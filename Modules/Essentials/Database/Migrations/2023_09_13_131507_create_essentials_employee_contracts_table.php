@@ -23,9 +23,10 @@ return new class extends Migration
             $table->date('contract_end_date'); 
             $table->integer('contract_duration'); 
             $table->string('probation_period'); 
-            $table->decimal('basic_salary', 10, 2);
+            $table->decimal('salary', 10, 2);
             $table->string('profile_image');
-            $table->boolean('activation_status'); 
+            $table->boolean('is_active'); 
+            $table->boolean('is_renewable');
             $table->timestamps();
         });
     }

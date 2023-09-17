@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('bank_id')->nullable();
             $table->string('account_number')->nullable();
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
             $table->foreign('bank_id')->references('id')->on('essentials_bank_accounts')->onDelete('cascade');
 

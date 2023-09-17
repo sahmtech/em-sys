@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('mobile_number')->nullable();
             $table->text('address')->nullable();
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

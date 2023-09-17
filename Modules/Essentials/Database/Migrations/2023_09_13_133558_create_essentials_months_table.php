@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('essentials_months', function (Blueprint $table) {
             $table->id();
             $table->string('month_name');
-            $table->unsignedTinyInteger('month_number')->max('12');
+            $table->unsignedTinyInteger('month_number');
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

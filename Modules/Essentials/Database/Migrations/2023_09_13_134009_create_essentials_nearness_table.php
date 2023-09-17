@@ -16,8 +16,10 @@ return new class extends Migration
         Schema::create('essentials_nearness', function (Blueprint $table) {
             $table->id();
             $table->string('relationship');
+            $table->unsignedInteger('employee_id');
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
+            $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

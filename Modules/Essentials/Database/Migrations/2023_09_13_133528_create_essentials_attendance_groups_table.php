@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('essentials_attendance_groups', function (Blueprint $table) {
             $table->id();
             $table->string('group_name');
-            $table->json('supervisors');
             $table->string('group_code')->unique();
             $table->text('details')->nullable();
             $table->timestamps();

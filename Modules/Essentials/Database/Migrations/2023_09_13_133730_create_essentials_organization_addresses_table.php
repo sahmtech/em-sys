@@ -15,10 +15,11 @@ return new class extends Migration
     {
         Schema::create('essentials_organization_addresses', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code');
+            $table->unsignedBigInteger('organization_id');
+            $table->string('address');
             $table->text('details')->nullable();
-            $table->string('activation_status');
+            $table->string('is_active');
+            $table->foreign('organization_id')->references('id')->on('essentials_organizations')->onDelete('cascade');
             $table->timestamps();
         });
     }

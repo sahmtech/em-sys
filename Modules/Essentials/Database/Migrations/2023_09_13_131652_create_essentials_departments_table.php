@@ -23,7 +23,7 @@ return new class extends Migration
             $table->date('creation_date'); 
             $table->string('location');
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

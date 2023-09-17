@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('wife_ticket_value', 10, 2);
             $table->decimal('children_ticket_value', 10, 2);
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

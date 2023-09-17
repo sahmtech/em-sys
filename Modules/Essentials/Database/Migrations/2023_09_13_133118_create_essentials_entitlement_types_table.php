@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('percentage', 5, 2);
             $table->string('from');
             $table->text('details')->nullable(); 
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('supervision_scope');
             $table->text('authorities_and_permissions');
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

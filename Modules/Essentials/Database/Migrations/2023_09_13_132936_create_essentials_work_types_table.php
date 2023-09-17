@@ -15,15 +15,14 @@ return new class extends Migration
     {
         Schema::create('essentials_work_types', function (Blueprint $table) {
             $table->id();
-            $table->string('type_name');
-            $table->string('type_name_english');
+            $table->json('type_name');
             $table->integer('delay_start_after');
             $table->boolean('delay_allowance_period'); // التأخير يشمل فترة السماح (عدد الدقائق)
             $table->integer('delay_allowance_count'); // عدد مرات السماح
             $table->enum('delay_deduction_type',['once','multiple']); // نوع خصم التأخير
             $table->boolean('early_checkout_deduction'); // خصم الخروج المبكر
             $table->integer('overtime_hours'); // ساعات العمل الإضافية
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

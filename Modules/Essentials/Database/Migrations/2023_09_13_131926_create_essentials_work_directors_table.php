@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_work_directors', function (Blueprint $table) {
+        Schema::create('essentials_admissions_to_work', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('employee_id');
-            $table->enum('directive_type', ['first_time', 'after_vac']);
-            $table->enum('directive_status', ['on_date', 'delay']); // حالة المباشرة
+            $table->enum('dmissions_type', ['first_time', 'after_vac']);
+            $table->enum('dmissions_status', ['on_date', 'delay']); // حالة المباشرة
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
 

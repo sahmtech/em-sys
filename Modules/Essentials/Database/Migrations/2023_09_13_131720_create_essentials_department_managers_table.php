@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('department_id');
             $table->string('internal_department');
-            $table->string('manager_name');
-            $table->string('gate');
             $table->text('details')->nullable();
+            $table->unsignedInteger('manager_id');
+            $table->foreign('manager_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('department_id')->references('id')->on('essentials_departments')->onDelete('cascade');
             $table->timestamps();
         });

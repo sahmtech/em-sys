@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('months_number');
             $table->boolean('paid_with_salary');
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

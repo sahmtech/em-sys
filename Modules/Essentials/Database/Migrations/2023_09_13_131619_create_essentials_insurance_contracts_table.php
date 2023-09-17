@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('responsible_person');
             $table->string('phone_number');
             $table->string('mobile_number');
+            $table->string('social_number');
             $table->string('address');
             $table->integer('employees_count');
             $table->integer('dependents_count');
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->date('insurance_end_date'); 
             $table->json('documents')->nullable(); 
             $table->text('details')->nullable();
-            $table->boolean('activation_status');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }
