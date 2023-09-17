@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('essentials_delay_management', function (Blueprint $table) {
             $table->id();
-            $table->string('employee_id');
+          //  $table->string('employee_id');
+            $table->unsignedInteger('employee_id');
             $table->date('from_date');
             $table->time('from_time');
             $table->date('to_date');
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->boolean('employee_attendance');
             $table->text('details')->nullable();
             $table->boolean('activation_status');
+            $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

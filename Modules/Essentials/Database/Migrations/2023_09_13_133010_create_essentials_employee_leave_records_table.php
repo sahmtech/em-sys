@@ -15,12 +15,13 @@ return new class extends Migration
     {
         Schema::create('essentials_employee_leave_records', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('employee_id');
+            $table->unsignedInteger('employee_id');
             $table->text('decision_data'); // بيانات القرار
             $table->text('leave_data'); // بيانات الإجازة
             $table->boolean('deferment'); // التأجيل
             $table->boolean('cancellation'); // الإلغاء
             $table->text('other_details')->nullable();
+            $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
