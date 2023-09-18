@@ -26,7 +26,6 @@ return new class extends Migration
             $table->integer('dependents_count');
             $table->date('insurance_start_date');
             $table->date('insurance_end_date'); 
-            $table->json('documents')->nullable(); 
             $table->text('details')->nullable();
             $table->boolean('is_active');
             $table->timestamps();

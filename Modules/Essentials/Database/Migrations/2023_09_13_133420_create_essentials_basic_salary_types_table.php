@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('essentials_basic_salary_types', function (Blueprint $table) {
             $table->id();
-            $table->string('salary_type');
+            $table->string('type');
             $table->text('details')->nullable();
             $table->boolean('is_active');
             $table->timestamps();

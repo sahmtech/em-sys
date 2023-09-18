@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('contract_number');
             $table->unsignedInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
-            $table->json('employee_files')->nullable()->change(); 
             $table->date('contract_start_date');
             $table->date('contract_end_date'); 
             $table->integer('contract_duration'); 

@@ -12,14 +12,14 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
+    {  //البدلات
         Schema::create('essentials_allowance_types', function (Blueprint $table) {
             $table->id();
-            $table->string('allowance_name');
-            $table->string('allowance_type');
+            $table->string('name');
+            $table->string('type');
             $table->enum('allowance_value',['constant','percentage_of_salary']);
-            $table->integer('months_number');
-            $table->boolean('paid_with_salary');
+            $table->integer('number_of_months');
+            $table->boolean('added_to_salary');
             $table->text('details')->nullable();
             $table->boolean('is_active');
             $table->timestamps();

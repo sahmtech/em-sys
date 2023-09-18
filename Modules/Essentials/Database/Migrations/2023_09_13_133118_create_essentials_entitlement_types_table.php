@@ -12,10 +12,10 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
+    { //الاستحقاقات
         Schema::create('essentials_entitlement_types', function (Blueprint $table) {
             $table->id();
-            $table->string('entitlement_name');
+            $table->string('name');
             $table->decimal('percentage', 5, 2);
             $table->string('from');
             $table->text('details')->nullable(); 

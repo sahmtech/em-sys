@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('job_code')->unique();
             $table->text('responsibilities');
             $table->text('supervision_scope');
-            $table->text('authorities_and_permissions');
+            $table->text('authorization_and_permissions');
             $table->text('details')->nullable();
             $table->boolean('is_active');
             $table->timestamps();

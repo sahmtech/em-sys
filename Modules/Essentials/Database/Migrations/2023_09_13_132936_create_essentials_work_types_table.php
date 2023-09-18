@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('essentials_work_types', function (Blueprint $table) {
             $table->id();
-            $table->json('type_name');
+            $table->json('name');
             $table->integer('delay_start_after');
             $table->boolean('delay_allowance_period'); // التأخير يشمل فترة السماح (عدد الدقائق)
             $table->integer('delay_allowance_count'); // عدد مرات السماح

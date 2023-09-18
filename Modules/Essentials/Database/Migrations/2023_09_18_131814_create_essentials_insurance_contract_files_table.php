@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_attendance_groups', function (Blueprint $table) {
+        Schema::create('essentials_insurance_contract_files', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code')->unique();
-            $table->text('details')->nullable();
+            $table->unsignedBigInteger('contract_id');
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->foreign('contract_id')->references('id')->on('essentials_insurance_contracts');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('essentials_attendance_groups');
+        Schema::dropIfExists('essentials_insurance_contract_files');
     }
 };

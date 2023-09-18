@@ -12,10 +12,10 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
+    { //المؤهلات
         Schema::create('essentials_qualification_types', function (Blueprint $table) {
             $table->id();
-            $table->string('qualification_name');
+            $table->string('name');
             $table->text('details')->nullable();
             $table->boolean('is_active');
             $table->timestamps();

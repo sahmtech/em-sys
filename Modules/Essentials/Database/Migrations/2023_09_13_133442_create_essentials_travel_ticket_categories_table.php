@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('essentials_travel_ticket_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('group_name');
+            $table->string('name');
             $table->decimal('employee_ticket_value', 10, 2);
             $table->decimal('wife_ticket_value', 10, 2);
             $table->decimal('children_ticket_value', 10, 2);

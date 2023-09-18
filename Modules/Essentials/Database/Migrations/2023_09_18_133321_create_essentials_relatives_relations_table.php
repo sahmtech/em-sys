@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_nearness', function (Blueprint $table) {
+        Schema::create('essentials_relatives_relations', function (Blueprint $table) {
             $table->id();
             $table->string('relationship');
             $table->unsignedInteger('employee_id');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('essentials_nearness');
+        Schema::dropIfExists('essentials_relatives_relations');
     }
 };
