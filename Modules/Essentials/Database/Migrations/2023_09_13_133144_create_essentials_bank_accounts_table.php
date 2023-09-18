@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('essentials_bank_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('bank_name');
+            $table->string('name');
             $table->string('phone_number')->nullable();
             $table->string('mobile_number')->nullable();
             $table->text('address')->nullable();

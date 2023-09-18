@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('essentials_employee_contract_files', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('contract_id');
-            $table->string('file_name');
-            $table->string('file_path');
+            $table->string('name');
+            $table->string('path');
             $table->foreign('contract_id')->references('id')->on('essentials_employee_contracts');
             $table->timestamps();
         });
