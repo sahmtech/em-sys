@@ -28,8 +28,9 @@ class AdminSidebarMenu
             $pos_settings = ! empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
 
             $is_admin = auth()->user()->hasRole('Admin#'.session('business.id')) ? true : false;
+            
             //Home
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-tachometer-alt', 'active' => request()->segment(1) == 'home'])->order(5);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ','active' => request()->segment(1) == 'home'])->order(5);
 
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
@@ -58,9 +59,14 @@ class AdminSidebarMenu
                             );
                         }
                     },
-                    ['icon' => 'fa fas fa-users']
+                    ['icon' => 'fas fa-user-tie ']
                 )->order(10);
             }
+
+   
+
+
+
 
             //Contacts dropdown
             if (auth()->user()->can('supplier.view') || auth()->user()->can('customer.view') || auth()->user()->can('supplier.view_own') || auth()->user()->can('customer.view_own')) {
@@ -102,7 +108,7 @@ class AdminSidebarMenu
                             );
                         }
                     },
-                    ['icon' => 'fa fas fa-address-book', 'id' => 'tour_step4']
+                    ['icon' => 'fas fa-id-card ', 'id' => 'tour_step4']
                 )->order(15);
             }
 
@@ -198,7 +204,7 @@ class AdminSidebarMenu
                             ['icon' => 'fa fas fa-shield-alt', 'active' => request()->segment(1) == 'warranties']
                         );
                     },
-                    ['icon' => 'fa fas fa-cubes', 'id' => 'tour_step5']
+                    ['icon' => 'fas fa-chart-pie ', 'id' => 'tour_step5']
                 )->order(20);
             }
 
@@ -244,7 +250,7 @@ class AdminSidebarMenu
                             );
                         }
                     },
-                    ['icon' => 'fa fas fa-arrow-circle-down', 'id' => 'tour_step6']
+                    ['icon' => 'fas fa-cart-plus ', 'id' => 'tour_step6']
                 )->order(25);
             }
             //Sell dropdown
@@ -360,7 +366,7 @@ class AdminSidebarMenu
                             );
                         }
                     },
-                    ['icon' => 'fa fas fa-arrow-circle-up', 'id' => 'tour_step7']
+                    ['icon' => 'fas fa-universal-access ', 'id' => 'tour_step7']
                 )->order(30);
             }
 
@@ -439,7 +445,7 @@ class AdminSidebarMenu
                             );
                         }
                     },
-                    ['icon' => 'fa fas fa-minus-circle']
+                    ['icon' => 'fas fa-shopping-basket ']
                 )->order(45);
             }
             //Accounts dropdown
@@ -695,6 +701,8 @@ class AdminSidebarMenu
                 $menu->url(action([\App\Http\Controllers\NotificationTemplateController::class, 'index']), __('lang_v1.notification_templates'), ['icon' => 'fa fas fa-envelope', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
             }
 
+         
+
             //Settings Dropdown
             if (auth()->user()->can('business_settings.access') ||
                 auth()->user()->can('barcode_settings.access') ||
@@ -774,6 +782,15 @@ class AdminSidebarMenu
                     ['icon' => 'fa fas fa-cog', 'id' => 'tour_step3']
                 )->order(85);
             }
+
+            //Housing&movement module
+            if (auth()->user()->can('send_notifications')) {
+                $menu->url(action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']), 'إدارة السكن والحركة', ['icon' => 'fa 	fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
+            }
+
+
+
+            
         });
 
         //Add menus from modules

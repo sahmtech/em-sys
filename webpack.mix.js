@@ -13,6 +13,11 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js/init.js').vue()
     .sass('resources/sass/app.scss', 'public/css/init.css')
+	
+	.copy(
+        'node_modules/@fortawesome/fontawesome-free/webfonts',
+        'public/init.fonts'
+    )
     .combine([
       'public/js/init.js',
         'resources/plugins/AdminLTE/plugins/pace/pace.min.js',

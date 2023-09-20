@@ -14,5 +14,6 @@
     "Spreadsheet": true,
     "Superadmin": true,
     "Woocommerce": true,
-    "AiAssistance": true
+    "AiAssistance": true,
+    "HousingMovements": true
 }
