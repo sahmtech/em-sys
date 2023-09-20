@@ -1,0 +1,11 @@
+{
+    "name": "HousingMovements",
+    "alias": "housingmovements",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\HousingMovements\\Providers\\HousingMovementsServiceProvider"
+    ],
+    "files": []
+}
