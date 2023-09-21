@@ -702,7 +702,14 @@ class AdminSidebarMenu
             }
 
          
-
+     //Housing&movement module
+     if (auth()->user()->can('send_notifications')) {
+        $menu->url(action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']), 'إدارة السكن والحركة', ['icon' => 'fa 	fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
+    }
+    //International Relations
+    if (auth()->user()->can('send_notifications')) {
+        $menu->url(action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']), 'العلاقات الدولية', ['icon' => 'fa fas fa-dharmachakra', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
+    }
             //Settings Dropdown
             if (auth()->user()->can('business_settings.access') ||
                 auth()->user()->can('barcode_settings.access') ||
@@ -783,11 +790,7 @@ class AdminSidebarMenu
                 )->order(85);
             }
 
-            //Housing&movement module
-            if (auth()->user()->can('send_notifications')) {
-                $menu->url(action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']), 'إدارة السكن والحركة', ['icon' => 'fa 	fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
-            }
-
+       
 
 
             

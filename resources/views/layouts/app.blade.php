@@ -45,10 +45,18 @@
             @if(!$pos_layout)
                 @include('layouts.partials.header')
                 @if (Request::is('housingmovements/*'))
+
                     @include('housingmovements::layouts.sidebarh&m')
+
+                @elseif(Request::is('international-Relations/*'))
+                      
+                     @include('internationalrelations::layouts.sidebarh&m')
                 @else
+
                 @include('layouts.partials.sidebar')
+
                 @endif
+
             @else
                 @include('layouts.partials.header-pos')
             @endif
