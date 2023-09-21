@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('essentials_discount_types', function (Blueprint $table) {
             $table->id();
-            $table->string('discount_name');
+            $table->string('name');
             $table->decimal('weight', 5, 2);
             $table->text('details')->nullable();
             $table->boolean('is_active');

@@ -44,6 +44,7 @@ storage/logs
 storage/framework/cache/
 storage/framework/sessions/
 storage/framework/views/
+storage/debugbar/
 storage/*.key
 .env
 Homestead.yaml
