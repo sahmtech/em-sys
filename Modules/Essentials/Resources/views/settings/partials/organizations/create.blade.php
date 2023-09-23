@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('organization.organizations'))
+@section('title', __('country.countries'))
 
 @section('content')
-
+@include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang('essentials::lang.organizations')
-        <small>@lang('essentials::lang.manage_organizations')</small>
+    <h1>
+        <span>@lang('essentials::lang.manage_organizations')</span>
     </h1>
 </section>
 <section class="content">
@@ -56,7 +56,7 @@
                   </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('details', __('essentials::lang.details') . ':') !!}
-                    {!! Form::textarea('details',null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.details'), 'rows' => 3]) !!}
+                    {!! Form::textarea('details',null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.details'), 'rows' =>2]) !!}
                 </div>
             
                 

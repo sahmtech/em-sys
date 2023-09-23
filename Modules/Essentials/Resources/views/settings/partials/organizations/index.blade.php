@@ -1,18 +1,18 @@
 @extends('layouts.app')
-@section('title', __('organization.organizations'))
+@section('title', __('country.countries'))
 
 @section('content')
-
+@include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang('essentials::lang.organizations')
-        <small>@lang('essentials::lang.manage_organizations')</small>
+    <h1>
+        <span>@lang('essentials::lang.manage_organizations')</span>
     </h1>
 </section>
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => __('essentials::lang.organizations')])
+    @component('components.widget', ['class' => 'box-primary'])
         @can('organization.create')
             @slot('tool')
                 <div class="box-tools">

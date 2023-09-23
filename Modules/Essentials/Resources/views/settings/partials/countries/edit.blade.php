@@ -2,11 +2,14 @@
 @section('title', __('country.countries'))
 
 @section('content')
+@include('essentials::layouts.nav_hrm')
+<!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang('essentials::lang.countries')
-        <small>@lang('essentials::lang.manage_countries')</small>
+    <h1>
+        <span>@lang('essentials::lang.manage_countries')</span>
     </h1>
 </section>
+
 <div class="modal-dialog" role="document">
     <div class="modal-content">
     {!! Form::open(['route' => ['updateCountry', $country->id], 'method' => 'put', 'id' => 'add_country_form']) !!}
@@ -36,7 +39,7 @@
         
             <div class="form-group col-md-6">
                 {!! Form::label('details', __('essentials::lang.contry_details') . ':') !!}
-                {!! Form::textarea('details', $country->details, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_details'), 'rows' => 3]) !!}
+                {!! Form::textarea('details', $country->details, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_details'), 'rows' =>2]) !!}
             </div>
         
             <div class="form-group col-md-6">

@@ -1,12 +1,15 @@
 @extends('layouts.app')
-@section('title', __('country.cities'))
+@section('title', __('country.countries'))
 
 @section('content')
+@include('essentials::layouts.nav_hrm')
+<!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang('essentials::lang.cities')
-        <small>@lang('essentials::lang.manage_cities')</small>
+    <h1>
+        <span>@lang('essentials::lang.manage_cities')</span>
     </h1>
 </section>
+
 
 <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -36,7 +39,7 @@
   
               <div class="form-group col-md-6">
                   {!! Form::label('details', __('essentials::lang.details') . ':') !!}
-                  {!! Form::textarea('details', $city->details, ['class' => 'form-control', 'placeholder' => __('essentials::lang.details'), 'rows' => 3]) !!}
+                  {!! Form::textarea('details', $city->details, ['class' => 'form-control', 'placeholder' => __('essentials::lang.details'), 'rows' => 2]) !!}
               </div>
           
               <div class="form-group col-md-6">

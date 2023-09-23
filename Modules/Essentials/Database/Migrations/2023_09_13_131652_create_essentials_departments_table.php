@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('essentials_departments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('organization');
             $table->enum('level', ['one', 'other']);
             $table->unsignedBigInteger('parent_department_id')->nullable();
             $table->boolean('is_main_department')->default(false);

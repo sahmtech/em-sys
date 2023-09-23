@@ -25,16 +25,7 @@
                         
                         
                     </div>
-                    <a href="{{ route('countries') }}" class="list-group-item text-center">
-                            <span style="display: inline-block; width: 100%;">@lang('essentials::lang.countries')</span>
-                    </a>
-                    <a href="{{ route('cities') }}" class="list-group-item text-center">
-                        <span style="display: inline-block; width: 100%;">@lang('essentials::lang.cities')</span>
-                    </a>
-                    <a href="{{ route('organizations') }}" class="list-group-item text-center">
-                        <span style="display: inline-block; width: 100%;">@lang('essentials::lang.organizations')</span>
-                    </a>
-                 
+                  
                 </div>
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.leave_settings')

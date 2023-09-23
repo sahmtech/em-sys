@@ -8,74 +8,61 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
-use Illuminate\Http\Response;
-use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsJobTitle;
 
-
-class EssentialsCountryController extends Controller
+class EssentialsJobTitleController extends Controller
 {
-    protected $moduleUtil;
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
-
-     public function __construct(ModuleUtil $moduleUtil)
-     {
-         $this->moduleUtil = $moduleUtil;
-     }
+    protected $moduleUtil;
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
     public function index()
     {
-       $business_id = request()->session()->get('user.business_id');
-
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+  
+        $business_id = request()->session()->get('user.business_id');
+    
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+    
+   
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
+    
         if (request()->ajax()) {
-            $countries = DB::table('essentials_countries')->select(['id','name', 'nationality', 'details', 'is_active']);
-                       
-
-            return Datatables::of($countries)
-            ->addColumn(
-                'nameAr',
-                function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['ar'] ?? '';
-                }
-            )
-            ->addColumn(
-                'nameEn',
-                function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['en'] ?? '';
-                }
-            )
-            ->addColumn(
-                'action',
-                function ($row) use ($is_admin) {
-                    $html = '';
+        
+            $job_titles = DB::table('essentials_job_titles')
+                ->select('job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions',
+                    'details', 'is_active');
+    
+          
+            return Datatables::of($job_titles)
+                ->addColumn('action', function ($row) use ($is_admin) {
+                   
+                        $html = '';
                     if ($is_admin) {
-                        $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                        $html .= '<a href="'. route('job_title.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('country.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                        $html .= '<button class="btn btn-xs btn-danger delete_job_title_button" data-href="' . route('job_title.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
-        
+    
                     return $html;
-                }
-            )
-            ->filterColumn('name', function ($query, $keyword) {
-                $query->where('name', 'like', "%{$keyword}%");
-            })
-            ->removeColumn('id')
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
-      return view('essentials::settings.partials.countries.index');
+                })
+                ->filterColumn('name', function ($query, $keyword) {
+                  
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+    
+
+        return view('essentials::settings.partials.job_titles.index');
     }
 
     /**
@@ -83,16 +70,14 @@ class EssentialsCountryController extends Controller
      * @return Renderable
      */
     public function create()
-    {   
-       
+    {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
                      abort(403, 'Unauthorized action.');}
        
-        return view('essentials::settings.partials.countries.create');
-        
+        return view('essentials::settings.partials.job_titles.create');
         
     }
 
@@ -112,18 +97,24 @@ class EssentialsCountryController extends Controller
         }
  
         try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
+            $input = $request->only(['job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions', 'details', 'is_active']);
             
 
-            $input['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
+            $input2['job_title'] =  $input['job_title'];
             
-            $input['nationality'] = $input['nationality'];
-           
-            $input['details'] = $input['details'];
+            $input2['job_code'] = $input['job_code'];
+
+            $input2['responsibilities'] = $input['responsibilities'];
+
+            $input2['supervision_scope'] = $input['supervision_scope'];
+
+            $input2['authorization_and_permissions'] = $input['authorization_and_permissions'];
+
+            $input2['details'] = $input['details'];
             
-            $input['is_active'] = $input['is_active'];
+            $input2['is_active'] = $input['is_active'];
             
-            EssentialsCountry::create($input);
+            EssentialsJobTitle::create($input2);
  
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
@@ -135,9 +126,11 @@ class EssentialsCountryController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
+      
 
-        return view('essentials::settings.partials.countries.index');
+        return view('essentials::settings.partials.job_titles.index');
     }
+
     /**
      * Show the specified resource.
      * @param int $id
@@ -162,10 +155,10 @@ class EssentialsCountryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $country = EssentialsCountry::findOrFail($id);
+        $job_title = EssentialsJobTitle::findOrFail($id);
 
 
-        return view('essentials::settings.partials.countries.edit')->with(compact('country'));
+        return view('essentials::settings.partials.job_titles.edit')->with(compact('job_title'));
     }
 
     /**
@@ -185,17 +178,24 @@ class EssentialsCountryController extends Controller
         }
 
         try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
-       
-            $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
+            $input = $request->only(['job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions', 'details', 'is_active']);
             
-            $input2['nationality'] = $input['nationality'];
-           
+
+            $input2['job_title'] =  $input['job_title'];
+            
+            $input2['job_code'] = $input['job_code'];
+
+            $input2['responsibilities'] = $input['responsibilities'];
+
+            $input2['supervision_scope'] = $input['supervision_scope'];
+
+            $input2['authorization_and_permissions'] = $input['authorization_and_permissions'];
+
             $input2['details'] = $input['details'];
             
             $input2['is_active'] = $input['is_active'];
             
-            EssentialsCountry::where('id', $id)->update($input2);
+            EssentialsJobTitle::where('id', $id)->update($input2);
             $output = ['success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
@@ -207,9 +207,9 @@ class EssentialsCountryController extends Controller
             ];
         }
 
-
-        return view('essentials::settings.partials.countries.index');
+        return view('essentials::settings.partials.job_titles.index');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -226,7 +226,7 @@ class EssentialsCountryController extends Controller
         }
 
         try {
-            EssentialsCountry::where('id', $id)
+            EssentialsJobTitle::where('id', $id)
                         ->delete();
 
             $output = ['success' => true,

@@ -42,6 +42,53 @@
                     @if(auth()->user()->can('edit_essentials_settings'))
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'settings') class="active" @endif><a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit'])}}">@lang('business.settings')</a></li>
                     @endif
+                    @if(auth()->user()->can('edit_essentials_other_settings'))
+                    <li>
+                     
+                            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @lang('business.other_settings')
+                            </a>
+                            
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                               
+                                    <a class="dropdown-item" href="{{ route('countries') }}">
+                                        @lang('essentials::lang.countries')  
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('cities') }}">
+                                        @lang('essentials::lang.cities')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('organizations') }}">
+                                        @lang('essentials::lang.organizations')
+                                    </a>
+                                   
+                                    <a class="dropdown-item" href="{{ route('job_titles') }}">
+                                        @lang('essentials::lang.job_titles')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('bank_accounts') }}">
+                                        @lang('essentials::lang.bank_accounts')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('travel_categories') }}">
+                                        @lang('essentials::lang.travel_ticket_categories')
+                                    </a>
+                                    <a class="dropdown-item" href="">
+                                        @lang('essentials::lang.insurance_contracts')
+                                    </a>
+                                    <a class="dropdown-item" href="">
+                                        @lang('essentials::lang.basic_salary_types')
+                                    </a>
+                                    
+                                    <a class="dropdown-item" href="{{ route('entitlements') }}">
+                                        @lang('essentials::lang.entitlements')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('allowances') }}">
+                                        @lang('essentials::lang.allowances')
+                                    </a>
+                                  
+                               
+                            </div>
+                        
+                    </li>
+                    @endif
                 </ul>
 
             </div><!-- /.navbar-collapse -->

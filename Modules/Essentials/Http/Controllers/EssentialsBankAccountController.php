@@ -8,75 +8,58 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
-use Illuminate\Http\Response;
-use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
 
-
-class EssentialsCountryController extends Controller
+class EssentialsBankAccountController extends Controller
 {
     protected $moduleUtil;
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-
+    
      public function __construct(ModuleUtil $moduleUtil)
      {
          $this->moduleUtil = $moduleUtil;
      }
-    public function index()
-    {
-       $business_id = request()->session()->get('user.business_id');
-
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
-        if (request()->ajax()) {
-            $countries = DB::table('essentials_countries')->select(['id','name', 'nationality', 'details', 'is_active']);
-                       
-
-            return Datatables::of($countries)
-            ->addColumn(
-                'nameAr',
-                function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['ar'] ?? '';
-                }
-            )
-            ->addColumn(
-                'nameEn',
-                function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['en'] ?? '';
-                }
-            )
-            ->addColumn(
-                'action',
-                function ($row) use ($is_admin) {
-                    $html = '';
-                    if ($is_admin) {
-                        $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                        &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('country.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    }
+     public function index()
+     {
+        $business_id = request()->session()->get('user.business_id');
+ 
+         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+             abort(403, 'Unauthorized action.');
+         }
+ 
+         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+ 
+         if (request()->ajax()) {
         
-                    return $html;
-                }
-            )
-            ->filterColumn('name', function ($query, $keyword) {
-                $query->where('name', 'like', "%{$keyword}%");
-            })
-            ->removeColumn('id')
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
-      return view('essentials::settings.partials.countries.index');
-    }
+            
+             $banks = DB::table('essentials_bank_accounts')->select(['id','name', 'phone_number', 'mobile_number',
+             'address','details', 'is_active']);
+                        
+ 
+             return Datatables::of($banks)
+             ->addColumn(
+                 'action',
+                 function ($row) use ($is_admin) {
+                     $html = '';
+                     if ($is_admin) {
+                         $html .= '<a href="'. route('bank_account.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                         &nbsp;';
+                         $html .= '<button class="btn btn-xs btn-danger delete_bank_account_button" data-href="' . route('bank_account.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                     }
+         
+                     return $html;
+                 }
+             )
+             ->filterColumn('name', function ($query, $keyword) {
+                 $query->where('name', 'like', "%{$keyword}%");
+             })
+             ->removeColumn('id')
+             ->rawColumns(['action'])
+             ->make(true);
+         
+         
+             }
+       return view('essentials::settings.partials.bank_accounts.index');
+     }
 
     /**
      * Show the form for creating a new resource.
@@ -91,7 +74,7 @@ class EssentialsCountryController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
                      abort(403, 'Unauthorized action.');}
        
-        return view('essentials::settings.partials.countries.create');
+        return view('essentials::settings.partials.bank_accounts.create');
         
         
     }
@@ -112,18 +95,24 @@ class EssentialsCountryController extends Controller
         }
  
         try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
+            $input = $request->only(['name', 'phone_number', 'mobile_number',
+            'address','details', 'is_active']);
             
 
-            $input['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
+            $input2['name'] = $input['name'];
             
-            $input['nationality'] = $input['nationality'];
+            $input2['phone_number'] = $input['phone_number'];
+
+            $input2['mobile_number'] = $input['mobile_number'];
+
+            $input2['address'] = $input['address'];
+
            
-            $input['details'] = $input['details'];
+            $input2['details'] = $input['details'];
             
-            $input['is_active'] = $input['is_active'];
+            $input2['is_active'] = $input['is_active'];
             
-            EssentialsCountry::create($input);
+            EssentialsBankAccounts::create($input);
  
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
@@ -136,8 +125,9 @@ class EssentialsCountryController extends Controller
             ];
         }
 
-        return view('essentials::settings.partials.countries.index');
+        return view('essentials::settings.partials.bank_accounts.index');
     }
+
     /**
      * Show the specified resource.
      * @param int $id
@@ -162,10 +152,10 @@ class EssentialsCountryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $country = EssentialsCountry::findOrFail($id);
+        $bank = EssentialsBankAccounts::findOrFail($id);
 
 
-        return view('essentials::settings.partials.countries.edit')->with(compact('country'));
+        return view('essentials::settings.partials.bank_accounts.edit')->with(compact('bank'));
     }
 
     /**
@@ -185,17 +175,25 @@ class EssentialsCountryController extends Controller
         }
 
         try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
-       
-            $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
+            $input = $request->only(['name', 'phone_number', 'mobile_number',
+            'address','details', 'is_active']);
             
-            $input2['nationality'] = $input['nationality'];
+
+            $input2['name'] = $input['name'];
+            
+            $input2['phone_number'] = $input['phone_number'];
+
+            $input2['mobile_number'] = $input['mobile_number'];
+
+            $input2['address'] = $input['address'];
+
            
             $input2['details'] = $input['details'];
             
             $input2['is_active'] = $input['is_active'];
             
-            EssentialsCountry::where('id', $id)->update($input2);
+            
+            EssentialsBankAccounts::where('id', $id)->update($input2);
             $output = ['success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
@@ -208,9 +206,8 @@ class EssentialsCountryController extends Controller
         }
 
 
-        return view('essentials::settings.partials.countries.index');
+        return view('essentials::settings.partials.bank_accounts.index');
     }
-
     /**
      * Remove the specified resource from storage.
      * @param int $id
@@ -226,7 +223,7 @@ class EssentialsCountryController extends Controller
         }
 
         try {
-            EssentialsCountry::where('id', $id)
+            EssentialsBankAccounts::where('id', $id)
                         ->delete();
 
             $output = ['success' => true,
