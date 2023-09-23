@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('country.countries'))
+@section('title', __('essentials::lang.cities'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
@@ -32,8 +32,8 @@
             </div>
         
             <div class="form-group col-md-12">
-	        	{!! Form::label('country', __( 'essentials::lang.country' ) . ':') !!}
-	          	{!! Form::select('country', $countries, null, ['class' => 'form-control select2', 'placeholder' => __( 'essentials::lang.country' ) ]); !!}
+	        	{!! Form::label('country', __( 'essentials::lang.country' ) . ':*') !!}
+	          	{!! Form::select('country', $countries, null, ['class' => 'form-control select2', 'placeholder' => __( 'essentials::lang.country' ) , 'required']); !!}
 	      	</div>
 
             <div class="form-group col-md-6">
@@ -42,7 +42,7 @@
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('is_active', __('essentials::lang.city_is_active') . ':') !!}
+                {!! Form::label('is_active', __('essentials::lang.city_is_active') . ':*') !!}
                 {!! Form::select('is_active', ['1' => __('essentials::lang.city_is_active'), '0' => __('essentials::lang.city_is_unactive')], null, ['class' => 'form-control']) !!}
             </div>
         </div>

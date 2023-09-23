@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('job_title.job_titles'))
+@section('title', __('essentials::lang.job_titles'))
 
 @section('content')
 <section class="content-header">
@@ -20,12 +20,12 @@
       <div class="modal-body">
         <div class="row">
             <div class="form-group col-md-6">
-                {!! Form::label('job_title', __('essentials::lang.job_title') . ':*') !!}
+                {!! Form::label('job_title', __('essentials::lang.job_title') . ':') !!}
                 {!! Form::text('job_title', $job_title->job_title, ['class' => 'form-control', 'placeholder' => __('essentials::lang.job_title'), 'required']) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('job_code', __('essentials::lang.job_code') . ':*') !!}
+                {!! Form::label('job_code', __('essentials::lang.job_code') . ':') !!}
                 {!! Form::text('job_code', $job_title->job_code, ['class' => 'form-control', 'placeholder' => __('essentials::lang.job_code'), 'required']) !!}
             </div>
         

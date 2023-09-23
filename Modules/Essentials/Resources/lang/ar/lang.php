@@ -391,7 +391,37 @@ return[
 'bank'=>'الحساب البنكي',
 'organization_bank'=>'الحساب البنكي',
 'one_level'=>'المستوى الأول',
-'other_level'=>'مستوى آخر'
+'other_level'=>'مستوى آخر',
+'add_job_title'=>'إضافة مسمى وظيفي',
+'manage_bank_accounts'=>'',
+'phone_number'=>'رقم الهاتف',
+'mobile_number'=>'رقم الموبايل',
+'address'=>'العنوان',
+'add_bank_account'=>'إضافة حساب بنكي',
+'manage_travel_categories'=>'إدارة تذاكر السفر',
+'addTravel_categorie'=>'إضافة تذكرة سفر',
+'wife_ticket_value'=>'سعر التذكرة للزوجة',
+'employee_ticket_value'=>'سعر التذكرة للموظف',
+'children_ticket_value'=>'سعر التذكرة للأولاد',
+'travel_categories'=>'تذاكر السفر',
+'manage_basic_salary_types'=>'إدارة الرواتب الأساسية',
+'add_basic_salary_type'=>'إضافة نوع راتب أساسي',
+'basic_salary_type'=>'نوع الراتب الأساسي',
+'manage_entitlement_types'=>'إدارة أنواع الاستحقاقات',
+'add_entitlement'=>'إضافة نوع استحقاق',
+'percentage'=>'النسبة',
+'from'=>'من',
+'entitlement_types'=>'أنواع الاستحقاقات',
+'manage_allowances_types'=>'إدارة أنواع البدلات',
+'add_allowance'=>'إضافة بدل',
+'allowance_value'=>'قيمة البدل',
+'type'=>'النوع',
+'number_of_months'=>'عدد الأشهر',
+'added_to_salary'=>'تضاف إلى الراتب',
+'not_added_to_salary'=>'لا تضاف إلى الراتب ',
+
+
+
    
 
 

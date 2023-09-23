@@ -1,36 +1,33 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.bank_accounts'))
+@section('title', __('essentials::lang.basic_salary_types'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.manage_bank_accounts')</span>
+        <span>@lang('essentials::lang.manage_basic_salary_types')</span>
     </h1>
 </section>
 
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary'])
-        @can('bank.create')
+        @can('basic_salary_type.create')
             @slot('tool')
                 <div class="box-tools">
-                    <a class="btn btn-block btn-primary" href="{{ route('createBank_account') }}">
+                    <a class="btn btn-block btn-primary" href="{{ route('createBasicSalary') }}">
                         <i class="fa fa-plus"></i> @lang('messages.add')
                     </a>
                 </div>
             @endslot
         @endcan
-        @can('bank.view')
+        @can('basic_salary_type.view')
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="bank_accounts_table">
+                <table class="table table-bordered table-striped" id="basic_salary_types_table">
                     <thead>
                         <tr>
-                            <th>@lang('essentials::lang.name')</th>
-                            <th>@lang('essentials::lang.phone_number')</th>                           
-                            <th>@lang('essentials::lang.mobile_number')</th>
-                            <th>@lang('essentials::lang.address')</th>
+                            <th>@lang('essentials::lang.basic_salary_type')</th>
                             <th>@lang('essentials::lang.details')</th>
                             <th>@lang('essentials::lang.is_active')</th>
                             <th>@lang('messages.action')</th>
@@ -41,7 +38,7 @@
         @endcan
     @endcomponent
 
-    <div class="modal fade bank_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade basic_salary_type_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 
 </section>
@@ -51,17 +48,15 @@
 
 @section('javascript')
 <script type="text/javascript">
- 
+  
     $(document).ready(function () {
-        var bank_accounts_table = $('#bank_accounts_table').DataTable({
+        var basic_salary_types_table = $('#basic_salary_types_table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("bank_accounts") }}', 
+            ajax: '{{ route("basic_salary_types") }}', 
             columns: [
-                { data: 'name'},
-                { data: 'phone_number'},
-                { data: 'mobile_number'},
-                { data: 'address'},
+              
+                { data: 'type'},
                 { data: 'details' },
                 { 
         data: 'is_active',
@@ -77,10 +72,10 @@
             ]
         });
 
-        $(document).on('click', 'button.delete_bank_account_button', function () {
+        $(document).on('click', 'button.delete_basic_salary_type_button', function () {
             swal({
                 title: LANG.sure,
-                text: LANG.confirm_delete_bank,
+                text: LANG.confirm_delete_basic_salary_type,
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -94,7 +89,7 @@
                         success: function (result) {
                             if (result.success == true) {
                                 toastr.success(result.msg);
-                                bank_accounts_table.ajax.reload();
+                                basic_salary_types_table.ajax.reload();
                             } else {
                                 toastr.error(result.msg);
                             }

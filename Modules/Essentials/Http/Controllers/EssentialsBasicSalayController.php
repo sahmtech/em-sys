@@ -8,88 +8,68 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
-use Illuminate\Http\Response;
-use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsBasicSalaryType;
 
-
-class EssentialsCountryController extends Controller
+class EssentialsBasicSalayController extends Controller
 {
     protected $moduleUtil;
    
 
-     public function __construct(ModuleUtil $moduleUtil)
-     {
-         $this->moduleUtil = $moduleUtil;
-     }
-    public function index()
+    public function __construct(ModuleUtil $moduleUtil)
     {
-       $business_id = request()->session()->get('user.business_id');
-
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
-        if (request()->ajax()) {
-            $countries = DB::table('essentials_countries')->select(['id','name', 'nationality', 'details', 'is_active']);
-                       
-
-            return Datatables::of($countries)
-            ->addColumn(
-                'nameAr',
-                function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['ar'] ?? '';
-                }
-            )
-            ->addColumn(
-                'nameEn',
-                function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['en'] ?? '';
-                }
-            )
-            ->addColumn(
-                'action',
-                function ($row) use ($is_admin) {
-                    $html = '';
-                    if ($is_admin) {
-                        $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                        &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('country.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    }
-        
-                    return $html;
-                }
-            )
-            ->filterColumn('name', function ($query, $keyword) {
-                $query->where('name', 'like', "%{$keyword}%");
-            })
-            ->removeColumn('id')
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
-      return view('essentials::settings.partials.countries.index');
+        $this->moduleUtil = $moduleUtil;
     }
+   public function index()
+   {
+      $business_id = request()->session()->get('user.business_id');
+
+       if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+           abort(403, 'Unauthorized action.');
+       }
+
+       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+       if (request()->ajax()) {
+           $types= DB::table('essentials_basic_salary_types')->select(['id','type', 'details', 'is_active']);
+                      
+
+           return Datatables::of($types)
+           ->addColumn(
+               'action',
+               function ($row) use ($is_admin) {
+                   $html = '';
+                   if ($is_admin) {
+                       $html .= '<a href="'. route('BasicSalary.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                       &nbsp;';
+                       $html .= '<button class="btn btn-xs btn-danger delete_basic_salary_type_button" data-href="' . route('BasicSalary.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                   }
+       
+                   return $html;
+               }
+           )
+           ->filterColumn('type', function ($query, $keyword) {
+               $query->where('type', 'like', "%{$keyword}%");
+           })
+           ->removeColumn('id')
+           ->rawColumns(['action'])
+           ->make(true);
+       
+       
+           }
+     return view('essentials::settings.partials.basic_salary.index');
+   }
 
     public function create()
     {   
-       
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
                      abort(403, 'Unauthorized action.');}
        
-        return view('essentials::settings.partials.countries.create');
-        
-        
+        return view('essentials::settings.partials.basic_salary.create');
+     
     }
-
-   
     public function store(Request $request)
     {
       
@@ -101,18 +81,15 @@ class EssentialsCountryController extends Controller
         }
  
         try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
+            $input = $request->only(['type',  'details', 'is_active']);
             
-
-            $input['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
-            
-            $input['nationality'] = $input['nationality'];
+            $input['type'] = $input['type'];
            
             $input['details'] = $input['details'];
             
             $input['is_active'] = $input['is_active'];
             
-            EssentialsCountry::create($input);
+            EssentialsBasicSalaryType::create($input);
  
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
@@ -125,7 +102,7 @@ class EssentialsCountryController extends Controller
             ];
         }
 
-        return view('essentials::settings.partials.countries.index');
+        return view('essentials::settings.partials.basic_salary.index');
     }
   
     public function show($id)
@@ -143,10 +120,10 @@ class EssentialsCountryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $country = EssentialsCountry::findOrFail($id);
+        $basic_salary_type = EssentialsBasicSalaryType::findOrFail($id);
 
 
-        return view('essentials::settings.partials.countries.edit')->with(compact('country'));
+        return view('essentials::settings.partials.basic_salary.edit')->with(compact('basic_salary_type'));
     }
 
  
@@ -161,17 +138,16 @@ class EssentialsCountryController extends Controller
         }
 
         try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
+            $input = $request->only([ 'type', 'details', 'is_active']);
        
-            $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
             
-            $input2['nationality'] = $input['nationality'];
+            $input2['type'] = $input['type'];
            
             $input2['details'] = $input['details'];
             
             $input2['is_active'] = $input['is_active'];
             
-            EssentialsCountry::where('id', $id)->update($input2);
+            EssentialsBasicSalaryType::where('id', $id)->update($input2);
             $output = ['success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
@@ -183,8 +159,9 @@ class EssentialsCountryController extends Controller
             ];
         }
 
+      
 
-        return view('essentials::settings.partials.countries.index');
+        return view('essentials::settings.partials.basic_salary.index');
     }
 
     public function destroy($id)
@@ -197,7 +174,7 @@ class EssentialsCountryController extends Controller
         }
 
         try {
-            EssentialsCountry::where('id', $id)
+            EssentialsBasicSalaryType::where('id', $id)
                         ->delete();
 
             $output = ['success' => true,

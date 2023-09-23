@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('country.countries'))
+@section('title', __('essentials::lang.organizations'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
@@ -24,12 +24,12 @@
         <div class="modal-body">
             <div class="row">
                 <div class="form-group col-md-6">
-                    {!! Form::label('name', __('essentials::lang.organization_name') . ':*') !!}
+                    {!! Form::label('name', __('essentials::lang.organization_name') . ':') !!}
                     {!! Form::text('name', $organization->name, ['class' => 'form-control', 'placeholder' => __('essentials::lang.organization_name'), 'required']) !!}
                 </div>
             
                 <div class="form-group col-md-6">
-                    {!! Form::label('code', __('essentials::lang.organization_code') . ':*') !!}
+                    {!! Form::label('code', __('essentials::lang.organization_code') . ':') !!}
                     {!! Form::text('code',  $organization->code , ['class' => 'form-control', 'placeholder' => __('essentials::lang.organization_code'), 'required']) !!}
                 </div>
             

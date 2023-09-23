@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('bank_account.bank_accounts'))
+@section('title', __('essentials::lang.bank_accounts'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
@@ -23,12 +23,12 @@
       <div class="modal-body">
         <div class="row">
             <div class="form-group col-md-6">
-                {!! Form::label('name', __('essentials::lang.bank_name') . ':*') !!}
+                {!! Form::label('name', __('essentials::lang.bank_name') . ':') !!}
                 {!! Form::text('name', $bank->name, ['class' => 'form-control', 'placeholder' => __('essentials::lang.bank_name'), 'required']) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':*') !!}
+                {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':') !!}
                 {!! Form::text('phone_number',  $bank->phone_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
             </div>
         

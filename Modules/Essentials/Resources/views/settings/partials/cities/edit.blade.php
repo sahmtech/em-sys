@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('country.countries'))
+@section('title', __('essentials::lang.cities'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
@@ -23,12 +23,12 @@
         <div class="modal-body">
           <div class="row">
               <div class="form-group col-md-6">
-                  {!! Form::label('arabic_name', __('essentials::lang.city_ar_name') . ':*') !!}
+                  {!! Form::label('arabic_name', __('essentials::lang.city_ar_name') . ':') !!}
                   {!! Form::text('arabic_name', (json_decode($city->name,true))['ar'], ['class' => 'form-control', 'placeholder' => __('essentials::lang.city_ar_name'), 'required']) !!}
               </div>
           
               <div class="form-group col-md-6">
-                  {!! Form::label('english_name', __('essentials::lang.city_en_name') . ':*') !!}
+                  {!! Form::label('english_name', __('essentials::lang.city_en_name') . ':') !!}
                   {!! Form::text('english_name', (json_decode($city->name,true))['ar'], ['class' => 'form-control', 'placeholder' => __('essentials::lang.city_en_name'), 'required']) !!}
               </div>
           

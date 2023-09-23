@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('job_title.job_titles'))
+@section('title', __('essentials::lang.job_titles'))
 
 @section('content')
 
@@ -31,17 +31,17 @@
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('responsibilities', __('essentials::lang.responsibilities') . ':') !!}
-                {!! Form::textarea('responsibilities', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.responsibilities'), 'rows' => 2]) !!}
+                {!! Form::label('responsibilities', __('essentials::lang.responsibilities') . ':*') !!}
+                {!! Form::textarea('responsibilities', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.responsibilities'),  'required','rows' => 2]) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('supervision_scope', __('essentials::lang.supervision_scope') . ':') !!}
-                {!! Form::text('supervision_scope', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.supervision_scope')]) !!}
+                {!! Form::label('supervision_scope', __('essentials::lang.supervision_scope') . ':*') !!}
+                {!! Form::text('supervision_scope', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.supervision_scope'), 'required']) !!}
             </div>
             <div class="form-group col-md-6">
-                {!! Form::label('authorization_and_permissions', __('essentials::lang.authorization_and_permissions') . ':') !!}
-                {!! Form::textarea('authorization_and_permissions', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.authorization_and_permissions'), 'rows' => 2]) !!}
+                {!! Form::label('authorization_and_permissions', __('essentials::lang.authorization_and_permissions') . ':*') !!}
+                {!! Form::textarea('authorization_and_permissions', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.authorization_and_permissions'), 'required', 'rows' => 2]) !!}
             </div>
             <div class="form-group col-md-6">
                 {!! Form::label('details', __('essentials::lang.details') . ':') !!}
@@ -49,8 +49,8 @@
             </div>
             
             <div class="form-group col-md-6">
-                {!! Form::label('is_active', __('essentials::lang.contry_is_active') . ':') !!}
-                {!! Form::select('is_active', ['1' => __('essentials::lang.contry_is_active'), '0' => __('essentials::lang.contry_is_unactive')], null, ['class' => 'form-control']) !!}
+                {!! Form::label('is_active', __('essentials::lang.is_active') . ':*') !!}
+                {!! Form::select('is_active', ['1' => __('essentials::lang.is_active'), '0' => __('essentials::lang.is_unactive')], null, ['class' => 'form-control']) !!}
             </div>
         </div>
         

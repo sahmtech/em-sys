@@ -70,13 +70,9 @@
                                     <a class="dropdown-item" href="{{ route('travel_categories') }}">
                                         @lang('essentials::lang.travel_ticket_categories')
                                     </a>
-                                    <a class="dropdown-item" href="">
-                                        @lang('essentials::lang.insurance_contracts')
-                                    </a>
-                                    <a class="dropdown-item" href="">
+                                    <a class="dropdown-item" href="{{ route('basic_salary_types') }}">
                                         @lang('essentials::lang.basic_salary_types')
                                     </a>
-                                    
                                     <a class="dropdown-item" href="{{ route('entitlements') }}">
                                         @lang('essentials::lang.entitlements')
                                     </a>

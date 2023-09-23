@@ -1,44 +1,41 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.bank_accounts'))
+@section('title', __('essentials::lang.entitlement_types'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.manage_bank_accounts')</span>
+        <span>@lang('essentials::lang.manage_entitlement_types')</span>
     </h1>
 </section>
 
 <section class="content">
   
-      {!! Form::open(['route' => 'storeBank_account']) !!}
-  
+      {!! Form::open(['route' => 'storeEntitlement']) !!}
+
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">@lang( 'essentials::lang.add_bank_account' )</h4>
+        <h4 class="modal-title">@lang( 'essentials::lang.add_entitlement' )</h4>
       </div>
-    
+  
       <div class="modal-body">
         <div class="row">
             <div class="form-group col-md-6">
-                {!! Form::label('name', __('essentials::lang.bank_name') . ':*') !!}
-                {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.bank_name'), 'required']) !!}
+                {!! Form::label('name', __('essentials::lang.name') . ':*') !!}
+                {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.name'), 'required']) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':*') !!}
-                {!! Form::text('phone_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
+                {!! Form::label('percentage', __('essentials::lang.percentage') . ':*') !!}
+                {!! Form::text('percentage', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.percentage'), 'required']) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('mobile_number', __('essentials::lang.mobile_number') . ':*') !!}
-                {!! Form::text('mobile_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.mobile_number'), 'required']) !!}
+                {!! Form::label('from', __('essentials::lang.from') . ':*') !!}
+                {!! Form::text('from', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.from'), 'required']) !!}
             </div>
-            <div class="form-group col-md-6">
-                {!! Form::label('address', __('essentials::lang.address') . ':*') !!}
-                {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.address'), 'required']) !!}
-            </div>
+        
             <div class="form-group col-md-6">
                 {!! Form::label('details', __('essentials::lang.details') . ':') !!}
                 {!! Form::textarea('details', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.details'), 'rows' => 2]) !!}

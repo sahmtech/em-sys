@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('country.countries'))
+@section('title', __('essentials::lang.organizations'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
@@ -32,27 +32,27 @@
                 </div>
             
                 <div class="form-group col-md-6">
-                    {!! Form::label('level_type', __('essentials::lang.organization_level_type') . ':') !!}
+                    {!! Form::label('level_type', __('essentials::lang.organization_level_type') . ':*') !!}
                     {!! Form::select('level_type', ['one_level' => __('essentials::lang.one_level'), 'other' => __('essentials::lang.other_level')], null, ['class' => 'form-control']) !!}
                 </div> 
     
                 <div class="form-group col-md-6">
-                    {!! Form::label('parent_level', __('essentials::lang.organization_parent_level') . ':') !!}
-                    {!! Form::text('parent_level', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.organization_parent_level')]) !!}
+                    {!! Form::label('parent_level', __('essentials::lang.organization_parent_level') . ':*') !!}
+                    {!! Form::text('parent_level', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.organization_parent_level'), 'required']) !!}
                 </div>
     
                 <div class="form-group col-md-6">
-                    {!! Form::label('account_number', __('essentials::lang.organization_account_number') . ':') !!}
-                    {!! Form::text('account_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.organization_account_number')]) !!}
+                    {!! Form::label('account_number', __('essentials::lang.organization_account_number') . ':*') !!}
+                    {!! Form::text('account_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.organization_account_number'), 'required']) !!}
                 </div>
                
                 <div class="form-group col-md-6">
-                    {!! Form::label('is_active', __('essentials::lang.is_active') . ':') !!}
+                    {!! Form::label('is_active', __('essentials::lang.is_active') . ':*') !!}
                     {!! Form::select('is_active', ['1' => __('essentials::lang.is_active'), '0' => __('essentials::lang.is_unactive')],null, ['class' => 'form-control']) !!}
                 </div> 
                 <div class="form-group col-md-12">
-                    {!! Form::label('bank', __( 'essentials::lang.organization_bank' ) . ':') !!}
-                      {!! Form::select('bank', $banks, null, ['class' => 'form-control select2', 'placeholder' => __( 'essentials::lang.bank' ) ]); !!}
+                    {!! Form::label('bank', __( 'essentials::lang.organization_bank' ) . ':*') !!}
+                      {!! Form::select('bank', $banks, null, ['class' => 'form-control select2', 'placeholder' => __( 'essentials::lang.bank' ), 'required' ]); !!}
                   </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('details', __('essentials::lang.details') . ':') !!}

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('country.countries'))
+@section('title', __('essentials::lang.organizations'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')

@@ -36,7 +36,7 @@ class EssentialsJobTitleController extends Controller
         if (request()->ajax()) {
         
             $job_titles = DB::table('essentials_job_titles')
-                ->select('job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions',
+                ->select('id','job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions',
                     'details', 'is_active');
     
           
