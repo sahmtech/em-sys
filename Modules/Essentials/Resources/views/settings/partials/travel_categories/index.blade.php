@@ -32,7 +32,7 @@
                             <th>@lang('essentials::lang.wife_ticket_value')</th>
                             <th>@lang('essentials::lang.children_ticket_value')</th>
                             <th>@lang('essentials::lang.details')</th>
-                            <th>@lang('essentials::lang.active')</th>
+                            <th>@lang('essentials::lang.is_active')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
