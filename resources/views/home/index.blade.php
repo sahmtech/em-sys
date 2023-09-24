@@ -14,113 +14,119 @@
                 <!-- /.col -->
              
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('users.index') }}">
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                       <a href="{{ route('users.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المستخدمين </span></a>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المستخدمين </span>
                          
                         <img src="img/coworking.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+</a>
                   <!-- /.info-box -->
                 </div>
 
 
                 
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('customer-group.index') }}"> 
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('customer-group.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">العملاء والموردين </span></a>
+                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">العملاء والموردين </span>
                          
                         <img src="img/global.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
 
   
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('products.index') }}"> 
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('products.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">الأصناف </span></a>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">الأصناف </span>
                          
                         <img src="img/spare-parts.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
 
                 
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('purchases.index') }}">
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('purchases.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المشتريات </span></a>
+                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المشتريات </span>
                          
                         <img src="img/buy-button.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
                 
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('sells.index') }}">  
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('sells.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المبيعات </span></a>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المبيعات </span>
                          
                         <img src="img/acquisition.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
 
                  
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('expenses.index') }}"> 
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('expenses.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المصاريف </span></a>
+                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المصاريف </span>
                          
                         <img src="img/budget.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
@@ -128,19 +134,20 @@
                 
                  
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('reports.profit-loss') }}">   
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('reports.profit-loss') }}">     <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">التقارير </span></a>
+                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">التقارير </span>
                          
                         <img src="img/report.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
@@ -148,38 +155,40 @@
 
                    
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('notification-templates.index') }}"> 
                    <div class="info-box">
                       
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('notification-templates.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">نماذج الاشعارات </span></a>
+                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">نماذج الاشعارات </span>
                          
                         <img src="img/notifications.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 
 
                    
                 <div class="col-md-4 col-sm-20 col-xs-15" >
-               
+                <a href="{{ route('housingmovements.dashboard') }}">
                    <div class="info-box">
                       
                    
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('housingmovements.dashboard') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif"> إدارة السكن والحركة  </span></a>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif"> إدارة السكن والحركة  </span>
                          
                         <img src="img/mobility.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
                      
                         <!-- /.info-box-content -->
                    </div>
+                   </a>
                   <!-- /.info-box -->
                 </div>
 

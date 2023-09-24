@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'name' => 'HousingMovements'
+    'name' => 'HousingMovements',
+    'module_version' => '4.1',
 ];
