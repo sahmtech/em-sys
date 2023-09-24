@@ -25,6 +25,7 @@
 
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
         <title>@yield('title') - {{ Session::get('business.name') }}</title>
         
@@ -43,7 +44,19 @@
             </script>
             @if(!$pos_layout)
                 @include('layouts.partials.header')
+                @if (Request::is('housingmovements/*'))
+
+                    @include('housingmovements::layouts.sidebarh&m')
+
+                @elseif(Request::is('international-Relations/*'))
+                      
+                     @include('internationalrelations::layouts.sidebarh&m')
+                @else
+
                 @include('layouts.partials.sidebar')
+
+                @endif
+
             @else
                 @include('layouts.partials.header-pos')
             @endif

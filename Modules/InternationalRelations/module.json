@@ -1,0 +1,11 @@
+{
+    "name": "InternationalRelations",
+    "alias": "internationalrelations",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\InternationalRelations\\Providers\\InternationalRelationsServiceProvider"
+    ],
+    "files": []
+}

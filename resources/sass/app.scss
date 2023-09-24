@@ -8,13 +8,15 @@
 // Bootstrap
 // @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
+$fa-font-path: "/webfonts" !default;
 @import "node_modules/icheck/skins/square/blue";
 
 @import "node_modules/ladda/dist/ladda-themeless.min";
-
+@import "node_modules/@fortawesome/fontawesome-free/css/all.css";
 @import 'node_modules/@fortawesome/fontawesome-free/scss/fontawesome';
 @import 'node_modules/@fortawesome/fontawesome-free/scss/brands';
 @import 'node_modules/@fortawesome/fontawesome-free/scss/solid';
+@import "~@fortawesome/fontawesome-free/scss/regular";
 
 @import "node_modules/jkanban/dist/jkanban.min";
 
