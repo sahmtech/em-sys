@@ -57,16 +57,16 @@
                                     <a class="dropdown-item" href="{{ route('cities') }}">
                                         @lang('essentials::lang.cities')
                                     </a>
-                                    <a class="dropdown-item" href="{{ route('organizations') }}">
-                                        @lang('essentials::lang.organizations')
-                                    </a>
-                                   
-                                    <a class="dropdown-item" href="{{ route('job_titles') }}">
-                                        @lang('essentials::lang.job_titles')
-                                    </a>
                                     <a class="dropdown-item" href="{{ route('bank_accounts') }}">
                                         @lang('essentials::lang.bank_accounts')
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('organizations') }}">
+                                        @lang('essentials::lang.organizations')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('job_titles') }}">
+                                        @lang('essentials::lang.job_titles')
+                                    </a>
+                                    
                                     <a class="dropdown-item" href="{{ route('travel_categories') }}">
                                         @lang('essentials::lang.travel_ticket_categories')
                                     </a>

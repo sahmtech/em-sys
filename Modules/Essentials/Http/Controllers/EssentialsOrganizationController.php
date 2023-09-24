@@ -63,8 +63,9 @@ class EssentialsOrganizationController extends Controller
                 ->make(true);
         }
     
-
-        return view('essentials::settings.partials.organizations.index');
+        $banks = EssentialsBankAccounts::forDropdown();
+        
+        return view('essentials::settings.partials.organizations.index')->with(compact('banks'));
     }
     
     /**
@@ -136,8 +137,8 @@ class EssentialsOrganizationController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-        return view('essentials::settings.partials.organizations.index');
+        $banks = EssentialsBankAccounts::forDropdown();
+        return redirect()->route('organizations')->with(compact('banks'));
     }
 
     /**
@@ -224,7 +225,7 @@ class EssentialsOrganizationController extends Controller
 
      
 
-        return view('essentials::settings.partials.organizations.index');
+        return redirect()->route('organizations');
     }
 
 

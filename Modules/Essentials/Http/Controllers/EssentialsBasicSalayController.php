@@ -102,7 +102,7 @@ class EssentialsBasicSalayController extends Controller
             ];
         }
 
-        return view('essentials::settings.partials.basic_salary.index');
+        return redirect()->route('basic_salary_types');
     }
   
     public function show($id)
@@ -161,7 +161,7 @@ class EssentialsBasicSalayController extends Controller
 
       
 
-        return view('essentials::settings.partials.basic_salary.index');
+        return redirect()->route('basic_salary_types');
     }
 
     public function destroy($id)

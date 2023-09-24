@@ -125,7 +125,8 @@ class EssentialsCountryController extends Controller
             ];
         }
 
-        return view('essentials::settings.partials.countries.index');
+       // return view('essentials::settings.partials.countries.index');
+       return redirect()->route('countries');
     }
   
     public function show($id)
@@ -184,7 +185,7 @@ class EssentialsCountryController extends Controller
         }
 
 
-        return view('essentials::settings.partials.countries.index');
+        return redirect()->route('countries');
     }
 
     public function destroy($id)

@@ -115,7 +115,7 @@ class EssentialsTravelCategorieController extends Controller
            ];
        }
 
-       return view('essentials::settings.partials.travel_categories.index');
+       return redirect()->route('travel_categories');
    }
  
    public function show($id)
@@ -180,7 +180,7 @@ class EssentialsTravelCategorieController extends Controller
        }
 
 
-       return view('essentials::settings.partials.travel_categories.index');
+       return redirect()->route('travel_categories');
    }
 
    public function destroy($id)

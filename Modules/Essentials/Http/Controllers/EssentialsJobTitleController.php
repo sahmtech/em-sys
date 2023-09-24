@@ -128,7 +128,7 @@ class EssentialsJobTitleController extends Controller
         }
       
 
-        return view('essentials::settings.partials.job_titles.index');
+        return redirect()->route('job_titles');
     }
 
     /**
@@ -207,7 +207,8 @@ class EssentialsJobTitleController extends Controller
             ];
         }
 
-        return view('essentials::settings.partials.job_titles.index');
+        
+        return redirect()->route('job_titles');
     }
 
 

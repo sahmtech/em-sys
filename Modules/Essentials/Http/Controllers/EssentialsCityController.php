@@ -92,7 +92,9 @@ class EssentialsCityController extends Controller
         
         
             }
-      return view('essentials::settings.partials.cities.index');
+        $countries = EssentialsCountry::forDropdown();
+     
+        return view('essentials::settings.partials.cities.index')->with(compact('countries'));
     }
 
     /**
@@ -156,7 +158,10 @@ class EssentialsCityController extends Controller
         ->leftJoin('essentials_countries', 'essentials_cities.country_id', '=', 'essentials_countries.id')
         ;
 
-        return view('essentials::settings.partials.cities.index');;
+
+       
+        $countries = EssentialsCountry::forDropdown();
+        return redirect()->route('cities')->with(compact('countries'));
     }
 
     /**
@@ -236,7 +241,7 @@ class EssentialsCityController extends Controller
 
         $cities = DB::table('essentials_cities')->select(['id','name', 'nationality', 'details', 'is_active']);
 
-        return view('essentials::settings.partials.cities.index');
+        return redirect()->route('cities');
     }
 
     /**
