@@ -13,9 +13,16 @@ use Modules\Accounting\Entities\AccountingAccTransMapping;
 use Modules\Accounting\Entities\CostCenter;
 use Modules\Accounting\Entities\OpeningBalance;
 use Yajra\DataTables\Facades\DataTables;
-
+use App\Utils\ModuleUtil;
 class OpeningBalanceController extends Controller
 {
+    protected $moduleUtil;
+   
+
+     public function __construct(ModuleUtil $moduleUtil)
+     {
+         $this->moduleUtil = $moduleUtil;
+     }
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
