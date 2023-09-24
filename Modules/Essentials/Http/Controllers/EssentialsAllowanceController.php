@@ -119,8 +119,8 @@ class EssentialsAllowanceController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-        return view('essentials::settings.partials.allowances.index');
+        return redirect()->route('allowances');
+    
     }
 
     /**
@@ -183,8 +183,8 @@ class EssentialsAllowanceController extends Controller
              ];
          }
  
- 
-         return view('essentials::settings.partials.countries.index');
+         return redirect()->route('allowances');
+
      }
  
      public function destroy($id)

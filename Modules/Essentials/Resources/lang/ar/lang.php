@@ -393,7 +393,7 @@ return[
 'one_level'=>'المستوى الأول',
 'other_level'=>'مستوى آخر',
 'add_job_title'=>'إضافة مسمى وظيفي',
-'manage_bank_accounts'=>'',
+'manage_bank_accounts'=>'إدارة الحسابات البنكية',
 'phone_number'=>'رقم الهاتف',
 'mobile_number'=>'رقم الموبايل',
 'address'=>'العنوان',
@@ -419,8 +419,6 @@ return[
 'number_of_months'=>'عدد الأشهر',
 'added_to_salary'=>'تضاف إلى الراتب',
 'not_added_to_salary'=>'لا تضاف إلى الراتب ',
-
-
 
    
 

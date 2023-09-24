@@ -124,8 +124,8 @@ class EssentialsBankAccountController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-        return view('essentials::settings.partials.bank_accounts.index');
+        return redirect()->route('bank_accounts');
+       
     }
 
     /**
@@ -206,7 +206,7 @@ class EssentialsBankAccountController extends Controller
         }
 
 
-        return view('essentials::settings.partials.bank_accounts.index');
+        return redirect()->route('bank_accounts');
     }
     /**
      * Remove the specified resource from storage.

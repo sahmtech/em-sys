@@ -109,7 +109,7 @@ class EssentialsEntitlementController extends Controller
            ];
        }
 
-       return view('essentials::settings.partials.entitlements.index');
+       return redirect()->route('entitlements');
    }
  
    public function show($id)
@@ -172,7 +172,7 @@ class EssentialsEntitlementController extends Controller
        }
 
 
-       return view('essentials::settings.partials.entitlements.index');
+       return redirect()->route('entitlements');
    }
 
    public function destroy($id)
