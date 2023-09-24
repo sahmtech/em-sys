@@ -96,4 +96,6 @@
 "tax_number2"=>"رقم الضريبة 2",
 "is_active"=>"نشط",
 "created_by"=>"أنشأت بواسطة",
+"other_settings"=>" إعدادات أخرى",
+
 ];

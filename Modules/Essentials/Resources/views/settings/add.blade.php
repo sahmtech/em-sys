@@ -23,7 +23,9 @@
                         <a href="#" class="list-group-item text-center">@lang('essentials::lang.sales_target')</a>
                         <a href="#" class="list-group-item text-center">@lang('essentials::lang.essentials')</a>
                         
+                        
                     </div>
+                  
                 </div>
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.leave_settings')
@@ -40,11 +42,16 @@
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.essentials_settings')
                 </div>
+               
+               
             </div>
+            
+          
 
             <!--  </pos-tab-container> -->
         </div>
     </div>
+
     <div class="row">
         <div class="col-xs-12">
             <div class="form-group pull-right">
@@ -53,6 +60,7 @@
         </div>
     </div>
     {!! Form::close() !!}
+
 </section>
 @stop
 @section('javascript')

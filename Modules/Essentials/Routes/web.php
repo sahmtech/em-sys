@@ -3,6 +3,7 @@
 // use App\Http\Controllers\Modules;
 // use Illuminate\Support\Facades\Route;
 
+
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu')->group(function () {
    
    
@@ -55,6 +56,78 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/settings', [Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']);
         Route::post('/settings', [Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'update']);
+     
+        Route::get('/countries', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index'])->name('countries');
+        Route::get('/createCountry', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'create'])->name('createCountry');
+        Route::post('/storeCountry', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'store'])->name('storeCountry');
+        Route::get('/countries/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'edit'])->name('country.edit');
+        Route::delete('/countries/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'destroy'])->name('country.destroy');
+        Route::put('/updateCountry/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'update'])->name('updateCountry');
+
+        
+        Route::get('/cities', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'index'])->name('cities');
+        Route::get('/createCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'create'])->name('createCity');
+        Route::post('/storeCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'store'])->name('storeCity');
+        Route::get('/cities/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'edit'])->name('city.edit');
+        Route::delete('/cities/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'destroy'])->name('city.destroy');
+        Route::put('/updateCity/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'update'])->name('updateCity');
+        
+        Route::get('/organizations', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'index'])->name('organizations');
+        Route::get('/createOrganization', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'create'])->name('createOrganization');
+        Route::post('/storeOrganization', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'store'])->name('storeOrganization');
+        Route::get('/organizations/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'edit'])->name('organization.edit');
+        Route::delete('/organizations/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'destroy'])->name('organization.destroy');
+        Route::put('/updateOrganization/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'update'])->name('updateOrganization');
+
+        Route::get('/departments', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'index'])->name('departments');
+        Route::get('/createDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'create'])->name('createDepartment');
+        Route::post('/storeDepartment', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'store'])->name('storeDepartment');
+        Route::get('/departments/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'edit'])->name('department.edit');
+        Route::delete('/departments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'destroy'])->name('department.destroy');
+        Route::put('/updateDepartments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'update'])->name('updateDepartment');
+
+        
+        Route::get('/job_titles', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'index'])->name('job_titles');
+        Route::get('/createJob_title', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'create'])->name('createJob_title');
+        Route::post('/storeJob_title', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'store'])->name('storeJob_title');
+        Route::get('/job_titles/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'edit'])->name('job_title.edit');
+        Route::delete('/job_titles/{id}', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'destroy'])->name('job_title.destroy');
+        Route::put('/updateJob_title/{id}', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'update'])->name('updateJob_title');
+
+        Route::get('/bank_accounts', [\Modules\Essentials\Http\Controllers\EssentialsBankAccountController::class, 'index'])->name('bank_accounts');
+        Route::get('/createBank_account', [\Modules\Essentials\Http\Controllers\EssentialsBankAccountController::class, 'create'])->name('createBank_account');
+        Route::post('/storeBank_account', [\Modules\Essentials\Http\Controllers\EssentialsBankAccountController::class, 'store'])->name('storeBank_account');
+        Route::get('/bank_accounts/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsBankAccountController::class, 'edit'])->name('bank_account.edit');
+        Route::delete('/bank_accounts/{id}', [\Modules\Essentials\Http\Controllers\EssentialsBankAccountController::class, 'destroy'])->name('bank_account.destroy');
+        Route::put('/updateBank_account/{id}', [\Modules\Essentials\Http\Controllers\EssentialsBankAccountController::class, 'update'])->name('updateBank_account');
+
+        Route::get('/travel_categories', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'index'])->name('travel_categories');
+        Route::get('/createTravel_categorie', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'create'])->name('createTravel_categorie');
+        Route::post('/storeTravel_categorie', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'store'])->name('storeTravel_categorie');
+        Route::get('/travel_categories/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'edit'])->name('travel_categorie.edit');
+        Route::delete('/travel_categories/{id}', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'destroy'])->name('travel_categorie.destroy');
+        Route::put('/updateTravel_categorie/{id}', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class, 'update'])->name('updateTravel_categorie');
+
+        Route::get('/basic_salary_types', [\Modules\Essentials\Http\Controllers\EssentialsBasicSalayController::class, 'index'])->name('basic_salary_types');
+        Route::get('/createBasicSalary', [\Modules\Essentials\Http\Controllers\EssentialsBasicSalayController::class, 'create'])->name('createBasicSalary');
+        Route::post('/storeBasicSalary', [\Modules\Essentials\Http\Controllers\EssentialsBasicSalayController::class, 'store'])->name('storeBasicSalary');
+        Route::get('/basic_salary_types/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsBasicSalayController::class, 'edit'])->name('BasicSalary.edit');
+        Route::delete('/basic_salary_types/{id}', [\Modules\Essentials\Http\Controllers\EssentialsBasicSalayController::class, 'destroy'])->name('BasicSalary.destroy');
+        Route::put('/updateBasicSalary/{id}', [\Modules\Essentials\Http\Controllers\EssentialsBasicSalayController::class, 'update'])->name('updateBasicSalary');
+
+        Route::get('/entitlements', [\Modules\Essentials\Http\Controllers\EssentialsEntitlementController::class, 'index'])->name('entitlements');
+        Route::get('/createEntitlement', [\Modules\Essentials\Http\Controllers\EssentialsEntitlementController::class, 'create'])->name('createEntitlement');
+        Route::post('/storeEntitlement', [\Modules\Essentials\Http\Controllers\EssentialsEntitlementController::class, 'store'])->name('storeEntitlement');
+        Route::get('/entitlements/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEntitlementController::class, 'edit'])->name('Entitlement.edit');
+        Route::delete('/entitlements/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEntitlementController::class, 'destroy'])->name('Entitlement.destroy');
+        Route::put('/updateEntitlement/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEntitlementController::class, 'update'])->name('updateEntitlement');
+
+        Route::get('/allowances', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'index'])->name('allowances');
+        Route::get('/createAllowance', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'create'])->name('createAllowance');
+        Route::post('/storeAllowance', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'store'])->name('storeAllowance');
+        Route::get('/allowances/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'edit'])->name('Allowance.edit');
+        Route::delete('/allowances/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'destroy'])->name('Allowance.destroy');
+        Route::put('/updateAllowance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'update'])->name('updateAllowance');
 
         Route::post('/import-attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'importAttendance']);
         Route::resource('/attendance', 'Modules\Essentials\Http\Controllers\AttendanceController');
