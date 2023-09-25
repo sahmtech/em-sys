@@ -20,7 +20,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المستخدمين </span>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المستخدمين </span>
                          
                         <img src="img/coworking.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -40,7 +40,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">العملاء والموردين </span>
+                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">العملاء والموردين </span>
                          
                         <img src="img/global.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -60,7 +60,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">الأصناف </span>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">الأصناف </span>
                          
                         <img src="img/spare-parts.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -80,7 +80,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المشتريات </span>
+                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المشتريات </span>
                          
                         <img src="img/buy-button.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -99,7 +99,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المبيعات </span>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المبيعات </span>
                          
                         <img src="img/acquisition.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -119,7 +119,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المصاريف </span>
+                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المصاريف </span>
                          
                         <img src="img/budget.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -140,7 +140,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">التقارير </span>
+                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">التقارير </span>
                          
                         <img src="img/report.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -161,7 +161,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">نماذج الاشعارات </span>
+                       <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">نماذج الاشعارات </span>
                          
                         <img src="img/notifications.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -181,7 +181,7 @@
                    
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif"> إدارة السكن والحركة  </span>
+                      <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif"> إدارة السكن والحركة  </span>
                          
                         <img src="img/mobility.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
