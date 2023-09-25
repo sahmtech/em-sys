@@ -1,9 +1,10 @@
 @inject('request', 'Illuminate\Http\Request')
 <!-- Main Header -->
   <header class="main-header no-print">
+    <link href='https://fonts.googleapis.com/css?family=Cairo' rel='stylesheet'>
     <a href="{{route('home')}}" class="logo">
       
-      <span class="logo-lg">{{ Session::get('business.name') }} <i class="fa fa-circle text-success" id="online_indicator"></i></span> 
+      <span style="font-family:Cairo" class="logo-lg">{{ Session::get('business.name') }} <i class="fa fa-circle text-success" id="online_indicator"></i></span> 
 
     </a>
 
