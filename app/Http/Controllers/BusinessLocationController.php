@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Account;
 use App\BusinessLocation;
+use App\Business;
 use App\InvoiceLayout;
 use App\InvoiceScheme;
 use App\SellingPriceGroup;
@@ -69,9 +70,15 @@ class BusinessLocationController extends Controller
                     'business_locations.selling_price_group_id',
                     '=',
                     'spg.id'
+                )->leftjoin(
+                   'business as business',
+                   'business_locations.business_id',
+                    '=',
+                    'business.id'
+
                 )
                 ->select(['business_locations.name', 'location_id', 'landmark', 'city', 'zip_code', 'state',
-                    'country', 'business_locations.id', 'spg.name as price_group', 'ic.name as invoice_scheme', 'il.name as invoice_layout', 'sil.name as sale_invoice_layout', 'business_locations.is_active', ]);
+                    'country', 'business_locations.id', 'spg.name as price_group', 'ic.name as invoice_scheme', 'il.name as invoice_layout', 'sil.name as sale_invoice_layout', 'business_locations.is_active','business.name as business' ]);
 
             $permitted_locations = auth()->user()->permitted_locations();
             if ($permitted_locations != 'all') {
@@ -79,6 +86,7 @@ class BusinessLocationController extends Controller
             }
 
             return Datatables::of($locations)
+                
                 ->addColumn(
                     'action',
                     '<button type="button" data-href="{{action(\'App\Http\Controllers\BusinessLocationController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".location_edit_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
@@ -89,7 +97,7 @@ class BusinessLocationController extends Controller
                 )
                 ->removeColumn('id')
                 ->removeColumn('is_active')
-                ->rawColumns([11])
+                ->rawColumns([12])
                 ->make(false);
         }
 
@@ -107,7 +115,7 @@ class BusinessLocationController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
-
+        $business=Business::all()->pluck('name','id');
         //Check if subscribed or not, then check for location quota
         if (! $this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
@@ -139,7 +147,8 @@ class BusinessLocationController extends Controller
                         'invoice_schemes',
                         'price_groups',
                         'payment_types',
-                        'accounts'
+                        'accounts',
+                        'business'
                     ));
     }
 
@@ -168,7 +177,7 @@ class BusinessLocationController extends Controller
             $input = $request->only(['name', 'landmark', 'city', 'state', 'country', 'zip_code', 'invoice_scheme_id',
                 'invoice_layout_id', 'mobile', 'alternate_number', 'email', 'website', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'location_id', 'selling_price_group_id', 'default_payment_accounts', 'featured_products', 'sale_invoice_layout_id', 'sale_invoice_scheme_id']);
 
-            $input['business_id'] = $business_id;
+            $input['business_id'] = $request->business_id;
 
             $input['default_payment_accounts'] = ! empty($input['default_payment_accounts']) ? json_encode($input['default_payment_accounts']) : null;
 

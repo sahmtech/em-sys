@@ -16,6 +16,7 @@ use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
+
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
 
@@ -330,13 +331,43 @@ class DataController extends Controller
 
         if ($is_essentials_enabled) {
             Menu::modify('admin-sidebar-menu', function ($menu) {
-                $menu->url(
-                        action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
-                        __('essentials::lang.hrm'),
-                        ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'hrm', 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '']
-                    )
-                ->order(87);
 
+
+                $menu->dropdown(
+                    __('essentials::lang.hrm'),
+                    function ($subMenu) {
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
+                            __('essentials::lang.hrm_manage')
+                        )->order(1);
+
+                        $subMenu->url(
+                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                            __('essentials::lang.facilities_management')
+                        )->order(2);
+
+                      /*  $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
+                            __('essentials::lang.payroll_management')
+                        )->order(3);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
+                            __('essentials::lang.settings')
+                        )->order(4);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
+                            __('essentials::lang.reports')
+                        )->order(5);*/
+                    },
+                    [
+                        'icon' => 'fa fas fa-users',
+                        'active' => request()->segment(1) == 'essentials',
+                        'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+                    ]
+                )->order(87);
+             
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),

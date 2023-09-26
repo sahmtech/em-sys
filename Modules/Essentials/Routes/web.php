@@ -85,7 +85,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/departments/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'edit'])->name('department.edit');
         Route::delete('/departments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'destroy'])->name('department.destroy');
         Route::put('/updateDepartments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentController::class, 'update'])->name('updateDepartment');
-
+        
         
         Route::get('/job_titles', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'index'])->name('job_titles');
         Route::get('/createJob_title', [\Modules\Essentials\Http\Controllers\EssentialsJobTitleController::class, 'create'])->name('createJob_title');
@@ -128,7 +128,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/allowances/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'edit'])->name('Allowance.edit');
         Route::delete('/allowances/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'destroy'])->name('Allowance.destroy');
         Route::put('/updateAllowance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'update'])->name('updateAllowance');
-
+    
+        Route::get('/getBusiness', [\App\Http\Controllers\BusinessController::class, 'getBusiness'])->name('getBusiness');
+        Route::get('/business.view/{id}', [\App\Http\Controllers\BusinessController::class, 'show'])->name('business.view');
+        Route::get('/business_documents.view/{id}', [\App\Http\Controllers\BusinessDocumentController::class, 'show'])->name('business_documents.view');
+        Route::post('/storeBusiness', [\App\Http\Controllers\BusinessController::class, 'store'])->name('storeBusiness');
+        Route::post('/storeBusinessDoc', [\App\Http\Controllers\BusinessDocumentController::class, 'store'])->name('storeBusinessDoc');
+     
+        
         Route::post('/import-attendance', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'importAttendance']);
         Route::resource('/attendance', 'Modules\Essentials\Http\Controllers\AttendanceController');
         Route::post('/clock-in-clock-out', [Modules\Essentials\Http\Controllers\AttendanceController::class, 'clockInClockOut']);
