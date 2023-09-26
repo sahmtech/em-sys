@@ -363,6 +363,8 @@ class BusinessController extends Controller
                     if ($is_admin) {
                         $html .= '<a href="'. route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> '.__('messages.view').'</a>
                         &nbsp;';
+                        $html .= '<a href="'. route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> '.__('business.view_business_docs').'</a>
+                        &nbsp;';
                    //    $html .= '<button class="btn btn-xs btn-danger delete_business_button" data-href="' . route('business.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }   
         
@@ -483,7 +485,7 @@ class BusinessController extends Controller
             if (! empty($notAllowed)) {
                 return $notAllowed;
             }
-*/
+                */
             $business_details = $request->only(['name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'default_profit_percent', 'default_sales_tax', 'default_sales_discount', 'sell_price_tax', 'sku_prefix', 'time_zone', 'fy_start_month', 'accounting_method', 'transaction_edit_days', 'sales_cmsn_agnt', 'item_addition_method', 'currency_symbol_placement', 'on_product_expiry',
                 'stop_selling_before', 'default_unit', 'expiry_type', 'date_format',
                 'time_format', 'ref_no_prefixes', 'theme_color', 'email_settings',

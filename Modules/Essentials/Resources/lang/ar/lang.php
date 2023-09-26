@@ -422,7 +422,15 @@ return[
 'added_to_salary'=>'تضاف إلى الراتب',
 'not_added_to_salary'=>'لا تضاف إلى الراتب ',
 'business'=>'الشركات',
-'add_business'=>'إضافة شركة'
+'add_business'=>'إضافة شركة',
+'licence_number'=>'رقم الترخيص',
+'licence_date'=>'تاريخ الترخيص',
+'renew_date'=>'تاريخ التجديد',
+'expiration_date'=>'تاريخ الانتهاء',
+'issuing_location'=>'مكان الاصدار',
+'file'=>"الوثيقة",
+'add_BusinessDoc'=>'إضافة وثيقة ترخيص',
+'licence_type'=>'نوع الترخيص'
 
    
 
