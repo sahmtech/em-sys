@@ -18,7 +18,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
-
+use Yajra\DataTables\Facades\DataTables;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsCity;
 class BusinessController extends Controller
 {
     /*
@@ -117,6 +119,7 @@ class BusinessController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    //store
     public function postRegister(Request $request)
     {
         if (! config('constants.allow_registration')) {
@@ -270,6 +273,7 @@ class BusinessController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    //index
     public function getBusinessSettings()
     {
         if (! auth()->user()->can('business_settings.access')) {
@@ -336,12 +340,138 @@ class BusinessController extends Controller
         return view('business.settings', compact('business', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
     }
 
+    public function getBusiness()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+            if (request()->ajax()) {
+            $business = DB::table('business')->select(['business.id','business.name','business.en_name','business.start_date','business.tax_label_1','business.tax_number_1'])
+            ;
+            
+            return Datatables::of($business)
+           
+            ->addColumn(
+                'action',
+                function ($row) use ($is_admin) {
+                    $html = '';
+                    if ($is_admin) {
+                        $html .= '<a href="'. route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> '.__('messages.view').'</a>
+                        &nbsp;';
+                   //    $html .= '<button class="btn btn-xs btn-danger delete_business_button" data-href="' . route('business.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    }   
+        
+                    return $html;
+                }
+            )
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where('name', 'like', "%{$keyword}%");
+            })
+            ->removeColumn('id')
+            ->rawColumns(['action'])
+            ->make(true);
+        
+            }
+            $currencies = $this->businessUtil->allCurrencies();
+            $countries = EssentialsCountry::forDropdown2();
+            $cities = EssentialsCity::forDropdown2();
+
+           
+
+           
+            $timezone_list = $this->businessUtil->allTimeZones();
+            $months = [];
+            for ($i = 1; $i <= 12; $i++) {
+                $months[$i] = __('business.months.'.$i);
+            }
+    
+            $accounting_methods = $this->businessUtil->allAccountingMethods();
+            $package_id = request()->package;
+
+            $system_settings = System::getProperties(['superadmin_enable_register_tc', 'superadmin_register_tc'], true);
+    
+      return view('essentials::bussines_manage.index', compact( 'countries','cities','currencies', 'timezone_list','months','accounting_methods','system_settings','package_id'));
+
+    }
+
+    public function show($id){
+        if (! auth()->user()->can('business_settings.access')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+        $timezone_list = [];
+        foreach ($timezones as $timezone) {
+            $timezone_list[$timezone] = $timezone;
+        }
+
+   
+        $business = Business::where('id', $id)->first();
+
+        $currencies = $this->businessUtil->allCurrencies();
+        $tax_details = TaxRate::forBusinessDropdown($id);
+        $tax_rates = $tax_details['tax_rates'];
+
+        $months = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $months[$i] = __('business.months.'.$i);
+        }
+
+        $accounting_methods = [
+            'fifo' => __('business.fifo'),
+            'lifo' => __('business.lifo'),
+        ];
+        $commission_agent_dropdown = [
+            '' => __('lang_v1.disable'),
+            'logged_in_user' => __('lang_v1.logged_in_user'),
+            'user' => __('lang_v1.select_from_users_list'),
+            'cmsn_agnt' => __('lang_v1.select_from_commisssion_agents_list'),
+        ];
+
+        $units_dropdown = Unit::forDropdown($id, true);
+
+        $date_formats = Business::date_formats();
+
+        $shortcuts = json_decode($business->keyboard_shortcuts, true);
+
+        $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business->pos_settings, true);
+
+        $email_settings = empty($business->email_settings) ? $this->businessUtil->defaultEmailSettings() : $business->email_settings;
+
+        $sms_settings = empty($business->sms_settings) ? $this->businessUtil->defaultSmsSettings() : $business->sms_settings;
+
+        $modules = $this->moduleUtil->availableModules();
+
+        $theme_colors = $this->theme_colors;
+
+        $mail_drivers = $this->mailDrivers;
+
+        $allow_superadmin_email_settings = System::getProperty('allow_email_settings_to_businesses');
+
+        $custom_labels = ! empty($business->custom_labels) ? json_decode($business->custom_labels, true) : [];
+
+        $common_settings = ! empty($business->common_settings) ? $business->common_settings : [];
+
+        $weighing_scale_setting = ! empty($business->weighing_scale_setting) ? $business->weighing_scale_setting : [];
+
+        $payment_types = $this->moduleUtil->payment_types(null, false, $id);
+
+        return view('business.settings', compact('business', 'currencies', 'tax_rates', 'timezone_list', 'months', 'accounting_methods', 'commission_agent_dropdown', 'units_dropdown', 'date_formats', 'shortcuts', 'pos_settings', 'modules', 'theme_colors', 'email_settings', 'sms_settings', 'mail_drivers', 'allow_superadmin_email_settings', 'custom_labels', 'common_settings', 'weighing_scale_setting', 'payment_types'));
+    
+    }
+
     /**
      * Updates business settings
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    
     public function postBusinessSettings(Request $request)
     {
         if (! auth()->user()->can('business_settings.access')) {
@@ -349,11 +479,11 @@ class BusinessController extends Controller
         }
 
         try {
-            $notAllowed = $this->businessUtil->notAllowedInDemo();
+         /*   $notAllowed = $this->businessUtil->notAllowedInDemo();
             if (! empty($notAllowed)) {
                 return $notAllowed;
             }
-
+*/
             $business_details = $request->only(['name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'default_profit_percent', 'default_sales_tax', 'default_sales_discount', 'sell_price_tax', 'sku_prefix', 'time_zone', 'fy_start_month', 'accounting_method', 'transaction_edit_days', 'sales_cmsn_agnt', 'item_addition_method', 'currency_symbol_placement', 'on_product_expiry',
                 'stop_selling_before', 'default_unit', 'expiry_type', 'date_format',
                 'time_format', 'ref_no_prefixes', 'theme_color', 'email_settings',
@@ -600,5 +730,53 @@ class BusinessController extends Controller
         }
 
         return $output;
+    }
+    public function store(Request $request){
+     
+
+        $owner_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password', 'language']);
+
+        $owner_details['language'] = empty($owner_details['language']) ? config('app.locale') : $owner_details['language'];
+
+        $user = User::create_user($owner_details);
+
+        $business_details = $request->only(['name', 'en_name','start_date', 'currency_id', 'time_zone',
+                'fy_start_month', 'accounting_method', 'tax_label_1', 'tax_number_1',
+                'tax_label_2', 'tax_number_2', ]);
+
+        $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark',
+                'website', 'mobile', 'alternate_number', ]);
+
+          
+        $business_details['owner_id'] = $user->id;
+            if (! empty($business_details['start_date'])) {
+                $business_details['start_date'] = Carbon::createFromFormat(config('constants.default_date_format'), $business_details['start_date'])->toDateString();
+            }
+
+            //upload logo
+        $logo_name = $this->businessUtil->uploadFile($request, 'business_logo', 'business_logos', 'image');
+            if (! empty($logo_name)) {
+                $business_details['logo'] = $logo_name;
+            }
+
+            //default enabled modules
+        $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+
+        $business = $this->businessUtil->createNewBusiness($business_details);
+
+            //Update user with business id
+        $user->business_id = $business->id;
+        $user->save();
+
+        $this->businessUtil->newBusinessDefaultResources($business->id, $user->id);
+         $new_location = $this->businessUtil->addLocation($business->id, $business_location);
+
+            //create new permission with the new location
+        Permission::create(['name' => 'location.'.$new_location->id]);
+
+
+        
+        return redirect()->route('getBusiness');
+
     }
 }

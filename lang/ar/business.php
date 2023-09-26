@@ -93,9 +93,14 @@
 "keyboard_shortcut" => "اختصار لوحة المفاتيح", 
 "business_created_succesfully" => "تم إنشاء الشركة بنجاح!", 
 "tax_number1"=>"رقم الضريبة 1",
+"tax_number_1"=>"الرقم الضريبي",
 "tax_number2"=>"رقم الضريبة 2",
 "is_active"=>"نشط",
 "created_by"=>"أنشأت بواسطة",
 "other_settings"=>" إعدادات أخرى",
+'tax_label_1'=>'اسم الضريبة',
+'website'=>'الموقع الالكتروني',
+'business_ar_name'=>'اسم الشركة بالعربية',
+'business_en_name'=>'اسم الشركة بالانجليزية',
 
 ];

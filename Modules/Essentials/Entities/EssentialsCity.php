@@ -8,5 +8,24 @@ class EssentialsCity extends Model
 {
    
     protected $guarded = ['id'];
-   
+    public static function forDropdown()
+    {
+        $cities = EssentialsCity::all();
+
+        $res=collect();
+        foreach ($cities as $city){
+            $res->put($city->id,(json_decode($city->name,true))['ar'],(json_decode($city->name,true))['en'],);
+        }
+        return $res;
+    }
+    public static function forDropdown2()
+    {
+        $cities = EssentialsCity::all();
+
+        $res=collect();
+        foreach ($cities as $city){
+            $res->put((json_decode($city->name,true))['ar'],(json_decode($city->name,true))['en'],);
+        }
+        return $res;
+    }
 }

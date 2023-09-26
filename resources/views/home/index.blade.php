@@ -20,7 +20,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                       <a href="{{ route('users.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المستخدمين </span></a>
+                       <a href="{{ route('users.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المستخدمين </span></a>
                          
                         <img src="img/coworking.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -39,7 +39,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('customer-group.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">العملاء والموردين </span></a>
+                        <a href="{{ route('customer-group.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">العملاء والموردين </span></a>
                          
                         <img src="img/global.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -58,7 +58,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('products.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">الأصناف </span></a>
+                        <a href="{{ route('products.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">الأصناف </span></a>
                          
                         <img src="img/spare-parts.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -77,7 +77,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('purchases.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المشتريات </span></a>
+                        <a href="{{ route('purchases.index') }}"> <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المشتريات </span></a>
                          
                         <img src="img/buy-button.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -95,7 +95,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('sells.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المبيعات </span></a>
+                        <a href="{{ route('sells.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المبيعات </span></a>
                          
                         <img src="img/acquisition.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -114,7 +114,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('expenses.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">المصاريف </span></a>
+                        <a href="{{ route('expenses.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">المصاريف </span></a>
                          
                         <img src="img/budget.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -134,7 +134,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('reports.profit-loss') }}">     <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">التقارير </span></a>
+                        <a href="{{ route('reports.profit-loss') }}">     <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">التقارير </span></a>
                          
                         <img src="img/report.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -154,7 +154,7 @@
 
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('notification-templates.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">نماذج الاشعارات </span></a>
+                        <a href="{{ route('notification-templates.index') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif">نماذج الاشعارات </span></a>
                          
                         <img src="img/notifications.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
@@ -173,7 +173,7 @@
                    
                         <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                        
-                        <a href="{{ route('housingmovements.dashboard') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif"> إدارة السكن والحركة  </span></a>
+                        <a href="{{ route('housingmovements.dashboard') }}">  <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Cairo, sans-serif"> إدارة السكن والحركة  </span></a>
                          
                         <img src="img/mobility.png"  style="width: 75px;  height: 75px;" alt="">
                         </div>
