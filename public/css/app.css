@@ -18,7 +18,7 @@
 }
 .btn-big {
     padding: 10px 30px;
-    font-size: 18px;
+    font-family:Cairo,font-size: 18px;
     line-height: 1.3333333;
 }
 
@@ -27,7 +27,7 @@
 }
 
 #online_indicator {
-  font-size: 8px;
+  font-family:Cairo,font-size: 8px;
   vertical-align: middle;
 }
 
@@ -44,7 +44,7 @@
   position: absolute;
   top: 6px;
   right: 10px;
-  font-size: 18px;
+  font-family:Cairo,font-size: 18px;
   padding: 7px;
 }
 
@@ -52,11 +52,11 @@
   position: absolute;
   top: -2px;
   left: 10px;
-  font-size: 12px;
+  font-family:Cairo,font-size: 12px;
   padding: 6px;
 }
 .product-info-table td, .product-info-table th {
-  font-size: 12px;
+  font-family:Cairo,font-size: 12px;
 }
 .catalogue {
   max-height: 127px;
@@ -65,7 +65,7 @@
 }
 .catalogue-title {
   display: inline-block;
-  font-size: 18px;
+  font-family:Cairo,font-size: 18px;
   margin: 0;
   line-height: 1;
   margin-bottom: 10px;
@@ -164,7 +164,7 @@
   padding-top:-10px;
 }
 .scroll .fas {
-  font-size:25px;
+  font-family:Cairo,font-size:25px;
   margin-top:-5px;
   margin-left:1px;
   transition: 0.5s;
@@ -198,7 +198,7 @@
 }
 
 .btn-app>.fas, .btn-app>.fab{
-    font-size: 20px;
+    font-family:Cairo,font-size: 20px;
     display: block;
 }
 .dropdown-menu>li>a>.fas{
@@ -263,14 +263,14 @@ legend {
   width: 100%;
 }
 .login-header {
-  font-size: 27px;
+  font-family:Cairo,font-size: 27px;
   font-weight: 600;
 }
 .login-header a {
   color: #fff;
 }
 .form-header {
-  font-size: 18px;
+  font-family:Cairo,font-size: 18px;
   margin: 16px 0;
 }
 .btn-login {
@@ -289,7 +289,7 @@ legend {
 .right-col a, .text-white a {
   color: #fff;
   font-weight: 600;
-  font-size: 15px
+  font-family:Cairo,font-size: 15px
 }
 .right-col a:hover, .text-white a:hover {
   color: #ccc;
@@ -328,7 +328,7 @@ legend {
   position: absolute;
   top: -5px;
   right: -7px;
-  font-size: 9px;
+  font-family:Cairo,font-size: 9px;
   font-weight: 400;
   cursor: pointer;
 }
@@ -366,7 +366,7 @@ legend {
 }
 
 .label-round{
-  font-size: 8px;
+  font-family:Cairo,font-size: 8px;
   border-radius: 44%;
 }
 .table>tbody+tbody{
@@ -399,7 +399,7 @@ table.table-border-center-col > tfoot > tr > td:nth-child(2)
 }
 
 .nav-tabs>li>a{
-  font-size: 18px;
+  font-family:Cairo,font-size: 18px;
   font-weight: 600;
 }
 .table-transparent, .table-transparent th {
@@ -410,7 +410,7 @@ table.table-border-center-col > tfoot > tr > td:nth-child(2)
   white-space:nowrap;
 }
 .font-17{
-    font-size: 17px !important;
+    font-family:Cairo,font-size: 17px !important;
 }
 table.dataTable tbody>tr.selected{
     background-color: #B0BED9;
@@ -625,7 +625,7 @@ tr.details td.details-control {
     color: #fff !important
 }
 .hover-q {
-    font-size: 16px;
+    font-family:Cairo,font-size: 16px;
     margin-left: 3px;
     cursor: help;
 }
@@ -718,11 +718,11 @@ tr.details td.details-control {
 }
 
 .font-30{
-    font-size: 30px !important;
+    font-family:Cairo,font-size: 30px !important;
 }
 
 .font-23{
-    font-size: 23px !important;
+    font-family:Cairo,font-size: 23px !important;
 }
 .padding-5{
     padding: 5px !important;
@@ -774,7 +774,7 @@ tr.details td.details-control {
 }
 
 .pos-express-btn{
-    font-size: 23px !important;
+    font-family:Cairo,font-size: 23px !important;
     overflow: hidden !important;
     height: 73px !important;
     white-space: normal;
@@ -914,7 +914,7 @@ table.table-text-center td, table.table-text-center th{
 }
 
 .fs-10 {
-  font-size: 10px;
+  font-family:Cairo,font-size: 10px;
 }
 
 .timeline-lode-more-btn {
@@ -941,7 +941,7 @@ table.table-text-center td, table.table-text-center th{
 }
 .treeview-menu a{
   padding-left: 25px !important;
-  font-size: 95% !important;
+  font-family:Cairo,font-size: 95% !important;
 }
 .treeview-menu a::before{
   content: "\2192 ";
@@ -974,7 +974,7 @@ table.table-text-center td, table.table-text-center th{
     margin-right: 5px;
 }
 .pos-total span.number{
-    font-size: 26px;
+    font-family:Cairo,font-size: 26px;
     vertical-align: middle;
     font-weight: bolder;
 }
@@ -995,7 +995,7 @@ table.table-text-center td, table.table-text-center th{
 }
 
 .fa-times{
-    font-size: 30px
+    font-family:Cairo,font-size: 30px
 }
 .mb-5{
   margin-bottom: 5px !important;
