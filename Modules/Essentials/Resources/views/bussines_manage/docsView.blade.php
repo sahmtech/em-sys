@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.business'))
+@section('title', __('essentials::lang.licenses'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.business')</span>
+        <span>@lang('essentials::lang.licenses')</span>
     </h1>
 </section>
 
@@ -37,7 +37,9 @@
                             <th>@lang('essentials::lang.expiration_date')</th>
                             <th>@lang('essentials::lang.issuing_location')</th>
                             <th>@lang('essentials::lang.details')</th>
-                            <th>@lang('essentials::lang.file')</th>
+                     
+                            <th>@lang('essentials::lang.action')</th>
+
                             
 
             
@@ -53,7 +55,7 @@
     <div class="modal fade" id="addBusinessDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                {!! Form::open(['route' => 'storeBusinessDoc']) !!}
+                {!! Form::open(['route' => 'storeBusinessDoc','method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">@lang('essentials::lang.add_BusinessDoc')</h4>
@@ -124,10 +126,14 @@
 @section('javascript')
 <script type="text/javascript">
     $(document).ready(function () { 
+        var id = "{{ $business_id }}";
         var business_docs_table = $('#business_docs_table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('business_documents.view', ['id' => '1']) }}",
+            ajax: {
+                url: "{{ route('business_documents.view', ['id' => ':id']) }}".replace(':id', id), // Replace ':id' with the actual id
+                type: 'GET',
+            },
              
             columns: [
                 { data: 'licence_type' },
@@ -137,9 +143,36 @@
                 { data: 'expiration_date' },
                 { data: 'issuing_location' },
                 { data: 'details' },
-                { data: 'path_file' },
+                { data: 'action' },
+
              
             ]
+        });
+        $(document).on('click', 'button.delete_doc_button', function () {
+            swal({
+                title: LANG.sure,
+                text: LANG.confirm_delete_doc,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).data('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                                business_docs_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
+            });
         });
 
      

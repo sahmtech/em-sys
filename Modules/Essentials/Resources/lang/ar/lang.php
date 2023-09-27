@@ -430,9 +430,9 @@ return[
 'issuing_location'=>'مكان الاصدار',
 'file'=>"الوثيقة",
 'add_BusinessDoc'=>'إضافة وثيقة ترخيص',
-'licence_type'=>'نوع الترخيص'
-
-   
+'licence_type'=>'نوع الترخيص',
+'licenses'=>'التراخيص',
+'doc_view'=>'عرض الوثيقة'
 
 
 ];
