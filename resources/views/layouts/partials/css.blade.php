@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ asset('css/vendor.css?v='.$asset_v) }}">
-<link href='https://fonts.googleapis.com/css?family=Cairo' rel='stylesheet'>
+<!-- <link href='https://fonts.googleapis.com/css?family=Cairo' rel='stylesheet'> -->
 @if( in_array(session()->get('user.language', config('app.locale')), config('constants.langs_rtl')) )
 	<link rel="stylesheet" href="{{ asset('css/rtl.css?v='.$asset_v) }}">
 @endif
