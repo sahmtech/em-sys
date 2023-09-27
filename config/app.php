@@ -199,6 +199,7 @@ return [
         ConsoleTVs\Charts\ChartsServiceProvider::class,
         Nwidart\Menus\MenusServiceProvider::class,
         Knox\Pesapal\PesapalServiceProvider::class,
+        Modules\Accounting\Providers\AccountingServiceProvider::class,
     ],
 
     /*
