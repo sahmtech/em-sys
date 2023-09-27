@@ -701,9 +701,7 @@ class AdminSidebarMenu
                 $menu->url(action([\App\Http\Controllers\NotificationTemplateController::class, 'index']), __('lang_v1.notification_templates'), ['icon' => 'fa fas fa-envelope', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
             }
 
-                    //Add menus from modules
-        $moduleUtil = new ModuleUtil;
-        $moduleUtil->getModuleData('modifyAdminMenu');
+
          
      //Housing&movement module
      if (auth()->user()->can('send_notifications')) {
@@ -799,7 +797,9 @@ class AdminSidebarMenu
             
         });
 
-
+         //Add menus from modules
+        $moduleUtil = new ModuleUtil;
+        $moduleUtil->getModuleData('modifyAdminMenu');
 
         return $next($request);
     }
