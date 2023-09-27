@@ -19,4 +19,14 @@ class EssentialsCountry extends Model
         }
         return $res;
     }
+    public static function forDropdown2()
+    {
+        $countries = EssentialsCountry::all();
+
+        $res=collect();
+        foreach ($countries as $country){
+            $res->put((json_decode($country->name,true))['ar'],(json_decode($country->name,true))['en'],);
+        }
+        return $res;
+    }
 }

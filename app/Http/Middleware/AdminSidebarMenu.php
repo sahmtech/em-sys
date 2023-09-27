@@ -701,8 +701,6 @@ class AdminSidebarMenu
                 $menu->url(action([\App\Http\Controllers\NotificationTemplateController::class, 'index']), __('lang_v1.notification_templates'), ['icon' => 'fa fas fa-envelope', 'active' => request()->segment(1) == 'notification-templates'])->order(80);
             }
 
-   
-
             //Settings Dropdown
             if (auth()->user()->can('business_settings.access') ||
                 auth()->user()->can('barcode_settings.access') ||
@@ -789,7 +787,7 @@ class AdminSidebarMenu
             
         });
 
-        //Add menus from modules
+         //Add menus from modules
         $moduleUtil = new ModuleUtil;
         $moduleUtil->getModuleData('modifyAdminMenu');
         $moduleUtil->getModuleData('modifyAdminMenu_hm');

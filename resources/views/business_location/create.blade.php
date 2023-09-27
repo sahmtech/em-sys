@@ -29,6 +29,12 @@
                         {!! Form::text('landmark', null, ['class' => 'form-control', 'placeholder' => __( 'business.landmark' ) ]); !!}
                     </div>
                 </div>
+                <div class="col-sm-6">
+                <div class="form-group col-md-12">
+                    {!! Form::label('business', __( 'essentials::lang.business' ) . ':*') !!}
+                      {!! Form::select('business', $business, null, ['class' => 'form-control select2', 'placeholder' => __( 'essentials::lang.business' ) , 'required']); !!}
+                  </div>
+                </div>
                 <div class="clearfix"></div>
                 <div class="col-sm-6">
                     <div class="form-group">
