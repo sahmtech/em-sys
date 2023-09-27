@@ -346,20 +346,101 @@ class DataController extends Controller
                             __('essentials::lang.facilities_management')
                         )->order(2);
 
-                      /*  $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
-                            __('essentials::lang.payroll_management')
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'index']),
+                            __('essentials::lang.leave_type')
                         )->order(3);
 
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
-                            __('essentials::lang.settings')
+                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
+                            __('essentials::lang.leave')
                         )->order(4);
 
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
-                            __('essentials::lang.reports')
-                        )->order(5);*/
+                            action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
+                            __('essentials::lang.attendance')
+                        )->order(5);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+                            __('essentials::lang.payroll')
+                        )->order(6);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
+                            __('essentials::lang.holiday')
+                        )->order(7);
+
+                        $subMenu->url(
+                            action([\App\Http\Controllers\TaxonomyController::class, 'index']),
+                            __('essentials::lang.departments')
+                        )->order(8);
+
+                        $subMenu->url(
+                            action([\App\Http\Controllers\TaxonomyController::class, 'index']) ,
+                            __('essentials::lang.designations')
+                        )->order(9);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
+                            __('essentials::lang.sales_target')
+                        )->order(10);
+
+                     $subMenu->url(
+                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+                            __('business.settings')
+                        )->order(11);
+/* 
+        
+                }}">@lang('')</a></li>
+                
+                    @if(auth()->user()->can('edit_essentials_other_settings'))
+                    <li>
+                     
+                            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @lang('business.other_settings')
+                            </a>
+                            
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                               
+                                    <a class="dropdown-item" href="{{ route('countries') }}">
+                                        @lang('essentials::lang.countries')  
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('cities') }}">
+                                        @lang('essentials::lang.cities')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('bank_accounts') }}">
+                                        @lang('essentials::lang.bank_accounts')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('organizations') }}">
+                                        @lang('essentials::lang.organizations')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('job_titles') }}">
+                                        @lang('essentials::lang.job_titles')
+                                    </a>
+                                    
+                                    <a class="dropdown-item" href="{{ route('travel_categories') }}">
+                                        @lang('essentials::lang.travel_ticket_categories')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('basic_salary_types') }}">
+                                        @lang('essentials::lang.basic_salary_types')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('entitlements') }}">
+                                        @lang('essentials::lang.entitlements')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('allowances') }}">
+                                        @lang('essentials::lang.allowances')
+                                    </a>
+                                  
+                               
+                            </div>
+                        
+                    </li>
+                    @endif
+             
+
+        */
+                
                     },
                     [
                         'icon' => 'fa fas fa-users',
