@@ -51,6 +51,10 @@
                 @elseif(Request::is('international-Relations/*'))
                       
                      @include('internationalrelations::layouts.sidebarh&m')
+
+                @elseif(Request::is('followup/*'))
+                      
+                      @include('followup::layouts.sidebarh&m')
                 @else
 
                 @include('layouts.partials.sidebar')

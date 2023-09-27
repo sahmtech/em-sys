@@ -16,5 +16,6 @@
     "Woocommerce": true,
     "AiAssistance": true,
     "HousingMovements": true,
-    "InternationalRelations": true
+    "InternationalRelations": true,
+    "FollowUp": true
 }
