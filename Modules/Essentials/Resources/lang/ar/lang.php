@@ -432,7 +432,12 @@ return[
 'add_BusinessDoc'=>'إضافة وثيقة ترخيص',
 'licence_type'=>'نوع الترخيص',
 'licenses'=>'التراخيص',
-'doc_view'=>'عرض الوثيقة'
-
-
+'doc_view'=>'عرض الوثيقة',
+'employees_affairs'=>'شؤون الموظفين',
+'leave_requests'=>'طلبات الإجازات',
+'requests'=>'الطلبات', 
+'loan'=>'العهد',
+'system_settings'=>'إعدادات النظام',
+'employees_settings'=>'إعدادات الموظفين',
+'organizational_structure'=>'الهيكل التنظيمي'
 ];
