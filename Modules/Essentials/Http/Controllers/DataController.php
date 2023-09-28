@@ -347,14 +347,65 @@ class DataController extends Controller
                         )->order(2);
 
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'index']),
-                            __('essentials::lang.leave_type')
+                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
+                            __('essentials::lang.employees_affairs')
                         )->order(3);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
+                            __('essentials::lang.attendance')
+                        )->order(4);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
+                            __('essentials::lang.leave_requests')
+                        )->order(5);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+                            __('essentials::lang.payroll')
+                        )->order(6);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
+                            __('essentials::lang.requests')
+                        )->order(7);
+
+                        $subMenu->url(
+                            action([\App\Http\Controllers\TaxonomyController::class, 'index']),
+                            __('essentials::lang.loan')
+                        )->order(8);
+
+                        $subMenu->url(
+                            action([\App\Http\Controllers\TaxonomyController::class, 'index']) ,
+                            __('essentials::lang.system_settings')
+                        )->order(9);
+
+                        $subMenu->url(
+                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+                            __('essentials::lang.employees_settings')
+                        )->order(10);
+
+                        $subMenu->url(
+                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+                                __('essentials::lang.organizational_structure')
+                        )->order(11);
+        /*            $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
+                            __('essentials::lang.hrm_manage')
+                        )->order(1);
+
+                        $subMenu->url(
+                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                            __('essentials::lang.facilities_management')
+                        )->order(2);
+
+                      
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
                             __('essentials::lang.leave')
-                        )->order(4);
+                        )->order(3);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
@@ -390,7 +441,7 @@ class DataController extends Controller
                         action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
                             __('business.settings')
                         )->order(11);
-/* 
+
         
                 }}">@lang('')</a></li>
                 
