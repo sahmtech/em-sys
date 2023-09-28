@@ -2,7 +2,6 @@
 @section('title', __('essentials::lang.attendance'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
 <section class="content-header">
     <h1>@lang('essentials::lang.attendance')
     </h1>

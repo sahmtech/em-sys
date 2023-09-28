@@ -79,8 +79,12 @@
                                     <a class="dropdown-item" href="{{ route('allowances') }}">
                                         @lang('essentials::lang.allowances')
                                     </a>
-                                  
-                               
+                                    <a class="dropdown-item" href="{action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index'])}}">
+                                        @lang('essentials::lang.sales_target')
+                                    </a>
+                                    <a class="dropdown-item" href="{{ action([\App\Http\Controllers\TaxonomyController::class, 'index'])}}">
+                                        @lang('essentials::lang.designations')
+                                    </a>
                             </div>
                         
                     </li>

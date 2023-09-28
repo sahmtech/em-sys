@@ -4,11 +4,10 @@
     $navbar = !empty($module_category_data['navbar']) ? $module_category_data['navbar'] : null;
 @endphp
 @section('title', $heading)
-
 @section('content')
-@if(!empty($navbar))
-    @include($navbar)
-@endif
+@include('essentials::layouts.nav_hrm_setting')
+
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>{{$heading }}

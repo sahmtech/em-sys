@@ -2,11 +2,11 @@
 @section('title', __('essentials::lang.countries'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
-<!-- Content Header (Page header) -->
+@include('essentials::layouts.nav_hrm_setting')
+
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.manage_countries')</span>
+        <span>@lang('essentials::lang.countries')</span>
     </h1>
 </section>
 
