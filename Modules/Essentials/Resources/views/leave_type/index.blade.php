@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.leave_type'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_leave')
 <section class="content-header">
     <h1>@lang('essentials::lang.leave_type')
     </h1>

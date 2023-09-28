@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.payroll'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+
 <section class="content-header">
     <h1>@lang('essentials::lang.payroll')
     </h1>

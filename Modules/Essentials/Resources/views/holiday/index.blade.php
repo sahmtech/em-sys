@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.holiday'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_setting')
 <section class="content-header">
     <h1>@lang('essentials::lang.holiday')
     </h1>

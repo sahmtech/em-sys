@@ -2,11 +2,11 @@
 @section('title', __('essentials::lang.travel_categories'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_setting')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.manage_travel_categories')</span>
+        <span>@lang('essentials::lang.travel_categories')</span>
     </h1>
 </section>
 

@@ -2,11 +2,11 @@
 @section('title', __('essentials::lang.entitlement_types'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_setting')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.manage_entitlement_types')</span>
+        <span>@lang('essentials::lang.entitlement_types')</span>
     </h1>
 </section>
 

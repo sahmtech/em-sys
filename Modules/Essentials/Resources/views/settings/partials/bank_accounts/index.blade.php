@@ -2,11 +2,11 @@
 @section('title', __('essentials::lang.bank_accounts'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_setting')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.manage_bank_accounts')</span>
+        <span>@lang('essentials::lang.bank_accounts')</span>
     </h1>
 </section>
 
