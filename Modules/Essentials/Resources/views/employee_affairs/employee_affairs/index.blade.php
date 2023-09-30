@@ -31,7 +31,7 @@
                 <table class="table table-bordered table-striped" id="employees">
                     <thead>
                         <tr>
-                            <th>@lang( 'business.username' )</th>
+                            {{-- <th>@lang( 'business.username' )</th> --}}
                             <th>@lang( 'user.name' )</th>
                             <th>@lang( 'user.role' )</th>
                             <th>@lang( 'business.email' )</th>
@@ -59,12 +59,12 @@
                     serverSide: true,
                     ajax: '/hrm/employees',
                     columnDefs: [ {
-                        "targets": [4],
+                        "targets": [3],
                         "orderable": false,
                         "searchable": false
                     } ],
                     "columns":[
-                        {"data":"username"},
+                        // {"data":"username"},
                         {"data":"full_name"},
                         {"data":"role"},
                         {"data":"email"},
