@@ -44,13 +44,13 @@ class AdminSidebarMenu
                                 ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
                             );
                         }
-                        if (auth()->user()->can('roles.view')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\RoleController::class, 'index']),
-                                __('user.roles'),
-                                ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
-                            );
-                        }
+                        // if (auth()->user()->can('roles.view')) {
+                        //     $sub->url(
+                        //         action([\App\Http\Controllers\RoleController::class, 'index']),
+                        //         __('user.roles'),
+                        //         ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                        //     );
+                        // }
                         if (auth()->user()->can('user.create')) {
                             $sub->url(
                                 action([\App\Http\Controllers\SalesCommissionAgentController::class, 'index']),

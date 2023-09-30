@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __( 'user.users' ))
+@section('title', __( 'essentials::lang.employees' ))
 
 @section('content')
-
+@include('essentials::layouts.nav_employee_affairs')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang( 'user.users' )
-        <small>@lang( 'user.manage_users' )</small>
+    <h1>
+        @lang( 'essentials::lang.manage_employees' )
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -16,13 +16,13 @@
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => __( 'user.all_users' )])
+    @component('components.widget', ['class' => 'box-primary'])
         @can('user.create')
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary" 
-                    href="{{action([\App\Http\Controllers\ManageUserController::class, 'create'])}}" >
-                    <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
+                    href="{{ route('createEmployee') }}" >
+                    <i class="fa fa-plus"></i> @lang( 'essentials::lang.add_new_employee' )</a>
                  </div>
             @endslot
         @endcan
@@ -57,7 +57,7 @@
         var users_table = $('#users_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/users',
+                    ajax: '/hrm/usersIndex',
                     columnDefs: [ {
                         "targets": [3],
                         "orderable": false,

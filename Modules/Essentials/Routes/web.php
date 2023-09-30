@@ -170,5 +170,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/sales-target', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']);
         Route::get('/set-sales-target/{id}', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'setSalesTarget']);
         Route::post('/save-sales-target', [Modules\Essentials\Http\Controllers\SalesTargetController::class, 'saveSalesTarget']);
+
+        Route::get('/employees', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])->name('employees');
+        Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
+        Route::get('/usersIndex', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'usersIndex'])->name('usersIndex');
+        Route::get('/employ/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'employ'])->name('employ');
+        Route::get('/createEmployee', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'create'])->name('createEmployee');
+        Route::post('/storeEmployee', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'store'])->name('storeEmployee');
     });
 });

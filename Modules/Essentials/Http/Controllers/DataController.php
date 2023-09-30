@@ -336,57 +336,63 @@ class DataController extends Controller
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
-                       
-
-                       
-
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
-                            __('essentials::lang.employees_affairs')
+                            route('employees'),
+                            __('essentials::lang.employees_affairs'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='employees'],
                         )->order(1);
                         $subMenu->url(
                             action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                              __('essentials::lang.facilities_management')
+                              __('essentials::lang.facilities_management'),
+                              ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='getBusiness'],
                              )->order(2);
                         $subMenu->url(
                            
                             action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
-                            __('essentials::lang.attendance')
+                            __('essentials::lang.attendance'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='attendance'],
                         )->order(3);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
-                            __('essentials::lang.leave_requests')
+                            __('essentials::lang.leave_requests'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='leave'],
                         )->order(4);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-                            __('essentials::lang.payroll')
+                            __('essentials::lang.payroll'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='payroll'],
                         )->order(5);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
-                            __('essentials::lang.requests')
+                            __('essentials::lang.requests'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='holiday'],
                         )->order(6);
 
                         $subMenu->url(
                             action([\App\Http\Controllers\TaxonomyController::class, 'index']),
-                            __('essentials::lang.loan')
+                            __('essentials::lang.loan'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='taxonomies'],
                         )->order(7);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']) ,
-                            __('essentials::lang.system_settings')
+                            __('essentials::lang.system_settings'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='settings'],
                         )->order(8);
 
                         $subMenu->url(
                         action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
-                            __('essentials::lang.employees_settings')
+                            __('essentials::lang.employees_settings'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='countries'],
                         )->order(9);
 
                         $subMenu->url(
                         action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-                                __('essentials::lang.organizational_structure')
+                                __('essentials::lang.organizational_structure'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='settings'],
                         )->order(10);
         /*            $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
