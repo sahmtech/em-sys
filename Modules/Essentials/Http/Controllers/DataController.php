@@ -336,10 +336,6 @@ class DataController extends Controller
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
-                        error_log("++++++++++++++++++++++++++++++");
-                        error_log( request()->segment(1));
-                        error_log( request()->segment(2));
-                        error_log("*****************************");
                         $subMenu->url(
                             route('employees'),
                             __('essentials::lang.employees_affairs'),

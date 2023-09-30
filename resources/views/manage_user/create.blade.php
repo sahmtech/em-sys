@@ -89,7 +89,7 @@
               [ 'class' => 'input-icheck', 'id' => 'allow_login']); !!} {{ __( 'lang_v1.allow_login' ) }}
             </label>
           </div>
-      </div>
+       </div>
       </div>
   @endcomponent
   </div>
