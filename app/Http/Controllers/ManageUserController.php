@@ -61,16 +61,27 @@ class ManageUserController extends Controller
                 //         return $role_name;
                 //     }
                 // )
+                // ->addColumn(
+                //     'action',
+                //     '@can("user.update")
+                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                //         &nbsp;
+                //     @endcan
+                //     @can("user.view")
+                //      <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
+                //      &nbsp;
+                //      @endcan
+                //     @can("user.delete")
+                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                //     @endcan'
+                // )
                 ->addColumn(
                     'action',
                     '@can("user.update")
                         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                         &nbsp;
                     @endcan
-                    @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                    &nbsp;
-                    @endcan
+               
                     @can("user.delete")
                         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                     @endcan'
@@ -122,24 +133,10 @@ class ManageUserController extends Controller
                         return $role_name;
                     }
                 )
-                // ->addColumn(
-                //     'action',
-                //     '@can("user.update")
-                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                //         &nbsp;
-                //     @endcan
-                //     @can("user.view")
-                //     <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                //     &nbsp;
-                //     @endcan
-                //     @can("user.delete")
-                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                //     @endcan'
-                // )
                 ->addColumn(
                     'action',
                     '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.create_user")</a>
+                        <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
                         &nbsp;
                     @endcan'
                 )
@@ -291,7 +288,7 @@ class ManageUserController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
-        return view('manage_user.edit')
+        return view('manage_user.make_user')
                 ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 

@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', __( 'user.edit_user' ))
+@section('title', __( 'user.make_user_account' ))
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang( 'user.edit_user' )</h1>
+    <h1>@lang( 'user.make_user_account' )</h1>
 </section>
 
 <!-- Main content -->
@@ -15,24 +15,24 @@
     <div class="row">
         <div class="col-md-12">
         @component('components.widget', ['class' => 'box-primary'])
-            <div class="col-md-2">
+            {{-- <div class="col-md-2">
                 <div class="form-group">
                   {!! Form::label('surname', __( 'business.prefix' ) . ':') !!}
                     {!! Form::text('surname', $user->surname, ['class' => 'form-control', 'placeholder' => __( 'business.prefix_placeholder' ) ]); !!}
                 </div>
-            </div>
-            <div class="col-md-5">
+            </div> --}}
+            {{-- <div class="col-md-5">
                 <div class="form-group">
                   {!! Form::label('first_name', __( 'business.first_name' ) . ':*') !!}
                     {!! Form::text('first_name', $user->first_name, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.first_name' ) ]); !!}
                 </div>
-            </div>
-            <div class="col-md-5">
+            </div> --}}
+            {{-- <div class="col-md-5">
                 <div class="form-group">
                   {!! Form::label('last_name', __( 'business.last_name' ) . ':') !!}
                     {!! Form::text('last_name', $user->last_name, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
                 </div>
-            </div>
+            </div> --}}
             <div class="col-md-5">
               <div class="form-group">
                 {!! Form::label('username', __( 'business.username' ) . ':') !!}

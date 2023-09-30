@@ -1598,7 +1598,7 @@ class Util
                 $user_details['username'] = $this->generateReferenceNumber('username', $ref_count, $business_id);
             }
 
-            if ($user_details['user_type'] == 'user') {
+            if ($user_details['user_type'] == 'user' || $user_details['user_type'] == 'employee') {
                 $username_ext = $this->getUsernameExtension();
                 if (!empty($username_ext)) {
                     $user_details['username'] .= $username_ext;

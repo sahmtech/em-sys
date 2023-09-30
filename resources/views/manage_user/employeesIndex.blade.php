@@ -5,7 +5,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>@lang( 'user.users' )
-        <small>@lang( 'user.manage_users' )</small>
+        <small>@lang( 'user.display_employees' )</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -30,8 +30,8 @@
                 <table class="table table-bordered table-striped" id="employees">
                     <thead>
                         <tr>
-                            <th>@lang( 'business.username' )</th>
-                            <th>@lang( 'user.name' )</th>
+                            {{-- <th>@lang( 'business.username' )</th> --}}
+                            <th>@lang( 'user.employee_name' )</th>
                             <th>@lang( 'user.role' )</th>
                             <th>@lang( 'business.email' )</th>
                             <th>@lang( 'messages.action' )</th>
@@ -56,14 +56,14 @@
         var users_table = $('#employees').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/hrm/employees',
+                    ajax: '/manage_user/employeesIndex',
                     columnDefs: [ {
-                        "targets": [4],
+                        "targets": [3],
                         "orderable": false,
                         "searchable": false
                     } ],
                     "columns":[
-                        {"data":"username"},
+                        // {"data":"username"},
                         {"data":"full_name"},
                         {"data":"role"},
                         {"data":"email"},
