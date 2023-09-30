@@ -16,7 +16,7 @@ use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-
+use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\essentialsAllowanceType;
@@ -495,7 +495,7 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
-        error_log('1111111111');
+    
         if ($data['event'] = 'user_saved') {
             
             $user = $data['model_instance'];
@@ -527,16 +527,25 @@ class DataController extends Controller
             $contract->deductions_id = request()->input('entitlement_type');
             $contract->employee_id = $user->id;
             $contract->salary = request()->input('essentials_salary');
-            // $contract->basic_salary_type_id= request()->input('basic_salary_type');
-            $contract->basic_salary_type_id= '3';
-         //   $contract->work_type_id= '1';
-
-
+            $contract->basic_salary_type_id= request()->input('basic_salary_type');
+            $contract->work_type= request()->input('work_type');
             $contract->is_active = '1';
             
             $contract->save();
 
-
+           
+            if (request()->hasFile('contract_file')) {
+                error_log('2222222222');
+                $file = request()->file('contract_file');
+                $filePath = $file->store('/employee_contracts');
+                $contract_file = new EssentialsEmployeeContractFile();
+                $contract_file->contract_id = $contract->id;
+                $contract_file->path=$filePath;
+                $contract_file->save();
+            }
+else{
+    error_log('3333333333333');
+}
             
            
             $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);

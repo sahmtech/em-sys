@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class EssentialsBasicSalaryType extends Model
 {
-   
+    
     protected $guarded = ['id'];
     public static function forDropdown()
     {
-        $basicSalaryTypes = EssentialsBasicSalaryType::all()->pluck('name','id');
-
+        $basicSalaryTypes = EssentialsBasicSalaryType::get()->pluck('type','id');
+      
         return $basicSalaryTypes;
+
     }
 }
    

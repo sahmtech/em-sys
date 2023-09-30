@@ -11,7 +11,7 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['route' => 'storeEmployee']) !!}
+{!! Form::open(['route' => 'storeEmployee','enctype' => 'multipart/form-data']) !!}
   <div class="row">
     <div class="col-md-12">
   @component('components.widget')

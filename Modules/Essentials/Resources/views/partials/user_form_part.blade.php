@@ -117,7 +117,7 @@
     
     <div class="form-group col-md-3">
         {!! Form::label('essentials::lang.basic_salary_type', __('essentials::lang.basic_salary_type') . ':') !!}
-        {!! Form::select('basic_salary_type',  $basic_salary_types,null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.basic_salary_type')]) !!}
+        {!! Form::select('basic_salary_type',$basic_salary_types,null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.basic_salary_type')]) !!}
     </div>
     
     <div class="form-group col-md-3">
