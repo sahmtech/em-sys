@@ -42,7 +42,7 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)
+            $users = User::where('business_id', $business_id)->where('user_type','user')
                         ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
@@ -50,23 +50,33 @@ class ManageUserController extends Controller
 
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-                ->addColumn(
-                    'role',
-                    function ($row) {
-                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
+                // ->addColumn(
+                //     'role',
+                //     function ($row) {
+                //         $role_name = $this->moduleUtil->getUserRoleName($row->id);
 
-                        return $role_name;
-                    }
-                )
+                //         return $role_name;
+                //     }
+                // )
+                // ->addColumn(
+                //     'action',
+                //     '@can("user.update")
+                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                //         &nbsp;
+                //     @endcan
+                //     @can("user.view")
+                //     <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
+                //     &nbsp;
+                //     @endcan
+                //     @can("user.delete")
+                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                //     @endcan'
+                // )
                 ->addColumn(
                     'action',
                     '@can("user.update")
                         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                         &nbsp;
-                    @endcan
-                    @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                    &nbsp;
                     @endcan
                     @can("user.delete")
                         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
@@ -124,6 +134,7 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
+    //    return $request;
         if (! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -147,6 +158,7 @@ class ManageUserController extends Controller
         } catch (\Exception $e) {
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
+            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
             $output = ['success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
@@ -429,7 +441,6 @@ class ManageUserController extends Controller
             }
             $roles[$key] = str_replace('#'.$business_id, '', $value);
         }
-
         return $roles;
     }
 

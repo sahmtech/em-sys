@@ -1,22 +1,20 @@
 @extends('layouts.app')
 
-@section('title', __( 'user.add_user' ))
+@section('title', __( 'essentials::lang.add_new_employee' ))
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>@lang( 'user.add_user' )</h1>
+  <h1>@lang( 'essentials::lang.add_new_employee' )</h1>
 </section>
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action([\App\Http\Controllers\ManageUserController::class, 'store']), 'method' => 'post', 'id' => 'user_add_form' ]) !!}
-<div class="row">
+{!! Form::open(['route' => 'storeEmployee']) !!}
+  <div class="row">
     <div class="col-md-12">
   @component('components.widget')
-
-
       <div class="col-md-2">
         <div class="form-group">
           {!! Form::label('surname', __( 'business.prefix' ) . ':') !!}
@@ -35,21 +33,6 @@
             {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
         </div>
       </div>
-      <div class="col-md-5">
-        <div class="form-group">
-          {!! Form::label('username', __( 'business.username' ) . ':') !!}
-          @if(!empty($username_ext))
-            <div class="input-group">
-              {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __( 'business.username' ) ]); !!}
-              <span class="input-group-addon">{{$username_ext}}</span>
-            </div>
-            <p class="help-block" id="show_username"></p>
-          @else
-              {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __( 'business.username' ) ]); !!}
-          @endif
-          <p class="help-block">@lang('lang_v1.username_help')</p>
-        </div>
-      </div>
       <div class="clearfix"></div>
       <div class="col-md-4">
         <div class="form-group">
@@ -57,21 +40,11 @@
             {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="form-group">
-          {!! Form::label('password', __( 'business.password' ) . ':*') !!}
-            {!! Form::password('password', ['class' => 'form-control', 'required', 'placeholder' => __( 'business.password' ) ]); !!}
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-group">
-          {!! Form::label('confirm_password', __( 'business.confirm_password' ) . ':*') !!}
-            {!! Form::password('confirm_password', ['class' => 'form-control', 'required', 'placeholder' => __( 'business.confirm_password' ) ]); !!}
-        </div>
-      </div>
+
       <div class="col-md-4">
         <div class="form-group">
           <div class="checkbox">
+            <br/>
             <label>
                  {!! Form::checkbox('is_active', 'active', true, ['class' => 'input-icheck status']); !!} {{ __('lang_v1.status_for_user') }}
             </label>
@@ -79,21 +52,9 @@
           </div>
         </div>
       </div>
-
-      <div class="col-md-4">
-        <div class="form-group">
-          <div class="checkbox">
-         
-            <label>
-              {!! Form::checkbox('allow_login', 1, true, 
-              [ 'class' => 'input-icheck', 'id' => 'allow_login']); !!} {{ __( 'lang_v1.allow_login' ) }}
-            </label>
-          </div>
-      </div>
-      </div>
   @endcomponent
   </div>
-  {{-- <div class="col-md-12">
+  <div class="col-md-12">
     @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
       <div class="col-md-4">
         <div class="form-group">
@@ -134,7 +95,7 @@
             {!! Form::password('confirm_password', ['class' => 'form-control', 'required', 'placeholder' => __( 'business.confirm_password' ) ]); !!}
         </div>
       </div>
-     </div>
+    </div>
       <div class="clearfix"></div>
       <div class="col-md-6">
         <div class="form-group">
@@ -168,9 +129,9 @@
           @endforeach
         </div>
     @endcomponent
-  </div> --}}
+  </div>
 
-  {{-- <div class="col-md-12">
+  <div class="col-md-12">
     @component('components.widget', ['title' => __('sale.sells')])
       <div class="col-md-4">
         <div class="form-group">
@@ -208,16 +169,16 @@
       </div>
 
     @endcomponent
-  </div> --}}
+  </div>
 
   </div>
-    {{-- @include('user.edit_profile_form_part')
+    @include('user.edit_profile_form_part')
 
     @if(!empty($form_partials))
       @foreach($form_partials as $partial)
         {!! $partial !!}
       @endforeach
-    @endif --}}
+    @endif
   <div class="row">
     <div class="col-md-12 text-center">
       <button type="submit" class="btn btn-primary btn-big" id="submit_user_button">@lang( 'messages.save' )</button>

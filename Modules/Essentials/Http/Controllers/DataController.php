@@ -336,12 +336,8 @@ class DataController extends Controller
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
-                       
-
-                       
-
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
+                            route('employees'),
                             __('essentials::lang.employees_affairs')
                         )->order(1);
                         $subMenu->url(

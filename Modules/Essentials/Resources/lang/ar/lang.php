@@ -439,5 +439,9 @@ return[
 'loan'=>'العهد',
 'system_settings'=>'إعدادات النظام',
 'employees_settings'=>'إعدادات الموظفين',
-'organizational_structure'=>'الهيكل التنظيمي'
+'organizational_structure'=>'الهيكل التنظيمي',
+'employees'=>'الموظفين',
+'manage_employees'=>'إدارة الموظفين',
+'add_new_employee'=>'إضافة موظف جديد',
+'employ_user'=>'توظيف المستخدم',
 ];

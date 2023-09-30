@@ -75,7 +75,7 @@ class RoleController extends Controller
                 ->make(false);
         }
 
-        return view('role.index');
+        return view('essentials::employee_affairs.role.index');
     }
 
     /**
