@@ -482,8 +482,32 @@ class DataController extends Controller
             $user_department = Category::find($user->essentials_department_id);
             $user_designstion = Category::find($user->essentials_designation_id);
             $work_location = BusinessLocation::find($user->location_id);
+            $qualification_type=EssentialsQualificationType::where('employee_id',$user->id)->first();
+            $contract= EssentialsEmployeeContract::where('employee_id',$user->id)->select([
+                'essentials_employee_contracts.id',
+                'essentials_employee_contracts.contract_number',
+                'essentials_employee_contracts.contract_start_date',
+                'essentials_employee_contracts.contract_end_date',
+                'essentials_employee_contracts.contract_duration',
+                'essentials_employee_contracts.probation_period',
+                'essentials_employee_contracts.is_active',
+                'essentials_employee_contracts.is_renewable',
+                'essentials_basic_salary_types.type AS basic_salary_type',
+                'essentials_travel_ticket_categories.name AS travel_ticket_category_name',
+                'essentials_allowance_types.name AS allowance_name',
+                'essentials_entitlement_types.name AS entitlement_name',
+                'essentials_employee_contracts.work_type',
+            ])
+            ->leftJoin('essentials_basic_salary_types', 'essentials_employee_contracts.basic_salary_type_id', '=', 'essentials_basic_salary_types.id')
+        
+            ->leftJoin('essentials_travel_ticket_categories', 'essentials_employee_contracts.travel_ticket_category_id', '=', 'essentials_travel_ticket_categories.id')
+            ->leftJoin('essentials_allowance_types', 'essentials_employee_contracts.allowances_id', '=', 'essentials_allowance_types.id')
+            
+            ->leftJoin('essentials_entitlement_types', 'essentials_employee_contracts.deductions_id', '=', 'essentials_entitlement_types.id')
+            ->get();     
 
-            return view('essentials::partials.user_details_part', compact('user_department', 'user_designstion', 'user', 'work_location'))
+            $admissions_to_work=DB::table('essentials_admissions_to_work')->where('employee_id',$user->id)->get();
+            return view('essentials::partials.user_details_part', compact('admissions_to_work','qualification_type','contract','user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
     }
