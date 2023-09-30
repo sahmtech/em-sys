@@ -336,13 +336,19 @@ class DataController extends Controller
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
+                        error_log("++++++++++++++++++++++++++++++");
+                        error_log( request()->segment(1));
+                        error_log( request()->segment(2));
+                        error_log("*****************************");
                         $subMenu->url(
                             route('employees'),
-                            __('essentials::lang.employees_affairs')
+                            __('essentials::lang.employees_affairs'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='employees'],
                         )->order(1);
                         $subMenu->url(
                             action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                              __('essentials::lang.facilities_management')
+                              __('essentials::lang.facilities_management'),
+                              ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='getBusiness'],
                              )->order(2);
                         $subMenu->url(
                            
