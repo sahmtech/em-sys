@@ -31,4 +31,6 @@
 "transaction_edit_not_allowed" => "لا يُسمح بإصدار المعاملة بعد days: الأيام.",
 'activate' => 'تنشيط',
 'deactivate' => 'إلغاء تنشيط',
+'employe' => 'توظيف',
+'create_user'=>'إنشاء مستخدم',
 ];

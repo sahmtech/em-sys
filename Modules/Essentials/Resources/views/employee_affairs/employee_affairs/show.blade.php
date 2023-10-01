@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
-@section('title', __( 'lang_v1.view_user' ))
+@section('title', __( 'essentials::lang.view_employee' ))
 
 @section('content')
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-4">
-                <h3>@lang( 'lang_v1.view_user' )</h3>
+                <h3>@lang( 'essentials::lang.view_employee' )</h3>
             </div>
-            {{-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
+            <div class="col-md-4 col-xs-12 mt-15 pull-right">
                 {!! Form::select('user_id', $users, $user->id , ['class' => 'form-control select2', 'id' => 'user_id']); !!}
-            </div> --}}
+            </div>
         </div>
         <br>
-        <div  class="row">
-            <div class="col-md-4">
+        <div class="row">
+            <div class="col-md-3">
                 <!-- Profile Image -->
                 <div class="box box-primary">
                     <div class="box-body box-profile">
@@ -38,14 +38,14 @@
                         </p>
 
                         <ul class="list-group list-group-unbordered">
-                            <li class="list-group-item">
+                            {{-- <li class="list-group-item">
                                 <b>@lang( 'business.username' )</b>
                                 <a class="pull-right">{{$user->username}}</a>
                             </li>
                             <li class="list-group-item">
                                 <b>@lang( 'business.email' )</b>
                                 <a class="pull-right">{{$user->email}}</a>
-                            </li>
+                            </li> --}}
                             <li class="list-group-item">
                                 <b>{{ __('lang_v1.status_for_user') }}</b>
                                 @if($user->status == 'active')
@@ -70,11 +70,11 @@
                 </div>
                 <!-- /.box -->
             </div>
-            {{-- <div class="col-md-9">
+            <div class="col-md-9">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs nav-justified">
                         <li class="active">
-                            <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user" aria-hidden="true"></i> @lang( 'lang_v1.user_info')</a>
+                            <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user" aria-hidden="true"></i> @lang( 'essentials::lang.employee_info')</a>
                         </li>
                         
                         <li>
@@ -140,7 +140,7 @@
                         </div>
                     </div>
                 </div>
-            </div> --}}
+            </div>
         </div>
     </section>    
 @endsection

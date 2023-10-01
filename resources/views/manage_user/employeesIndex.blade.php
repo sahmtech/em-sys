@@ -2,11 +2,10 @@
 @section('title', __( 'user.users' ))
 
 @section('content')
-
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>@lang( 'user.users' )
-        <small>@lang( 'user.manage_users' )</small>
+        <small>@lang( 'user.display_employees' )</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -16,25 +15,24 @@
 
 <!-- Main content -->
 <section class="content">
-    @component('components.widget', ['class' => 'box-primary', 'title' => __( 'user.all_users' )])
+    @component('components.widget', ['class' => 'box-primary'])
         @can('user.create')
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary" 
-                    href="{{ route('employeesIndex') }}" >
-                 
-                    <i class="fa fa-plus"></i> @lang( 'user.create_new_user' )</a>
-                 </div>
+                    href="{{action([\App\Http\Controllers\ManageUserController::class, 'create'])}}" >
+                    <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
+                 </div> 
             @endslot
         @endcan
         @can('user.view')
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="users_table">
+                <table class="table table-bordered table-striped" id="employees">
                     <thead>
                         <tr>
-                            <th>@lang( 'business.username' )</th>
-                            <th>@lang( 'user.name' )</th>
-                            {{-- <th>@lang( 'user.role' )</th> --}}
+                            {{-- <th>@lang( 'business.username' )</th> --}}
+                            <th>@lang( 'user.employee_name' )</th>
+                            <th>@lang( 'user.role' )</th>
                             <th>@lang( 'business.email' )</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>
@@ -55,19 +53,19 @@
 <script type="text/javascript">
     //Roles table
     $(document).ready( function(){
-        var users_table = $('#users_table').DataTable({
+        var users_table = $('#employees').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/users',
+                    ajax: '/manage_user/employeesIndex',
                     columnDefs: [ {
                         "targets": [3],
                         "orderable": false,
                         "searchable": false
                     } ],
                     "columns":[
-                        {"data":"username"},
+                        // {"data":"username"},
                         {"data":"full_name"},
-                        // {"data":"role"},
+                        {"data":"role"},
                         {"data":"email"},
                         {"data":"action"}
                     ]
