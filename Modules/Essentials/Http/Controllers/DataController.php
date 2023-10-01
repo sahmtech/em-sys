@@ -413,9 +413,15 @@ class DataController extends Controller
                         )->order(9);
 
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-                            __('essentials::lang.organizational_structure'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+
+                        action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                                __('essentials::lang.organizational_structure'),
+                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+
+//                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+//                             __('essentials::lang.organizational_structure'),
+                         
+
                         )->order(10);
                     },
                     [
