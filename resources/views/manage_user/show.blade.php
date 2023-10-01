@@ -9,13 +9,13 @@
             <div class="col-md-4">
                 <h3>@lang( 'lang_v1.view_user' )</h3>
             </div>
-            <div class="col-md-4 col-xs-12 mt-15 pull-right">
+            {{-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
                 {!! Form::select('user_id', $users, $user->id , ['class' => 'form-control select2', 'id' => 'user_id']); !!}
-            </div>
+            </div> --}}
         </div>
         <br>
-        <div class="row">
-            <div class="col-md-3">
+        <div  class="row">
+            <div class="col-md-4">
                 <!-- Profile Image -->
                 <div class="box box-primary">
                     <div class="box-body box-profile">
@@ -70,7 +70,7 @@
                 </div>
                 <!-- /.box -->
             </div>
-            <div class="col-md-9">
+            {{-- <div class="col-md-9">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs nav-justified">
                         <li class="active">
@@ -140,7 +140,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </section>    
 @endsection
