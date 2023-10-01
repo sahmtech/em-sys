@@ -385,7 +385,7 @@ class DataController extends Controller
                         )->order(9);
 
                         $subMenu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+                        action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
                                 __('essentials::lang.organizational_structure')
                         )->order(10);
         /*            $subMenu->url(
