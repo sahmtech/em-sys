@@ -41,7 +41,7 @@ class AdminSidebarMenu
                             $sub->url(
                                 action([\App\Http\Controllers\ManageUserController::class, 'index']),
                                 __('user.users'),
-                                ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users']
+                                ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
                             );
                         }
                         // if (auth()->user()->can('roles.view')) {

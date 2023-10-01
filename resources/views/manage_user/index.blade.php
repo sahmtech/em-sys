@@ -23,7 +23,7 @@
                     <a class="btn btn-block btn-primary" 
                     href="{{ route('employeesIndex') }}" >
                  
-                    <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
+                    <i class="fa fa-plus"></i> @lang( 'user.create_new_user' )</a>
                  </div>
             @endslot
         @endcan
