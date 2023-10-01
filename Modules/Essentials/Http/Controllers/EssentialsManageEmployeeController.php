@@ -119,7 +119,7 @@ class EssentialsManageEmployeeController extends Controller
             $user_id = request()->session()->get('user.id');
 
             $users = User::where('business_id', $business_id)->where('user_type','employee')
-                        ->user()
+                        // ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
                             DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
@@ -137,11 +137,11 @@ class EssentialsManageEmployeeController extends Controller
                 ->addColumn(
                     'action',
                     '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                        <a href="{{route(\'editEmployee\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                         &nbsp;
                     @endcan
                     @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
+                    <a href="{{route(\'showEmployee\',[\'id\'=>$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
                     &nbsp;
                     @endcan
                     @can("user.delete")
@@ -198,8 +198,39 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        //    return $request;
+            if (! auth()->user()->can('user.create')) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            try {
+                if (! empty($request->input('dob'))) {
+                    $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+                }
+    
+                $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+    
+                $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+
+                $request['user_type']='employee';
+                $user = $this->moduleUtil->createUser($request);
+    
+                event(new UserCreatedOrModified($user, 'added'));
+    
+                $output = ['success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            } catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+                error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                $output = ['success' => 0,
+                    'msg' => __('messages.something_went_wrong'),
+                ];
+            }
+    
+            return redirect()->route('employees')->with('status', $output);
+        }
 
     /**
      * Show the specified resource.
@@ -208,7 +239,27 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function show($id)
     {
-        return view('essentials::show');
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $user = User::where('business_id', $business_id)
+                    ->with(['contactAccess'])
+                    ->find($id);
+
+        //Get user view part from modules
+        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
+
+        $users = User::forDropdown($business_id, false);
+
+        $activities = Activity::forSubject($user)
+           ->with(['causer', 'subject'])
+           ->latest()
+           ->get();
+
+        return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user', 'view_partials', 'users', 'activities'));
     }
 
     /**
@@ -246,7 +297,7 @@ class EssentialsManageEmployeeController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
-        return view('manage_user.edit')
+        return view('essentials::employee_affairs.employee_affairs.edit')
                 ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 

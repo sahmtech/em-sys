@@ -11,7 +11,7 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['route' => 'storeEmployee']) !!}
+{!! Form::open(['route' => 'storeEmployee','enctype' => 'multipart/form-data']) !!}
   <div class="row">
     <div class="col-md-12">
   @component('components.widget')
@@ -33,15 +33,17 @@
             {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
         </div>
       </div>
-      <div class="clearfix"></div>
+
+
+      {{-- <div class="clearfix"></div>
       <div class="col-md-4">
         <div class="form-group">
           {!! Form::label('email', __( 'business.email' ) . ':*') !!}
             {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
         </div>
-      </div>
+      </div> --}}
 
-      <div class="col-md-4">
+      {{-- <div class="col-md-4">
         <div class="form-group">
           <div class="checkbox">
             <br/>
@@ -51,10 +53,10 @@
             @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
           </div>
         </div>
-      </div>
+      </div> --}}
   @endcomponent
   </div>
-  <div class="col-md-12">
+  {{-- <div class="col-md-12">
     @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
       <div class="col-md-4">
         <div class="form-group">
@@ -129,9 +131,9 @@
           @endforeach
         </div>
     @endcomponent
-  </div>
+  </div> --}}
 
-  <div class="col-md-12">
+  {{-- <div class="col-md-12">
     @component('components.widget', ['title' => __('sale.sells')])
       <div class="col-md-4">
         <div class="form-group">
@@ -169,7 +171,7 @@
       </div>
 
     @endcomponent
-  </div>
+  </div> --}}
 
   </div>
     @include('user.edit_profile_form_part')

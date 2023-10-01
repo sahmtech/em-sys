@@ -16,9 +16,16 @@ use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-
+use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
+use Modules\Essentials\Entities\essentialsAllowanceType;
+use Modules\Essentials\Entities\EssentialsEntitlementType;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsEmployeeContract;
+use Modules\Essentials\Entities\EssentialsQualificationType;
+use Modules\Essentials\Entities\EssentialsBasicSalaryType;
+use Modules\Essentials\Entities\EssentialsAdmissionsToWork;
 
 class DataController extends Controller
 {
@@ -30,8 +37,10 @@ class DataController extends Controller
     public function parse_notification($notification)
     {
         $notification_data = [];
-        if ($notification->type ==
-            'Modules\Essentials\Notifications\DocumentShareNotification') {
+        if (
+            $notification->type ==
+            'Modules\Essentials\Notifications\DocumentShareNotification'
+        ) {
             $notifiction_data = DocumentShare::documentShareNotificationData($notification->data);
             $notification_data = [
                 'msg' => $notifiction_data['msg'],
@@ -40,8 +49,10 @@ class DataController extends Controller
                 'read_at' => $notification->read_at,
                 'created_at' => $notification->created_at->diffForHumans(),
             ];
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\NewMessageNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\NewMessageNotification'
+        ) {
             $data = $notification->data;
             $msg = __('essentials::lang.new_message_notification', ['sender' => $data['from']]);
 
@@ -52,13 +63,15 @@ class DataController extends Controller
                 'read_at' => $notification->read_at,
                 'created_at' => $notification->created_at->diffForHumans(),
             ];
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\NewLeaveNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\NewLeaveNotification'
+        ) {
             $data = $notification->data;
 
             $employee = User::find($data['applied_by']);
 
-            if (! empty($employee)) {
+            if (!empty($employee)) {
                 $msg = __('essentials::lang.new_leave_notification', ['employee' => $employee->user_full_name, 'ref_no' => $data['ref_no']]);
 
                 $notification_data = [
@@ -69,13 +82,15 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\LeaveStatusNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\LeaveStatusNotification'
+        ) {
             $data = $notification->data;
 
             $admin = User::find($data['changed_by']);
 
-            if (! empty($admin)) {
+            if (!empty($admin)) {
                 $msg = __('essentials::lang.status_change_notification', ['status' => $data['status'], 'ref_no' => $data['ref_no'], 'admin' => $admin->user_full_name]);
 
                 $notification_data = [
@@ -86,8 +101,10 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\PayrollNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\PayrollNotification'
+        ) {
             $data = $notification->data;
 
             $month = \Carbon::createFromFormat('m', $data['month'])->format('F');
@@ -96,11 +113,11 @@ class DataController extends Controller
 
             $created_by = User::find($data['created_by']);
 
-            if (! empty($created_by)) {
+            if (!empty($created_by)) {
                 if ($data['action'] == 'created') {
-                    $msg = __('essentials::lang.payroll_added_notification', ['month_year' => $month.'/'.$data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
+                    $msg = __('essentials::lang.payroll_added_notification', ['month_year' => $month . '/' . $data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
                 } elseif ($data['action'] == 'updated') {
-                    $msg = __('essentials::lang.payroll_updated_notification', ['month_year' => $month.'/'.$data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
+                    $msg = __('essentials::lang.payroll_updated_notification', ['month_year' => $month . '/' . $data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
                 }
 
                 $notification_data = [
@@ -111,13 +128,15 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\NewTaskNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\NewTaskNotification'
+        ) {
             $data = $notification->data;
 
             $assigned_by = User::find($data['assigned_by']);
 
-            if (! empty($assigned_by)) {
+            if (!empty($assigned_by)) {
                 $msg = __('essentials::lang.new_task_notification', ['assigned_by' => $assigned_by->user_full_name, 'task_id' => $data['task_id']]);
 
                 $notification_data = [
@@ -128,12 +147,14 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\NewTaskCommentNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\NewTaskCommentNotification'
+        ) {
             $data = $notification->data;
 
             $comment = EssentialsTodoComment::with(['task', 'added_by'])->find($data['comment_id']);
-            if (! empty($comment) && $comment->task) {
+            if (!empty($comment) && $comment->task) {
                 $msg = __('essentials::lang.new_task_comment_notification', ['added_by' => $comment->added_by->user_full_name, 'task_id' => $comment->task->task_id]);
 
                 $notification_data = [
@@ -144,13 +165,15 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\Essentials\Notifications\NewTaskDocumentNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\Essentials\Notifications\NewTaskDocumentNotification'
+        ) {
             $data = $notification->data;
 
             $uploaded_by = User::find($data['uploaded_by']);
 
-            if (! empty($uploaded_by)) {
+            if (!empty($uploaded_by)) {
                 $msg = __('essentials::lang.new_task_document_notification', ['uploaded_by' => $uploaded_by->user_full_name, 'task_id' => $data['task_id']]);
 
                 $notification_data = [
@@ -339,163 +362,61 @@ class DataController extends Controller
                         $subMenu->url(
                             route('employees'),
                             __('essentials::lang.employees_affairs'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='employees'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'employees'],
                         )->order(1);
                         $subMenu->url(
                             action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                              __('essentials::lang.facilities_management'),
-                              ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='getBusiness'],
-                             )->order(2);
+                            __('essentials::lang.facilities_management'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
+                        )->order(2);
                         $subMenu->url(
-                           
+
                             action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
                             __('essentials::lang.attendance'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='attendance'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                         )->order(3);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
                             __('essentials::lang.leave_requests'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='leave'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leave'],
                         )->order(4);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
                             __('essentials::lang.payroll'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='payroll'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
                         )->order(5);
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
                             __('essentials::lang.requests'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='holiday'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'holiday'],
                         )->order(6);
 
                         $subMenu->url(
                             action([\App\Http\Controllers\TaxonomyController::class, 'index']),
                             __('essentials::lang.loan'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='taxonomies'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
                         )->order(7);
 
                         $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']) ,
+                            action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
                             __('essentials::lang.system_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='settings'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(8);
 
                         $subMenu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
+                            action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
                             __('essentials::lang.employees_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='countries'],
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
                         )->order(9);
 
                         $subMenu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-                                __('essentials::lang.organizational_structure'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='settings'],
+                            action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+                            __('essentials::lang.organizational_structure'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(10);
-        /*            $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
-                            __('essentials::lang.hrm_manage')
-                        )->order(1);
-
-                        $subMenu->url(
-                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                            __('essentials::lang.facilities_management')
-                        )->order(2);
-
-                      
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
-                            __('essentials::lang.leave')
-                        )->order(3);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
-                            __('essentials::lang.attendance')
-                        )->order(5);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-                            __('essentials::lang.payroll')
-                        )->order(6);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
-                            __('essentials::lang.holiday')
-                        )->order(7);
-
-                        $subMenu->url(
-                            action([\App\Http\Controllers\TaxonomyController::class, 'index']),
-                            __('essentials::lang.departments')
-                        )->order(8);
-
-                        $subMenu->url(
-                            action([\App\Http\Controllers\TaxonomyController::class, 'index']) ,
-                            __('essentials::lang.designations')
-                        )->order(9);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
-                            __('essentials::lang.sales_target')
-                        )->order(10);
-
-                     $subMenu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-                            __('business.settings')
-                        )->order(11);
-
-        
-                }}">@lang('')</a></li>
-                
-                    @if(auth()->user()->can('edit_essentials_other_settings'))
-                    <li>
-                     
-                            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @lang('business.other_settings')
-                            </a>
-                            
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                               
-                                    <a class="dropdown-item" href="{{ route('countries') }}">
-                                        @lang('essentials::lang.countries')  
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('cities') }}">
-                                        @lang('essentials::lang.cities')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('bank_accounts') }}">
-                                        @lang('essentials::lang.bank_accounts')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('organizations') }}">
-                                        @lang('essentials::lang.organizations')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('job_titles') }}">
-                                        @lang('essentials::lang.job_titles')
-                                    </a>
-                                    
-                                    <a class="dropdown-item" href="{{ route('travel_categories') }}">
-                                        @lang('essentials::lang.travel_ticket_categories')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('basic_salary_types') }}">
-                                        @lang('essentials::lang.basic_salary_types')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('entitlements') }}">
-                                        @lang('essentials::lang.entitlements')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('allowances') }}">
-                                        @lang('essentials::lang.allowances')
-                                    </a>
-                                  
-                               
-                            </div>
-                        
-                    </li>
-                    @endif
-             
-
-        */
-                
                     },
                     [
                         'icon' => 'fa fas fa-users',
@@ -503,13 +424,13 @@ class DataController extends Controller
                         'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                     ]
                 )->order(87);
-             
+
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),
                     ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
                 )
-                ->order(87);
+                    ->order(87);
             });
         }
     }
@@ -558,26 +479,52 @@ class DataController extends Controller
             $designations = Category::forDropdown($business_id, 'hrm_designation');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
-            $user = ! empty($data['user']) ? $data['user'] : null;
+            $user = !empty($data['user']) ? $data['user'] : null;
 
             $allowance_deduction_ids = [];
-            if (! empty($user)) {
+            if (!empty($user)) {
                 $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-                                            ->pluck('allowance_deduction_id')
-                                            ->toArray();
+                    ->pluck('allowance_deduction_id')
+                    ->toArray();
             }
-
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-
-            return view('essentials::partials.user_form_part', compact('departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $allowance_types = essentialsAllowanceType::forDropdown();
+            $entitlement_type = EssentialsEntitlementType::forDropdown();
+            $travel_ticket_categorie = EssentialsTravelTicketCategorie::forDropdown();
+            $basic_salary_types = EssentialsBasicSalaryType::forDropdown();
+            return view('essentials::partials.user_form_part', compact('basic_salary_types', 'travel_ticket_categorie', 'entitlement_type', 'allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
-            $user = ! empty($data['user']) ? $data['user'] : null;
+            $user = !empty($data['user']) ? $data['user'] : null;
             $user_department = Category::find($user->essentials_department_id);
             $user_designstion = Category::find($user->essentials_designation_id);
             $work_location = BusinessLocation::find($user->location_id);
+            $qualification_type=EssentialsQualificationType::where('employee_id',$user->id)->first();
+            $contract= EssentialsEmployeeContract::where('employee_id',$user->id)->select([
+                'essentials_employee_contracts.id',
+                'essentials_employee_contracts.contract_number',
+                'essentials_employee_contracts.contract_start_date',
+                'essentials_employee_contracts.contract_end_date',
+                'essentials_employee_contracts.contract_duration',
+                'essentials_employee_contracts.probation_period',
+                'essentials_employee_contracts.is_active',
+                'essentials_employee_contracts.is_renewable',
+                'essentials_basic_salary_types.type AS basic_salary_type',
+                'essentials_travel_ticket_categories.name AS travel_ticket_category_name',
+                'essentials_allowance_types.name AS allowance_name',
+                'essentials_entitlement_types.name AS entitlement_name',
+                'essentials_employee_contracts.work_type',
+            ])
+            ->leftJoin('essentials_basic_salary_types', 'essentials_employee_contracts.basic_salary_type_id', '=', 'essentials_basic_salary_types.id')
+        
+            ->leftJoin('essentials_travel_ticket_categories', 'essentials_employee_contracts.travel_ticket_category_id', '=', 'essentials_travel_ticket_categories.id')
+            ->leftJoin('essentials_allowance_types', 'essentials_employee_contracts.allowances_id', '=', 'essentials_allowance_types.id')
+            
+            ->leftJoin('essentials_entitlement_types', 'essentials_employee_contracts.deductions_id', '=', 'essentials_entitlement_types.id')
+            ->get();     
 
-            return view('essentials::partials.user_details_part', compact('user_department', 'user_designstion', 'user', 'work_location'))
+            $admissions_to_work=DB::table('essentials_admissions_to_work')->where('employee_id',$user->id)->get();
+            return view('essentials::partials.user_details_part', compact('admissions_to_work','qualification_type','contract','user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
     }
@@ -589,7 +536,9 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
+
         if ($data['event'] = 'user_saved') {
+
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -597,17 +546,65 @@ class DataController extends Controller
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->location_id = request()->input('location_id');
+
             $user->save();
+
+            $qualificationType = new EssentialsQualificationType();
+            $qualificationType->name = request()->input('qualification_type');
+            $qualificationType->employee_id = $user->id;
+            $qualificationType->is_active = '1';
+
+            $qualificationType->save();
+
+            $contract = new EssentialsEmployeeContract();
+            $contract->contract_number = request()->input('contract_number');
+            $contract->contract_start_date = request()->input('contract_start_date');
+            $contract->contract_end_date = request()->input('contract_end_date');
+            $contract->contract_duration = request()->input('contract_duration');
+            $contract->probation_period = request()->input('probation_period');
+            $contract->is_renewable = request()->input('is_renewable');
+            $contract->travel_ticket_category_id = request()->input('travel_ticket_categorie');
+            $contract->allowances_id = request()->input('allowance_type');
+            $contract->deductions_id = request()->input('entitlement_type');
+            $contract->employee_id = $user->id;
+            $contract->salary = request()->input('essentials_salary');
+            $contract->basic_salary_type_id = request()->input('basic_salary_type');
+            $contract->work_type = request()->input('work_type');
+            $contract->is_active = '1';
+
+            $contract->save();
+
+            $admissionsToWork = new EssentialsAdmissionsToWork();
+            $admissionsToWork->employee_id = $user->id;
+            $admissionsToWork->dmissions_type = request()->input('dmissions_type');
+            $admissionsToWork->dmissions_status = request()->input('dmissions_status');
+            $admissionsToWork->details = request()->input('details');
+            $admissionsToWork->is_active = '1';
+
+            $admissionsToWork->save();
+
+            if (request()->hasFile('contract_file')) {
+                error_log('2222222222');
+                $file = request()->file('contract_file');
+                $filePath = $file->store('/employee_contracts');
+                $contract_file = new EssentialsEmployeeContractFile();
+                $contract_file->contract_id = $contract->id;
+                $contract_file->path = $filePath;
+                $contract_file->save();
+            } else {
+                error_log('3333333333333');
+            }
+
 
             $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
 
             //delete  existing pay component
             EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-                    ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
-                    ->delete();
+                ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
+                ->delete();
 
             //if pay component exist add to db
-            if (! empty(request()->input('pay_components'))) {
+            if (!empty(request()->input('pay_components'))) {
                 $pay_components = request()->input('pay_components');
                 foreach ($pay_components as $key => $pay_component) {
                     EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
@@ -616,13 +613,43 @@ class DataController extends Controller
         }
     }
 
+
+    // public function afterModelSaved($data)
+    // {
+    //     if ($data['event'] = 'user_saved') {
+    //         $user = $data['model_instance'];
+    //         $user->essentials_department_id = request()->input('essentials_department_id');
+    //         $user->essentials_designation_id = request()->input('essentials_designation_id');
+    //         $user->essentials_salary = request()->input('essentials_salary');
+    //         $user->essentials_pay_period = request()->input('essentials_pay_period');
+    //         $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
+    //         $user->location_id = request()->input('location_id');
+    //         $user->save();
+
+    //         $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
+
+    //         //delete  existing pay component
+    //         EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+    //                 ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
+    //                 ->delete();
+
+    //         //if pay component exist add to db
+    //         if (! empty(request()->input('pay_components'))) {
+    //             $pay_components = request()->input('pay_components');
+    //             foreach ($pay_components as $key => $pay_component) {
+    //                 EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
+    //             }
+    //         }
+    //     }
+    // }
+
     public function profitLossReportData($data)
     {
         $business_id = $data['business_id'];
-        $location_id = ! empty($data['location_id']) ? $data['location_id'] : null;
-        $start_date = ! empty($data['start_date']) ? $data['start_date'] : null;
-        $end_date = ! empty($data['end_date']) ? $data['end_date'] : null;
-        $user_id = ! empty($data['user_id']) ? $data['user_id'] : null;
+        $location_id = !empty($data['location_id']) ? $data['location_id'] : null;
+        $start_date = !empty($data['start_date']) ? $data['start_date'] : null;
+        $end_date = !empty($data['end_date']) ? $data['end_date'] : null;
+        $user_id = !empty($data['user_id']) ? $data['user_id'] : null;
 
         $total_payroll = $this->__getTotalPayroll(
             $business_id,
@@ -664,7 +691,7 @@ class DataController extends Controller
         $end_date = null,
         $location_id = null,
         $user_id = null
-        ) {
+    ) {
         $transactionUtil = new TransactionUtil();
 
         $transaction_totals = $transactionUtil->getTransactionTotals(
@@ -674,7 +701,7 @@ class DataController extends Controller
             $end_date,
             $location_id,
             $user_id
-            );
+        );
 
         return $transaction_totals['total_payroll'];
     }
@@ -690,15 +717,15 @@ class DataController extends Controller
         $events = [];
         if (in_array('todo', $data['events'])) {
             $todos = ToDo::where('business_id', $data['business_id'])
-                            ->with(['users'])
-                            ->where(function ($query) use ($data) {
-                                $query->where('created_by', $data['user_id'])
-                                    ->orWhereHas('users', function ($q) use ($data) {
-                                        $q->where('user_id', $data['user_id']);
-                                    });
-                            })
-                            ->whereBetween(DB::raw('date(date)'), [$data['start_date'], $data['end_date']])
-                            ->get();
+                ->with(['users'])
+                ->where(function ($query) use ($data) {
+                    $query->where('created_by', $data['user_id'])
+                        ->orWhereHas('users', function ($q) use ($data) {
+                            $q->where('user_id', $data['user_id']);
+                        });
+                })
+                ->whereBetween(DB::raw('date(date)'), [$data['start_date'], $data['end_date']])
+                ->get();
 
             foreach ($todos as $todo) {
                 $events[] = [
@@ -717,7 +744,7 @@ class DataController extends Controller
         if (in_array('holiday', $data['events'])) {
             $holidays_query = EssentialsHoliday::where('business_id', $data['business_id']);
 
-            if (! empty($data['user_id'])) {
+            if (!empty($data['user_id'])) {
                 $user = User::where('business_id', $data['business_id'])->find($data['user_id']);
                 $permitted_locations = $user->permitted_locations();
                 if ($permitted_locations != 'all') {
@@ -728,14 +755,17 @@ class DataController extends Controller
                 }
             }
 
-            if (! empty($data['location_id'])) {
+            if (!empty($data['location_id'])) {
                 $holidays_query->where('location_id', $data['location_id']);
             }
 
-            $holidays = $holidays_query->whereDate('start_date', '>=',
-                            $data['start_date'])
-                            ->whereDate('start_date', '<=', $data['end_date'])
-                            ->get();
+            $holidays = $holidays_query->whereDate(
+                'start_date',
+                '>=',
+                $data['start_date']
+            )
+                ->whereDate('start_date', '<=', $data['end_date'])
+                ->get();
 
             foreach ($holidays as $holiday) {
                 $events[] = [
@@ -753,27 +783,27 @@ class DataController extends Controller
 
         if (in_array('leaves', $data['events'])) {
             $leaves_query = EssentialsLeave::where('essentials_leaves.business_id', $data['business_id'])
-                        ->join('users as u', 'u.id', '=', 'essentials_leaves.user_id')
-                        ->join('essentials_leave_types as lt', 'lt.id', '=', 'essentials_leaves.essentials_leave_type_id')
-                        ->select([
-                            'essentials_leaves.id',
-                            DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                            'lt.leave_type',
-                            'start_date',
-                            'end_date',
-                        ]);
+                ->join('users as u', 'u.id', '=', 'essentials_leaves.user_id')
+                ->join('essentials_leave_types as lt', 'lt.id', '=', 'essentials_leaves.essentials_leave_type_id')
+                ->select([
+                    'essentials_leaves.id',
+                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    'lt.leave_type',
+                    'start_date',
+                    'end_date',
+                ]);
 
-            if (! empty($data['user_id'])) {
+            if (!empty($data['user_id'])) {
                 $leaves_query->where('essentials_leaves.user_id', $data['user_id']);
             }
 
             $leaves = $leaves_query->whereDate('essentials_leaves.start_date', '>=', $data['start_date'])
-                            ->whereDate('essentials_leaves.start_date', '<=', $data['end_date'])
-                            ->get();
+                ->whereDate('essentials_leaves.start_date', '<=', $data['end_date'])
+                ->get();
             foreach ($leaves as $leave) {
                 $events[] = [
                     'title' => $leave->user,
-                    'title_html' => $leave->user.'<br>'.$leave->leave_type,
+                    'title_html' => $leave->user . '<br>' . $leave->leave_type,
                     'start' => $leave->start_date,
                     'end' => $leave->end_date,
                     'url' => action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
@@ -831,7 +861,7 @@ class DataController extends Controller
         $additional_js = '';
         $additional_css = '';
         $additional_html =
-        '<div class="modal fade" id="task_modal" tabindex="-1" role="dialog" 
+            '<div class="modal fade" id="task_modal" tabindex="-1" role="dialog" 
         aria-labelledby="gridSystemModalLabel">
         </div>';
         $additional_views = ['essentials::todo.todo_javascript'];
@@ -853,10 +883,10 @@ class DataController extends Controller
     public function getNonDeletablePayComponents($business_id, $user_id)
     {
         $ads = EssentialsAllowanceAndDeduction::join('essentials_user_allowance_and_deductions as euad', 'euad.allowance_deduction_id', '=', 'essentials_allowances_and_deductions.id')
-                ->whereNotNull('essentials_allowances_and_deductions.applicable_date')
-                ->where('business_id', $business_id)
-                ->where('euad.user_id', $user_id)
-                ->get();
+            ->whereNotNull('essentials_allowances_and_deductions.applicable_date')
+            ->where('business_id', $business_id)
+            ->where('euad.user_id', $user_id)
+            ->get();
 
         $ids = $ads->pluck('id')->toArray();
 
@@ -872,9 +902,9 @@ class DataController extends Controller
     public function getTodosDropdown($business_id)
     {
         $todos = ToDo::where('business_id', $business_id)
-                    ->select(DB::raw("CONCAT(task, ' (', task_id , ')') AS task_name"), 'id')
-                    ->pluck('task_name', 'id')
-                    ->toArray();
+            ->select(DB::raw("CONCAT(task, ' (', task_id , ')') AS task_name"), 'id')
+            ->pluck('task_name', 'id')
+            ->toArray();
 
         return $todos;
     }
@@ -888,9 +918,9 @@ class DataController extends Controller
     public function getAssignedTaskForUser($user_id)
     {
         $task_ids = DB::table('essentials_todos_users')
-                    ->where('user_id', $user_id)
-                    ->pluck('todo_id')
-                    ->toArray();
+            ->where('user_id', $user_id)
+            ->pluck('todo_id')
+            ->toArray();
 
         return $task_ids;
     }

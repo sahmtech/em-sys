@@ -80,7 +80,7 @@
         </div>
       </div>
 
-      <div class="col-md-4">
+      {{-- <div class="col-md-4">
         <div class="form-group">
           <div class="checkbox">
          
@@ -90,10 +90,10 @@
             </label>
           </div>
        </div>
-      </div>
+      </div> --}}
   @endcomponent
   </div>
-  {{-- <div class="col-md-12">
+  <div class="col-md-12">
     @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
       <div class="col-md-4">
         <div class="form-group">
@@ -168,7 +168,7 @@
           @endforeach
         </div>
     @endcomponent
-  </div> --}}
+  </div>
 
   {{-- <div class="col-md-12">
     @component('components.widget', ['title' => __('sale.sells')])

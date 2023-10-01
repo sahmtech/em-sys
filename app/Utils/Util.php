@@ -1569,7 +1569,7 @@ class Util
         $user_details['business_id'] = $business_id;
 
         //Check if subscribed or not, then check for users quota
-        if ($user_details['user_type'] == 'user') {
+        if ($user_details['user_type'] == 'user' || $user_details['user_type'] == 'employee') {
             $moduleUtil = new \App\Utils\ModuleUtil;
             if (!$moduleUtil->isSubscribed($business_id)) {
                 return $moduleUtil->expiredResponse();
@@ -1598,7 +1598,7 @@ class Util
                 $user_details['username'] = $this->generateReferenceNumber('username', $ref_count, $business_id);
             }
 
-            if ($user_details['user_type'] == 'user') {
+            if ($user_details['user_type'] == 'user' || $user_details['user_type'] == 'employee') {
                 $username_ext = $this->getUsernameExtension();
                 if (!empty($username_ext)) {
                     $user_details['username'] .= $username_ext;
@@ -1609,7 +1609,7 @@ class Util
         //Create the user
         $user = User::create($user_details);
 
-        if ($user_details['user_type'] == 'user') {
+        if ($user_details['user_type'] == 'user' || $user_details['user_type'] == 'employee') {
             $role = null;
             if ($request->input('role')) {
                 $role = Role::findOrFail($request->input('role'));
