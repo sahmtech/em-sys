@@ -19,7 +19,12 @@ use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
-
+use Modules\Essentials\Entities\essentialsAllowanceType;
+use Modules\Essentials\Entities\EssentialsEntitlementType;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsEmployeeContract;
+use Modules\Essentials\Entities\EssentialsQualificationType;
+use Modules\Essentials\Entities\EssentialsBasicSalaryType;
 class DataController extends Controller
 {
     /**
@@ -394,107 +399,6 @@ class DataController extends Controller
                                 __('essentials::lang.organizational_structure'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1)=='hrm' && request()->segment(2)=='settings'],
                         )->order(10);
-        /*            $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard']),
-                            __('essentials::lang.hrm_manage')
-                        )->order(1);
-
-                        $subMenu->url(
-                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                            __('essentials::lang.facilities_management')
-                        )->order(2);
-
-                      
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
-                            __('essentials::lang.leave')
-                        )->order(3);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
-                            __('essentials::lang.attendance')
-                        )->order(5);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-                            __('essentials::lang.payroll')
-                        )->order(6);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
-                            __('essentials::lang.holiday')
-                        )->order(7);
-
-                        $subMenu->url(
-                            action([\App\Http\Controllers\TaxonomyController::class, 'index']),
-                            __('essentials::lang.departments')
-                        )->order(8);
-
-                        $subMenu->url(
-                            action([\App\Http\Controllers\TaxonomyController::class, 'index']) ,
-                            __('essentials::lang.designations')
-                        )->order(9);
-
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
-                            __('essentials::lang.sales_target')
-                        )->order(10);
-
-                     $subMenu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-                            __('business.settings')
-                        )->order(11);
-
-        
-                }}">@lang('')</a></li>
-                
-                    @if(auth()->user()->can('edit_essentials_other_settings'))
-                    <li>
-                     
-                            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @lang('business.other_settings')
-                            </a>
-                            
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                               
-                                    <a class="dropdown-item" href="{{ route('countries') }}">
-                                        @lang('essentials::lang.countries')  
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('cities') }}">
-                                        @lang('essentials::lang.cities')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('bank_accounts') }}">
-                                        @lang('essentials::lang.bank_accounts')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('organizations') }}">
-                                        @lang('essentials::lang.organizations')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('job_titles') }}">
-                                        @lang('essentials::lang.job_titles')
-                                    </a>
-                                    
-                                    <a class="dropdown-item" href="{{ route('travel_categories') }}">
-                                        @lang('essentials::lang.travel_ticket_categories')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('basic_salary_types') }}">
-                                        @lang('essentials::lang.basic_salary_types')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('entitlements') }}">
-                                        @lang('essentials::lang.entitlements')
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('allowances') }}">
-                                        @lang('essentials::lang.allowances')
-                                    </a>
-                                  
-                               
-                            </div>
-                        
-                    </li>
-                    @endif
-             
-
-        */
                 
                     },
                     [
@@ -566,10 +470,12 @@ class DataController extends Controller
                                             ->pluck('allowance_deduction_id')
                                             ->toArray();
             }
-
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-
-            return view('essentials::partials.user_form_part', compact('departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $allowance_types=essentialsAllowanceType::forDropdown();
+            $entitlement_type=EssentialsEntitlementType::forDropdown();
+            $travel_ticket_categorie=EssentialsTravelTicketCategorie::forDropdown();
+            $basic_salary_types=EssentialsBasicSalaryType::forDropdown();
+            return view('essentials::partials.user_form_part', compact('basic_salary_types','travel_ticket_categorie','entitlement_type','allowance_types','departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = ! empty($data['user']) ? $data['user'] : null;
@@ -589,7 +495,9 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
+        error_log('1111111111');
         if ($data['event'] = 'user_saved') {
+            
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -597,8 +505,40 @@ class DataController extends Controller
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->location_id = request()->input('location_id');
+
             $user->save();
 
+            $qualificationType = new EssentialsQualificationType();
+            $qualificationType->name = request()->input('qualification_type');
+            $qualificationType->employee_id = $user->id;
+            $qualificationType->is_active = '1';
+
+            $qualificationType->save();
+
+            $contract = new EssentialsEmployeeContract();
+            $contract->contract_number = request()->input('contract_number');
+            $contract->contract_start_date = request()->input('contract_start_date');
+            $contract->contract_end_date = request()->input('contract_end_date');
+            $contract->contract_duration = request()->input('contract_duration');
+            $contract->probation_period = request()->input('probation_period');
+            $contract->is_renewable = request()->input('is_renewable');
+            $contract->travel_ticket_category_id = request()->input('travel_ticket_categorie');
+            $contract->allowances_id = request()->input('allowance_type');
+            $contract->deductions_id = request()->input('entitlement_type');
+            $contract->employee_id = $user->id;
+            $contract->salary = request()->input('essentials_salary');
+            // $contract->basic_salary_type_id= request()->input('basic_salary_type');
+            $contract->basic_salary_type_id= '3';
+         //   $contract->work_type_id= '1';
+
+
+            $contract->is_active = '1';
+            
+            $contract->save();
+
+
+            
+           
             $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
 
             //delete  existing pay component
@@ -615,6 +555,36 @@ class DataController extends Controller
             }
         }
     }
+
+
+    // public function afterModelSaved($data)
+    // {
+    //     if ($data['event'] = 'user_saved') {
+    //         $user = $data['model_instance'];
+    //         $user->essentials_department_id = request()->input('essentials_department_id');
+    //         $user->essentials_designation_id = request()->input('essentials_designation_id');
+    //         $user->essentials_salary = request()->input('essentials_salary');
+    //         $user->essentials_pay_period = request()->input('essentials_pay_period');
+    //         $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
+    //         $user->location_id = request()->input('location_id');
+    //         $user->save();
+
+    //         $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
+
+    //         //delete  existing pay component
+    //         EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+    //                 ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
+    //                 ->delete();
+
+    //         //if pay component exist add to db
+    //         if (! empty(request()->input('pay_components'))) {
+    //             $pay_components = request()->input('pay_components');
+    //             foreach ($pay_components as $key => $pay_component) {
+    //                 EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
+    //             }
+    //         }
+    //     }
+    // }
 
     public function profitLossReportData($data)
     {

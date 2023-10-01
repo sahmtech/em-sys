@@ -32,4 +32,5 @@
 'activate' => 'تنشيط',
 'deactivate' => 'إلغاء تنشيط',
 'employe' => 'توظيف',
+'create_user'=>'إنشاء مستخدم',
 ];

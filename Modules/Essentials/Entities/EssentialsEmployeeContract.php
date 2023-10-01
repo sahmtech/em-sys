@@ -4,15 +4,15 @@ namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EssentialsEntitlementType extends Model
+class EssentialsEmployeeContract extends Model
 {
    
     protected $guarded = ['id'];
-
     public static function forDropdown()
     {
-        $entitlementTypes = EssentialsEntitlementType::all()->pluck('name','id');
+        $employeeContract = EssentialsEmployeeContract::all()->pluck('name','id');
 
-        return $entitlementTypes;
+        return $employeeContract;
     }
+   
 }

@@ -173,8 +173,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/employees', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])->name('employees');
         Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
-        Route::get('/usersIndex', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'usersIndex'])->name('usersIndex');
-        Route::get('/employ/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'employ'])->name('employ');
         Route::get('/createEmployee', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'create'])->name('createEmployee');
         Route::post('/storeEmployee', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'store'])->name('storeEmployee');
     });

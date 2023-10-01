@@ -119,7 +119,7 @@ class EssentialsManageEmployeeController extends Controller
             $user_id = request()->session()->get('user.id');
 
             $users = User::where('business_id', $business_id)->where('user_type','employee')
-                        ->user()
+                        // ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
                             DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
@@ -198,8 +198,39 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        //    return $request;
+            if (! auth()->user()->can('user.create')) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            try {
+                if (! empty($request->input('dob'))) {
+                    $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+                }
+    
+                $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+    
+                $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+
+                $request['user_type']='employee';
+                $user = $this->moduleUtil->createUser($request);
+    
+                event(new UserCreatedOrModified($user, 'added'));
+    
+                $output = ['success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            } catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+                error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                $output = ['success' => 0,
+                    'msg' => __('messages.something_went_wrong'),
+                ];
+            }
+    
+            return redirect()->route('employees')->with('status', $output);
+        }
 
     /**
      * Show the specified resource.

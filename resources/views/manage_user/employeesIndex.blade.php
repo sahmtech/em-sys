@@ -1,12 +1,11 @@
 @extends('layouts.app')
-@section('title', __( 'essentials::lang.employees' ))
+@section('title', __( 'user.users' ))
 
 @section('content')
-@include('essentials::layouts.nav_employee_affairs')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>
-        @lang( 'essentials::lang.manage_employees' )
+    <h1>@lang( 'user.users' )
+        <small>@lang( 'user.manage_users' )</small>
     </h1>
     <!-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
@@ -21,19 +20,19 @@
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary" 
-                    href="{{ route('createEmployee') }}" >
-                    <i class="fa fa-plus"></i> @lang( 'essentials::lang.add_new_employee' )</a>
-                 </div>
+                    href="{{action([\App\Http\Controllers\ManageUserController::class, 'create'])}}" >
+                    <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
+                 </div> 
             @endslot
         @endcan
         @can('user.view')
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="users_table">
+                <table class="table table-bordered table-striped" id="employees">
                     <thead>
                         <tr>
                             <th>@lang( 'business.username' )</th>
                             <th>@lang( 'user.name' )</th>
-                            {{-- <th>@lang( 'user.role' )</th> --}}
+                            <th>@lang( 'user.role' )</th>
                             <th>@lang( 'business.email' )</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>
@@ -54,19 +53,19 @@
 <script type="text/javascript">
     //Roles table
     $(document).ready( function(){
-        var users_table = $('#users_table').DataTable({
+        var users_table = $('#employees').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/hrm/usersIndex',
+                    ajax: '/hrm/employees',
                     columnDefs: [ {
-                        "targets": [3],
+                        "targets": [4],
                         "orderable": false,
                         "searchable": false
                     } ],
                     "columns":[
                         {"data":"username"},
                         {"data":"full_name"},
-                        // {"data":"role"},
+                        {"data":"role"},
                         {"data":"email"},
                         {"data":"action"}
                     ]
