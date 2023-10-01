@@ -473,6 +473,7 @@ return[
 'full_time' =>'دوام كامل',
 'part_time' =>'دوام جزئي',
 'work_type' =>'نمط العمل ',
+'edit_employee' =>'تعديل موظف',
 
 
 

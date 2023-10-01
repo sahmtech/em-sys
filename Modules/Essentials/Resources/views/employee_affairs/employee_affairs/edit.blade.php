@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', __( 'user.edit_user' ))
+@section('title', __( 'essentials::lang.edit_employee' ))
 
 @section('content')
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>@lang( 'user.edit_user' )</h1>
+    <h1>@lang( 'essentials::lang.edit_employee' )</h1>
 </section>
 
 <!-- Main content -->
@@ -33,7 +33,7 @@
                     {!! Form::text('last_name', $user->last_name, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
                 </div>
             </div>
-            <div class="clearfix"></div>
+            {{-- <div class="clearfix"></div>
             <div class="col-md-4">
                 <div class="form-group">
                   {!! Form::label('email', __( 'business.email' ) . ':*') !!}
@@ -51,10 +51,10 @@
                     @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
                   </div>
                 </div>
-            </div>
+            </div> --}}
         @endcomponent
         </div>
-        <div class="col-md-12">
+        {{-- <div class="col-md-12">
         @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
             <div class="col-md-4">
                 <div class="form-group">
@@ -133,9 +133,9 @@
               @endforeach
             </div>
         @endcomponent
-        </div>
+        </div> --}}
 
-        <div class="col-md-12">
+        {{-- <div class="col-md-12">
             @component('components.widget', ['title' => __('sale.sells')])
 
             <div class="col-md-4">
@@ -175,7 +175,7 @@
                 </div>
             </div>
             @endcomponent
-        </div>
+        </div> --}}
     </div>
     @include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
 
