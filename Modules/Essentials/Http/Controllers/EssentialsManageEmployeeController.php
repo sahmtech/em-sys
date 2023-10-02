@@ -137,11 +137,11 @@ class EssentialsManageEmployeeController extends Controller
                 ->addColumn(
                     'action',
                     '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                        <a href="{{route(\'editEmployee\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                         &nbsp;
                     @endcan
                     @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
+                    <a href="{{route(\'showEmployee\',[\'id\'=>$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
                     &nbsp;
                     @endcan
                     @can("user.delete")
@@ -239,7 +239,27 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function show($id)
     {
-        return view('essentials::show');
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $user = User::where('business_id', $business_id)
+                    ->with(['contactAccess'])
+                    ->find($id);
+
+        //Get user view part from modules
+        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
+
+        $users = User::forDropdown($business_id, false);
+
+        $activities = Activity::forSubject($user)
+           ->with(['causer', 'subject'])
+           ->latest()
+           ->get();
+
+        return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user', 'view_partials', 'users', 'activities'));
     }
 
     /**
@@ -277,7 +297,7 @@ class EssentialsManageEmployeeController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
-        return view('manage_user.edit')
+        return view('essentials::employee_affairs.employee_affairs.edit')
                 ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 

@@ -9,6 +9,12 @@
 <!-- app css -->
 <link rel="stylesheet" href="{{ asset('css/app.css?v='.$asset_v) }}">
 
+<link rel="stylesheet" href="{{ asset('css/treeview.css?v='.$asset_v) }}">
+
+<script src="{{ asset('js/app.js') }}" defer></script>
+
+
+
 @if(isset($pos_layout) && $pos_layout)
 	<style type="text/css">
 		.content{

@@ -473,6 +473,9 @@ return[
 'full_time' =>'دوام كامل',
 'part_time' =>'دوام جزئي',
 'work_type' =>'نمط العمل ',
+'edit_employee' =>'تعديل موظف',
+'view_employee' =>'عرض موظف',
+'employee_info' =>'معلومات الموظف',
 
 
 
