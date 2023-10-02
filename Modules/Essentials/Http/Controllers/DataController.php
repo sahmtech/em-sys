@@ -554,14 +554,16 @@ class DataController extends Controller
             $user->location_id = request()->input('location_id');
 
             $user->save();
-
+            if (request()->input('qualification_type')!=null) {
             $qualificationType = new EssentialsQualificationType();
             $qualificationType->name = request()->input('qualification_type');
             $qualificationType->employee_id = $user->id;
             $qualificationType->is_active = '1';
-
             $qualificationType->save();
+            }
+           
 
+            if (request()->input('contract_number')!=null) {
             $contract = new EssentialsEmployeeContract();
             $contract->contract_number = request()->input('contract_number');
             $contract->contract_start_date = request()->input('contract_start_date');
@@ -580,6 +582,10 @@ class DataController extends Controller
 
             $contract->save();
 
+            }
+           
+
+
             $admissionsToWork = new EssentialsAdmissionsToWork();
             $admissionsToWork->employee_id = $user->id;
             $admissionsToWork->dmissions_type = request()->input('dmissions_type');
@@ -589,8 +595,9 @@ class DataController extends Controller
 
             $admissionsToWork->save();
 
+
             if (request()->hasFile('contract_file')) {
-                error_log('2222222222');
+   
                 $file = request()->file('contract_file');
                 $filePath = $file->store('/employee_contracts');
                 $contract_file = new EssentialsEmployeeContractFile();
@@ -600,7 +607,6 @@ class DataController extends Controller
             } else {
                 error_log('3333333333333');
             }
-
 
             $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
 
