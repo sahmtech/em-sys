@@ -64,10 +64,11 @@
                             @else
                             <p>No data available.</p>
                                 <button id="addNodeButton" class="btn btn-primary">Add Node</button>
-                @endif
+                             @endif
 
                            
-
+                             <input type="text" id="edit-node-text" style="display: none;">
+                              <button id="edit-node-button" style="display: none;">edit</button>
                      </div>
 	  				</div>
 	  				
@@ -77,13 +78,13 @@
 	  		</div>
         </div>
         <div class="context-menu-trigger"></div>
-
         <div id="context-menu" class="context-menu" style="display: none;">
     <ul>
         <li id="edit">Edit</li>
         <li id="delete">Delete</li>
-        <li id="add">add</li>
+        <li id="add">Add</li>
     </ul>
+   
 </div>
 
 
@@ -151,15 +152,29 @@
                 top: event.pageY
             });
         }
+    
+
+// Event listener for changes in the input field
+     
 
         // Attach right-click event to context menu trigger
         $('.tree-node').on('contextmenu', function(event) {
-    var nodeId = $(this).data('node-id');
- 
-    console.log('Node ID:', nodeId); 
-    // Log the node ID
-    showContextMenu(event, nodeId);
-    return false;
+                var nodeId = $(this).data('node-id');
+        
+     
+        console.log('Node ID:', nodeId); 
+        // Log the node ID
+        showContextMenu(event, nodeId);
+        return false;
+});
+$('.tree-node-child').on('contextmenu', function(event) {
+                var nodeId = $(this).data('node-id');
+        
+     
+        console.log('Node ID:', nodeId); 
+        // Log the node ID
+        showContextMenu(event, nodeId);
+        return false;
 });
 
         // Close the context menu when clicking outside
@@ -168,28 +183,59 @@
         });
 
        // Attach click event to Edit context menu item
-$('#edit').on('click', function() {
+       $('#edit').on('click', function() {
     var nodeId = $('#context-menu').attr('data-node-id');
-    var inputField = $(`#node_${nodeId} .edit-input`);
-    
-    // Show the input field for editing
+    var inputField = $('#edit-node-text');
+    var editButton = $('#edit-node-button');
+    var nodeContent;
+
+if ($(`#node_${nodeId}`).hasClass('tree-node')) {
+    // This is a parent node
+    nodeContent = $(`#node_${nodeId} .node-content`).text();
+} else if ($(`#node_${nodeId}`).hasClass('tree-node-child')) {
+    // This is a child node
+    nodeContent = $(`#node_${nodeId} .node-content-child`).text();
+}
+   console.log(nodeContent);
+    inputField.val(nodeContent);  // Set the node text in the input field
+
+    // Show the input field and edit button for editing
     inputField.show();
+    editButton.show();
     inputField.focus();
-    
-    // Hide the node content (text) while editing
-    $(`#node_${nodeId} .node-content`).hide();
-    
-    // Bind a keyup event to the input field to save the edited text on Enter key
-    inputField.keyup(function(event) {
-        if (event.keyCode === 13) { // Enter key
-            var newText = inputField.val();
-            saveEditedNode(nodeId, newText);
+
+    // Bind a click event to the edit button to save the edited text
+    editButton.on('click', function() {
+        var newText = inputField.val();
+        saveEditedNode(nodeId, newText);
+    });
+// Bind an event to the "Escape" key to cancel the edit
+$(document).keyup(function(e) {
+        if (e.key === "Escape") {
+            cancelEdit(nodeId, nodeContent);
         }
     });
-    
     // Hide the context menu
     $('#context-menu').css('display', 'none');
 });
+// Function to cancel the edit
+function cancelEdit(nodeId, originalText) {
+    var inputField = $('#edit-node-text');
+    var editButton = $('#edit-node-button');
+
+    inputField.val(originalText);  // Reset the input field to the original text
+
+    // Hide the input field and edit button
+    inputField.hide();
+    editButton.hide();
+
+    // Show the node content again
+    if ($(`#node_${nodeId}`).hasClass('tree-node')) {
+        $(`#node_${nodeId} .node-content`).show();
+    } else if ($(`#node_${nodeId}`).hasClass('tree-node-child')) {
+        $(`#node_${nodeId} .child`).show();
+    }
+}
 
 
 $('#delete').on('click', function() {
@@ -205,26 +251,28 @@ $('#delete').on('click', function() {
         node_id: nodeId,
         new_text: newText
     };
-    
+
     $.ajax({
-        url: '/hrm/treeview/update/' + nodeId,  // Replace with your actual URL
+        url: '/hrm/treeview/update/' + nodeId , // Replace with your actual URL and route
         type: 'POST',
         data: postData,
         success: function(response) {
-            // Handle success response
             console.log('Edit action successful for node with ID:', nodeId);
             console.log('Response:', response);
 
-            // Update the node content with the edited text
             $(`#node_${nodeId} .node-content`).text(newText);
-            
-            // Hide the input field and show the node content again
-            $(`#node_${nodeId} .edit-input`).hide();
+
+            // Hide the input field and edit button
+            $('#edit-node-text').hide();
+            $('#edit-node-button').hide();
+
+            // Show the node content again
             $(`#node_${nodeId} .node-content`).show();
+
+            // Reload the page to reflect the updates
             location.reload();
         },
         error: function(xhr, status, error) {
-            // Handle error
             console.error('Error editing node:', error);
         }
     });
