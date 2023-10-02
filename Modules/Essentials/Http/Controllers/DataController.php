@@ -585,7 +585,7 @@ class DataController extends Controller
             }
            
 
-
+            if (request()->input('dmissions_type')!=null) {
             $admissionsToWork = new EssentialsAdmissionsToWork();
             $admissionsToWork->employee_id = $user->id;
             $admissionsToWork->dmissions_type = request()->input('dmissions_type');
@@ -594,20 +594,16 @@ class DataController extends Controller
             $admissionsToWork->is_active = '1';
 
             $admissionsToWork->save();
-
+            }
 
             if (request()->hasFile('contract_file')) {
-   
                 $file = request()->file('contract_file');
                 $filePath = $file->store('/employee_contracts');
                 $contract_file = new EssentialsEmployeeContractFile();
                 $contract_file->contract_id = $contract->id;
                 $contract_file->path = $filePath;
                 $contract_file->save();
-            } else {
-                error_log('3333333333333');
-            }
-
+            } 
             $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
 
             //delete  existing pay component
