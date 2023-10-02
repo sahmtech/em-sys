@@ -27,6 +27,9 @@ class ManageUserController extends Controller
         $this->moduleUtil = $moduleUtil;
     }
 
+
+
+
     /**
      * Display a listing of the resource.
      *
@@ -42,8 +45,80 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)
+            $users = User::where('business_id', $business_id)->where('user_type','user')
                         ->user()
+                        ->where('is_cmmsn_agnt', 0)
+                        ->select(['id', 'username',
+                            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
+
+            return Datatables::of($users)
+                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
+                // ->addColumn(
+                //     'role',
+                //     function ($row) {
+                //         $role_name = $this->moduleUtil->getUserRoleName($row->id);
+
+                //         return $role_name;
+                //     }
+                // )
+                // ->addColumn(
+                //     'action',
+                //     '@can("user.update")
+                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                //         &nbsp;
+                //     @endcan
+                //     @can("user.view")
+                //      <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
+                //      &nbsp;
+                //      @endcan
+                //     @can("user.delete")
+                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                //     @endcan'
+                // )
+                ->addColumn(
+                    'action',
+                    '@can("user.update")
+                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                        &nbsp;
+                    @endcan
+                
+                    @can("user.delete")
+                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                    @endcan'
+                )
+                // ->addColumn(
+                //     'action',
+                //     '@can("user.update")
+                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                //         &nbsp;
+                //     @endcan
+                //     @can("user.delete")
+                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
+                //     @endcan'
+                // )
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action', 'username'])
+                ->make(true);
+        }
+
+        return view('manage_user.index');
+    }
+
+    public function employeesIndex()
+    {
+        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (request()->ajax()) {
+            $business_id = request()->session()->get('user.business_id');
+            $user_id = request()->session()->get('user.id');
+
+            $users = User::where('business_id', $business_id)->where('user_type','employee')
+                       // ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
                             DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
@@ -61,15 +136,8 @@ class ManageUserController extends Controller
                 ->addColumn(
                     'action',
                     '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                        <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
                         &nbsp;
-                    @endcan
-                    @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                    &nbsp;
-                    @endcan
-                    @can("user.delete")
-                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                     @endcan'
                 )
                 ->filterColumn('full_name', function ($query, $keyword) {
@@ -79,10 +147,12 @@ class ManageUserController extends Controller
                 ->rawColumns(['action', 'username'])
                 ->make(true);
         }
+        return view('manage_user.employeesIndex');
 
-        return view('manage_user.index');
     }
 
+
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -124,6 +194,7 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
+    //    return $request;
         if (! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -147,6 +218,7 @@ class ManageUserController extends Controller
         } catch (\Exception $e) {
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
+            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
             $output = ['success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
@@ -185,6 +257,41 @@ class ManageUserController extends Controller
 
         return view('manage_user.show')->with(compact('user', 'view_partials', 'users', 'activities'));
     }
+
+    public function makeUser($id)
+    {
+        if (! auth()->user()->can('user.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+        $user = User::where('business_id', $business_id)
+                    ->with(['contactAccess'])
+                    ->findOrFail($id);
+
+        $roles = $this->getRolesArray($business_id);
+
+        $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
+
+        if ($user->status == 'active') {
+            $is_checked_checkbox = true;
+        } else {
+            $is_checked_checkbox = false;
+        }
+
+        $locations = BusinessLocation::where('business_id', $business_id)
+                                    ->get();
+
+        $permitted_locations = $user->permitted_locations();
+        $username_ext = $this->moduleUtil->getUsernameExtension();
+
+        //Get user form part from modules
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
+
+        return view('manage_user.make_user')
+                ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+    }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -429,7 +536,6 @@ class ManageUserController extends Controller
             }
             $roles[$key] = str_replace('#'.$business_id, '', $value);
         }
-
         return $roles;
     }
 

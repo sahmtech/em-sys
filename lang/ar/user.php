@@ -30,4 +30,8 @@
 "user_update_success" => "تم تحديث المستخدم بنجاح",
 "user_delete_success" => "تم حذف المستخدم بنجاح",
 "View export to buttons (csv/excel/print/pdf) on tables" => "عرض التصدير إلى الأزرار (csv / excel / print / pdf) على الجداول",
+'display_employees'=>'عرض الموظفين',
+'employee_name'=>'اسم الموظف',
+'make_user_account'=>'إنشاء حساب مستخدم',
+'create_new_user'=>'إضافة مستخدم جديد',
 ];

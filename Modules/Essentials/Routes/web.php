@@ -178,5 +178,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('treeview/add/', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'store'])->name('hrm.treeview.add');
 
 
+        Route::get('/employees', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])->name('employees');
+        Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
+        Route::get('/createEmployee', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'create'])->name('createEmployee');
+        Route::post('/storeEmployee', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'store'])->name('storeEmployee');
+        Route::get('/editEmployee/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'edit'])->name('editEmployee');
+        Route::get('/employees/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'show'])->name('showEmployee');
     });
 });

@@ -479,6 +479,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::put('update-sales-orders/{id}/status', [SalesOrderController::class, 'postEditSalesOrderStatus']);
     Route::get('reports/activity-log', [ReportController::class, 'activityLog']);
     Route::get('user-location/{latlng}', [HomeController::class, 'getUserLocation']);
+
+
+    Route::get('/manage_user/employeesIndex',[ManageUserController::class,'employeesIndex'])->name('employeesIndex');
+    Route::get('/manage_user/makeUser/{id}',[ManageUserController::class,'makeUser'])->name('makeUser');
+
 });
 
 // Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
@@ -511,4 +516,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
         ->name('packing.downloadPdf');
     Route::get('/sells/invoice-url/{id}', [SellPosController::class, 'showInvoiceUrl']);
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
+
+   
 });
