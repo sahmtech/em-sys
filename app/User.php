@@ -51,7 +51,7 @@ class User extends Authenticatable
 
     public function scopeUser($query)
     {
-        return $query->where('users.user_type', 'user');
+        return $query->where('users.user_type','LIKE', '%user%' );
     }
 
     /**
