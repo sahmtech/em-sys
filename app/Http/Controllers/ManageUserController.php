@@ -120,7 +120,7 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )
+            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )->where('user_type', 'NOT LIKE', '%user%')
                 // ->user()
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
