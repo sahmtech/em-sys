@@ -323,27 +323,27 @@ class DataController extends Controller
             ],
             [
                 'value' => 'essentials.crud_holidays',
-                'label' => __('essentials::lang.access_sales_target'),
+                'label' => __('essentials::lang.crud_holidays'),
                 'default' => false,
             ],
             [
                 'value' => 'essentials.crud_countries',
-                'label' => __('essentials::lang.access_sales_target'),
+                'label' => __('essentials::lang.crud_countries'),
                 'default' => false,
             ],
             [
                 'value' => 'essentials.crud_cities',
-                'label' => __('essentials::lang.access_sales_target'),
+                'label' => __('essentials::lang.crud_cities'),
                 'default' => false,
             ],
             [
                 'value' => 'essentials.crud_allowances',
-                'label' => __('essentials::lang.access_sales_target'),
+                'label' => __('essentials::lang.crud_allowances'),
                 'default' => false,
             ],
             [
                 'value' => 'essentials.crud_bank_accounts',
-                'label' => __('essentials::lang.access_sales_target'),
+                'label' => __('essentials::lang.crud_bank_accounts'),
                 'default' => false,
             ],
             
