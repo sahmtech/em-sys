@@ -40,6 +40,10 @@ class EssentialsHolidayController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
+        $can_crud_holidays= auth()->user()->can('essentials.crud_holidays');
+        if (! $can_crud_holidays) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 

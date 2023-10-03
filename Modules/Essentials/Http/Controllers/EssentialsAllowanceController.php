@@ -28,6 +28,10 @@ class EssentialsAllowanceController extends Controller
             abort(403, 'Unauthorized action.');
         }
  
+        $can_crud_allowances = auth()->user()->can('essentials.crud_allowances');
+        if (! $can_crud_allowances) {
+            abort(403, 'Unauthorized action.');
+        }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
  
         if (request()->ajax()) {
