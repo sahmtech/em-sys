@@ -476,8 +476,10 @@ return[
 'edit_employee' =>'تعديل موظف',
 'view_employee' =>'عرض موظف',
 'employee_info' =>'معلومات الموظف',
-
-
-
+'crud_holidays'=>'العطل الرسمية ',
+'crud_countries'=>'الدول',
+'crud_cities'=>'المدن',
+'crud_allowances'=>'الاستحقاقات',
+'crud_bank_accounts'=>'الحسابات البنكية ',
 
 ];

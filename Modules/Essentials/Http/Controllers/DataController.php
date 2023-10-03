@@ -321,6 +321,32 @@ class DataController extends Controller
                 'label' => __('essentials::lang.access_sales_target'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.crud_holidays',
+                'label' => __('essentials::lang.access_sales_target'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_countries',
+                'label' => __('essentials::lang.access_sales_target'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_cities',
+                'label' => __('essentials::lang.access_sales_target'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_allowances',
+                'label' => __('essentials::lang.access_sales_target'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_bank_accounts',
+                'label' => __('essentials::lang.access_sales_target'),
+                'default' => false,
+            ],
+            
         ];
     }
 
@@ -429,14 +455,14 @@ class DataController extends Controller
                         'active' => request()->segment(1) == 'essentials',
                         'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                     ]
-                )->order(87);
-
+                )->order(40);
+             
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),
                     ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
                 )
-                    ->order(87);
+                ->order(40);
             });
         }
     }
