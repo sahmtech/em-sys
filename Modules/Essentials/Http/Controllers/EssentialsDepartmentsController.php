@@ -123,7 +123,7 @@ if(is_null($order)) {
 
                 // Update the desired attribute based on the request data
         $model->name =  $newText;
-        $model->creation_date=Date.now();
+        
         $model->save();
         
         
