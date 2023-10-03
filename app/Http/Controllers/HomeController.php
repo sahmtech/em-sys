@@ -18,7 +18,7 @@ use Datatables;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
-
+use Illuminate\Support\Str;
 class HomeController extends Controller
 {
     /**
@@ -61,7 +61,7 @@ class HomeController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if ($user->user_type == 'user_customer') {
+        if (Str::contains($user->user_type , 'user_customer')) {
             return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
         }
 

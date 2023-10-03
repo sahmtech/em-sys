@@ -124,7 +124,7 @@
                     </div>
                 </div>
             @endif
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <div class="form-group">
                   {!! Form::label('password', __( 'business.password' ) . ':') !!}
                     {!! Form::password('password', ['class' => 'form-control', 'placeholder' => __( 'business.password'), 'required' => empty($user->allow_login) ? true : false ]); !!}
@@ -137,7 +137,7 @@
                     {!! Form::password('confirm_password', ['class' => 'form-control', 'placeholder' => __( 'business.confirm_password' ), 'required' => empty($user->allow_login) ? true : false ]); !!}
                   
                 </div>
-            </div>
+            </div> --}}
             </div>
             <div class="clearfix"></div>
             <div class="col-md-6">
