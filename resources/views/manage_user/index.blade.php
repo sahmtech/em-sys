@@ -21,7 +21,7 @@
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary" 
-                    href="{{ route('employeesIndex') }}" >
+                    href="{{action([\App\Http\Controllers\ManageUserController::class, 'create'])}}" >
                  
                     <i class="fa fa-plus"></i> @lang( 'user.create_new_user' )</a>
                  </div>

@@ -45,12 +45,12 @@ class ManageUserController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
-
-            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%user%' )
+           
+            $users = User::where('business_id', $business_id) //->where('user_type', 'LIKE', '%user%' )
                 //->user()
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
-                    'id', 'username',
+                    'id', 'username','user_type',
                     DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
                 ]);
 
@@ -78,31 +78,52 @@ class ManageUserController extends Controller
                 //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                 //     @endcan'
                 // )
-                ->addColumn(
-                    'action',
-                    '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                        &nbsp;
-                    @endcan
-                
-                    @can("user.delete")
-                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                    @endcan'
-                )
                 // ->addColumn(
                 //     'action',
-                //     '@can("user.update")
-                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                //         &nbsp;
+                //    '@can("user.update")
+                //       <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
+                //     &nbsp;
+                 
                 //     @endcan
+                //     @can("user.update")
+                //         <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
+                //     &nbsp;
+                //     @endcan
+                  
                 //     @can("user.delete")
                 //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                 //     @endcan'
+                             
+                          
                 // )
+                ->addColumn(
+                    'action',
+                    function($row){
+                        $html='';
+                        if(auth()->user()->can('user.update')){
+                            $html.='  <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__("messages.edit").'</a>
+                            &nbsp;';
+                            if(!Str::contains($row->user_type,'user')){
+                                $html.=' <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary">'.__("messages.create_user").'
+                                </a>
+                                &nbsp;';
+                            }
+                           
+                        }
+                        if(auth()->user()->can('user.delete')){
+                            $html.='
+                            <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>'.__("messages.delete").'</button>
+                        ';
+                        }
+                           
+                              
+                        return $html;
+                    }   
+                )
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->removeColumn('id')
+                ->removeColumn('id')->removeColumn('user_type')
                 ->rawColumns(['action', 'username'])
                 ->make(true);
         }
