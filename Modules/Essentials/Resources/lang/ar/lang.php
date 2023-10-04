@@ -484,6 +484,9 @@ return[
 'crud_basic_salary'=>'إضافة / تعديل / عرض / حذف الرواتب الأساسية  ',
 'crud_entitlements'=>'إضافة / تعديل / عرض / حذف الاستحقاقات  ',
 'crud_travel_categories'=>'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
-
+'crud_contract_types'=>'إضافة / تعديل / عرض / حذف فئات أنواع العقود  ',
+'contract_types'=>'أنواع العقود',
+'add_ContractType'=>'إضافة نوع عقد',
+'edit_contract_type'=>'تعديل نوع العقد'
 
 ];
