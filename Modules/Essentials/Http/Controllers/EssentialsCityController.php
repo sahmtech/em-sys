@@ -31,7 +31,10 @@ class EssentialsCityController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+        $can_crud_cities = auth()->user()->can('essentials.crud_cities');
+        if (! $can_crud_cities) {
+            abort(403, 'Unauthorized action.');
+        }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         if (request()->ajax()) {
