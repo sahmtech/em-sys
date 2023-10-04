@@ -476,6 +476,7 @@ return[
 'edit_employee' =>'تعديل موظف',
 'view_employee' =>'عرض موظف',
 'employee_info' =>'معلومات الموظف',
+
 'crud_holidays'=>'إضافة / تعديل / عرض / حذف العطل الرسمية ',
 'crud_countries'=>'إضافة / تعديل / عرض / حذف الدول ',
 'crud_cities'=>'إضافة / تعديل / عرض / حذف المدن ',

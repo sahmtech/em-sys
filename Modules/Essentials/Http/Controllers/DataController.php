@@ -347,6 +347,12 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
+
+                'value' => 'essentials.crud_organizational_structure',
+                'label' => __('essentials::lang.crud_Organizational_Chart'),
+                    'default' => false,
+            ],
+    [
                 'value' => 'essentials.crud_basic_salary',
                 'label' => __('essentials::lang.crud_basic_salary'),
                 'default' => false,
@@ -364,6 +370,7 @@ class DataController extends Controller
             [
                 'value' => 'essentials.employees_settings',
                 'label' => __('essentials::lang.employees_settings'),
+
                 'default' => false,
             ],
         ];
@@ -457,28 +464,48 @@ class DataController extends Controller
                             action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
                             __('essentials::lang.employees_settings'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
-                        )->order(9);}
+
+                        )->order(9);
+
+                        if (auth()->user()->can('curd_organizational_structure')) 
+                        {
+                            $subMenu->url(
+
+                                action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                                        __('essentials::lang.organizational_structure'),
+                                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+        
+        //                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+        //                             __('essentials::lang.organizational_structure'),
+                                 
+        
+                                )->order(10);
+                        }
+                        
+
+                     /*   )->order(9);}
                         
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
                                 __('essentials::lang.organizational_structure'),
                              ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],                     
 
-                        )->order(10);
+                        )->order(10);*/
+
                     },
                     [
                         'icon' => 'fa fas fa-users',
                         'active' => request()->segment(1) == 'essentials',
                         'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                     ]
-                )->order(40);
+                )->order(10);
              
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),
                     ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
                 )
-                ->order(40);
+                ->order(10);
             });
         }
     }
