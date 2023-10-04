@@ -346,6 +346,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_bank_accounts'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.crud_organizational_structure',
+                'label' => __('essentials::lang.crud_Organizational_Chart'),
+                'default' => false,
+            ],
             
         ];
     }
@@ -438,17 +443,21 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
                         )->order(9);
 
-                        $subMenu->url(
+                        if (auth()->user()->can('curd_organizational_structure')) 
+                        {
+                            $subMenu->url(
 
-                        action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
-                                __('essentials::lang.organizational_structure'),
-                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-
-//                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-//                             __('essentials::lang.organizational_structure'),
-                         
-
-                        )->order(10);
+                                action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                                        __('essentials::lang.organizational_structure'),
+                                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+        
+        //                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+        //                             __('essentials::lang.organizational_structure'),
+                                 
+        
+                                )->order(10);
+                        }
+                        
                     },
                     [
                         'icon' => 'fa fas fa-users',

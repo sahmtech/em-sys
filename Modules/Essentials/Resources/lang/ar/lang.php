@@ -481,5 +481,5 @@ return[
 'crud_cities'=>'المدن',
 'crud_allowances'=>'الاستحقاقات',
 'crud_bank_accounts'=>'الحسابات البنكية ',
-
+'crud_organizational_structure'=>'  إضافة / تعديل / عرض / حذف الهيكل التنظيمي "',
 ];
