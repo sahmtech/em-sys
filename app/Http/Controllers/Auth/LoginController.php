@@ -8,7 +8,7 @@ use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 class LoginController extends Controller
 {
     /*
@@ -111,7 +111,7 @@ class LoginController extends Controller
                     'status',
                     ['success' => 0, 'msg' => __('lang_v1.login_not_allowed')]
                 );
-        } elseif (($user->user_type == 'user_customer') && ! $this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
+        } elseif ((Str::contains($user->user_type , 'user_customer')) && ! $this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
             \Auth::logout();
 
             return redirect('/login')
@@ -129,7 +129,7 @@ class LoginController extends Controller
             return '/pos/create';
         }
 
-        if ($user->user_type == 'user_customer') {
+        if (Str::contains($user->user_type , 'user_customer')) {
             return 'contact/contact-dashboard';
         }
 
