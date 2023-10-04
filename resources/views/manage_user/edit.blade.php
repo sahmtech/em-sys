@@ -33,7 +33,7 @@
                     {!! Form::text('last_name', $user->last_name, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
                 </div>
             </div>
-            <div class="col-md-5">
+            {{-- <div class="col-md-5">
               <div class="form-group">
                 {!! Form::label('username', __( 'business.username' ) . ':') !!}
                 @if(!empty($username_ext))
@@ -47,7 +47,7 @@
                 @endif
                 <p class="help-block">@lang('lang_v1.username_help')</p>
               </div>
-            </div>
+            </div> --}}
             <div class="clearfix"></div>
             <div class="col-md-4">
               <div class="form-group">
@@ -124,7 +124,7 @@
                     </div>
                 </div>
             @endif
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <div class="form-group">
                   {!! Form::label('password', __( 'business.password' ) . ':') !!}
                     {!! Form::password('password', ['class' => 'form-control', 'placeholder' => __( 'business.password'), 'required' => empty($user->allow_login) ? true : false ]); !!}
@@ -137,7 +137,7 @@
                     {!! Form::password('confirm_password', ['class' => 'form-control', 'placeholder' => __( 'business.confirm_password' ), 'required' => empty($user->allow_login) ? true : false ]); !!}
                   
                 </div>
-            </div>
+            </div> --}}
             </div>
             <div class="clearfix"></div>
             <div class="col-md-6">

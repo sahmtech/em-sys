@@ -33,7 +33,7 @@
                     {!! Form::text('last_name', $user->last_name, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
                 </div>
             </div> --}}
-            <div class="col-md-5">
+            {{-- <div class="col-md-5">
               <div class="form-group">
                 {!! Form::label('username', __( 'business.username' ) . ':') !!}
                 @if(!empty($username_ext))
@@ -47,7 +47,7 @@
                 @endif
                 <p class="help-block">@lang('lang_v1.username_help')</p>
               </div>
-            </div>
+            </div> --}}
             <div class="clearfix"></div>
             <div class="col-md-4">
               <div class="form-group">
