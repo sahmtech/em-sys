@@ -77,7 +77,7 @@ class EssentialsManageEmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)->where('user_type','user')
+            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%user%' )
                         ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
@@ -118,7 +118,7 @@ class EssentialsManageEmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)->where('user_type','employee')
+            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )
                         // ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
