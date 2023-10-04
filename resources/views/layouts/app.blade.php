@@ -61,6 +61,7 @@
 
                 @endif
 
+                
             @else
                 @include('layouts.partials.header-pos')
             @endif

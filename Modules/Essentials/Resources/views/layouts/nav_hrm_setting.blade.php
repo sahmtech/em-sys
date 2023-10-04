@@ -70,6 +70,7 @@
                             <a href="{{ route('contract_types') }}">@lang('essentials::lang.contract_types')</a>
                         </li>
                     @endif
+
                     {{-- @if(auth()->user()->can('essentials.access_sales_target') )
                         <li @if(request()->segment(2) == 'sales_target') class="active" @endif>
                             <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>

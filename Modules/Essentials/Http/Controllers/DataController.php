@@ -347,30 +347,17 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
-                'value' => 'essentials.crud_basic_salary',
-                'label' => __('essentials::lang.crud_basic_salary'),
+                'value' => 'essentials.crud_organizational_structure',
+                'label' => __('essentials::lang.crud_Organizational_Chart'),
                 'default' => false,
             ],
-            [
-                'value' => 'essentials.crud_entitlements',
-                'label' => __('essentials::lang.crud_entitlements'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_travel_categories',
-                'label' => __('essentials::lang.crud_travel_categories'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.employees_settings',
-                'label' => __('essentials::lang.employees_settings'),
-                'default' => false,
-            ],
+
             [
                 'value' => 'essentials.crud_contract_types',
                 'label' => __('essentials::lang.crud_contract_types'),
                 'default' => false,
             ],
+
         ];
     }
 
@@ -456,34 +443,42 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(8);
 
-                        if(auth()->user()->can('essentials.employees_settings') )
-                        {
-                            $subMenu->url(
+                        $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
                             __('essentials::lang.employees_settings'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
-                        )->order(9);}
-                        
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
-                                __('essentials::lang.organizational_structure'),
-                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],                     
+                        )->order(9);
 
-                        )->order(10);
-                    },
+                            if (auth()->user()->can('curd_organizational_structure')) 
+                            {
+                                $subMenu->url(
+
+                                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                                            __('essentials::lang.organizational_structure'),
+                                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+            
+                                    
+            
+                                    )->order(10);}
+                       
+
+                        },
+                        
+                    
+
                     [
                         'icon' => 'fa fas fa-users',
                         'active' => request()->segment(1) == 'essentials',
                         'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                     ]
-                )->order(40);
+                )->order(10);
              
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),
                     ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
                 )
-                ->order(40);
+                ->order(10);
             });
         }
     }
