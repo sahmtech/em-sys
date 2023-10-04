@@ -17,38 +17,66 @@
                 <ul class="nav navbar-nav">
                     
                
+                    @if(auth()->user()->can('essentials.crud_countries') )
+                        <li @if(request()->segment(2) == 'countries') class="active" @endif>
+                            <a href="{{ route('countries') }}">@lang('essentials::lang.countries')</a>
+                        </li>
+                    @endif
 
-                    <li @if(request()->segment(2) == 'countries') class="active" @endif>
-                        <a href="{{ route('countries') }}">@lang('essentials::lang.countries')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'cities') class="active" @endif>
-                        <a href="{{ route('cities') }}">@lang('essentials::lang.cities')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'bank_accounts') class="active" @endif>
-                        <a href="{{ route('bank_accounts') }}">@lang('essentials::lang.bank_accounts')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'holiday') class="active" @endif><a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index'])}}">@lang('essentials::lang.holiday')</a></li>
-                  
-                    <li @if(request()->segment(2) == 'travel_categories') class="active" @endif>
-                        <a href="{{ route('travel_categories') }}">@lang('essentials::lang.travel_ticket_categories')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'basic_salary_types') class="active" @endif>
-                        <a href="{{ route('basic_salary_types') }}">@lang('essentials::lang.basic_salary_types')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'entitlements') class="active" @endif>
-                        <a href="{{ route('entitlements') }}">@lang('essentials::lang.entitlements')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'allowances') class="active" @endif>
-                        <a href="{{ route('allowances') }}">@lang('essentials::lang.allowances')</a>
-                    </li>
-                    <li @if(request()->segment(2) == 'sales_target') class="active" @endif>
-                        <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>
-                    </li>
+                    @if(auth()->user()->can('essentials.crud_cities') )
+                        <li @if(request()->segment(2) == 'cities') class="active" @endif>
+                            <a href="{{ route('cities') }}">@lang('essentials::lang.cities')</a>
+                        </li>   
+                    @endif
+
+                    @if(auth()->user()->can('essentials.crud_bank_accounts') )
+                        <li @if(request()->segment(2) == 'bank_accounts') class="active" @endif>
+                            <a href="{{ route('bank_accounts') }}">@lang('essentials::lang.bank_accounts')</a>
+                        </li>
+                    @endif
+                
+                    @if(auth()->user()->can('essentials.crud_holidays') )
+                        <li @if(request()->segment(2) == 'holiday') class="active" @endif>
+                            <a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index'])}}">@lang('essentials::lang.holiday')</a></li>
+                        </li>
+                    @endif
                     
-                    <li @if(request()->get('type') == 'hrm_designation') class="active" @endif>
-                        <a href="{{action([\App\Http\Controllers\TaxonomyController::class, 'index']) . '?type=hrm_designation'}}">@lang('essentials::lang.designations')</a></li>
+                    @if(auth()->user()->can('essentials.crud_travel_categories') )
+                        <li @if(request()->segment(2) == 'travel_categories') class="active" @endif>
+                            <a href="{{ route('travel_categories') }}">@lang('essentials::lang.travel_ticket_categories')</a>
+                        </li>
+                    @endif
 
-                    </li>
+                    @if(auth()->user()->can('essentials.crud_basic_salary') )
+                        <li @if(request()->segment(2) == 'basic_salary_types') class="active" @endif>
+                            <a href="{{ route('basic_salary_types') }}">@lang('essentials::lang.basic_salary_types')</a>
+                        </li>
+                    @endif
+
+                    @if(auth()->user()->can('essentials.crud_entitlements') )
+                        <li @if(request()->segment(2) == 'entitlements') class="active" @endif>
+                            <a href="{{ route('entitlements') }}">@lang('essentials::lang.entitlements')</a>
+                        </li>
+                    @endif
+                    
+                    @if(auth()->user()->can('essentials.crud_allowances') )
+                        <li @if(request()->segment(2) == 'allowances') class="active" @endif>
+                            <a href="{{ route('allowances') }}">@lang('essentials::lang.allowances')</a>
+                        </li>
+                    @endif
+                    
+                    @if(auth()->user()->can('essentials.access_sales_target') )
+                        <li @if(request()->segment(2) == 'sales_target') class="active" @endif>
+                            <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>
+                        </li>
+                    @endif
+
+                    @if(auth()->user()->can('essentials.crud_designation')) 
+                        <li @if(request()->get('type') == 'hrm_designation') class="active" @endif>
+                            <a href="{{action([\App\Http\Controllers\TaxonomyController::class, 'index']) . '?type=hrm_designation'}}">@lang('essentials::lang.designations')</a></li>
+
+                        </li>
+                    @endif
                 </ul>
 
             </div><!-- /.navbar-collapse -->

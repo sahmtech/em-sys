@@ -28,6 +28,11 @@ class EssentialsBankAccountController extends Controller
  
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
  
+         $can_crud_bank_accounts= auth()->user()->can('essentials.crud_bank_accounts');
+         if (! $can_crud_bank_accounts) {
+             abort(403, 'Unauthorized action.');
+         }
+         
          if (request()->ajax()) {
         
             

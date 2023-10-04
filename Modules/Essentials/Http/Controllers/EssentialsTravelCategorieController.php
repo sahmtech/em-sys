@@ -27,6 +27,10 @@ class EssentialsTravelCategorieController extends Controller
        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
            abort(403, 'Unauthorized action.');
        }
+       $can_crud_travel_categories= auth()->user()->can('essentials.crud_travel_categories');
+       if (! $can_crud_travel_categories) {
+           abort(403, 'Unauthorized action.');
+       }
 
        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 

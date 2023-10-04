@@ -42,7 +42,7 @@
                     @if(auth()->user()->can('edit_essentials_settings'))
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'settings') class="active" @endif><a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit'])}}">@lang('business.settings')</a></li>
                     @endif
-                    @if(auth()->user()->can('edit_essentials_other_settings'))
+                    @if(auth()->user()->can('essentials_other_settings'))
                     <li>
                      
                             <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

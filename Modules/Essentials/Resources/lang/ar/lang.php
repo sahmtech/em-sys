@@ -476,10 +476,14 @@ return[
 'edit_employee' =>'تعديل موظف',
 'view_employee' =>'عرض موظف',
 'employee_info' =>'معلومات الموظف',
-'crud_holidays'=>'العطل الرسمية ',
-'crud_countries'=>'الدول',
-'crud_cities'=>'المدن',
-'crud_allowances'=>'الاستحقاقات',
-'crud_bank_accounts'=>'الحسابات البنكية ',
+'crud_holidays'=>'إضافة / تعديل / عرض / حذف العطل الرسمية ',
+'crud_countries'=>'إضافة / تعديل / عرض / حذف الدول ',
+'crud_cities'=>'إضافة / تعديل / عرض / حذف المدن ',
+'crud_allowances'=>'إضافة / تعديل / عرض / حذف البدلات',
+'crud_bank_accounts'=>'إضافة / تعديل / عرض / حذف الحسابات البنكية ',
+'crud_basic_salary'=>'إضافة / تعديل / عرض / حذف الرواتب الأساسية  ',
+'crud_entitlements'=>'إضافة / تعديل / عرض / حذف الاستحقاقات  ',
+'crud_travel_categories'=>'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
+
 
 ];
