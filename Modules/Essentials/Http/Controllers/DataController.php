@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Menu;
 use Modules\Essentials\Entities\DocumentShare;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
@@ -523,8 +524,9 @@ class DataController extends Controller
     {
         if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
             $business_id = session()->get('business.id');
-            $departments = Category::forDropdown($business_id, 'hrm_department');
+         //   $departments = Category::forDropdown($business_id, 'hrm_department');
             $designations = Category::forDropdown($business_id, 'hrm_designation');
+            $departments = EssentialsDepartment::pluck('name','id')->all();
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;
