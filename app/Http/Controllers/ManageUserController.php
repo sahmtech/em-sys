@@ -14,7 +14,7 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\URL;
 class ManageUserController extends Controller
 {
     /**
@@ -101,10 +101,10 @@ class ManageUserController extends Controller
                     function($row){
                         $html='';
                         if(auth()->user()->can('user.update')){
-                            $html.='  <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__("messages.edit").'</a>
+                            $html.='  <a href="'.URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]).'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__("messages.edit").'</a>
                             &nbsp;';
                             if(!Str::contains($row->user_type,'user')){
-                                $html.=' <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary">'.__("messages.create_user").'
+                                $html.=' <a href="'. route('makeUser',[$row->id]).'" class="btn btn-xs btn-primary">'.__("messages.create_user").'
                                 </a>
                                 &nbsp;';
                             }
@@ -112,7 +112,7 @@ class ManageUserController extends Controller
                         }
                         if(auth()->user()->can('user.delete')){
                             $html.='
-                            <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>'.__("messages.delete").'</button>
+                            <button data-href="'.URL::action('App\Http\Controllers\ManageUserController@destroy', [$row->id]).'" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>'.__("messages.delete").'</button>
                         ';
                         }
                            

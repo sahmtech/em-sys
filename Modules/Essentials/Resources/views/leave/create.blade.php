@@ -23,18 +23,21 @@
 
 	      	<div class="form-group col-md-6">
 	        	{!! Form::label('start_date', __( 'essentials::lang.start_date' ) . ':*') !!}
-	        	<div class="input-group data">
+				{!! Form::date('start_date', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.start_date'), 'required' ]); !!}
+	        	{{-- <div class="input-group data">
+
 	        		{!! Form::text('start_date', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.start_date' ), 'readonly' ]); !!}
 	        		<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-	        	</div>
+	        	</div> --}}
 	      	</div>
 
 	      	<div class="form-group col-md-6">
 	        	{!! Form::label('end_date', __( 'essentials::lang.end_date' ) . ':*') !!}
-		        	<div class="input-group data">
+				{!! Form::date('end_date', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.end_date') , 'required']); !!}
+		        	{{-- <div class="input-group data">
 		          	{!! Form::text('end_date', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.end_date' ), 'readonly', 'required' ]); !!}
 		          	<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-	        	</div>
+	        	</div> --}}
 	      	</div>
 
 	      	<div class="form-group col-md-12">

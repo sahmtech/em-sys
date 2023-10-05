@@ -37,7 +37,7 @@
                 </div>
 	        </div>
 		</div>
-		<div class="col-md-4 col-sm-6 col-xs-12 col-custom">
+		{{-- <div class="col-md-4 col-sm-6 col-xs-12 col-custom">
 			<div class="box box-solid">
 				<div class="box-header with-border">
 	                <i class="fas fa-bullseye"></i>
@@ -87,7 +87,7 @@
                     </table>
                 </div>
 	        </div>
-		</div>
+		</div> --}}
 		@include('essentials::dashboard.birthdays')
 		@if(!$is_admin)
         	@include('essentials::dashboard.holidays')
@@ -257,7 +257,7 @@
 	            </div>
 	        </div>
 
-	        <div class="col-md-8 col-sm-12 col-xs-12">
+	        {{-- <div class="col-md-8 col-sm-12 col-xs-12">
 	        	<div class="box box-solid">
 	        		<div class="box-header with-border">
 	                    <i class="fas fa-bullseye"></i>
@@ -275,7 +275,7 @@
 	                	</table>
 	                </div>
 	            </div>
-	        </div>
+	        </div> --}}
     	@endif
     </div>
     
