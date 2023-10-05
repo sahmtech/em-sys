@@ -367,11 +367,25 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_contract_types'),
                 'default' => false,
             ],
-           
+            [
+                'value' => 'essentials.crud_all_roles',
+                'label' => __('essentials::lang.crud_all_roles'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.view_employees',
+                'label' => __('essentials::lang.view_employees'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_official_documents',
+                'label' => __('essentials::lang.crud_official_documents'),
+                'default' => false,
+            ],
 
         ];
     }
-
+    
     /**
      * Superadmin package permissions
      *
