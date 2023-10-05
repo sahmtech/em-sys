@@ -20,7 +20,6 @@ use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
-use Modules\Essentials\Entities\essentialsAllowanceType;
 use Modules\Essentials\Entities\EssentialsEntitlementType;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\EssentialsEmployeeContract;
@@ -538,7 +537,7 @@ class DataController extends Controller
                     ->toArray();
             }
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-            $allowance_types = essentialsAllowanceType::forDropdown();
+            $allowance_types = EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('description','id')->all();
             $entitlement_type = EssentialsEntitlementType::forDropdown();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::forDropdown();
             $basic_salary_types = EssentialsBasicSalaryType::forDropdown();
