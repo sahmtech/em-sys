@@ -209,9 +209,9 @@ class EssentialsLeaveController extends Controller
             $mysql_format = 'Y-m-d';
             $input['business_id'] = $business_id;
             $input['status'] = 'pending';
-            $input['start_date'] = $input['start_date']->format($mysql_format);
-            $input['end_date'] = $input['end_date']->format($mysql_format);
-
+            $input['start_date'] = \Carbon::parse($input['start_date'])->format($mysql_format);
+            $input['end_date'] = \Carbon::parse($input['end_date'])->format($mysql_format);
+  
             DB::beginTransaction();
             if (auth()->user()->can('essentials.crud_all_leave') && ! empty($request->input('employees'))) {
                 foreach ($request->input('employees') as $user_id) {
