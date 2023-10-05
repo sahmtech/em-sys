@@ -32,8 +32,8 @@ class EssentialsOfficialDocumentController extends Controller
         }
       
         if (request()->ajax()) {
-            $official_documents = EssentialsOfficialDocument::where('essentials_official_documents.employee_id', $business_id)
-                ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+            $official_documents = EssentialsOfficialDocument::
+                join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
                 ->select([
                     'essentials_official_documents.id',
                     DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -79,8 +79,10 @@ class EssentialsOfficialDocumentController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-    
-        $users = User::all()->pluck('first_name','id');
+        $query = User::where('business_id', $business_id)
+        ->user();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
     
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
     }
@@ -138,8 +140,12 @@ class EssentialsOfficialDocumentController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        $user =  User::all()->pluck('first_name','id');
-       
+
+        $query = User::where('business_id', $business_id)
+        ->user();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+    
     
        return redirect()->route('official_documents')->with(compact('users'));
 
