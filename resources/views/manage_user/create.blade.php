@@ -122,7 +122,7 @@
           <p class="help-block">@lang('lang_v1.username_help')</p>
         </div>
       </div>
-      <div class="col-md-4">
+      {{-- <div class="col-md-4">
         <div class="form-group">
           {!! Form::label('password', __( 'business.password' ) . ':*') !!}
             {!! Form::password('password', ['class' => 'form-control', 'required', 'placeholder' => __( 'business.password' ) ]); !!}
@@ -133,7 +133,7 @@
           {!! Form::label('confirm_password', __( 'business.confirm_password' ) . ':*') !!}
             {!! Form::password('confirm_password', ['class' => 'form-control', 'required', 'placeholder' => __( 'business.confirm_password' ) ]); !!}
         </div>
-      </div>
+      </div> --}}
      </div>
       <div class="clearfix"></div>
       <div class="col-md-6">
