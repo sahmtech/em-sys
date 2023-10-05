@@ -317,6 +317,16 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
+                'value' => 'essentials.view_employee_settings',
+                'label' => __('essentials::lang.view_employee_settings'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.view_employee_affairs',
+                'label' => __('essentials::lang.view_employee_affairs'),
+                'default' => false,
+            ],
+            [
                 'value' => 'essentials.access_sales_target',
                 'label' => __('essentials::lang.access_sales_target'),
                 'default' => false,
@@ -357,6 +367,7 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_contract_types'),
                 'default' => false,
             ],
+           
 
         ];
     }
@@ -396,11 +407,14 @@ class DataController extends Controller
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
-                        $subMenu->url(
-                            route('employees'),
-                            __('essentials::lang.employees_affairs'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'employees'],
-                        )->order(1);
+                        if (auth()->user()->can('view_employee_affairs')) 
+                        {
+                            $subMenu->url(
+                                route('employees'),
+                                __('essentials::lang.employees_affairs'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'employees'],
+                            )->order(1);
+                        }
                         $subMenu->url(
                             action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
                             __('essentials::lang.facilities_management'),
@@ -443,14 +457,18 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(8);
 
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
-                            __('essentials::lang.employees_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
-                        )->order(9);
+                        
+                        if (auth()->user()->can('view_employee_settings')) 
+                        {
+                            $subMenu->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
+                                __('essentials::lang.employees_settings'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
+                            )->order(9);
+                        }
 
-                            if (auth()->user()->can('curd_organizational_structure')) 
-                            {
+                        if (auth()->user()->can('curd_organizational_structure')) 
+                        {
                                 $subMenu->url(
 
                                     action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
@@ -459,7 +477,7 @@ class DataController extends Controller
             
                                     
             
-                                    )->order(10);}
+                      )->order(10);}
                        
 
                         },

@@ -477,7 +477,6 @@ return[
 'edit_employee' =>'تعديل موظف',
 'view_employee' =>'عرض موظف',
 'employee_info' =>'معلومات الموظف',
-
 'crud_holidays'=>'إضافة / تعديل / عرض / حذف العطل الرسمية ',
 'crud_countries'=>'إضافة / تعديل / عرض / حذف الدول ',
 'crud_cities'=>'إضافة / تعديل / عرض / حذف المدن ',
@@ -486,11 +485,14 @@ return[
 'crud_basic_salary'=>'إضافة / تعديل / عرض / حذف الرواتب الأساسية  ',
 'crud_entitlements'=>'إضافة / تعديل / عرض / حذف الاستحقاقات  ',
 'crud_travel_categories'=>'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
-'crud_contract_types'=>'إضافة / تعديل / عرض / حذف فئات أنواع العقود  ',
+'crud_contract_types'=>'إضافة / تعديل / عرض / حذف  أنواع العقود  ',
+'view_employee_settings'=>'عرض إعدادات الموظفين',
+'view_employee_affairs'=>'عرض شؤون الموظفين',
 'contract_types'=>'أنواع العقود',
 'add_ContractType'=>'إضافة نوع عقد',
 'edit_contract_type'=>'تعديل نوع العقد',
 'allowances_and_deductions'=>'البدلات والخصومات',
 'fixed'=>'ثابت',
 'percent'=>'نسبة',
+'crud_Organizational_Chart'=>'إضافة / تعديل / عرض / حذف الهيكل التنظيمي '
 ];
