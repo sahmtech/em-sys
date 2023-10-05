@@ -80,7 +80,7 @@ class EssentialsOfficialDocumentController extends Controller
                 ->make(true);
         }
     
-        $users = User::forDropdown($business_id, false);
+        $users = User::all()->pluck('user_name','id');
     
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
     }
@@ -138,8 +138,8 @@ class EssentialsOfficialDocumentController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-        $users = User::forDropdown($business_id, false);
+        $user =  User::all()->pluck('user_name','id');
+       
     
        return redirect()->route('official_documents')->with(compact('users'));
 
