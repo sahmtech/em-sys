@@ -80,7 +80,7 @@ class EssentialsOfficialDocumentController extends Controller
                 ->make(true);
         }
     
-        $users = User::all()->pluck('user_name','id');
+        $users = User::all()->pluck('first_name','id');
     
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
     }
@@ -138,7 +138,7 @@ class EssentialsOfficialDocumentController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        $user =  User::all()->pluck('user_name','id');
+        $user =  User::all()->pluck('first_name','id');
        
     
        return redirect()->route('official_documents')->with(compact('users'));
