@@ -206,11 +206,11 @@ class EssentialsLeaveController extends Controller
 
         try {
             $input = $request->only(['essentials_leave_type_id', 'start_date', 'end_date', 'reason']);
-
+            $mysql_format = 'Y-m-d';
             $input['business_id'] = $business_id;
             $input['status'] = 'pending';
-            $input['start_date'] = $this->moduleUtil->uf_date($input['start_date']);
-            $input['end_date'] = $this->moduleUtil->uf_date($input['end_date']);
+            $input['start_date'] = $input['start_date']->format($mysql_format);
+            $input['end_date'] = $input['end_date']->format($mysql_format);
 
             DB::beginTransaction();
             if (auth()->user()->can('essentials.crud_all_leave') && ! empty($request->input('employees'))) {
@@ -229,7 +229,7 @@ class EssentialsLeaveController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
             $output = ['success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
