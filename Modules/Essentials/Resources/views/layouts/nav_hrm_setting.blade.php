@@ -59,12 +59,18 @@
                         </li>
                     @endif
                     
-                    @if(auth()->user()->can('essentials.crud_allowances') )
-                        <li @if(request()->segment(2) == 'allowances') class="active" @endif>
-                            <a href="{{ route('allowances') }}">@lang('essentials::lang.allowances')</a>
+                    @if(auth()->user()->can('essentials.view_allowance_and_deduction') )
+                        <li @if(request()->segment(2) == 'allowances_and_deductions') class="active" @endif>
+                            <a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'index'])}}">@lang('essentials::lang.allowances_and_deductions')</a>
                         </li>
                     @endif
                     
+                    @if(auth()->user()->can('essentials.crud_contract_types') )
+                        <li @if(request()->segment(2) == 'contract_types') class="active" @endif>
+                            <a href="{{ route('contract_types') }}">@lang('essentials::lang.contract_types')</a>
+                        </li>
+                    @endif
+
                     {{-- @if(auth()->user()->can('essentials.access_sales_target') )
                         <li @if(request()->segment(2) == 'sales_target') class="active" @endif>
                             <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>

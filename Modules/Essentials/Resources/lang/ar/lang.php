@@ -151,6 +151,7 @@ return[
 "deduction" => "المستقطع",
 "duration_unit" => "وحدة المدة",
 "gross_amount" => "المبلغ الإجمالي",
+"amount" => "المبلغ ",
 "payroll_ref_no_prefix" => "بادئة الرقم المرجعي للرواتب",
 "payroll_added_notification" => "مسير الرواتب لـ :month_year أضيفت بواسطة :create_by. رقم المرجع :ref_no",
 "payroll_updated_notification" => "مسير الرواتب لـ: month_year التي تمت مراجعتها بواسطة :create_by. رقم المرجع :ref_no",
@@ -485,6 +486,11 @@ return[
 'crud_basic_salary'=>'إضافة / تعديل / عرض / حذف الرواتب الأساسية  ',
 'crud_entitlements'=>'إضافة / تعديل / عرض / حذف الاستحقاقات  ',
 'crud_travel_categories'=>'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
-
-
+'crud_contract_types'=>'إضافة / تعديل / عرض / حذف فئات أنواع العقود  ',
+'contract_types'=>'أنواع العقود',
+'add_ContractType'=>'إضافة نوع عقد',
+'edit_contract_type'=>'تعديل نوع العقد',
+'allowances_and_deductions'=>'البدلات والخصومات',
+'fixed'=>'ثابت',
+'percent'=>'نسبة',
 ];

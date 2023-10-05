@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Menu;
 use Modules\Essentials\Entities\DocumentShare;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
@@ -19,7 +20,6 @@ use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
-use Modules\Essentials\Entities\essentialsAllowanceType;
 use Modules\Essentials\Entities\EssentialsEntitlementType;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\EssentialsEmployeeContract;
@@ -351,7 +351,13 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_Organizational_Chart'),
                 'default' => false,
             ],
-            
+
+            [
+                'value' => 'essentials.crud_contract_types',
+                'label' => __('essentials::lang.crud_contract_types'),
+                'default' => false,
+            ],
+
         ];
     }
 
@@ -517,8 +523,9 @@ class DataController extends Controller
     {
         if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
             $business_id = session()->get('business.id');
-            $departments = Category::forDropdown($business_id, 'hrm_department');
+         //   $departments = Category::forDropdown($business_id, 'hrm_department');
             $designations = Category::forDropdown($business_id, 'hrm_designation');
+            $departments = EssentialsDepartment::pluck('name','id')->all();
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -530,7 +537,7 @@ class DataController extends Controller
                     ->toArray();
             }
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-            $allowance_types = essentialsAllowanceType::forDropdown();
+            $allowance_types = EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('description','id')->all();
             $entitlement_type = EssentialsEntitlementType::forDropdown();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::forDropdown();
             $basic_salary_types = EssentialsBasicSalaryType::forDropdown();
