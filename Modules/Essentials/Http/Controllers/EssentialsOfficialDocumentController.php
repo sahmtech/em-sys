@@ -63,20 +63,15 @@ class EssentialsOfficialDocumentController extends Controller
             }
     
             return Datatables::of($official_documents)
-                ->addColumn(
-                    'action',
-                    function ($row) {
-                        $html = '';
-                        if (auth()->user()->can('essentials.crud_all_leave')) {
-                       //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('doc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                      
-                        }
-    
-                     //   $html .= '&nbsp;<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal"  data-href=><i class="fa fa-edit"></i> ' . __('essentials::lang.activity') . '</button>';
-    
-                        return $html;
-                    }
-                )
+            ->addColumn(
+                'action',
+                function ($row) {
+                    $html = '';
+                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
+            
+                    return $html;
+                }
+            )
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
@@ -121,7 +116,7 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['number'] = $input['doc_number'];
             $input2['issue_date'] = $input['issue_date'];
             $input2['expiration_date'] = $input['expiration_date'];
-            $input2['employee_id'] = $input['employee'];
+            $input2['employee_id'] = $input['employee']; // Remove the extra space here
             $input2['status'] = $input['status'];
             $input2['issue_place'] = $input['issue_place'];
             
@@ -157,8 +152,19 @@ class EssentialsOfficialDocumentController extends Controller
      */
     public function show($id)
     {
-        return view('essentials::show');
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+       $doc = EssentialsOfficialDocument::findOrFail($id);
+
+       $user = User::where('id', $doc->employee_id)->first();
+        
+        return view('essentials::employee_affairs.official_docs.show')->with(compact('doc','user'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

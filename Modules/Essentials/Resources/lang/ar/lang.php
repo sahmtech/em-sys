@@ -514,6 +514,9 @@ return[
 'expired_date'=>' تاريخ الانتهاء',
 'issue_place'=>'مكان الإصدار',
 'issue_date'=>'تاريخ الإصدار',
+'doc_details'=>'تفاصيل الوثيقة',
+'view_doc'=>'عرض الوثيقة',
+'close'=>'إغلاق'
 
 
 
