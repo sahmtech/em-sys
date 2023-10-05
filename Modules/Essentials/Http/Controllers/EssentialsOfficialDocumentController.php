@@ -116,7 +116,7 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['number'] = $input['doc_number'];
             $input2['issue_date'] = $input['issue_date'];
             $input2['expiration_date'] = $input['expiration_date'];
-            $input2['employee_id'] = $input['employee']; // Remove the extra space here
+            $input2['employee_id'] = $input['employee'];
             $input2['status'] = $input['status'];
             $input2['issue_place'] = $input['issue_place'];
             

@@ -164,7 +164,7 @@
                 official_documents_table.ajax.reload();
             }
 
-            leaves_table = $('#official_documents_table').DataTable({
+            official_documents_table  = $('#official_documents_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -208,33 +208,8 @@
             $(document).on('change', '#user_id_filter, #status_filter, #doc_filter_date_range, #doc_type_filter', function() {
                 reloadDataTable();
             });
-            $(document).on('click', 'button.delete_doc_button', function () {
-            swal({
-                title: LANG.sure,
-                text: LANG.confirm_delete_doc,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    var href = $(this).data('href');
-                    $.ajax({
-                        method: "DELETE",
-                        url: href,
-                        dataType: "json",
-                        success: function (result) {
-                            if (result.success == true) {
-                                toastr.success(result.msg);
-                                business_docs_table.ajax.reload();
-                            } else {
-                                toastr.error(result.msg);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
+          
+       
             
         });
     
