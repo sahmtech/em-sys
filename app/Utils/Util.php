@@ -230,6 +230,7 @@ class Util
      */
     public function uf_date($date, $time = false)
     {
+        error_log(session('business.date_format'));
         $date_format = session('business.date_format');
         $mysql_format = 'Y-m-d';
         if ($time) {
@@ -240,7 +241,7 @@ class Util
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
-
+error_log( $date);
         return !empty($date_format) ? \Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
     }
 
