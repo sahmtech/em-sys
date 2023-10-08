@@ -565,4 +565,5 @@ return[
 'Allowance_type'=>'نوع البدل',
 'Entitlement_type'=>'نوع الاستحقاق',
 'Class_travel_tickets'=>'فئة تذاكر السفر',
+'add_Doc'=>'إضافة وثيقة'
 ];
