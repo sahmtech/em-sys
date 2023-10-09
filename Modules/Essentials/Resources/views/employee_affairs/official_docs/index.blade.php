@@ -10,44 +10,46 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                @if(!empty($users))
+            @if (!empty($users))
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('user_id_filter', __('essentials::lang.employee') . ':') !!}
                         {!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                     </div>
                 </div>
-                @endif
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('doc_type_filter', __('essentials::lang.doc_type') . ':') !!}
-                        <select class="form-control select2" name="doc_type_filter" required id="doc_type_filter" style="width: 100%;">
-                            <option value="national_id">@lang('essentials::lang.national_id')</option>
-                            <option value="passport">@lang('essentials::lang.passport')</option>
-                            <option value="residence_permit">@lang('essentials::lang.residence_permit')</option>
-                            <option value="drivers_license">@lang('essentials::lang.drivers_license')</option>
-                            <option value="car_registration">@lang('essentials::lang.car_registration')</option>
-                            <option value="international_certificate">@lang('essentials::lang.international_certificate')</option>
-                        </select>
-                    </div>
+            @endif
+        
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('doc_type_filter', __('essentials::lang.doc_type') . ':') !!}
+                    <select class="form-control select2" name="doc_type_filter" required id="doc_type_filter" style="width: 100%;">
+                        <option value="all">@lang('lang_v1.all')</option>
+                        <option value="national_id">@lang('essentials::lang.national_id')</option>
+                        <option value="passport">@lang('essentials::lang.passport')</option>
+                        <option value="residence_permit">@lang('essentials::lang.residence_permit')</option>
+                        <option value="drivers_license">@lang('essentials::lang.drivers_license')</option>
+                        <option value="car_registration">@lang('essentials::lang.car_registration')</option>
+                        <option value="international_certificate">@lang('essentials::lang.international_certificate')</option>
+                    </select>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="status_filter">@lang( 'essentials::lang.status' ):</label>
-                        <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
-                            <option value="valid">@lang('essentials::lang.valid')</option>
-                            <option value="expired">@lang('essentials::lang.expired')</option>
-                        </select>
-                    </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="status_filter">@lang('essentials::lang.status'):</label>
+                    <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
+                        <option value="all">@lang('lang_v1.all')</option>
+                        <option value="valid">@lang('essentials::lang.valid')</option>
+                        <option value="expired">@lang('essentials::lang.expired')</option>
+                    </select>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('doc_filter_date_range', __('report.date_range') . ':') !!}
-                        {!! Form::text('doc_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-                    </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('doc_filter_date_range', __('report.date_range') . ':') !!}
+                    {!! Form::text('doc_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
                 </div>
-            @endcomponent
+            </div>
+        @endcomponent
         </div>
     </div>
 
@@ -185,14 +187,39 @@
                 },
                 
                 columns: [
-                    { data: 'user' },
-                    { data: 'number' },
-                    { data: 'type' },
-                    { data: 'expiration_date' },
-                    { data: 'status' },
-                    { data: 'action' },
-                ],
-            });
+                        { data: 'user' },
+                        { data: 'number' },
+                        {data: 'type',
+                                    render: function (data, type, row) {
+                                        if (data === 'national_id') {
+                                            return '@lang('essentials::lang.national_id')';
+                                        } else if (data === 'passport') {
+                                            return '@lang('essentials::lang.passport')';
+                                        } else if (data === 'residence_permit') {
+                                            return '@lang('essentials::lang.residence_permit')';
+                                        } else if (data === 'drivers_license') {
+                                            return '@lang('essentials::lang.drivers_license')';
+                                        } else if (data === 'car_registration') {
+                                            return '@lang('essentials::lang.car_registration')';
+                                        } else {
+                                            return '@lang('essentials::lang.international_certificate')';
+                                        }
+                                    }
+                                },
+                        { data: 'expiration_date' },
+                        {
+                            data: 'status',
+                            render: function (data, type, row) {
+                                if (data === 'valid') {
+                                    return  '@lang('essentials::lang.valid')';
+                                } else {
+                                    return  '@lang('essentials::lang.expired')';
+                                }
+                            }
+                        },
+                        { data: 'action' },
+                    ],
+             });
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
