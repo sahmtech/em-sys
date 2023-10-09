@@ -48,7 +48,7 @@
         </div>
         </div> <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">@lang('essentials::lang.close')</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href = '{{ env('APP_path') }}/uploads/{{ $doc->file_path }}'">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href = '/uploads/{{ $doc->file_path }}'">
             @lang('essentials::lang.view_doc')
         </button>
 

@@ -15,12 +15,7 @@
   <div class="row">
     <div class="col-md-12">
   @component('components.widget')
-      <div class="col-md-2">
-        <div class="form-group">
-          {!! Form::label('surname', __( 'business.prefix' ) . ':') !!}
-            {!! Form::text('surname', null, ['class' => 'form-control', 'placeholder' => __( 'business.prefix_placeholder' ) ]); !!}
-        </div>
-      </div>
+      
       <div class="col-md-5">
         <div class="form-group">
           {!! Form::label('first_name', __( 'business.first_name' ) . ':*') !!}
@@ -29,12 +24,41 @@
       </div>
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('last_name', __( 'business.last_name' ) . ':') !!}
-            {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
+          {!! Form::label('mid_name', __( 'business.mid_name' ) . ':') !!}
+            {!! Form::text('mid_name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.mid_name' ) ]); !!}
         </div>
       </div>
-
-
+      <div class="col-md-5">
+        <div class="form-group">
+          {!! Form::label('last_name', __( 'business.last_name' ) . ':') !!}
+          {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="form-group">
+          {!! Form::label('email', __( 'business.email' ) . ':') !!}
+          {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __( 'business.email' ) ]); !!}
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="form-group">
+          {!! Form::label('profile_picture', __('user.profile_picture') . ':') !!}
+          {!! Form::file('profile_picture', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+        </div>
+        
+      </div>
+      <div class="col-md-5">
+        <div class="form-group">
+          {!! Form::label('user_type', __( 'user.user_type' ) . ':*') !!}
+            {!! Form::select('user_type',['manager' => __('user.manager'),
+              'employee' => __('user.employee'),
+              'worker' => __('user.worker'),
+        
+              ]
+            , null, ['class' => 'form-control', 'required', 'placeholder' => __( 'user.user_type' ) ]); !!}
+        </div>
+      </div>
+   
       {{-- <div class="clearfix"></div>
       <div class="col-md-4">
         <div class="form-group">

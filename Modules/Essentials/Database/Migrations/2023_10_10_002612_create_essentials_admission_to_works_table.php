@@ -13,19 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_employee_contracts', function (Blueprint $table) {
+        
+        Schema::create('essentials_admission_to_works', function (Blueprint $table) {
             $table->id();
-            $table->string('contract_number');
             $table->unsignedInteger('employee_id');
+            $table->unsignedBigInteger('department_id');
+            $table->enum('admissions_type', ['first_time', 'after_vac']);
+            $table->enum('admissions_status', ['on_date', 'delay']);
+            $table->date('admissions_date');
             $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
-            $table->date('contract_start_date');
-            $table->date('contract_end_date'); 
-            $table->integer('contract_duration'); 
-            $table->string('probation_period'); 
-            $table->decimal('salary', 10, 2);
-            $table->string('profile_image');
-            $table->boolean('is_active'); 
-            $table->boolean('is_renewable');
+            $table->foreign('department_id')->references('id')->on('essentials_departments')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -37,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('essentials_employee_contracts');
+        Schema::dropIfExists('essentials_admission_to_works');
     }
 };

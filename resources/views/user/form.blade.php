@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
 @php
   $custom_labels = json_decode(session('business.custom_labels'), true);
   $user_custom_field1 = !empty($custom_labels['user']['custom_field_1']) ? $custom_labels['user']['custom_field_1'] : __('lang_v1.user_custom_field1');
@@ -34,15 +40,38 @@
     {!! Form::label('family_number', __( 'lang_v1.family_contact_number' ) . ':') !!}
     {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.family_contact_number') ]); !!}
 </div>
+
+
+<div class="clearfix"></div>
+<div class="form-group col-md-6">
+    {!! Form::label('permanent_address', __( 'lang_v1.permanent_address') . ':') !!}
+    {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.permanent_address'), 'rows' => 3 ]); !!}
+</div>
+<div class="form-group col-md-6">
+    {!! Form::label('current_address', __( 'lang_v1.current_address') . ':') !!}
+    {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
+</div>
 <div class="form-group col-md-3">
+    {!! Form::label('id_proof_name', __( 'lang_v1.id_proof_name') . ':') !!}
+    <select id="id_proof_name" name="id_proof_name" class="form-control">
+        <option value="national_id">@lang('user.national_id')</option>
+        <option value="eqama">@lang('user.eqama')</option>
+    </select>
+</div>
+
+<div class="form-group col-md-3">
+    {!! Form::label('id_proof_number', __( 'lang_v1.id_proof_number') . ':') !!}
+    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.id_proof_number' ) ]); !!}
+</div>
+{{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
     {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
-</div>
-<div class="form-group col-md-3">
+</div> --}}
+{{-- <div class="form-group col-md-3">
     {!! Form::label('twitter_link', __( 'lang_v1.twitter_link' ) . ':') !!}
     {!! Form::text('twitter_link', !empty($user->twitter_link) ? $user->twitter_link : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.twitter_link') ]); !!}
-</div>
-<div class="form-group col-md-3">
+</div> --}}
+{{-- <div class="form-group col-md-3">
     {!! Form::label('social_media_1', __( 'lang_v1.social_media', ['number' => 1] ) . ':') !!}
     {!! Form::text('social_media_1', !empty($user->social_media_1) ? $user->social_media_1 : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.social_media', ['number' => 1] ) ]); !!}
 </div>
@@ -70,24 +99,7 @@
 <div class="form-group col-md-3">
     {!! Form::label('guardian_name', __( 'lang_v1.guardian_name') . ':') !!}
     {!! Form::text('guardian_name', !empty($user->guardian_name) ? $user->guardian_name : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.guardian_name' ) ]); !!}
-</div>
-<div class="form-group col-md-3">
-    {!! Form::label('id_proof_name', __( 'lang_v1.id_proof_name') . ':') !!}
-    {!! Form::text('id_proof_name', !empty($user->id_proof_name) ? $user->id_proof_name : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.id_proof_name' ) ]); !!}
-</div>
-<div class="form-group col-md-3">
-    {!! Form::label('id_proof_number', __( 'lang_v1.id_proof_number') . ':') !!}
-    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.id_proof_number' ) ]); !!}
-</div>
-<div class="clearfix"></div>
-<div class="form-group col-md-6">
-    {!! Form::label('permanent_address', __( 'lang_v1.permanent_address') . ':') !!}
-    {!! Form::textarea('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.permanent_address'), 'rows' => 3 ]); !!}
-</div>
-<div class="form-group col-md-6">
-    {!! Form::label('current_address', __( 'lang_v1.current_address') . ':') !!}
-    {!! Form::textarea('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
-</div>
+</div> --}}
 <div class="col-md-12">
     <hr>
     <h4>@lang('lang_v1.bank_details'):</h4>
@@ -112,8 +124,29 @@
     {!! Form::label('branch', __( 'lang_v1.branch') . ':') !!}
     {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, ['class' => 'form-control', 'id' => 'branch', 'placeholder' => __( 'lang_v1.branch') ]); !!}
 </div>
-<div class="form-group col-md-3">
+{{-- <div class="form-group col-md-3">
     {!! Form::label('tax_payer_id', __( 'lang_v1.tax_payer_id') . ':') !!}
     @show_tooltip(__('lang_v1.tax_payer_id_help'))
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
-</div>
+</div> --}}
+
+<script>
+    $(document).ready(function() {
+        $('#id_proof_name').change(function() {
+            var idProofName = $(this).val();
+            var idProofNumber = $('#id_proof_number');
+
+            idProofNumber.val('');
+
+            if (idProofName === 'national_id') {
+                idProofNumber.attr('placeholder', '@lang('user.add_10_numbers')');
+                idProofNumber.attr('maxlength', 10);
+            } else if (idProofName === 'eqama') {
+                idProofNumber.attr('placeholder', '@lang('user.add_13_numbers')');
+                idProofNumber.attr('maxlength', 13);
+            }
+        });
+    });
+</script>
+</body>
+</html>
