@@ -565,4 +565,11 @@ return[
 'Allowance_type'=>'نوع البدل',
 'Entitlement_type'=>'نوع الاستحقاق',
 'Class_travel_tickets'=>'فئة تذاكر السفر',
+'crud_insurance_companies'=>'إضافة / تعديل / عرض / حذف شركات التأمين  ',
+'insurance_companies'=>'شركات التأمين',
+'business_name'=>'المنشأة',
+'insurance_company'=>'شركة التأمين',
+'city'=>'المدينة',
+'state'=>'المنطقة',
+'tax_number'=>'الرقم الضريبي',
 ];
