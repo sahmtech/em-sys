@@ -1557,13 +1557,17 @@ error_log( $date);
     public function createUser($request)
     {
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email',
+            'surname', 'first_name', 'last_name', 'email','mid_name','profile_picture',
             'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1',
             'custom_field_2', 'custom_field_3', 'custom_field_4', 'guardian_name', 'id_proof_name', 'id_proof_number', 'permanent_address', 'current_address', 'bank_details', 'selected_contacts',
         ]);
-
+        if ($request->hasFile('profile_picture')) {
+            $image = $request->file('profile_picture');
+             $profile= $image->store('/profile_images');
+            $user_details['profile_image'] = $profile;}
+    
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'inactive';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
 
