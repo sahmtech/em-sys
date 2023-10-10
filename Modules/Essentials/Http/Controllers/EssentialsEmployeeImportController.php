@@ -102,10 +102,14 @@ class EssentialsEmployeeImportController extends Controller
 
                     $emp_array['first_name'] = $value[1];
                     $emp_array['last_name'] = $value[2];
-
-                    if (! empty( $emp_array['dob'])) {
-                        $emp_array['dob'] = $this->moduleUtil->uf_date($value[3]);
+                    if (!empty($value[3])) {
+                        // Parse the date using strtotime and then format it as needed
+                        $dob = date('Y-m-d', strtotime($value[3]));
+                        
+                        // Add the formatted date to the array
+                        $emp_array['dob'] = $dob;
                     }
+                  
                     
                     $emp_array['gender'] = $value[4];
                     $emp_array['marital_status'] = $value[5];
@@ -155,11 +159,22 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['qualification_type']= $value[29];
 
                     $contract_array['contract_number'] = $value[30];
-                    if (!  $contract_array['contract_start_date']) {
-                        $contract_array['contract_start_date'] = $this->moduleUtil->uf_date( $value[31]);
+                  
+                    if (!empty($value[31])) {
+                        // Parse the date using strtotime and then format it as needed
+                        $contract_start_date = date('Y-m-d', strtotime($value[31]));
+                        
+                        // Add the formatted date to the array
+                        $contract_array['contract_start_date'] = $contract_start_date;
                     }
-                    if (!  $contract_array['contract_end_date']) {
-                        $contract_array['contract_end_date'] = $this->moduleUtil->uf_date( $value[32]);
+
+                     
+                    if (!empty($value[32])) {
+                        // Parse the date using strtotime and then format it as needed
+                        $contract_end_date = date('Y-m-d', strtotime($value[32]));
+                        
+                        // Add the formatted date to the array
+                        $contract_array['contract_end_date'] = $contract_end_date;
                     }
                     
                     $contract_array['contract_duration'] = $value[33];
