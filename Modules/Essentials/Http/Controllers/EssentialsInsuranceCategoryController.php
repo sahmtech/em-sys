@@ -9,7 +9,7 @@ use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
 class EssentialsInsuranceCategoryController extends Controller
 {
@@ -36,7 +36,7 @@ class EssentialsInsuranceCategoryController extends Controller
             abort(403, 'Unauthorized action.');
         }
         if (request()->ajax()) {
-            $insuranceCompanies = DB::table('essentials_insurance_classes')->select([
+            $insuranceCategories = DB::table('essentials_insurance_classes')->select([
                 'id',
                 'name',
             ]);
@@ -61,7 +61,7 @@ class EssentialsInsuranceCategoryController extends Controller
             //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
             // }
     
-            return Datatables::of($insuranceCompanies)
+            return Datatables::of($insuranceCategories)
             //' . route('doc.view', ['id' => $row->id]) . '
             ->addColumn(
                 'action',
@@ -101,7 +101,36 @@ class EssentialsInsuranceCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $business_id = $request->session()->get('user.business_id');
+        $user_id = $request->session()->get('user.id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['insurance_category_name']);
+
+            $insurance_category_data['name'] = $input['insurance_category_name'];
+
+            EssentialsInsuranceClass::create($insurance_category_data);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->route('insurance_categories')->with('status', $output);
     }
 
     /**

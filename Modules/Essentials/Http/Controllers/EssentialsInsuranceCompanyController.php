@@ -13,6 +13,7 @@ use Modules\Essentials\Entities\EssentialsCountry;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsCity;
 
+
 class EssentialsInsuranceCompanyController extends Controller
 {
     protected $moduleUtil;
@@ -93,7 +94,7 @@ class EssentialsInsuranceCompanyController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $cities = EssentialsCity::forDropdown();
         $businesses = Business::forDropdown();  
-        return view('essentials::settings.partials.insurance_companies')->with(compact('countries','cities','businesses'));
+        return view('essentials::insurance_companies.index')->with(compact('countries','cities','businesses'));
      }
 
     /**
@@ -112,7 +113,43 @@ class EssentialsInsuranceCompanyController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+        
+        $business_id = $request->session()->get('user.business_id');
+        $user_id = $request->session()->get('user.id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['business_name', 'insurance_company', 'city', 'state', 'country','address','tax_number','phone_number','mobile_number']);
+            $Contact_data['business_id']=$business_id;
+            $Contact_data['created_by']=$user_id;
+            $Contact_data['supplier_business_name']=$input['insurance_company'];
+            $Contact_data['name']=$input['business_name'];
+            $Contact_data['tax_number']=$input['tax_number'];
+            $Contact_data['city']=$input['city'];
+            $Contact_data['state']=$input['state'];
+            $Contact_data['country']=$input['country'];
+            $Contact_data['address_line_1']=$input['address'];
+            $Contact_data['landline']=$input['phone_number'];
+            $Contact_data['mobile']=$input['mobile_number'];
+            $Contact_data['created_by ']=$input['mobile_number'];
+            $Contact_data['type']='insurance';
+            Contact::create($Contact_data);
+            $output = ['success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+           error_log( print_r('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage()));
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->route('insurance_companies')->with('status', $output);
     }
 
     /**

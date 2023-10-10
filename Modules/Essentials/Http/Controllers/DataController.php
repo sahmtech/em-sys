@@ -484,10 +484,16 @@ class DataController extends Controller
                         )->order(8);
 
                         $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'index']),
+                            __('essentials::lang.insurance_companies'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_companies'],
+                        )->order(9);
+
+                        $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
                             __('essentials::lang.system_settings'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                        )->order(9);
+                        )->order(10);
 
                         
                         if (auth()->user()->can('view_employee_settings')) 
@@ -496,14 +502,14 @@ class DataController extends Controller
                                 action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
                                 __('essentials::lang.employees_settings'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
-                            )->order(10);
+                            )->order(11);
                         }
 
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
                             __('essentials::lang.import_employees'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import_employee'],
-                        )->order(11);
+                        )->order(12);
 
                         if (auth()->user()->can('curd_organizational_structure')) 
                             {
@@ -512,7 +518,7 @@ class DataController extends Controller
                                     action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
                                             __('essentials::lang.organizational_structure'),
                                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                      )->order(12);
+                      )->order(13);
                     }},
                     [
                         'icon' => 'fa fas fa-users',

@@ -574,6 +574,7 @@ return[
 'tax_number'=>'الرقم الضريبي',
 'add_Doc'=>'إضافة وثيقة',
 'insurance_categories'=>'فئات التأمين',
+'insurance_category_name'=>'اسم الفئة',
 'insurance_policy_number'=>'رقم البوليصة',
 'insurance_policy_value'=>'قيمة البوليصة',
 'insurance_employees_count'=>'عدد الموظفين',
@@ -582,4 +583,6 @@ return[
 'insurance_end_date'=>'تاريخ النهاية',
 'insurance_attachments'=>'المرفقات',
 'add_insurance_contract'=>'إضافة عقد تأمين',
+'add_insurance_company'=>'إضافة شركة تأمين',
+'add_insurance_category'=>'إضافة فئة تأمين',
 ];

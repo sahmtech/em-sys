@@ -58,7 +58,7 @@
                 @slot('tool')
                 <div class="box-tools">
                     
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal" data-target="#addDocModal">
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal" data-target="#addInsuranceCategoryModal">
                         <i class="fa fa-plus"></i> @lang('messages.add')
                     </button>
                 </div>
@@ -69,7 +69,7 @@
                     <table class="table table-bordered table-striped" id="insurance_companies_table">
                         <thead>
                             <tr>
-                                <th>@lang('essentials::lang.insurance_company' )</th>
+                                <th>@lang('essentials::lang.insurance_category_name' )</th>
                                 <th>@lang('messages.action' )</th>
                             </tr>
                         </thead>
@@ -77,66 +77,34 @@
                 </div>
             @endcomponent
         </div>
-        {{-- <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal fade" id="addInsuranceCategoryModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
-                    {!! Form::open(['route' => 'storeOfficialDoc' , 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'insurance_categories.store']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
+                        <h4 class="modal-title">@lang('essentials::lang.add_insurance_category')</h4>
                     </div>
         
                     <div class="modal-body">
     
                         <div class="row">
                             <div class="form-group col-md-6">
-                                {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => 'Select employee', 'required']) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
-                                {!! Form::select('doc_type', [
-                                   
-                                    'national_id'=>__('essentials::lang.national_id'),
-                                    'passport'=>__('essentials::lang.passport'),
-                                    'residence_permit'=>__('essentials::lang.residence_permit'),
-                                    'drivers_license'=>__('essentials::lang.drivers_license'),
-                                    'car_registration'=>__('essentials::lang.car_registration'),
-                                    'international_certificate'=>__('essentials::lang.international_certificate'),
-                                ], null, ['class' => 'form-control', 'placeholder' => 'Select type', 'required']) !!}
-                            </div>
-        
-                            <div class="form-group col-md-6">
-                                {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
-                                {!! Form::number('doc_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.doc_number'), 'required']) !!}
-                            </div>
-        
-                            <div class="form-group col-md-6">
-                                {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
-                                {!! Form::date('issue_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_date'), 'required']) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
-                                {!! Form::text('issue_place', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_place'), 'required']) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-                                {!! Form::select('status', [
-                                'valid' => __('essentials::lang.valid'),
-                                'expired' => __('essentials::lang.expired'),
-                              
-                            ], null, ['class' => 'form-control', 'placeholder' => 'Select status', 'required']) !!}
-                        </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
-                                {!! Form::date('expiration_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.expiration_date'), 'required']) !!}
-                            </div>
-                        
-                            <div class="form-group col-md-6">
-                                {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
-                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
-                            </div>
+                                {!! Form::label('insurance_category_name', __('essentials::lang.insurance_category_name') . ':*') !!}
+                                {!! Form::select('insurance_category_name',
+                                ['VIP+'=>'VIP+',
+                                'VIP'=>'VIP',
+                                'A+'=>'A+',
+                                'A'=>'A',
+                                'B+'=>'B+',
+                                'B'=>'B',
+                                'C+'=>'C+',
+                                'C'=>'C',
+                                'CR+'=>'CR+',
+                                'CR'=>'CR'],
+                                 null, ['class' => 'form-control', 'required']) !!}
+                            </div>        
                         </div>
                     </div>
         
@@ -147,7 +115,7 @@
                     {!! Form::close() !!}
                 </div>
             </div>
-        </div> --}}
+        </div>
     </div>
 </section>
 @endsection
@@ -164,7 +132,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ route('insurance_companies') }}",
+                    "url": "{{ route('insurance_categories') }}",
                     // "data": function(d) {
                     //     if ($('#user_id_filter').length) {
                     //         d.user_id = $('#user_id_filter').val();

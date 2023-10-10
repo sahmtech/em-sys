@@ -27,59 +27,58 @@ class EssentialsInsuranceContractController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-    
+
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
         $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
-        if (! $can_crud_insurance_companies) {
+        if (!$can_crud_insurance_companies) {
             abort(403, 'Unauthorized action.');
         }
         if (request()->ajax()) {
             $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
-               'id',
-               'insurance_company_id',
-               'employees_count',
-               'dependents_count',
-               'insurance_start_date',
-               'insurance_end_date',
-               'policy_number',
-               'policy_value',
-               'attachments',
-               
+                'id',
+                'insurance_company_id',
+                'employees_count',
+                'dependents_count',
+                'insurance_start_date',
+                'insurance_end_date',
+                'policy_number',
+                'policy_value',
+                'attachments',
             ]);
 
-    
+
             // if (!empty(request()->input('user_id'))) {
             //     $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
             // }
-    
+
             // if (!empty(request()->input('status'))) {
             //     $official_documents->where('essentials_official_documents.status', request()->input('status'));
             // }
-    
+
             // if (!empty(request()->input('doc_type'))) {
             //     $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
             // }
-    
+
             // if (!empty(request()->start_date) && !empty(request()->end_date)) {
             //     $start = request()->start_date;
             //     $end = request()->end_date;
             //     $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
             //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
             // }
-    
+
             return Datatables::of($insuranceContracts)
-            //' . route('doc.view', ['id' => $row->id]) . '
-            ->addColumn(
-                'action',
-                function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
-            
-                    return $html;
-                }
-            )
+                //' . route('doc.view', ['id' => $row->id]) . '
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '';
+                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
+
+                        return $html;
+                    }
+                )
                 // ->filterColumn('supplier_business_name', function ($query, $keyword) {
                 //     $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
                 // })
@@ -87,13 +86,14 @@ class EssentialsInsuranceContractController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        
-        return view('essentials::insurance_contracts.index');
-     }
+        $business_id = request()->session()->get('user.business_id');
+        $insuramce_companies = Contact::where('business_id', $business_id)->pluck('supplier_business_name', 'id',);
+        return view('essentials::insurance_contracts.index')->with(compact('insuramce_companies'));
+    }
 
-   
 
-    
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -111,7 +111,43 @@ class EssentialsInsuranceContractController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $business_id = $request->session()->get('user.business_id');
+        $user_id = $request->session()->get('user.id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['insurance_company', 'policy_number','policy_value','insurance_employees_count','insurance_dependents_count','insurance_start_date','insurance_end_date','insurance_attachments']);
+            $file = request()->file('insurance_attachments');
+            $filePath = $file->store('/insuranceContracts');
+            $insurance_contract_data['attachments'] = $filePath;
+            $insurance_contract_data['employees_count'] =  $input['insurance_employees_count'];
+            $insurance_contract_data['dependents_count'] = $input['insurance_dependents_count'];
+            $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
+            $insurance_contract_data['insurance_end_date'] =  $input['insurance_end_date'];
+            $insurance_contract_data['insurance_company_id'] = $input['insurance_company'];
+            $insurance_contract_data['policy_number'] =  $input['policy_number'];
+            $insurance_contract_data['policy_value'] = $input['policy_value'];
+            EssentialsInsuranceContract::create($insurance_contract_data);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->route('insurance_contracts')->with('status', $output);
     }
 
     /**

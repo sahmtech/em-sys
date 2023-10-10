@@ -1,9 +1,21 @@
-<div class="pos-tab-content">
+@extends('layouts.app')
+@section('title', __('essentials::lang.insurance_companies'))
 
+@section('content')
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <span>@lang('essentials::lang.insurance_companies')</span>
+    </h1>
+</section>
+
+
+<section class="content">
 
         {{-- <div class="row">
             <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-primary'])
                     @if(!empty($users))
                     <div class="col-md-3">
                         <div class="form-group">
@@ -79,38 +91,38 @@
                     </div>
                 @endcomponent
             </div>
-            {{-- <div class="modal fade" id="addInsuranceCompanyModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal fade" id="addInsuranceCompanyModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
     
                         {!! Form::open(['route' => 'insurance_companies.store' , 'enctype' => 'multipart/form-data']) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
+                            <h4 class="modal-title">@lang('essentials::lang.add_insurance_company')</h4>
                         </div>
             
                         <div class="modal-body">
         
                             <div class="row">
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('business_name', __('essentials::lang.business_name') . ':*') !!}
-                                    {!! Form::select('business_name', $businesses, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.business_name'), 'required']) !!}
+                                    {!! Form::select('business_name', $businesses, null, ['class' => 'form-control select2',  'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
                                     {!! Form::text('insurance_company', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_company'), 'required']) !!}
                                 </div>
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('city', __('essentials::lang.city') . ':*') !!}
-                                    {!! Form::select('city', $cities, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.city'), 'required']) !!}
+                                    {!! Form::select('city', $cities, null, ['class' => 'form-control select2',  'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('state', __('essentials::lang.state') . ':*') !!}
                                     {!! Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.state'), 'required']) !!}
                                 </div>
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('country', __('essentials::lang.country') . ':*') !!}
-                                    {!! Form::select('country', $countries, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.country'), 'required']) !!}
+                                    {!! Form::select('country', $countries, null, ['class' => 'form-control select2','required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('address', __('essentials::lang.address') . ':*') !!}
@@ -138,9 +150,10 @@
                         {!! Form::close() !!}
                     </div>
                 </div>
-            </div> --}}
+            </div>
         </div>
- 
+    </section>
+    @endsection
     @section('javascript')
         <script type="text/javascript">
             $(document).ready(function() {
@@ -205,4 +218,4 @@
         
         </script>
     @endsection
-</div>
+
