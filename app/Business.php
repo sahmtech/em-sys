@@ -40,6 +40,12 @@ class Business extends Model
         'common_settings' => 'array',
         'weighing_scale_setting' => 'array',
     ];
+    public static function forDropdown()
+    {
+        $businesses = Business::all()->pluck('name','id');
+        
+        return $businesses;
+    }
 
     /**
      * Returns the date formats

@@ -572,5 +572,14 @@ return[
 'city'=>'المدينة',
 'state'=>'المنطقة',
 'tax_number'=>'الرقم الضريبي',
-'add_Doc'=>'إضافة وثيقة'
+'add_Doc'=>'إضافة وثيقة',
+'insurance_categories'=>'فئات التأمين',
+'insurance_policy_number'=>'رقم البوليصة',
+'insurance_policy_value'=>'قيمة البوليصة',
+'insurance_employees_count'=>'عدد الموظفين',
+'insurance_dependents_count'=>'عدد التابعين',
+'insurance_start_date'=>'تاريخ البداية',
+'insurance_end_date'=>'تاريخ النهاية',
+'insurance_attachments'=>'المرفقات',
+'add_insurance_contract'=>'إضافة عقد تأمين',
 ];

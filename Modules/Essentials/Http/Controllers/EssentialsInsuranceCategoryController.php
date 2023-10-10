@@ -2,19 +2,19 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\Business;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCountry;
-use App\Contact;
-use Modules\Essentials\Entities\EssentialsCity;
 
-class EssentialsInsuranceCompanyController extends Controller
+
+class EssentialsInsuranceCategoryController extends Controller
 {
+
+
     protected $moduleUtil;
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -36,19 +36,9 @@ class EssentialsInsuranceCompanyController extends Controller
             abort(403, 'Unauthorized action.');
         }
         if (request()->ajax()) {
-            $insuranceCompanies = Contact::join('business', 'business.id', '=', 'contacts.business_id')
-            ->where('contacts.type','insurance')
-            ->select([
-                'contacts.id',
-                'business.name',
-                'contacts.supplier_business_name',
-                'contacts.city',
-                'contacts.state',
-                'contacts.country',
-                'contacts.tax_number',
-                'contacts.address_line_1',
-                'contacts.mobile',
-                'contacts.landline',
+            $insuranceCompanies = DB::table('essentials_insurance_classes')->select([
+                'id',
+                'name',
             ]);
 
     
@@ -82,19 +72,18 @@ class EssentialsInsuranceCompanyController extends Controller
                     return $html;
                 }
             )
-                ->filterColumn('supplier_business_name', function ($query, $keyword) {
-                    $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name',"LIKE", "%{$keyword}%");
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        $countries = EssentialsCountry::forDropdown();
-        $cities = EssentialsCity::forDropdown();
-        $businesses = Business::forDropdown();  
-        return view('essentials::settings.partials.insurance_companies')->with(compact('countries','cities','businesses'));
+        return view('essentials::settings.partials.insurance_categories.index');
      }
+
+   
 
     /**
      * Show the form for creating a new resource.
@@ -112,7 +101,7 @@ class EssentialsInsuranceCompanyController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+        //
     }
 
     /**

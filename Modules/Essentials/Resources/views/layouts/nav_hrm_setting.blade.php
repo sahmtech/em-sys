@@ -70,12 +70,13 @@
                             <a href="{{ route('contract_types') }}">@lang('essentials::lang.contract_types')</a>
                         </li>
                     @endif
-
-                    @if(auth()->user()->can('essentials.crud_insurance_companies') )
-                        <li @if(request()->segment(2) == 'insurance_companies') class="active" @endif>
-                            <a href="{{ route('insurance_companies') }}">@lang('essentials::lang.insurance_companies')</a>
+ 
+                    @if(auth()->user()->can('essentials.crud_insurance_classes') )
+                        <li @if(request()->segment(2) == 'insurance_categories') class="active" @endif>
+                            <a href="{{ route('insurance_categories') }}">@lang('essentials::lang.insurance_categories')</a>
                         </li>
                     @endif
+                   
                     {{-- @if(auth()->user()->can('essentials.access_sales_target') )
                         <li @if(request()->segment(2) == 'sales_target') class="active" @endif>
                             <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>

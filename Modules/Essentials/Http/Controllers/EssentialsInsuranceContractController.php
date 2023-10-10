@@ -2,7 +2,6 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\Business;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -12,8 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\Essentials\Entities\EssentialsInsuranceContract;
 
-class EssentialsInsuranceCompanyController extends Controller
+class EssentialsInsuranceContractController extends Controller
 {
     protected $moduleUtil;
     public function __construct(ModuleUtil $moduleUtil)
@@ -36,19 +36,17 @@ class EssentialsInsuranceCompanyController extends Controller
             abort(403, 'Unauthorized action.');
         }
         if (request()->ajax()) {
-            $insuranceCompanies = Contact::join('business', 'business.id', '=', 'contacts.business_id')
-            ->where('contacts.type','insurance')
-            ->select([
-                'contacts.id',
-                'business.name',
-                'contacts.supplier_business_name',
-                'contacts.city',
-                'contacts.state',
-                'contacts.country',
-                'contacts.tax_number',
-                'contacts.address_line_1',
-                'contacts.mobile',
-                'contacts.landline',
+            $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
+               'id',
+               'insurance_company_id',
+               'employees_count',
+               'dependents_count',
+               'insurance_start_date',
+               'insurance_end_date',
+               'policy_number',
+               'policy_value',
+               'attachments',
+               
             ]);
 
     
@@ -71,7 +69,7 @@ class EssentialsInsuranceCompanyController extends Controller
             //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
             // }
     
-            return Datatables::of($insuranceCompanies)
+            return Datatables::of($insuranceContracts)
             //' . route('doc.view', ['id' => $row->id]) . '
             ->addColumn(
                 'action',
@@ -82,19 +80,20 @@ class EssentialsInsuranceCompanyController extends Controller
                     return $html;
                 }
             )
-                ->filterColumn('supplier_business_name', function ($query, $keyword) {
-                    $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
-                })
+                // ->filterColumn('supplier_business_name', function ($query, $keyword) {
+                //     $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
+                // })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
-        $countries = EssentialsCountry::forDropdown();
-        $cities = EssentialsCity::forDropdown();
-        $businesses = Business::forDropdown();  
-        return view('essentials::settings.partials.insurance_companies')->with(compact('countries','cities','businesses'));
+        
+        return view('essentials::insurance_contracts.index');
      }
+
+   
+
+    
 
     /**
      * Show the form for creating a new resource.
@@ -112,7 +111,7 @@ class EssentialsInsuranceCompanyController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+        //
     }
 
     /**

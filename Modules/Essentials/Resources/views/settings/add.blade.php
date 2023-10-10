@@ -21,7 +21,10 @@
                         <a href="#" class="list-group-item text-center">@lang('essentials::lang.attendance')</a>
                         {{-- <a href="#" class="list-group-item text-center">@lang('essentials::lang.sales_target')</a> --}}
                         <a href="#" class="list-group-item text-center">@lang('essentials::lang.essentials')</a>
-                        
+                        <a href="#" class="list-group-item text-center">@lang('essentials::lang.insurance_companies')</a>
+
+                       
+            
                         
                     </div>
                   
@@ -41,10 +44,15 @@
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.essentials_settings')
                 </div>
-               
-               
+                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
+                    @include('essentials::settings.partials.insurance_companies') 
+                </div> 
+              
             </div>
-            
+            {{-- @if(auth()->user()->can('essentials.crud_insurance_companies') )
+            <li @if(request()->segment(2) == 'insurance_companies') class="active" @endif>
+                <a href="{{ route('insurance_companies') }}">@lang('essentials::lang.insurance_companies')</a>
+            </li> --}}
           
 
             <!--  </pos-tab-container> -->

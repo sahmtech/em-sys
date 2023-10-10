@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.insurance_companies'))
+@section('title', __('essentials::lang.insurance_categories'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm_setting')
 <section class="content-header">
-    <h1>@lang('essentials::lang.insurance_companies')</h1>
+    <h1>@lang('essentials::lang.insurance_categories')</h1>
 </section>
 <section class="content">
     {{-- <div class="row">
@@ -69,15 +69,7 @@
                     <table class="table table-bordered table-striped" id="insurance_companies_table">
                         <thead>
                             <tr>
-                                <th>@lang('essentials::lang.business_name' )</th>
-                                <th>@lang('essentials::lang.insurance_company')</th>
-                                <th>@lang('essentials::lang.city' )</th>
-                                <th>@lang('essentials::lang.state' )</th>
-                                <th>@lang('essentials::lang.country' )</th>
-                                <th>@lang('essentials::lang.address' )</th>
-                                <th>@lang('essentials::lang.tax_number' )</th>
-                                <th>@lang('essentials::lang.phone_number' )</th>
-                                <th>@lang('essentials::lang.mobile_number' )</th>
+                                <th>@lang('essentials::lang.insurance_company' )</th>
                                 <th>@lang('messages.action' )</th>
                             </tr>
                         </thead>
@@ -190,14 +182,6 @@
                 
                 columns: [
                     { data: 'name' },
-                    { data: 'supplier_business_name' },
-                    { data: 'city' },
-                    { data: 'state' },
-                    { data: 'country' },
-                    { data: 'address_line_1' },
-                    { data: 'tax_number' },
-                    { data: 'landline' },
-                    { data: 'mobile' },
                     { data: 'action' },
                 ],
             });
