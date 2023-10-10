@@ -121,8 +121,10 @@ class EssentialsManageEmployeeController extends Controller
             $user_id = request()->session()->get('user.id');
 
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->join('essentials_employee_appointmets as app', 'app.employee_id', '=', 'users.id')
-            ->join('essentials_departments as dep', 'dep.id', '=','app.department_id' )
+            ->join('essentials_departments as dep', 'dep.id', '=','users.essentials_department_id' )
+            ->join('categories as cat', 'cat.id', '=','users.essentials_designation_id' )
+            
+           
             ->select(['users.id',
                     'users.username',
                     DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
@@ -130,18 +132,13 @@ class EssentialsManageEmployeeController extends Controller
                     'users.allow_login',
                     'users.contact_number',
                     'dep.name as department',
-                    'app.employee_status as employee_status']);
+                    'cat.name as designation',
+                    'users.status as employee_status'
+                        ]);
 
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-                ->addColumn(
-                    'role',
-                    function ($row) {
-                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
-
-                        return $role_name;
-                    }
-                )
+                
                 ->addColumn(
                     'action',
                     '@can("user.update")

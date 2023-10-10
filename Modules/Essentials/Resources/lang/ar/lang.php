@@ -590,6 +590,8 @@ return[
 'employees_appointments'=>'تعيينات الموظفين',
 'add_Appointment'=>'تعيين موظف',
 'select_location'=>'اختر الفرع',
+'extra_salary_type'=>'نوع الراتب الإضافي',
+'add'=>'إضافة',
 
 
 ];

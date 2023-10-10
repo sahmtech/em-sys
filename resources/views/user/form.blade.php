@@ -52,16 +52,18 @@
     {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
 </div>
 <div class="form-group col-md-3">
-    {!! Form::label('id_proof_name', __( 'lang_v1.id_proof_name') . ':') !!}
-    <select id="id_proof_name" name="id_proof_name" class="form-control">
+    {!! Form::label('id_proof_name', __( 'lang_v1.id_proof_name') . ':*') !!}
+
+    <select id="id_proof_name" name="id_proof_name" class="form-control" >
+        <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
     </select>
 </div>
 
 <div class="form-group col-md-3">
-    {!! Form::label('id_proof_number', __( 'lang_v1.id_proof_number') . ':') !!}
-    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.id_proof_number' ) ]); !!}
+    {!! Form::label('id_proof_number', __( 'lang_v1.id_proof_number') . ':*') !!}
+    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required','placeholder' => __( 'lang_v1.id_proof_number' ) ]); !!}
 </div>
 {{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
