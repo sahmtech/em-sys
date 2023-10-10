@@ -571,6 +571,27 @@ return[
 'Allowance_type'=>'نوع البدل',
 'Entitlement_type'=>'نوع الاستحقاق',
 'Class_travel_tickets'=>'فئة تذاكر السفر',
+
+'crud_insurance_companies'=>'إضافة / تعديل / عرض / حذف شركات التأمين  ',
+'insurance_companies'=>'شركات التأمين',
+'business_name'=>'المنشأة',
+'insurance_company'=>'شركة التأمين',
+'city'=>'المدينة',
+'state'=>'المنطقة',
+'tax_number'=>'الرقم الضريبي',
+'insurance_categories'=>'فئات التأمين',
+'insurance_category_name'=>'اسم الفئة',
+'insurance_policy_number'=>'رقم البوليصة',
+'insurance_policy_value'=>'قيمة البوليصة',
+'insurance_employees_count'=>'عدد الموظفين',
+'insurance_dependents_count'=>'عدد التابعين',
+'insurance_start_date'=>'تاريخ البداية',
+'insurance_end_date'=>'تاريخ النهاية',
+'insurance_attachments'=>'المرفقات',
+'add_insurance_contract'=>'إضافة عقد تأمين',
+'add_insurance_company'=>'إضافة شركة تأمين',
+'add_insurance_category'=>'إضافة فئة تأمين',
+
 'add_Doc'=>'إضافة وثيقة',
 'edit_doc'=>'تعديل وثيقة',
 'appointment'=>'التعيين',
@@ -590,6 +611,5 @@ return[
 'employees_appointments'=>'تعيينات الموظفين',
 'add_Appointment'=>'تعيين موظف',
 'select_location'=>'اختر الفرع',
-
 
 ];
