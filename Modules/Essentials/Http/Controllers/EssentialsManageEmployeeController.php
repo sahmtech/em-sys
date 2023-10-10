@@ -46,6 +46,7 @@ class EssentialsManageEmployeeController extends Controller
         $roles = $this->getRolesArray($business_id);
 
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
+        
 
         if ($user->status == 'active') {
             $is_checked_checkbox = true;
@@ -108,6 +109,7 @@ class EssentialsManageEmployeeController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
+   
     public function index()
     {
         if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
@@ -118,11 +120,17 @@ class EssentialsManageEmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )
-                        // ->user()
-                        ->where('is_cmmsn_agnt', 0)
-                        ->select(['id', 'username',
-                            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
+            $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+            ->join('essentials_employee_appointmets as app', 'app.employee_id', '=', 'users.id')
+            ->join('essentials_departments as dep', 'dep.id', '=','app.department_id' )
+            ->select(['users.id',
+                    'users.username',
+                    DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                    'users.email',
+                    'users.allow_login',
+                    'users.contact_number',
+                    'dep.name as department',
+                    'app.employee_status as employee_status']);
 
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
@@ -151,7 +159,7 @@ class EssentialsManageEmployeeController extends Controller
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->removeColumn('id')
+                
                 ->rawColumns(['action', 'username'])
                 ->make(true);
         }
@@ -213,7 +221,6 @@ class EssentialsManageEmployeeController extends Controller
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
-                $request['user_type']='employee';
                 $user = $this->moduleUtil->createUser($request);
     
                 event(new UserCreatedOrModified($user, 'added'));

@@ -26,4 +26,11 @@ class EssentialsDepartment extends Model
         return $this->hasMany('Modules\Essentials\Entities\EssentialsDepartment','parent_department_id','id') ;
 
     }
+    public static function forDropdown()
+    {
+        $EssentialsDepartment = EssentialsDepartment::all()->pluck('name','id');
+        
+        return $EssentialsDepartment;
+    }
+
 }

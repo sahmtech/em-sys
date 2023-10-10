@@ -2,6 +2,7 @@
  return [ 
 "edit_profile" => "تعديل الملف الشخصي",
 "change_password" => "تغيير كلمة المرور",
+'profile_picture'=>'الصورة الشخصية',
 "current_password" => "كلمة المرور الحالية",
 "new_password" => "كلمة مرور جديدة",
 "confirm_new_password" => "تأكيد كلمة المرور الجديدة",
@@ -9,6 +10,12 @@
 "roles" => "الصلاحيات",
 "users" => "المستخدمين",
 "manage_roles" => "إدارة الصلاحيات",
+'national_id'=>'الهوية الوطنية',
+'eqama'=>' الإقامة',
+'user_type'=>'نوع الموظف',
+'manager'=>'مدير',
+'employee'=>'موظف',
+'worker'=>'عامل',
 "all_roles" => "كل الصلاحيات",
 "add_role" => "إضافة صلاحية",
 "role_name" => "اسم الصلاحية",
@@ -34,4 +41,6 @@
 'employee_name'=>'اسم الموظف',
 'make_user_account'=>'إنشاء حساب مستخدم',
 'create_new_user'=>'إضافة مستخدم جديد',
+'add_10_numbers' => 'ادخل 10 أرقام',
+'add_13_numbers'=> 'ادخل 13 أرقام',
 ];

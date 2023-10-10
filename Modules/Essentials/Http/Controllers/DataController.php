@@ -23,7 +23,7 @@ use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\EssentialsEntitlementType;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\EssentialsEmployeeContract;
-use Modules\Essentials\Entities\EssentialsQualificationType;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsBasicSalaryType;
 use Modules\Essentials\Entities\EssentialsAdmissionsToWork;
 
@@ -602,7 +602,7 @@ class DataController extends Controller
             $user_department = Category::find($user->essentials_department_id);
             $user_designstion = Category::find($user->essentials_designation_id);
             $work_location = BusinessLocation::find($user->location_id);
-            $qualification_type=EssentialsQualificationType::where('employee_id',$user->id)->first();
+            $qualification_type=EssentialsEmployeesQualification::where('employee_id',$user->id)->first();
             $contract= EssentialsEmployeeContract::where('employee_id',$user->id)->select([
                 'essentials_employee_contracts.id',
                 'essentials_employee_contracts.contract_number',
@@ -652,7 +652,7 @@ class DataController extends Controller
 
             $user->save();
             if (request()->input('qualification_type')!=null) {
-            $qualificationType = new EssentialsQualificationType();
+            $qualificationType = new EssentialsEmployeesQualification();
             $qualificationType->name = request()->input('qualification_type');
             $qualificationType->employee_id = $user->id;
             $qualificationType->is_active = '1';
