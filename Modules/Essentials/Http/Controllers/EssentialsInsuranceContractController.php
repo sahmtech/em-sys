@@ -74,7 +74,7 @@ class EssentialsInsuranceContractController extends Controller
                 'attachments2',
                 function ($row) {
                     $html = '';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = /uploads/'.$row->attachments.'><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
+                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->attachments.'\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
 
                     return $html;
                 }
