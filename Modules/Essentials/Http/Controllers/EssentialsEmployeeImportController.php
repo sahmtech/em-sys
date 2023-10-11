@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use DB;
 use Excel;
 use App\User;
+use App\Category;
 use Modules\Essentials\Entities\EssentialsEmployeeContract;
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
@@ -92,34 +93,35 @@ class EssentialsEmployeeImportController extends Controller
                     //Check contact type
                     
                     if (! empty($value[0])) {
-                        $emp_array['surename'] = $value[0];
-                       
+                        $emp_array['first_name'] = $value[0];
                     } else {
                         $is_valid = false;
-                        $error_msg = "employee Name is required in row no. $row_no";
+                        $error_msg = "First name is required in row no. $row_no";
                         break;
                     }
-
-                    $emp_array['first_name'] = $value[1];
+                    $emp_array['mid_name'] = $value[1];
                     $emp_array['last_name'] = $value[2];
-                    if (!empty($value[3])) {
+                    $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
+                    $emp_array['email'] = $value[4];
+                    $emp_array['user_type'] = $value[5];
+                    if (!empty($value[6])) {
                         // Parse the date using strtotime and then format it as needed
-                        $dob = date('Y-m-d', strtotime($value[3]));
+                        $dob = date('Y-m-d', strtotime($value[6]));
                         
                         // Add the formatted date to the array
                         $emp_array['dob'] = $dob;
                     }
                   
                     
-                    $emp_array['gender'] = $value[4];
-                    $emp_array['marital_status'] = $value[5];
+                    $emp_array['gender'] = $value[7];
+                    $emp_array['marital_status'] = $value[8];
                    // $emp_array['name'] = implode(' ', [$emp_array['prefix'], $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
-                   $emp_array['blood_group'] = $value[6];
+                   $emp_array['blood_group'] = $value[9];
                   
                     
                     //Mobile number
-                    if (! empty(trim($value[7]))) {
-                        $emp_array['contact_number'] = $value[7];
+                    if (! empty(trim($value[10]))) {
+                        $emp_array['contact_number'] = $value[10];
                     } else {
                         $is_valid = false;
                         $error_msg = "Mobile number is required in row no. $row_no";
@@ -127,71 +129,71 @@ class EssentialsEmployeeImportController extends Controller
                     }
 
                     //Alt contact number
-                    $emp_array['family_number'] = $value[8];
-
-                    //Landline
-                    $emp_array['fb_link'] = $value[9];
-
-                    //City
-                    $emp_array['twitter_link'] = $value[10];
-
-                    //State
-                    $emp_array['social_media_1'] = $value[11];
-
-                    //Country
-                    $emp_array['social_media_2'] = $value[12];
-
-
-                    //Cust fields
-                    $emp_array['custom_field1'] = $value[13];
-                    $emp_array['custom_field2'] = $value[14];
-                    $emp_array['custom_field3'] = $value[15];
-                    $emp_array['custom_field4'] = $value[16];
-
-                    $emp_array['guardian_name'] = $value[17];
-                    $emp_array['id_proof_name'] = $value[18];
-                    $emp_array['permanent_address'] = $value[19];
-                    $emp_array['current_address'] = $value[20];
-                    $emp_array['bank_details']=implode(' ', [$value[21], $value[23], $value[24],$value[25],$value[26]]);
-
-                   // $emp_array['']= $value[27];
-                    $emp_array['essentials_designation_id']= $value[28];
-                    $emp_array['qualification_type']= $value[29];
-
-                    $contract_array['contract_number'] = $value[30];
+                    $emp_array['alt_number'] = $value[11];
+                    $emp_array['family_number'] = $value[12];
+                    $emp_array['current_address'] = $value[13];
+                    $emp_array['permanent_address'] = $value[14];
                   
-                    if (!empty($value[31])) {
+
+
+                    $emp_array['id_proof_name'] = $value[15];
+                    $emp_array['id_proof_number'] = $value[16];
+                    $emp_array['bank_details']=implode(' ', [$value[17], $value[18], $value[19],$value[20]]);
+
+                    $businessname = $row[21];
+                    $business = Business::where('name', $businessname)->first();
+                    if ($business) {
+                        
+                        $businessId = $business->id;
+                        $emp_array['location_id ']=$businessId;
+                    }
+
+
+                    $departmentname = $row[22];
+                    $department = Business::where('name', $departmentname)->first();
+                    if ($department) {
+                        
+                        $departmentId = $department->id;
+                        $emp_array['essentials_department_id  ']=$departmentId;
+                    }
+
+
+                    $categoryname = $row[23];
+                    $category = Category::where('name', $categoryname)->first();
+                    if ($category) {
+                        
+                        $categoryId = $category->id;
+                        $emp_array['essentials_designation_id ']=$categoryId;
+                    }
+                   
+
+                    
+                    $contract_array['contract_number'] = $value[24];
+                    if (!empty($value[25])) {
                         // Parse the date using strtotime and then format it as needed
-                        $contract_start_date = date('Y-m-d', strtotime($value[31]));
+                        $contract_start_date = date('Y-m-d', strtotime($value[25]));
                         
                         // Add the formatted date to the array
                         $contract_array['contract_start_date'] = $contract_start_date;
                     }
 
                      
-                    if (!empty($value[32])) {
+                    if (!empty($value[26])) {
                         // Parse the date using strtotime and then format it as needed
-                        $contract_end_date = date('Y-m-d', strtotime($value[32]));
+                        $contract_end_date = date('Y-m-d', strtotime($value[26]));
                         
                         // Add the formatted date to the array
                         $contract_array['contract_end_date'] = $contract_end_date;
                     }
                     
-                    $contract_array['contract_duration'] = $value[33];
+                    $contract_array['contract_duration'] = $value[27];
                   
-                    $contract_array['probation_period'] = $value[34];
-                    $contract_array['is_renewable'] = $value[35];
-                    $contract_array['travel_ticket_categorie'] = $value[42];
-                    $contract_array['allowance_type'] = $value[40];
-                    $contract_array['entitlement_type'] = $value[41];
-                    $contract_array['essentials_salary'] = $value[37];
-                    $contract_array['basic_salary_type'] = $value[39];
+                    $contract_array['probation_period'] = $value[28];
+                    $contract_array['is_renewable'] = $value[29];
 
-                    $emp_array['essentials_department_id']= $value[36];
-                    $emp_array['essentials_salary']= $value[37];
 
-                    $emp_array['user_type'] = 'employee';
-
+                  
+                    $emp_array['essentials_salary'] = $value[30];
                   
                     $formated_data[] = $emp_array;
                     $formated_data2[] = $contract_array;

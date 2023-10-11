@@ -590,6 +590,6 @@ return[
 'employees_appointments'=>'تعيينات الموظفين',
 'add_Appointment'=>'تعيين موظف',
 'select_location'=>'اختر الفرع',
-
+'mid_name'=>' الاسم الأوسط',
 
 ];
