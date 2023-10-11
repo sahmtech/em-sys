@@ -35,6 +35,8 @@ class EssentialsInsuranceContractController extends Controller
         if (!$can_crud_insurance_companies) {
             abort(403, 'Unauthorized action.');
         }
+        $business_id = request()->session()->get('user.business_id');
+        $insuramce_companies = Contact::where('business_id', $business_id)->pluck('supplier_business_name', 'id',);
         if (request()->ajax()) {
             $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
                 'id',
@@ -69,7 +71,11 @@ class EssentialsInsuranceContractController extends Controller
             // }
 
             return Datatables::of($insuranceContracts)
-           
+            ->editColumn('insurance_company_id',function($row)use($insuramce_companies){
+                $item = $insuramce_companies[$row->insurance_company_id]??'';
+
+                return $item;
+            })
             ->addColumn(
                 'attachments2',
                 function ($row) {
@@ -97,8 +103,7 @@ class EssentialsInsuranceContractController extends Controller
                 ->rawColumns(['attachments2','action'])
                 ->make(true);
         }
-        $business_id = request()->session()->get('user.business_id');
-        $insuramce_companies = Contact::where('business_id', $business_id)->pluck('supplier_business_name', 'id',);
+        
         return view('essentials::insurance_contracts.index')->with(compact('insuramce_companies'));
     }
 

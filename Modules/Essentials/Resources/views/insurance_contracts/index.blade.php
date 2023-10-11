@@ -117,7 +117,6 @@
 
 @section('javascript')
 <script type="text/javascript">
-    // Cities table
     $(document).ready(function () {
         var insurance_contracts_table = $('#insurance_contracts_table').DataTable({
             processing: true,
