@@ -73,9 +73,8 @@
             {!! Form::file('contract_file', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_file') ]); !!}
         </div>
 
+    </div>
         
-        
-</div>
 @endcomponent
 @component('components.widget', ['title' => __('essentials::lang.payroll')])
 <div class="row">
@@ -109,9 +108,22 @@
     </table>
 
     <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
-
+    
     
 </div>
+<div class="col-md-12">
+    <hr>
+    <h4>@lang('essentials::lang.features'):</h4>
+    </div>
+    <div class="form-group col-md-3">
+        {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
+        {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie,null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
+    </div>
+    <div class="form-group col-md-3">
+        {!! Form::label('health_insurance', __('essentials::lang.health_insurance') . ':') !!}
+        {!! Form::text('health_insurance',null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.health_insurance') ]); !!}
+        
+    </div>
 
 <script>
     var rowCount = 0; 

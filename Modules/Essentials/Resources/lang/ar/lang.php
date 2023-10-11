@@ -591,11 +591,9 @@ return[
 'add_insurance_contract'=>'إضافة عقد تأمين',
 'add_insurance_company'=>'إضافة شركة تأمين',
 'add_insurance_category'=>'إضافة فئة تأمين',
-
 'add_Doc'=>'إضافة وثيقة',
 'edit_doc'=>'تعديل وثيقة',
 'appointment'=>'التعيين',
-'benefits'=>'مزايا',
 'select_country'=>'اختر دولة',
 'select_employee'=>'اختر موظف',
 'major'=>'الاختصاص',
@@ -614,5 +612,6 @@ return[
 'extra_salary_type'=>'نوع الراتب الإضافي',
 'add'=>'إضافة',
 'add_contract'=>'إضافة عقد',
-'contract_view'=>'عرض العقد'
+'contract_view'=>'عرض العقد',
+'features'=>'مزايا'
 ];

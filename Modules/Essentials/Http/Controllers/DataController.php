@@ -18,7 +18,7 @@ use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\EssentialsEntitlementType;
@@ -593,8 +593,9 @@ class DataController extends Controller
             }
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
+            $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name','id')->all();
         
-            return view('essentials::partials.user_form_part', compact('allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            return view('essentials::partials.user_form_part', compact('travel_ticket_categorie','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -658,19 +659,43 @@ class DataController extends Controller
 
             }}
       
-           if (request()->selectedData) {
-                $elements = explode(',', request()->selectedData);
-                foreach ($elements  as $element) {
-                error_log($element);
+        //    if (request()->selectedData) {
+        //         $elements = explode(',', request()->selectedData);
+        //         foreach ($elements  as $element) {
+        //         error_log($element);
+        //         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+        //         error_log('11111111111');
+        //         $userAllowancesAndDeduction->user_id = $user->id;
+        //         error_log($user->id);
+        //         $userAllowancesAndDeduction->allowance_deduction_id =$element;
+        //         error_log('22222222222');
+        //         $userAllowancesAndDeduction->amount = Db::table('essentials_allowances_and_deductions')
+        //          ->where('id',(int)$element)->first()->amount;
+        //          error_log('333333333');
+        //         $userAllowancesAndDeduction->save();
+        //     }
+
+        if (request()->selectedData) {
+            $elements = explode(',', request()->selectedData);
+            
+            foreach ($elements as $element) {
                 $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+        
                 $userAllowancesAndDeduction->user_id = $user->id;
-                $userAllowancesAndDeduction->allowance_deduction_id =(int) $element;
-                 $userAllowancesAndDeduction->amount = Db::table('essentials_allowances_and_deductions')
-                 ->where('id',(int)$element)->first()->amount;
-                $userAllowancesAndDeduction->save();
+                $userAllowancesAndDeduction->allowance_deduction_id = $element;
+        
+                $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                    ->where('id',$element)
+                    ->first();
+        
+                if ($allowanceDeduction) {
+                    $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                    $userAllowancesAndDeduction->save();
+                } 
+                else{ $userAllowancesAndDeduction->save();
             }
-
-
+        }
+        
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id =$user->id;
                 $essentials_employee_appointmets->department_id=request()->input('essentials_department_id');
@@ -679,6 +704,12 @@ class DataController extends Controller
                 $essentials_employee_appointmets->job_title=request()->input('essentials_designation_id');
                 $essentials_employee_appointmets->employee_status ="active";
                 $essentials_employee_appointmets->save();
+
+                if (request()->input('travel_ticket_categorie')!=null)
+                $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+                $travel_ticket_categorie->employee_id =$user->id;
+                $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
+                $travel_ticket_categorie->save();
 
             }
             
