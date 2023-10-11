@@ -104,7 +104,7 @@
                     </tr>
                     <tr>
                         <td>8</td>
-                        <td>@lang('essentials::lang.Mobile_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.Mobile_number') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>

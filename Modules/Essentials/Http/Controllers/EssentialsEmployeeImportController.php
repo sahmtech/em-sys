@@ -80,7 +80,8 @@ class EssentialsEmployeeImportController extends Controller
 
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
-                    if (count($value) != 44) {
+                   
+                    if (count($value) != 31) {
                         $is_valid = false;
                         $error_msg = 'Number of columns mismatch';
                         break;
@@ -101,27 +102,27 @@ class EssentialsEmployeeImportController extends Controller
                     }
                     $emp_array['mid_name'] = $value[1];
                     $emp_array['last_name'] = $value[2];
-                    $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
-                    $emp_array['email'] = $value[4];
-                    $emp_array['user_type'] = $value[5];
-                    if (!empty($value[6])) {
+                    $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
+                    $emp_array['email'] = $value[3];
+                    $emp_array['user_type'] = $value[4];
+                    if (!empty($value[5])) {
                         // Parse the date using strtotime and then format it as needed
-                        $dob = date('Y-m-d', strtotime($value[6]));
+                        $dob = date('Y-m-d', strtotime($value[5]));
                         
                         // Add the formatted date to the array
                         $emp_array['dob'] = $dob;
                     }
                   
                     
-                    $emp_array['gender'] = $value[7];
-                    $emp_array['marital_status'] = $value[8];
+                    $emp_array['gender'] = $value[6];
+                    $emp_array['marital_status'] = $value[7];
                    // $emp_array['name'] = implode(' ', [$emp_array['prefix'], $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
-                   $emp_array['blood_group'] = $value[9];
+                   $emp_array['blood_group'] = $value[8];
                   
                     
                     //Mobile number
-                    if (! empty(trim($value[10]))) {
-                        $emp_array['contact_number'] = $value[10];
+                    if (! empty(trim($value[9]))) {
+                        $emp_array['contact_number'] = $value[9];
                     } else {
                         $is_valid = false;
                         $error_msg = "Mobile number is required in row no. $row_no";
@@ -129,18 +130,18 @@ class EssentialsEmployeeImportController extends Controller
                     }
 
                     //Alt contact number
-                    $emp_array['alt_number'] = $value[11];
-                    $emp_array['family_number'] = $value[12];
-                    $emp_array['current_address'] = $value[13];
-                    $emp_array['permanent_address'] = $value[14];
+                    $emp_array['alt_number'] = $value[10];
+                    $emp_array['family_number'] = $value[11];
+                    $emp_array['current_address'] = $value[12];
+                    $emp_array['permanent_address'] = $value[13];
                   
 
 
-                    $emp_array['id_proof_name'] = $value[15];
-                    $emp_array['id_proof_number'] = $value[16];
-                    $emp_array['bank_details']=implode(' ', [$value[17], $value[18], $value[19],$value[20]]);
+                    $emp_array['id_proof_name'] = $value[14];
+                    $emp_array['id_proof_number'] = $value[15];
+                    $emp_array['bank_details']=implode(' ', [$value[16], $value[17], $value[18],$value[19]]);
 
-                    $businessname = $row[21];
+                    $businessname = $value[20];
                     $business = Business::where('name', $businessname)->first();
                     if ($business) {
                         
@@ -149,7 +150,7 @@ class EssentialsEmployeeImportController extends Controller
                     }
 
 
-                    $departmentname = $row[22];
+                    $departmentname = $value[21];
                     $department = Business::where('name', $departmentname)->first();
                     if ($department) {
                         
@@ -158,7 +159,7 @@ class EssentialsEmployeeImportController extends Controller
                     }
 
 
-                    $categoryname = $row[23];
+                    $categoryname = $value[22];
                     $category = Category::where('name', $categoryname)->first();
                     if ($category) {
                         
@@ -168,32 +169,32 @@ class EssentialsEmployeeImportController extends Controller
                    
 
                     
-                    $contract_array['contract_number'] = $value[24];
-                    if (!empty($value[25])) {
+                    $contract_array['contract_number'] = $value[23];
+                    if (!empty($value[24])) {
                         // Parse the date using strtotime and then format it as needed
-                        $contract_start_date = date('Y-m-d', strtotime($value[25]));
+                        $contract_start_date = date('Y-m-d', strtotime($value[24]));
                         
                         // Add the formatted date to the array
                         $contract_array['contract_start_date'] = $contract_start_date;
                     }
 
                      
-                    if (!empty($value[26])) {
+                    if (!empty($value[25])) {
                         // Parse the date using strtotime and then format it as needed
-                        $contract_end_date = date('Y-m-d', strtotime($value[26]));
+                        $contract_end_date = date('Y-m-d', strtotime($value[25]));
                         
                         // Add the formatted date to the array
                         $contract_array['contract_end_date'] = $contract_end_date;
                     }
                     
-                    $contract_array['contract_duration'] = $value[27];
+                    $contract_array['contract_duration'] = $value[26];
                   
-                    $contract_array['probation_period'] = $value[28];
-                    $contract_array['is_renewable'] = $value[29];
+                    $contract_array['probation_period'] = $value[27];
+                    $contract_array['is_renewable'] = $value[28];
 
 
                   
-                    $emp_array['essentials_salary'] = $value[30];
+                    $emp_array['essentials_salary'] = $value[29];
                   
                     $formated_data[] = $emp_array;
                     $formated_data2[] = $contract_array;
