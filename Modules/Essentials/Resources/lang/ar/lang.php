@@ -613,5 +613,6 @@ return[
 'select_location'=>'اختر الفرع',
 'extra_salary_type'=>'نوع الراتب الإضافي',
 'add'=>'إضافة',
-
+'add_contract'=>'إضافة عقد',
+'contract_view'=>'عرض العقد'
 ];
