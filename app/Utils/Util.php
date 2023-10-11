@@ -1605,8 +1605,7 @@ error_log( $date);
                 $user_details['username'] = $this->generateReferenceNumber('username', $ref_count, $business_id);
             }
 
-            if (Str::contains( $user_details['user_type'],'user') || Str::contains( $user_details['user_type'],'employee')
-            ){
+            {
                 $username_ext = $this->getUsernameExtension();
                 if (!empty($username_ext)) {
                     $user_details['username'] .= $username_ext;
@@ -1617,8 +1616,7 @@ error_log( $date);
         //Create the user
         $user = User::create($user_details);
 
-        if (Str::contains( $user_details['user_type'],'user') || Str::contains( $user_details['user_type'],'employee')
-        ) {
+       {
             $role = null;
             if ($request->input('role')) {
                 $role = Role::findOrFail($request->input('role'));

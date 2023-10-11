@@ -23,7 +23,7 @@
                             if(isset($user->media->display_url)) {
                                 $img_src = $user->media->display_url;
                             } else {
-                                $img_src = 'https://ui-avatars.com/api/?name='.$user->first_name;
+                                $img_src = '/uploads/'.$user->profile_image;
                             }
                         @endphp
 
