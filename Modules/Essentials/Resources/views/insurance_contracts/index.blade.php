@@ -131,12 +131,12 @@
                 { data: 'dependents_count'},
                 { data: 'insurance_start_date'},
                 { data: 'insurance_end_date'},              
-                { data: 'attachments' },
+                { data: 'attachments2', name: 'attachments2', orderable: false, searchable: false  },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
 
-        $(document).on('click', 'button.delete_city_button', function () {
+        $(document).on('click', 'button.delete_insurance_contract_button', function () {
             swal({
                 title: LANG.sure,
                 text: LANG.confirm_delete_city,
@@ -153,7 +153,7 @@
                         success: function (result) {
                             if (result.success == true) {
                                 toastr.success(result.msg);
-                                cities_table.ajax.reload();
+                                insurance_contracts_table.ajax.reload();
                             } else {
                                 toastr.error(result.msg);
                             }

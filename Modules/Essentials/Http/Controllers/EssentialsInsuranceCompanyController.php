@@ -78,8 +78,9 @@ class EssentialsInsuranceCompanyController extends Controller
                 'action',
                 function ($row) {
                     $html = '';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
-            
+                    //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
+                    //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
+                    $html .= '<button class="btn btn-xs btn-danger delete_insurance_company_button" data-href="' . route('insurance_companies.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';                    
                     return $html;
                 }
             )
@@ -190,6 +191,29 @@ class EssentialsInsuranceCompanyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            Contact::where('id', $id)
+                        ->delete();
+
+            $output = ['success' => true,
+                'msg' => __('lang_v1.deleted_success'),
+            ];
+       
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+       
+        return $output;
     }
 }
