@@ -51,47 +51,46 @@ class EssentialsInsuranceContractController extends Controller
             ]);
 
 
-            // if (!empty(request()->input('user_id'))) {
-            //     $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
-            // }
+            if (!empty(request()->input('insurance_company_filter')) && request()->input('insurance_company_filter') != 'all') {
+                $contract = Contact::where([['business_id', $business_id], ['supplier_business_name', request()->input('insurance_company_filter')]])->first();
+                $id = 0;
+                if ($contract) {
+                    $id = $contract->id;
+                }
+                $insuranceContracts->where('insurance_company_id', $id);
+            }
+            if (!empty(request()->input('insurance_policy_number_filter')) && request()->input('insurance_policy_number_filter') != 'all') {
+                $insuranceContracts->where('policy_number', request()->input('insurance_policy_number_filter'));
+            }
 
-            // if (!empty(request()->input('status'))) {
-            //     $official_documents->where('essentials_official_documents.status', request()->input('status'));
-            // }
-
-            // if (!empty(request()->input('doc_type'))) {
-            //     $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
-            // }
-
-            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            //     $start = request()->start_date;
-            //     $end = request()->end_date;
-            //     $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
-            //         ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
-            // }
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end = request()->end_date;
+                $insuranceContracts->whereDate('insurance_end_date', '>=', $start)
+                    ->whereDate('insurance_end_date', '<=', $end);
+            }
 
             return Datatables::of($insuranceContracts)
-            ->editColumn('insurance_company_id',function($row)use($insuramce_companies){
-                $item = $insuramce_companies[$row->insurance_company_id]??'';
+                ->editColumn('insurance_company_id', function ($row) use ($insuramce_companies) {
+                    $item = $insuramce_companies[$row->insurance_company_id] ?? '';
+                    return $item;
+                })
+                ->addColumn(
+                    'attachments2',
+                    function ($row) {
+                        $html = '';
+                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->attachments . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
 
-                return $item;
-            })
-            ->addColumn(
-                'attachments2',
-                function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->attachments.'\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
-
-                    return $html;
-                }
-            )
+                        return $html;
+                    }
+                )
                 ->addColumn(
                     'action',
                     function ($row) {
                         $html = '';
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
                         //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';                    
+                        $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         return $html;
                     }
                 )
@@ -100,10 +99,10 @@ class EssentialsInsuranceContractController extends Controller
                 // })
                 ->removeColumn('id')
                 ->removeColumn('attachments')
-                ->rawColumns(['attachments2','action'])
+                ->rawColumns(['attachments2', 'action'])
                 ->make(true);
         }
-        
+
         return view('essentials::insurance_contracts.index')->with(compact('insuramce_companies'));
     }
 
@@ -132,12 +131,12 @@ class EssentialsInsuranceContractController extends Controller
         $user_id = $request->session()->get('user.id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
-            $input = $request->only(['insurance_company', 'policy_number','policy_value','insurance_employees_count','insurance_dependents_count','insurance_start_date','insurance_end_date','insurance_attachments']);
+            $input = $request->only(['insurance_company', 'policy_number', 'policy_value', 'insurance_employees_count', 'insurance_dependents_count', 'insurance_start_date', 'insurance_end_date', 'insurance_attachments']);
             $file = request()->file('insurance_attachments');
             $filePath = $file->store('/insuranceContracts');
             $insurance_contract_data['attachments'] = $filePath;
@@ -207,26 +206,27 @@ class EssentialsInsuranceContractController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             EssentialsInsuranceContract::where('id', $id)
-                        ->delete();
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
+
         return $output;
     }
 }

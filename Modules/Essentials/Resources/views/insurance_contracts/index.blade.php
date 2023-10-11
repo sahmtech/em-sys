@@ -13,8 +13,34 @@
 
 <!-- Main content -->
 <section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('insurance_company_filter', __('essentials::lang.insurance_company') . ':') !!}
+                    {!! Form::text('insurance_company_filter', null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('insurance_policy_number_filter', __('essentials::lang.insurance_policy_number') . ':') !!}
+                    {!! Form::text('insurance_policy_number_filter', null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('doc_filter_date_range', __('essentials::lang.insurance_end_date') . ':') !!}
+                    {!! Form::text('doc_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
+                </div>
+            </div>
+        @endcomponent
+        </div>
+    </div>
+
+
     @component('components.widget',['class' => 'box-primary'])
-        @can('city.create')
+     
         @slot('tool')
         <div class="box-tools">
             <!-- Button to trigger the Add New City modal -->
@@ -23,8 +49,7 @@
             </button>
         </div>
         @endslot
-        @endcan
-        @can('city.view')
+ 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="insurance_contracts_table">
                     <thead>
@@ -42,7 +67,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+      
     @endcomponent
 
     <div class="modal fade insurance_contract_model" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
@@ -118,10 +143,27 @@
 @section('javascript')
 <script type="text/javascript">
     $(document).ready(function () {
-        var insurance_contracts_table = $('#insurance_contracts_table').DataTable({
+        var insurance_contracts_table;
+
+        function reloadDataTable() {
+            insurance_contracts_table.ajax.reload();
+        }
+        insurance_contracts_table = $('#insurance_contracts_table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("insurance_contracts") }}',
+            ajax: {
+                "url":"{{ route('insurance_contracts') }}",
+                "data": function(d) {
+                        d.insurance_company_filter = $('#insurance_company_filter').val();
+                        d.insurance_policy_number_filter = $('#insurance_policy_number_filter').val();
+                        if ($('#doc_filter_date_range').val()) {
+                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
+                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
+                            d.start_date = start;
+                            d.end_date = end;
+                        }
+                    }
+            },
             columns: [
                 { data: 'insurance_company_id' },
                 { data: 'policy_number' },
@@ -134,6 +176,21 @@
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
+
+        $('#doc_filter_date_range').daterangepicker(
+                dateRangeSettings,
+                function(start, end) {
+                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
+                }
+            );
+            $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+                $('#doc_filter_date_range').val('');
+                reloadDataTable();
+            });
+            $('#insurance_company_filter, #insurance_policy_number_filter, #doc_filter_date_range').on('change', function() {
+                reloadDataTable();
+            });
+       
 
         $(document).on('click', 'button.delete_insurance_contract_button', function () {
             swal({
