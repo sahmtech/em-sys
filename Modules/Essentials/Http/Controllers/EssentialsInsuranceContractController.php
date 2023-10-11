@@ -69,13 +69,23 @@ class EssentialsInsuranceContractController extends Controller
             // }
 
             return Datatables::of($insuranceContracts)
-                //' . route('doc.view', ['id' => $row->id]) . '
+           
+            ->addColumn(
+                'attachments2',
+                function ($row) {
+                    $html = '';
+                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = /uploads/'.$row->attachments.'><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
+
+                    return $html;
+                }
+            )
                 ->addColumn(
                     'action',
                     function ($row) {
                         $html = '';
-                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
-
+                        //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
+                        //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
+                        $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';                    
                         return $html;
                     }
                 )
@@ -83,7 +93,8 @@ class EssentialsInsuranceContractController extends Controller
                 //     $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
                 // })
                 ->removeColumn('id')
-                ->rawColumns(['action'])
+                ->removeColumn('attachments')
+                ->rawColumns(['attachments2','action'])
                 ->make(true);
         }
         $business_id = request()->session()->get('user.business_id');
@@ -188,6 +199,29 @@ class EssentialsInsuranceContractController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            EssentialsInsuranceContract::where('id', $id)
+                        ->delete();
+
+            $output = ['success' => true,
+                'msg' => __('lang_v1.deleted_success'),
+            ];
+       
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+       
+        return $output;
     }
 }
