@@ -1568,7 +1568,7 @@ error_log( $date);
              $profile= $image->store('/profile_images');
             $user_details['profile_image'] = $profile;}
     
-        $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'inactive';
+        $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'active';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
 
         $business_id = Auth::user()->business_id;

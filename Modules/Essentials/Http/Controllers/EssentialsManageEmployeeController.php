@@ -8,13 +8,14 @@ use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
+use App\Category;
 use DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
+use Modules\Essentials\Entities\EssentialsDepartment;
+
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -115,15 +116,15 @@ class EssentialsManageEmployeeController extends Controller
         if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
+        $categories=Category::all()->pluck('name','id');
+        $departments=EssentialsDepartment::all()->pluck('name','id');
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
 
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->join('essentials_departments as dep', 'dep.id', '=','users.essentials_department_id' )
-            ->join('categories as cat', 'cat.id', '=','users.essentials_designation_id' )
-            
+           
            
             ->select(['users.id',
                     'users.username',
@@ -131,12 +132,22 @@ class EssentialsManageEmployeeController extends Controller
                     'users.email',
                     'users.allow_login',
                     'users.contact_number',
-                    'dep.name as department',
-                    'cat.name as designation',
+                    'users.essentials_department_id',
+                    'users.essentials_designation_id',
                     'users.status as employee_status'
                         ]);
 
             return Datatables::of($users)
+                ->editColumn('essentials_department_id',function($row)use($departments){
+                        $item = $departments[$row->essentials_department_id]??'';
+
+                        return $item;
+                    })
+                ->editColumn('essentials_designation_id',function($row)use($categories){
+                        $item = $categories[$row->essentials_designation_id]??'';
+
+                        return $item;
+                    })
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 
                 ->addColumn(

@@ -66,8 +66,8 @@
                     "columns":[
                         {"data":"id"},
                         {"data":"full_name"},
-                        {"data":"designation"},
-                        {"data":"department"},
+                        {"data":"essentials_designation_id"},
+                        {"data":"essentials_department_id"},
                         {"data":"contact_number"},
                         {"data":"email"},
                         {"data":"employee_status"},
