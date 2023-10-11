@@ -9,16 +9,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{action([\Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard'])}}"><i class="fa fas fa-users"></i> {{__('essentials::lang.hrm')}}</a>
+                 <a class="navbar-brand" href=""><i class="fa fas fa-users"></i> {{__('essentials::lang.employees_affairs')}}</a> 
                 
             </div>
 
            
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
+                 
+
                      @if(auth()->user()->can('essentials.view_employees'))
                         <li @if(request()->segment(2) == 'employees') class="active" @endif>
-                            <a href="{{ route('employees') }}">@lang('essentials::lang.employees_affairs')</a>
+                            <a href="{{ route('employees') }}">@lang('essentials::lang.employees')</a>
                         </li>
                     @endif
 
@@ -28,13 +30,49 @@
                         </li>
                     @endif
 
+                        <li @if(request()->segment(2) == 'appointment') class="active" @endif>
+                            <a href="{{ route('appointments') }}">@lang('essentials::lang.appointment')</a>
+                        </li>
+                       
+
+                    
+                        <li @if(request()->segment(2) == 'admissions_to_work') class="active" @endif>
+                            <a href="{{ route('admissionToWork') }}">@lang('essentials::lang.admissions_to_work')</a>
+                        </li>
+                        
+
+                        <li @if(request()->segment(2) == 'employee_contracts') class="active" @endif>
+                            <a href="{{ route('employeeContracts') }}">@lang('essentials::lang.employee_contracts')</a>
+                        </li>
+            
+
+                        <li @if(request()->segment(2) == 'qualifications') class="active" @endif>
+                            <a href="{{ route('qualifications') }}">@lang('essentials::lang.qualifications')</a>
+                        </li>
+                
+                        
+                        
                     @if(auth()->user()->can('essentials.crud_official_documents'))
                         <li @if(request()->segment(2) == 'official_documents') class="active" @endif>
                             <a href="{{ route('official_documents') }}">@lang('essentials::lang.official_documents')</a>
                         </li>
                     @endif
+
+                        <li @if(request()->segment(2) == 'health_insurance') class="active" @endif>
+                            <a href="">@lang('essentials::lang.health_insurance')</a>
+                        </li>
+                        {{-- {{ route('insurances') }} --}}
                     
-                    
+                        <li @if(request()->segment(2) == 'benefits') class="active" @endif>
+                            <a href="">@lang('essentials::lang.benefits')</a>
+                        </li>
+                        {{-- {{ route('docs') }} --}}
+
+                        <li @if(request()->segment(2) == 'reports') class="active" @endif>
+                            <a href="">@lang('essentials::lang.reports')</a>
+                        </li>
+                        {{-- {{ route('docs') }} --}}
+                        
                 </ul>
 
             </div>

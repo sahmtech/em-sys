@@ -14,81 +14,81 @@ use Modules\Essentials\Entities\EssentialsOfficialDocument;
 class EssentialsOfficialDocumentController extends Controller
 {
     protected $moduleUtil;
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
+
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
     }
     
     public function index()
-{
-    $business_id = request()->session()->get('user.business_id');
+    {
+        $business_id = request()->session()->get('user.business_id');
 
-    if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-        abort(403, 'Unauthorized action.');
-    }
-    $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
-    if (!$can_crud_official_documents) {
-        abort(403, 'Unauthorized action.');
-    }
-    if (request()->ajax()) {
-        $official_documents = EssentialsOfficialDocument::
-            join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
-            ->select([
-                'essentials_official_documents.id',
-                DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                'essentials_official_documents.type',
-                'essentials_official_documents.status',
-                'essentials_official_documents.number',
-                'essentials_official_documents.expiration_date',
-            ]);
-
-        if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
-            $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+            abort(403, 'Unauthorized action.');
         }
-
-        if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-            $official_documents->where('essentials_official_documents.status', request()->input('status'));
+        $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
+        if (!$can_crud_official_documents) {
+            abort(403, 'Unauthorized action.');
         }
+        if (request()->ajax()) {
+            $official_documents = EssentialsOfficialDocument::
+                join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+                ->select([
+                    'essentials_official_documents.id',
+                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    'essentials_official_documents.type',
+                    'essentials_official_documents.status',
+                    'essentials_official_documents.number',
+                    'essentials_official_documents.expiration_date',
+                ]);
 
-        if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
-            $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
-        }
+            if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
+                $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));
+            }
 
-        if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            $start = request()->start_date;
-            $end = request()->end_date;
-            $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
-                ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
-        }
+            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                $official_documents->where('essentials_official_documents.status', request()->input('status'));
+            }
 
-        return Datatables::of($official_documents)
+            if (!empty(request()->input('doc_type')) && request()->input('doc_type') !== 'all') {
+                $official_documents->where('essentials_official_documents.type', request()->input('doc_type'));
+            }
+
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end = request()->end_date;
+                $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
+                    ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
+            }
+
+            return Datatables::of($official_documents)
             ->addColumn(
                 'action',
                 function ($row) {
                     $html = '';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
+                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a> &nbsp;';
+                    $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
 
                     return $html;
                 }
             )
-            ->filterColumn('user', function ($query, $keyword) {
-                $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
-            })
-            ->removeColumn('id')
-            ->rawColumns(['action'])
-            ->make(true);
-    }
-    $query = User::where('business_id', $business_id)
-        ->user();
-    $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-    $users = $all_users->pluck('full_name', 'id');
+            
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        $query = User::where('business_id', $business_id)
+            ->user();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
 
-    return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
-}
+        return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
+    }
 
     
     /**
@@ -183,7 +183,35 @@ class EssentialsOfficialDocumentController extends Controller
      */
     public function edit($id)
     {
-        return view('essentials::edit');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+        $doc = EssentialsOfficialDocument::where('essentials_official_documents.id', $id)
+        ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+        ->select([
+            'essentials_official_documents.id as id',
+            'essentials_official_documents.employee_id as employee_id',
+            DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as employee"),
+            'essentials_official_documents.type as type',
+            'essentials_official_documents.status as status',
+            'essentials_official_documents.number as number',
+            'essentials_official_documents.issue_date as issue_date',
+            'essentials_official_documents.issue_place as issue_place',
+            'essentials_official_documents.expiration_date as expiration_date',
+            'essentials_official_documents.file_path as file_path',
+        ])
+        ->firstOrFail();
+        
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select(['id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name")])->get();
+        $users = $all_users->pluck('full_name', 'id');
+        $var=$users[$doc->employee_id];
+      
+        return view('essentials::employee_affairs.official_docs.edit')->with(compact('users','doc','var'));
+
     }
 
     /**
@@ -192,10 +220,67 @@ class EssentialsOfficialDocumentController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+   
+     public function update(Request $request, $id)
+     {
+        
+        $business_id = $request->session()->get('user.business_id');
+         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+ 
+         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+             abort(403, 'Unauthorized action.');
+         }
+         
+       
+         try {
+      
+            $file2=EssentialsOfficialDocument::where('id', $id)->get()[0]->file_path;
+            $employee2=EssentialsOfficialDocument::where('id', $id)->get()[0]->employee_id;
+
+            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status','expiration_date','file']);
+           
+            $input2['type'] = $input['doc_type'];
+            $input2['number'] = $input['doc_number'];
+            $input2['issue_date'] = $input['issue_date'];
+            $input2['expiration_date'] = $input['expiration_date'];
+            
+            $input2['status'] = $input['status'];
+            $input2['issue_place'] = $input['issue_place'];
+            if($input['employee']==null){
+                $input2['file_path']=$employee2;
+            }
+            else{
+                $input2['employee_id'] = $input['employee'];
+            }
+            if($input['file']==null){
+                $input2['file_path']=$file2;
+            }
+            else{
+                $file = request()->file('file');
+                $filePath = $file->store('/officialDocuments');
+                
+                $input2['file_path'] = $filePath;}
+            
+            EssentialsOfficialDocument::where('id', $id)->update($input2);
+             $output = ['success' => true,
+                 'msg' => __('lang_v1.updated_success'),
+             ];
+         } catch (\Exception $e) {
+             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+ 
+             $output = ['success' => false,
+                 'msg' => __('messages.something_went_wrong'),
+             ];
+         }
+ 
+         $query = User::where('business_id', $business_id)
+        ->user();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+    
+    
+       return redirect()->route('official_documents')->with(compact('users'));
+     }
 
     /**
      * Remove the specified resource from storage.

@@ -109,20 +109,20 @@
                 { data: 'nationality'},
                 { data: 'details' },
                 { 
-        data: 'is_active',
-        render: function (data, type, row) {
-            if (data === 1) {
-                return '<span style="color: green;">Active</span>';
-            } else {
-                return '<span style="color: red;">Inactive</span>';
-            }
-        }
-    },
+                    data: 'is_active',
+                    render: function (data, type, row) {
+                        if (data === 1) {
+                            return '<span style="color: green;">Active</span>';
+                        } else {
+                            return '<span style="color: red;">Inactive</span>';
+                        }
+                    }
+                },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
-        });
+    });
 
-        $(document).on('click', 'button.delete_country_button', function () {
+    $(document).on('click', 'button.delete_country_button', function () {
             swal({
                 title: LANG.sure,
                 text: LANG.confirm_delete_country,

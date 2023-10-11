@@ -31,10 +31,14 @@
                 <table class="table table-bordered table-striped" id="employees">
                     <thead>
                         <tr>
-                            {{-- <th>@lang( 'business.username' )</th> --}}
-                            <th>@lang( 'user.name' )</th>
-                            <th>@lang( 'user.role' )</th>
+                          
+                            <th>@lang('essentials::lang.employee_number' )</th>
+                            <th>@lang('essentials::lang.employee_name' )</th>
+                            <th>@lang('essentials::lang.role' )</th>
+                            <th>@lang('essentials::lang.department' )</th>
+                            <th>@lang('essentials::lang.mobile_number' )</th>
                             <th>@lang( 'business.email' )</th>
+                            <th>@lang( 'essentials::lang.status' )</th>
                             <th>@lang( 'messages.action' )</th>
                         </tr>
                     </thead>
@@ -58,16 +62,15 @@
                     processing: true,
                     serverSide: true,
                     ajax: '/hrm/employees',
-                    columnDefs: [ {
-                        "targets": [3],
-                        "orderable": false,
-                        "searchable": false
-                    } ],
+                    
                     "columns":[
-                        // {"data":"username"},
+                        {"data":"id"},
                         {"data":"full_name"},
                         {"data":"role"},
+                        {"data":"department"},
+                        {"data":"contact_number"},
                         {"data":"email"},
+                        {"data":"employee_status"},
                         {"data":"action"}
                     ]
                 });

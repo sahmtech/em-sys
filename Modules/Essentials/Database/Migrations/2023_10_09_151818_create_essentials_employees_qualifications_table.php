@@ -13,9 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_qualification_types', function (Blueprint $table) {
+        Schema::create('essentials_employees_qualifications', function (Blueprint $table) {
+            $table->id();
+            $table->string('qualification_type');
+            $table->string('major');
+            $table->string('graduation_year');
+            $table->string('graduation_institution');
+            $table->string('graduation_country');
+            $table->string('degree');
             $table->unsignedInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
 
         });
     }
@@ -27,8 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('', function (Blueprint $table) {
-
-        });
+        Schema::dropIfExists('essentials_employees_qualifications');
     }
 };
