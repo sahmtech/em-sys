@@ -674,27 +674,47 @@ class DataController extends Controller
         //          error_log('333333333');
         //         $userAllowancesAndDeduction->save();
         //     }
+            if (request()->input('travel_ticket_categorie')!=null)
+            $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+            $travel_ticket_categorie->employee_id =$user->id;
+            $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
+            $travel_ticket_categorie->save();
+
 
         if (request()->selectedData) {
             $elements = explode(',', request()->selectedData);
             
             foreach ($elements as $element) {
+                try {
                 $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
-        
+                
                 $userAllowancesAndDeduction->user_id = $user->id;
-                $userAllowancesAndDeduction->allowance_deduction_id = $element;
+                $userAllowancesAndDeduction->allowance_deduction_id =(int)$element;
+                error_log($element);
         
                 $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
                     ->where('id',$element)
                     ->first();
-        
+                
                 if ($allowanceDeduction) {
                     $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                    error_log($allowanceDeduction->amount);
+                    error_log( $userAllowancesAndDeduction->allowance_deduction_id);
+                    error_log( $userAllowancesAndDeduction->user_id);
+
                     $userAllowancesAndDeduction->save();
+                    error_log("*****************************");
+                    error_log($userAllowancesAndDeduction->id);
                 } 
-                else{ $userAllowancesAndDeduction->save();
-            }
-        }
+                else{ 
+                    $userAllowancesAndDeduction->save();
+                }
+                } catch (\Exception $e) {
+                    \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                    error_log ($element);
+                    error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                }
+                 }
         
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id =$user->id;
@@ -705,30 +725,26 @@ class DataController extends Controller
                 $essentials_employee_appointmets->employee_status ="active";
                 $essentials_employee_appointmets->save();
 
-                if (request()->input('travel_ticket_categorie')!=null)
-                $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
-                $travel_ticket_categorie->employee_id =$user->id;
-                $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
-                $travel_ticket_categorie->save();
+                
 
             }
             
-          //  EssentialsUserAllowancesAndDeduction
+        //   //  EssentialsUserAllowancesAndDeduction
            
-            $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
+        //     $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
 
-            //delete  existing pay component
-            EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-                ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
-                ->delete();
+        //     //delete  existing pay component
+        //     EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+        //         ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
+        //         ->delete();
 
             //if pay component exist add to db
-            if (!empty(request()->input('pay_components'))) {
-                $pay_components = request()->input('pay_components');
-                foreach ($pay_components as $key => $pay_component) {
-                    EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
-                }
-            }
+            // if (!empty(request()->input('pay_components'))) {
+            //     $pay_components = request()->input('pay_components');
+            //     foreach ($pay_components as $key => $pay_component) {
+            //         EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
+            //     }
+            // }
         }
     }
 
