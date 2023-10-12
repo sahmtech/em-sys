@@ -41,8 +41,8 @@
     <!-- Add more details here -->
 </div>
 
-
-@if ($contract->count() > 0)
+ 
+@if ($contract)
 <div class="col-md-12">
     <p><strong>@lang('essentials::lang.contract_details'):</strong></p>
     <ul>
