@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.sales_target'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm_setting')
+@include('essentials::layouts.nav_hrm')
 <section class="content-header">
     <h1>@lang('essentials::lang.sales_target')
     </h1>

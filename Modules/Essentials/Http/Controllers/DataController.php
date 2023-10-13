@@ -444,7 +444,8 @@ class DataController extends Controller
                                  || request()->segment(2) == 'admissionToWork'
                                  || request()->segment(2) == 'employeeContracts'
                                  || request()->segment(2) == 'qualifications' 
-                                 || request()->segment(2) == 'official_documents')],
+                                 || request()->segment(2) == 'official_documents'
+                                 || request()->segment(2) == 'featureIndex')],
                             )->order(1);
                         }
                         $subMenu->url(
@@ -511,7 +512,11 @@ class DataController extends Controller
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
                             )->order(11);
                         }
-
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
+                            __('essentials::lang.sales_target'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'sales-target'],
+                        )->order(11);
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
                             __('essentials::lang.import_employees'),
@@ -680,47 +685,43 @@ class DataController extends Controller
         //          error_log('333333333');
         //         $userAllowancesAndDeduction->save();
         //     }
-            if (request()->input('travel_ticket_categorie')!=null)
+            if (request()->input('travel_ticket_categorie')!=null){
             $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
             $travel_ticket_categorie->employee_id =$user->id;
             $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
             $travel_ticket_categorie->save();
-
-
+            }
         if (request()->selectedData) {
             $elements = explode(',', request()->selectedData);
             
             foreach ($elements as $element) {
                 try {
-                $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
-                
-                $userAllowancesAndDeduction->user_id = $user->id;
-                $userAllowancesAndDeduction->allowance_deduction_id =(int)$element;
-                error_log($element);
-        
-                $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
-                    ->where('id',$element)
-                    ->first();
-                
-                if ($allowanceDeduction) {
-                    $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
-                    error_log($allowanceDeduction->amount);
-                    error_log( $userAllowancesAndDeduction->allowance_deduction_id);
-                    error_log( $userAllowancesAndDeduction->user_id);
+                    $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+                    
+                    $userAllowancesAndDeduction->user_id = $user->id;
+                    $userAllowancesAndDeduction->allowance_deduction_id =(int)$element;
+                    
+            
+                    $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                        ->where('id',$element)
+                        ->first();
+                    
+                    if ($allowanceDeduction) {
+                        $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                    
 
-                    $userAllowancesAndDeduction->save();
-                    error_log("*****************************");
-                    error_log($userAllowancesAndDeduction->id);
-                } 
-                else{ 
-                    $userAllowancesAndDeduction->save();
+                        $userAllowancesAndDeduction->save();
+                    
+                    } 
+                    else{ 
+                        $userAllowancesAndDeduction->save();
+                    }
+                    } catch (\Exception $e) {
+                        \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                        error_log ($element);
+                        error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                    }
                 }
-                } catch (\Exception $e) {
-                    \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-                    error_log ($element);
-                    error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-                }
-                 }
         
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                 $essentials_employee_appointmets->employee_id =$user->id;
