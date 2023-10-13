@@ -84,7 +84,54 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->make(true);
         }
     }
+    public function featureIndex()
+    {
+ 
+        $business_id = request()->session()->get('user.business_id');
 
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+       if (request()->ajax()) {
+          
+            $allowances = EssentialsAllowanceAndDeduction::where('business_id', $business_id)
+                ->with('employees');
+           
+            return Datatables::of($allowances)
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '';
+                        if (auth()->user()->can('essentials.add_allowance_and_deduction')) {
+                            $html .= '<button data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'edit'], [$row->id]).'" data-container="#add_allowance_deduction_modal" class="btn-modal btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i> '.__('messages.edit').'</button>';
+
+                            $html .= '&nbsp; <button data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'destroy'], [$row->id]).'" class="delete-allowance btn btn-danger btn-xs"><i class="fa fa-trash" aria-hidden="true"></i> '.__('messages.delete').'</button>';
+                        }
+
+                        return $html;
+                    }
+                )
+                ->editColumn('applicable_date', function ($row) {
+                    return $this->essentialsUtil->format_date($row->applicable_date);
+                })
+                ->editColumn('type', '{{__("essentials::lang." . $type)}}')
+                ->editColumn('amount', '<span class="display_currency" data-currency_symbol="false">{{$amount}}</span> @if($amount_type =="percent") % @endif')
+                ->editColumn('employees', function ($row) {
+                    $employees = [];
+                    foreach ($row->employees as $employee) {
+                        $employees[] = $employee->user_full_name;
+                    }
+
+                    return implode(', ', $employees);
+                })
+                ->rawColumns(['action', 'amount'])
+                ->make(true);
+              
+
+        }  
+        return view('essentials::employee_affairs.employee_features.index');
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -102,13 +149,8 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
         return view('essentials::allowance_deduction.create')->with(compact('users'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
+   
+  
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
