@@ -109,7 +109,7 @@ class EssentialsManageEmployeeController extends Controller
     /**
      * Display a listing of the resource.
      * @return Renderable
-     */
+     */ 
    
     public function index()
     {
@@ -121,14 +121,10 @@ class EssentialsManageEmployeeController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $user_id = request()->session()->get('user.id');
-
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-           
-           
             ->select(['users.id',
                     'users.username',
-                    DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
                     'users.email',
                     'users.allow_login',
                     'users.contact_number',
@@ -165,7 +161,7 @@ class EssentialsManageEmployeeController extends Controller
                     @endcan'
                 )
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 
                 ->rawColumns(['action', 'username'])

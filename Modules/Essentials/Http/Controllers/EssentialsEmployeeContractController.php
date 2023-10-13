@@ -31,10 +31,11 @@ class EssentialsEmployeeContractController extends Controller
         
         if (request()->ajax()) {
             $employees_contracts = EssentialsEmployeesContract::
-                join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+                join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')->where('u.business_id', $business_id)
+                
                 ->select([
                     'essentials_employees_contracts.id',
-                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'essentials_employees_contracts.contract_number',
                     'essentials_employees_contracts.contract_start_date',
                     'essentials_employees_contracts.contract_end_date',
@@ -77,15 +78,15 @@ class EssentialsEmployeeContractController extends Controller
                 )
             
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('file_path')
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id)->user();
-                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+                $query = User::where('business_id', $business_id);
+                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
                
         
@@ -133,9 +134,8 @@ class EssentialsEmployeeContractController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)
-        ->user();
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         
     

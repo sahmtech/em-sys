@@ -438,7 +438,13 @@ class DataController extends Controller
                             $subMenu->url(
                                 route('employees'),
                                 __('essentials::lang.employees_affairs'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'employees'],
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
+                                 request()->segment(2) == 'roles'
+                                 || request()->segment(2) == 'appointments' 
+                                 || request()->segment(2) == 'admissionToWork'
+                                 || request()->segment(2) == 'employeeContracts'
+                                 || request()->segment(2) == 'qualifications' 
+                                 || request()->segment(2) == 'official_documents')],
                             )->order(1);
                         }
                         $subMenu->url(

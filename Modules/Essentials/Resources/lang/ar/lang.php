@@ -613,5 +613,7 @@ return[
 'add'=>'إضافة',
 'add_contract'=>'إضافة عقد',
 'contract_view'=>'عرض العقد',
-'features'=>'مزايا'
+'features'=>'مزايا',
+'employee_features'=>'مزايا الموظفين'
+
 ];

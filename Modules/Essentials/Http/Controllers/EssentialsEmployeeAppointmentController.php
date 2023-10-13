@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 
+
 class EssentialsEmployeeAppointmentController extends Controller
 {
     protected $moduleUtil;
@@ -30,25 +31,22 @@ class EssentialsEmployeeAppointmentController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        
+       // $categories=Category::all()->pluck('name','id');
+        $departments=EssentialsDepartment::all()->pluck('name','id');
+        $business_locations=BusinessLocation::all()->pluck('name','id');
         if (request()->ajax()) {
             $employeeAppointments = EssentialsEmployeeAppointmet::
-                join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')
-                ->join('essentials_departments as dep', 'dep.id', '=', 'essentials_employee_appointmets.department_id')
-                ->join('business_locations as loc', 'loc.id', '=', 'essentials_employee_appointmets.business_location_id')
-             
+                join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')->where('u.business_id', $business_id)
                 ->select([
                     'essentials_employee_appointmets.id',
-                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'u.id_proof_number',
-                    'dep.name as department',
-                    'loc.name as location',
+                    'essentials_employee_appointmets.business_location_id',
+                    'essentials_employee_appointmets.department_id',
                     'essentials_employee_appointmets.superior',
                     'essentials_employee_appointmets.job_title',
                     'essentials_employee_appointmets.employee_status',
-               
-        
-        
+
                 ]);
 
             if (!empty(request()->input('job_title')) && request()->input('job_title') !== 'all') {
@@ -63,6 +61,16 @@ class EssentialsEmployeeAppointmentController extends Controller
                 $employeeAppointments->where('essentials_employee_appointmets.department_id', request()->input('department'));
             }
             return Datatables::of($employeeAppointments)
+            ->editColumn('department_id',function($row)use($departments){
+                $item = $departments[$row->department_id]??'';
+
+                return $item;
+            })
+            ->editColumn('business_location_id',function($row)use($business_locations){
+                $item = $business_locations[$row->business_location_id]??'';
+
+                return $item;
+            })
             ->addColumn(
                 'action',
                  function ($row) {
@@ -76,17 +84,17 @@ class EssentialsEmployeeAppointmentController extends Controller
                 )
             
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id)->user();
-                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+                $query = User::where('business_id', $business_id);
+                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
-                $departments = EssentialsDepartment::forDropdown();
-                $business_locations=BusinessLocation::all()->pluck('name','id');
+               
+                
 
         return view('essentials::employee_affairs.employee_appointments.index')->with(compact('users','departments','business_locations'));
     }
@@ -128,7 +136,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $query = User::where('business_id', $business_id)
         ->user();
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         
         $departments = EssentialsDepartment::forDropdown();

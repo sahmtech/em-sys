@@ -29,17 +29,16 @@ class EssentialsAdmissionToWorkController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        
+        $departments=EssentialsDepartment::all()->pluck('name','id');
         if (request()->ajax()) {
             $admissionToWork = EssentialsAdmissionToWork::
-                join('users as u', 'u.id', '=', 'essentials_admission_to_works.employee_id')
-                ->join('essentials_departments as dep', 'dep.id', '=', 'essentials_admission_to_works.department_id')
-             
+                join('users as u', 'u.id', '=', 'essentials_admission_to_works.employee_id')->where('u.business_id', $business_id)
+               
                 ->select([
                     'essentials_admission_to_works.id',
-                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'u.id_proof_number',
-                    'dep.name',
+                    'essentials_admission_to_works.department_id',
                     'essentials_admission_to_works.admissions_type',
                     'essentials_admission_to_works.admissions_status',
                     'essentials_admission_to_works.admissions_date',
@@ -63,6 +62,11 @@ class EssentialsAdmissionToWorkController extends Controller
             }
 
             return Datatables::of($admissionToWork)
+            ->editColumn('department_id',function($row)use($departments){
+                $item = $departments[$row->department_id]??'';
+
+                return $item;
+            })
             ->addColumn(
                 'action',
                  function ($row) {
@@ -76,16 +80,16 @@ class EssentialsAdmissionToWorkController extends Controller
                 )
             
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id)->user();
+                $query = User::where('business_id', $business_id);
                 $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
-                $departments = EssentialsDepartment::forDropdown();
+              
 
         return view('essentials::employee_affairs.admission_to_work.index')->with(compact('users','departments'));
     }
