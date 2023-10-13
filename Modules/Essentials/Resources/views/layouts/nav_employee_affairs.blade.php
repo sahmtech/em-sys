@@ -64,8 +64,8 @@
                         </li>
                         {{-- {{ route('insurances') }} --}}
                     
-                        <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'features') class="active" @endif>
-                            <a href="{{ route('features') }}">@lang('essentials::lang.features')</a>
+                        <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'featureIndex') class="active" @endif>
+                            <a href="{{ route('featureIndex') }}">@lang('essentials::lang.features')</a>
                         </li>
 
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'reports') class="active" @endif>
