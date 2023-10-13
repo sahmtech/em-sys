@@ -28,13 +28,14 @@ class EssentialsEmployeeQualificationController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        
+        $countries= $countries = EssentialsCountry::forDropdown();
         if (request()->ajax()) {
             $employees_qualifications = EssentialsEmployeesQualification::
                 join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
+                ->where('u.business_id', $business_id)
                 ->select([
                     'essentials_employees_qualifications.id',
-                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'essentials_employees_qualifications.qualification_type',
                     'essentials_employees_qualifications.major',
                     'essentials_employees_qualifications.graduation_year',
@@ -54,6 +55,11 @@ class EssentialsEmployeeQualificationController extends Controller
 
 
             return Datatables::of($employees_qualifications)
+            ->editColumn('graduation_country',function($row)use($countries){
+                $item = $countries[$row->graduation_country]??'';
+
+                return $item;
+            })
             ->addColumn(
                 'action',
                  function ($row) {
@@ -67,14 +73,14 @@ class EssentialsEmployeeQualificationController extends Controller
                 )
             
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id)->user();
-                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+                $query = User::where('business_id', $business_id);
+                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
                 $countries = EssentialsCountry::forDropdown();
 
@@ -118,9 +124,8 @@ class EssentialsEmployeeQualificationController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)
-        ->user();
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $countries = EssentialsCountry::forDropdown();
     
