@@ -616,6 +616,7 @@ return[
 'features'=>'مزايا',
 'employee_features'=>'مزايا الموظفين',
 'travel_categorie'=>'تذكرة السفر',
-'add_user_travel_categorie'=>'إضافة تذكرة سفر لموظف'
+'add_user_travel_categorie'=>'إضافة تذكرة سفر لموظف',
+'select_allowance'=>'اختار بدل'
 
 ];
