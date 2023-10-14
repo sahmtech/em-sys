@@ -19,7 +19,7 @@
                 
                     <li @if(request()->segment(2) == 'featureIndex') class="active" @endif><a href="{{ route('featureIndex') }}">@lang('essentials::lang.allowances')</a></li>
                  
-                    <li @if(request()->segment(2) == 'leave-type') class="active" @endif><a href="">@lang('essentials::lang.travel_categories')</a></li>
+                    <li @if(request()->segment(2) == 'userTravelCat') class="active" @endif><a href="{{ route('userTravelCat') }}">@lang('essentials::lang.travel_categories')</a></li>
                     
                 </ul>
 

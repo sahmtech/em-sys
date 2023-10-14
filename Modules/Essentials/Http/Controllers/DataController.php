@@ -670,57 +670,45 @@ class DataController extends Controller
 
             }}
       
-        //    if (request()->selectedData) {
-        //         $elements = explode(',', request()->selectedData);
-        //         foreach ($elements  as $element) {
-        //         error_log($element);
-        //         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
-        //         error_log('11111111111');
-        //         $userAllowancesAndDeduction->user_id = $user->id;
-        //         error_log($user->id);
-        //         $userAllowancesAndDeduction->allowance_deduction_id =$element;
-        //         error_log('22222222222');
-        //         $userAllowancesAndDeduction->amount = Db::table('essentials_allowances_and_deductions')
-        //          ->where('id',(int)$element)->first()->amount;
-        //          error_log('333333333');
-        //         $userAllowancesAndDeduction->save();
-        //     }
+       
             if (request()->input('travel_ticket_categorie')!=null){
             $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
             $travel_ticket_categorie->employee_id =$user->id;
             $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
             $travel_ticket_categorie->save();
             }
-        if (request()->selectedData) {
-            $elements = explode(',', request()->selectedData);
-            
-            foreach ($elements as $element) {
-                try {
-                    $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
-                    
-                    $userAllowancesAndDeduction->user_id = $user->id;
-                    $userAllowancesAndDeduction->allowance_deduction_id =(int)$element;
-                    
-            
-                    $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
-                        ->where('id',$element)
-                        ->first();
-                    
-                    if ($allowanceDeduction) {
-                        $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
-                    
+            error_log(request()->selectedData);
+            if (request()->selectedData) {
+            $jsonData = json_decode(request()->selectedData, true); 
+            foreach ($jsonData as $item) {
+                error_log($item['salaryType']);
+                error_log($item['amount']);
 
-                        $userAllowancesAndDeduction->save();
+                    try {
+                            $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+                            $userAllowancesAndDeduction->user_id = $user->id;
+                            $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
+                            
+                            if($item['amount'] != Null){
+                                 $userAllowancesAndDeduction->amount =$item['amount'];
+                             }
+                            else
+                             {
+                                $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                                    ->where('id', $item['salaryType'])
+                                    ->first();
                     
-                    } 
-                    else{ 
-                        $userAllowancesAndDeduction->save();
-                    }
-                    } catch (\Exception $e) {
-                        \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-                        error_log ($element);
-                        error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-                    }
+                                if ($allowanceDeduction) {
+                                    $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                                  
+                                }
+                             }  
+                             $userAllowancesAndDeduction->save();
+                        } catch (\Exception $e) {
+                            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                            
+                            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                        }
                 }
         
                 $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();

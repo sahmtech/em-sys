@@ -72,7 +72,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateContractType/{id}', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'update'])->name('updateContractType');
 
         Route::get('featureIndex', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class,'featureIndex'])->name('featureIndex');
+        Route::post('storeAllowance', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class,'storeUserAllowance'])->name('storeAllowance');
        
+        Route::get('userTravelCat', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class,'userTravelCat'])->name('userTravelCat');
+        Route::post('storeUserTravelCat', [\Modules\Essentials\Http\Controllers\EssentialsTravelCategorieController::class,'storeUserTravelCat'])->name('storeUserTravelCat');
+        
         
         Route::get('/cities', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'index'])->name('cities');
         Route::get('/createCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'create'])->name('createCity');

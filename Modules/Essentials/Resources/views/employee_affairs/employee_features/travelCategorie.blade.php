@@ -9,7 +9,7 @@
     <h1>@lang('essentials::lang.employee_features')
     </h1>
     <br>
-    <h1>@lang('essentials::lang.allowances')
+    <h1>@lang('essentials::lang.travel_categories')
     </h1>
 <section class="content">
    
@@ -20,7 +20,7 @@
                 @slot('tool')
                 <div class="box-tools">
                     
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal" data-target="#addEmployeeAllowanceModal">
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal" data-target="#addEmployeetravel_categorieModal">
                         <i class="fa fa-plus"></i> @lang('messages.add')
                     </button>
                 </div>
@@ -28,26 +28,25 @@
             
             
             <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="employee_allowances_table">
+                    <table class="table table-bordered table-striped" id="employee_travel_categorie_table">
                         <thead>
                             <tr>
                                 <th>@lang('essentials::lang.employee' )</th>
-                                <th>@lang('essentials::lang.allowance' )</th>
-                                <th>@lang('essentials::lang.amount' )</th>
+                                <th>@lang('essentials::lang.travel_categorie' )</th>
                                 <th>@lang('messages.action' )</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
             @endcomponent
-         <div class="modal fade" id="addEmployeeAllowanceModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+         <div class="modal fade" id="addEmployeetravel_categorieModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
-                    {!! Form::open(['route' => 'storeAllowance' , 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'storeUserTravelCat' , 'enctype' => 'multipart/form-data']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('essentials::lang.add_allowance')</h4>
+                        <h4 class="modal-title">@lang('essentials::lang.add_user_travel_categorie')</h4>
                     </div>
         
                     <div class="modal-body">
@@ -58,15 +57,10 @@
                                 {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('allowance', __('essentials::lang.allowance') . ':*') !!}
-                                {!! Form::select('allowance',$allowance_types, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_allowance'), 'required']) !!}
+                                {!! Form::label('travel_categoire', __('essentials::lang.travel_categorie') . ':*') !!}
+                                {!! Form::select('travel_categoire',$travelCategories, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.travel_categorie'), 'required']) !!}
                             </div>
    
-                            <div class="form-group col-md-6">
-                                {!! Form::label('amount', __('essentials::lang.amount') . ':*') !!}
-                                {!! Form::number('amount', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.amount'), 'required']) !!}
-                            </div>
-                        
                        
                            
                         </div>
@@ -80,31 +74,28 @@
                 </div>
             </div>
         </div>
-    </div>     </div>
+    </div>     
+</div>
   
 </section>
 @endsection
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
-            var employee_allowances_table;
+            var employee_travel_categorie_table;
 
-            function reloadDataTable() {
-                employee_allowances_table.ajax.reload();
-            }
-
-            employee_allowances_table  = $('#employee_allowances_table').DataTable({
+          
+            employee_travel_categorie_table  = $('#employee_travel_categorie_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {   
-                    url: "{{ route('featureIndex') }}",
+                    url: "{{ route('userTravelCat') }}",
                
                 },
                 
                 columns: [
-                        { data: 'user' },
-                        { data: 'description' },
-                        { data: 'amount' },
+                        { data: 'user'},
+                        { data: 'categorie_id' },
                         { data: 'action' },
                     ],
              });

@@ -53,11 +53,11 @@
                         </li>
                     @endif
 
-                    @if(auth()->user()->can('essentials.crud_entitlements') )
+                    {{-- @if(auth()->user()->can('essentials.crud_entitlements') )
                         <li @if(request()->segment(2) == 'entitlements') class="active" @endif>
                             <a href="{{ route('entitlements') }}">@lang('essentials::lang.entitlements')</a>
                         </li>
-                    @endif
+                    @endif --}}
                     
                     @if(auth()->user()->can('essentials.view_allowance_and_deduction') )
                         <li @if(request()->segment(2) == 'allowances_and_deductions') class="active" @endif>
