@@ -614,6 +614,8 @@ return[
 'add_contract'=>'إضافة عقد',
 'contract_view'=>'عرض العقد',
 'features'=>'مزايا',
-'employee_features'=>'مزايا الموظفين'
+'employee_features'=>'مزايا الموظفين',
+'travel_categorie'=>'تذكرة السفر',
+'add_user_travel_categorie'=>'إضافة تذكرة سفر لموظف'
 
 ];

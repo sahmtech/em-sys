@@ -89,25 +89,28 @@
             </div>
         </div>
     </div>
-    <input type="hidden" id="selectedData" name="selectedData" value=""/>
+
     <table class="table">
         <thead>
             <tr>
                 <th>{{ __('essentials::lang.salary') }}</th>
-         
+                <th>{{ __('essentials::lang.amount') }}</th>
             </tr>
         </thead>
         <tbody id="salary-table-body">
             <tr>
                 <td>
-                    {!! Form::select('salary_type', $allowance_types, null,['class' => 'form-control width-60 pull-lef', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+                    {!! Form::select('salary_type[]', $allowance_types, null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
                 </td>
-              
+                <td>
+                    {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount')]); !!}
+                </td>
             </tr>
         </tbody>
     </table>
-
+    
     <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
+
     
     
 </div>
@@ -125,41 +128,44 @@
         
     </div>
 
+
 <script>
-    var rowCount = 0; 
-    var selectedData  = []; 
+    var selectedData = [];
+
     function addRow() {
-        rowCount++; 
-      
         var newRow = $('#salary-table-body tr:first').clone();
+        newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
+        newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
 
-        newRow.find('select[name="salary_type"]').attr('name', 'salary_type' + rowCount);
-      
-        newRow.find('select').change(function() {
-           updateSelectedData($(this));
-        });
-
-        newRow.find('select').val('');
         $('#salary-table-body').append(newRow);
-        if (rowCount === 1) {
-                selectedData.push('1');
-                var inputElement = document.getElementById('selectedData');
-                inputElement.value=selectedData;
-            }
-        }
-        function updateSelectedData(selectedElement) {
-                
-         var index = parseInt(selectedElement.attr('name').replace('salary_type', ''), 10) ;
-          selectedData[index] = selectedElement.val();
-          var inputElement = document.getElementById('selectedData');
-          inputElement.value=selectedData;
-            
-        }
+    }
 
-        $('#add-row').click(function() {
-            addRow();
+    $('#add-row').click(function() {
+        addRow();
+    });
+
+    $(document).on('change', 'select[name="salary_type[]"]', function() {
+        updateSelectedData();
+    });
+
+    $(document).on('input', 'input[name="amount[]"]', function() {
+        updateSelectedData();
+    });
+
+    function updateSelectedData() {
+        selectedData = [];
+
+        $('select[name="salary_type[]"]').each(function(index) {
+            var salaryType = $(this).val();
+            var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
+            selectedData.push({ salaryType: salaryType, amount: amount });
         });
 
+        console.log(selectedData);
+        var inputElement = document.getElementById('selectedData');
+        inputElement.value = JSON.stringify(selectedData);
+    }
 </script>
 
+<input type="hidden" id="selectedData" name="selectedData" value="">
 @endcomponent
