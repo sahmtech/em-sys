@@ -34,7 +34,7 @@
                           
                             <th>@lang('essentials::lang.employee_number' )</th>
                             <th>@lang('essentials::lang.employee_name' )</th>
-                            <th>@lang('essentials::lang.role' )</th>
+                            <th>@lang('essentials::lang.designation' )</th>
                             <th>@lang('essentials::lang.department' )</th>
                             <th>@lang('essentials::lang.mobile_number' )</th>
                             <th>@lang( 'business.email' )</th>
@@ -66,8 +66,8 @@
                     "columns":[
                         {"data":"id"},
                         {"data":"full_name"},
-                        {"data":"role"},
-                        {"data":"department"},
+                        {"data":"essentials_designation_id"},
+                        {"data":"essentials_department_id"},
                         {"data":"contact_number"},
                         {"data":"email"},
                         {"data":"employee_status"},

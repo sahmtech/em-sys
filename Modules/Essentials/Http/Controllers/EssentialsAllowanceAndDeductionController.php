@@ -7,9 +7,11 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Yajra\DataTables\Facades\DataTables;
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 
 class EssentialsAllowanceAndDeductionController extends Controller
 {
@@ -84,7 +86,59 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->make(true);
         }
     }
+    public function featureIndex()
+    {
+ 
+        $business_id = request()->session()->get('user.business_id');
 
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+       // $allowances=EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('name','id');
+        if (request()->ajax()) {
+            $userAllowances = EssentialsUserAllowancesAndDeduction::
+            join('essentials_allowances_and_deductions as allawocnce', 'allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')->where('allawocnce.type', 'allowance')
+                ->join('users as u', 'u.id', '=', 'essentials_user_allowance_and_deductions.user_id')->where('u.business_id', $business_id)
+                ->select([
+                    'essentials_user_allowance_and_deductions.id',
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    'allawocnce.description',
+                    'essentials_user_allowance_and_deductions.amount',
+
+                ]);
+
+         
+            return Datatables::of($userAllowances)
+            
+            
+            ->addColumn(
+                'action',
+                 function ($row) {
+                    $html = '';
+                //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    $html .= '<a  href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a> &nbsp;';
+                    $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href=""><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    
+                    return $html;
+                 }
+                )
+            
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+                $query = User::where('business_id', $business_id);
+                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+                $users = $all_users->pluck('full_name', 'id');
+                $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
+
+               
+                return view('essentials::employee_affairs.employee_features.index')->with(compact('allowance_types','users'));
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -102,13 +156,8 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
         return view('essentials::allowance_deduction.create')->with(compact('users'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
+   
+  
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -138,7 +187,43 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
         return $output;
     }
+    
+    public function storeUserAllowance(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
 
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['employee', 'allowance', 'amount']);
+            $input['user_id'] = $input['employee'];
+            $input['allowance_deduction_id'] = $input['allowance'];
+            $input['amount'] = $this->moduleUtil->num_uf($input['amount']);
+            EssentialsUserAllowancesAndDeduction::create($input);
+     
+
+            $output = ['success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => 'File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
+            ];
+        }
+
+        
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
+       
+        return redirect()->route('featureIndex')->with(compact('allowance_types','users'));
+
+    }
     /**
      * Show the specified resource.
      *

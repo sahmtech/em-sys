@@ -8,13 +8,14 @@ use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
+use App\Category;
 use DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
+use Modules\Essentials\Entities\EssentialsDepartment;
+
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -108,40 +109,43 @@ class EssentialsManageEmployeeController extends Controller
     /**
      * Display a listing of the resource.
      * @return Renderable
-     */
+     */ 
    
     public function index()
     {
         if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
+        $categories=Category::all()->pluck('name','id');
+        $departments=EssentialsDepartment::all()->pluck('name','id');
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $user_id = request()->session()->get('user.id');
-
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->join('essentials_employee_appointmets as app', 'app.employee_id', '=', 'users.id')
-            ->join('essentials_departments as dep', 'dep.id', '=','app.department_id' )
             ->select(['users.id',
                     'users.username',
-                    DB::raw("CONCAT(COALESCE(users.surname, ''), ' ', COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
                     'users.email',
                     'users.allow_login',
                     'users.contact_number',
-                    'dep.name as department',
-                    'app.employee_status as employee_status']);
+                    'users.essentials_department_id',
+                    'users.essentials_designation_id',
+                    'users.status as employee_status'
+                        ]);
 
             return Datatables::of($users)
-                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-                ->addColumn(
-                    'role',
-                    function ($row) {
-                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
+                ->editColumn('essentials_department_id',function($row)use($departments){
+                        $item = $departments[$row->essentials_department_id]??'';
 
-                        return $role_name;
-                    }
-                )
+                        return $item;
+                    })
+                ->editColumn('essentials_designation_id',function($row)use($categories){
+                        $item = $categories[$row->essentials_designation_id]??'';
+
+                        return $item;
+                    })
+                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
+                
                 ->addColumn(
                     'action',
                     '@can("user.update")
@@ -157,7 +161,7 @@ class EssentialsManageEmployeeController extends Controller
                     @endcan'
                 )
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 
                 ->rawColumns(['action', 'username'])

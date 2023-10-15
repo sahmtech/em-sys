@@ -53,11 +53,11 @@
                         </li>
                     @endif
 
-                    @if(auth()->user()->can('essentials.crud_entitlements') )
+                    {{-- @if(auth()->user()->can('essentials.crud_entitlements') )
                         <li @if(request()->segment(2) == 'entitlements') class="active" @endif>
                             <a href="{{ route('entitlements') }}">@lang('essentials::lang.entitlements')</a>
                         </li>
-                    @endif
+                    @endif --}}
                     
                     @if(auth()->user()->can('essentials.view_allowance_and_deduction') )
                         <li @if(request()->segment(2) == 'allowances_and_deductions') class="active" @endif>
@@ -70,7 +70,13 @@
                             <a href="{{ route('contract_types') }}">@lang('essentials::lang.contract_types')</a>
                         </li>
                     @endif
-
+ 
+                    @if(auth()->user()->can('essentials.crud_insurance_classes') )
+                        <li @if(request()->segment(2) == 'insurance_categories') class="active" @endif>
+                            <a href="{{ route('insurance_categories') }}">@lang('essentials::lang.insurance_categories')</a>
+                        </li>
+                    @endif
+                   
                     {{-- @if(auth()->user()->can('essentials.access_sales_target') )
                         <li @if(request()->segment(2) == 'sales_target') class="active" @endif>
                             <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>

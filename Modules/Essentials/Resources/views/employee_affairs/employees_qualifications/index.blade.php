@@ -91,7 +91,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':*') !!}
-                                {!! Form::text('graduation_year', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year'), 'required']) !!}
+                                {!! Form::number('graduation_year', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':*') !!}
@@ -104,7 +104,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('degree', __('essentials::lang.degree') . ':*') !!}
-                                {!! Form::text('degree', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'required']) !!}
+                                {!! Form::number('degree', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'required']) !!}
                             </div>
                             
                         </div>

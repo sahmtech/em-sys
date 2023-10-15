@@ -164,8 +164,8 @@
                 columns: [
                         { data: 'user' },
                         { data: 'id_proof_number' },
-                        { data: 'department' },
-                        { data: 'location' },
+                        { data: 'department_id' },
+                        { data: 'business_location_id' },
                         { data: 'superior' },
                         { data: 'job_title' },
                         { data: 'employee_status'},

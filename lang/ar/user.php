@@ -14,6 +14,7 @@
 'eqama'=>' الإقامة',
 'user_type'=>'نوع الموظف',
 'manager'=>'مدير',
+'select_proof_name'=>'اختر نوع إثبات الهوية',
 'employee'=>'موظف',
 'worker'=>'عامل',
 "all_roles" => "كل الصلاحيات",

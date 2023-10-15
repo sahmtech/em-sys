@@ -31,10 +31,11 @@ class EssentialsEmployeeContractController extends Controller
         
         if (request()->ajax()) {
             $employees_contracts = EssentialsEmployeesContract::
-                join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+                join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')->where('u.business_id', $business_id)
+                
                 ->select([
                     'essentials_employees_contracts.id',
-                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'essentials_employees_contracts.contract_number',
                     'essentials_employees_contracts.contract_start_date',
                     'essentials_employees_contracts.contract_end_date',
@@ -42,6 +43,8 @@ class EssentialsEmployeeContractController extends Controller
                     'essentials_employees_contracts.probation_period',
                     'essentials_employees_contracts.status',
                     'essentials_employees_contracts.is_renewable',
+                    'essentials_employees_contracts.file_path',
+
 
                 ]);
 
@@ -61,8 +64,12 @@ class EssentialsEmployeeContractController extends Controller
             ->addColumn(
                 'action',
                  function ($row) {
-                    $html = '';
+                    $html = ''; 
                 //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file_path.'\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
+                    '&nbsp;';
+                 
+
                 //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
                     $html .= '<button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     
@@ -71,14 +78,15 @@ class EssentialsEmployeeContractController extends Controller
                 )
             
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
+                ->removeColumn('file_path')
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id)->user();
-                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+                $query = User::where('business_id', $business_id);
+                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
                
         
@@ -126,9 +134,8 @@ class EssentialsEmployeeContractController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)
-        ->user();
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         
     

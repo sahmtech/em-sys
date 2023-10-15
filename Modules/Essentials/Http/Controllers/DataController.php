@@ -16,13 +16,14 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsHoliday;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsTodoComment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
-use Modules\Essentials\Entities\EssentialsEmployeeContractFile;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\EssentialsEntitlementType;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
-use Modules\Essentials\Entities\EssentialsEmployeeContract;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsBasicSalaryType;
 use Modules\Essentials\Entities\EssentialsAdmissionsToWork;
@@ -388,6 +389,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_import_employee'),
                 'default' => false,
             ],
+             [
+                'value' => 'essentials.crud_insurance_companies',
+                'label' => __('essentials::lang.crud_insurance_companies'),
+                'default' => false,
+            ],
             
         ];
     }
@@ -432,7 +438,14 @@ class DataController extends Controller
                             $subMenu->url(
                                 route('employees'),
                                 __('essentials::lang.employees_affairs'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'employees'],
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
+                                 request()->segment(2) == 'roles'
+                                 || request()->segment(2) == 'appointments' 
+                                 || request()->segment(2) == 'admissionToWork'
+                                 || request()->segment(2) == 'employeeContracts'
+                                 || request()->segment(2) == 'qualifications' 
+                                 || request()->segment(2) == 'official_documents'
+                                 || request()->segment(2) == 'featureIndex')],
                             )->order(1);
                         }
                         $subMenu->url(
@@ -440,6 +453,7 @@ class DataController extends Controller
                             __('essentials::lang.facilities_management'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
                         )->order(2);
+                        
                         $subMenu->url(
 
                             action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
@@ -472,10 +486,22 @@ class DataController extends Controller
                         )->order(7);
 
                         $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index']),
+                            __('essentials::lang.insurance_contracts'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_contracts'],
+                        )->order(8);
+
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'index']),
+                            __('essentials::lang.insurance_companies'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_companies'],
+                        )->order(9);
+
+                        $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
                             __('essentials::lang.system_settings'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                        )->order(8);
+                        )->order(10);
 
                         
                         if (auth()->user()->can('view_employee_settings')) 
@@ -484,14 +510,18 @@ class DataController extends Controller
                                 action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
                                 __('essentials::lang.employees_settings'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
-                            )->order(9);
+                            )->order(11);
                         }
-
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
+                            __('essentials::lang.sales_target'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'sales-target'],
+                        )->order(11);
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
                             __('essentials::lang.import_employees'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import_employee'],
-                        )->order(10);
+                        )->order(12);
 
                         if (auth()->user()->can('curd_organizational_structure')) 
                             {
@@ -500,19 +530,8 @@ class DataController extends Controller
                                     action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
                                             __('essentials::lang.organizational_structure'),
                                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-            
-                                    
-            
-                      )->order(10);}
-                       
-
-                        }
-                        
-                        
-                        ,
-                        
-                    
-
+                      )->order(13);
+                    }},
                     [
                         'icon' => 'fa fas fa-users',
                         'active' => request()->segment(1) == 'essentials',
@@ -584,43 +603,28 @@ class DataController extends Controller
                     ->toArray();
             }
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-            $allowance_types = EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('description','id')->all();
-            $entitlement_type = EssentialsEntitlementType::forDropdown();
-            $travel_ticket_categorie = EssentialsTravelTicketCategorie::forDropdown();
-            $basic_salary_types = EssentialsBasicSalaryType::forDropdown();
-            return view('essentials::partials.user_form_part', compact('basic_salary_types', 'travel_ticket_categorie', 'entitlement_type', 'allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
+            $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name','id')->all();
+        
+            return view('essentials::partials.user_form_part', compact('travel_ticket_categorie','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
-            $user_department = Category::find($user->essentials_department_id);
+            $user_department = EssentialsDepartment::find($user->essentials_department_id);
             $user_designstion = Category::find($user->essentials_designation_id);
             $work_location = BusinessLocation::find($user->location_id);
-            $qualification_type=EssentialsEmployeesQualification::where('employee_id',$user->id)->first();
-            $contract= EssentialsEmployeeContract::where('employee_id',$user->id)->select([
-                'essentials_employee_contracts.id',
-                'essentials_employee_contracts.contract_number',
-                'essentials_employee_contracts.contract_start_date',
-                'essentials_employee_contracts.contract_end_date',
-                'essentials_employee_contracts.contract_duration',
-                'essentials_employee_contracts.probation_period',
-                'essentials_employee_contracts.is_active',
-                'essentials_employee_contracts.is_renewable',
-                'essentials_basic_salary_types.type AS basic_salary_type',
-                'essentials_travel_ticket_categories.name AS travel_ticket_category_name',
-                'essentials_allowance_types.name AS allowance_name',
-                'essentials_entitlement_types.name AS entitlement_name',
-                'essentials_employee_contracts.work_type',
-            ])
-            ->leftJoin('essentials_basic_salary_types', 'essentials_employee_contracts.basic_salary_type_id', '=', 'essentials_basic_salary_types.id')
-        
-            ->leftJoin('essentials_travel_ticket_categories', 'essentials_employee_contracts.travel_ticket_category_id', '=', 'essentials_travel_ticket_categories.id')
-            ->leftJoin('essentials_allowance_types', 'essentials_employee_contracts.allowances_id', '=', 'essentials_allowance_types.id')
-            
-            ->leftJoin('essentials_entitlement_types', 'essentials_employee_contracts.deductions_id', '=', 'essentials_entitlement_types.id')
-            ->get();     
-
-            $admissions_to_work=DB::table('essentials_admissions_to_work')->where('employee_id',$user->id)->get();
-            return view('essentials::partials.user_details_part', compact('admissions_to_work','qualification_type','contract','user_department', 'user_designstion', 'user', 'work_location'))
+            $contract= EssentialsEmployeesContract::where('employee_id',$user->id)->select([
+                 'essentials_employees_contracts.id',
+                 'essentials_employees_contracts.contract_number',
+                 'essentials_employees_contracts.contract_start_date',
+                 'essentials_employees_contracts.contract_end_date',
+                 'essentials_employees_contracts.contract_duration',
+                 'essentials_employees_contracts.probation_period',
+                'essentials_employees_contracts.status',
+                'essentials_employees_contracts.is_renewable',
+          
+             ])->first();
+            return view('essentials::partials.user_details_part', compact('contract','user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
     }
@@ -633,6 +637,7 @@ class DataController extends Controller
     public function afterModelSaved($data)
     {
 
+      
         if ($data['event'] = 'user_saved') {
 
             $user = $data['model_instance'];
@@ -644,71 +649,97 @@ class DataController extends Controller
             $user->location_id = request()->input('location_id');
 
             $user->save();
-            if (request()->input('qualification_type')!=null) {
-            $qualificationType = new EssentialsEmployeesQualification();
-            $qualificationType->name = request()->input('qualification_type');
-            $qualificationType->employee_id = $user->id;
-            $qualificationType->is_active = '1';
-            $qualificationType->save();
-            
-            }
+
            
 
             if (request()->input('contract_number')!=null) {
-            $contract = new EssentialsEmployeeContract();
+            $contract = new EssentialsEmployeesContract();
+            $contract->employee_id = $user->id;
             $contract->contract_number = request()->input('contract_number');
             $contract->contract_start_date = request()->input('contract_start_date');
             $contract->contract_end_date = request()->input('contract_end_date');
             $contract->contract_duration = request()->input('contract_duration');
             $contract->probation_period = request()->input('probation_period');
             $contract->is_renewable = request()->input('is_renewable');
-            $contract->travel_ticket_category_id = request()->input('travel_ticket_categorie');
-            $contract->allowances_id = request()->input('allowance_type');
-            $contract->deductions_id = request()->input('entitlement_type');
-            $contract->employee_id = $user->id;
-            $contract->salary = request()->input('essentials_salary');
-            $contract->basic_salary_type_id = request()->input('basic_salary_type');
-            $contract->work_type = request()->input('work_type');
-            $contract->is_active = '1';
-
+            $contract->status = request()->input('status');
+            if (request()->hasFile('contract_file')) {
+            $file = request()->file('contract_file');
+            $filePath = $file->store('/employee_contracts');
+            $contract->file_path = $filePath;
             $contract->save();
 
+            }}
+      
+       
+            if (request()->input('travel_ticket_categorie')!=null){
+            $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+            $travel_ticket_categorie->employee_id =$user->id;
+            $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
+            $travel_ticket_categorie->save();
             }
+            error_log(request()->selectedData);
+            if (request()->selectedData) {
+            $jsonData = json_decode(request()->selectedData, true); 
+            foreach ($jsonData as $item) {
+                error_log($item['salaryType']);
+                error_log($item['amount']);
+
+                    try {
+                            $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+                            $userAllowancesAndDeduction->user_id = $user->id;
+                            $userAllowancesAndDeduction->allowance_deduction_id = (int)$item['salaryType'];
+                            
+                            if($item['amount'] != Null){
+                                 $userAllowancesAndDeduction->amount =$item['amount'];
+                             }
+                            else
+                             {
+                                $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                                    ->where('id', $item['salaryType'])
+                                    ->first();
+                    
+                                if ($allowanceDeduction) {
+                                    $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                                  
+                                }
+                             }  
+                             $userAllowancesAndDeduction->save();
+                        } catch (\Exception $e) {
+                            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                            
+                            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                        }
+                }
+        
+                $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
+                $essentials_employee_appointmets->employee_id =$user->id;
+                $essentials_employee_appointmets->department_id=request()->input('essentials_department_id');
+                $essentials_employee_appointmets->business_location_id= request()->input('location_id');
+                $essentials_employee_appointmets->superior = "superior";
+                $essentials_employee_appointmets->job_title=request()->input('essentials_designation_id');
+                $essentials_employee_appointmets->employee_status ="active";
+                $essentials_employee_appointmets->save();
+
+                
+
+            }
+            
+        //   //  EssentialsUserAllowancesAndDeduction
            
+        //     $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
 
-            if (request()->input('dmissions_type')!=null) {
-            $admissionsToWork = new EssentialsAdmissionsToWork();
-            $admissionsToWork->employee_id = $user->id;
-            $admissionsToWork->dmissions_type = request()->input('dmissions_type');
-            $admissionsToWork->dmissions_status = request()->input('dmissions_status');
-            $admissionsToWork->details = request()->input('details');
-            $admissionsToWork->is_active = '1';
-
-            $admissionsToWork->save();
-            }
-
-            if (request()->hasFile('contract_file')) {
-                $file = request()->file('contract_file');
-                $filePath = $file->store('/employee_contracts');
-                $contract_file = new EssentialsEmployeeContractFile();
-                $contract_file->contract_id = $contract->id;
-                $contract_file->path = $filePath;
-                $contract_file->save();
-            } 
-            $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
-
-            //delete  existing pay component
-            EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-                ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
-                ->delete();
+        //     //delete  existing pay component
+        //     EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+        //         ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
+        //         ->delete();
 
             //if pay component exist add to db
-            if (!empty(request()->input('pay_components'))) {
-                $pay_components = request()->input('pay_components');
-                foreach ($pay_components as $key => $pay_component) {
-                    EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
-                }
-            }
+            // if (!empty(request()->input('pay_components'))) {
+            //     $pay_components = request()->input('pay_components');
+            //     foreach ($pay_components as $key => $pay_component) {
+            //         EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
+            //     }
+            // }
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -10,6 +11,8 @@ use Modules\Essentials\Entities\EssentialsTravelCategorie;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+
 
 class EssentialsTravelCategorieController extends Controller
 {
@@ -64,7 +67,98 @@ class EssentialsTravelCategorieController extends Controller
            }
      return view('essentials::settings.partials.travel_categories.index');
    }
+    public function userTravelCat(){  
+     
+            $business_id = request()->session()->get('user.business_id');
+    
+            if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            $travelCategories=EssentialsTravelTicketCategorie::all()->pluck('name','id');
+            if (request()->ajax()) {
+                $userTravelCat = EssentialsEmployeeTravelCategorie::
+                    join('users as u', 'u.id', '=', 'essentials_employee_travel_categories.employee_id')->where('u.business_id', $business_id)
+                    ->select([
+                        'essentials_employee_travel_categories.id',
+                        DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                        'essentials_employee_travel_categories.categorie_id'
+    
+                    ]);
+    
+             
+                return Datatables::of($userTravelCat)
+                
+                ->editColumn('categorie_id',function($row)use($travelCategories){
+                    $item = $travelCategories[$row->categorie_id]??'';
+    
+                    return $item;
+                })
+                ->addColumn(
+                    'action',
+                     function ($row) {
+                        $html = '';
+               //         $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                 //     $html .= '<a  href="'. route('cancleActivition', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.cancleActivition').'</a>';
+                       $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href=""><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                        
+                        return $html;
+                     }
+                    )
+                
+                    ->filterColumn('user', function ($query, $keyword) {
+                        $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    })
+                    ->removeColumn('id')
+                    ->rawColumns(['action'])
+                    ->make(true);
+            }
+                    $query = User::where('business_id', $business_id);
+                    $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+                    $users = $all_users->pluck('full_name', 'id');
+    
+                   
+                    return view('essentials::employee_affairs.employee_features.travelCategorie')->with(compact('travelCategories','users'));
+        
+    }
+    public function storeUserTravelCat(Request $request)
+    {    $business_id = request()->session()->get('user.business_id');
+    
+            if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            try {
+                
+                $input = $request->only(['employee', 'travel_categoire']);
 
+                $input['employee_id'] = $input['employee'];
+                $input['categorie_id'] = $input['travel_categoire'];
+                EssentialsEmployeeTravelCategorie::create($input);
+         
+    
+                $output = ['success' => true,
+                    'msg' => __('lang_v1.added_success'),
+                ];
+            } catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+                $output = ['success' => false,
+                    'msg' => 'File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
+                ];
+            }
+    
+            
+            $query = User::where('business_id', $business_id);
+            $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $users = $all_users->pluck('full_name', 'id');
+            $travelCategories=EssentialsTravelTicketCategorie::all()->pluck('name','id');
+           
+            return redirect()->route('userTravelCat')->with(compact('travelCategories','users'));
+    
+        
+
+    }
    public function create()
    {   
       
