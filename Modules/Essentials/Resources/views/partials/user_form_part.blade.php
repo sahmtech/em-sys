@@ -93,7 +93,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>{{ __('essentials::lang.salary') }}</th>
+                <th>{{ __('essentials::lang.extra_salary_type') }}</th>
                 <th>{{ __('essentials::lang.amount') }}</th>
             </tr>
         </thead>
