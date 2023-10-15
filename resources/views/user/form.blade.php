@@ -134,60 +134,9 @@
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
 
-<script>
-<<<<<<< HEAD
-    let validationLength = 10; 
 
-    function updateValidationCondition(select) {
-        if (select.value === 'eqama') {
-            validationLength = 13; 
-        } else {
-            validationLength = 10;
-=======
-    let validationCondition = /^\d{10}$/; // Default validation condition
 
-    function updateValidationCondition(select) {
-        const selectedOption = select.value;
 
-        if (selectedOption === 'eqama') {
-            validationCondition = /^\d{13}$/; // Change validation condition for 'eqama'
-        } else {
-            validationCondition = /^\d{10}$/; // Default validation condition for other options
->>>>>>> 3eb941d7609dd979fe3444e0a9a3734c285ef9bc
-        }
-
-        // Trigger validation on input change
-        validateIdProofNumber(document.getElementById('id_proof_number'));
-    }
-
-    function validateIdProofNumber(input) {
-        const idProofNumber = input.value;
-
-<<<<<<< HEAD
-        if (idProofNumber.length !== validationLength) {
-            document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
-=======
-        // Check against the current validation condition
-        if (!validationCondition.test(idProofNumber)) {
-            document.getElementById('idProofNumberError').innerText = 'ID proof number does not meet the required format.';
-            disableFormSubmission();
->>>>>>> 3eb941d7609dd979fe3444e0a9a3734c285ef9bc
-        } else {
-            document.getElementById('idProofNumberError').innerText = '';
-            enableFormSubmission();
-        }
-    }
-
-    function disableFormSubmission() {
-        // Disable form submission
-        document.getElementById('submit_user_button').disabled = true;
-    }
-
-    function enableFormSubmission() {
-        // Enable form submission
-        document.getElementById('submit_user_button').disabled = false;
-    }
-</script>
 
 
 </body>
