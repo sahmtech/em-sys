@@ -35,6 +35,8 @@ class DataController extends Controller
      *
      * @return array
      */
+
+    
     public function parse_notification($notification)
     {
         $notification_data = [];
@@ -742,6 +744,13 @@ class DataController extends Controller
             // }
         }
     }
+
+
+
+    // In your AllowanceController
+
+
+
 
 
     // public function afterModelSaved($data)

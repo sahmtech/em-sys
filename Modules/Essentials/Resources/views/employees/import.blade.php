@@ -78,7 +78,7 @@
                     </tr>
                     <tr>
                         <td>2</td>
-                        <td>@lang('essentials::lang.surname') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.mid_name') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
@@ -96,11 +96,7 @@
                         <td>@lang('essentials::lang.Gender') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>@lang('essentials::lang.status') <br><small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
+                 
                     <tr>
                         <td>7</td>
                         <td>@lang('essentials::lang.blood_type') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
@@ -108,7 +104,7 @@
                     </tr>
                     <tr>
                         <td>8</td>
-                        <td>@lang('essentials::lang.Mobile_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.Mobile_number') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
@@ -121,51 +117,8 @@
                         <td>@lang('essentials::lang.family_number') <br><small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>@lang('essentials::lang.Facebook_link') <br><small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>@lang('essentials::lang.Twitter_link') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>@lang('essentials::lang.Social_media_1') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>14</td>
-                        <td>@lang('essentials::lang.Social_media_2') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>@lang('essentials::lang.Custom_field_1') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>@lang('essentials::lang.Custom_field_2') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>@lang('essentials::lang.Custom_field_3') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>@lang('essentials::lang.Custom_field_4') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>16</td>
-                        <td>@lang('essentials::lang.Name_of_guardian') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
+                   
+                   
                     <tr>
                         <td>17</td>
                         <td>@lang('essentials::lang.Identity_proof_name') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
@@ -202,12 +155,7 @@
                         <td>&nbsp;</td>
                     </tr>
                    
-                    <tr>
-                        <td>23</td>
-                        <td>@lang('essentials::lang.employee_tax_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                   
+                  
                     <tr>
                         <td>24</td>
                         <td>@lang('essentials::lang.HR_Department') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
@@ -218,11 +166,7 @@
                         <td>@lang('essentials::lang.Job_title') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.academic_qualification') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
+                  
                     <tr>
                         <td>26</td>
                         <td>@lang('essentials::lang.,contract_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
@@ -258,42 +202,14 @@
                         <td>@lang('essentials::lang.Isrenewable') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.HR_Department') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
+                   
                     <tr>
                         <td>26</td>
                         <td>@lang('essentials::lang.Basic_salary') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.Salary_components') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.Type_basic_salary') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.Allowance_type') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.Entitlement_type') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.Class_travel_tickets') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
+                   
+                
                 </table>
             @endcomponent
         </div>

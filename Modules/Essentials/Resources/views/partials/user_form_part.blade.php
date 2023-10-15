@@ -167,5 +167,36 @@
     }
 </script>
 
+
+<script>
+    function updateAmount(element) {
+        var salaryType = $(element).val();
+        console.log(salaryType);
+        // Make an AJAX call to retrieve the amount for the selected salary type
+        $.ajax({
+            url: '/hrm/get-amount/' + salaryType, // Modify the URL according to your Laravel route
+            type: 'GET',
+            success: function(response) {
+                // Update the corresponding amount input field
+                var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
+                amountInput.val(response.amount);
+                updateSelectedData(); // Update the selected data after updating the amount
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+
+    // Rest of your existing JavaScript code...
+
+    $(document).on('change', 'select[name="salary_type[]"]', function() {
+        updateAmount(this); // Call the function to update the amount
+    });
+
+    // Rest of your existing JavaScript code...
+</script>
+
+
 <input type="hidden" id="selectedData" name="selectedData" value="">
 @endcomponent
