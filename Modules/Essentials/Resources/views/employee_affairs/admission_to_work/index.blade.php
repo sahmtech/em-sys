@@ -169,7 +169,7 @@
                 columns: [
                         { data: 'user' },
                         { data: 'id_proof_number' },
-                        { data: 'name' },
+                        { data: 'department_id' },
                  
                         {
                             data: 'admissions_type',
