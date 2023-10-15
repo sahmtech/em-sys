@@ -70,7 +70,7 @@
                         {"data":"essentials_department_id"},
                         {"data":"contact_number"},
                         {"data":"email"},
-                        {"data":"employee_status"},
+                        {"data":"status"},
                         {"data":"action"}
                     ]
                 });

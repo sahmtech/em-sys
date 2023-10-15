@@ -96,9 +96,9 @@ class EssentialsAllowanceAndDeductionController extends Controller
         }
 
        // $allowances=EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('name','id');
-        if (request()->ajax()) {
+       if (request()->ajax()) {
             $userAllowances = EssentialsUserAllowancesAndDeduction::
-            join('essentials_allowances_and_deductions as allawocnce', 'allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')->where('allawocnce.type', 'allowance')
+                 join('essentials_allowances_and_deductions as allawocnce', 'allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')->where('allawocnce.type', 'allowance')
                 ->join('users as u', 'u.id', '=', 'essentials_user_allowance_and_deductions.user_id')->where('u.business_id', $business_id)
                 ->select([
                     'essentials_user_allowance_and_deductions.id',
@@ -108,7 +108,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
                 ]);
 
-         
+
             return Datatables::of($userAllowances)
             
             
@@ -117,9 +117,10 @@ class EssentialsAllowanceAndDeductionController extends Controller
                  function ($row) {
                     $html = '';
                 //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                    $html .= '<a  href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a> &nbsp;';
-                    $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href=""><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    
+                    $html .= '<a href="'. route('employee_allowance.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                    &nbsp;';
+                    $html .= '<button class="btn btn-xs btn-danger delete_employee_allowance_button" data-href="' . route('employee_allowance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                
                     return $html;
                  }
                 )
@@ -139,6 +140,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
                
                 return view('essentials::employee_affairs.employee_features.index')->with(compact('allowance_types','users'));
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -268,7 +270,24 @@ class EssentialsAllowanceAndDeductionController extends Controller
         return view('essentials::allowance_deduction.edit')
                 ->with(compact('allowance', 'users', 'selected_users', 'applicable_date'));
     }
+    public function editAllowance($id)
+     {
+         $business_id = request()->session()->get('user.business_id');
+         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+ 
+         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+             abort(403, 'Unauthorized action.');
+         }
+ 
+         $UserAllowance = EssentialsUserAllowancesAndDeduction::findOrFail($id);
+ 
+         $query = User::where('business_id', $business_id);
+         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+         $users = $all_users->pluck('full_name', 'id');
+         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
 
+         return view('essentials::employee_affairs.employee_features.editAllowance')->with(compact('UserAllowance','users','allowance_types'));
+     }
     /**
      * Update the specified resource in storage.
      *
@@ -305,7 +324,41 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
         return $output;
     }
+    public function updateAllowance(Request $request, $id)
+    {
+      
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['employee', 'allowance', 'amount']);
+            $input2['user_id'] = $input['employee'];
+            $input2['allowance_deduction_id'] = $input['allowance'];
+            $input2['amount'] = $this->moduleUtil->num_uf($input['amount']);
+         
+            EssentialsUserAllowancesAndDeduction::where('id', $id)->update($input2);
+            $output = ['success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
+
+        return redirect()->route('featureIndex')->with(compact('allowance_types','users'));
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -338,5 +391,34 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
             return $output;
         }
+    } 
+    
+    public function destroyAllowance($id)
+    {
+            $business_id = request()->session()->get('user.business_id');
+            $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+    
+            if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            try {
+                EssentialsUserAllowancesAndDeduction::where('id', $id)
+                            ->delete();
+    
+                $output = ['success' => true,
+                    'msg' => __('lang_v1.deleted_success'),
+                ];
+           
+            } catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+                $output = ['success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ];
+            }
+           
+           return $output;
+    
     }
 }

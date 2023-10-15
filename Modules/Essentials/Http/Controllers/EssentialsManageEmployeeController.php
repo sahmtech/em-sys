@@ -140,7 +140,7 @@ class EssentialsManageEmployeeController extends Controller
                     'users.contact_number',
                     'users.essentials_department_id',
                     'users.essentials_designation_id',
-                    'users.status as employee_status'
+                    'users.status'
                         ]);
 
             return Datatables::of($users)
@@ -154,7 +154,6 @@ class EssentialsManageEmployeeController extends Controller
 
                         return $item;
                     })
-                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 
                 ->addColumn(
                     'action',
@@ -171,10 +170,10 @@ class EssentialsManageEmployeeController extends Controller
                     @endcan'
                 )
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 
-                ->rawColumns(['action', 'username'])
+                ->rawColumns(['action'])
                 ->make(true);
         }
         return view('essentials::employee_affairs.employee_affairs.index');

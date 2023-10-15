@@ -80,7 +80,8 @@
                 </div>
             </div>
         </div>
-    </div>     </div>
+    </div>
+</div>
   
 </section>
 @endsection
@@ -108,9 +109,38 @@
                         { data: 'action' },
                     ],
              });
+      
+
+     $(document).on('click', 'button.delete_employee_allowance_button', function () {
+            swal({
+                title: LANG.sure,
+                text: LANG.confirm_delete_employee_allowance,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).data('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                                employee_allowances_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                     
+                        }
+                    });
+                }
             });
-    
-    
+        });
+
+    });
+
     </script>
 @endsection
 

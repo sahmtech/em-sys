@@ -53,7 +53,6 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-
     <select id="id_proof_name" name="id_proof_name" class="form-control" onchange="updateValidationCondition(this)">
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
@@ -63,8 +62,9 @@
 
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
-    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)']); !!}
-    <span id="idProofNumberError" class="text-danger"></span>
+    {{-- {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)']); !!} --}}
+    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)', 'minlength' => '']) !!}
+  <span id="idProofNumberError" class="text-danger"></span>
 </div>
 
 {{-- <div class="form-group col-md-3">
@@ -136,8 +136,30 @@
 
 
 
+<script>
+    let validationLength = 10; 
 
+   
+    function updateValidationCondition(select) {
+    const idProofNumberInput = document.getElementById('id_proof_number');
+    if (select.value === 'eqama') {
+        validationLength = 13;
+    } else {
+        validationLength = 10;
+    }
+    idProofNumberInput.minLength = validationLength;
+}
 
+    function validateIdProofNumber(input) {
+        const idProofNumber = input.value;
+
+        if (idProofNumber.length !== validationLength) {
+            document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
+        } else {
+            document.getElementById('idProofNumberError').innerText = '';
+        }
+    }
+</script>
 
 </body>
 </html>
