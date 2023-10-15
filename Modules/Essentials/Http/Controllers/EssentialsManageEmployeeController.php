@@ -329,14 +329,112 @@ class EssentialsManageEmployeeController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,$id)
     {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
         
+            //Disable in demo
+            // $notAllowed = $this->moduleUtil->notAllowedInDemo();
+            // if (!empty($notAllowed)) {
+            //     return $notAllowed;
+            // }
+            if (!auth()->user()->can('user.update')) {
+                abort(403, 'Unauthorized action.');
+            }
+    error_log(';1111111111111111111111111');
+            try {
+                $user_data = $request->only([
+                    'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status',
+                    'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1',
+                    'social_media_2', 'permanent_address', 'current_address',
+                    'guardian_name', 'custom_field_1', 'custom_field_2',
+                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'max_sales_discount_percent', 'family_number', 'alt_number',
+                ]);
+    
+                $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
+                $business_id = request()->session()->get('user.business_id');
+                error_log(';222222222222222222222');
+                if (!isset($user_data['selected_contacts'])) {
+                    $user_data['selected_contacts'] = 0;
+                }
+                error_log(';33333333333');
+                if (empty($request->input('allow_login'))) {
+                    error_log(';444444444444');
+                    $user_data['username'] = null;
+                    $user_data['password'] = null;
+                    $user_data['allow_login'] = 0;
+                } else {
+                    error_log(';55555555555');
+                    $user_data['allow_login'] = 1;
+                }
+    
+                if (!empty($request->input('password'))) {
+                    error_log(';6666666666');
+                    $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
+                }
+                error_log(';777777777777777777');
+                //Sales commission percentage
+                $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
+                error_log(';8888888888888');
+                //$user_data['max_sales_discount_percent'] = ! is_null($user_data['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_data['max_sales_discount_percent']) : null;
+                $user_data['max_sales_discount_percent'] = null;
+                error_log(';9999999999999999');
+                if (!empty($request->input('dob'))) {
+                    error_log('******************');
+                    $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+                }
+    
+                if (!empty($request->input('bank_details'))) {error_log('******************');
+                    $user_data['bank_details'] = json_encode($request->input('bank_details'));
+                }
+    
+                DB::beginTransaction();
+                error_log('******************');
+                if ($user_data['allow_login'] && $request->has('username')) {
+                    error_log('????????????????/');
+                    $user_data['username'] = $request->input('username');
+                    $ref_count = $this->moduleUtil->setAndGetReferenceCount('username');
+                    if (blank($user_data['username'])) {
+                        $user_data['username'] = $this->moduleUtil->generateReferenceNumber('username', $ref_count);
+                    }
+    
+                    $username_ext = $this->moduleUtil->getUsernameExtension();
+                    if (!empty($username_ext)) {
+                        $user_data['username'] .= $username_ext;
+                    }
+                }
+    
+                $user = User::where('business_id', $business_id)
+                    ->findOrFail($id);
+    
+                $user->update($user_data);
+             
+             
+    
+                //Update module fields for user
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
+    
+                $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
+    
+                event(new UserCreatedOrModified($user, 'updated'));
+    
+                $output = [
+                    'success' => 1,
+                    'msg' => __('user.user_update_success'),
+                ];
+    
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+    
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+                $output = [
+                    'success' => 0,
+                    'msg' => $e->getMessage(),
+                ];
+            }
+    
+            return redirect()->route('employees')->with('status', $output);
     }
 
     /**
