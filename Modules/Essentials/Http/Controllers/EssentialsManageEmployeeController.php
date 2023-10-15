@@ -340,7 +340,6 @@ class EssentialsManageEmployeeController extends Controller
             if (!auth()->user()->can('user.update')) {
                 abort(403, 'Unauthorized action.');
             }
-    error_log(';1111111111111111111111111');
             try {
                 $user_data = $request->only([
                     'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status',
@@ -352,45 +351,34 @@ class EssentialsManageEmployeeController extends Controller
     
                 $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
                 $business_id = request()->session()->get('user.business_id');
-                error_log(';222222222222222222222');
                 if (!isset($user_data['selected_contacts'])) {
                     $user_data['selected_contacts'] = 0;
                 }
-                error_log(';33333333333');
                 if (empty($request->input('allow_login'))) {
-                    error_log(';444444444444');
                     $user_data['username'] = null;
                     $user_data['password'] = null;
                     $user_data['allow_login'] = 0;
                 } else {
-                    error_log(';55555555555');
                     $user_data['allow_login'] = 1;
                 }
     
                 if (!empty($request->input('password'))) {
-                    error_log(';6666666666');
                     $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
                 }
-                error_log(';777777777777777777');
                 //Sales commission percentage
                 $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
-                error_log(';8888888888888');
                 //$user_data['max_sales_discount_percent'] = ! is_null($user_data['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_data['max_sales_discount_percent']) : null;
                 $user_data['max_sales_discount_percent'] = null;
-                error_log(';9999999999999999');
                 if (!empty($request->input('dob'))) {
-                    error_log('******************');
                     $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
                 }
     
-                if (!empty($request->input('bank_details'))) {error_log('******************');
+                if (!empty($request->input('bank_details'))) {
                     $user_data['bank_details'] = json_encode($request->input('bank_details'));
                 }
     
                 DB::beginTransaction();
-                error_log('******************');
                 if ($user_data['allow_login'] && $request->has('username')) {
-                    error_log('????????????????/');
                     $user_data['username'] = $request->input('username');
                     $ref_count = $this->moduleUtil->setAndGetReferenceCount('username');
                     if (blank($user_data['username'])) {
