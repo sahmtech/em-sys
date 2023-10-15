@@ -332,7 +332,12 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+            abort(403, 'Unauthorized action.');
+        }
+        
     }
 
     /**

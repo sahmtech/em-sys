@@ -52,9 +52,8 @@
     {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
 </div>
 <div class="form-group col-md-3">
-    {!! Form::label('id_proof_name', __( 'lang_v1.id_proof_name') . ':*') !!}
-
-    <select id="id_proof_name" name="id_proof_name" class="form-control" >
+    {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
+    <select id="id_proof_name" name="id_proof_name" class="form-control" onchange="updateValidationCondition(this)">
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
@@ -66,6 +65,7 @@
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)']); !!}
     <span id="idProofNumberError" class="text-danger"></span>
 </div>
+
 {{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
     {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
@@ -136,12 +136,22 @@
 
 
 <script>
+    let validationLength = 10; // Default validation length
+
+    function updateValidationCondition(select) {
+        if (select.value === 'eqama') {
+            validationLength = 13; // Change validation length for 'eqama'
+        } else {
+            validationLength = 10; // Default validation length for other options
+        }
+    }
+
     function validateIdProofNumber(input) {
         const idProofNumber = input.value;
 
-        // Check if it's exactly 10 numbers
-        if (!/^\d{10}$/.test(idProofNumber)) {
-            document.getElementById('idProofNumberError').innerText = 'ID proof number must be 10 numbers.';
+        // Check if it's the correct length for the selected option
+        if (idProofNumber.length !== validationLength) {
+            document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
         } else {
             document.getElementById('idProofNumberError').innerText = '';
         }
