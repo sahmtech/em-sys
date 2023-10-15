@@ -62,8 +62,9 @@
 </div>
 
 <div class="form-group col-md-3">
-    {!! Form::label('id_proof_number', __( 'lang_v1.id_proof_number') . ':*') !!}
-    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required','placeholder' => __( 'lang_v1.id_proof_number' ) ]); !!}
+    {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
+    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)']); !!}
+    <span id="idProofNumberError" class="text-danger"></span>
 </div>
 {{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
@@ -132,23 +133,20 @@
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
 
+
+
 <script>
-    $(document).ready(function() {
-        $('#id_proof_name').change(function() {
-            var idProofName = $(this).val();
-            var idProofNumber = $('#id_proof_number');
+    function validateIdProofNumber(input) {
+        const idProofNumber = input.value;
 
-            idProofNumber.val('');
-
-            if (idProofName === 'national_id') {
-                idProofNumber.attr('placeholder', '@lang('user.add_10_numbers')');
-                idProofNumber.attr('maxlength', 10);
-            } else if (idProofName === 'eqama') {
-                idProofNumber.attr('placeholder', '@lang('user.add_13_numbers')');
-                idProofNumber.attr('maxlength', 13);
-            }
-        });
-    });
+        // Check if it's exactly 10 numbers
+        if (!/^\d{10}$/.test(idProofNumber)) {
+            document.getElementById('idProofNumberError').innerText = 'ID proof number must be 10 numbers.';
+        } else {
+            document.getElementById('idProofNumberError').innerText = '';
+        }
+    }
 </script>
+
 </body>
 </html>
