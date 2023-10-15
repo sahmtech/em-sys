@@ -15,7 +15,7 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
-
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -32,6 +32,16 @@ class EssentialsManageEmployeeController extends Controller
         $this->moduleUtil = $moduleUtil;
     }
 
+    public function getAmount($salaryType)
+    {
+     
+     
+      //  $allowance= EssentialsAllowanceAndDeduction::where('id', 1)->find();
+                  
+        $categories=EssentialsAllowanceAndDeduction::where('id', $salaryType)->select('amount')
+        ->first();
+        return response()->json($categories); // Return 0 if allowance not found
+    }
 
     public function employ($id)
     {

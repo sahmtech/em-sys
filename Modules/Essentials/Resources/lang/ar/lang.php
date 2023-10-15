@@ -609,6 +609,14 @@ return[
 'employees_appointments'=>'تعيينات الموظفين',
 'add_Appointment'=>'تعيين موظف',
 'select_location'=>'اختر الفرع',
-
+'extra_salary_type'=>'نوع الراتب الإضافي',
+'add'=>'إضافة',
+'add_contract'=>'إضافة عقد',
+'contract_view'=>'عرض العقد',
+'features'=>'مزايا',
+'employee_features'=>'مزايا الموظفين',
+'travel_categorie'=>'تذكرة السفر',
+'add_user_travel_categorie'=>'إضافة تذكرة سفر لموظف',
+'select_allowance'=>'اختار بدل'
 
 ];
