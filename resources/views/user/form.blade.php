@@ -136,20 +136,19 @@
 
 
 <script>
-    let validationLength = 10; // Default validation length
+    let validationLength = 10; 
 
     function updateValidationCondition(select) {
         if (select.value === 'eqama') {
-            validationLength = 13; // Change validation length for 'eqama'
+            validationLength = 13; 
         } else {
-            validationLength = 10; // Default validation length for other options
+            validationLength = 10;
         }
     }
 
     function validateIdProofNumber(input) {
         const idProofNumber = input.value;
 
-        // Check if it's the correct length for the selected option
         if (idProofNumber.length !== validationLength) {
             document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
         } else {
