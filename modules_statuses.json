@@ -18,5 +18,6 @@
     "HousingMovements": true,
     "InternationalRelations": true,
     "FollowUp": true,
-    "Sells": true
+    "Sells": true,
+    "Sales": true
 }

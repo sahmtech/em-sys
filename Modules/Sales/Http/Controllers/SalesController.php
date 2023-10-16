@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Sells\Http\Controllers;
+namespace Modules\Sales\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-class SellsController extends Controller
+class SalesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class SellsController extends Controller
      */
     public function index()
     {
-        return view('sells::index');
+        return view('sales::index');
     }
 
     /**
@@ -23,7 +23,7 @@ class SellsController extends Controller
      */
     public function create()
     {
-        return view('sells::create');
+        return view('sales::create');
     }
 
     /**
@@ -43,7 +43,7 @@ class SellsController extends Controller
      */
     public function show($id)
     {
-        return view('sells::show');
+        return view('sales::show');
     }
 
     /**
@@ -53,7 +53,7 @@ class SellsController extends Controller
      */
     public function edit($id)
     {
-        return view('sells::edit');
+        return view('sales::edit');
     }
 
     /**
