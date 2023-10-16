@@ -17,5 +17,6 @@
     "AiAssistance": true,
     "HousingMovements": true,
     "InternationalRelations": true,
-    "FollowUp": true
+    "FollowUp": true,
+    "Sells": true
 }
