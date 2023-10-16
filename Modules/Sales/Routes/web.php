@@ -11,6 +11,12 @@
 |
 */
 
-Route::prefix('sales')->group(function() {
-    Route::get('/', 'SalesController@index');
+Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu')->group(function () {
+
+
+    Route::prefix('sale')->group(function () {
+        Route::get('/clients', [\Modules\Sales\Http\Controllers\ClientsController::class, 'index'])->name('clients');
+        Route::get('/cotracts', [\Modules\Sales\Http\Controllers\ContractsController::class, 'index'])->name('cotracts');
+        Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('offer-price');
+    });
 });
