@@ -4,4 +4,33 @@ return [
     'clients'=>'العملاء',
     'contracts'=>'العقود',
     'offer_price'=>'عروض الأسعار',
+    'add_offer_price'=>'إضافة عرض سعر',
+    'offer_number'=>'رقم العرض',
+    'customer_number'=>'رقم العميل',
+    'customer_name'=>'اسم العميل',
+    'date'=>'التاريخ',
+    'value'=>'القيمة',
+    'offer_type'=>'نوع العرض',
+    'offer_status'=>'حالة العرض',
+    'action'=>'العمليات',
+    'add_new_client'=>'إضافة زبون جديد',
+    'profession'=>'المهنة',
+    'specialization'=>'التخصص',
+    'nationality'=>'الجنسية',
+    'gender'=>'الجنس',
+    'salary'=>'الراتب',
+    'food_allowance'=>'بدل الطعام',
+    'housing_allowance'=>'بدل السكن',
+    'number_of_clients'=>'العدد',
+    'monthly_cost'=>'التكلفة الشهرية',
+    'total'=>'الاجمالي',
+    'female'=>'أنثى',
+    'male'=>'ذكر',
+    'cash'=>'قيمة نقدية',
+    'insured_by_the_other'=>'مؤمن من قبل الطرف الآخر',
+
+
+
+
+
 ];
