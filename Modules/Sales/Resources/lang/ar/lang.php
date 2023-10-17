@@ -28,9 +28,12 @@ return [
     'male'=>'ذكر',
     'cash'=>'قيمة نقدية',
     'insured_by_the_other'=>'مؤمن من قبل الطرف الآخر',
-
-
-
+    'contract_form'=>'صيغة العقد',
+    'operating_fees'=>'رسوم التشغيل',
+    'monthly_cost'=>'التكلفة الشهرية',
+    'down_payment'=>'الدفعة المقدمة',
+    'search'=>'ابحث',
+    'add_new_client'=>'إضافة زبون جديد'
 
 
 ];

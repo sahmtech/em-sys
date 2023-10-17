@@ -22,6 +22,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'clientAdd'])->name('clientAdd');
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'clientAdd'])->name('clientAdd');
         Route::post('/saveQuickClient', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'saveQuickClient'])->name('saveQuickClient');
+        Route::get('/viewClients', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'index'])->name('viewClients');
 
    
     });

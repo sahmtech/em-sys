@@ -23,12 +23,9 @@ class SalesTargetedClientController extends Controller
 
         if (request()->ajax()) {
             $clients = DB::table('sales_targeted_clients')->select(['id','profession', 'specialization', 'nationality', 'gender'
-        ,'number','Salary','food_allowance','housing_allowance','monthly_cost']);
-                       
-
+            ,'number','Salary','food_allowance','housing_allowance','monthly_cost']);
+                
             return datatables::of($clients)
-           
-           
             ->removeColumn('id')
             ->make(true);
         
@@ -53,18 +50,15 @@ class SalesTargetedClientController extends Controller
         return view('sales::targetedClient.client_add');
     }
     public function saveQuickClient(Request $request) {
-        return $request;
+       
         try {
             $business_id = $request->session()->get('user.business_id');
-            $form_fields = ['profession', 'specialization', 'nationality', 'gender', 'number', 'Salary', 'food_allowance', 'housing_allowance'
-               , 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_custom_field5', 'product_custom_field6', 'product_custom_field7', 'product_custom_field8', 'product_custom_field9', 'product_custom_field10', 'product_custom_field11', 'product_custom_field12', 'product_custom_field13', 'product_custom_field14', 'product_custom_field15', 'product_custom_field16', 'product_custom_field17', 'product_custom_field18', 'product_custom_field19', 'product_custom_field20'];
+            $form_fields = ['profession', 'specialization', 'nationality', 'gender','monthly_cost', 'number', 'salary', 'food_allowance', 'housing_allowance'];
 
             $client_details = $request->only($form_fields);
 
             $client_details['business_id'] = $business_id;
             $client_details['created_by'] = $request->session()->get('user.id');
-            $client_details['number_of_clients'] =$request->input('number_of_clients');
-            $client_details['monthly_cost'] = $request->input('monthly_cost');
         
             DB::beginTransaction();
 

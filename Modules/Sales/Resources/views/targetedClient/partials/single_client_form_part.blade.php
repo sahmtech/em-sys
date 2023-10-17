@@ -10,7 +10,7 @@
         <tr>
           <td>
             <div class="col-sm-6">
-              {!! Form::text('number_of_clients', 0, ['class' => 'form-control input-sm  input_number', 'placeholder' => __('sales::lang.number_of_clients'), 'required']); !!}
+              {!! Form::text('number', 0, ['class' => 'form-control input-sm  input_number', 'placeholder' => __('sales::lang.number_of_clients'), 'required']); !!}
             </div> </td>
         <td>
             <div class="col-sm-6">

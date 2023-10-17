@@ -1,40 +1,40 @@
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      {!! Form::open(['url' => action([\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'saveQuickClient']), 'method' => 'post', 'id' => 'quick_add_cient_form' ]) !!}
+      {!! Form::open(['url' => action([\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'saveQuickClient']), 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
   
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="modalTitle">@lang( 'client.add_new_client' )</h4>
+            <h4 class="modal-title" id="modalTitle">@lang( 'sales::lang.add_new_client' )</h4>
       </div>
       <div class="modal-body">
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              {!! Form::label('profession', __('client.profession') . ':*') !!}
+              {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
                 {!! Form::text('profession', null, ['class' => 'form-control', 'required',
-                'placeholder' => __('client.profession')]); !!}
+                'placeholder' => __('sales::lang.profession')]); !!}
             </div>
           </div>
   
           <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('specialization', __('client.specialization') . ':*') !!}
+                {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
                   {!! Form::text('specialization', null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('client.specialization')]); !!}
+                  'placeholder' => __('sales::lang.specialization')]); !!}
               </div>
           </div>
           <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('nationality', __('client.nationality') . ':*') !!}
+                {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
                   {!! Form::text('nationality', null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('client.nationality')]); !!}
+                  'placeholder' => __('sales::lang.nationality')]); !!}
               </div>
           </div>
           <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('gender', __('client.gender') . ':*') !!}
+                {!! Form::label('gender', __('sales::lang.gender') . ':*') !!}
                   {!! Form::select('gender',  ['male' => __('sales::lang.male'), 'female' => __('sales::lang.female')],null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('client.gender')]); !!}
+                  'placeholder' => __('sales::lang.gender')]); !!}
                   
               </div>
           </div>
@@ -47,65 +47,29 @@
           </div> --}}
           <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('Salary', __('client.salary') . ':*') !!}
+                {!! Form::label('Salary', __('sales::lang.salary') . ':*') !!}
                   {!! Form::number('Salary', null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('client.salary')]); !!}
+                  'placeholder' => __('sales::lang.salary')]); !!}
               </div>
           </div>
           <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('food_allowance', __('client.food_allowance') . ':*') !!}
+                {!! Form::label('food_allowance', __('sales::lang.food_allowance') . ':*') !!}
                   {!! Form::select('food_allowance',  ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')],null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('client.food_allowance')]); !!}
+                  'placeholder' => __('sales::lang.food_allowance')]); !!}
                   
               </div>
           </div>
           <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('housing_allowance', __('client.housing_allowance') . ':*') !!}
+                {!! Form::label('housing_allowance', __('sales::lang.housing_allowance') . ':*') !!}
                   {!! Form::select('housing_allowance',  ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')],null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('client.housing_allowance')]); !!}
+                  'placeholder' => __('sales::lang.housing_allowance')]); !!}
                   
               </div>
-          </div>
-          <div class="clearfix"></div>
-          @php
-          $custom_labels = json_decode(session('business.custom_labels'), true);
-          $product_custom_field1 = !empty($custom_labels['product']['custom_field_1']) ? $custom_labels['product']['custom_field_1'] : __('lang_v1.product_custom_field1');
-          $product_custom_field2 = !empty($custom_labels['product']['custom_field_2']) ? $custom_labels['product']['custom_field_2'] : __('lang_v1.product_custom_field2');
-          $product_custom_field3 = !empty($custom_labels['product']['custom_field_3']) ? $custom_labels['product']['custom_field_3'] : __('lang_v1.product_custom_field3');
-          $product_custom_field4 = !empty($custom_labels['product']['custom_field_4']) ? $custom_labels['product']['custom_field_4'] : __('lang_v1.product_custom_field4');
-        @endphp
-          
-          <div class="clearfix"></div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              {!! Form::label('product_custom_field1',  $product_custom_field1 . ':') !!}
-              {!! Form::text('product_custom_field1', null, ['class' => 'form-control', 'placeholder' => $product_custom_field1]); !!}
-            </div>
-          </div>
-  
-          <div class="col-sm-3">
-            <div class="form-group">
-              {!! Form::label('product_custom_field2',  $product_custom_field2 . ':') !!}
-              {!! Form::text('product_custom_field2',null, ['class' => 'form-control', 'placeholder' => $product_custom_field2]); !!}
-            </div>
-          </div>
-  
-          <div class="col-sm-3">
-            <div class="form-group">
-              {!! Form::label('product_custom_field3',  $product_custom_field3 . ':') !!}
-              {!! Form::text('product_custom_field3', null, ['class' => 'form-control', 'placeholder' => $product_custom_field3]); !!}
-            </div>
-          </div>
-  
-          <div class="col-sm-3">
-            <div class="form-group">
-              {!! Form::label('product_custom_field4',  $product_custom_field4 . ':') !!}
-              {!! Form::text('product_custom_field4', null, ['class' => 'form-control', 'placeholder' => $product_custom_field4]); !!}
-            </div>
           </div>
          
+          
         <div class="row">
           <div class="form-group col-sm-11 col-sm-offset-1">
             @include('sales::targetedClient.partials.single_client_form_part', ['quick_add' => true ])
@@ -121,3 +85,31 @@
   
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
+<script type="text/javascript">
+    $(document).ready(function(){
+      $("form#quick_add_client_form").validate({
+        submitHandler: function (form) {
+          
+          var form = $("form#quick_add_client_form");
+          var url = form.attr('action');
+          form.find('button[type="submit"]').attr('disabled', true);
+          $.ajax({
+              method: "POST",
+              url: url,
+              dataType: 'json',
+              data: $(form).serialize(),
+              success: function(data){
+                  $('.quick_add_client_modal').modal('hide');
+                  if( data.success){
+                      toastr.success(data.msg);
+                      $(document).trigger({type: "quickProductAdded", 'product': data.client });
+                  } else {
+                      toastr.error(data.msg);
+                  }
+              }
+          });
+          return false;
+        }
+      });
+    });
+  </script>
