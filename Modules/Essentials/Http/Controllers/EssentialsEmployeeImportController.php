@@ -160,11 +160,12 @@ class EssentialsEmployeeImportController extends Controller
 
 
                     $categoryname = $value[22];
+                    $emp_array['job_title']=$value[22];
                     $category = Category::where('name', $categoryname)->first();
                     if ($category) {
                         
                         $categoryId = $category->id;
-                        $emp_array['essentials_designation_id ']=$categoryId;
+                        $emp_array['essentials_designation_id']=$categoryId;
                     }
                    
 
@@ -188,13 +189,12 @@ class EssentialsEmployeeImportController extends Controller
                     }
                     
                     $contract_array['contract_duration'] = $value[26];
-                  
                     $contract_array['probation_period'] = $value[27];
                     $contract_array['is_renewable'] = $value[28];
-
+                    $contract_array['status'] = $value[29];
 
                   
-                    $emp_array['essentials_salary'] = $value[29];
+                    $emp_array['essentials_salary'] = $value[30];
                   
                     $formated_data[] = $emp_array;
                     $formated_data2[] = $contract_array;
@@ -209,8 +209,16 @@ class EssentialsEmployeeImportController extends Controller
                        
                         $emp_data['business_id'] = $business_id;
                         $emp_data['created_by'] = $user_id;
-
                         $emp = User::create($emp_data);
+
+                        $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
+                        $essentials_employee_appointmets->employee_id = $emp->id;
+                        $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
+                        $essentials_employee_appointmets->business_location_id= $emp_data['location_id'];
+                        $essentials_employee_appointmets->superior = "superior";
+                        $essentials_employee_appointmets->job_title=$emp_data['job_title'];
+                        $essentials_employee_appointmets->employee_status ="active";
+                        $essentials_employee_appointmets->save();
                          
                       // $this->transactionUtil->activityLog($emp, 'imported');
                     }
@@ -223,7 +231,6 @@ class EssentialsEmployeeImportController extends Controller
                         $con_data['business_id'] = $business_id;
                         $con_data['employee_id'] = $emp->id;
                         $con_data['created_by'] = $user_id;
-
                         $contract = EssentialsEmployeeContract::create($con_data);
 
                       // $this->transactionUtil->activityLog($emp, 'imported');
