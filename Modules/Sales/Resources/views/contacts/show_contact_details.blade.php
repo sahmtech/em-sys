@@ -88,6 +88,22 @@
 		
 		
 		</div>
+
+		<div class="col-md-4">
+			
+			
+			<p>
+			<strong>@lang('sales::lang.allow_login'):</strong>
+			@if(!empty($contactFollower[0]->allow_login))
+				<span>@lang('sales::lang.allowlogin')</span>
+				@if(!empty($contactFollower[0]->username))
+					<span style="margin-left: 10px;">{{$contactFollower[0]->username}}</span>
+				@endif
+			@else
+				<span>@lang('sales::lang.notallowlogin')</span>
+			@endif
+		</p>
+		</div>
 		<br>
 		</div>
 	</div>
