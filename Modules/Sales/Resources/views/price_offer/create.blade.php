@@ -1,25 +1,12 @@
 @extends('layouts.app')
 
-@php
-	if (!empty($status) && $status == 'quotation') {
-		$title = __('lang_v1.add_quotation');
-	} else if (!empty($status) && $status == 'draft') {
-		$title = __('lang_v1.add_draft');
-	} else {
-		$title = __('sale.add_sale');
-	}
 
-	if($sale_type == 'sales_order') {
-		$title = __('lang_v1.sales_order');
-	}
-@endphp
-
-@section('title', $title)
+@section('title',__('lang_v1.add_quotation'))
 
 @section('content')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1>{{$title}}</h1>
+    <h1>@lang('lang_v1.add_quotation')</h1>
 </section>
 <!-- Main content -->
 <section class="content no-print">
@@ -150,11 +137,32 @@
 						'placeholder' => __('sales::lang.contract_form')]); !!}
 				   </div>
 				</div>
+				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+					<div class="form-group">
+						{!! Form::label('status', __('sale.status') . ':*') !!}
+						{!! Form::select('status',
+						  ['approved' => __('sales::lang.approved'), 
+						 'transfered' => __('sales::lang.transfered'),
+						 'refused' => __('sales::lang.refused')
+						],  null, ['class' => 'form-control', 'required',
+						'placeholder' => __('sale.status')]); !!}
+					</div>
+			</div>
 				<div class="col-md-4">
 					<div class="form-group">
 					  {!! Form::label('down_payment', __('sales::lang.down_payment') . ':*') !!}
 					  {!! Form::Number('down_payment',  null, ['class' => 'form-control', 'required',
 						'placeholder' => __('sales::lang.down_payment')]); !!}
+				   </div>
+				</div>
+				
+				<div class="col-md-4">
+					<div class="form-group">
+					  {!! Form::label('offer_type', __('sales::lang.offer_type') . ':*') !!}
+					  {!! Form::select('offer_type',
+					 	 ['external' => __('sales::lang.external'), 
+					 	'internal' => __('sales::lang.internal')],  null, ['class' => 'form-control', 'required',
+						'placeholder' => __('sales::lang.offer_type')]); !!}
 				   </div>
 				</div>
 				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
@@ -167,15 +175,6 @@
 							{!! Form::text('transaction_date', $default_datetime, ['class' => 'form-control', 'readonly', 'required']); !!}
 						</div>
 					</div>
-				</div>
-				<div class="col-md-4">
-					<div class="form-group">
-					  {!! Form::label('offer_type', __('sales::lang.offer_type') . ':*') !!}
-					  {!! Form::select('offer_type',
-					 	 ['external' => __('sales::lang.external'), 
-					 	'internal' => __('sales::lang.internal')],  null, ['class' => 'form-control', 'required',
-						'placeholder' => __('sales::lang.offer_type')]); !!}
-				   </div>
 				</div>
 
 				@if(!empty($commission_agent))
@@ -191,20 +190,9 @@
 				</div>
 				@endif
 			
-				@if(!empty($status))
-					<input type="hidden" name="status" id="status" value="{{$status}}">
-
-					@if(in_array($status, ['draft', 'quotation']))
-						<input type="hidden" id="disable_qty_alert">
-					@endif
-				@else
-					<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
-						<div class="form-group">
-							{!! Form::label('status', __('sale.status') . ':*') !!}
-							{!! Form::select('status', $statuses, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
-						</div>
-					</div>
-				@endif
+				
+				
+				
 				
 		        <div class="clearfix"></div>
 
