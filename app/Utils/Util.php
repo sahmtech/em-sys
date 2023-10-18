@@ -362,9 +362,9 @@ error_log( $date);
     
         if (!in_array($type, ['contacts', 'business_location', 'username'])) {
             $ref_year = \Carbon::now()->year;
-            $ref_number = 'L' . $ref_digits;
+            $ref_number = $prefix. $ref_digits;
         } else {
-            $ref_number = 'L' . $ref_digits;
+            $ref_number = $prefix . $ref_digits;
         }
     
         return $ref_number;
