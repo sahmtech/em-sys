@@ -44,7 +44,7 @@
 			<br>
 			<p><strong>@lang('sales::lang.capacity_cs'):</strong>  @if(!empty($contactSigners[0]->capacity_cs)) {{$contactSigners[0]->capacity_cs }}@endif</p>
 			<br>
-			<p><strong>@lang('sales::lang.email_cs'):</strong>  @if(!empty($contactSigners[0]->email_cs)) {{$contactSigners[0]->email_cs }}@endif</p>
+			<p><strong>@lang('sales::lang.email_cs'):</strong>  @if(!empty($contactSigners[0]->email)) {{$contactSigners[0]->email }}@endif</p>
 		</div>
 		<br>
         <div class="col-md-4">
@@ -75,12 +75,20 @@
 		<div class="col-md-4">
 
 			<p><strong>@lang('sales::lang.first_name_cf'):</strong>@if(!empty($contactFollower[0]->first_name)) {{$contactFollower[0]->first_name }}@endif</p>
-			<br>
+			
 			
 			<p><strong>@lang('sales::lang.last_name_cf'):</strong>  @if(!empty($contactFollower[0]->last_name)) {{$contactFollower[0]->last_name }}@endif</p>
-            <br>
+           
 			
 		</div>
+		<div class="col-md-4">
+			<p><strong>@lang('sales::lang.english_name_cf'):</strong>@if(!empty($contactFollower[0]->english_name)) {{$contactSigners[0]->english_name }}@endif</p>
+		
+			<p><strong>@lang('sales::lang.email_cf'):</strong>@if(!empty($contactFollower[0]->email)) {{$contactSigners[0]->email }}@endif</p>
+		
+		
+		</div>
+		<br>
 		</div>
 	</div>
 </div>
