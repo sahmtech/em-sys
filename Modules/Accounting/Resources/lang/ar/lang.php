@@ -296,7 +296,7 @@ return [
     'account_type' => 'الحساب الرئيسي',
     'detail_type' => 'نوع الحساب الفرعي',
     'account' => 'Account',
-    'parent_account' => 'Parent Account',
+    'parent_account' => 'الحساب الاصلي',
     'as_of' => 'As of',
     'gl_code_help' => 'All General Ledger accounts have a 6-digit number. 1xxxxxx = Assets, 2xxxxx = Liabilities, 3xxxxx = Net Assets, 4xxxxx = Revenue, 5xxxxx = Revenue, 8xxxxx = Allocations',
     'gl_code' => 'General Ledger (GL) Code',

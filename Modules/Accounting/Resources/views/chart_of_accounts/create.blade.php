@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="form-group">
-                        {!! Form::label('parent_account', __('accounting::lang.parent_account') . ':') !!}
+                        {!! Form::label('parent_account', __('accounting::lang.parent_account') . '') !!}
                         {!! Form::select('parent_account_id', [], null, [
                             'class' => 'form-control',
                             'placeholder' => __('messages.please_select'),
