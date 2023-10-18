@@ -51,18 +51,19 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
                         )->order(1);
 
+                        $subMenu->url(
+                            action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
+                             __('sales::lang.add_offer_price'),
+                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+                               )->order(2);
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                             __('sales::lang.offer_price'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer_price'],
-                        )->order(2);
+                        )->order(3);
 
-                        $subMenu->url(
-                            action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-                            __('sales::lang.add_offer_price'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-                        )->order(2);
+                      
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),

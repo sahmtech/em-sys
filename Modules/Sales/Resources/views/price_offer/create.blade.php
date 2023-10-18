@@ -55,43 +55,15 @@
 	$common_settings = session()->get('business.common_settings');
 @endphp
 <input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
-	{!! Form::open(['url' => action([\App\Http\Controllers\SellPosController::class, 'store']), 'method' => 'post', 'id' => 'add_sell_form', 'files' => true ]) !!}
+	{!! Form::open(['url' => action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'store']), 'method' => 'post', 'id' => 'add_sell_form']) !!}
 	 @if(!empty($sale_type))
 	 	<input type="hidden" id="sale_type" name="type" value="{{$sale_type}}">
 	 @endif
 	<div class="row">
 		<div class="col-md-12 col-sm-12">
 			@component('components.widget', ['class' => 'box-solid'])
-				{!! Form::hidden('location_id', !empty($default_location) ? $default_location->id : null , ['id' => 'location_id', 'data-receipt_printer_type' => !empty($default_location->receipt_printer_type) ? $default_location->receipt_printer_type : 'browser', 'data-default_payment_accounts' => !empty($default_location) ? $default_location->default_payment_accounts : '']); !!}
+				{!! Form::hidden('business_id', !empty($default_location) ? $default_location->id : null , ['id' => 'location_id', 'data-receipt_printer_type' => !empty($default_location->receipt_printer_type) ? $default_location->receipt_printer_type : 'browser', 'data-default_payment_accounts' => !empty($default_location) ? $default_location->default_payment_accounts : '']); !!}
 
-				@if(!empty($price_groups))
-					@if(count($price_groups) > 1)
-						<div class="col-sm-4">
-							<div class="form-group">
-								<div class="input-group">
-									<span class="input-group-addon">
-										<i class="fas fa-money-bill-alt"></i>
-									</span>
-									@php
-										reset($price_groups);
-										$selected_price_group = !empty($default_price_group_id) && array_key_exists($default_price_group_id, $price_groups) ? $default_price_group_id : null;
-									@endphp
-									{!! Form::hidden('hidden_price_group', key($price_groups), ['id' => 'hidden_price_group']) !!}
-									{!! Form::select('price_group', $price_groups, $selected_price_group, ['class' => 'form-control select2', 'id' => 'price_group']); !!}
-									<span class="input-group-addon">
-										@show_tooltip(__('lang_v1.price_group_help_text'))
-									</span> 
-								</div>
-							</div>
-						</div>
-						
-					@else
-						@php
-							reset($price_groups);
-						@endphp
-						{!! Form::hidden('price_group', key($price_groups), ['id' => 'price_group']) !!}
-					@endif
-				@endif
 
 				{!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
@@ -185,24 +157,26 @@
 						'placeholder' => __('sales::lang.down_payment')]); !!}
 				   </div>
 				</div>
-				{{-- <div class="col-md-3">
-		          <div class="form-group">
-		            <div class="multi-input">
-		            @php
-						$is_pay_term_required = !empty($pos_settings['is_pay_term_required']);
-					@endphp
-		              {!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!} @show_tooltip(__('tooltip.pay_term'))
-		              <br/>
-		              {!! Form::number('pay_term_number', $walk_in_customer['pay_term_number'], ['class' => 'form-control width-40 pull-left', 'placeholder' => __('contact.pay_term'), 'required' => $is_pay_term_required]); !!}
-
-		              {!! Form::select('pay_term_type', 
-		              	['months' => __('lang_v1.months'), 
-		              		'days' => __('lang_v1.days')], 
-		              		$walk_in_customer['pay_term_type'], 
-		              	['class' => 'form-control width-60 pull-left','placeholder' => __('messages.please_select'), 'required' => $is_pay_term_required]); !!}
-		            </div>
-		          </div>
-		        </div> --}}
+				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+					<div class="form-group">
+						{!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
+						<div class="input-group">
+							<span class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</span>
+							{!! Form::text('transaction_date', $default_datetime, ['class' => 'form-control', 'readonly', 'required']); !!}
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+					  {!! Form::label('offer_type', __('sales::lang.offer_type') . ':*') !!}
+					  {!! Form::select('offer_type',
+					 	 ['external' => __('sales::lang.external'), 
+					 	'internal' => __('sales::lang.internal')],  null, ['class' => 'form-control', 'required',
+						'placeholder' => __('sales::lang.offer_type')]); !!}
+				   </div>
+				</div>
 
 				@if(!empty($commission_agent))
 				@php
@@ -216,17 +190,7 @@
 					</div>
 				</div>
 				@endif
-				{{-- <div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
-					<div class="form-group">
-						{!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
-						<div class="input-group">
-							<span class="input-group-addon">
-								<i class="fa fa-calendar"></i>
-							</span>
-							{!! Form::text('transaction_date', $default_datetime, ['class' => 'form-control', 'readonly', 'required']); !!}
-						</div>
-					</div>
-				</div> --}}
+			
 				@if(!empty($status))
 					<input type="hidden" name="status" id="status" value="{{$status}}">
 
@@ -241,111 +205,7 @@
 						</div>
 					</div>
 				@endif
-				{{-- @if($sale_type != 'sales_order')
-					<div class="col-sm-3">
-						<div class="form-group">
-							{!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme') . ':') !!}
-							{!! Form::select('invoice_scheme_id', $invoice_schemes, $default_invoice_schemes->id, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select')]); !!}
-						</div>
-					</div>
-				@endif --}}
-					{{-- @can('edit_invoice_number')
-					<div class="col-sm-3">
-						<div class="form-group">
-							{!! Form::label('invoice_no', $sale_type == 'sales_order' ? __('restaurant.order_no') : __('sale.invoice_no') . ':') !!}
-							{!! Form::text('invoice_no', null, ['class' => 'form-control', 'placeholder' => $sale_type == 'sales_order' ? __('restaurant.order_no') : __('sale.invoice_no')]); !!}
-							<p class="help-block">@lang('lang_v1.keep_blank_to_autogenerate')</p>
-						</div>
-					</div>
-					@endcan --}}
-				{{-- 				
-				@php
-			        $custom_field_1_label = !empty($custom_labels['sell']['custom_field_1']) ? $custom_labels['sell']['custom_field_1'] : '';
-
-			        $is_custom_field_1_required = !empty($custom_labels['sell']['is_custom_field_1_required']) && $custom_labels['sell']['is_custom_field_1_required'] == 1 ? true : false;
-
-			        $custom_field_2_label = !empty($custom_labels['sell']['custom_field_2']) ? $custom_labels['sell']['custom_field_2'] : '';
-
-			        $is_custom_field_2_required = !empty($custom_labels['sell']['is_custom_field_2_required']) && $custom_labels['sell']['is_custom_field_2_required'] == 1 ? true : false;
-
-			        $custom_field_3_label = !empty($custom_labels['sell']['custom_field_3']) ? $custom_labels['sell']['custom_field_3'] : '';
-
-			        $is_custom_field_3_required = !empty($custom_labels['sell']['is_custom_field_3_required']) && $custom_labels['sell']['is_custom_field_3_required'] == 1 ? true : false;
-
-			        $custom_field_4_label = !empty($custom_labels['sell']['custom_field_4']) ? $custom_labels['sell']['custom_field_4'] : '';
-
-			        $is_custom_field_4_required = !empty($custom_labels['sell']['is_custom_field_4_required']) && $custom_labels['sell']['is_custom_field_4_required'] == 1 ? true : false;
-		        @endphp --}}
-		        {{-- @if(!empty($custom_field_1_label))
-		        	@php
-		        		$label_1 = $custom_field_1_label . ':';
-		        		if($is_custom_field_1_required) {
-		        			$label_1 .= '*';
-		        		}
-		        	@endphp
-
-		        	<div class="col-md-4">
-				        <div class="form-group">
-				            {!! Form::label('custom_field_1', $label_1 ) !!}
-				            {!! Form::text('custom_field_1', null, ['class' => 'form-control','placeholder' => $custom_field_1_label, 'required' => $is_custom_field_1_required]); !!}
-				        </div>
-				    </div>
-		        @endif
-		        @if(!empty($custom_field_2_label))
-		        	@php
-		        		$label_2 = $custom_field_2_label . ':';
-		        		if($is_custom_field_2_required) {
-		        			$label_2 .= '*';
-		        		}
-		        	@endphp
-
-		        	<div class="col-md-4">
-				        <div class="form-group">
-				            {!! Form::label('custom_field_2', $label_2 ) !!}
-				            {!! Form::text('custom_field_2', null, ['class' => 'form-control','placeholder' => $custom_field_2_label, 'required' => $is_custom_field_2_required]); !!}
-				        </div>
-				    </div>
-		        @endif
-		        @if(!empty($custom_field_3_label))
-		        	@php
-		        		$label_3 = $custom_field_3_label . ':';
-		        		if($is_custom_field_3_required) {
-		        			$label_3 .= '*';
-		        		}
-		        	@endphp
-
-		        	<div class="col-md-4">
-				        <div class="form-group">
-				            {!! Form::label('custom_field_3', $label_3 ) !!}
-				            {!! Form::text('custom_field_3', null, ['class' => 'form-control','placeholder' => $custom_field_3_label, 'required' => $is_custom_field_3_required]); !!}
-				        </div>
-				    </div>
-		        @endif
-		        @if(!empty($custom_field_4_label))
-		        	@php
-		        		$label_4 = $custom_field_4_label . ':';
-		        		if($is_custom_field_4_required) {
-		        			$label_4 .= '*';
-		        		}
-		        	@endphp
-
-		        	<div class="col-md-4">
-				        <div class="form-group">
-				            {!! Form::label('custom_field_4', $label_4 ) !!}
-				            {!! Form::text('custom_field_4', null, ['class' => 'form-control','placeholder' => $custom_field_4_label, 'required' => $is_custom_field_4_required]); !!}
-				        </div>
-				    </div>
-		        @endif --}}
-		        {{-- <div class="col-sm-3">
-	                <div class="form-group">
-	                    {!! Form::label('upload_document', __('purchase.attach_document') . ':') !!}
-	                    {!! Form::file('sell_document', ['id' => 'upload_document', 'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types')))]); !!}
-	                    <p class="help-block">
-	                    	@lang('purchase.max_file_size', ['size' => (config('constants.document_size_limit') / 1000000)])
-	                    	@includeIf('components.document_help_text')
-	                    </p>
-	                </div>
-	            </div> --}}
+				
 		        <div class="clearfix"></div>
 
 		        @if((!empty($pos_settings['enable_sales_order']) && $sale_type != 'sales_order') || $is_order_request_enabled)
@@ -387,14 +247,9 @@
 					<input type="hidden" name="sell_price_tax" id="sell_price_tax" value="{{$business_details->sell_price_tax}}">
 
 					<!-- Keeps count of product rows -->
-					<input type="hidden" id="product_row_count" 
-						value="0">
-					@php
-						$hide_tax = '';
-						if( session()->get('business.enable_inline_tax') == 0){
-							$hide_tax = 'hide';
-						}
-					@endphp
+						<input type="hidden" id="product_row_count" 
+							value="0">
+				
 					<div class="table-responsive">
 					<table class="table table-condensed table-bordered table-striped table-responsive" id="pos_table">
 						<thead>
@@ -434,21 +289,23 @@
 					</table>
 					</div>
 					<div class="table-responsive">
-					<table class="table table-condensed table-bordered table-striped">
-						<tr>
-							<td>
-								<div class="pull-right">
-								<b>@lang('sale.item'):</b> 
-								<span class="total_quantity">0</span>
-								&nbsp;&nbsp;&nbsp;&nbsp;
-								<b>@lang('sale.total'): </b>
-									<span class="price_total">0</span>
-								</div>
-							</td>
-						</tr>
-					</table>
+						<table class="table table-condensed table-bordered table-striped">
+							<tr>
+								<td>
+									<div class="pull-right">
+									<b>@lang('sale.item'):</b> 
+									<span class="total_quantity">0</span>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<b>@lang('sale.total'): </b>
+										<span class="price_total">0</span>
+									</div>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</div>
+				<input type="hidden" name="final_total" id="price_total_input" value="0">
+
 			@endcomponent
 			{{-- @component('components.widget', ['class' => 'box-solid'])
 				<div class="col-md-4  @if($sale_type == 'sales_order') hide @endif">
@@ -926,6 +783,7 @@
 @section('javascript')
 	<script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
 	<script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
+	<script src="{{ asset('js/client.js') }}"></script>
 	<script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
 
 	<!-- Call restaurant module if defined -->

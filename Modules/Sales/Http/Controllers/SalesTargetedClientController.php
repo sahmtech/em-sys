@@ -67,7 +67,7 @@ class SalesTargetedClientController extends Controller
             DB::commit();
 
             $output = ['success' => 1,
-                'msg' => __('sales::lang.client_added_success'),
+                'msg' => __('sales::lang.added_success'),
                 'client' => $client
                
             ];
@@ -91,6 +91,7 @@ class SalesTargetedClientController extends Controller
     {
         //
     }
+ 
 
     /**
      * Show the specified resource.

@@ -13,6 +13,7 @@ use DB;
 use App\CustomerGroup;
 
 use App\Utils\BusinessUtil;
+use App\Utils\Util;
 use App\Utils\ContactUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
@@ -33,7 +34,7 @@ class OfferPriceController extends Controller
     protected $transactionUtil;
     protected $productUtil;
     protected $moduleUtil;
-
+    protected $util;
 
 
 
@@ -48,7 +49,7 @@ class OfferPriceController extends Controller
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->productUtil = $productUtil;
-
+  
         $this->dummyPaymentLine = ['method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
             'is_return' => 0, 'transaction_no' => '', ];
 
@@ -76,35 +77,25 @@ class OfferPriceController extends Controller
                 ->where('transactions.type', 'sell')
                 ->select(
                     'transactions.id',
-                    'transaction_date',
-                    'invoice_no',
+                    'transactions.transaction_date',
+                    'transactions.ref_no',
+                    'transactions.final_total',
+                    'transactions.is_direct_sale',
                     'contacts.name',
                     'contacts.mobile',
-                    'contacts.supplier_business_name',
-                    
-                    'sub_status',
-                    DB::raw('COUNT( DISTINCT tsl.id) as total_items'),
-                    DB::raw('SUM(tsl.quantity) as total_quantity'),
-                    DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as added_by"),
-                    'transactions.is_export'
+                    'transactions.status',
+                    'transactions.offer_type',
+
                 );
 
-            
-                $sells->where('transactions.sub_status', 'quotation');
-
-                if (! auth()->user()->can('quotation.view_all') && auth()->user()->can('quotation.view_own')) {
-                    $sells->where('transactions.created_by', request()->session()->get('user.id'));
-                }
-           
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $sells->whereIn('transactions.location_id', $permitted_locations);
+            $sells->groupBy('transactions.id');
+            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                $sells->where('transactions.status', request()->input('status'));
             }
 
-          
-
-            $sells->groupBy('transactions.id');
-
+            if (!empty(request()->input('offer_type')) && request()->input('offer_type') !== 'all') {
+                $sells->where('transactions.offer_type', request()->input('offer_type'));
+            }
             return Datatables::of($sells)
                  ->addColumn(
                     'action', function ($row) {
@@ -142,77 +133,16 @@ class OfferPriceController extends Controller
                                     <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
                                 </li>';
 
-                        if (config('constants.enable_download_pdf')) {
-                            $sub_status = $row->sub_status == 'proforma' ? 'proforma' : '';
-                            $html .= '<li>
-                                        <a href="'.route('quotation.downloadPdf', ['id' => $row->id, 'sub_status' => $sub_status]).'" target="_blank">
-                                            <i class="fas fa-print" aria-hidden="true"></i>'.__('lang_v1.download_pdf').'
-                                        </a>
-                                    </li>';
-                        }
-
-                        if ((auth()->user()->can('sell.create') || auth()->user()->can('direct_sell.access')) && config('constants.enable_convert_draft_to_invoice')) {
-                            $html .= '<li>
-                                        <a href="'.action([\App\Http\Controllers\SellPosController::class, 'convertToInvoice'], [$row->id]).'" class="convert-draft"><i class="fas fa-sync-alt"></i>'.__('lang_v1.convert_to_invoice').'</a>
-                                    </li>';
-                        }
-
-                        if ($row->sub_status != 'proforma') {
-                            $html .= '<li>
-                                        <a href="'.action([\App\Http\Controllers\SellPosController::class, 'convertToProforma'], [$row->id]).'" class="convert-to-proforma"><i class="fas fa-sync-alt"></i>'.__('lang_v1.convert_to_proforma').'</a>
-                                    </li>';
-                        }
-
-                        if (auth()->user()->can('draft.delete') || auth()->user()->can('quotation.delete')) {
-                            $html .= '<li>
-                                <a href="'.action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]).'" class="delete-sale"><i class="fas fa-trash"></i>'.__('messages.delete').'</a>
-                                </li>';
-                        }
-
-                        if ($row->sub_status == 'quotation') {
-                            $html .= '<li>
-                                        <a href="'.action([\App\Http\Controllers\SellPosController::class, 'copyQuotation'],[$row->id]).'" 
-                                        class="copy_quotation"><i class="fas fa-copy"></i>'.
-                                        __("lang_v1.copy_quotation").'</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-href="'.action("\App\Http\Controllers\NotificationController@getTemplate", ["transaction_id" => $row->id,"template_for" => "new_quotation"]).'" class="btn-modal" data-container=".view_modal"><i class="fa fa-envelope" aria-hidden="true"></i>' . __("lang_v1.new_quotation_notification") . '
-                                        </a>
-                                    </li>';
-
-                            $html .= '<li>
-                                        <a href="'.action("\App\Http\Controllers\SellPosController@showInvoiceUrl", [$row->id]).'" class="view_invoice_url"><i class="fas fa-eye"></i>'.__("lang_v1.view_quote_url").'</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-href="'.action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], ['transaction_id' => $row->id, 'template_for' => 'new_quotation']).'" class="btn-modal" data-container=".view_modal"><i class="fa fa-envelope" aria-hidden="true"></i>'.__('lang_v1.new_quotation_notification').'
-                                        </a>
-                                    </li>';
-                        }
+                      
+                      
 
                         $html .= '</ul></div>';
 
                         return $html;
                     })
                 ->removeColumn('id')
-                ->editColumn('invoice_no', function ($row) {
-                    $invoice_no = $row->invoice_no;
-                    if (! empty($row->woocommerce_order_id)) {
-                        $invoice_no .= ' <i class="fab fa-wordpress text-primary no-print" title="'.__('lang_v1.synced_from_woocommerce').'"></i>';
-                    }
-
-                    if ($row->sub_status == 'proforma') {
-                        $invoice_no .= '<br><span class="label bg-gray">'.__('lang_v1.proforma_invoice').'</span>';
-                    }
-
-                    if (! empty($row->is_export)) {
-                        $invoice_no .= '</br><small class="label label-default no-print" title="'.__('lang_v1.export').'">'.__('lang_v1.export').'</small>';
-                    }
-
-                    return $invoice_no;
-                })
+               
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
-                ->editColumn('total_items', '{{@format_quantity($total_items)}}')
-                ->editColumn('total_quantity', '{{@format_quantity($total_quantity)}}')
                 ->addColumn('conatct_name', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br>@endif {{$name}}')
                 ->filterColumn('conatct_name', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
@@ -398,9 +328,54 @@ class OfferPriceController extends Controller
      * @return Renderable
      */
     public function store(Request $request)
-    {
-        //
+{
+    try {
+        $business_id = $request->session()->get('user.business_id');
+        $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'offer_type', 'status'];
+
+        $offer_details = $request->only($offer);
+        $offer_details['business_id'] = $business_id;
+        $offer_details['created_by'] = $request->session()->get('user.id');
+        $offer_details['type'] = 'sell';
+
+       
+        $latestRecord = Transaction::where('type', 'sell')->orderBy('ref_no', 'desc')->first();
+
+        
+        if ($latestRecord) {
+            $latestRefNo = $latestRecord->ref_no;
+            $numericPart = (int)substr($latestRefNo, 5); 
+            $numericPart++;
+            $offer_details['ref_no'] = 'QN' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
+        } else {
+            // No previous records, start from 3000
+            $offer_details['ref_no'] = 'QN0003000';
+        }
+
+        DB::beginTransaction();
+
+        $client = Transaction::create($offer_details);
+
+        DB::commit();
+
+        $output = [
+            'success' => 1,
+            'msg' => __('sales::lang.client_added_success'),
+            'client' => $client->id
+        ];
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+        $output = [
+            'success' => 0,
+            'msg' => __('messages.something_went_wrong'),
+        ];
     }
+
+    return redirect()->route('price_offer');
+}
+
 
     /**
      * Show the specified resource.

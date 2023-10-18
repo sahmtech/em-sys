@@ -23,7 +23,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'clientAdd'])->name('clientAdd');
         Route::post('/saveQuickClient', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'saveQuickClient'])->name('saveQuickClient');
         Route::get('/viewClients', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'index'])->name('viewClients');
-
+        Route::get('/getClientRow', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'getClientRow'])->name('getClientRow');
+        Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'store'])->name('storeOfferPrice');
+        
    
     });
 });

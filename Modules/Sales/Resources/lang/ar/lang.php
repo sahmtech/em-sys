@@ -33,7 +33,11 @@ return [
     'monthly_cost'=>'التكلفة الشهرية',
     'down_payment'=>'الدفعة المقدمة',
     'search'=>'ابحث',
-    'add_new_client'=>'إضافة زبون جديد'
-
-
+    'add_new_client'=>'إضافة زبون جديد',
+    'added_success'=>'تمت الإضافة بنجاح',
+    'internal'=>'داخلي',
+    'external'=>'خارجي',
+    'approved'=>'مقبول',
+    'transfered'=>'محول',
+   'refused'=>'مرفوض',
 ];

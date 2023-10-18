@@ -85,7 +85,7 @@
   
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
-<script type="text/javascript">
+{{-- <script type="text/javascript">
     $(document).ready(function(){
       $("form#quick_add_client_form").validate({
         submitHandler: function (form) {
@@ -102,7 +102,8 @@
                   $('.quick_add_client_modal').modal('hide');
                   if( data.success){
                       toastr.success(data.msg);
-                      $(document).trigger({type: "quickProductAdded", 'product': data.client });
+                      // $(document).trigger({type: "quickProductAdded", 'product': data.client });
+                      $(document).trigger({type: "quickProductAdded", 'product': data.client, 'variation': data.variation });
                   } else {
                       toastr.error(data.msg);
                   }
@@ -112,4 +113,5 @@
         }
       });
     });
-  </script>
+</script> --}}
+<script src="{{ asset('js/client.js') }}"></script>
