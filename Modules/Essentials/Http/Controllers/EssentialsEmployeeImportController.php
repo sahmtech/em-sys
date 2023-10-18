@@ -9,7 +9,15 @@ use DB;
 use Excel;
 use App\User;
 use App\Category;
+use App\Business;
+use Modules\Essentials\Entities\essentialsAllowanceType;
+use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsEmployeeContract;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
 class EssentialsEmployeeImportController extends Controller
@@ -81,7 +89,7 @@ class EssentialsEmployeeImportController extends Controller
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
                    
-                    if (count($value) != 36) {
+                    if (count($value) != 35) {
                         $is_valid = false;
                         $error_msg = 'Number of columns mismatch';
                         break;
@@ -143,49 +151,71 @@ class EssentialsEmployeeImportController extends Controller
 
                     $businessname = $value[20];
                     $business = Business::where('name', $businessname)->first();
+                  
                     if ($business) {
-                        
+                       
                         $businessId = $business->id;
-                        $emp_array['location_id ']=$businessId;
+                        $emp_array['location_id']=$businessId;
+                       // dd(  $emp_array['location_id']);
                     }
+                    else{$emp_array['location_id']=null;}
 
 
                     $departmentname = $value[21];
-                    $department = Business::where('name', $departmentname)->first();
+                    $department = EssentialsDepartment::where('name', $departmentname)->first();
+                   
                     if ($department) {
                         
                         $departmentId = $department->id;
-                        $emp_array['essentials_department_id  ']=$departmentId;
+                        $emp_array['essentials_department_id']=$departmentId;
                     }
+                    else{ $emp_array['essentials_department_id']=null;}
 
 
                     $categoryname = $value[22];
                     $emp_array['job_title']=$value[22];
                     $category = Category::where('name', $categoryname)->first();
+                   // dd($category);
                     if ($category) {
                         
                         $categoryId = $category->id;
                         $emp_array['essentials_designation_id']=$categoryId;
                     }
+                    else{ $emp_array['essentials_designation_id']=null;}
                    
 
                     
-                    $contract_array['contract_number'] = $value[23];
+                  
+                    if (!empty($value[23])) {
+                        $contract_array['contract_number'] = $value[23];
+                    } else {
+                        $is_valid = false;
+                        $error_msg = "contract_number is required in row no. $row_no";
+                        break;
+                    }
                     if (!empty($value[24])) {
-                        // Parse the date using strtotime and then format it as needed
+                      
                         $contract_start_date = date('Y-m-d', strtotime($value[24]));
                         
-                        // Add the formatted date to the array
+                   
                         $contract_array['contract_start_date'] = $contract_start_date;
+                    }
+                    else {
+                        $is_valid = false;
+                        $error_msg = "contract_start_date is required in row no. $row_no";
+                        break;
                     }
 
                      
                     if (!empty($value[25])) {
-                        // Parse the date using strtotime and then format it as needed
+                     
                         $contract_end_date = date('Y-m-d', strtotime($value[25]));
-                        
-                        // Add the formatted date to the array
                         $contract_array['contract_end_date'] = $contract_end_date;
+                    }
+                    else {
+                        $is_valid = false;
+                        $error_msg = "contract_end_date is required in row no. $row_no";
+                        break;
                     }
                     
                     $contract_array['contract_duration'] = $value[26];
@@ -196,6 +226,28 @@ class EssentialsEmployeeImportController extends Controller
                   
                     $emp_array['essentials_salary'] = $value[30];
                   
+                    $allowancename=$value[31];
+                    $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
+                    if ($allowancetype) {
+                        
+                        $allowancetypeId = $allowancetype->id;
+                        $emp_array['allowance_deduction_id']=$allowancetypeId;
+                    }
+                    else{ $emp_array['allowance_deduction_id']=null;}
+                    $emp_array['amount']=$value[32];
+
+
+
+                    $travelcategoryname=$value[33];
+                    $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
+                    if ($traveltype) {
+                        
+                        $traveltypeId = $traveltype->id;
+                        $emp_array['travel_ticket_categorie']=$traveltypeId;
+                    }
+                    else{ $emp_array['travel_ticket_categorie']=null;}
+
+                    $emp_array['health_insurance']=$value[34];
                     $formated_data[] = $emp_array;
                     $formated_data2[] = $contract_array;
                 }
@@ -211,6 +263,8 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_data['created_by'] = $user_id;
                         $emp = User::create($emp_data);
 
+                        
+
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
@@ -219,8 +273,19 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->job_title=$emp_data['job_title'];
                         $essentials_employee_appointmets->employee_status ="active";
                         $essentials_employee_appointmets->save();
-                         
-                      // $this->transactionUtil->activityLog($emp, 'imported');
+
+                       
+                        $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
+                        $userAllowancesAndDeduction->user_id = $user_id;
+                        $userAllowancesAndDeduction->allowance_deduction_id = (int)$emp_data['allowance_deduction_id'];
+                        $userAllowancesAndDeduction->amount = $emp_data['amount']; 
+                        $userAllowancesAndDeduction->save();
+
+                    
+                        // $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+                        // $travel_ticket_categorie->employee_id = $user_id;
+                        // $travel_ticket_categorie->categorie_id=(int)$emp_data['travel_ticket_categorie'];
+                        // $travel_ticket_categorie->save();
                     }
                 }
                
@@ -231,9 +296,9 @@ class EssentialsEmployeeImportController extends Controller
                         $con_data['business_id'] = $business_id;
                         $con_data['employee_id'] = $emp->id;
                         $con_data['created_by'] = $user_id;
-                        $contract = EssentialsEmployeeContract::create($con_data);
+                        $contract = EssentialsEmployeesContract::create($con_data);
 
-                      // $this->transactionUtil->activityLog($emp, 'imported');
+                      
                     }
                 }
                
@@ -244,6 +309,7 @@ class EssentialsEmployeeImportController extends Controller
                 DB::commit();
             }
         } catch (\Exception $e) {
+
             DB::rollBack();
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 

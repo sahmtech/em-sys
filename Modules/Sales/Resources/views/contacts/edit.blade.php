@@ -298,10 +298,10 @@
                                                                                             
                                                                                                 <label>
                                                                                                 @if(isset($contactSigners) && $contactSigners->isNotEmpty())
-                                                                                                {!! Form::checkbox('allow_login',  $contactSigners[0]->allow_login, ['class' => 'input-icheck', 'id' => 'allow_login']); !!}
+                                                                                                {!! Form::checkbox('allow_login_cs',  $contactSigners[0]->allow_login, [ 'id' => 'allow_login']); !!}
                                                                                                         <strong>@lang('sales::lang.allow_login')</strong>
                                                                                                 @else
-                                                                                                {!! Form::checkbox('allow_login', 1,  false, ['class' => 'input-icheck', 'id' => 'allow_login']); !!}
+                                                                                                {!! Form::checkbox('allow_login_cs', 1,  false, [ 'id' => 'allow_login']); !!}
                                                                                                         <strong>@lang('sales::lang.allow_login')</strong>
                                                                                                 @endif
                                                                                                     </label>
@@ -316,10 +316,10 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners->username_cs) ? $contactSigners->username_cs : '' }}">
+                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners[0]->username) ? $contactSigners[0]->username : '' }}">
 
                                                                             @if(isset($contactSigners) && $contactSigners->isNotEmpty())
-                                                                                {!! Form::text('username_cs', $contactSigners[0]->username_cs ?? "", ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
+                                                                                {!! Form::text('username_cs', $contactSigners[0]->username ?? "", ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
                                                                             @else
                                                                                 {!! Form::text('username_cs', "", ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
                                                                             @endif
@@ -334,10 +334,11 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners->password_cs) ? $contactSigners->password_cs : '' }}">
+                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners[0]->password) ? $contactSigners[0]->password : '' }}">
 
                                                                             @if(isset($contactSigners) && $contactSigners->isNotEmpty())
-                                                                                {!! Form::text('password_cs', $contactSigners[0]->password_cs ?? "", ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
+                                                                            {!! Form::password('password_cs', ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs'), 'value' => $contactSigners[0]->password ?? ""]); !!}
+
                                                                             @else
                                                                                 {!! Form::text('password_cs', "", ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
                                                                             @endif
@@ -451,14 +452,65 @@
                                                                         </div>
                                                         </div> 
 
-                                                       
+                                                        <div class="col-md-12">
+                                                                                            <div class="form-group">
+                                                                                        
+                                                                                                <div class="input-group">
+                                                                                            
+                                                                                                <label>
+                                                                                                @if(isset($contactFollower) && $contactFollower->isNotEmpty())
+                                                                                                {!! Form::checkbox('allow_login_cf',  $contactFollower[0]->allow_login, [ 'id' => 'allow_login']); !!}
+                                                                                                        <strong>@lang('sales::lang.allow_login')</strong>
+                                                                                                @else
+                                                                                                {!! Form::checkbox('allow_login_cf', 1,  false, [ 'id' => 'allow_login']); !!}
+                                                                                                        <strong>@lang('sales::lang.allow_login')</strong>
+                                                                                                @endif
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                            </div>
+                                                        </div>
 
+                                                        <div class="col-md-6">
+                                                                        <div class="form-group">
+                                                                        {!! Form::label('username_cf', __('sales::lang.username_cf') . ':') !!}
+                                                                            <div class="input-group">
+                                                                            <span class="input-group-addon">
+                                                                                <i class="fa fa-info"></i>
+                                                                            </span>
+                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners[0]->username) ? $contactSigners[0]->username : '' }}">
 
+                                                                            @if(isset($contactFollower) && $contactFollower->isNotEmpty())
+                                                                                {!! Form::text('username_cf', $contactFollower[0]->username_cs ?? "", ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
+                                                                            @else
+                                                                                {!! Form::text('username_cf', "", ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
+                                                                            @endif
+                                                                            </div>
+                                                                        </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-md-6">
+                                                                        <div class="form-group">
+                                                                        {!! Form::label('password_cf', __('sales::lang.password_cf') . ':') !!}
+                                                                            <div class="input-group">
+                                                                            <span class="input-group-addon">
+                                                                                <i class="fa fa-info"></i>
+                                                                            </span>
+                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactFollower[0]->password) ? $contactFollower[0]->password : '' }}">
+
+                                                                            @if(isset($contactSigners) && $contactSigners->isNotEmpty())
+                                                                            {!! Form::password('password_cf', ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf'), 'value' => $contactFollower[0]->password ?? ""]); !!}
+
+                                                                            @else
+                                                                                {!! Form::text('password_cf', "", ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf')]); !!}
+                                                                            @endif
+                                                                            </div>
+                                                                        </div>
+                                                            </div>
 
 
 
         </div>
-       
+        <div class="clearfix"></div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">@lang( 'messages.update' )</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
