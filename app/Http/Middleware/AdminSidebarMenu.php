@@ -370,6 +370,9 @@ class AdminSidebarMenu
                 )->order(30);
             }
 
+
+
+
             //Stock transfer dropdown
             if (in_array('stock_transfers', $enabled_modules) && (auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create'))) {
                 $menu->dropdown(
@@ -418,6 +421,9 @@ class AdminSidebarMenu
                 )->order(40);
             }
 
+
+        //customer_sales
+       
             //Expense dropdown
             if (in_array('expenses', $enabled_modules) && (auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
                 $menu->dropdown(
@@ -793,6 +799,7 @@ class AdminSidebarMenu
         $moduleUtil->getModuleData('modifyAdminMenu');
         $moduleUtil->getModuleData('modifyAdminMenu_hm');
         $moduleUtil->getModuleData('modifyAdminMenu_IR');
+        $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
     }
 }

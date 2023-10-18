@@ -280,6 +280,13 @@ class TransactionUtil extends Util
      *   Example: ['database_trasnaction_linekey' => 'products_line_key'];
      * @return boolean/object
      */
+    public function generateSellReferenceNumber($prefix, $ref_count)
+    {
+       
+        $ref_digits = str_pad($ref_count, 7, 0, STR_PAD_LEFT);
+        $ref_number = $prefix . $ref_digits;
+        return $ref_number;
+    }
     public function createOrUpdateSellLines($transaction, $products, $location_id, $return_deleted = false, $status_before = null, $extra_line_parameters = [], $uf_data = true)
     {
         $lines_formatted = [];
