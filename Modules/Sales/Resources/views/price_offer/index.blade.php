@@ -90,7 +90,7 @@ $(document).ready( function(){
 
             }
         },
-       
+      
         columns: [
            
             { data: 'ref_no'},
@@ -99,7 +99,16 @@ $(document).ready( function(){
             { data: 'transaction_date'},
             { data: 'final_total'},
             { data: 'offer_type'},
-            { data: 'status'},
+            {
+                            data: 'status',
+                            render: function (data, type, row) {
+                                if (data === 'approved') {
+                                    return  '@lang('sales::lang.approved')';
+                                } else if (data === 'transfered'){
+                                    return  '@lang('sales::lang.transfered')';
+                                } else {  return  '@lang('sales::lang.refused')';}
+                            }
+                        }
            
         ],
         "fnDrawCallback": function (oSettings) {
