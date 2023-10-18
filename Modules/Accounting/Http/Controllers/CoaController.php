@@ -1233,7 +1233,7 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only(['name', 'account_primary_type', 'account_sub_type_id', 'detail_type_id',
-                'parent_account_id', 'description', 'gl_code']);
+                'parent_account_id', 'description', 'gl_code','account_category']);
 
             $account_type = AccountingAccountType::find($input['account_sub_type_id']);
 
@@ -1262,7 +1262,7 @@ class CoaController extends Controller
                 $trans = AccountingAccountsTransaction::query()->create($data);
                 $opBalance = [
                     'accounts_account_transaction_id' => $trans->id,
-                    'type' => $data['type'] == 'debit' ? 'debtor' : 'creditor',
+                    'type' => $data['type'] == 'debit' ? 'debit' : 'credit',
                     'business_id' => $business_id,
                     'year' => Carbon::today()->format('Y')
                 ];
@@ -1354,7 +1354,7 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only(['name', 'account_primary_type', 'account_sub_type_id', 'detail_type_id',
-                'parent_account_id', 'description', 'gl_code']);
+                'parent_account_id', 'description', 'gl_code','account_category']);
 
             $input['parent_account_id'] = !empty($input['parent_account_id'])
             && $input['parent_account_id'] !== 'null' ? $input['parent_account_id'] : null;
