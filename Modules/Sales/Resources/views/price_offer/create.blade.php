@@ -54,7 +54,7 @@
 
 				{!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
-				@if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+				{{-- @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
 					<div class="col-md-4 col-sm-6">
 						<div class="form-group">
 							<div class="input-group">
@@ -73,9 +73,9 @@
 						</div>
 					</div>
 					<div class="modal fade types_of_service_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
-				@endif
+				@endif --}}
 				
-				@if(in_array('subscription', $enabled_modules))
+				{{-- @if(in_array('subscription', $enabled_modules))
 					<div class="col-md-4 pull-right col-sm-6">
 						<div class="checkbox">
 							<label>
@@ -83,7 +83,7 @@
 				            </label><button type="button" data-toggle="modal" data-target="#recurringInvoiceModal" class="btn btn-link"><i class="fa fa-external-link"></i></button>@show_tooltip(__('lang_v1.recurring_invoice_help'))
 						</div>
 					</div>
-				@endif
+				@endif --}}
 				<div class="clearfix"></div>
 				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 					<div class="form-group">
@@ -133,7 +133,9 @@
 					  {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
 					  {!! Form::select('contract_form',
 					 	 ['operating_fees' => __('sales::lang.operating_fees'), 
-					 	'monthly_cost' => __('sales::lang.monthly_cost')],  null, ['class' => 'form-control', 'required',
+					 	'monthly_cost' => __('sales::lang.monthly_cost')],
+						null,
+						['class' => 'form-control', 'required',
 						'placeholder' => __('sales::lang.contract_form')]); !!}
 				   </div>
 				</div>
@@ -206,10 +208,10 @@
 					<div class="clearfix"></div>
 				@endif
 				<!-- Call restaurant module if defined -->
-		        @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
+		        {{-- @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
 		        	<span id="restaurant_module_span">
 		        	</span>
-		        @endif
+		        @endif --}}
 			@endcomponent
 {{-- //products --}}
 			@component('components.widget', ['class' => 'box-solid'])
