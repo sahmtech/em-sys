@@ -9,6 +9,7 @@ class OpeningBalance extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $table ="accounting_opening_balances";
     public function transaction(){
         return $this->hasOne(AccountingAccountsTransaction::class, 'id','accounts_account_transaction_id');
     }
