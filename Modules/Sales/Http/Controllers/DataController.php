@@ -27,6 +27,19 @@ class DataController extends Controller
         ];
     }
 
+    public function user_permissions()
+    {
+        return [
+           
+             [
+                'value' => 'sales.crud_customers',
+                'label' => __('sales::lang.crud_customers'),
+                'default' => false,
+            ],
+            
+        ];
+    }
+    
     /**
      * Adds followup menus
      *
@@ -39,38 +52,47 @@ class DataController extends Controller
         $business_id = session()->get('user.business_id');
         $is_sales_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'sales_module');
         //dd($is_followup_enabled);
+
+
+        
         if ($is_sales_enabled) {
             Menu::modify('admin-sidebar-menu', function ($menu) {
 
 
-                $menu->dropdown(
-                    __('sales::lang.sales'),
-                    function ($subMenu) {
-                        $subMenu->url(
-                            action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
-                            __('sales::lang.clients'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'index'],
-                        )->order(1);
+              
+                    $menu->dropdown(
+                        __('sales::lang.sales'),
+                        function ($sub) {
 
-                        $subMenu->url(
-                            action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
-                            __('sales::lang.contracts'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'index'],
-                        )->order(1);
 
-                        $subMenu->url(
-                            action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
-                            __('sales::lang.offer_price'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'index'],
-                        )->order(1);
-                      
-                      },
-                    [
-                        'icon' => 'fa fas fa-users',
-                        'active' => request()->segment(1) == 'sales',
-                        'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
-                    ]
-                )->order(10);
+                                $sub->url(
+                                    action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
+                                    __('sales::lang.customers'),
+                                    ['icon' => 'fa fas fa-star', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients']
+                                );
+                                
+                                $sub->url(
+                                    action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
+                                    __('sales::lang.contracts'),
+                                    ['icon' => 'fa fas fa-star']
+                                );
+
+                                $sub->url(
+                                    action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
+                                    __('sales::lang.offer_price'),
+                                    ['icon' => 'fa fas fa-star']
+                                );
+                               
+                          
+
+                          
+    
+                          
+                        },
+                        ['icon' => 'fas fa-id-card ', 'id' => 'tour_step4']
+                    )->order(10);
+                
+    
              
               
             });
