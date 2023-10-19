@@ -36,7 +36,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
 
     @include('layouts.partials.css')
-
+    @yield('css')
     <style>
         *,
         .h1,
@@ -55,7 +55,7 @@
             /* font-size: 15px */
         }
     </style>
-    @yield('css')
+
 </head>
 
 <body
