@@ -55,6 +55,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>@lang( 'accounting::lang.account_category' ):</th>
+                            <td>
+                                @if(!empty($account->account_category))
+                                    {{__('accounting::lang.' . $account->account_category)}}
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
                             <th>@lang( 'lang_v1.balance' ):</th>
                             <td>@format_currency($current_bal)</td>
                         </tr>

@@ -8,16 +8,16 @@
         ]) !!}
 
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:red"><span
                     aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">@lang('accounting::lang.edit_account')</h4>
+            <h4 class="modal-title"> <i class="fas fa-edit"></i> @lang('accounting::lang.edit_account')</h4>
         </div>
 
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        {!! Form::label('account_primary_type', __('accounting::lang.account_type') . ':*') !!}
+                        {!! Form::label('account_primary_type', __('accounting::lang.account_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         <select class="form-control" name="account_primary_type" id="account_primary_type" required>
                             <option value="">@lang('messages.please_select')</option>
                             @foreach ($account_types as $account_type => $account_details)
@@ -27,7 +27,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('account_sub_type', __('accounting::lang.account_sub_type') . ':*') !!}
+                        {!! Form::label('account_sub_type', __('accounting::lang.account_sub_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         <select class="form-control" name="account_sub_type_id" id="account_sub_type" required>
                             <option value="">@lang('messages.please_select')</option>
                             @foreach ($account_sub_types as $account_type)
@@ -39,7 +39,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('detail_type', __('accounting::lang.detail_type') . ':*') !!}
+                        {!! Form::label('detail_type', __('accounting::lang.detail_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
 
                         <select class="form-control" name="detail_type_id" id="detail_type" required>
                             <option value="">@lang('messages.please_select')</option>
@@ -53,7 +53,17 @@
                             {{ $account->detail_type->account_type_description ?? '' }}</p>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('name', __('user.name') . ':*') !!}
+                        {!! Form::label('account_category', __('accounting::lang.account_category') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                        <select class="form-control" name="account_category" id="account_category" required>
+                            <option value="balance_sheet" @if ($account->account_category == 'balance_sheet') selected @endif>
+                                @lang('accounting::lang.balance_sheet')</option>
+                            <option value="income_list" @if ($account->account_category == 'income_list') selected @endif>
+                                @lang('accounting::lang.income_list')</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        {!! Form::label('name', __('user.name') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         {!! Form::text('name', $account->name, [
                             'class' => 'form-control',
                             'required',
@@ -61,7 +71,7 @@
                         ]) !!}
                     </div>
                     <div class="form-group">
-                        {!! Form::label('gl_code', __('accounting::lang.gl_code') . ':*') !!}
+                        {!! Form::label('gl_code', __('accounting::lang.gl_code') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         {!! Form::text('gl_code', $account->gl_code, [
                             'class' => 'form-control',
                             'required',
@@ -69,7 +79,7 @@
                         ]) !!}
                         <p class="help-block">@lang('accounting::lang.gl_code_help')</p>
                     </div>
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         {!! Form::label('parent_account', __('accounting::lang.parent_account') . ':') !!}
                         <select class="form-control" name="parent_account_id" id="parent_account">
                             <option value="">@lang('messages.please_select')</option>
@@ -79,10 +89,10 @@
                                     {{ $parent_account->name }}</option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
-            <div class="row"">
+            {{-- <div class="row"">
                 <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('description', __('lang_v1.description') . ':') !!}
@@ -92,12 +102,14 @@
                         ]) !!}
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+        <div class="modal-footer" style="justify-content: flex-end">
+            <button type="submit" class="btn btn-primary"
+                style="border-radius: 5px;
+            min-width: 25%;">@lang('messages.save')</button>
+            {{-- <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button> --}}
         </div>
 
         {!! Form::close() !!}
