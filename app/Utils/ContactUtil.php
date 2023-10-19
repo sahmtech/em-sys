@@ -136,7 +136,9 @@ class ContactUtil extends Util
             ];
 
             return $output;
-        } else {
+        } 
+        else
+         {
             throw new \Exception('Error Processing Request', 1);
         }
     }

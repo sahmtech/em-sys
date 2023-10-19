@@ -27,6 +27,19 @@ class DataController extends Controller
         ];
     }
 
+    public function user_permissions()
+    {
+        return [
+           
+             [
+                'value' => 'sales.crud_customers',
+                'label' => __('sales::lang.crud_customers'),
+                'default' => false,
+            ],
+            
+        ];
+    }
+    
     /**
      * Adds followup menus
      *
@@ -38,6 +51,7 @@ class DataController extends Controller
 
         $business_id = session()->get('user.business_id');
         $is_sales_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'sales_module');
+
         if ($is_sales_enabled) {
             Menu::modify('admin-sidebar-menu', function ($menu) {
 

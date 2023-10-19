@@ -81,7 +81,7 @@ class EssentialsEmployeeImportController extends Controller
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
                    
-                    if (count($value) != 31) {
+                    if (count($value) != 36) {
                         $is_valid = false;
                         $error_msg = 'Number of columns mismatch';
                         break;
@@ -93,7 +93,7 @@ class EssentialsEmployeeImportController extends Controller
                     $emp="";
                     //Check contact type
                     
-                    if (! empty($value[0])) {
+                    if (!empty($value[0])) {
                         $emp_array['first_name'] = $value[0];
                     } else {
                         $is_valid = false;
@@ -103,8 +103,8 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['mid_name'] = $value[1];
                     $emp_array['last_name'] = $value[2];
                     $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
-                    $emp_array['email'] = $value[3];
-                    $emp_array['user_type'] = $value[4];
+                    $emp_array['user_type'] = $value[3];
+                    $emp_array['email'] = $value[4];
                     if (!empty($value[5])) {
                         // Parse the date using strtotime and then format it as needed
                         $dob = date('Y-m-d', strtotime($value[5]));

@@ -30,6 +30,12 @@ class PermissionsTableSeeder extends Seeder
             ['name' => 'customer.update'],
             ['name' => 'customer.delete'],
 
+            ['name' => 'Salecust.view'],
+            ['name' => 'Salecust.create'],
+            ['name' => 'Salecust.update'],
+            ['name' => 'Salecust.delete'],
+            ['name' => 'Salecust.view_own'], 
+
             ['name' => 'product.view'],
             ['name' => 'product.create'],
             ['name' => 'product.update'],
