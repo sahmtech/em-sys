@@ -61,7 +61,7 @@ class DataController extends Controller
                     function ($subMenu) {
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
-                            __('sales::lang.clients'),
+                            __('sales::lang.customers'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
                         )->order(1);
 
