@@ -76,6 +76,7 @@
                         <td>@lang('essentials::lang.employee_name') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                         <td>@lang('essentials::lang.employee_name_example') </td>
                     </tr>
+                   
                     <tr>
                         <td>2</td>
                         <td>@lang('essentials::lang.mid_name') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
@@ -88,92 +89,120 @@
                     </tr>
                     <tr>
                         <td>4</td>
+                        <td>@lang('essentials::lang.employee_type') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                        <td>@lang('essentials::lang.employee_type_example') </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>@lang('essentials::lang.email') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                        <td>@lang('essentials::lang.email_example') </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
                         <td>@lang('essentials::lang.Birth_date') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>@lang('lang_v1.dob_ins') ({{\Carbon::now()->format('Y-m-d')}})</td>
                     </tr>
                     <tr>
-                        <td>5</td>
+                        <td>7</td>
                         <td>@lang('essentials::lang.Gender') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
+
+                    <tr>
+                        <td>8</td>
+                        <td>@lang('essentials::lang.marital_status') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.marital_status_example') </td>
+                    </tr>
                  
                     <tr>
-                        <td>7</td>
+                        <td>9</td>
                         <td>@lang('essentials::lang.blood_type') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>8</td>
+                        <td>10</td>
                         <td>@lang('essentials::lang.Mobile_number') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>9</td>
+                        <td>11</td>
                         <td>@lang('essentials::lang.Alternative_mobile_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>10</td>
+                        <td>12</td>
                         <td>@lang('essentials::lang.family_number') <br><small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                    
                    
                     <tr>
-                        <td>17</td>
-                        <td>@lang('essentials::lang.Identity_proof_name') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>13</td>
+                        <td>@lang('essentials::lang.Identity_proof_name') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                        <td>@lang('essentials::lang.proof_name_example') </td>
+                    </tr>
+
+                    <tr>
+                        <td>14</td>
+                        <td>@lang('essentials::lang.Identity_proof_id') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>18</td>
+                        <td>15</td>
                         <td>@lang('essentials::lang.permanent_address') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>19</td>
+                        <td>16</td>
                         <td>@lang('essentials::lang.current_address') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>20</td>
+                        <td>17</td>
                         <td>@lang('essentials::lang.bank_account_holder') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>21</td>
+                        <td>18</td>
                         <td>@lang('essentials::lang.account_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>22</td>
+                        <td>19</td>
+                        <td>@lang('essentials::lang.account_name') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
                         <td>@lang('essentials::lang.IBAN_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>23</td>
+                        <td>21</td>
                         <td>@lang('essentials::lang.Branch') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                    
                   
                     <tr>
-                        <td>24</td>
+                        <td>22</td>
                         <td>@lang('essentials::lang.HR_Department') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>25</td>
-                        <td>@lang('essentials::lang.Job_title') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>23</td>
+                        <td>@lang('essentials::lang.HR_Department_branch') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td>@lang('essentials::lang.Job_title') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.job_titles_example') </td>
                     </tr>
                   
+                
                     <tr>
-                        <td>26</td>
-                        <td>@lang('essentials::lang.,contract_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>26</td>
+                        <td>25</td>
                         <td>@lang('essentials::lang.contract_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>@lang('essentials::lang.contract_number_example') </td>
                     </tr>
@@ -183,31 +212,52 @@
                         <td>@lang('lang_v1.dob_ins') ({{\Carbon::now()->format('Y-m-d')}})</td>
                     </tr>
                     <tr>
-                        <td>26</td>
+                        <td>27</td>
                         <td>@lang('essentials::lang.Contract_end_date') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>@lang('lang_v1.dob_ins') ({{\Carbon::now()->format('Y-m-d')}})</td>
                     </tr>
                     <tr>
-                        <td>26</td>
+                        <td>28</td>
                         <td>@lang('essentials::lang.Duration_contract') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>26</td>
+                        <td>29</td>
                         <td>@lang('essentials::lang.Trial_period') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td>26</td>
+                        <td>30</td>
                         <td>@lang('essentials::lang.Isrenewable') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>31</td>
+                        <td>@lang('essentials::lang.contractstatus') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
                    
                     <tr>
-                        <td>26</td>
+                        <td>32</td>
                         <td>@lang('essentials::lang.Basic_salary') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>&nbsp;</td>
                     </tr>
+                    <tr>
+                        <td>33</td>
+                        <td>@lang('essentials::lang.additional_salary_type') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.additional_salary_type_example') </td>
+                    </tr>
+                    <tr>
+                        <td>34</td>
+                        <td>@lang('essentials::lang.additional_salary_amount') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>35</td>
+                        <td>@lang('essentials::lang.travel_ticket_categorie') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
+                        <td>@lang('essentials::lang.travel_ticket_categorie_example') </td>
+                    </tr>
+                  
                    
                 
                 </table>

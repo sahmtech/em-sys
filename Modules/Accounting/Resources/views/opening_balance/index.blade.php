@@ -33,7 +33,13 @@
                     <th>@lang('messages.action')</th>
                 </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                    <tr>
+                        <th >
+                         
+                        </th>
+                    </tr>
+                </tbody>
             </table>
 
         @endcomponent
@@ -42,7 +48,7 @@
     @include('accounting::opening_balance.create')
 @stop
 
-@push('javascript')
+@section('javascript')
     <script>
         function calc(){
             setTimeout(function(){
@@ -76,8 +82,8 @@
                 columns: [
                     {data: 'account_name', name: 'account_name'},
                     {data: 'account_number', name: 'account_number'},
-                    {data: 'debtor', name: 'debtor'},
-                    {data: 'creditor', name: 'creditor'},
+                    {data: 'debit', name: 'debit'},
+                    {data: 'credit', name: 'credit'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ]
             })
@@ -92,7 +98,7 @@
             let id = $(this).data('id')
             let value = $(this).data('value')
 
-            if (type === 'debtor') {
+            if (type === 'debit') {
                 $('#type_creditor').attr('checked', false)
                 $('#type_debtor').attr('checked', true)
             } else {
@@ -219,4 +225,4 @@
         });
 
     </script>
-@endpush
+@endsection

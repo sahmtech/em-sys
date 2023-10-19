@@ -327,16 +327,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.283.2",
+            "version": "3.283.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "6616677d76e39af28138512740199d38a461859f"
+                "reference": "848be1aefb7ab6adfe8995de07166f38ec7c1f53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6616677d76e39af28138512740199d38a461859f",
-                "reference": "6616677d76e39af28138512740199d38a461859f",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/848be1aefb7ab6adfe8995de07166f38ec7c1f53",
+                "reference": "848be1aefb7ab6adfe8995de07166f38ec7c1f53",
                 "shasum": ""
             },
             "require": {
@@ -416,9 +416,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.283.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.283.5"
             },
-            "time": "2023-10-06T18:09:54+00:00"
+            "time": "2023-10-17T18:12:19+00:00"
         },
         {
             "name": "balping/json-raw-encoder",
@@ -1702,21 +1702,21 @@
         },
         {
             "name": "fruitcake/php-cors",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fruitcake/php-cors.git",
-                "reference": "58571acbaa5f9f462c9c77e911700ac66f446d4e"
+                "reference": "3d158f36e7875e2f040f37bc0573956240a5a38b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fruitcake/php-cors/zipball/58571acbaa5f9f462c9c77e911700ac66f446d4e",
-                "reference": "58571acbaa5f9f462c9c77e911700ac66f446d4e",
+                "url": "https://api.github.com/repos/fruitcake/php-cors/zipball/3d158f36e7875e2f040f37bc0573956240a5a38b",
+                "reference": "3d158f36e7875e2f040f37bc0573956240a5a38b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4|^8.0",
-                "symfony/http-foundation": "^4.4|^5.4|^6"
+                "symfony/http-foundation": "^4.4|^5.4|^6|^7"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.4",
@@ -1726,7 +1726,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.1-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -1757,7 +1757,7 @@
             ],
             "support": {
                 "issues": "https://github.com/fruitcake/php-cors/issues",
-                "source": "https://github.com/fruitcake/php-cors/tree/v1.2.0"
+                "source": "https://github.com/fruitcake/php-cors/tree/v1.3.0"
             },
             "funding": [
                 {
@@ -1769,20 +1769,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-02-20T15:07:15+00:00"
+            "time": "2023-10-12T05:21:21+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.22",
+            "version": "8.13.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "fc69cbcaff14c1af1f935b79033bdc5c0fa4a846"
+                "reference": "b2dff83693cb46eb4478b193e9d94e2ff6258480"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/fc69cbcaff14c1af1f935b79033bdc5c0fa4a846",
-                "reference": "fc69cbcaff14c1af1f935b79033bdc5c0fa4a846",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/b2dff83693cb46eb4478b193e9d94e2ff6258480",
+                "reference": "b2dff83693cb46eb4478b193e9d94e2ff6258480",
                 "shasum": ""
             },
             "require": {
@@ -1841,7 +1841,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2023-09-29T14:53:55+00:00"
+            "time": "2023-10-11T07:12:56+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -3077,21 +3077,21 @@
         },
         {
             "name": "lcobucci/clock",
-            "version": "3.0.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/clock.git",
-                "reference": "039ef98c6b57b101d10bd11d8fdfda12cbd996dc"
+                "reference": "c7aadcd6fd97ed9e199114269c0be3f335e38876"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/clock/zipball/039ef98c6b57b101d10bd11d8fdfda12cbd996dc",
-                "reference": "039ef98c6b57b101d10bd11d8fdfda12cbd996dc",
+                "url": "https://api.github.com/repos/lcobucci/clock/zipball/c7aadcd6fd97ed9e199114269c0be3f335e38876",
+                "reference": "c7aadcd6fd97ed9e199114269c0be3f335e38876",
                 "shasum": ""
             },
             "require": {
                 "php": "~8.1.0 || ~8.2.0",
-                "psr/clock": "^1.0"
+                "stella-maris/clock": "^0.1.7"
             },
             "provide": {
                 "psr/clock-implementation": "1.0"
@@ -3125,7 +3125,7 @@
             "description": "Yet another clock abstraction",
             "support": {
                 "issues": "https://github.com/lcobucci/clock/issues",
-                "source": "https://github.com/lcobucci/clock/tree/3.0.0"
+                "source": "https://github.com/lcobucci/clock/tree/2.3.0"
             },
             "funding": [
                 {
@@ -3137,45 +3137,47 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2022-12-19T15:00:24+00:00"
+            "time": "2022-12-19T14:38:11+00:00"
         },
         {
             "name": "lcobucci/jwt",
-            "version": "4.3.0",
+            "version": "4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "4d7de2fe0d51a96418c0d04004986e410e87f6b4"
+                "reference": "55564265fddf810504110bd68ca311932324b0e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/4d7de2fe0d51a96418c0d04004986e410e87f6b4",
-                "reference": "4d7de2fe0d51a96418c0d04004986e410e87f6b4",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/55564265fddf810504110bd68ca311932324b0e9",
+                "reference": "55564265fddf810504110bd68ca311932324b0e9",
                 "shasum": ""
             },
             "require": {
-                "ext-hash": "*",
-                "ext-json": "*",
                 "ext-mbstring": "*",
                 "ext-openssl": "*",
-                "ext-sodium": "*",
-                "lcobucci/clock": "^2.0 || ^3.0",
+                "lcobucci/clock": "^2.0",
                 "php": "^7.4 || ^8.0"
             },
             "require-dev": {
-                "infection/infection": "^0.21",
+                "infection/infection": "^0.20",
                 "lcobucci/coding-standard": "^6.0",
-                "mikey179/vfsstream": "^1.6.7",
-                "phpbench/phpbench": "^1.2",
+                "mikey179/vfsstream": "^1.6",
+                "phpbench/phpbench": "^0.17",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1.4",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan-deprecation-rules": "^0.12",
+                "phpstan/phpstan-phpunit": "^0.12",
+                "phpstan/phpstan-strict-rules": "^0.12",
                 "phpunit/php-invoker": "^3.1",
-                "phpunit/phpunit": "^9.5"
+                "phpunit/phpunit": "^9.4"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Lcobucci\\JWT\\": "src"
@@ -3199,7 +3201,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lcobucci/jwt/issues",
-                "source": "https://github.com/lcobucci/jwt/tree/4.3.0"
+                "source": "https://github.com/lcobucci/jwt/tree/4.0.4"
             },
             "funding": [
                 {
@@ -3211,7 +3213,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-01-02T13:28:00+00:00"
+            "time": "2021-09-28T19:18:28+00:00"
         },
         {
             "name": "league/commonmark",
@@ -3673,16 +3675,16 @@
         },
         {
             "name": "league/mime-type-detection",
-            "version": "1.13.0",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/mime-type-detection.git",
-                "reference": "a6dfb1194a2946fcdc1f38219445234f65b35c96"
+                "reference": "b6a5854368533df0295c5761a0253656a2e52d9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/a6dfb1194a2946fcdc1f38219445234f65b35c96",
-                "reference": "a6dfb1194a2946fcdc1f38219445234f65b35c96",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/b6a5854368533df0295c5761a0253656a2e52d9e",
+                "reference": "b6a5854368533df0295c5761a0253656a2e52d9e",
                 "shasum": ""
             },
             "require": {
@@ -3713,7 +3715,7 @@
             "description": "Mime-type detection for Flysystem",
             "support": {
                 "issues": "https://github.com/thephpleague/mime-type-detection/issues",
-                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.13.0"
+                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.14.0"
             },
             "funding": [
                 {
@@ -3725,41 +3727,41 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-08-05T12:09:49+00:00"
+            "time": "2023-10-17T14:13:20+00:00"
         },
         {
             "name": "league/oauth2-server",
-            "version": "8.5.4",
+            "version": "8.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/oauth2-server.git",
-                "reference": "ab7714d073844497fd222d5d0a217629089936bc"
+                "reference": "007dc5f6c0151a73b133fec36c9686cc956209d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/ab7714d073844497fd222d5d0a217629089936bc",
-                "reference": "ab7714d073844497fd222d5d0a217629089936bc",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/007dc5f6c0151a73b133fec36c9686cc956209d3",
+                "reference": "007dc5f6c0151a73b133fec36c9686cc956209d3",
                 "shasum": ""
             },
             "require": {
-                "defuse/php-encryption": "^2.3",
+                "defuse/php-encryption": "^2.2.1",
+                "ext-json": "*",
                 "ext-openssl": "*",
-                "lcobucci/clock": "^2.2 || ^3.0",
-                "lcobucci/jwt": "^4.3 || ^5.0",
+                "lcobucci/jwt": "^3.4.6 || ^4.0.4",
                 "league/event": "^2.2",
-                "league/uri": "^6.7 || ^7.0",
-                "php": "^8.0",
-                "psr/http-message": "^1.0.1 || ^2.0"
+                "league/uri": "^6.4",
+                "php": "^7.2 || ^8.0",
+                "psr/http-message": "^1.0.1"
             },
             "replace": {
                 "league/oauth2server": "*",
                 "lncd/oauth2": "*"
             },
             "require-dev": {
-                "laminas/laminas-diactoros": "^3.0.0",
+                "laminas/laminas-diactoros": "^2.4.1",
                 "phpstan/phpstan": "^0.12.57",
                 "phpstan/phpstan-phpunit": "^0.12.16",
-                "phpunit/phpunit": "^9.6.6",
+                "phpunit/phpunit": "^8.5.13",
                 "roave/security-advisories": "dev-master"
             },
             "type": "library",
@@ -3805,7 +3807,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/oauth2-server/issues",
-                "source": "https://github.com/thephpleague/oauth2-server/tree/8.5.4"
+                "source": "https://github.com/thephpleague/oauth2-server/tree/8.4.2"
             },
             "funding": [
                 {
@@ -3813,48 +3815,58 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-08-25T22:35:12+00:00"
+            "time": "2023-08-02T22:54:39+00:00"
         },
         {
             "name": "league/uri",
-            "version": "7.3.0",
+            "version": "6.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri.git",
-                "reference": "36743c3961bb82bf93da91917b6bced0358a8d45"
+                "reference": "a700b4656e4c54371b799ac61e300ab25a2d1d39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri/zipball/36743c3961bb82bf93da91917b6bced0358a8d45",
-                "reference": "36743c3961bb82bf93da91917b6bced0358a8d45",
+                "url": "https://api.github.com/repos/thephpleague/uri/zipball/a700b4656e4c54371b799ac61e300ab25a2d1d39",
+                "reference": "a700b4656e4c54371b799ac61e300ab25a2d1d39",
                 "shasum": ""
             },
             "require": {
-                "league/uri-interfaces": "^7.3",
-                "php": "^8.1"
+                "ext-json": "*",
+                "league/uri-interfaces": "^2.3",
+                "php": "^8.1",
+                "psr/http-message": "^1.0.1"
             },
             "conflict": {
                 "league/uri-schemes": "^1.0"
             },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^v3.9.5",
+                "nyholm/psr7": "^1.5.1",
+                "php-http/psr7-integration-tests": "^1.1.1",
+                "phpbench/phpbench": "^1.2.6",
+                "phpstan/phpstan": "^1.8.5",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.1.1",
+                "phpstan/phpstan-strict-rules": "^1.4.3",
+                "phpunit/phpunit": "^9.5.24",
+                "psr/http-factory": "^1.0.1"
+            },
             "suggest": {
-                "ext-bcmath": "to improve IPV4 host parsing",
-                "ext-fileinfo": "to create Data URI from file contennts",
-                "ext-gmp": "to improve IPV4 host parsing",
-                "ext-intl": "to handle IDN host with the best performance",
-                "jeremykendall/php-domain-parser": "to resolve Public Suffix and Top Level Domain",
-                "league/uri-components": "Needed to easily manipulate URI objects components",
-                "php-64bit": "to improve IPV4 host parsing",
-                "symfony/polyfill-intl-idn": "to handle IDN host via the Symfony polyfill if ext-intl is not present"
+                "ext-fileinfo": "Needed to create Data URI from a filepath",
+                "ext-intl": "Needed to improve host validation",
+                "league/uri-components": "Needed to easily manipulate URI objects",
+                "psr/http-factory": "Needed to use the URI factory"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.x-dev"
+                    "dev-master": "6.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "League\\Uri\\": ""
+                    "League\\Uri\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3894,8 +3906,8 @@
             "support": {
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
-                "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri/tree/7.3.0"
+                "issues": "https://github.com/thephpleague/uri/issues",
+                "source": "https://github.com/thephpleague/uri/tree/6.8.0"
             },
             "funding": [
                 {
@@ -3903,44 +3915,46 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-09T17:21:43+00:00"
+            "time": "2022-09-13T19:58:47+00:00"
         },
         {
             "name": "league/uri-interfaces",
-            "version": "7.3.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri-interfaces.git",
-                "reference": "c409b60ed2245ff94c965a8c798a60166db53361"
+                "reference": "00e7e2943f76d8cb50c7dfdc2f6dee356e15e383"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/c409b60ed2245ff94c965a8c798a60166db53361",
-                "reference": "c409b60ed2245ff94c965a8c798a60166db53361",
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/00e7e2943f76d8cb50c7dfdc2f6dee356e15e383",
+                "reference": "00e7e2943f76d8cb50c7dfdc2f6dee356e15e383",
                 "shasum": ""
             },
             "require": {
-                "ext-filter": "*",
-                "php": "^8.1",
-                "psr/http-factory": "^1",
-                "psr/http-message": "^1.1 || ^2.0"
+                "ext-json": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.19",
+                "phpstan/phpstan": "^0.12.90",
+                "phpstan/phpstan-phpunit": "^0.12.19",
+                "phpstan/phpstan-strict-rules": "^0.12.9",
+                "phpunit/phpunit": "^8.5.15 || ^9.5"
             },
             "suggest": {
-                "ext-bcmath": "to improve IPV4 host parsing",
-                "ext-gmp": "to improve IPV4 host parsing",
-                "ext-intl": "to handle IDN host with the best performance",
-                "php-64bit": "to improve IPV4 host parsing",
-                "symfony/polyfill-intl-idn": "to handle IDN host via the Symfony polyfill if ext-intl is not present"
+                "ext-intl": "to use the IDNA feature",
+                "symfony/intl": "to use the IDNA feature via Symfony Polyfill"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "League\\Uri\\": ""
+                    "League\\Uri\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3954,32 +3968,17 @@
                     "homepage": "https://nyamsprod.com"
                 }
             ],
-            "description": "Common interfaces and classes for URI representation and interaction",
-            "homepage": "https://uri.thephpleague.com",
+            "description": "Common interface for URI representation",
+            "homepage": "http://github.com/thephpleague/uri-interfaces",
             "keywords": [
-                "data-uri",
-                "file-uri",
-                "ftp",
-                "hostname",
-                "http",
-                "https",
-                "parse_str",
-                "parse_url",
-                "psr-7",
-                "query-string",
-                "querystring",
                 "rfc3986",
                 "rfc3987",
-                "rfc6570",
                 "uri",
-                "url",
-                "ws"
+                "url"
             ],
             "support": {
-                "docs": "https://uri.thephpleague.com",
-                "forum": "https://thephpleague.slack.com",
-                "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.3.0"
+                "issues": "https://github.com/thephpleague/uri-interfaces/issues",
+                "source": "https://github.com/thephpleague/uri-interfaces/tree/2.3.0"
             },
             "funding": [
                 {
@@ -3987,7 +3986,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-09T17:21:43+00:00"
+            "time": "2021-06-28T04:27:21+00:00"
         },
         {
             "name": "maatwebsite/excel",
@@ -6779,16 +6778,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.11.21",
+            "version": "v0.11.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "bcb22101107f3bf770523b65630c9d547f60c540"
+                "reference": "128fa1b608be651999ed9789c95e6e2a31b5802b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/bcb22101107f3bf770523b65630c9d547f60c540",
-                "reference": "bcb22101107f3bf770523b65630c9d547f60c540",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/128fa1b608be651999ed9789c95e6e2a31b5802b",
+                "reference": "128fa1b608be651999ed9789c95e6e2a31b5802b",
                 "shasum": ""
             },
             "require": {
@@ -6817,7 +6816,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "0.11.x-dev"
+                    "dev-0.11": "0.11.x-dev"
                 },
                 "bamarni-bin": {
                     "bin-links": false,
@@ -6853,9 +6852,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.11.21"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.11.22"
             },
-            "time": "2023-09-17T21:15:54+00:00"
+            "time": "2023-10-14T21:56:36+00:00"
         },
         {
             "name": "pusher/pusher-php-server",
@@ -8154,6 +8153,53 @@
                 "source": "https://github.com/srmklive/laravel-paypal/tree/3.0.26"
             },
             "time": "2023-09-27T09:16:07+00:00"
+        },
+        {
+            "name": "stella-maris/clock",
+            "version": "0.1.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stella-maris-solutions/clock.git",
+                "reference": "fa23ce16019289a18bb3446fdecd45befcdd94f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stella-maris-solutions/clock/zipball/fa23ce16019289a18bb3446fdecd45befcdd94f8",
+                "reference": "fa23ce16019289a18bb3446fdecd45befcdd94f8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0|^8.0",
+                "psr/clock": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "StellaMaris\\Clock\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andreas Heigl",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A pre-release of the proposed PSR-20 Clock-Interface",
+            "homepage": "https://gitlab.com/stella-maris/clock",
+            "keywords": [
+                "clock",
+                "datetime",
+                "point in time",
+                "psr20"
+            ],
+            "support": {
+                "source": "https://github.com/stella-maris-solutions/clock/tree/0.1.7"
+            },
+            "time": "2022-11-25T16:15:06+00:00"
         },
         {
             "name": "stripe/stripe-php",
@@ -11534,16 +11580,16 @@
         },
         {
             "name": "maximebf/debugbar",
-            "version": "v1.19.0",
+            "version": "v1.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maximebf/php-debugbar.git",
-                "reference": "30f65f18f7ac086255a77a079f8e0dcdd35e828e"
+                "reference": "03dd40a1826f4d585ef93ef83afa2a9874a00523"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maximebf/php-debugbar/zipball/30f65f18f7ac086255a77a079f8e0dcdd35e828e",
-                "reference": "30f65f18f7ac086255a77a079f8e0dcdd35e828e",
+                "url": "https://api.github.com/repos/maximebf/php-debugbar/zipball/03dd40a1826f4d585ef93ef83afa2a9874a00523",
+                "reference": "03dd40a1826f4d585ef93ef83afa2a9874a00523",
                 "shasum": ""
             },
             "require": {
@@ -11594,9 +11640,9 @@
             ],
             "support": {
                 "issues": "https://github.com/maximebf/php-debugbar/issues",
-                "source": "https://github.com/maximebf/php-debugbar/tree/v1.19.0"
+                "source": "https://github.com/maximebf/php-debugbar/tree/v1.19.1"
             },
-            "time": "2023-09-19T19:53:10+00:00"
+            "time": "2023-10-12T08:10:52+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -13554,35 +13600,35 @@
         },
         {
             "name": "spatie/flare-client-php",
-            "version": "1.4.2",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/flare-client-php.git",
-                "reference": "5f2c6a7a0d2c1d90c12559dc7828fd942911a544"
+                "reference": "5db2fdd743c3ede33f2a5367d89ec1a7c9c1d1ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/flare-client-php/zipball/5f2c6a7a0d2c1d90c12559dc7828fd942911a544",
-                "reference": "5f2c6a7a0d2c1d90c12559dc7828fd942911a544",
+                "url": "https://api.github.com/repos/spatie/flare-client-php/zipball/5db2fdd743c3ede33f2a5367d89ec1a7c9c1d1ec",
+                "reference": "5db2fdd743c3ede33f2a5367d89ec1a7c9c1d1ec",
                 "shasum": ""
             },
             "require": {
-                "illuminate/pipeline": "^8.0|^9.0|^10.0",
+                "illuminate/pipeline": "^8.0|^9.0|^10.0|^11.0",
                 "nesbot/carbon": "^2.62.1",
                 "php": "^8.0",
                 "spatie/backtrace": "^1.5.2",
-                "symfony/http-foundation": "^5.0|^6.0",
-                "symfony/mime": "^5.2|^6.0",
-                "symfony/process": "^5.2|^6.0",
-                "symfony/var-dumper": "^5.2|^6.0"
+                "symfony/http-foundation": "^5.2|^6.0|^7.0",
+                "symfony/mime": "^5.2|^6.0|^7.0",
+                "symfony/process": "^5.2|^6.0|^7.0",
+                "symfony/var-dumper": "^5.2|^6.0|^7.0"
             },
             "require-dev": {
-                "dms/phpunit-arraysubset-asserts": "^0.3.0",
-                "pestphp/pest": "^1.20",
+                "dms/phpunit-arraysubset-asserts": "^0.5.0",
+                "pestphp/pest": "^1.20|^2.0",
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan-deprecation-rules": "^1.0",
                 "phpstan/phpstan-phpunit": "^1.0",
-                "spatie/phpunit-snapshot-assertions": "^4.0"
+                "spatie/phpunit-snapshot-assertions": "^4.0|^5.0"
             },
             "type": "library",
             "extra": {
@@ -13612,7 +13658,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/flare-client-php/issues",
-                "source": "https://github.com/spatie/flare-client-php/tree/1.4.2"
+                "source": "https://github.com/spatie/flare-client-php/tree/1.4.3"
             },
             "funding": [
                 {
@@ -13620,7 +13666,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-07-28T08:07:24+00:00"
+            "time": "2023-10-17T15:54:07+00:00"
         },
         {
             "name": "spatie/ignition",

@@ -14,22 +14,25 @@ use Modules\Accounting\Entities\CostCenter;
 use Modules\Accounting\Entities\OpeningBalance;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+
 class OpeningBalanceController extends Controller
 {
     protected $moduleUtil;
-   
 
-     public function __construct(ModuleUtil $moduleUtil)
-     {
-         $this->moduleUtil = $moduleUtil;
-     }
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
+        if (
+            !(auth()->user()->can('superadmin') ||
                 $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.view_journal'))) {
+            !(auth()->user()->can('accounting.view_journal'))
+        ) {
             abort(403, 'Unauthorized action.');
         }
         $sub_types_obj = AccountingAccount::query()->whereIn('account_primary_type', ['asset', 'liability'])
@@ -50,13 +53,15 @@ class OpeningBalanceController extends Controller
                 ->orderBy('id');
             return Datatables::of($openingBalances)
                 ->addColumn(
-                    'action', function ($row) {
-                    $deleteUrl = action('\Modules\Accounting\Http\Controllers\OpeningBalanceController@destroy', [$row->id]);
-                    return
-                        '
+                    'action',
+                    function ($row) {
+                        $deleteUrl = action('\Modules\Accounting\Http\Controllers\OpeningBalanceController@destroy', [$row->id]);
+                        return
+                            '
                         <button data-href="' . $deleteUrl . '" class="btn btn-xs btn-danger delete_opening_balance_button"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</button>
                     ';
-                })
+                    }
+                )
                 ->addColumn('account_name', function ($row) {
                     $acc = $row->account->name;
                     return $acc;
@@ -65,14 +70,14 @@ class OpeningBalanceController extends Controller
                     $acc = $row->account->gl_code;
                     return $acc;
                 })
-                ->addColumn('debtor', function ($row) {
+                ->addColumn('debit', function ($row) {
                     if ($row->type == 'debit') {
                         return $row->amount;
                     } else {
                         return 0;
                     }
                 })
-                ->addColumn('creditor', function ($row) {
+                ->addColumn('credit', function ($row) {
                     if ($row->type == 'credit') {
                         return $row->amount;
                     } else {
@@ -83,31 +88,32 @@ class OpeningBalanceController extends Controller
                     'action',
                     'account_name',
                     'account_number',
-                    'debtor',
-                    'creditor'
+                    'debit',
+                    'credit'
                 ])
                 ->make(true);
         }
-
+       
         return view('accounting::opening_balance.index', compact('sub_types'));
     }
 
     protected function store(Request $request)
     {
         $rules = [
-            'year' => 'required|String',
+            // 'year' => 'required|String',
             'accounting_account_id' => 'required|String|exists:accounting_accounts,id',
-            'type' => 'required|in:creditor,debtor',
+            'type' => 'required|in:credit,debit',
             'value' => 'required|Numeric',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
 
             $failedRules = $validator->failed();
-//            if (isset($failedRules['ar_name']['min']) || isset($failedRules['ar_name']['max'])) {
-//                return response()->json(['fail' => __("messages.something_went_wrong")]);
-//            }
-            return response()->json(['success' => false,
+            //            if (isset($failedRules['ar_name']['min']) || isset($failedRules['ar_name']['max'])) {
+            //                return response()->json(['fail' => __("messages.something_went_wrong")]);
+            //            }
+            return response()->json([
+                'success' => false,
                 'msg' => __("messages.something_went_wrong")
             ]);
         }
@@ -117,17 +123,19 @@ class OpeningBalanceController extends Controller
         $transaction = AccountingAccountsTransaction::query()->create([
             'accounting_account_id' => $validated['accounting_account_id'],
             'amount' => $validated['value'],
-            'type' => $validated['type'] == 'creditor' ? 'credit' : 'debit',
+            'type' => $validated['type'] == 'credit' ? 'credit' : 'debit',
             'sub_type' => 'opening_balance'
         ]);
         $validated['accounts_account_transaction_id'] = $transaction->id;
         OpeningBalance::query()->create([
-            'year' => $validated['year'],
+            'year' => date('Y-m-d'),
             'business_id' => $validated['business_id'],
             'type' => $validated['type'],
             'accounts_account_transaction_id' => $validated['accounts_account_transaction_id']
         ]);
-        return response()->json(['success' => true,
+        return redirect()->back();
+        return response()->json([
+            'success' => true,
             'msg' => __("lang_v1.added_success")
         ]);
     }
@@ -138,17 +146,18 @@ class OpeningBalanceController extends Controller
         $rules = [
             'year' => 'required|String',
             'accounting_account_id' => 'required|String|exists:accounting_accounts,id',
-            'type' => 'required|in:creditor,debtor',
+            'type' => 'required|in:credit,debit',
             'value' => 'required|Numeric',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
 
             $failedRules = $validator->failed();
-//            if (isset($failedRules['ar_name']['min']) || isset($failedRules['ar_name']['max'])) {
-//                return response()->json(['fail' => __("messages.something_went_wrong")]);
-//            }
-            return response()->json(['success' => false,
+            //            if (isset($failedRules['ar_name']['min']) || isset($failedRules['ar_name']['max'])) {
+            //                return response()->json(['fail' => __("messages.something_went_wrong")]);
+            //            }
+            return response()->json([
+                'success' => false,
                 'msg' => __("messages.something_went_wrong")
             ]);
         }
@@ -158,7 +167,8 @@ class OpeningBalanceController extends Controller
             'accounting_account_id' => $request->accounting_account_id,
             'type' => $request->type
         ]);
-        return response()->json(['success' => true,
+        return response()->json([
+            'success' => true,
             'msg' => __("lang_v1.updated_success")
         ]);
     }

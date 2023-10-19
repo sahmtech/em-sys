@@ -21,7 +21,7 @@
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang('contact.add_contact')</h4>
+      <h4 class="modal-title">@lang('sales::lang.add_contact')</h4>
     </div>
 
     <div class="modal-body">
@@ -38,10 +38,7 @@
                 </div>
             </div>
             <div class="col-md-4 mt-15">
-                <label class="radio-inline">
-                    <input type="radio" name="contact_type_radio" id="inlineRadio1" value="individual">
-                    @lang('lang_v1.individual')
-                </label>
+              
                 <label class="radio-inline">
                     <input type="radio" name="contact_type_radio" id="inlineRadio2" value="business">
                     @lang('business.business')
@@ -61,17 +58,7 @@
                     </p>
                 </div>
             </div>
-            <div class="col-md-4 customer_fields">
-                <div class="form-group">
-                  {!! Form::label('customer_group_id', __('lang_v1.customer_group') . ':') !!}
-                  <div class="input-group">
-                      <span class="input-group-addon">
-                          <i class="fa fa-users"></i>
-                      </span>
-                      {!! Form::select('customer_group_id', $customer_groups, '', ['class' => 'form-control']); !!}
-                  </div>
-                </div>
-            </div>
+           
             <div class="clearfix customer_fields"></div>
             <div class="col-md-4 business" style="display: none;">
                 <div class="form-group">
@@ -225,7 +212,7 @@
                 </div>
             @endif
 
-            <div class="clearfix"></div>
+        <div class="clearfix"></div>
         </div>
         <div class="row">
             <div class="col-md-12">
