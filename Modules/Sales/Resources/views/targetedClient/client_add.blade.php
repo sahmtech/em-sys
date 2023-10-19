@@ -86,31 +86,7 @@
          
         <input type="hidden" id="selectedData" name="selectedData" value="">
       </div>  
-       
-      
-          {{-- <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('food_allowance', __('sales::lang.food_allowance') . ':*') !!}
-                  {!! Form::select('food_allowance',  ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')],null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('sales::lang.food_allowance')]); !!}
-                  
-              </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('housing_allowance', __('sales::lang.housing_allowance') . ':*') !!}
-                  {!! Form::select('housing_allowance',  ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')],null, ['class' => 'form-control', 'required',
-                  'placeholder' => __('sales::lang.housing_allowance')]); !!}
-                  
-              </div>
-          </div> --}}
-            
-        {{-- <div class="row">
-          <div class="form-group col-sm-11 col-sm-offset-1">
-            @include('sales::targetedClient.partials.single_client_form_part', ['quick_add' => true ])
-          </div>
-        </div> --}}
-        <div class="table-responsive">
+    <div class="table-responsive">
           <table class="table table-bordered add-product-price-table table">
               <tr> 
                   <th>@lang('sales::lang.number_of_clients')</th>
