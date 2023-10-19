@@ -19,6 +19,12 @@ class EssentialsCountry extends Model
         }
         return $res;
     }
+    public static function nationalityForDropdown()
+    {
+        $countries = EssentialsCountry::all()->pluck('nationality','id');
+
+        return $countries;
+    }
     public static function forDropdown2()
     {
         $countries = EssentialsCountry::all();

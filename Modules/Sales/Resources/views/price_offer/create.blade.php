@@ -54,36 +54,8 @@
 
 				{!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
-				@if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-					<div class="col-md-4 col-sm-6">
-						<div class="form-group">
-							<div class="input-group">
-								<span class="input-group-addon">
-									<i class="fa fa-external-link-square-alt text-primary service_modal_btn"></i>
-								</span>
-								{!! Form::select('types_of_service_id', $types_of_service, null, ['class' => 'form-control', 'id' => 'types_of_service_id', 'style' => 'width: 100%;', 'placeholder' => __('lang_v1.select_types_of_service')]); !!}
-
-								{!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
-
-								<span class="input-group-addon">
-									@show_tooltip(__('lang_v1.types_of_service_help'))
-								</span> 
-							</div>
-							<small><p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p></small>
-						</div>
-					</div>
-					<div class="modal fade types_of_service_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
-				@endif
+			
 				
-				@if(in_array('subscription', $enabled_modules))
-					<div class="col-md-4 pull-right col-sm-6">
-						<div class="checkbox">
-							<label>
-				              {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']); !!} @lang('lang_v1.subscribe')?
-				            </label><button type="button" data-toggle="modal" data-target="#recurringInvoiceModal" class="btn btn-link"><i class="fa fa-external-link"></i></button>@show_tooltip(__('lang_v1.recurring_invoice_help'))
-						</div>
-					</div>
-				@endif
 				<div class="clearfix"></div>
 				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 					<div class="form-group">
@@ -205,11 +177,8 @@
 					</div>
 					<div class="clearfix"></div>
 				@endif
-				<!-- Call restaurant module if defined -->
-		        @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
-		        	<span id="restaurant_module_span">
-		        	</span>
-		        @endif
+			
+		        
 			@endcomponent
 {{-- //products --}}
 			@component('components.widget', ['class' => 'box-solid'])

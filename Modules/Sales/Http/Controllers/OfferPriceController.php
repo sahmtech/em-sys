@@ -25,7 +25,9 @@ use App\Account;
 use App\Business;
 use App\InvoiceScheme;
 use App\TypesOfService;
-
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 
 class OfferPriceController extends Controller
 {   
@@ -286,7 +288,7 @@ class OfferPriceController extends Controller
                 $is_order_request_enabled = true;
             }
         }
-
+   
         //Added check because $users is of no use if enable_contact_assign if false
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
 
@@ -294,6 +296,7 @@ class OfferPriceController extends Controller
 
         return view('sales::price_offer.create')
             ->with(compact(
+               
                 'business_details',
                 'taxes',
                 'walk_in_customer',
