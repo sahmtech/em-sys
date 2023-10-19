@@ -145,7 +145,7 @@
 						{!! Form::select('status',
 						  ['approved' => __('sales::lang.approved'), 
 						 'transfered' => __('sales::lang.transfered'),
-						 'cancelled' => __('sales::lang.cancelled')
+						 'refused' => __('sales::lang.cancelled')
 						],  null, ['class' => 'form-control', 'required',
 						'placeholder' => __('sale.status')]); !!}
 					</div>
@@ -262,7 +262,7 @@
 								<th class="text-center">
 									@lang('sales::lang.number_of_clients')
 								</th>
-								
+							
 								<th class="text-center">
 									@lang('sales::lang.total')
 								</th>
