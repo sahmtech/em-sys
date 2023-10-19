@@ -413,6 +413,17 @@ class OfferPriceController extends Controller
      * @param int $id
      * @return Renderable
      */
+    // public function updateStatus(Request $request)
+    // {
+    //     error_log('1111111111');
+    //     $rowId = $request->input('rowId');
+    //     $newStatus = $request->input('newStatus');
+
+    //     // Update the status in the database using Eloquent (replace 'YourModel' with your actual model)
+    //     Transaction::where('id', $rowId)->update(['status' => $newStatus]);
+
+    //     return response()->json(['message' => 'Status updated successfully']);
+    // }
     public function destroy($id)
     {
         //

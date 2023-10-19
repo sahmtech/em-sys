@@ -64,6 +64,7 @@
             </table>
         </div>
     @endcomponent
+    @include('sales::price_offer.change_status_modal')
 </section>
 <!-- /.content -->
 @stop
@@ -100,15 +101,19 @@ $(document).ready( function(){
             { data: 'final_total'},
             { data: 'offer_type'},
             {
-                            data: 'status',
-                            render: function (data, type, row) {
-                                if (data === 'approved') {
-                                    return  '@lang('sales::lang.approved')';
-                                } else if (data === 'transfered'){
-                                    return  '@lang('sales::lang.transfered')';
-                                } else {  return  '@lang('sales::lang.refused')';}
-                            }
-                        }
+                data: 'status',
+                render: function (data, type, row) {
+    
+                    if (data === 'approved') {
+                        return '<button class="green-button" onclick="updateStatus(' + row.id + ', \'transferred\')">Approve</button>';
+                    } else if (data === 'transferred') {
+                        return '<button class="blue-button">@lang('sales::lang.transferred')</button>';
+                    } else {
+                        return '<button class="red-button" onclick="updateStatus(' + row.id + ', \'refused\')">Refuse</button>';
+                    }
+                }
+            }
+
            
         ],
         "fnDrawCallback": function (oSettings) {
@@ -146,7 +151,40 @@ $(document).ready( function(){
             }
         });
     });
-});
+    $(document).on('click', 'a.change_status', function(e) {
+            e.preventDefault();
+            $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
+            $('#change_status_modal').find('#leave_id').val($(this).data('leave-id'));
+            $('#change_status_modal').find('#status_note').val($(this).data('status_note'));
+            $('#change_status_modal').modal('show');
+        });
+
+        $(document).on('submit', 'form#change_status_form', function(e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            var ladda = Ladda.create(document.querySelector('.update-leave-status'));
+            ladda.start();
+            $.ajax({
+                method: $(this).attr('method'),
+                url: $(this).attr('action'),
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    ladda.stop();
+                    if (result.success == true) {
+                        $('div#change_status_modal').modal('hide');
+                        toastr.success(result.msg);
+                        leaves_table.ajax.reload();
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        });
+  
+    }
+
+);
 </script>
 	
 @endsection
