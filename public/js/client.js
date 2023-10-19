@@ -21,8 +21,7 @@ $(document).ready(function () {
                             '<td class="text-center">' + submittedData.gender + '</td>' +
                             '<td class="text-center">' + submittedData.monthly_cost + '</td>' +
                             '<td class="text-center">' + submittedData.number + '</td>' +
-                            '<td class="text-center">' + submittedData.food_allowance + '</td>' +
-                            '<td class="text-center">' + submittedData.housing_allowance + '</td>' +
+                       
                             '<td class="text-center total-column">' + newTotal + '</td>' +
                             '<td class="text-center"><i class="fas fa-times" aria-hidden="true"></i></td>' +
                             '</tr>';

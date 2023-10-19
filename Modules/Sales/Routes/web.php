@@ -25,7 +25,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/viewClients', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'index'])->name('viewClients');
         Route::get('/getClientRow', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'getClientRow'])->name('getClientRow');
         Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'store'])->name('storeOfferPrice');
-        
+        Route::post('/change-status', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'changeStatus'])->name('changeStatus');
+
    
         Route::get('/clients', [\Modules\Sales\Http\Controllers\ClientsController::class, 'index'])->name('sale.clients');
 

@@ -6,6 +6,10 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Sales\Entities\salesTargetedClient;
 
@@ -47,7 +51,11 @@ class SalesTargetedClientController extends Controller
         if (! auth()->user()->can('product.create')) {
             abort(403, 'Unauthorized action.');
         }
-        return view('sales::targetedClient.client_add');
+        $specializations=EssentialsSpecialization::all()->pluck('name','id');
+        $professions=EssentialsProfession::all()->pluck('name','id');
+        $nationalities=EssentialsCountry::nationalityForDropdown();
+        $allowance_types=EssentialsAllowanceAndDeduction::all()->pluck('description','id');
+        return view('sales::targetedClient.client_add')->with(compact('allowance_types','specializations','professions','nationalities'));
     }
     public function saveQuickClient(Request $request) {
        

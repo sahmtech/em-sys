@@ -39,7 +39,7 @@ return [
     'external'=>'خارجي',
     'approved'=>'مقبول',
     'transfered'=>'محول',
-   'refused'=>'مرفوض',
+   'cancelled'=>'مرفوض',
     'custs'=>'العملاء',
     'all_your_customers'=>'جميع العملاء',
     'add_contact'=>'إضافة عميل',
