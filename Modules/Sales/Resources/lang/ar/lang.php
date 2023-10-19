@@ -39,5 +39,5 @@ return [
     'external'=>'خارجي',
     'approved'=>'مقبول',
     'transfered'=>'محول',
-   'refused'=>'مرفوض',
+   'cancelled'=>'مرفوض',
 ];

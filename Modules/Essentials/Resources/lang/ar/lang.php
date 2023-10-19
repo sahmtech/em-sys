@@ -618,5 +618,6 @@ return[
 'travel_categorie'=>'تذكرة السفر',
 'add_user_travel_categorie'=>'إضافة تذكرة سفر لموظف',
 'select_allowance'=>'اختار بدل',
-'edit_allowance'=>'تعديل بدل'
+'edit_allowance'=>'تعديل بدل',
+'transfared'=>'محوّل'
 ];

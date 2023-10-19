@@ -53,8 +53,8 @@
 
 
 				{!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
-{{-- 
-				@if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+
+				{{-- @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
 					<div class="col-md-4 col-sm-6">
 						<div class="form-group">
 							<div class="input-group">
@@ -73,8 +73,8 @@
 						</div>
 					</div>
 					<div class="modal fade types_of_service_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
-				@endif
-				 --}}
+				@endif --}}
+				
 				{{-- @if(in_array('subscription', $enabled_modules))
 					<div class="col-md-4 pull-right col-sm-6">
 						<div class="checkbox">
@@ -133,7 +133,9 @@
 					  {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
 					  {!! Form::select('contract_form',
 					 	 ['operating_fees' => __('sales::lang.operating_fees'), 
-					 	'monthly_cost' => __('sales::lang.monthly_cost')],  null, ['class' => 'form-control', 'required',
+					 	'monthly_cost' => __('sales::lang.monthly_cost')],
+						null,
+						['class' => 'form-control', 'required',
 						'placeholder' => __('sales::lang.contract_form')]); !!}
 				   </div>
 				</div>
@@ -143,7 +145,7 @@
 						{!! Form::select('status',
 						  ['approved' => __('sales::lang.approved'), 
 						 'transfered' => __('sales::lang.transfered'),
-						 'refused' => __('sales::lang.refused')
+						 'cancelled' => __('sales::lang.cancelled')
 						],  null, ['class' => 'form-control', 'required',
 						'placeholder' => __('sale.status')]); !!}
 					</div>
@@ -205,8 +207,8 @@
 					</div>
 					<div class="clearfix"></div>
 				@endif
-				{{-- <!-- Call restaurant module if defined -->
-		        @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
+				<!-- Call restaurant module if defined -->
+		        {{-- @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
 		        	<span id="restaurant_module_span">
 		        	</span>
 		        @endif --}}
@@ -260,12 +262,7 @@
 								<th class="text-center">
 									@lang('sales::lang.number_of_clients')
 								</th>
-								<th class="text-center">
-									@lang('sales::lang.food_allowance')
-								</th>
-								<th class="text-center">
-									@lang('sales::lang.housing_allowance')
-								</th>
+								
 								<th class="text-center">
 									@lang('sales::lang.total')
 								</th>

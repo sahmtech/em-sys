@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_specializations', function (Blueprint $table) {
+        Schema::create('essentials_professions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('profession_id');
-            $table->foreign('profession_id')->references('id')->on('essentials_professions')->onDelete('cascade');
-
+            $table->string('en_name')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('essentials_specializations');
+        Schema::dropIfExists('essentials_professions');
     }
 };

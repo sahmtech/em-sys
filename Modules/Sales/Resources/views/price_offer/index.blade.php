@@ -100,25 +100,16 @@ $(document).ready( function(){
             { data: 'transaction_date'},
             { data: 'final_total'},
             { data: 'offer_type'},
-            {
-                data: 'status',
-                render: function (data, type, row) {
-    
-                    if (data === 'approved') {
-                        return '<button class="green-button" onclick="updateStatus(' + row.id + ', \'transferred\')">Approve</button>';
-                    } else if (data === 'transferred') {
-                        return '<button class="blue-button">@lang('sales::lang.transferred')</button>';
-                    } else {
-                        return '<button class="red-button" onclick="updateStatus(' + row.id + ', \'refused\')">Refuse</button>';
-                    }
-                }
-            }
+            {data: 'status'},
+            {data: 'action'}
+
+            
 
            
         ],
-        "fnDrawCallback": function (oSettings) {
-            __currency_convert_recursively($('#purchase_table'));
-        }
+        // "fnDrawCallback": function (oSettings) {
+        //     __currency_convert_recursively($('#purchase_table'));
+        // }
     });
     
     $(document).on('change', '#offer_type_filter, #status_filter',  function() {
@@ -154,15 +145,14 @@ $(document).ready( function(){
     $(document).on('click', 'a.change_status', function(e) {
             e.preventDefault();
             $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
-            $('#change_status_modal').find('#leave_id').val($(this).data('leave-id'));
-            $('#change_status_modal').find('#status_note').val($(this).data('status_note'));
+            $('#change_status_modal').find('#offer_id').val($(this).data('offer-id'));
             $('#change_status_modal').modal('show');
         });
 
-        $(document).on('submit', 'form#change_status_form', function(e) {
+    $(document).on('submit', 'form#change_status_form', function(e) {
             e.preventDefault();
             var data = $(this).serialize();
-            var ladda = Ladda.create(document.querySelector('.update-leave-status'));
+            var ladda = Ladda.create(document.querySelector('.update-offer-status'));
             ladda.start();
             $.ajax({
                 method: $(this).attr('method'),
@@ -174,7 +164,7 @@ $(document).ready( function(){
                     if (result.success == true) {
                         $('div#change_status_modal').modal('hide');
                         toastr.success(result.msg);
-                        leaves_table.ajax.reload();
+                        sale_table.ajax.reload();
                     } else {
                         toastr.error(result.msg);
                     }

@@ -194,26 +194,28 @@
         var amountInput = $(this).closest('tr').find('input[name="amount[]"]');
 
         if (selectedOption === 'insured_by_the_other') {
-            amountInput.prop('disabled', true);
+            amountInput.prop('disabled', true).val('0');
+            updateMonthlyCost();
+            
         } else {
             amountInput.prop('disabled', false);
         }
 
         updateSelectedData();
     });
-    function updateAmount(element) {
+
+  function updateAmount(element) {
         var salaryType = $(element).val();
         console.log(salaryType);
-        // Make an AJAX call to retrieve the amount for the selected salary type
+       
         $.ajax({
-            url: '/hrm/get-amount/' + salaryType, // Modify the URL according to your Laravel route
+            url: '/hrm/get-amount/' + salaryType,
             type: 'GET',
             success: function(response) {
-                // Update the corresponding amount input field
+     
                 var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
                 amountInput.val(response.amount);
-                updateSelectedData(); // Update the selected data after updating the amount
-                // Update the monthly_cost field after getting the amount
+                updateSelectedData();
                 updateMonthlyCost();
             },
             error: function(xhr, status, error) {
@@ -254,33 +256,32 @@
     $(document).on('input', 'input[id="amountInput"]', function() {
         updateMonthlyCost();
     });
-  // Rest of your existing JavaScript code...
+
 
   $(document).on('change', 'select[name="salary_type[]"]', function() {
-      updateAmount(this); // Call the function to update the amount
+      updateAmount(this);
   });
 
-  // Rest of your existing JavaScript code...
 
-  // Get references to the input fields and the total field
+  
   const numberInput = document.getElementById('number');
   const monthlyCostInput = document.getElementById('monthly_cost');
   const totalField = document.getElementById('total');
 
-  // Add event listeners to both input fields
+
   numberInput.addEventListener('input', updateTotal);
   monthlyCostInput.addEventListener('input', updateTotal);
 
-  // Function to calculate and update the total field
+
   function updateTotal() {
-      // Get the values from the input fields
+    
       const numberValue = parseFloat(numberInput.value) || 0;
       const monthlyCostValue = parseFloat(monthlyCostInput.value) || 0;
 
-      // Calculate the product of the two values
+   
       const totalValue = numberValue * monthlyCostValue;
 
-      // Update the total field with the calculated value
+   
       totalField.value = totalValue;
   }
 </script>

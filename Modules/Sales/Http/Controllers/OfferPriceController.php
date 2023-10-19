@@ -38,7 +38,7 @@ class OfferPriceController extends Controller
     protected $moduleUtil;
     protected $util;
 
-
+    protected $statuses;
 
     /**
      * Display a listing of the resource.
@@ -51,17 +51,34 @@ class OfferPriceController extends Controller
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->productUtil = $productUtil;
-  
-        $this->dummyPaymentLine = ['method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-            'is_return' => 0, 'transaction_no' => '', ];
-
-        $this->shipping_status_colors = [
-            'ordered' => 'bg-yellow',
-            'packed' => 'bg-info',
-            'shipped' => 'bg-navy',
-            'delivered' => 'bg-green',
-            'cancelled' => 'bg-red',
+        $this->statuses = [
+           
+            
+            'approved' => [
+                'name' => __('essentials::lang.approved'),
+                'class' => 'bg-green',
+            ],
+            'cancelled' => [
+                'name' => __('essentials::lang.cancelled'),
+                'class' => 'bg-red',
+            ],
+            'transfared' => [
+                'name' => __('essentials::lang.transfered'),
+                'class' => 'bg-yellow',
+            ],
         ];
+
+        $this->dummyPaymentLine = ['method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
+        'is_return' => 0, 'transaction_no' => '', ];
+
+    $this->shipping_status_colors = [
+        'ordered' => 'bg-yellow',
+        'packed' => 'bg-info',
+        'shipped' => 'bg-navy',
+        'delivered' => 'bg-green',
+        'cancelled' => 'bg-red',
+    ];
+       
     }
     
     public function index()
@@ -78,28 +95,35 @@ class OfferPriceController extends Controller
                 ->where('transactions.business_id', $business_id)
                 ->where('transactions.type', 'sell')
                 ->select(
-                    'transactions.id',
+                    'transactions.id as id',
                     'transactions.transaction_date',
                     'transactions.ref_no',
                     'transactions.final_total',
                     'transactions.is_direct_sale',
                     'contacts.name',
                     'contacts.mobile',
-                    'transactions.status',
+                    'transactions.status as status',
                     'transactions.offer_type',
 
                 );
 
             $sells->groupBy('transactions.id');
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $sells->where('transactions.status', request()->input('status'));
+                $sells->where('status', request()->input('status'));
             }
 
             if (!empty(request()->input('offer_type')) && request()->input('offer_type') !== 'all') {
                 $sells->where('transactions.offer_type', request()->input('offer_type'));
             }
             return Datatables::of($sells)
-                 ->addColumn(
+                ->editColumn('status', function ($row) {
+                        $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
+                        .$this->statuses[$row->status]['name'].'</span>';
+                        $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
+                        
+                        return $status;
+                    })
+                ->addColumn(
                     'action', function ($row) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
@@ -163,18 +187,53 @@ class OfferPriceController extends Controller
                             return '';
                         }
                     }, ])
-                ->rawColumns(['action', 'invoice_no', 'transaction_date', 'conatct_name'])
+                ->rawColumns(['action', 'invoice_no', 'status','transaction_date', 'conatct_name'])
                 ->make(true);
         }
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $customers = Contact::customersDropdown($business_id, false);
-
+        $statuses = $this->statuses;
         $sales_representative = User::forDropdown($business_id, false, false, true);
 
         return view('sales::price_offer.index')
-                ->with(compact('business_locations', 'customers', 'sales_representative'));
+                ->with(compact('business_locations','statuses' ,'customers', 'sales_representative'));
     }
+    public function changeStatus(Request $request)
+    {
+        error_log($request->offer_id);
+        error_log($request->status);
 
+        $business_id = request()->session()->get('user.business_id');
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.approve_leave')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['status', 'offer_id']);
+
+            $offer = Transaction::find($input['offer_id']);
+
+            $offer->status = $input['status'];
+         
+            $offer->save();
+
+            $offer->status = $this->statuses[$offer->status]['name'];
+
+        
+            $output = ['success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
     /**
      * Show the form for creating a new resource.
      * @return Renderable

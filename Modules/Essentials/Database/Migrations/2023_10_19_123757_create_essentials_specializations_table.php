@@ -13,9 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_professions', function (Blueprint $table) {
+        Schema::create('essentials_specializations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('en_name')->nullable();
+            $table->unsignedBigInteger('profession_id');
+            $table->foreign('profession_id')->references('id')->on('essentials_professions')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('essentials_professions');
+        Schema::dropIfExists('essentials_specializations');
     }
 };
