@@ -10,6 +10,7 @@ use Excel;
 use App\User;
 use App\Category;
 use App\Business;
+use DateTime;
 use Modules\Essentials\Entities\essentialsAllowanceType;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsEmployeeContract;
@@ -113,15 +114,19 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
                     $emp_array['user_type'] = $value[3];
                     $emp_array['email'] = $value[4];
+                    
                     if (!empty($value[5])) {
-                        // Parse the date using strtotime and then format it as needed
-                        $dob = date('Y-m-d', strtotime($value[5]));
+                        $date = DateTime::createFromFormat('d-m-Y', $value[5]);
                         
-                        // Add the formatted date to the array
-                        $emp_array['dob'] = $dob;
+                        if ($date) 
+                        {
+                            $dob = $date->format('Y-m-d');
+                            $emp_array['dob'] = $dob;
+                           // dd( $emp_array['dob']);
+                        }
                     }
                   
-                    
+                 
                     $emp_array['gender'] = $value[6];
                     $emp_array['marital_status'] = $value[7];
                    // $emp_array['name'] = implode(' ', [$emp_array['prefix'], $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
@@ -131,7 +136,8 @@ class EssentialsEmployeeImportController extends Controller
                     //Mobile number
                     if (! empty(trim($value[9]))) {
                         $emp_array['contact_number'] = $value[9];
-                    } else {
+                    } 
+                    else {
                         $is_valid = false;
                         $error_msg = "Mobile number is required in row no. $row_no";
                         break;
@@ -188,35 +194,45 @@ class EssentialsEmployeeImportController extends Controller
                   
                     if (!empty($value[23])) {
                         $contract_array['contract_number'] = $value[23];
-                    } else {
-                        $is_valid = false;
-                        $error_msg = "contract_number is required in row no. $row_no";
-                        break;
-                    }
-                    if (!empty($value[24])) {
-                      
-                        $contract_start_date = date('Y-m-d', strtotime($value[24]));
-                        
+                    } 
+                    // else {
+                    //     $is_valid = false;
+                    //     $error_msg = "contract_number is required in row no. $row_no";
+                    //     break;
+                    // }
                    
-                        $contract_array['contract_start_date'] = $contract_start_date;
+                    // else {
+                    //     $is_valid = false;
+                    //     $error_msg = "contract_start_date is required in row no. $row_no";
+                    //     break;
+                    // }
+                    if (!empty($value[24])) {
+                        $date = DateTime::createFromFormat('d-m-Y', $value[24]);
+                        
+                        if ($date) 
+                        {
+                            $contract_start_date = $date->format('Y-m-d');
+                            $emp_array['contract_start_date'] = $contract_start_date;
+                          //  dd( $emp_array['dob']);
+                        }
                     }
-                    else {
-                        $is_valid = false;
-                        $error_msg = "contract_start_date is required in row no. $row_no";
-                        break;
-                    }
-
-                     
                     if (!empty($value[25])) {
+                        $date = DateTime::createFromFormat('d-m-Y', $value[25]);
+                        
+                        if ($date) 
+                        {
+                            $contract_end_date = $date->format('Y-m-d');
+                            $emp_array['contract_end_date'] = $contract_end_date;
+                          //  dd( $emp_array['dob']);
+                        }
+                    }
                      
-                        $contract_end_date = date('Y-m-d', strtotime($value[25]));
-                        $contract_array['contract_end_date'] = $contract_end_date;
-                    }
-                    else {
-                        $is_valid = false;
-                        $error_msg = "contract_end_date is required in row no. $row_no";
-                        break;
-                    }
+                   
+                    // else {
+                    //     $is_valid = false;
+                    //     $error_msg = "contract_end_date is required in row no. $row_no";
+                    //     break;
+                    // }
                     
                     $contract_array['contract_duration'] = $value[26];
                     $contract_array['probation_period'] = $value[27];
@@ -263,8 +279,9 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_data['created_by'] = $user_id;
                         $emp = User::create($emp_data);
 
-                        
-
+                    
+                        if ($emp_data['essentials_department_id']!=null){
+                            dd( $emp_data['essentials_department_id']);
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
@@ -273,19 +290,20 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->job_title=$emp_data['job_title'];
                         $essentials_employee_appointmets->employee_status ="active";
                         $essentials_employee_appointmets->save();
-
-                       
+                        }
+                        if ($emp_data['amount']!=null || $emp_data['allowance_deduction_id']!=null ){
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                         $userAllowancesAndDeduction->user_id = $user_id;
                         $userAllowancesAndDeduction->allowance_deduction_id = (int)$emp_data['allowance_deduction_id'];
                         $userAllowancesAndDeduction->amount = $emp_data['amount']; 
                         $userAllowancesAndDeduction->save();
-
-                    
-                        // $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
-                        // $travel_ticket_categorie->employee_id = $user_id;
-                        // $travel_ticket_categorie->categorie_id=(int)$emp_data['travel_ticket_categorie'];
-                        // $travel_ticket_categorie->save();
+                        }
+                        if ($emp_data['travel_ticket_categorie']!=null){
+                        $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+                        $travel_ticket_categorie->employee_id = $user_id;
+                        $travel_ticket_categorie->categorie_id=(int)$emp_data['travel_ticket_categorie'];
+                        $travel_ticket_categorie->save();
+                        }
                     }
                 }
                
