@@ -53,8 +53,8 @@
 
 
 				{!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
-
-				{{-- @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+{{-- 
+				@if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
 					<div class="col-md-4 col-sm-6">
 						<div class="form-group">
 							<div class="input-group">
@@ -74,8 +74,8 @@
 					</div>
 					<div class="modal fade types_of_service_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 				@endif
-				
-				@if(in_array('subscription', $enabled_modules))
+				 --}}
+				{{-- @if(in_array('subscription', $enabled_modules))
 					<div class="col-md-4 pull-right col-sm-6">
 						<div class="checkbox">
 							<label>
@@ -205,8 +205,8 @@
 					</div>
 					<div class="clearfix"></div>
 				@endif
-				<!-- Call restaurant module if defined -->
-		        {{-- @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
+				{{-- <!-- Call restaurant module if defined -->
+		        @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
 		        	<span id="restaurant_module_span">
 		        	</span>
 		        @endif --}}
