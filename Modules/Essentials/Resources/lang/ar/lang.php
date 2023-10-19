@@ -331,6 +331,7 @@ return[
 'allowances'=>'البدلات',
 'work_types'=>'أنماط العمل',
 'job_titles'=>'المسميات الوظيفية',
+'job_titles_example'=>'مثال: مبرمج- مصمم',
 'travel_ticket_categories'=>'فئات تذاكر السفر',
 'travel_ticket_categorie'=>'فئة تذاكر السفر',
 'relatives_relations'=>'صلات القرابة',
@@ -633,8 +634,9 @@ return[
 'marital_status'=>'الحالة الاجتماعية',
 'marital_status_example'=>'مثال أعزب مطلق ',
 'additional_salary_type'=>'نوع الراتب الإضافي',
+'additional_salary_type_example'=>'مثال:بدل مواصلات-بدل سكن-بدل سكن و مواصلات',
 'additional_salary_amount'=>'مبلغ الراتب الأضافي',
 'travel_ticket_categorie'=>'فئة تذاكر السفر',
-'travel_ticket_categorie_example'=>' مثال:فئة 1',
+'travel_ticket_categorie_example'=>' مثال:فئة رقم 1',
 'health_insurance'=>'التأمين الطبي',
 ];

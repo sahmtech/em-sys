@@ -385,52 +385,50 @@
                                                                             </div>
 
                                                                             <div class="col-md-12">
-                                                                                            <div class="form-group">
-                                                                                        
-                                                                                                <div class="input-group">
-                                                                                            
-                                                                                                <label>
-                                                                                                 {!! Form::checkbox('allow_login', 1, false, ['class' => 'input-icheck', 'id' => 'allow_login']); !!} <strong>@lang('sales::lang.allow_login')</strong>
-                                                                                                                        </label>
-                                                                                                </div>
-                                                                                            </div>
-                                                                            </div>
+    <div class="form-group">
+        <div class="input-group">
+            <label>
+                {!! Form::checkbox('allow_login', 1, false, ['id' => 'allow_login_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
+            </label>
+        </div>
+    </div>
+</div>
 
-                                                                                        <div class="col-md-3  ">
-                                                                                                    <div class="form-group">
-                                                                                                        {!! Form::label('username_cs', __('sales::lang.username_cs') . ':') !!}
-                                                                                                        <div class="input-group">
-                                                                                                            <span class="input-group-addon">
-                                                                                                                <i class="fa fa-info"></i>
-                                                                                                            </span>
-                                                                                                            {!! Form::text('username_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
+<div class="col-md-3" id="username_cs_wrapper" style="display: none;">
+    <div class="form-group">
+        {!! Form::label('username_cs', __('sales::lang.username_cs') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-info"></i>
+            </span>
+            {!! Form::text('username_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
+        </div>
+    </div>
+</div>
 
-                                                                                                <div class="col-md-3  ">
-                                                                                                    <div class="form-group">
-                                                                                                        {!! Form::label('password_cs', __('sales::lang.password_cs') . ':') !!}
-                                                                                                        <div class="input-group">
-                                                                                                            <span class="input-group-addon">
-                                                                                                                <i class="fa fa-info"></i>
-                                                                                                            </span>
-                                                                                                            {!! Form::text('password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
+<div class="col-md-3" id="password_cs_wrapper" style="display: none;">
+    <div class="form-group">
+        {!! Form::label('password_cs', __('sales::lang.password_cs') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-info"></i>
+            </span>
+            {!! Form::text('password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
+        </div>
+    </div>
+</div>
 
-                                                                                                <div class="col-md-3 ">
-                                                                                                    <div class="form-group">
-                                                                                                        {!! Form::label('confirm_password_cs', __('sales::lang.confirm_password_cs') . ':') !!}
-                                                                                                        <div class="input-group">
-                                                                                                            <span class="input-group-addon">
-                                                                                                                <i class="fa fa-info"></i>
-                                                                                                            </span>
-                                                                                                            {!! Form::text('confirm_password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cs')]); !!}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
+<div class="col-md-3" id="confirm_password_cs_wrapper" style="display: none;">
+    <div class="form-group">
+        {!! Form::label('confirm_password_cs', __('sales::lang.confirm_password_cs') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-info"></i>
+            </span>
+            {!! Form::text('confirm_password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cs')]); !!}
+        </div>
+    </div>
+</div>
 
 
 
@@ -513,53 +511,50 @@
                                                                             </div>
 
                                                                             <div class="col-md-12">
-                                                                                            <div class="form-group">
-                                                                                        
-                                                                                                <div class="input-group">
-                                                                                            
-                                                                                                <label>
-                                                                                                 {!! Form::checkbox('allow_login_cf', 1, false, ['class' => 'input-icheck', 'id' => 'allow_login_cf']); !!} <strong>@lang('sales::lang.allow_login')</strong>
-                                                                                                                        </label>
-                                                                                                </div>
-                                                                                            </div>
-                                                                            </div>
+    <div class="form-group">
+        <div class="input-group">
+            <label>
+                {!! Form::checkbox('allow_login_cf', 1, false, [ 'id' => 'allow_login_cf_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
+            </label>
+        </div>
+    </div>
+</div>
 
-                                                                                        <div class="col-md-3  ">
-                                                                                                    <div class="form-group">
-                                                                                                        {!! Form::label('username_cf', __('sales::lang.username_cf') . ':') !!}
-                                                                                                        <div class="input-group">
-                                                                                                            <span class="input-group-addon">
-                                                                                                                <i class="fa fa-info"></i>
-                                                                                                            </span>
-                                                                                                            {!! Form::text('username_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
+<div class="col-md-3" id="username_cf_wrapper" style="display: none;">
+    <div class="form-group">
+        {!! Form::label('username_cf', __('sales::lang.username_cf') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-info"></i>
+            </span>
+            {!! Form::text('username_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
+        </div>
+    </div>
+</div>
 
-                                                                                                <div class="col-md-3  ">
-                                                                                                    <div class="form-group">
-                                                                                                        {!! Form::label('password_cf', __('sales::lang.password_cf') . ':') !!}
-                                                                                                        <div class="input-group">
-                                                                                                            <span class="input-group-addon">
-                                                                                                                <i class="fa fa-info"></i>
-                                                                                                            </span>
-                                                                                                            {!! Form::text('password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf')]); !!}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
+<div class="col-md-3" id="password_cf_wrapper" style="display: none;">
+    <div class="form-group">
+        {!! Form::label('password_cf', __('sales::lang.password_cf') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-info"></i>
+            </span>
+            {!! Form::text('password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf')]); !!}
+        </div>
+    </div>
+</div>
 
-                                                                                                <div class="col-md-3 ">
-                                                                                                    <div class="form-group">
-                                                                                                        {!! Form::label('confirm_password_cf', __('sales::lang.confirm_password_cf') . ':') !!}
-                                                                                                        <div class="input-group">
-                                                                                                            <span class="input-group-addon">
-                                                                                                                <i class="fa fa-info"></i>
-                                                                                                            </span>
-                                                                                                            {!! Form::text('confirm_password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cf')]); !!}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-
+<div class="col-md-3" id="confirm_password_cf_wrapper" style="display: none;">
+    <div class="form-group">
+        {!! Form::label('confirm_password_cf', __('sales::lang.confirm_password_cf') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-info"></i>
+            </span>
+            {!! Form::text('confirm_password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cf')]); !!}
+        </div>
+    </div>
+</div>
 
 
                                                     </div>
@@ -679,12 +674,34 @@
 </script>
 
 <script type="text/javascript">
-$(document).ready(function () {
-    $('#log').change(function () {
-        console.log('Checkbox changed:', $(this).is(':checked'));
-        console.log('done');
+$(document).ready(function() {
+    $('#allow_login_checkbox').change(function() {
+        if(this.checked) {
+            $('#username_cs_wrapper').show();
+            $('#password_cs_wrapper').show();
+            $('#confirm_password_cs_wrapper').show();
+        } else {
+            $('#username_cs_wrapper').hide();
+            $('#password_cs_wrapper').hide();
+            $('#confirm_password_cs_wrapper').hide();
+        }
     });
 });
+
+$(document).ready(function() {
+    $('#allow_login_cf_checkbox').change(function() {
+        if(this.checked) {
+            $('#username_cf_wrapper').show();
+            $('#password_cf_wrapper').show();
+            $('#confirm_password_cf_wrapper').show();
+        } else {
+            $('#username_cf_wrapper').hide();
+            $('#password_cf_wrapper').hide();
+            $('#confirm_password_cf_wrapper').hide();
+        }
+    });
+});
+
 </script>
 
 @endsection
