@@ -114,18 +114,24 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
                     $emp_array['user_type'] = $value[3];
                     $emp_array['email'] = $value[4];
-                  // dd($value[5]);
+            // dd($value[5]);
                     if (!empty($value[5])) {
-                       
-                        $date = DateTime::createFromFormat('d/m/Y',$value[5]);
-                       // dd( $date);
-                       if ($date) {
-                        // Format the date to 'Y-m-d' which is the MySQL date format
-                        $formattedDate = $date->format('Y-m-d');
-                        $emp_array['dob'] = $formattedDate;
-                       // dd($emp_array['dob']);
-                       }
+                        if (is_numeric($value[5])) {
+                            // Convert the float to a human-readable date
+                            $excelDateValue = (float)$value[5];
+                            $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
+                            $date = date('Y-m-d', $unixTimestamp);
+                            $emp_array['dob'] = $date;
+                           // dd($emp_array['dob']);
+                        } else {
+                            // Try to parse it as a date string
+                            $date = DateTime::createFromFormat('d/m/Y', $value[5]);
+                            if ($date) {
+                                $dob = $date->format('Y-m-d');
+                                $emp_array['dob'] = $dob;
+                            }
                     }
+                }
 
                  
                     $emp_array['gender'] = $value[6];
@@ -198,28 +204,42 @@ class EssentialsEmployeeImportController extends Controller
                     } 
                  
                     
-                    // if (!empty($value[24])) {
-                    //     $date = DateTime::createFromFormat('d-m-Y', $value[24]);
-                        
-                    //     if ($date) 
-                    //     {
-                    //         $contract_start_date = $date->format('Y-m-d');
-                    //         $emp_array['contract_start_date'] = $contract_start_date;
-                    //       // dd( $emp_array['dob']);
-                    //     }
-                    // }
-
                     if (!empty($value[24])) {
-                       
-                        $date = DateTime::createFromFormat('d/m/Y',$value[24]);
-                       // dd( $date);
-                       if ($date) {
-                        // Format the date to 'Y-m-d' which is the MySQL date format
-                        $formattedDate = $date->format('Y-m-d');
-                        $emp_array['contract_start_date'] = $formattedDate;
-                       // dd($emp_array['dob']);
-                       }
+                        if (is_numeric($value[24])) {
+                            // Convert the float to a human-readable date
+                            $excelDateValue = (float)$value[24];
+                            $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
+                            $date = date('Y-m-d', $unixTimestamp);
+                            $emp_array['contract_start_date'] = $date;
+                           // dd($emp_array['dob']);
+                        } else {
+                            // Try to parse it as a date string
+                            $date = DateTime::createFromFormat('d/m/Y', $value[24]);
+                            if ($date) {
+                                $dob = $date->format('Y-m-d');
+                                $emp_array['contract_start_date'] = $dob;
+                            }
                     }
+                }
+
+                if (!empty($value[25])) {
+                    if (is_numeric($value[25])) {
+                        // Convert the float to a human-readable date
+                        $excelDateValue = (float)$value[25];
+                        $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
+                        $date = date('Y-m-d', $unixTimestamp);
+                        $emp_array['contract_end_date'] = $date;
+                       // dd($emp_array['dob']);
+                    } else {
+                        // Try to parse it as a date string
+                        $date = DateTime::createFromFormat('d/m/Y', $value[25]);
+                        if ($date) {
+                            $dob = $date->format('Y-m-d');
+                            $emp_array['contract_end_date'] = $dob;
+                        }
+                }
+            }
+
 
                     if (!empty($value[25])) {
                         $date = DateTime::createFromFormat('d-m-Y', $value[25]);
