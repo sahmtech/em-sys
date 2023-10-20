@@ -116,16 +116,18 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['email'] = $value[4];
                     
                     if (!empty($value[5])) {
-                        $date = DateTime::createFromFormat('d-m-Y', $value[5]);
-                        
-                        if ($date) 
-                        {
-                            $dob = $date->format('d-m-Y');
-                            $emp_array['dob'] = $dob;
-                           // dd( $emp_array['dob']);
+                        // Convert Excel serial date to a PHP date
+                        $excelDate = $value[5];
+                        $unixTimestamp = ($excelDate - 25569) * 86400; // Convert to Unix timestamp
+            
+                        if ($unixTimestamp > 0) {
+                            $date = date('Y-m-d', $unixTimestamp);
+                            $emp_array['dob'] = $date;
+                          //  dd( $emp_array['dob'] );
                         }
                     }
-                  
+
+                   
                  
                     $emp_array['gender'] = $value[6];
                     $emp_array['marital_status'] = $value[7];
@@ -211,7 +213,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                         if ($date) 
                         {
-                            $contract_start_date = $date->format('d-m-Y');
+                            $contract_start_date = $date->format('Y-m-d');
                             $emp_array['contract_start_date'] = $contract_start_date;
                           //  dd( $emp_array['dob']);
                         }
@@ -221,7 +223,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                         if ($date) 
                         {
-                            $contract_end_date = $date->format('d-m-Y');
+                            $contract_end_date = $date->format('Y-m-d');
                             $emp_array['contract_end_date'] = $contract_end_date;
                           //  dd( $emp_array['dob']);
                         }
@@ -274,14 +276,14 @@ class EssentialsEmployeeImportController extends Controller
                 if (! empty($formated_data)) {
                     foreach ($formated_data as $emp_data) {
                      
-                       
+                       //dd($emp_data);
                         $emp_data['business_id'] = $business_id;
                         $emp_data['created_by'] = $user_id;
                         $emp = User::create($emp_data);
 
                     
                         if ($emp_data['essentials_department_id']!=null){
-                            dd( $emp_data['essentials_department_id']);
+                          //  dd( $emp_data['essentials_department_id']);
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];

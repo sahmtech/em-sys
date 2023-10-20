@@ -95,6 +95,8 @@ return [
     'allowlogin'=>'المستخدم يسمح له بتسجيل الدخول',
     'notallowlogin'=>'المستخدم لايسمح له بتسجيل الدخول',
     'sale_operation_orders'=>'طلب تشغيل',
+    'add_sale_operation'=>'إضافة طلب تشغيل',
+    'all_sales_operations'=>'جميع طلبات التغشيل',
      
    
 ];
