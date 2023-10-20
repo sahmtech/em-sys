@@ -114,20 +114,19 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
                     $emp_array['user_type'] = $value[3];
                     $emp_array['email'] = $value[4];
-                    
+                  // dd($value[5]);
                     if (!empty($value[5])) {
-                        // Convert Excel serial date to a PHP date
-                        $excelDate = $value[5];
-                        $unixTimestamp = ($excelDate - 25569) * 86400; // Convert to Unix timestamp
-            
-                        if ($unixTimestamp > 0) {
-                            $date = date('Y-m-d', $unixTimestamp);
-                            $emp_array['dob'] = $date;
-                          //  dd( $emp_array['dob'] );
-                        }
+                       
+                        $date = DateTime::createFromFormat('d/m/Y',$value[5]);
+                       // dd( $date);
+                       if ($date) {
+                        // Format the date to 'Y-m-d' which is the MySQL date format
+                        $formattedDate = $date->format('Y-m-d');
+                        $emp_array['dob'] = $formattedDate;
+                       // dd($emp_array['dob']);
+                       }
                     }
 
-                   
                  
                     $emp_array['gender'] = $value[6];
                     $emp_array['marital_status'] = $value[7];
@@ -197,27 +196,31 @@ class EssentialsEmployeeImportController extends Controller
                     if (!empty($value[23])) {
                         $contract_array['contract_number'] = $value[23];
                     } 
-                    // else {
-                    //     $is_valid = false;
-                    //     $error_msg = "contract_number is required in row no. $row_no";
-                    //     break;
-                    // }
-                   
-                    // else {
-                    //     $is_valid = false;
-                    //     $error_msg = "contract_start_date is required in row no. $row_no";
-                    //     break;
-                    // }
-                    if (!empty($value[24])) {
-                        $date = DateTime::createFromFormat('d-m-Y', $value[24]);
+                 
+                    
+                    // if (!empty($value[24])) {
+                    //     $date = DateTime::createFromFormat('d-m-Y', $value[24]);
                         
-                        if ($date) 
-                        {
-                            $contract_start_date = $date->format('Y-m-d');
-                            $emp_array['contract_start_date'] = $contract_start_date;
-                          //  dd( $emp_array['dob']);
-                        }
+                    //     if ($date) 
+                    //     {
+                    //         $contract_start_date = $date->format('Y-m-d');
+                    //         $emp_array['contract_start_date'] = $contract_start_date;
+                    //       // dd( $emp_array['dob']);
+                    //     }
+                    // }
+
+                    if (!empty($value[24])) {
+                       
+                        $date = DateTime::createFromFormat('d/m/Y',$value[24]);
+                       // dd( $date);
+                       if ($date) {
+                        // Format the date to 'Y-m-d' which is the MySQL date format
+                        $formattedDate = $date->format('Y-m-d');
+                        $emp_array['contract_start_date'] = $formattedDate;
+                       // dd($emp_array['dob']);
+                       }
                     }
+
                     if (!empty($value[25])) {
                         $date = DateTime::createFromFormat('d-m-Y', $value[25]);
                         
