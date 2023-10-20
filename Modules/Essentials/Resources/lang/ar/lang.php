@@ -639,4 +639,13 @@ return[
 'travel_ticket_categorie'=>'فئة تذاكر السفر',
 'travel_ticket_categorie_example'=>' مثال:فئة رقم 1',
 'health_insurance'=>'التأمين الطبي',
+'professions'=>'المهن',
+'profession_name'=>'اسم المهنة بالعربية',
+'specializations'=>'الاختصاصات',
+'optional'=>'اختياري',
+'specialization'=>'اسم الاختصاص',
+'add_specialization'=>'إضافة اختصاص',
+''=>'',
+''=>'',
+
 ];

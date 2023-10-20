@@ -133,11 +133,7 @@ class OfferPriceController extends Controller
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <li>
-                                    <a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>'.__('messages.view').'
-                                    </a>
-                                    </li>';
+                                    ';
 
                         if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
                             if ($row->is_direct_sale == 1) {
