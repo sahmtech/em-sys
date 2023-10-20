@@ -120,7 +120,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                         if ($date) 
                         {
-                            $dob = $date->format('Y-m-d');
+                            $dob = $date->format('d-m-Y');
                             $emp_array['dob'] = $dob;
                            // dd( $emp_array['dob']);
                         }
@@ -211,7 +211,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                         if ($date) 
                         {
-                            $contract_start_date = $date->format('Y-m-d');
+                            $contract_start_date = $date->format('d-m-Y');
                             $emp_array['contract_start_date'] = $contract_start_date;
                           //  dd( $emp_array['dob']);
                         }
@@ -221,7 +221,7 @@ class EssentialsEmployeeImportController extends Controller
                         
                         if ($date) 
                         {
-                            $contract_end_date = $date->format('Y-m-d');
+                            $contract_end_date = $date->format('d-m-Y');
                             $emp_array['contract_end_date'] = $contract_end_date;
                           //  dd( $emp_array['dob']);
                         }

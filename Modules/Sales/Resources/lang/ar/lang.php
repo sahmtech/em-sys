@@ -94,6 +94,7 @@ return [
     'edit_customer'=>'تعديل  بيانات العميل',
     'allowlogin'=>'المستخدم يسمح له بتسجيل الدخول',
     'notallowlogin'=>'المستخدم لايسمح له بتسجيل الدخول',
+    'sale_operation_orders'=>'طلب تشغيل',
      
    
 ];
