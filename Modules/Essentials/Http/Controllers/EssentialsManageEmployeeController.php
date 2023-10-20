@@ -273,7 +273,7 @@ class EssentialsManageEmployeeController extends Controller
 
         //Get user view part from modules
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
-
+       
         $users = User::forDropdown($business_id, false);
 
         $activities = Activity::forSubject($user)

@@ -1047,7 +1047,7 @@ return [
 "middle_name"=>"الاسم الأوسط",
 "address_line_1"=>"العنوان الأول",
 "address_line_2"=>"العنوان الثاني",
-"dob"=>"تاريخ الولادة",
+
 "dob_ins"=>"تنسيق Y-m-d",
 "by_purchase_price" => "بسعر الشراء",
 "by_sale_price" => "بسعر البيع",
