@@ -162,40 +162,14 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['id_proof_number'] = $value[15];
                     $emp_array['bank_details']=implode(' ', [$value[16], $value[17], $value[18],$value[19]]);
 
-                    $businessname = $value[20];
-                    $business = Business::where('name', $businessname)->first();
-                  
-                    if ($business) {
-                       
-                        $businessId = $business->id;
-                        $emp_array['location_id']=$businessId;
-                       // dd(  $emp_array['location_id']);
-                    }
-                    else{$emp_array['location_id']=null;}
-
-
-                    $departmentname = $value[21];
-                    $department = EssentialsDepartment::where('name', $departmentname)->first();
+                    $emp_array['location_id'] = $value[20];
+                    $emp_array['essentials_department_id'] = $value[21];
                    
-                    if ($department) {
-                        
-                        $departmentId = $department->id;
-                        $emp_array['essentials_department_id']=$departmentId;
-                    }
-                    else{ $emp_array['essentials_department_id']=null;}
 
 
-                    $categoryname = $value[22];
+                 
                     $emp_array['job_title']=$value[22];
-                    $category = Category::where('name', $categoryname)->first();
-                   // dd($category);
-                    if ($category) {
-                        
-                        $categoryId = $category->id;
-                        $emp_array['essentials_designation_id']=$categoryId;
-                    }
-                    else{ $emp_array['essentials_designation_id']=null;}
-                   
+               
 
                     
                   
@@ -305,8 +279,8 @@ class EssentialsEmployeeImportController extends Controller
                         $emp = User::create($emp_data);
 
                     
-                        if ($emp_data['essentials_department_id']!=null){
-                          //  dd( $emp_data['essentials_department_id']);
+                       
+                      
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
@@ -315,7 +289,8 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->job_title=$emp_data['job_title'];
                         $essentials_employee_appointmets->employee_status ="active";
                         $essentials_employee_appointmets->save();
-                        }
+                        
+
                         if ($emp_data['amount']!=null || $emp_data['allowance_deduction_id']!=null ){
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                         $userAllowancesAndDeduction->user_id = $user_id;
