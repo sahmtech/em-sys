@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('sale_operation_orders', function (Blueprint $table) {
             $table->id();
-            $table->integer('contract_id')->unsigned();
+            $table->bigInteger('contract_id')->unsigned();
             $table->foreign('contract_id')->references('id')->on('essentials_employees_contracts')->onDelete('cascade'); 
             $table->string('Industry')->nullable();
             $table->string('Interview')->nullable();

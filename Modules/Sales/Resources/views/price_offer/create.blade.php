@@ -25,12 +25,13 @@
 				<span class="input-group-addon">
 					<i class="fa fa-map-marker"></i>
 				</span>
-			{!! Form::select('select_location_id', $business_locations, $default_location->id ?? null, ['class' => 'form-control input-sm',
-			'id' => 'select_location_id', 
-			'required', 'autofocus'], $bl_attributes); !!}
-			<span class="input-group-addon">
-					@show_tooltip(__('tooltip.sale_location'))
-				</span> 
+					{!! Form::select('select_location_id', $business_locations, $default_location->id ?? null, ['class' => 'form-control input-sm',
+					'id' => 'select_location_id', 
+					'required', 'autofocus'], $bl_attributes); !!}
+						
+					<span class="input-group-addon">
+							@show_tooltip(__('tooltip.sale_location'))
+						</span> 
 			</div>
 		</div>
 	</div>

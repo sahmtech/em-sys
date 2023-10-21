@@ -5,9 +5,47 @@ namespace Modules\Sales\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use App\Notifications\CustomerNotification;
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\Facades\DataTables;
+use App\Utils\ContactUtil;
+use App\Utils\ModuleUtil;
+use App\Utils\NotificationUtil;
+use App\Utils\TransactionUtil;
+use App\Utils\Util;
+use DB;
 
 class SaleOperationOrderController extends Controller
 {
+    protected $commonUtil;
+
+    protected $contactUtil;
+
+    protected $transactionUtil;
+
+    protected $moduleUtil;
+
+    protected $notificationUtil;
+
+    /**
+     * Constructor
+     *
+     * @param  Util  $commonUtil
+     * @return void
+     */
+    public function __construct(
+        Util $commonUtil,
+        ModuleUtil $moduleUtil,
+        TransactionUtil $transactionUtil,
+        NotificationUtil $notificationUtil,
+        ContactUtil $contactUtil
+    ) {
+        $this->commonUtil = $commonUtil;
+        $this->contactUtil = $contactUtil;
+        $this->moduleUtil = $moduleUtil;
+        $this->transactionUtil = $transactionUtil;
+        $this->notificationUtil = $notificationUtil;
+    }
     /**
      * Display a listing of the resource.
      * @return Renderable

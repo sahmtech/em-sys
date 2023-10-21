@@ -46,5 +46,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
        // Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('sale.offer-price');
     
        Route::get('/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index'])->name('sale.orderOperations');
+       Route::post('/storeSaleOperation', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.storeSaleOperation');
     });
 });
