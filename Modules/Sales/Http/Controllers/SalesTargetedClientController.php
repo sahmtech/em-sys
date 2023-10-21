@@ -48,6 +48,7 @@ class SalesTargetedClientController extends Controller
     }
     public function clientAdd()
     {
+        
         if (! auth()->user()->can('product.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -58,16 +59,20 @@ class SalesTargetedClientController extends Controller
         return view('sales::targetedClient.client_add')->with(compact('allowance_types','specializations','professions','nationalities'));
     }
     public function saveQuickClient(Request $request) {
-       
         try {
+         
             $business_id = $request->session()->get('user.business_id');
-            $form_fields = ['profession', 'specialization', 'nationality', 'gender','monthly_cost', 'number', 'salary', 'food_allowance', 'housing_allowance'];
+            $form_fields = ['profession', 'specialization', 'nationality', 'gender','monthly_cost', 'number', 'salary'];
 
             $client_details = $request->only($form_fields);
-
+            
             $client_details['business_id'] = $business_id;
             $client_details['created_by'] = $request->session()->get('user.id');
-        
+            if (request()->selectedData) {
+                $jsonData = json_decode(request()->selectedData, true); 
+                foreach ($jsonData as $item) {
+                    error_log($item['salaryType']);
+                    error_log($item['amount']);}}
             DB::beginTransaction();
 
             $client = salesTargetedClient::create($client_details);
