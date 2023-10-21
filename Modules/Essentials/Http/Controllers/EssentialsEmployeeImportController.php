@@ -75,7 +75,7 @@ class EssentialsEmployeeImportController extends Controller
             if ($request->hasFile('employee_csv')) {
                 $file = $request->file('employee_csv');
                 $parsed_array = Excel::toArray([], $file);
-              // dd($parsed_array);
+                 // dd($parsed_array);
                 //Remove header row
                 $imported_data = array_splice($parsed_array[0], 1);
 
@@ -90,7 +90,7 @@ class EssentialsEmployeeImportController extends Controller
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
                    
-                    if (count($value) != 35) {
+                    if (count($value) != 34) {
                         $is_valid = false;
                         $error_msg = 'Number of columns mismatch';
                         break;
@@ -105,8 +105,8 @@ class EssentialsEmployeeImportController extends Controller
                     if (!empty($value[0])) {
                         $emp_array['first_name'] = $value[0];
                     } else {
-                        $is_valid = false;
-                        $error_msg = "First name is required in row no. $row_no";
+                        // $is_valid = false;
+                        // $error_msg = "First name is required in row no. $row_no";
                         break;
                     }
                     $emp_array['mid_name'] = $value[1];
@@ -114,7 +114,8 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
                     $emp_array['user_type'] = $value[3];
                     $emp_array['email'] = $value[4];
-            // dd($value[5]);
+          
+                    
                     if (!empty($value[5])) {
                         if (is_numeric($value[5])) {
                             // Convert the float to a human-readable date
@@ -262,7 +263,7 @@ class EssentialsEmployeeImportController extends Controller
                     }
                     else{ $emp_array['travel_ticket_categorie']=null;}
 
-                    $emp_array['health_insurance']=$value[34];
+                   // $emp_array['health_insurance']=$value[34];
                     $formated_data[] = $emp_array;
                     $formated_data2[] = $contract_array;
                 }
