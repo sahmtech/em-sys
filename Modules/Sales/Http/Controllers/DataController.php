@@ -59,31 +59,37 @@ class DataController extends Controller
                 $menu->dropdown(
                     __('sales::lang.sales'),
                     function ($subMenu) {
+
+                        $subMenu->url(
+                            action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
+                            __('sales::lang.sale_operation_orders'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'operationOrders'],
+                        )->order(1);
+
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
                             __('sales::lang.customers'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
-                        )->order(1);
+                        )->order(2);
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
                              __('sales::lang.add_offer_price'),
                              ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-                               )->order(2);
+                               )->order(3);
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                             __('sales::lang.offer_price'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
-                        )->order(3);
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer_price'],
+                        )->order(4);
 
-                      
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
                             __('sales::lang.contracts'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
-                        )->order(4);
+                        )->order(5);
                       
                       },
                     [

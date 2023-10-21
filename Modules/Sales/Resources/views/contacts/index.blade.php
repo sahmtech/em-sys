@@ -97,8 +97,7 @@
  
     @endcomponent
 
-   
- <!-- Modal for adding a new customer -->
+
  <div class="modal fade" id="addCountryModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     
                 <div class="modal-dialog modal-lg" role="document">
@@ -385,191 +384,191 @@
                                                                             </div>
 
                                                                             <div class="col-md-12">
-    <div class="form-group">
-        <div class="input-group">
-            <label>
-                {!! Form::checkbox('allow_login', 1, false, ['id' => 'allow_login_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
-            </label>
-        </div>
-    </div>
-</div>
+                                                                                    <div class="form-group">
+                                                                                        <div class="input-group">
+                                                                                            <label>
+                                                                                                {!! Form::checkbox('allow_login', 1, false, ['id' => 'allow_login_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
 
-<div class="col-md-3" id="username_cs_wrapper" style="display: none;">
-    <div class="form-group">
-        {!! Form::label('username_cs', __('sales::lang.username_cs') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-info"></i>
-            </span>
-            {!! Form::text('username_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
-        </div>
-    </div>
-</div>
-
-<div class="col-md-3" id="password_cs_wrapper" style="display: none;">
-    <div class="form-group">
-        {!! Form::label('password_cs', __('sales::lang.password_cs') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-info"></i>
-            </span>
-            {!! Form::text('password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
-        </div>
-    </div>
-</div>
-
-<div class="col-md-3" id="confirm_password_cs_wrapper" style="display: none;">
-    <div class="form-group">
-        {!! Form::label('confirm_password_cs', __('sales::lang.confirm_password_cs') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-info"></i>
-            </span>
-            {!! Form::text('confirm_password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cs')]); !!}
-        </div>
-    </div>
-</div>
-
-
-
-                                                    </div>
-                                                    <div class="clearfix"></div>
-                                        </div>
-                                      
-<br>
-                                        <div class="row">
-                                                    <div class="col-md-12">
-                                                        <button type="button" id="contract_follower" class="btn btn-primary center-block more_btn" data-target="#more_div">@lang('sales::lang.add_Contract_follower') <i class="fa fa-chevron-down"></i></button>
-                                                    </div>
-
-                                                    <div id="more_div2" class="hide">
-                                                    {!! Form::hidden('position', null, ['id' => 'position']); !!}
-                                                        <div class="col-md-12"><hr/></div>
-
-                                                       
-                                                        <div class="col-md-4">
-                                                                        <div class="form-group">
-                                                                        {!! Form::label('first_name', __('sales::lang.first_name_cf') . ':*') !!}
-                                                                            <div class="input-group">
-                                                                            <span class="input-group-addon">
-                                                                                <i class="fa fa-info"></i>
-                                                                            </span>
-                                                                            {!! Form::text('first_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.first_name_cf')]); !!}
-                                                                            </div>
-                                                                        </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                                        <div class="form-group">
-                                                                        {!! Form::label('last_name', __('sales::lang.last_name_cf') . ':*') !!}
-                                                                            <div class="input-group">
-                                                                            <span class="input-group-addon">
-                                                                                <i class="fa fa-info"></i>
-                                                                            </span>
-                                                                            {!! Form::text('last_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.last_name_cf')]); !!}
-                                                                            </div>
-                                                                        </div>
-                                                        </div>
-
-                                                    
-
-                                                        <div class="col-md-4">
-                                                                        <div class="form-group">
-                                                                        {!! Form::label('english_name', __('sales::lang.english_name_cf') .  ':*') !!}
-                                                                            <div class="input-group">
-                                                                            <span class="input-group-addon">
-                                                                                <i class="fa fa-info"></i>
-                                                                            </span>
-                                                                            {!! Form::text('english_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.english_name_cf')]); !!}
-                                                                            </div>
-                                                                        </div>
-                                                        </div>
-                                                
-                                                      
-
-                                                        <div class="col-md-4">
-                                                                        <div class="form-group">
-                                                                        {!! Form::label('email_cf', __('sales::lang.email_cf') . ':') !!}
-                                                                            <div class="input-group">
-                                                                            <span class="input-group-addon">
-                                                                                <i class="fa fa-info"></i>
-                                                                            </span>
-                                                                            {!! Form::text('email_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.email_cf')]); !!}
-                                                                            </div>
-                                                                        </div>
-                                                        </div>
-                                                      
-                                                                            <div class="col-md-3">
-                                                                                            <div class="form-group">
-                                                                                            {!! Form::label('mobile_cf', __('sales::lang.mobile_cf') . ':*') !!}
-                                                                                                <div class="input-group">
+                                                                                    <div class="col-md-3" id="username_cs_wrapper" style="display: none;">
+                                                                                        <div class="form-group">
+                                                                                            {!! Form::label('username_cs', __('sales::lang.username_cs') . ':') !!}
+                                                                                            <div class="input-group">
                                                                                                 <span class="input-group-addon">
                                                                                                     <i class="fa fa-info"></i>
                                                                                                 </span>
-                                                                                                {!! Form::text('mobile_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.mobile_cf')]); !!}
+                                                                                                {!! Form::text('username_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                                                                                                            </div>
+
+                                                                                        <div class="col-md-3" id="password_cs_wrapper" style="display: none;">
+                                                                                            <div class="form-group">
+                                                                                                {!! Form::label('password_cs', __('sales::lang.password_cs') . ':') !!}
+                                                                                                <div class="input-group">
+                                                                                                    <span class="input-group-addon">
+                                                                                                        <i class="fa fa-info"></i>
+                                                                                                    </span>
+                                                                                                    {!! Form::text('password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
                                                                                                 </div>
                                                                                             </div>
-                                                                            </div>
+                                                                                        </div>
 
-                                                                            <div class="col-md-12">
-    <div class="form-group">
-        <div class="input-group">
-            <label>
-                {!! Form::checkbox('allow_login_cf', 1, false, [ 'id' => 'allow_login_cf_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
-            </label>
-        </div>
-    </div>
-</div>
-
-<div class="col-md-3" id="username_cf_wrapper" style="display: none;">
-    <div class="form-group">
-        {!! Form::label('username_cf', __('sales::lang.username_cf') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-info"></i>
-            </span>
-            {!! Form::text('username_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
-        </div>
-    </div>
-</div>
-
-<div class="col-md-3" id="password_cf_wrapper" style="display: none;">
-    <div class="form-group">
-        {!! Form::label('password_cf', __('sales::lang.password_cf') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-info"></i>
-            </span>
-            {!! Form::text('password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf')]); !!}
-        </div>
-    </div>
-</div>
-
-<div class="col-md-3" id="confirm_password_cf_wrapper" style="display: none;">
-    <div class="form-group">
-        {!! Form::label('confirm_password_cf', __('sales::lang.confirm_password_cf') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-info"></i>
-            </span>
-            {!! Form::text('confirm_password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cf')]); !!}
-        </div>
-    </div>
-</div>
-
-
-                                                    </div>
-                                        </div>
-                                        @include('layouts.partials.module_form_part')
+                                                                                        <div class="col-md-3" id="confirm_password_cs_wrapper" style="display: none;">
+                                                                                            <div class="form-group">
+                                                                                                {!! Form::label('confirm_password_cs', __('sales::lang.confirm_password_cs') . ':') !!}
+                                                                                                <div class="input-group">
+                                                                                                    <span class="input-group-addon">
+                                                                                                        <i class="fa fa-info"></i>
+                                                                                                    </span>
+                                                                                                    {!! Form::text('confirm_password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cs')]); !!}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
 
 
 
+                                                                                                                                                    </div>
+                                                                                                                                                    <div class="clearfix"></div>
+                                                                                                                                        </div>
+                                                                                                                                    
+                                                                                                <br>
+                                                                                                                                        <div class="row">
+                                                                                                                                                    <div class="col-md-12">
+                                                                                                                                                        <button type="button" id="contract_follower" class="btn btn-primary center-block more_btn" data-target="#more_div">@lang('sales::lang.add_Contract_follower') <i class="fa fa-chevron-down"></i></button>
+                                                                                                                                                    </div>
 
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                                            </div>
-                                {!! Form::close() !!}
-                        </div>
+                                                                                                                                                    <div id="more_div2" class="hide">
+                                                                                                                                                    {!! Form::hidden('position', null, ['id' => 'position']); !!}
+                                                                                                                                                        <div class="col-md-12"><hr/></div>
+
+                                                                                                                                                    
+                                                                                                                                                        <div class="col-md-4">
+                                                                                                                                                                        <div class="form-group">
+                                                                                                                                                                        {!! Form::label('first_name', __('sales::lang.first_name_cf') . ':*') !!}
+                                                                                                                                                                            <div class="input-group">
+                                                                                                                                                                            <span class="input-group-addon">
+                                                                                                                                                                                <i class="fa fa-info"></i>
+                                                                                                                                                                            </span>
+                                                                                                                                                                            {!! Form::text('first_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.first_name_cf')]); !!}
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                        </div>
+                                                                                                                                                        <div class="col-md-4">
+                                                                                                                                                                        <div class="form-group">
+                                                                                                                                                                        {!! Form::label('last_name', __('sales::lang.last_name_cf') . ':*') !!}
+                                                                                                                                                                            <div class="input-group">
+                                                                                                                                                                            <span class="input-group-addon">
+                                                                                                                                                                                <i class="fa fa-info"></i>
+                                                                                                                                                                            </span>
+                                                                                                                                                                            {!! Form::text('last_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.last_name_cf')]); !!}
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                        </div>
+
+                                                                                                                                                    
+
+                                                                                                                                                        <div class="col-md-4">
+                                                                                                                                                                        <div class="form-group">
+                                                                                                                                                                        {!! Form::label('english_name', __('sales::lang.english_name_cf') .  ':*') !!}
+                                                                                                                                                                            <div class="input-group">
+                                                                                                                                                                            <span class="input-group-addon">
+                                                                                                                                                                                <i class="fa fa-info"></i>
+                                                                                                                                                                            </span>
+                                                                                                                                                                            {!! Form::text('english_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.english_name_cf')]); !!}
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                        </div>
+                                                                                                                                                
+                                                                                                                                                    
+
+                                                                                                                                                        <div class="col-md-4">
+                                                                                                                                                                        <div class="form-group">
+                                                                                                                                                                        {!! Form::label('email_cf', __('sales::lang.email_cf') . ':') !!}
+                                                                                                                                                                            <div class="input-group">
+                                                                                                                                                                            <span class="input-group-addon">
+                                                                                                                                                                                <i class="fa fa-info"></i>
+                                                                                                                                                                            </span>
+                                                                                                                                                                            {!! Form::text('email_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.email_cf')]); !!}
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                        </div>
+                                                                                                                                                    
+                                                                                                                                                                            <div class="col-md-3">
+                                                                                                                                                                                            <div class="form-group">
+                                                                                                                                                                                            {!! Form::label('mobile_cf', __('sales::lang.mobile_cf') . ':*') !!}
+                                                                                                                                                                                                <div class="input-group">
+                                                                                                                                                                                                <span class="input-group-addon">
+                                                                                                                                                                                                    <i class="fa fa-info"></i>
+                                                                                                                                                                                                </span>
+                                                                                                                                                                                                {!! Form::text('mobile_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.mobile_cf')]); !!}
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                            </div>
+                                                                                                                                                                            </div>
+
+                                                                                                                                                                            <div class="col-md-12">
+                                                                                                    <div class="form-group">
+                                                                                                        <div class="input-group">
+                                                                                                            <label>
+                                                                                                                {!! Form::checkbox('allow_login_cf', 1, false, [ 'id' => 'allow_login_cf_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
+                                                                                                            </label>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div class="col-md-3" id="username_cf_wrapper" style="display: none;">
+                                                                                                    <div class="form-group">
+                                                                                                        {!! Form::label('username_cf', __('sales::lang.username_cf') . ':') !!}
+                                                                                                        <div class="input-group">
+                                                                                                            <span class="input-group-addon">
+                                                                                                                <i class="fa fa-info"></i>
+                                                                                                            </span>
+                                                                                                            {!! Form::text('username_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div class="col-md-3" id="password_cf_wrapper" style="display: none;">
+                                                                                                    <div class="form-group">
+                                                                                                        {!! Form::label('password_cf', __('sales::lang.password_cf') . ':') !!}
+                                                                                                        <div class="input-group">
+                                                                                                            <span class="input-group-addon">
+                                                                                                                <i class="fa fa-info"></i>
+                                                                                                            </span>
+                                                                                                            {!! Form::text('password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf')]); !!}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div class="col-md-3" id="confirm_password_cf_wrapper" style="display: none;">
+                                                                                                    <div class="form-group">
+                                                                                                        {!! Form::label('confirm_password_cf', __('sales::lang.confirm_password_cf') . ':') !!}
+                                                                                                        <div class="input-group">
+                                                                                                            <span class="input-group-addon">
+                                                                                                                <i class="fa fa-info"></i>
+                                                                                                            </span>
+                                                                                                            {!! Form::text('confirm_password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cf')]); !!}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+
+                                                                                                                                                    </div>
+                                                                                                                                        </div>
+                                                                                                                                        @include('layouts.partials.module_form_part')
+
+
+
+
+                                                                                                                                            <div class="modal-footer">
+                                                                                                                                                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                                                                                                                                                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                                                                                                                                            </div>
+                                                                                                                                {!! Form::close() !!}
+                                                                                                                        </div>
 
                                         
                     </div>

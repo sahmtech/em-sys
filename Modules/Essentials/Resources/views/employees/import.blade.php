@@ -94,7 +94,7 @@
                     </tr>
                     <tr>
                         <td>5</td>
-                        <td>@lang('essentials::lang.email') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
+                        <td>@lang('essentials::lang.email') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
                         <td>@lang('essentials::lang.email_example') </td>
                     </tr>
                     <tr>
