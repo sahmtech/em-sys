@@ -1457,12 +1457,11 @@ class CoaController extends Controller
             DB::beginTransaction();
 
             $input = $request->only([
-                'name', 'account_primary_type', 'account_sub_type_id', 'detail_type_id',
-                'parent_account_id', 'description', 'gl_code', 'account_category'
+                'name', 'account_category'
             ]);
 
-            $input['parent_account_id'] = !empty($input['parent_account_id'])
-                && $input['parent_account_id'] !== 'null' ? $input['parent_account_id'] : null;
+            // $input['parent_account_id'] = !empty($input['parent_account_id'])
+            //     && $input['parent_account_id'] !== 'null' ? $input['parent_account_id'] : null;
 
             $account = AccountingAccount::find($id);
             $account->update($input);

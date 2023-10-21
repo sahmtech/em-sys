@@ -48,7 +48,7 @@
                                                             style="font-size: 14px;"></i></span>
                                                 @endif
                                                 <span class="tree-actions">
-                                                    <a class="btn-modal btn-xs btn-default text-success"
+                                                    <a class="btn-modal btn-xs btn-default text-success ledger-link"
                                                         style="margin: 2px;" title="@lang('accounting::lang.ledger')"
                                                         href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', $account->id) }}">
                                                         <i class="fas fa-file-alt"></i></a>
