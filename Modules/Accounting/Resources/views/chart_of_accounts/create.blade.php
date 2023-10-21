@@ -16,7 +16,8 @@
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="form-group">
+
+                    {{-- <div class="form-group">
                         {!! Form::label('account_primary_type', __('accounting::lang.account_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         <select class="form-control" name="account_primary_type" id="account_primary_type" required>
                             <option value="">@lang('messages.please_select')</option>
@@ -29,18 +30,18 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         {!! Form::label('account_sub_type', __('accounting::lang.account_sub_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         <select class="form-control" name="account_sub_type_id" id="account_sub_type" required>
                             <option value="">@lang('messages.please_select')</option>
                         </select>
-                    </div>
+                    </div> --}}
 
 
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         {!! Form::label('detail_type', __('accounting::lang.detail_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         {!! Form::select('detail_type_id', [], null, [
                             'class' => 'form-control',
@@ -49,20 +50,21 @@
                             'id' => 'detail_type',
                         ]) !!}
                         <p class="help-block" id="detail_type_desc"></p>
-                    </div>
+                    </div> --}}
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         {!! Form::label('parent_account', __('accounting::lang.parent_account') . '') !!}
                         {!! Form::select('parent_account_id', [], null, [
                             'class' => 'form-control',
                             'placeholder' => __('messages.please_select'),
                             'id' => 'parent_account',
                         ]) !!}
-                    </div>
+                    </div> --}}
 
                     <div class="form-group">
                         {!! Form::label('account_category', __('accounting::lang.account_category') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                        <select class="form-control" name="account_category" id="account_category" required>
+                        <select class="form-control" name="account_category" id="account_category" style="padding: 2px"
+                            required>
                             <option value="balance_sheet"
                                 style="font-size: 14px !important;
                             line-height: 1.42857143;
@@ -81,6 +83,7 @@
                         {!! Form::label('name', __('user.name') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                         {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __('user.name')]) !!}
                     </div>
+
                     <div class="form-group">
                         {!! Form::label('gl_code', __('accounting::lang.gl_code') . '  ') !!} <span style="color: red; font-size:10px"> *</span>
                         {!! Form::text('gl_code', null, [
@@ -91,7 +94,7 @@
                         <p class="help-block">@lang('accounting::lang.gl_code_help')</p>
                     </div>
 
-
+                    <input name="parent_account_id" value="{{ $parent_accounts }}" hidden />
 
 
                 </div>
