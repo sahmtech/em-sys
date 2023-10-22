@@ -84,7 +84,7 @@
                         {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __('user.name')]) !!}
                     </div>
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         {!! Form::label('gl_code', __('accounting::lang.gl_code') . '  ') !!} <span style="color: red; font-size:10px"> *</span>
                         {!! Form::text('gl_code', null, [
                             'class' => 'form-control',
@@ -92,7 +92,7 @@
                             'placeholder' => __('accounting::lang.gl_code'),
                         ]) !!}
                         <p class="help-block">@lang('accounting::lang.gl_code_help')</p>
-                    </div>
+                    </div> --}}
 
                     <input name="parent_account_id" value="{{ $parent_accounts }}" hidden />
 
