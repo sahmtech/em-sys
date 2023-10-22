@@ -83,7 +83,8 @@ class ClientsController extends Controller
                 'mobile',
                 'email',
                 'city'
-            ]);
+            ])->where('business_id',$business_id);
+            //dd($contacts);
             return Datatables::of($contacts)
                 ->addColumn('nameAr', function ($row) {
                     $name = json_decode($row->name, true);

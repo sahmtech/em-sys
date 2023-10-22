@@ -90,11 +90,11 @@ class EssentialsEmployeeImportController extends Controller
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
                    
-                    if (count($value) != 34) {
-                        $is_valid = false;
-                        $error_msg = 'Number of columns mismatch';
-                        break;
-                    }
+                    // if (count($value) != 34) {
+                    //     $is_valid = false;
+                    //     $error_msg = 'Number of columns mismatch';
+                    //     break;
+                    // }
 
                     $row_no = $key + 1;
                     $emp_array = [];
@@ -161,8 +161,17 @@ class EssentialsEmployeeImportController extends Controller
 
                     $emp_array['id_proof_name'] = $value[14];
                     $emp_array['id_proof_number'] = $value[15];
-                    $emp_array['bank_details']=implode(' ', [$value[16], $value[17], $value[18],$value[19]]);
-
+                   // $emp_array['bank_details']=implode(' ', [$value[16], $value[17], $value[18],$value[19]]);
+                   $emp_array['bank_details'] = [
+                    'account_holder_name' => $value[16],
+                    'account_number' => $value[17],
+                    'bank_name' => $value[18],
+                    'bank_code' => $value[19],
+                ];
+                
+                // Convert the 'bank_details' array to JSON
+                    $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
+                  // dd( $emp_array['bank_details']);
                     $emp_array['location_id'] = $value[20];
                     $emp_array['essentials_department_id'] = $value[21];
                    
@@ -178,21 +187,23 @@ class EssentialsEmployeeImportController extends Controller
                         $contract_array['contract_number'] = $value[23];
                     } 
                  
-                    
+                   
                     if (!empty($value[24])) {
                         if (is_numeric($value[24])) {
                             // Convert the float to a human-readable date
                             $excelDateValue = (float)$value[24];
                             $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
                             $date = date('Y-m-d', $unixTimestamp);
-                            $emp_array['contract_start_date'] = $date;
+                            
+                            $contract_array['contract_start_date'] = $date;
+                           // dd( $emp_array['contract_start_date'] );
                            // dd($emp_array['dob']);
                         } else {
                             // Try to parse it as a date string
                             $date = DateTime::createFromFormat('d/m/Y', $value[24]);
                             if ($date) {
                                 $dob = $date->format('Y-m-d');
-                                $emp_array['contract_start_date'] = $dob;
+                                $contract_array['contract_start_date'] = $dob;
                             }
                     }
                 }
@@ -203,30 +214,19 @@ class EssentialsEmployeeImportController extends Controller
                         $excelDateValue = (float)$value[25];
                         $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
                         $date = date('Y-m-d', $unixTimestamp);
-                        $emp_array['contract_end_date'] = $date;
+                        $contract_array['contract_end_date'] = $date;
                        // dd($emp_array['dob']);
                     } else {
                         // Try to parse it as a date string
                         $date = DateTime::createFromFormat('d/m/Y', $value[25]);
                         if ($date) {
                             $dob = $date->format('Y-m-d');
-                            $emp_array['contract_end_date'] = $dob;
+                            $contract_array['contract_end_date'] = $dob;
                         }
                 }
             }
 
 
-                    if (!empty($value[25])) {
-                        $date = DateTime::createFromFormat('d-m-Y', $value[25]);
-                        
-                        if ($date) 
-                        {
-                            $contract_end_date = $date->format('Y-m-d');
-                            $emp_array['contract_end_date'] = $contract_end_date;
-                          //  dd( $emp_array['dob']);
-                        }
-                    }
-                     
                    
                     // else {
                     //     $is_valid = false;
@@ -307,7 +307,7 @@ class EssentialsEmployeeImportController extends Controller
                         }
                     }
                 }
-               
+              // dd($formated_data2);
                 if (! empty($formated_data2)) {
                     foreach ($formated_data2 as $con_data) {
                      
