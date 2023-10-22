@@ -90,11 +90,11 @@ class EssentialsEmployeeImportController extends Controller
                 DB::beginTransaction();
                 foreach ($imported_data as $key => $value) {
                    
-                    if (count($value) != 34) {
-                        $is_valid = false;
-                        $error_msg = 'Number of columns mismatch';
-                        break;
-                    }
+                    // if (count($value) != 34) {
+                    //     $is_valid = false;
+                    //     $error_msg = 'Number of columns mismatch';
+                    //     break;
+                    // }
 
                     $row_no = $key + 1;
                     $emp_array = [];
