@@ -3,7 +3,7 @@
          <li @if (count($child_account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right" }' @endif>
              {{ $child_account->name }}
              @if (!empty($child_account->gl_code))
-                 ({{ $child_account->gl_code }})
+                - ({{ $child_account->gl_code }})
              @endif
              - @format_currency($child_account->balance)
 
