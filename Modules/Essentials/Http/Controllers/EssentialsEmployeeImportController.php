@@ -75,7 +75,7 @@ class EssentialsEmployeeImportController extends Controller
             if ($request->hasFile('employee_csv')) {
                 $file = $request->file('employee_csv');
                 $parsed_array = Excel::toArray([], $file);
-                 // dd($parsed_array);
+                 //dd($parsed_array);
                 //Remove header row
                 $imported_data = array_splice($parsed_array[0], 1);
 
@@ -105,14 +105,30 @@ class EssentialsEmployeeImportController extends Controller
                     if (!empty($value[0])) {
                         $emp_array['first_name'] = $value[0];
                     } else {
-                        // $is_valid = false;
-                        // $error_msg = "First name is required in row no. $row_no";
+                        $is_valid = false;
+                        $error_msg = "First name is required in row no. $row_no";
                         break;
                     }
                     $emp_array['mid_name'] = $value[1];
-                    $emp_array['last_name'] = $value[2];
+                    if (!empty($value[2])) {
+                        $emp_array['last_name'] = $value[2];
+                    } else {
+                        $is_valid = false;
+                        $error_msg = "First name is required in row no. $row_no";
+                        break;
+                    }
+                  
                     $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
-                    $emp_array['user_type'] = $value[3];
+                    if(!empty($value[3])){
+                        $emp_array['user_type'] = $value[3];
+                    }
+                    else
+                    {
+                         $is_valid = false;
+                        $error_msg = "Mobile number is required in row no. $row_no";
+                        break;
+                    }
+                   
                     $emp_array['email'] = $value[4];
           
                     
@@ -146,9 +162,9 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_array['contact_number'] = $value[9];
                     } 
                     else {
-                        $is_valid = false;
-                        $error_msg = "Mobile number is required in row no. $row_no";
-                        break;
+                        // $is_valid = false;
+                        // $error_msg = "Mobile number is required in row no. $row_no";
+                        // break;
                     }
 
                     //Alt contact number
@@ -174,10 +190,7 @@ class EssentialsEmployeeImportController extends Controller
                   // dd( $emp_array['bank_details']);
                     $emp_array['location_id'] = $value[20];
                     $emp_array['essentials_department_id'] = $value[21];
-                   
 
-
-                 
                     $emp_array['job_title']=$value[22];
                
 
@@ -228,20 +241,15 @@ class EssentialsEmployeeImportController extends Controller
 
 
                    
-                    // else {
-                    //     $is_valid = false;
-                    //     $error_msg = "contract_end_date is required in row no. $row_no";
-                    //     break;
-                    // }
+                   
                     
                     $contract_array['contract_duration'] = $value[26];
                     $contract_array['probation_period'] = $value[27];
                     $contract_array['is_renewable'] = $value[28];
                     $contract_array['status'] = $value[29];
-
                   
                     $emp_array['essentials_salary'] = $value[30];
-                  
+                   
                     $allowancename=$value[31];
                     $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
                     if ($allowancetype) {
@@ -269,8 +277,7 @@ class EssentialsEmployeeImportController extends Controller
                 }
                 if (! $is_valid) {
                     throw new \Exception($error_msg);
-                }
-
+                }//dd($formated_data);
                 if (! empty($formated_data)) {
                     foreach ($formated_data as $emp_data) {
                      
