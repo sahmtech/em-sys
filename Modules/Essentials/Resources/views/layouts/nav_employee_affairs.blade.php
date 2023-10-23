@@ -63,7 +63,7 @@
                             <a href="{{ route('official_documents') }}">@lang('essentials::lang.official_documents')</a>
                         </li>
                     @endif
-                    @endcan  
+               
 
                         <li @if(request()->segment(2) == 'health_insurance') class="active" @endif>
                             <a href="">@lang('essentials::lang.health_insurance')</a>
