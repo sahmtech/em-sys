@@ -135,6 +135,7 @@ class EssentialsManageEmployeeController extends Controller
             ->select(['users.id',
                     'users.username',
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                    'users.dob',
                     'users.email',
                     'users.allow_login',
                     'users.contact_number',

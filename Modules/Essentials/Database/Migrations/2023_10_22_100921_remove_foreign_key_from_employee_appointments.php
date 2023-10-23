@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_employees_contracts', function (Blueprint $table) {
-            $table->date('contract_start_date')->nullable()->change();
+        Schema::table('essentials_employee_appointmets', function (Blueprint $table) {
+            $table->dropForeign(['business_location_id']);
         });
     }
 
@@ -25,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        $table->date('contract_start_date')->change();
+        Schema::table('', function (Blueprint $table) {
+
+        });
     }
 };

@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_employees_contracts', function (Blueprint $table) {
-            $table->string('contract_duration')->nullable()->change();
+        Schema::table('essentials_employee_appointmets', function (Blueprint $table) {
+            $table->bigInteger('business_location_id')->unsigned()->nullable()->change();
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down()
     {
-        $table->string('contract_duration')->change();
+        //
     }
 };

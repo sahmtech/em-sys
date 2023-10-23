@@ -101,6 +101,7 @@ class DataController extends Controller
                             action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                             __('sales::lang.offer_price'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
+                         
                         )->order(3);
 
 

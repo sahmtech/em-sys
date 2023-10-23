@@ -71,11 +71,11 @@
     @slot('tool')
             <div class="box-tools">
                 
-                <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addCountryModal">
+                <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addContactModal">
                     <i class="fa fa-plus"></i> @lang('sales::lang.add_contact')
                 </button>
             </div>
-            @endslot
+    @endslot
       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="cust_table">
@@ -98,7 +98,7 @@
     @endcomponent
 
 
- <div class="modal fade" id="addCountryModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+ <div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">

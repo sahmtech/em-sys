@@ -13,8 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_employees_contracts', function (Blueprint $table) {
-            $table->boolean('is_renewable')->nullable()->change();
+       
+        Schema::table('essentials_employee_appointmets', function (Blueprint $table) {
+            $table->bigInteger('department_id')->unsigned()->nullable()->change();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        $table->boolean('is_renewable')->change();
+        //
     }
 };

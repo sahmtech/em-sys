@@ -13,18 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('essentials_employees_contracts', function (Blueprint $table) {
+        Schema::create('', function (Blueprint $table) {
             $table->id();
-            $table->integer('contract_number');
+            $table->integer('contract_number')->nullable();
             $table->unsignedInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('users')->onDelete('cascade');
-            $table->date('contract_start_date');
-            $table->date('contract_end_date'); 
-            $table->string('contract_duration'); 
-            $table->string('probation_period');
-            $table->string('status');
+            $table->date('contract_start_date')->nullable();
+            $table->date('contract_end_date')->nullable(); 
+            $table->string('contract_duration')->nullable(); 
+            $table->string('probation_period')->nullable();
+            $table->string('status')->nullable();
             $table->string('file_path')->nullable();
-            $table->boolean('is_renewable');
+            $table->boolean('is_renewable')->nullable();
             $table->timestamps();
         });
     }
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('essentials_employees_contracts');
+        Schema::dropIfExists('');
     }
 };

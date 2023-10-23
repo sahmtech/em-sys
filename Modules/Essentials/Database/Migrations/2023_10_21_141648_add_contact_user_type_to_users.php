@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_employees_contracts', function (Blueprint $table) {
-            $table->date('contract_end_date')->nullable()->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('contact_user_type', ['contact_signer', 'contract_follower'])->after('user_type')->nullable();
         });
     }
 
@@ -25,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        $table->date('contract_end_date')->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('contact_user_type');
+        });
     }
 };

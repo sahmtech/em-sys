@@ -63,5 +63,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/contract_appendices/{id}', [\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'destroy'])->name('appendix.destroy');
         Route::put('/updateAppendix/{id}', [\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'update'])->name('updateAppendix');
       
+       Route::get('/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index'])->name('sale.orderOperations');
+       Route::post('/storeSaleOperation', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.storeSaleOperation');
     });
 });

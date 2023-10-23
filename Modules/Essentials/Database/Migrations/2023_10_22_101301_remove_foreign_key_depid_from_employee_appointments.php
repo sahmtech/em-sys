@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_employees_contracts', function (Blueprint $table) {
-            $table->string('status')->nullable()->change();
+        Schema::table('essentials_employee_appointmets', function (Blueprint $table) {
+            $table->dropForeign(['department_id']);
         });
     }
 
@@ -25,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        $table->string('status')->change();
+        Schema::table('', function (Blueprint $table) {
+
+        });
     }
 };
