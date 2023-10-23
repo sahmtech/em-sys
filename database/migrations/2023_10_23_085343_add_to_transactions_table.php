@@ -14,11 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->enum('offer_type',['internal','external'])->nullable();
-            $table->enum('contract_form',['down_payment','monthly_cost'])->nullable();
-            $table->decimal('down_payment')->nullable();
-
-
+            
+                $table->enum('offer_type',['internal','external'])->nullable();
+                $table->enum('contract_form',['operating_fees','monthly_cost'])->nullable();
+                $table->decimal('down_payment')->nullable();
+    
+    
         });
     }
 
