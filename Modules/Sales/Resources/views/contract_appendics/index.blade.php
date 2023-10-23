@@ -18,7 +18,7 @@
                 
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('contract_filter', __('saless::lang.contract') . ':') !!}
+                        {!! Form::label('contract_filter', __('sales::lang.contract') . ':') !!}
                         {!! Form::select('contract_filter',$contracts,null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                     </div>
                 </div>

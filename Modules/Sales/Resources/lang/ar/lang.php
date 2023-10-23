@@ -133,9 +133,8 @@ return [
     'select_customer'=>'اختر عميل',
     'under_study'=>'قيد الدراسة',
     'contract_view'=>'عرض ملف العقد',
-    'offer_details'=>'تفاصيل عرض السعر'
-
-
+    'offer_details'=>'تفاصيل عرض السعر',
+    'save'=>'حفظ'
      
    
 ];
