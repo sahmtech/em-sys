@@ -70,7 +70,7 @@
                         </li>
                         {{-- {{ route('insurances') }} --}}
 
-                        @can('essentials.view_allowance_and_deduction')
+                        @can('essentials.crud_employee_features')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'featureIndex') class="active" @endif>
                             <a href="{{ route('featureIndex') }}">@lang('essentials::lang.features')</a>
                         </li>
