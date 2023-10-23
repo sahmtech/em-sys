@@ -29,15 +29,17 @@
                 <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
                     <option value="all">@lang('lang_v1.all')</option>
                     <option value="approved">@lang('sales::lang.approved')</option>
-                    <option value="transfered">@lang('sales::lang.transfered')</option>
-                    <option value="refused">@lang('sales::lang.refused')</option>
+                    <option value="transfared">@lang('sales::lang.transfared')</option>
+                    <option value="cancelled">@lang('sales::lang.cancelled')</option>
+                    <option value="under_study">@lang('sales::lang.under_study')</option>
+
 
                 </select>
             </div>
         </div>
 
-        
-        
+      
+
     @endcomponent
     @component('components.widget', ['class' => 'box-primary'])
         @slot('tool')
@@ -99,7 +101,19 @@ $(document).ready( function(){
             { data: 'mobile'}, 
             { data: 'transaction_date'},
             { data: 'final_total'},
-            { data: 'offer_type'},
+            {
+                            data: 'offer_type',
+                            render: function (data, type, row) {
+                                if (data === 'external') {
+                                    return  '@lang('sales::lang.external')';
+                                    
+                                } else if (data === 'internal') {
+                                    return  '@lang('sales::lang.internal')';
+                                } else {
+                                    return  '';
+                                }
+                            }
+            },
             {data: 'status'},
             {data: 'action'}
 
