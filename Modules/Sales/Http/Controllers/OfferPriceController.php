@@ -11,9 +11,7 @@ use App\Transaction;
 use App\User;
 use DB;
 use App\CustomerGroup;
-
 use App\Utils\BusinessUtil;
-use App\Utils\Util;
 use App\Utils\ContactUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
@@ -25,9 +23,7 @@ use App\Account;
 use App\Business;
 use App\InvoiceScheme;
 use App\TypesOfService;
-use Modules\Essentials\Entities\EssentialsCountry;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
+
 
 class OfferPriceController extends Controller
 {   
@@ -52,8 +48,6 @@ class OfferPriceController extends Controller
         $this->moduleUtil = $moduleUtil;
         $this->productUtil = $productUtil;
         $this->statuses = [
-           
-            
             'approved' => [
                 'name' => __('essentials::lang.approved'),
                 'class' => 'bg-green',
@@ -63,7 +57,11 @@ class OfferPriceController extends Controller
                 'class' => 'bg-red',
             ],
             'transfared' => [
-                'name' => __('essentials::lang.transfered'),
+                'name' => 'Transfared',
+                'class' => 'bg-blue',
+            ],
+            'under_study' => [
+                'name' =>'Under Study',
                 'class' => 'bg-yellow',
             ],
         ];
@@ -71,12 +69,12 @@ class OfferPriceController extends Controller
         $this->dummyPaymentLine = ['method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
         'is_return' => 0, 'transaction_no' => '', ];
 
-    $this->shipping_status_colors = [
-        'ordered' => 'bg-yellow',
-        'packed' => 'bg-info',
-        'shipped' => 'bg-navy',
-        'delivered' => 'bg-green',
-        'cancelled' => 'bg-red',
+        $this->shipping_status_colors = [
+            'ordered' => 'bg-yellow',
+            'packed' => 'bg-info',
+            'shipped' => 'bg-navy',
+            'delivered' => 'bg-green',
+            'cancelled' => 'bg-red',
     ];
        
     }
@@ -87,7 +85,10 @@ class OfferPriceController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
-        
+        $can_crud_offer_price= auth()->user()->can('essentials.crud_offer_prices');
+        if (! $can_crud_offer_price) {
+            abort(403, 'Unauthorized action.');
+        }
         if (request()->ajax()) {
         
             
@@ -117,6 +118,8 @@ class OfferPriceController extends Controller
             }
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
+                 //   error_log($this->statuses); // Debug the statuses array
+                    error_log($row->status);
                         $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
                         .$this->statuses[$row->status]['name'].'</span>';
                         $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
@@ -238,16 +241,11 @@ class OfferPriceController extends Controller
     {
         $sale_type = request()->get('sale_type', '');
 
-        if ($sale_type == 'sales_order') {
-            if (! auth()->user()->can('so.create')) {
+        if (! auth()->user()->can('create_offer_price')) {
                 abort(403, 'Unauthorized action.');
             }
-        } else {
-            if (! auth()->user()->can('direct_sell.access')) {
-                abort(403, 'Unauthorized action.');
-            }
-        }
-
+        
+        
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota
@@ -349,11 +347,12 @@ class OfferPriceController extends Controller
 
         $change_return = $this->dummyPaymentLine;
 
+        $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
         return view('sales::price_offer.create')
             ->with(compact(
                
                 'business_details',
-                'taxes',
+                'taxes','leads',
                 'walk_in_customer',
                 'business_locations',
                 'bl_attributes',
@@ -386,7 +385,7 @@ class OfferPriceController extends Controller
      * @return Renderable
      */
     public function store(Request $request)
-{
+   {   
     try {
         $business_id = $request->session()->get('user.business_id');
         $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'offer_type', 'status'];

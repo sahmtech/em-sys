@@ -1,5 +1,5 @@
-
 $(document).ready(function () {
+
         $('#quick_add_client_form').on('submit', function (e) {
             e.preventDefault();
            
@@ -12,15 +12,15 @@ $(document).ready(function () {
                 success: function (response) {
                     if (response.success) {
                         var submittedData = response.client;
-                        var newTotal= submittedData.monthly_cost * submittedData.number;
+                        var newTotal= submittedData.monthly_cost_for_one * submittedData.alert_quantity;
                         var newRow = '<tr class="product_row">' +
                             
-                            '<td class="text-center">' + submittedData.profession + '</td>' +
-                            '<td class="text-center">' + submittedData.specialization + '</td>' +
-                            '<td class="text-center">' + submittedData.nationality + '</td>' +
+                            '<td class="text-center">' + submittedData.profession_id + '</td>' +
+                            '<td class="text-center">' + submittedData.specialization_id + '</td>' +
+                            '<td class="text-center">' + submittedData.nationality_id + '</td>' +
                             '<td class="text-center">' + submittedData.gender + '</td>' +
-                            '<td class="text-center">' + submittedData.monthly_cost + '</td>' +
-                            '<td class="text-center">' + submittedData.number + '</td>' +
+                            '<td class="text-center">' + submittedData.monthly_cost_for_one + '</td>' +
+                            '<td class="text-center">' + submittedData.alert_quantity + '</td>' +
                        
                             '<td class="text-center total-column">' + newTotal + '</td>' +
                             '<td class="text-center"><i class="fas fa-times" aria-hidden="true"></i></td>' +
@@ -37,6 +37,7 @@ $(document).ready(function () {
                         $('.total_quantity').text(totalQuantity + 1);
 
                         updatePriceTotal();
+                        updateProductIds(submittedData.id);
 
                     } else {
                         // Handle errors if any
@@ -56,7 +57,13 @@ $(document).ready(function () {
             $('#price_total_input').val(totalPrice);
             $('.price_total').text(totalPrice);
         }
-    
        
-    });
+     
+
+});
+
+    
+        
+       
+
 

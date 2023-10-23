@@ -57,28 +57,10 @@
 				<div class="clearfix"></div>
 				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 					<div class="form-group">
-						{!! Form::label('contact_id', __('contact.customer') . ':*') !!}
-						<div class="input-group">
-							<span class="input-group-addon">
-								<i class="fa fa-user"></i>
-							</span>
-							<input type="hidden" id="default_customer_id" 
-							value="{{ $walk_in_customer['id']}}" >
-							<input type="hidden" id="default_customer_name" 
-							value="{{ $walk_in_customer['name']}}" >
-							<input type="hidden" id="default_customer_balance" value="{{ $walk_in_customer['balance'] ?? ''}}" >
-							<input type="hidden" id="default_customer_address" value="{{ $walk_in_customer['shipping_address'] ?? ''}}" >
-							@if(!empty($walk_in_customer['price_calculation_type']) && $walk_in_customer['price_calculation_type'] == 'selling_price_group')
-								<input type="hidden" id="default_selling_price_group" 
-							value="{{ $walk_in_customer['selling_price_group_id'] ?? ''}}" >
-							@endif
-							{!! Form::select('contact_id', 
-								[], null, ['class' => 'form-control mousetrap', 'id' => 'customer_id', 'placeholder' => 'Enter Customer name / phone', 'required']); !!}
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
-							</span>
+						<div class="form-group col-md-10">
+							{!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
+							{!! Form::select('contact_id',$leads, null, ['class' => 'form-control', 'placeholder' => __('sales::lang.select_customer'), 'required']) !!}
 						</div>
-						<small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong> <span></span></small>
 					</div>
 				</div>
 				<div class="col-md-4">
@@ -97,12 +79,14 @@
 						{!! Form::label('status', __('sale.status') . ':*') !!}
 						{!! Form::select('status',
 						  ['approved' => __('sales::lang.approved'), 
-						 'transfered' => __('sales::lang.transfered'),
-						 'refused' => __('sales::lang.cancelled')
+						 'transfared' => __('sales::lang.transfared'),
+						 'cancelled' => __('sales::lang.cancelled'),
+						 'under_study' => __('sales::lang.under_study'),
+
 						],  null, ['class' => 'form-control', 'required',
 						'placeholder' => __('sale.status')]); !!}
 					</div>
-			</div>
+				</div>
 				<div class="col-md-4">
 					<div class="form-group">
 					  {!! Form::label('down_payment', __('sales::lang.down_payment') . ':*') !!}
@@ -181,6 +165,7 @@
 				<div class="row col-sm-12 pos_product_div" style="min-height: 0">
 
 					<input type="hidden" name="sell_price_tax" id="sell_price_tax" value="{{$business_details->sell_price_tax}}">
+					<input type="hidden" id="productIds" name="productIds" value="">
 
 					<!-- Keeps count of product rows -->
 						<input type="hidden" id="product_row_count" 

@@ -2,6 +2,7 @@
 
 namespace Modules\Sales\Http\Controllers;
 
+use App\Product;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -56,29 +57,37 @@ class SalesTargetedClientController extends Controller
         $professions=EssentialsProfession::all()->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
         $allowance_types=EssentialsAllowanceAndDeduction::all()->pluck('description','id');
-        return view('sales::targetedClient.client_add')->with(compact('allowance_types','specializations','professions','nationalities'));
+        $randomId = random_int(0, 1000);
+        return view('sales::targetedClient.client_add')->with(compact('allowance_types','randomId','specializations','professions','nationalities'));
     }
+
+
     public function saveQuickClient(Request $request) {
         try {
-         
+       
             $business_id = $request->session()->get('user.business_id');
-            $form_fields = ['profession', 'specialization', 'nationality', 'gender','monthly_cost', 'number', 'salary'];
+            $input = $request->only(['profession', 'specialization', 'nationality', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
+            $input2['name'] = __('sales::lang.service');
+            $input2['type'] = 'service';
+            $input2['profession_id'] = $input['profession'];
+            $input2['specialization_id'] = $input['specialization'];
+            $input2['nationality_id'] = $input['nationality'];
+            $input2['gender'] = $input['gender'];
+            $input2['alert_quantity'] = $input['number'];
+            $input2['service_price'] = $input['essentials_salary'];
+            $input2['monthly_cost_for_one'] = $input['monthly_cost'];
+            $input2['business_id'] = $business_id;
+            $input2['created_by'] = $request->session()->get('user.id');
 
-            $client_details = $request->only($form_fields);
-            
-            $client_details['business_id'] = $business_id;
-            $client_details['created_by'] = $request->session()->get('user.id');
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true); 
                 foreach ($jsonData as $item) {
                     error_log($item['salaryType']);
-                    error_log($item['amount']);}}
-            DB::beginTransaction();
+                    error_log($item['amount']);
+                }
+            }
 
-            $client = salesTargetedClient::create($client_details);
-      
-            DB::commit();
-
+            $client = Product::create($input2);
             $output = ['success' => 1,
                 'msg' => __('sales::lang.added_success'),
                 'client' => $client

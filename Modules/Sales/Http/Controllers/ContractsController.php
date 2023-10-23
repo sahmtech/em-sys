@@ -2,6 +2,8 @@
 
 namespace Modules\Sales\Http\Controllers;
 
+use App\Contact;
+use App\Transaction;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -10,7 +12,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\Utils\ModuleUtil;
-
+use Modules\Sales\Entities\salesContract;
+use Modules\Sales\Entities\salesContractItem;
 
 class ContractsController extends Controller
 {
@@ -25,73 +28,75 @@ class ContractsController extends Controller
     {
        
         $business_id = request()->session()->get('user.business_id');
+       
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+     
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sale_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        
+        $can_crud_contracts= auth()->user()->can('essentials.crud_contract');
+        if (! $can_crud_contracts) {
+            abort(403, 'Unauthorized action.');
+        }
+        $contacts=Contact::all()->pluck('supplier_business_name','id');
+        $offer_prices = Transaction::where([['type','=','sell'],['status','=','approved']])->pluck('ref_no','id');
+        $items=salesContractItem::pluck('name_of_item','id');
         if (request()->ajax()) {
-            $employees_contracts = EssentialsEmployeesContract::
-                join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')->where('u.business_id', $business_id)
-                
-                ->select([
-                    'essentials_employees_contracts.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'essentials_employees_contracts.contract_number',
-                    'essentials_employees_contracts.contract_start_date',
-                    'essentials_employees_contracts.contract_end_date',
-                    'essentials_employees_contracts.contract_duration',
-                    'essentials_employees_contracts.probation_period',
-                    'essentials_employees_contracts.status',
-                    'essentials_employees_contracts.is_renewable',
-                    'essentials_employees_contracts.file_path',
+    
+                $contracts = salesContract::join('transactions','transactions.id','=','sales_contracts.offer_price_id')->
+                select(['sales_contracts.number_of_contract','sales_contracts.id','sales_contracts.offer_price_id','sales_contracts.start_date',
+                'sales_contracts.end_date','sales_contracts.status','sales_contracts.operation_order','sales_contracts.file',
+                'transactions.contract_form as contract_form','transactions.contact_id','transactions.id as tra']);
 
+                if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                    $contracts->where('sales_contracts.status', request()->input('status'));
+                }
+                if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
+                    $contracts->where('transactions.contract_form', request()->input('contract_form'));
+                }
+            return Datatables::of($contracts)
 
-                ]);
+          
+            ->editColumn('contact_id',function($row)use($contacts){
+                $item = $contacts[$row->contact_id]??'';
 
-
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
-            }
+                return $item;
+            })
+            ->addColumn('operation_order', function ($row) {
+                if ($row->operation_order == 0) {
+                    return '<button class="btn btn-xs btn-primary add-new-order-button">Add New Order</button>';
+                } else {
+                    return $row->operation_order;
+                }
+            })
             
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
-                    ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
-            }
-           
-            return Datatables::of($employees_contracts)
             ->addColumn(
                 'action',
-                 function ($row) {
-                    $html = ''; 
-                //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file_path.'\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
-                    '&nbsp;';
-                 
-
-                //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
-                    $html .= '<button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    
-                    return $html;
-                 }
-                )
+                function ($row) {
+                    $html = '';
+                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file.'\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
+                    $html .= '&nbsp;'; 
+                    $html .= '<button class="btn btn-xs btn-warning btn-modal" data-container=".view_modal" data-href="' . route('offer.view', ['id' => $row->tra]) . '"><i class="fa fa-eye"></i> ' . __('sales::lang.offer_price_view') . '</button>';
+                    $html .= '&nbsp;'; 
+                    $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
             
-                ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    return $html;
+                }
+            )
+            
+                
+            
+                ->filterColumn('number_of_contract', function ($query, $keyword) {
+                    $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                 })
-                ->removeColumn('file_path')
-                ->removeColumn('id')
-                ->rawColumns(['action'])
+            
+                ->rawColumns(['action','operation_order'])
                 ->make(true);
-        }
-                $query = User::where('business_id', $business_id);
-                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-                $users = $all_users->pluck('full_name', 'id');
+                }
+             
                
         
-        return view('essentials::employee_affairs.employees_contracts.index')->with(compact('users'));
+        return view('sales::contracts.index')->with(compact('offer_prices','items'));
     }
    
 
@@ -103,7 +108,28 @@ class ContractsController extends Controller
     {
         return view('sales::create');
     }
+   
 
+    public function getContractValues(Request $request)
+    {
+         $offerPrice = $request->input('offer_price');
+            $contact = Transaction::whereId($offerPrice)->first()->contact_id;
+           
+            $contract_follower = User::where('crm_contact_id', $contact)
+            ->where('contract_user_type', 'contract_follower')
+            ->get()[0];
+
+            
+            $contract_signer = User::where([['crm_contact_id', $contact],['contract_user_type','contract_signer']])->get()[0];
+        
+            return response()->json([
+                'contract_follower' => $contract_follower,
+                'contract_signer' => $contract_signer
+            ]);
+        }
+        
+    
+    
     /**
      * Store a newly created resource in storage.
      * @param Request $request
@@ -111,7 +137,71 @@ class ContractsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    //  return $request;
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+ 
+        try {
+            $input = $request->only(['offer_price', 'start_date', 'end_date','status','contract_items','is_renewable','notes','operation_order','file']);
+            
+            $input2['offer_price_id'] = $input['offer_price'];
+            $input2['start_date'] = $input['start_date'];
+            $input2['end_date'] = $input['end_date'];
+            $input2['status'] = $input['status'];
+            $input2['is_renwable'] = $input['is_renewable'];
+            $input2['notes'] = $input['notes'];
+
+            if ($request->has('operation_order')) {
+                $input2['operation_order'] = $input['operation_order'];
+            }
+            
+            $latestRecord = salesContract::orderBy('number_of_contract', 'desc')->first();
+            if ($latestRecord) {
+
+                $latestRefNo = $latestRecord->number_of_contract;
+                $numericPart = (int)substr($latestRefNo, 3); 
+                $numericPart++;
+                $input2['number_of_contract'] = 'CR' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+            } else {
+                
+                $input2['number_of_contract'] = 'CR0001';
+            }
+            $selectedItems = $request->input('contract_items');
+            $selectedItems = array_filter($selectedItems, function ($item) {
+                
+                return $item !== null;
+                
+            });
+            $input2['items_ids'] = json_encode(array_values($selectedItems));
+
+            if ($request->hasFile('file')) {
+            $file = request()->file('file');
+            $filePath = $file->store('/salesContracts');
+            
+            $input2['file'] = $filePath;
+            }
+        
+            salesContract::create($input2);
+ 
+            $output = ['success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+             
+            ];
+        }
+        $contacts=Contact::all()->pluck('supplier_business_name','id');
+        $offer_prices = Transaction::where([['type','=','sell'],['status','=','approved']])->pluck('ref_no','id');
+        $items=salesContractItem::pluck('name_of_item','id');
+       return redirect()->route('saleContracts')->with(compact('offer_prices','items'));
     }
 
     /**
@@ -119,10 +209,7 @@ class ContractsController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
-    {
-        return view('sales::show');
-    }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -134,6 +221,31 @@ class ContractsController extends Controller
         return view('sales::edit');
     }
 
+    public function show($id)
+    {
+       if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+        $offer = Transaction::findOrFail($id)
+        ->leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+        ->select(
+            'transactions.id as id',
+            'transactions.transaction_date',
+            'transactions.ref_no',
+            'transactions.final_total as final_total',
+            'transactions.is_direct_sale',
+            'contacts.name as name',
+            'contacts.mobile as mobile',
+            'transactions.status as status',
+            'transactions.offer_type as offer_type'
+        )
+        ->get()[0];
+    
+      
+        return view('sales::price_offer.show')->with(compact('offer'));
+    }
     /**
      * Update the specified resource in storage.
      * @param Request $request
@@ -152,6 +264,30 @@ class ContractsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            salesContract::where('id', $id)
+                        ->delete();
+
+            $output = ['success' => true,
+                'msg' => __('lang_v1.deleted_success'),
+            ];
+       
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+       
+       return $output;
+
     }
 }
