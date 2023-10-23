@@ -241,11 +241,9 @@ class OfferPriceController extends Controller
     {
         $sale_type = request()->get('sale_type', '');
 
-        if (! auth()->user()->can('create_offer_price')) {
-                abort(403, 'Unauthorized action.');
-            }
+      
         
-        $can_create_offer_price= auth()->user()->can('essentials.create_offer_price');
+        $can_create_offer_price= auth()->user()->can('sales.create_offer_price');
             if (! $can_create_offer_price) {
                 abort(403, 'Unauthorized action.');
             }
