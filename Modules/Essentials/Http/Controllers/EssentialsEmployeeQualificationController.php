@@ -28,6 +28,10 @@ class EssentialsEmployeeQualificationController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
+        $can_crud_employee_qualifications = auth()->user()->can('essentials.crud_employee_qualifications');
+        if (! $can_crud_employee_qualifications) {
+            abort(403, 'Unauthorized action.');
+        }
         $countries= $countries = EssentialsCountry::forDropdown();
         if (request()->ajax()) {
             $employees_qualifications = EssentialsEmployeesQualification::

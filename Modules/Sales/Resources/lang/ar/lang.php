@@ -19,8 +19,6 @@ return [
     'nationality'=>'الجنسية',
     'gender'=>'الجنس',
     'salary'=>'الراتب',
-    'food_allowance'=>'بدل الطعام',
-    'housing_allowance'=>'بدل السكن',
     'number_of_clients'=>'العدد',
     'monthly_cost'=>'التكلفة الشهرية',
     'total'=>'الاجمالي',
@@ -134,7 +132,17 @@ return [
     'under_study'=>'قيد الدراسة',
     'contract_view'=>'عرض ملف العقد',
     'offer_details'=>'تفاصيل عرض السعر',
-    'save'=>'حفظ'
-     
-   
+    'save'=>'حفظ',
+    'food_allowance'=>'بدل طعام',
+    'housing_allowance'=>'بدل سكن',
+    'transportation_allowance'=>'بدل نقل',     
+    'overtime_hours'=>'ساعات إضافية',     
+    'other_allowances'=>'بدلات أخرى',     
+    'additional_account_name'=>'اسم الحساب الإضافي',     
+    'create_offer_price'=>'إنشاء عرض سعر',     
+    'crud_offer_prices'=>'حذف/ إضافة/تعديل  عروض الأسعار',
+    'crud_contract'=>'حذف/ إضافة/تعديل  عقود المبيعات',
+    'crud_contract_items'=>'حذف/ إضافة/تعديل  بنود العقود',
+    'crud_contract_appendics'=>'حذف/ إضافة/تعديل ملاحق العقود',
+
 ];

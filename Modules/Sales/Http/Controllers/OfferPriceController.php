@@ -245,7 +245,10 @@ class OfferPriceController extends Controller
                 abort(403, 'Unauthorized action.');
             }
         
-        
+        $can_create_offer_price= auth()->user()->can('essentials.create_offer_price');
+            if (! $can_create_offer_price) {
+                abort(403, 'Unauthorized action.');
+            }
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota

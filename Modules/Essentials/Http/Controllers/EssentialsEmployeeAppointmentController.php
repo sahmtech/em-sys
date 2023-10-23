@@ -31,7 +31,11 @@ class EssentialsEmployeeAppointmentController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-       // $categories=Category::all()->pluck('name','id');
+        
+        $can_crud_employee_appointments = auth()->user()->can('essentials.crud_employee_appointments');
+        if (! $can_crud_employee_appointments) {
+            abort(403, 'Unauthorized action.');
+        }
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $business_locations=BusinessLocation::all()->pluck('name','id');
         if (request()->ajax()) {
