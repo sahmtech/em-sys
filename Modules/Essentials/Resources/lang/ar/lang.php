@@ -656,5 +656,7 @@ return[
 'crud_employee_contracts'=>'إضافة/تعديل/حذف عقود الموظفين',
 'crud_employee_qualifications'=>'إضافة/تعديل/حذف مؤهلات الموظفين',
 'crud_employee_features'=>'إضافة/تعديل/حذف مزايا الموظفين',
+'view_user_travel_categorie'=>'إضافة/تعديل/حذف تذاكر سفر الموظفين',
+
 
 ];

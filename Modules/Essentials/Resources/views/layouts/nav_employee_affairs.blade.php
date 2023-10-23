@@ -31,43 +31,50 @@
                         </li>
                     @endif
 
-                        <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'appointment') class="active" @endif>
+                    @can('essentials.crud_employee_appointments')
+                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'appointment') class="active" @endif>
                             <a href="{{ route('appointments') }}">@lang('essentials::lang.appointment')</a>
                         </li>
+                    @endcan
+                        
                        
 
-                    
+                    @can('essentials.crud_employee_work_adminitions')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'admissions_to_work') class="active" @endif>
                             <a href="{{ route('admissionToWork') }}">@lang('essentials::lang.admissions_to_work')</a>
                         </li>
-                        
+                    @endcan  
 
+                    @can('essentials.crud_employee_contracts')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'employee_contracts') class="active" @endif>
                             <a href="{{ route('employeeContracts') }}">@lang('essentials::lang.employee_contracts')</a>
                         </li>
+                        @endcan  
             
-
+                        @can('essentials.crud_employee_qualifications')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'qualifications') class="active" @endif>
                             <a href="{{ route('qualifications') }}">@lang('essentials::lang.qualifications')</a>
                         </li>
-                
+                        @endcan  
                         
-                        
+                       
                     @if(auth()->user()->can('essentials.crud_official_documents'))
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'official_documents') class="active" @endif>
                             <a href="{{ route('official_documents') }}">@lang('essentials::lang.official_documents')</a>
                         </li>
                     @endif
+                    @endcan  
 
                         <li @if(request()->segment(2) == 'health_insurance') class="active" @endif>
                             <a href="">@lang('essentials::lang.health_insurance')</a>
                         </li>
                         {{-- {{ route('insurances') }} --}}
-                    
+
+                        @can('essentials.crud_employee_features')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'featureIndex') class="active" @endif>
                             <a href="{{ route('featureIndex') }}">@lang('essentials::lang.features')</a>
                         </li>
-
+                        @endcan  
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'reports') class="active" @endif>
                             <a href="">@lang('essentials::lang.reports')</a>
                         </li>
