@@ -111,13 +111,13 @@ class AccountingUtil extends Util
     }
 
 
-    public static function next_GLC($parent_account_id)
+    public static function next_GLC($parent_account_id, $business_id)
     {
 
 
 
         // parent_account_id
-        $last_parent_account = AccountingAccount::where('parent_account_id', '=', $parent_account_id)->latest()->first();
+        $last_parent_account = AccountingAccount::where([['parent_account_id', '=', $parent_account_id], ['business_id', '=', $business_id]])->latest()->first();
 
 
         if ($last_parent_account) {
