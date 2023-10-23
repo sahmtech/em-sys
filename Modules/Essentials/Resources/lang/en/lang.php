@@ -612,6 +612,10 @@ return [
 'crud_employee_qualifications' => 'Add/Modify/Delete Employee Qualifications',
 'crud_employee_features' => 'Add/Modify/Delete Employee Features',
 'view_user_travel_categorie' => 'Add/Modify/Delete Employee Travel Ticket Categories',
+'insurance_contracts'=>'Insurace Contracts',
+'facilities_management'=>'facilities Management',
+'qualifications'=>'Qualifications',
+'reports'=>'Reports'
 ];
 
 

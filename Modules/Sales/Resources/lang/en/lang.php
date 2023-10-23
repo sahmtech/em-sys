@@ -141,4 +141,6 @@ return [
     'crud_contract' => 'Delete/Add/Modify Sales Contracts',
     'crud_contract_items' => 'Delete/Add/Modify Contract Items',
     'crud_contract_appendics' => 'Delete/Add/Modify Contract Appendices',
+    'contract_items'=>'Contract Items'
+    
 ];
