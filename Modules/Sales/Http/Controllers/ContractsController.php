@@ -31,7 +31,7 @@ class ContractsController extends Controller
        
 
      
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sale_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
         $can_crud_contracts= auth()->user()->can('sales.crud_contract');

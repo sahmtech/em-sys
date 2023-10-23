@@ -81,9 +81,9 @@ class OfferPriceController extends Controller
     
     public function index()
     {
-        if (! auth()->user()->can('quotation.view_all') && ! auth()->user()->can('quotation.view_own')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (! auth()->user()->can('quotation.view_all') && ! auth()->user()->can('quotation.view_own')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
         $business_id = request()->session()->get('user.business_id');
         $can_crud_offer_price= auth()->user()->can('sales.crud_offer_prices');
         if (! $can_crud_offer_price) {
