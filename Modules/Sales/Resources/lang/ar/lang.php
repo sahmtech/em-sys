@@ -96,7 +96,7 @@ return [
     'notallowlogin'=>'المستخدم لايسمح له بتسجيل الدخول',
     'sale_operation_orders'=>'طلب تشغيل',
     'add_sale_operation'=>'إضافة طلب تشغيل',
-    'all_sales_operations'=>'جميع طلبات التغشيل',
+    'all_sales_operations'=>'جميع طلبات التشغيل',
     'service'=>'خدمة',
     'contract_itmes'=>'بنود العقود',
     'number_of_item'=>'رقم البند',
@@ -134,7 +134,30 @@ return [
     'under_study'=>'قيد الدراسة',
     'contract_view'=>'عرض ملف العقد',
     'offer_details'=>'تفاصيل عرض السعر',
-    'save'=>'حفظ'
+    'save'=>'حفظ',
+    'operation_order_number'=>'رقم طلب التشغيل',
+    'example_operation_order_number'=>'مثال: OPO1111 ',
+    'create_sale_operation'=>'إضافة طلب تشغيل',
+    'contact'=>'رقم العقد',
+    'select_contacts'=>'اختر العقد',
+    'Industry'=>'النشاط',
+    'operation_order_type'=>'نوع أمر التشغيل',
+    'Internal'=>'داخلي',
+    'external'=>'خارجي',
+    'Interview'=>'المقابلة',
+    'Company'=>'شركة ',
+    'Client'=>'عميل',
+    'Delivery'=>'مكان التسليم',
+    'Note'=>'الملاحظات',
+    'Status'=>'الحالة',
+    'agency_id'=>'شركة الاستقدام',
+    'select_agency'=>'اختار شركة الاستقدام',
+    'operationOrder_added_success'=>'تم إضافة طلب التشغيل بنجاح',
+    'Location'=>'الموقع',
+    'show_operation'=>'عرض أمر التشغيل',
+    'order_operation_details'=>'تفاصيل طلب التشغيل'
+
+   
      
    
 ];

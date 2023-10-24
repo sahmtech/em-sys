@@ -116,6 +116,7 @@ class OfferPriceController extends Controller
             if (!empty(request()->input('offer_type')) && request()->input('offer_type') !== 'all') {
                 $sells->where('transactions.offer_type', request()->input('offer_type'));
             }
+            
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
                  //   error_log($this->statuses); // Debug the statuses array
@@ -348,11 +349,13 @@ class OfferPriceController extends Controller
         $change_return = $this->dummyPaymentLine;
 
         $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
+       
         return view('sales::price_offer.create')
             ->with(compact(
                
                 'business_details',
-                'taxes','leads',
+                'taxes',
+                'leads',
                 'walk_in_customer',
                 'business_locations',
                 'bl_attributes',

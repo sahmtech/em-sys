@@ -224,9 +224,10 @@ class ClientsController extends Controller
                 } 
             }
             else
-            {$contract_signer_input['type']='user'; 
+            {
+                $contract_signer_input['type']='user'; 
             }
-            $contract_signer_input['contract_user_type']='contract_signer';
+            $contract_signer_input['contact_user_type']='contact_signer';
             $contract_signer = User::create($contract_signer_input);
 
 
@@ -248,7 +249,7 @@ class ClientsController extends Controller
             }
             else
             {$contract_follower_input['type']="user"; }
-            $contract_follower_input['contract_user_type']='contract_follower';
+            $contract_follower_input['contact_user_type']='contract_follower';
             $contract_follower = User::create($contract_follower_input);
 
      
@@ -324,13 +325,13 @@ class ClientsController extends Controller
 
            $contactSigners = DB::table('users')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
-           ->where('users.contract_user_type', 'contract_signer')
+           ->where('users.contact_user_type', 'contact_signer')
            ->select('users.*')
            ->get();
 
            $contactFollower = DB::table('users')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
-           ->where('users.contract_user_type', 'contract_follower')
+           ->where('users.contact_user_type', 'contract_follower')
            ->select('users.*')
            ->get();
        
@@ -374,13 +375,13 @@ class ClientsController extends Controller
            $contactSigners = DB::table('users')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
            ->where('contacts.id', $id)
-           ->where('users.contract_user_type', 'contract_signer')
+           ->where('users.contact_user_type', 'contact_signer')
            ->select('users.*')
            ->get();
           //dd( $contactSigners[0]->allow_login);
            $contactFollower = DB::table('users')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
-           ->where('users.contract_user_type', 'contract_follower')
+           ->where('users.contact_user_type', 'contract_follower')
            ->where('contacts.id', $id)
            ->select('users.*')
            ->get();
@@ -461,7 +462,7 @@ class ClientsController extends Controller
             else
             {$contract_signer_input['type']='user'; 
             }
-            $contract_signer_input['contract_user_type']='contract_signer';
+            $contract_signer_input['contact_user_type']='contact_signer';
 
             $contract_signer_user = User::where('crm_contact_id',$contactId);
             $contract_signer = $contract_signer_user->update($contract_signer_input);
@@ -485,7 +486,7 @@ class ClientsController extends Controller
             }
             else
             {$contract_follower_input['type']="user"; }
-            $contract_follower_input['contract_user_type']='contract_follower';
+            $contract_follower_input['contact_user_type']='contract_follower';
             $contract_follower_user = User::where('crm_contact_id',$contactId);
             $contract_follower = $contract_follower_user->update($contract_follower_input);
 

@@ -110,7 +110,10 @@ class EssentialsEmployeeImportController extends Controller
                         // break;
                     }
                     $emp_array['mid_name'] = $value[1];
-                    if (!empty($value[2])) {
+                   
+                   
+                    if (!empty($value[2])) 
+                    {
                         $emp_array['last_name'] = $value[2];
                     } else {
                         // $is_valid = false;
@@ -124,9 +127,9 @@ class EssentialsEmployeeImportController extends Controller
                     }
                     else
                     {
-                         $is_valid = false;
-                        $error_msg = "Mobile number is required in row no. $row_no";
-                        break;
+                        //  $is_valid = false;
+                        // $error_msg = "Mobile number is required in row no. $row_no";
+                        // break;
                     }
                    
                     $emp_array['email'] = $value[4];
@@ -190,7 +193,6 @@ class EssentialsEmployeeImportController extends Controller
                   // dd( $emp_array['bank_details']);
                     $emp_array['location_id'] = $value[20];
                     $emp_array['essentials_department_id'] = $value[21];
-
                     $emp_array['job_title']=$value[22];
                
 
@@ -248,8 +250,10 @@ class EssentialsEmployeeImportController extends Controller
                     $contract_array['is_renewable'] = $value[28];
                     $contract_array['status'] = $value[29];
                   
+                  
+
                     $emp_array['essentials_salary'] = $value[30];
-                   
+                   // dd($value[30]);
                     $allowancename=$value[31];
                     $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
                     if ($allowancetype) {
