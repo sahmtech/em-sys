@@ -347,8 +347,11 @@ class OfferPriceController extends Controller
 
         $change_return = $this->dummyPaymentLine;
 
-        $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
-       
+    //    $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
+        $leads = Contact::whereIn('type', ['lead', 'customer'])
+        ->where('business_id', $business_id)
+        ->pluck('supplier_business_name', 'id');
+    
         return view('sales::price_offer.create')
             ->with(compact(
                
