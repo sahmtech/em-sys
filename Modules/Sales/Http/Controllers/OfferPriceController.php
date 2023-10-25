@@ -386,7 +386,7 @@ class OfferPriceController extends Controller
      */
     public function store(Request $request)
     {  
-        return $request->productData;
+      return $request->productData;
     try {
         $business_id = $request->session()->get('user.business_id');
         $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
@@ -412,29 +412,23 @@ class OfferPriceController extends Controller
 
        $client = Transaction::create($offer_details);
    
-        $productIds = json_decode($request->productIds);
-        $productData = json_decode($request->productData);
+       $productIds = json_decode($request->input('productIds'));
+       $productData = json_decode($request->input('productData'));
       
         if (count($productIds) === count($productData)) {
-            foreach ($productIds as $key => $productId) {
-              
-                $data = json_decode($productData[$key]);
-                $decodedData = [];
-                foreach ($data as $item) {
-                    error_log($item);
-                    $decodedData[] = [
-                        'salaryType' => $item->salaryType,
-                        'amount' => $item->amount,
-                    ];
-                }
-                return json_encode($decodedData);
-                $transactionSellLine = new TransactionSellLine();
-                $transactionSellLine->additional_allwances = json_encode($decodedData);
+            foreach ($productIds as $productId) {
+                $data = array_pop($productData);
+           
+                $transactionSellLine = new TransactionSellLine;
+                $transactionSellLine->additional_allwances =$data;
                 $transactionSellLine->product_id= $productId;
                 $transactionSellLine->transaction_id= $client->id;
-        
+                
+             
                 $transactionSellLine->save();
-            }}
+            }
+          ;
+            };
      
         $output = [
             'success' => 1,

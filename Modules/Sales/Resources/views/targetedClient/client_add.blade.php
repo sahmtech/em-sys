@@ -1,6 +1,6 @@
 <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      {!! Form::open([ 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
+  <div class="modal-content">
+    {!! Form::open([ 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
       <input type="hidden" name="randomId" value="{{ $randomId }}">
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -97,7 +97,7 @@
          
         
       </div>  
-    <div class="table-responsive">
+      <div class="table-responsive">
           <table class="table table-bordered add-product-price-table table">
               <tr> 
                   <th>@lang('sales::lang.number_of_clients')</th>
@@ -132,65 +132,46 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
       </div>
   
-      {!! Form::close() !!}
+    {!! Form::close() !!}
   
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 
 <script src="{{ asset('js/client.js') }}"></script>
  
 <script>
-    $(document).ready(function() {
-  var selectedData = [];
+   
 
-  function addRow() {
-      var newRow = $('#salary-table-body tr:first').clone();
-      newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
-      newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
-
-      $('#salary-table-body').append(newRow);
-  }
-
-  $('#add-row').click(function() {
-      addRow();
-  });
-
-  const submitButton = document.getElementById('submit_quick_client');
-  const form = document.getElementById('quick_add_client_form');
-  // Add a click event listener to the button
-  submitButton.addEventListener('click', function(event) {
+  $(document).ready(function() {
+    var selectedData = [];
+    const form = document.getElementById('quick_add_client_form');
+    $('#submit_quick_client').on('click', function(event) {
+  
     event.preventDefault();
     updateSelectedData();
     const formData = new FormData(form);
-
-  // Make an AJAX request
-  fetch('/sale/saveQuickClient', {
-    method: 'POST',
-    body: formData,
-  })
-    .then(response => response.json()) // You can adjust the response type as needed
-    .then(data => {
-        submittedDataFunc(data);
-        $('.quick_add_client_modal').modal('hide');
-        $('#quick_add_client_form')[0].reset();
-      console.log(data);
-    })
-    .catch(error => {
-      // Handle any errors that occurred during the AJAX request
-      console.error(error);
-    });
-  });
-
-//   $(document).on('change', 'select[name="salary_type[]"]', function() {
-//       updateSelectedData();
-//   });
+    formData.append('selectedData', JSON.stringify(selectedData));
+   
+      fetch('/sale/saveQuickClient', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(data => {
+            submittedDataFunc(data);
+            $('.quick_add_client_modal').modal('hide');
+            $('#quick_add_client_form')[0].reset();
+        
+              
+          console.log(data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      });
 
 
-//   $(document).on('input', 'input[name="amount[]"]', function() {
-//       updateSelectedData();
-//   });
-
-  function updateSelectedData() {
+      function updateSelectedData() {
       selectedData = [];
 
       $('select[name="salary_type[]"]').each(function(index) {
@@ -203,11 +184,33 @@
       //console.log(selectedData);
       var inputElement = document.getElementById('selectedData');
       inputElement.value = JSON.stringify(selectedData);
-      console.log("****** client_add **********");
-        console.log(inputElement.value);
-        console.log("****************");
-     //   document.getElementById('quick_add_client_form').submit();
+
   }
+//   $(document).on('change', 'select[name="salary_type[]"]', function() {
+//       updateSelectedData();
+//   });
+
+
+//   $(document).on('input', 'input[name="amount[]"]', function() {
+//       updateSelectedData();
+//   });
+
+
+  function addRow() {
+      var newRow = $('#salary-table-body tr:first').clone();
+      newRow.find('select[name="salary_type[]"]').attr('name', 'salary_type[]');
+      newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
+
+      $('#salary-table-body').append(newRow);
+     
+  }
+
+  $('#add-row').click(function() {
+      addRow(); 
+    //  updateSelectedData();
+  });
+
+
   $(document).on('change', 'select[name="type[]"]', function() {
         var selectedOption = $(this).val();
         var amountInput = $(this).closest('tr').find('input[name="amount[]"]');
@@ -223,7 +226,7 @@
         }
 
      }
-    );
+  );
 
  
 
@@ -239,7 +242,7 @@
 
         var monthlyCost = essentialsSalary + totalAmount;
         $('#monthly_cost').val(monthlyCost);
-    }
+  }
 
     // Update the monthly_cost field initially
     updateMonthlyCost();
@@ -259,10 +262,6 @@
     });
 
 
-
-
-
-  
   const numberInput = document.getElementById('number');
   const monthlyCostInput = document.getElementById('monthly_cost');
   const totalField = document.getElementById('total');
@@ -277,22 +276,7 @@
       totalField.value = (parseFloat(numberInput.value) || 0) * (parseFloat(monthlyCostInput.value) || 0);
   }
 });
-$('#yourModal').on('hide.bs.modal', function () {
-     // Remove event listeners specific to the modal
-     $(document).off('change', 'select[name="type[]"]');
-    $(document).off('input', 'input[name="amount[]"]');
-    $(document).off('change', 'select[name="salary_type[]"]');
 
-    // Reset specific variables if needed
-    selectedData = [];
-
-    // Clear input fields or reset to their initial values
-    $('#selectedData').val('');
-    // You may want to reset other form elements or variables as needed
-
-    // Optionally, remove added rows in the table
-    $('#salary-table-body tr').not(':first').remove();
-});
 
     
 </script>
