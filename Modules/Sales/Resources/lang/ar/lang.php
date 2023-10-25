@@ -155,7 +155,11 @@ return [
     'operationOrder_added_success'=>'تم إضافة طلب التشغيل بنجاح',
     'Location'=>'الموقع',
     'show_operation'=>'عرض أمر التشغيل',
-    'order_operation_details'=>'تفاصيل طلب التشغيل'
+    'order_operation_details'=>'تفاصيل طلب التشغيل',
+    'product_name'=>'اسم الصنف ',
+    'product_type'=>'نوع الصنف ',
+    'service_price'=>'سعر الخدمة ',
+    'monthly_cost_for_one'=>'التكلفة شهريا',
 
    
      
