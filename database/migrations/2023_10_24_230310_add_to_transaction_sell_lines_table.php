@@ -13,13 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            
-                $table->enum('offer_type',['internal','external'])->nullable();
-                $table->enum('contract_form',['operating_fees','monthly_cost'])->nullable();
-                $table->decimal('down_payment')->nullable();
-    
-    
+        Schema::table('transaction_sell_lines', function (Blueprint $table) {
+            $table->bigInteger('variation_id')->unsigned()->nullable()->change();
         });
     }
 
@@ -30,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('transactions', function (Blueprint $table) {
+        Schema::table('transaction_sell_lines', function (Blueprint $table) {
             //
         });
     }

@@ -1047,6 +1047,7 @@ $(document).ready(function() {
     sell_form_validator = sell_form.validate();
 
     $('button#submit-sell, button#save-and-print').click(function(e) {
+       
         //Check if product is present or not.
         if ($('table#pos_table tbody').find('.product_row').length <= 0) {
             toastr.warning(LANG.no_products_added);

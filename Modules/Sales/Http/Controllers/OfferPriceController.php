@@ -22,6 +22,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Account;
 use App\Business;
 use App\InvoiceScheme;
+use App\TransactionSellLine;
 use App\TypesOfService;
 
 
@@ -104,7 +105,7 @@ class OfferPriceController extends Controller
                     'contacts.name',
                     'contacts.mobile',
                     'transactions.status as status',
-                    'transactions.offer_type',
+                    
 
                 );
 
@@ -113,9 +114,7 @@ class OfferPriceController extends Controller
                 $sells->where('status', request()->input('status'));
             }
 
-            if (!empty(request()->input('offer_type')) && request()->input('offer_type') !== 'all') {
-                $sells->where('transactions.offer_type', request()->input('offer_type'));
-            }
+          
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
                  //   error_log($this->statuses); // Debug the statuses array
@@ -386,17 +385,16 @@ class OfferPriceController extends Controller
      * @return Renderable
      */
     public function store(Request $request)
-   {   
+    {  
+        return $request->productData;
     try {
         $business_id = $request->session()->get('user.business_id');
-        $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'offer_type', 'status'];
+        $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
 
         $offer_details = $request->only($offer);
         $offer_details['business_id'] = $business_id;
         $offer_details['created_by'] = $request->session()->get('user.id');
         $offer_details['type'] = 'sell';
-
-       
         $latestRecord = Transaction::where('type', 'sell')->orderBy('ref_no', 'desc')->first();
 
         
@@ -410,16 +408,38 @@ class OfferPriceController extends Controller
             $offer_details['ref_no'] = 'QN0003000';
         }
 
-        DB::beginTransaction();
 
-        $client = Transaction::create($offer_details);
 
-        DB::commit();
-
+       $client = Transaction::create($offer_details);
+   
+        $productIds = json_decode($request->productIds);
+        $productData = json_decode($request->productData);
+      
+        if (count($productIds) === count($productData)) {
+            foreach ($productIds as $key => $productId) {
+              
+                $data = json_decode($productData[$key]);
+                $decodedData = [];
+                foreach ($data as $item) {
+                    error_log($item);
+                    $decodedData[] = [
+                        'salaryType' => $item->salaryType,
+                        'amount' => $item->amount,
+                    ];
+                }
+                return json_encode($decodedData);
+                $transactionSellLine = new TransactionSellLine();
+                $transactionSellLine->additional_allwances = json_encode($decodedData);
+                $transactionSellLine->product_id= $productId;
+                $transactionSellLine->transaction_id= $client->id;
+        
+                $transactionSellLine->save();
+            }}
+     
         $output = [
             'success' => 1,
             'msg' => __('sales::lang.client_added_success'),
-            'client' => $client->id
+            'client' => $client
         ];
     } catch (\Exception $e) {
         DB::rollBack();

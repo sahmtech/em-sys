@@ -110,23 +110,23 @@ class ContractsController extends Controller
     }
    
 
-    public function getContractValues(Request $request)
-    {
-         $offerPrice = $request->input('offer_price');
-            $contact = Transaction::whereId($offerPrice)->first()->contact_id;
+    // public function getContractValues(Request $request)
+    // {
+    //      $offerPrice = $request->input('offer_price');
+    //         $contact = Transaction::whereId($offerPrice)->first()->contact_id;
            
-            $contract_follower = User::where('crm_contact_id', $contact)
-            ->where('contract_user_type', 'contract_follower')
-            ->get()[0];
+    //         $contract_follower = User::where('crm_contact_id', $contact)
+    //         ->where('contract_user_type', 'contract_follower')
+    //         ->get()[0];
 
             
-            $contract_signer = User::where([['crm_contact_id', $contact],['contract_user_type','contract_signer']])->get()[0];
+    //         $contract_signer = User::where([['crm_contact_id', $contact],['contract_user_type','contract_signer']])->get()[0];
         
-            return response()->json([
-                'contract_follower' => $contract_follower,
-                'contract_signer' => $contract_signer
-            ]);
-        }
+    //         return response()->json([
+    //             'contract_follower' => $contract_follower,
+    //             'contract_signer' => $contract_signer
+    //         ]);
+    // }
         
     
     
@@ -239,7 +239,7 @@ class ContractsController extends Controller
             'contacts.name as name',
             'contacts.mobile as mobile',
             'transactions.status as status',
-            'transactions.offer_type as offer_type'
+
         )
         ->get()[0];
     

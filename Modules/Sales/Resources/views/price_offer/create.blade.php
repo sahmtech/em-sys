@@ -68,8 +68,8 @@
 					<div class="form-group">
 					  {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
 					  {!! Form::select('contract_form',
-					 	 ['operating_fees' => __('sales::lang.operating_fees'), 
-					 	'monthly_cost' => __('sales::lang.monthly_cost')],
+					 	 ['first' => __('sales::lang.first_choice'), 
+					 	'seconde' => __('sales::lang.second_choice')],
 						null,
 						['class' => 'form-control', 'required',
 						'placeholder' => __('sales::lang.contract_form')]); !!}
@@ -96,15 +96,7 @@
 				   </div>
 				</div>
 				
-				<div class="col-md-4">
-					<div class="form-group">
-					  {!! Form::label('offer_type', __('sales::lang.offer_type') . ':*') !!}
-					  {!! Form::select('offer_type',
-					 	 ['external' => __('sales::lang.external'), 
-					 	'internal' => __('sales::lang.internal')],  null, ['class' => 'form-control', 'required',
-						'placeholder' => __('sales::lang.offer_type')]); !!}
-				   </div>
-				</div>
+			
 				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 					<div class="form-group">
 						{!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
@@ -166,14 +158,14 @@
 				<div class="row col-sm-12 pos_product_div" style="min-height: 0">
 
 					<input type="hidden" name="sell_price_tax" id="sell_price_tax" value="{{$business_details->sell_price_tax}}">
-					<input type="hidden" id="productIds" name="productIds" value="">
+				
 
 					<!-- Keeps count of product rows -->
 						<input type="hidden" id="product_row_count" 
 							value="0">
 				
 					<div class="table-responsive">
-					<table class="table table-condensed table-bordered table-striped table-responsive" id="pos_table">
+					<table class="table table-condensed table-bordered table-striped table-responsive myTable" id="pos_table">
 						<thead>
 							<tr>
 								<th class="text-center">	
@@ -222,6 +214,10 @@
 					</div>
 				</div>
 				<input type="hidden" name="final_total" id="price_total_input" value="0">
+				<input type="hidden" id="productData" name="productData" value="">
+				<input type="hidden" id="productIds" name="productIds" value="">
+
+
 
 			@endcomponent
 		
@@ -476,5 +472,6 @@
 			}
 
     	});
+		
     </script>
 @endsection

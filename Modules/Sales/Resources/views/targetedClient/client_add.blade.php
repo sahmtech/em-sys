@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      {!! Form::open(['url' => action([\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'saveQuickClient']), 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
-  
+      {!! Form::open([ 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
+      <input type="hidden" name="randomId" value="{{ $randomId }}">
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="modalTitle">@lang( 'sales::lang.add_new_client' )</h4>
@@ -52,39 +52,50 @@
                     </div>
                 </div>
             </div>
-        
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>{{ __('essentials::lang.extra_salary_type') }}</th>
-                        <th>{{ __('essentials::lang.type') }}</th>
-                        <th>{{ __('essentials::lang.amount') }}</th>
-                    </tr>
-                </thead>
-                <tbody id="salary-table-body">
-                    <tr>
-                        <td>
-                            {!! Form::select('salary_type[]', $allowance_types, null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+            <input type="hidden" id="selectedData" name="selectedData" value="">
+            <br>
+            <div class="col-md-12">
+            <h4>نفقات اضافية</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ __('sales::lang.additional_account_name') }}</th>
+                            <th>{{ __('essentials::lang.type') }}</th>
+                            <th>{{ __('essentials::lang.amount') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salary-table-body">
+                        <tr>
+                            <td>
+                                {!! Form::select('salary_type[]',
+                                [
+                                'بدل سكن' => __('sales::lang.housing_allowance'),
+                                'بدل طعام' => __('sales::lang.food_allowance'),
+                                'بدل مواصلات' => __('sales::lang.transportation_allowance'),
+                                'ساعات إضافية' => __('sales::lang.overtime_hours'),
+                                'بدلات أخرى' => __('sales::lang.other_allowances')
+                                ],
+                                null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+                            </td>
+                            <td>
+                            {!! Form::select('type[]', ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.type'), 'id' => 'typeDropdown']); !!}
                         </td>
                         <td>
-                          {!! Form::select('type[]', ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')], null, ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.type'), 'id' => 'typeDropdown']); !!}
-                      </td>
-                      <td>
-                          {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount'), 'id' => 'amountInput']); !!}
-                      </td>
-                      
-                    </tr>
-                </tbody>
-            </table>
+                            {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount'), 'id' => 'amountInput']); !!}
+                        </td>
+                        
+                        </tr>
+                    </tbody>
+                </table>
             
-            <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
-        
+                <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
+            </div>
             
             
         </div>
-       
+        
          
-        <input type="hidden" id="selectedData" name="selectedData" value="">
+        
       </div>  
     <div class="table-responsive">
           <table class="table table-bordered add-product-price-table table">
@@ -129,6 +140,7 @@
 <script src="{{ asset('js/client.js') }}"></script>
  
 <script>
+    $(document).ready(function() {
   var selectedData = [];
 
   function addRow() {
@@ -143,13 +155,40 @@
       addRow();
   });
 
-  $(document).on('change', 'select[name="salary_type[]"]', function() {
-      updateSelectedData();
+  const submitButton = document.getElementById('submit_quick_client');
+  const form = document.getElementById('quick_add_client_form');
+  // Add a click event listener to the button
+  submitButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    updateSelectedData();
+    const formData = new FormData(form);
+
+  // Make an AJAX request
+  fetch('/sale/saveQuickClient', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json()) // You can adjust the response type as needed
+    .then(data => {
+        submittedDataFunc(data);
+        $('.quick_add_client_modal').modal('hide');
+        $('#quick_add_client_form')[0].reset();
+      console.log(data);
+    })
+    .catch(error => {
+      // Handle any errors that occurred during the AJAX request
+      console.error(error);
+    });
   });
 
-  $(document).on('input', 'input[name="amount[]"]', function() {
-      updateSelectedData();
-  });
+//   $(document).on('change', 'select[name="salary_type[]"]', function() {
+//       updateSelectedData();
+//   });
+
+
+//   $(document).on('input', 'input[name="amount[]"]', function() {
+//       updateSelectedData();
+//   });
 
   function updateSelectedData() {
       selectedData = [];
@@ -157,12 +196,17 @@
       $('select[name="salary_type[]"]').each(function(index) {
           var salaryType = $(this).val();
           var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
+          
           selectedData.push({ salaryType: salaryType, amount: amount });
       });
 
-      console.log(selectedData);
+      //console.log(selectedData);
       var inputElement = document.getElementById('selectedData');
       inputElement.value = JSON.stringify(selectedData);
+      console.log("****** client_add **********");
+        console.log(inputElement.value);
+        console.log("****************");
+     //   document.getElementById('quick_add_client_form').submit();
   }
   $(document).on('change', 'select[name="type[]"]', function() {
         var selectedOption = $(this).val();
@@ -171,38 +215,17 @@
         if (selectedOption === 'insured_by_the_other') {
             amountInput.prop('disabled', true).val('0');
             updateMonthlyCost();
-            
+            updateTotal();
+           // updateSelectedData();
         } else {
             amountInput.prop('disabled', false);
+          //  updateSelectedData();
         }
 
-        updateSelectedData();
-    });
+     }
+    );
 
-  function updateAmount(element) {
-        var salaryType = $(element).val();
-        console.log(salaryType);
-       
-        $.ajax({
-            url: '/hrm/get-amount/' + salaryType,
-            type: 'GET',
-            success: function(response) {
-     
-                var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
-                amountInput.val(response.amount);
-                updateSelectedData();
-                updateMonthlyCost();
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
-        });
-    }
-
-    // Update amount based on salary type when the dropdown changes
-    $(document).on('change', 'select[name="salary_type[]"]', function() {
-        updateAmount(this);
-    });
+ 
 
     // Function to calculate the sum of essentials_salary and amount fields
     function updateMonthlyCost() {
@@ -220,22 +243,23 @@
 
     // Update the monthly_cost field initially
     updateMonthlyCost();
+ 
 
 
     // Update monthly cost on essentials_salary change
     $('#essentials_salary').on('input', function() {
         updateMonthlyCost();
+        updateTotal();
     });
 
     // Update monthly cost when any amount field changes
     $(document).on('input', 'input[id="amountInput"]', function() {
         updateMonthlyCost();
+        updateTotal();
     });
 
 
-  $(document).on('change', 'select[name="salary_type[]"]', function() {
-      updateAmount(this);
-  });
+
 
 
   
@@ -250,13 +274,25 @@
 
   function updateTotal() {
     
-      const numberValue = parseFloat(numberInput.value) || 0;
-      const monthlyCostValue = parseFloat(monthlyCostInput.value) || 0;
-
-   
-      const totalValue = numberValue * monthlyCostValue;
-
-   
-      totalField.value = totalValue;
+      totalField.value = (parseFloat(numberInput.value) || 0) * (parseFloat(monthlyCostInput.value) || 0);
   }
+});
+$('#yourModal').on('hide.bs.modal', function () {
+     // Remove event listeners specific to the modal
+     $(document).off('change', 'select[name="type[]"]');
+    $(document).off('input', 'input[name="amount[]"]');
+    $(document).off('change', 'select[name="salary_type[]"]');
+
+    // Reset specific variables if needed
+    selectedData = [];
+
+    // Clear input fields or reset to their initial values
+    $('#selectedData').val('');
+    // You may want to reset other form elements or variables as needed
+
+    // Optionally, remove added rows in the table
+    $('#salary-table-body tr').not(':first').remove();
+});
+
+    
 </script>
