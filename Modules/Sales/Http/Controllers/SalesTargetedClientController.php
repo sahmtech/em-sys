@@ -63,6 +63,7 @@ class SalesTargetedClientController extends Controller
 
 
     public function saveQuickClient(Request $request) {
+      
         try {
        
             $business_id = $request->session()->get('user.business_id');
@@ -79,18 +80,24 @@ class SalesTargetedClientController extends Controller
             $input2['business_id'] = $business_id;
             $input2['created_by'] = $request->session()->get('user.id');
 
-            if (request()->selectedData) {
-                $jsonData = json_decode(request()->selectedData, true); 
-                foreach ($jsonData as $item) {
-                    error_log($item['salaryType']);
-                    error_log($item['amount']);
-                }
-            }
+            // if (request()->selectedData) {
+                
+            //     $jsonData = json_decode(request()->selectedData, true); 
+            //     foreach ($jsonData as $item) {
+            //         error_log($item['salaryType']);
+            //         error_log($item['amount']);
+            //     }
+            // }
 
             $client = Product::create($input2);
+            error_log("****  controller ******");
+            // error_log(json_decode(request()->selectedData, true));
+            // error_log("************");
+            error_log(request()->selectedData);
+            error_log("************");
             $output = ['success' => 1,
-                'msg' => __('sales::lang.added_success'),
-                'client' => $client
+                'client' => $client,
+                'selectedData'=>json_decode(request()->selectedData, true)
                
             ];
         } catch (\Exception $e) {

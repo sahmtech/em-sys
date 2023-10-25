@@ -26,8 +26,8 @@
                     {!! Form::label('contract_form_filter', __('sales::lang.contract_form') . ':') !!}
                     <select class="form-control select2" name="contract_form_filter" required id="contract_form_filter" style="width: 100%;">
                         <option value="all">@lang('lang_v1.all')</option>
-                        <option value="monthly_cost">@lang('sales::lang.monthly_cost')</option>
-                        <option value="operating_fees">@lang('sales::lang.operating_fees')</option>
+                        <option value="first">@lang('sales::lang.first_choice')</option>
+                        <option value="seconde">@lang('sales::lang.second_choice')</option>
                     </select>
                 </div>
             </div>
@@ -192,11 +192,13 @@
                         {
                             data: 'contract_form',
                             render: function (data, type, row) {
-                                if (data === 'monthly_cost') {
-                                    return  '@lang('sales::lang.monthly_cost')';
+                                if (data === 'first') {
+                                    return  '@lang('sales::lang.first_choice')';
                                     
+                                } else if (data === 'seconde') {
+                                    return  '@lang('sales::lang.second_choice')';
                                 } else {
-                                    return  '@lang('sales::lang.operating_fees')';
+                                    return  ' ';
                                 }
                             }
                         },

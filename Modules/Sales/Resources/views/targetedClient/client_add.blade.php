@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      {!! Form::open(['url' => action([\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'saveQuickClient']), 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
-  
+  <div class="modal-content">
+    {!! Form::open([ 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
+      <input type="hidden" name="randomId" value="{{ $randomId }}">
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="modalTitle">@lang( 'sales::lang.add_new_client' )</h4>
@@ -52,41 +52,52 @@
                     </div>
                 </div>
             </div>
-        
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>{{ __('essentials::lang.extra_salary_type') }}</th>
-                        <th>{{ __('essentials::lang.type') }}</th>
-                        <th>{{ __('essentials::lang.amount') }}</th>
-                    </tr>
-                </thead>
-                <tbody id="salary-table-body">
-                    <tr>
-                        <td>
-                            {!! Form::select('salary_type[]', $allowance_types, null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+            <input type="hidden" id="selectedData" name="selectedData" value="">
+            <br>
+            <div class="col-md-12">
+            <h4>نفقات اضافية</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ __('sales::lang.additional_account_name') }}</th>
+                            <th>{{ __('essentials::lang.type') }}</th>
+                            <th>{{ __('essentials::lang.amount') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salary-table-body">
+                        <tr>
+                            <td>
+                                {!! Form::select('salary_type[]',
+                                [
+                                'housing_allowance ' => __('sales::lang.housing_allowance'),
+                                'food_allowance' => __('sales::lang.food_allowance'),
+                                'transportation_allowance' => __('sales::lang.transportation_allowance'),
+                                'overtime_hours' => __('sales::lang.overtime_hours'),
+                                'other_allowances' => __('sales::lang.other_allowances')
+                                ],
+                                null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+                            </td>
+                            <td>
+                            {!! Form::select('type[]', ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.type'), 'id' => 'typeDropdown']); !!}
                         </td>
                         <td>
-                          {!! Form::select('type[]', ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')], null, ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.type'), 'id' => 'typeDropdown']); !!}
-                      </td>
-                      <td>
-                          {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount'), 'id' => 'amountInput']); !!}
-                      </td>
-                      
-                    </tr>
-                </tbody>
-            </table>
+                            {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount'), 'id' => 'amountInput']); !!}
+                        </td>
+                        
+                        </tr>
+                    </tbody>
+                </table>
             
-            <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
-        
+                <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
+            </div>
             
             
         </div>
-       
+        
          
-        <input type="hidden" id="selectedData" name="selectedData" value="">
+        
       </div>  
-    <div class="table-responsive">
+      <div class="table-responsive">
           <table class="table table-bordered add-product-price-table table">
               <tr> 
                   <th>@lang('sales::lang.number_of_clients')</th>
@@ -121,15 +132,69 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
       </div>
   
-      {!! Form::close() !!}
+    {!! Form::close() !!}
   
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
 
 <script src="{{ asset('js/client.js') }}"></script>
  
 <script>
-  var selectedData = [];
+   
+
+  $(document).ready(function() {
+    var selectedData = [];
+    const form = document.getElementById('quick_add_client_form');
+    $('#submit_quick_client').on('click', function(event) {
+  
+    event.preventDefault();
+    updateSelectedData();
+    const formData = new FormData(form);
+    formData.append('selectedData', JSON.stringify(selectedData));
+   
+      fetch('/sale/saveQuickClient', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(data => {
+            submittedDataFunc(data);
+            $('.quick_add_client_modal').modal('hide');
+            $('#quick_add_client_form')[0].reset();
+            $('#selectedData').val('');
+          console.log(" ******* success of ajax *********");
+          console.log(data);
+          console.log(" ****************");
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      });
+
+
+      function updateSelectedData() {
+      selectedData = [];
+
+      $('select[name="salary_type[]"]').each(function(index) {
+          var salaryType = $(this).val();
+          var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
+          
+          selectedData.push({ salaryType: salaryType, amount: amount });
+      });
+
+      var inputElement = document.getElementById('selectedData');
+      inputElement.value = JSON.stringify(selectedData);
+
+  }
+//   $(document).on('change', 'select[name="salary_type[]"]', function() {
+//       updateSelectedData();
+//   });
+
+
+//   $(document).on('input', 'input[name="amount[]"]', function() {
+//       updateSelectedData();
+//   });
+
 
   function addRow() {
       var newRow = $('#salary-table-body tr:first').clone();
@@ -137,33 +202,15 @@
       newRow.find('input[name="amount[]"]').attr('name', 'amount[]');
 
       $('#salary-table-body').append(newRow);
+     
   }
 
   $('#add-row').click(function() {
-      addRow();
+      addRow(); 
+    //  updateSelectedData();
   });
 
-  $(document).on('change', 'select[name="salary_type[]"]', function() {
-      updateSelectedData();
-  });
 
-  $(document).on('input', 'input[name="amount[]"]', function() {
-      updateSelectedData();
-  });
-
-  function updateSelectedData() {
-      selectedData = [];
-
-      $('select[name="salary_type[]"]').each(function(index) {
-          var salaryType = $(this).val();
-          var amount = parseFloat($('input[name="amount[]"]').eq(index).val());
-          selectedData.push({ salaryType: salaryType, amount: amount });
-      });
-
-      console.log(selectedData);
-      var inputElement = document.getElementById('selectedData');
-      inputElement.value = JSON.stringify(selectedData);
-  }
   $(document).on('change', 'select[name="type[]"]', function() {
         var selectedOption = $(this).val();
         var amountInput = $(this).closest('tr').find('input[name="amount[]"]');
@@ -171,38 +218,17 @@
         if (selectedOption === 'insured_by_the_other') {
             amountInput.prop('disabled', true).val('0');
             updateMonthlyCost();
-            
+            updateTotal();
+           // updateSelectedData();
         } else {
             amountInput.prop('disabled', false);
+          //  updateSelectedData();
         }
 
-        updateSelectedData();
-    });
+     }
+  );
 
-  function updateAmount(element) {
-        var salaryType = $(element).val();
-        console.log(salaryType);
-       
-        $.ajax({
-            url: '/hrm/get-amount/' + salaryType,
-            type: 'GET',
-            success: function(response) {
-     
-                var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
-                amountInput.val(response.amount);
-                updateSelectedData();
-                updateMonthlyCost();
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
-        });
-    }
-
-    // Update amount based on salary type when the dropdown changes
-    $(document).on('change', 'select[name="salary_type[]"]', function() {
-        updateAmount(this);
-    });
+ 
 
     // Function to calculate the sum of essentials_salary and amount fields
     function updateMonthlyCost() {
@@ -216,29 +242,26 @@
 
         var monthlyCost = essentialsSalary + totalAmount;
         $('#monthly_cost').val(monthlyCost);
-    }
+  }
 
     // Update the monthly_cost field initially
     updateMonthlyCost();
+ 
 
 
     // Update monthly cost on essentials_salary change
     $('#essentials_salary').on('input', function() {
         updateMonthlyCost();
+        updateTotal();
     });
 
     // Update monthly cost when any amount field changes
     $(document).on('input', 'input[id="amountInput"]', function() {
         updateMonthlyCost();
+        updateTotal();
     });
 
 
-  $(document).on('change', 'select[name="salary_type[]"]', function() {
-      updateAmount(this);
-  });
-
-
-  
   const numberInput = document.getElementById('number');
   const monthlyCostInput = document.getElementById('monthly_cost');
   const totalField = document.getElementById('total');
@@ -250,13 +273,10 @@
 
   function updateTotal() {
     
-      const numberValue = parseFloat(numberInput.value) || 0;
-      const monthlyCostValue = parseFloat(monthlyCostInput.value) || 0;
-
-   
-      const totalValue = numberValue * monthlyCostValue;
-
-   
-      totalField.value = totalValue;
+      totalField.value = (parseFloat(numberInput.value) || 0) * (parseFloat(monthlyCostInput.value) || 0);
   }
+});
+
+
+    
 </script>

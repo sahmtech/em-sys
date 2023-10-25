@@ -13,16 +13,7 @@
 <section class="content no-print">
         @component('components.filters', ['title' => __('report.filters')])
        
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="offer_type_filter">@lang('sales::lang.offer_type'):</label>
-                <select class="form-control select2" name="offer_type_filter" required id="offer_type_filter" style="width: 100%;">
-                    <option value="all">@lang('lang_v1.all')</option>
-                    <option value="external">@lang('sales::lang.external')</option>
-                    <option value="internal">@lang('sales::lang.internal')</option>
-                </select>
-            </div>
-        </div>
+    
         <div class="col-md-3">
             <div class="form-group">
                 <label for="status_filter">@lang('essentials::lang.status'):</label>
@@ -58,7 +49,6 @@
                         <th>@lang('sales::lang.customer_number')</th>
                         <th>@lang('sales::lang.date')</th>
                         <th>@lang('sales::lang.value')</th>
-                        <th>@lang('sales::lang.offer_type')</th>
                         <th>@lang('sales::lang.offer_status')</th>
                         <th>@lang('messages.action')</th>
                     </tr>
@@ -86,9 +76,6 @@ $(document).ready( function(){
             "data": function ( d ) {
                 
 
-               
-                d.offer_type = $('#offer_type_filter').val();
-                
                 d.status = $('#status_filter').val();
 
             }
@@ -101,19 +88,7 @@ $(document).ready( function(){
             { data: 'mobile'}, 
             { data: 'transaction_date'},
             { data: 'final_total'},
-            {
-                            data: 'offer_type',
-                            render: function (data, type, row) {
-                                if (data === 'external') {
-                                    return  '@lang('sales::lang.external')';
-                                    
-                                } else if (data === 'internal') {
-                                    return  '@lang('sales::lang.internal')';
-                                } else {
-                                    return  '';
-                                }
-                            }
-            },
+          
             {data: 'status'},
             {data: 'action'}
 
@@ -126,7 +101,7 @@ $(document).ready( function(){
         // }
     });
     
-    $(document).on('change', '#offer_type_filter, #status_filter',  function() {
+    $(document).on('change', '#status_filter',  function() {
         sale_table.ajax.reload();
     });
 

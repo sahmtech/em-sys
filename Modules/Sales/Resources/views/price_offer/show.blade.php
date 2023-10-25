@@ -15,15 +15,7 @@
                 <p><strong>@lang('sales::lang.customer_name'):</strong> {{$offer->name ?? ''}}</p>
                 <p><strong>@lang('sales::lang.customer_number'):</strong> {{$offer->mobile ?? ''}}</p>
                 <p><strong>@lang('sales::lang.date'):</strong> {{$offer->transaction_date ?? ''}}</p>
-                <p><strong>@lang('sales::lang.offer_type'):</strong>
-                    @if($offer->offer_type === 'external')
-                        @lang('sales::lang.external')
-                    @elseif($offer->offer_type === 'internal')
-                        @lang('sales::lang.internal')
-                    @else
-                        {{$offer->offer_type ?? ''}}
-                    @endif
-                </p>
+                
                 <p><strong>@lang('sales::lang.total'):</strong> {{$offer->final_total ?? ''}}</p>
             </div>
         </div>
