@@ -95,19 +95,10 @@
         </div>
         <div class="col-md-12">
         @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="checkbox">
-                      <label>
-                        {!! Form::checkbox('allow_login', 1, !empty($user->allow_login), 
-                        [ 'class' => 'input-icheck', 'id' => 'allow_login']); !!} {{ __( 'lang_v1.allow_login' ) }}
-                      </label>
-                    </div>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="user_auth_fields @if(empty($user->allow_login)) hide @endif">
-            @if(empty($user->allow_login))
+            
+   
+            <div class="user_auth_fields">
+       
                 <div class="col-md-4">
                     <div class="form-group">
                       {!! Form::label('username', __( 'business.username' ) . ':') !!}
@@ -123,22 +114,19 @@
                       <p class="help-block">@lang('lang_v1.username_help')</p>
                     </div>
                 </div>
-            @endif
-            {{-- <div class="col-md-4">
-                <div class="form-group">
-                  {!! Form::label('password', __( 'business.password' ) . ':') !!}
-                    {!! Form::password('password', ['class' => 'form-control', 'placeholder' => __( 'business.password'), 'required' => empty($user->allow_login) ? true : false ]); !!}
-                    <p class="help-block">@lang('user.leave_password_blank')</p>
-                </div>
+    
             </div>
+            <div class="clearfix"></div>
             <div class="col-md-4">
-                <div class="form-group">
-                  {!! Form::label('confirm_password', __( 'business.confirm_password' ) . ':') !!}
-                    {!! Form::password('confirm_password', ['class' => 'form-control', 'placeholder' => __( 'business.confirm_password' ), 'required' => empty($user->allow_login) ? true : false ]); !!}
-                  
-                </div>
-            </div> --}}
-            </div>
+              <div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      {!! Form::checkbox('allow_login', 1, !empty($user->allow_login), 
+                      [ 'class' => 'input-icheck', 'id' => 'allow_login']); !!} {{ __( 'lang_v1.allow_login' ) }}
+                    </label>
+                  </div>
+              </div>
+          </div>
             <div class="clearfix"></div>
             <div class="col-md-6">
                 <div class="form-group">

@@ -8,6 +8,7 @@
 <section class="content-header">
     <h1>@lang('lang_v1.add_quotation')</h1>
 </section>
+
 <!-- Main content -->
 <section class="content no-print">
 <input type="hidden" id="amount_rounding_method" value="{{$pos_settings['amount_rounding_method'] ?? ''}}">

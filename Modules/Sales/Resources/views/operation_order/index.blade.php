@@ -13,58 +13,66 @@
 
 <!-- Main content -->
 <section class="content">
+@component('components.filters', ['title' => __('report.filters')])
 
+<div class="col-md-3">
+    <div class="form-group">
+        <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
+        {!! Form::select('contract_id', $contracts->pluck('contract_number', 'contract_number'), null, [
+            'class' => 'form-control',
+            'style' => 'height:36px',
+            'placeholder' => __('lang_v1.all'),
+            'required',
+            'id' => 'contract-select'
+        ]) !!}
+    </div>
+</div>
+       <div class="col-md-3">
+           <div class="form-group">
+               <label for="status_filter">@lang('sales::lang.operation_order_type'):</label>
+               <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
+                   <option value="all">@lang('lang_v1.all')</option>
+                   <option value="external">@lang('sales::lang.external')</option>
+                   <option value="internal">@lang('sales::lang.internal')</option>
 
-    @component('components.widget', ['class' => 'box-primary'])
+               </select>
+           </div>
+       </div>
+
+     
+
+@endcomponent
+
+@component('components.widget', ['class' => 'box-primary'])
 
     @slot('tool')
             <div class="box-tools">
-                
-                <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addSaleOperationModal">
-                    <i class="fa fa-plus"></i> @lang('sales::lang.add_sale_operation')
-                </button>
+                <a class="btn btn-block btn-primary" href="{{action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'create'])}}">
+                <i class="fa fa-plus"></i> @lang('sales::lang.create_sale_operation')</a>
             </div>
-    @endslot
+        @endslot
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped ajax_view" id="operation_table">
+                <thead>
+                    <tr>
+                   
+                        <th>@lang('sales::lang.operation_order_number')</th>
+                        <th>@lang('sales::lang.customer_name')</th>
+                        <th>@lang('sales::lang.contract_number')</th>
+                        <th>@lang('sales::lang.operation_order_type')</th>
+                        <th>@lang('sales::lang.Status')</th>
+                        <th>@lang('sales::lang.show_operation')</th>
+                        <th>@lang('messages.action')</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
     @endcomponent
 
 
-<div class="modal fade" id="addSaleOperationModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-                {!! Form::open(['route' => 'sale.storeSaleOperation']) !!}
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">@lang('sales::lang.add_sale_operation')</h4>
-                </div>
 
-            <div class="modal-body">
-                               
-                                <div class="row">            
-
-                                        <div class="col-md-4 ">
-                                                <div class="form-group">
-                                                    {!! Form::label('Industry', __('sales::lang.first_name')  . ':*') !!}
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">
-                                                            <i class="fa fa-briefcase"></i>
-                                                        </span>
-                                                        {!! Form::text('Industry', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.first_name')]); !!}
-                                                    </div>
-                                                </div>
-                                        </div>
-
-                  
-
-                                       
-                                 </div>                           
-                      
-                                     
-
-                            
-            </div>
-    </div>
-</div>
 </section>
 <!-- /.content -->
 
@@ -74,7 +82,7 @@
 <script type="text/javascript">
     // Countries table
     $(document).ready(function () {
-    var customers_table = $('#cust_table').DataTable({
+    var customers_table = $('#operation_table').DataTable({
         ajax:'', 
         processing: true,
         serverSide: true,
@@ -82,26 +90,27 @@
         
        
         columns: [
+          
+         
+            { data: 'operation_order_no', name: 'operation_order_no' },
+            { data: 'contact_name', name: 'contact_name' },
+            { data: 'contract_number', name: 'contract_number' },
+            { data: 'operation_order_type', name: 'operation_order_type' },
+            { data: 'Status', name: 'Status' },
+            {data: 'show_operation' ,name:'show_operation'},
             { data: 'action', name: 'action', orderable: false, searchable: false },
-            { data: 'contact_id', name: 'contact_id' },
-            { data: 'name', name: 'name' },
-            { data: 'english_name', name: 'english_name' },
-            { data: 'commercial_register_no', name: 'commercial_register_no' },
-            { data: 'mobile', name: 'mobile' },
-            { data: 'email', name: 'email' },
-            { data: 'city', name: 'city' }
+           
         ]
     });
-   
+     // Add an event listener to trigger filtering when your filters change
+ 
+     $('#contract-select, #status_filter').change(function () {
+        customers_table.ajax.reload();
+    });
 });
 
-
-
-
-
-  
-
 </script>
+
 
 
 

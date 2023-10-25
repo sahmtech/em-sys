@@ -97,7 +97,7 @@
         @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
             
          
-            <div class="user_auth_fields @if(empty($user->allow_login)) hide @endif">
+            <div class="user_auth_fields">
             
                 <div class="col-md-4">
                     <div class="form-group">
