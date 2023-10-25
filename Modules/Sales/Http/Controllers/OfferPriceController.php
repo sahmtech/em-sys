@@ -416,7 +416,8 @@ class OfferPriceController extends Controller
 
 
        $client = Transaction::create($offer_details);
-   
+       Contact::where('id', $request->contact_id)->update(['type' => 'customer']);
+
        $productIds = json_decode($request->input('productIds'));
         $productData = json_decode($request->input('productData'), true);
 
