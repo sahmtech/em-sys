@@ -93,6 +93,11 @@ class Product extends Model
         return $this->belongsTo(\App\Category::class);
     }
 
+    public function nationality()
+    {
+        return $this->belongsTo(Modules\Essentials\Entities\EssentialsCountry::class);
+    }
+
     /**
      * Get sub-category associated with the product.
      */

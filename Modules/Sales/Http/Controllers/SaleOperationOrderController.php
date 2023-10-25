@@ -64,22 +64,30 @@ class SaleOperationOrderController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
     
         $contracts = DB::table('sales_orders_operations')
-        ->join('sales_contracts', 'sales_orders_operations.contract_id', '=', 'sales_contracts.id')
+        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
         ->select('sales_contracts.number_of_contract as contract_number')
         ->get();
 
         if (request()->input('contract_id')) {
-            $query->where('sales_orders_operations.contract_id', request()->input('contract_id'));
+            $query->where('sales_orders_operations.sale_contract_id', request()->input('contract_id'));
         }
     
         if (request()->input('status_filter')) {
             $query->where('sales_orders_operations.operation_order_type', request()->input('status_filter'));
         }
       
+  
+
+
+        //     foreach ($products as $pro)
+        //    {dd($pro);}
+
+   
+   
  
       $operations = DB::table('sales_orders_operations')
       ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
-      ->join('sales_contracts', 'sales_orders_operations.contract_id', '=', 'sales_contracts.id')
+      ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
       ->select(
           'sales_orders_operations.id as id',
           'sales_orders_operations.operation_order_no as operation_order_no',
@@ -88,7 +96,7 @@ class SaleOperationOrderController extends Controller
           'sales_orders_operations.operation_order_type as operation_order_type',
           'sales_orders_operations.Status as Status'
       );
-    //  dd( $operations);
+    //dd( $operations);
 
         if (request()->ajax()) {
          
@@ -103,7 +111,10 @@ class SaleOperationOrderController extends Controller
         
             ->addColumn('action', function ($row) {
                     $html = '<a href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                     $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_country_button" data-href=""><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                    $html .= '&nbsp;'; 
+                   // $html .= '<button class="btn btn-xs btn-danger delete_operation_button" data-href="' . route('sale.delete.order_operation', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+            
+                    
                     
                      return $html;
            
@@ -156,7 +167,7 @@ class SaleOperationOrderController extends Controller
         $business_id = request()->session()->get('user.business_id');
      
 
-        $leads=Contact::where('type','customer')
+        $leads=Contact::where('type','lead')
         
         ->where('business_id',$business_id)
         ->pluck('supplier_business_name','id');
@@ -165,8 +176,7 @@ class SaleOperationOrderController extends Controller
         ->where('business_id',$business_id)
         ->pluck('supplier_business_name','id');
 
-      
-
+    
         return view('sales::operation_order.create')->with(compact('leads','agencies'));
     }
 
@@ -185,7 +195,7 @@ class SaleOperationOrderController extends Controller
            
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                    'contact_id','contract_id','agency_id','operation_order_no','operation_order_type', 
+                    'contact_id','sale_contract_id','agency_id','operation_order_no','operation_order_type', 
                     'Interview', 'Location','Delivery', 'Note', 'Status', 'Industry'
                 ];
                 $operation_details = $request->only($operation_order);
@@ -194,21 +204,19 @@ class SaleOperationOrderController extends Controller
                 
                 if ( $latestRecord )
                 {
-                    if(empty($operation_details['operation_order_no']))
-                    {
-                        $latestRefNo = $latestRecord->operation_order_no;
+                      $latestRefNo = $latestRecord->operation_order_no;
                         $numericPart = (int)substr($latestRefNo, 5); 
                         $numericPart++;
                         $operation_details['operation_order_no'] = 'POP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                    }
+                    
 
                 }
                 else
                 {$operation_details['operation_order_no'] = 'POP1111';}
               
-              //  dd($operation_details['operation_order_no']);
+             //dd($operation_details);
                 $operation = SalesOrdersOperation::create( $operation_details );
-              //  dd( $operation );
+             //  dd( $operation );
             });
            
             $output = [
@@ -225,7 +233,7 @@ class SaleOperationOrderController extends Controller
             ];
         }
         
-        return redirect()->route('sale.orderOperations');
+        return redirect()->route('sale.orderOperations')->with($output);
     }
 
     /**
@@ -239,7 +247,7 @@ class SaleOperationOrderController extends Controller
 
             $operations = DB::table('sales_orders_operations')
             ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
-            ->join('sales_contracts', 'sales_orders_operations.contract_id', '=', 'sales_contracts.id')
+            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
             ->where('sales_orders_operations.id','=',$id)
             ->select(
                 'sales_orders_operations.id as id',
@@ -255,18 +263,24 @@ class SaleOperationOrderController extends Controller
                 'contacts.email as email',
             )->first();
 
-
             $transactionID=DB::table('sales_orders_operations')
-            ->join('sales_contracts', 'sales_orders_operations.contract_id', '=', 'sales_contracts.id')
-            ->join('transactions', 'sales_contracts.offer_price_id', '=', 'transactions.id')
-            ->where('sales_orders_operations.id','=',1)
+            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+           ->join('transactions', 'sales_contracts.offer_price_id', '=', 'transactions.id')
+            ->where('sales_orders_operations.id','=',$id)
             ->first();
-    
-            $products=DB::table('transaction_sell_lines')
-            ->join('products','transaction_sell_lines.product_id','=','products.id')
-            ->where('transaction_id','=',$transactionID->id)
-            ->select('products.*')
+         
+            $products = DB::table('transaction_sell_lines')
+            ->join('products', 'transaction_sell_lines.product_id', '=', 'products.id')
+            ->leftJoin('essentials_countries', 'products.nationality_id', '=', 'essentials_countries.id')
+            ->leftJoin('essentials_professions', 'products.profession_id', '=', 'essentials_professions.id')
+            ->leftJoin('essentials_specializations', 'products.specialization_id', '=', 'essentials_specializations.id')
+            ->leftJoin('units', 'products.unit_id', '=', 'units.id')
+            ->where('transaction_id', '=', $transactionID->id)
+            ->select('products.*', 'essentials_countries.nationality as nationality_name',
+             'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name',
+             'units.actual_name as unit')
             ->get();
+       
     
         
         //  dd($prod);
@@ -318,6 +332,39 @@ class SaleOperationOrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        $business_id = request()->session()->get('user.business_id');
+      //  dd(  $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $record = SalesOrdersOperation::find($id);
+        if (!$record) {
+          
+            return redirect()->route('sale.orderOperations')->with('error', 'Record not found.');
+        }
+        try {
+
+            $record->delete();
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_deleted_success'),
+            ];
+    
+           // return redirect()->route('sale.orderOperations')->with($output);
+        }
+        catch (\Exception $e) {
+                DB::rollBack();
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            
+                $output = [
+                    'success' => 0,
+                    'msg' => $e->getMessage(),
+                ];
+            }
+            return $output;
     }
 }
