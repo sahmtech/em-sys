@@ -6,7 +6,11 @@ function submittedDataFunc(response) {
       
         var resultItem = response.selectedData;
 
-
+        console.log(" ******* submittedDataFunc *********");
+        console.log(resultItem);
+        // console.log("***************");  
+        // console.log();
+        console.log("***************");
         var newTotal= submittedData.monthly_cost_for_one * submittedData.alert_quantity;
         var newRow = '<tr class="product_row">' +
             
@@ -19,8 +23,8 @@ function submittedDataFunc(response) {
        
             '<td class="text-center total-column">' + newTotal + '</td>' +
             '<td class="text-center"><i class="fas fa-times" aria-hidden="true"></i></td>' +
-            '<input type="hidden" id="selectedData" name="selectedData" value="' + resultItem + '"></input>' +
-            '<input type="hidden" name="productIds" value="' + submittedData.id + '"></input>' +
+            // '<input type="hidden" id="selectedData" name="selectedData" value="' + resultItem + '"></input>' +
+            // '<input type="hidden" name="productIds" value="' + submittedData.id + '"></input>' +
         '</tr>';
 
         $('#pos_table tbody').append(newRow);
@@ -35,7 +39,7 @@ function submittedDataFunc(response) {
 
         updatePriceTotal();
 
-        updateArray();
+        updateArray(resultItem,submittedData.id );
 
     } else {
     
@@ -54,26 +58,42 @@ function submittedDataFunc(response) {
             $('#price_total_input').val(totalPrice);
             $('.price_total').text(totalPrice);
         }
-      
 
-function updateArray() {
-    var resultsArray = [];
-    var productIds = [];
+  
+const resultsArray = [];
+const productIds = [];
+        
+    
 
-    var productRows = document.querySelectorAll('.product_row');
 
-    productRows.forEach(function (row) {
-        var selectedDataInput = row.querySelector('input[name="selectedData"]');
-        var productIdInput = row.querySelector('input[name="productIds"]');
+function updateArray(resultsArrayItem,productIdsItem) {
 
-        if (selectedDataInput && productIdInput) {
 
-            resultsArray.push(selectedDataInput.value);
-            productIds.push(productIdInput.value);
-        }
+    // var productRows = document.querySelectorAll('.product_row');
+
+    // productRows.forEach(function (row) {
+    //     var selectedDataInput = row.querySelector('input[name="selectedData"]');
+    //     var productIdInput = row.querySelector('input[name="productIds"]');
+
+    //     if (selectedDataInput && productIdInput) {
+
+    //         resultsArray.push(selectedDataInput.value);
+    //         productIds.push(productIdInput.value);
+    //     }
+    // });
+    resultsArray.push(resultsArrayItem);
+    productIds.push(productIdsItem);
+    console.log(" ******* updateArray *********");
+    resultsArray.forEach(function(object) {
+        console.log(object);
+        console.log("***************");
     });
+        // console.log(resultsArray);
+        // console.log("***************");  
+        // console.log(JSON.stringify(resultsArray));
+       // console.log("***************");
 
-    $('#productData').val(resultsArray);
+    $('#productData').val(JSON.stringify(resultsArray));
     $('#productIds').val(JSON.stringify(productIds));
 }
     

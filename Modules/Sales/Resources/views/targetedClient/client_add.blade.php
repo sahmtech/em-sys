@@ -162,8 +162,9 @@
             $('.quick_add_client_modal').modal('hide');
             $('#quick_add_client_form')[0].reset();
             $('#selectedData').val('');
-              
+          console.log(" ******* success of ajax *********");
           console.log(data);
+          console.log(" ****************");
         })
         .catch(error => {
           console.error(error);

@@ -401,6 +401,7 @@
     @endif
     <script type="text/javascript">
     	$(document).ready( function() {
+			
     		$('#status').change(function(){
     			if ($(this).val() == 'final') {
     				$('#payment_rows_div').removeClass('hide');

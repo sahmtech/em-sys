@@ -90,7 +90,11 @@ class SalesTargetedClientController extends Controller
             // }
 
             $client = Product::create($input2);
-        
+            error_log("****  controller ******");
+            // error_log(json_decode(request()->selectedData, true));
+            // error_log("************");
+            error_log(request()->selectedData);
+            error_log("************");
             $output = ['success' => 1,
                 'client' => $client,
                 'selectedData'=>json_decode(request()->selectedData, true)
