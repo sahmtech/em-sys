@@ -161,7 +161,7 @@
             submittedDataFunc(data);
             $('.quick_add_client_modal').modal('hide');
             $('#quick_add_client_form')[0].reset();
-        
+            $('#selectedData').val('');
               
           console.log(data);
         })
@@ -181,7 +181,6 @@
           selectedData.push({ salaryType: salaryType, amount: amount });
       });
 
-      //console.log(selectedData);
       var inputElement = document.getElementById('selectedData');
       inputElement.value = JSON.stringify(selectedData);
 

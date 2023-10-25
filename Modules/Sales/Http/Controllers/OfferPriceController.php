@@ -386,7 +386,7 @@ class OfferPriceController extends Controller
      */
     public function store(Request $request)
     {  
-      return $request->productData;
+        // return $request;
     try {
         $business_id = $request->session()->get('user.business_id');
         $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];

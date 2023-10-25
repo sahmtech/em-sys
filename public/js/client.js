@@ -4,12 +4,8 @@ function submittedDataFunc(response) {
                 
         var submittedData = response.client;
       
-        var resultItem = (response.selectedData);
+        var resultItem = response.selectedData;
 
-    
-        console.log("######## client.js ########");
-        console.log(resultItem);
-        console.log("######## ########");
 
         var newTotal= submittedData.monthly_cost_for_one * submittedData.alert_quantity;
         var newRow = '<tr class="product_row">' +
@@ -71,9 +67,7 @@ function updateArray() {
         var productIdInput = row.querySelector('input[name="productIds"]');
 
         if (selectedDataInput && productIdInput) {
-            console.log('***********************');
-            console.log(selectedDataInput.value);
-            console.log('***********************');
+
             resultsArray.push(selectedDataInput.value);
             productIds.push(productIdInput.value);
         }

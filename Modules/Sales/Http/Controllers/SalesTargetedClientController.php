@@ -93,7 +93,7 @@ class SalesTargetedClientController extends Controller
         
             $output = ['success' => 1,
                 'client' => $client,
-                'selectedData'=>json_decode(request()->selectedData, true),
+                'selectedData'=>json_decode(request()->selectedData, true)
                
             ];
         } catch (\Exception $e) {
