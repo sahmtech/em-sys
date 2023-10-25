@@ -356,7 +356,7 @@ class CoaController extends Controller
             $input['created_by'] = auth()->user()->id;
             $input['business_id'] = $request->session()->get('user.business_id');
             $input['status'] = 'active';
-            $input['gl_code'] = AccountingUtil::next_GLC($input['parent_account_id']);
+            $input['gl_code'] = AccountingUtil::next_GLC($input['parent_account_id'],$business_id);
             $account_type = AccountingAccountType::find($input['account_sub_type_id']);
             $account = AccountingAccount::create($input);
             // return $input;

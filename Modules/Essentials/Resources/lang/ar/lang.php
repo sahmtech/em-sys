@@ -646,7 +646,17 @@ return[
 'optional'=>'اختياري',
 'specialization'=>'اسم الاختصاص',
 'add_specialization'=>'إضافة اختصاص',
-''=>'',
-''=>'',
+'crud_official_documents'=>'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
+'crud_import_employee'=>' استيراد الموظفين',
+'crud_insurance_companies'=>'إضافة/تعديل/حذف شركات التأمين ',
+'view_facilities_management'=>' إدارة المنشآت ',
+'crud_insurance_contracts'=>'إضافة/تعديل/حذف عقود التأمين ',
+'crud_employee_appointments'=>'إضافة/تعديل/حذف تعيينات الموظفين',
+'crud_employee_work_adminitions'=>'إضافة/تعديل/حذف مباشرة العمل للموظفين',
+'crud_employee_contracts'=>'إضافة/تعديل/حذف عقود الموظفين',
+'crud_employee_qualifications'=>'إضافة/تعديل/حذف مؤهلات الموظفين',
+'crud_employee_features'=>'إضافة/تعديل/حذف مزايا الموظفين',
+'view_user_travel_categorie'=>'إضافة/تعديل/حذف تذاكر سفر الموظفين',
+
 
 ];

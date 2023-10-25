@@ -74,7 +74,9 @@ class EssentialsTravelCategorieController extends Controller
             if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
                 abort(403, 'Unauthorized action.');
             }
-    
+            if (! auth()->user()->can('essentials.view_user_travel_categorie')) {
+                abort(403, 'Unauthorized action.');
+            }
             $travelCategories=EssentialsTravelTicketCategorie::all()->pluck('name','id');
             if (request()->ajax()) {
                 $userTravelCat = EssentialsEmployeeTravelCategorie::

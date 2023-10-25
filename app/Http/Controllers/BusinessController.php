@@ -343,11 +343,11 @@ class BusinessController extends Controller
     public function getBusiness()
     {
         $business_id = request()->session()->get('user.business_id');
-
+        error_log("111");
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+        error_log("222");
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
             if (request()->ajax()) {

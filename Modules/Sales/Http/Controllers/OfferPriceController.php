@@ -81,11 +81,11 @@ class OfferPriceController extends Controller
     
     public function index()
     {
-        if (! auth()->user()->can('quotation.view_all') && ! auth()->user()->can('quotation.view_own')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (! auth()->user()->can('quotation.view_all') && ! auth()->user()->can('quotation.view_own')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
         $business_id = request()->session()->get('user.business_id');
-        $can_crud_offer_price= auth()->user()->can('essentials.crud_offer_prices');
+        $can_crud_offer_price= auth()->user()->can('sales.crud_offer_prices');
         if (! $can_crud_offer_price) {
             abort(403, 'Unauthorized action.');
         }
@@ -242,11 +242,12 @@ class OfferPriceController extends Controller
     {
         $sale_type = request()->get('sale_type', '');
 
-        if (! auth()->user()->can('create_offer_price')) {
+      
+        
+        $can_create_offer_price= auth()->user()->can('sales.create_offer_price');
+            if (! $can_create_offer_price) {
                 abort(403, 'Unauthorized action.');
             }
-        
-        
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota

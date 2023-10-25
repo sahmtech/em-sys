@@ -41,7 +41,10 @@ class EssentialsEmployeeImportController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+        $can_crud_import_employee = auth()->user()->can('essentials.crud_import_employee');
+        if (! $can_crud_import_employee) {
+            abort(403, 'Unauthorized action.');
+        }
         $zip_loaded = extension_loaded('zip') ? true : false;
 
         //Check if zip extension it loaded or not.

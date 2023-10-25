@@ -94,7 +94,9 @@ class EssentialsAllowanceAndDeductionController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+        if (! auth()->user()->can('essentials.view_allowance_and_deduction')) {
+            abort(403, 'Unauthorized action.');
+        }
        // $allowances=EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('name','id');
        if (request()->ajax()) {
             $userAllowances = EssentialsUserAllowancesAndDeduction::

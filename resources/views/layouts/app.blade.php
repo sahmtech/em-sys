@@ -57,6 +57,15 @@
             /* font-size: 15px */
         }
 
+        .fa-folder:before {
+            color: #ffd400 !important;
+            /* background-color:#ffd400; */
+        }
+
+        .fa-arrow-alt-circle-right:before {
+            color: #3936f5;
+        }
+
         body {
             min-height: 100vh;
             background-color: #243949;

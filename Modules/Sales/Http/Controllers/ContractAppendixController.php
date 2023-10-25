@@ -30,7 +30,7 @@ class ContractAppendixController extends Controller
          if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
              abort(403, 'Unauthorized action.');
          }
-         $can_crud_contract_appendics= auth()->user()->can('essentials.crud_contract_appendics');
+         $can_crud_contract_appendics= auth()->user()->can('sales.crud_contract_appendics');
          if (! $can_crud_contract_appendics) {
              abort(403, 'Unauthorized action.');
          }
