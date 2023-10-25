@@ -1616,33 +1616,33 @@ error_log( $date);
         //Create the user
         $user = User::create($user_details);
 
-       {
-            $role = null;
-            if ($request->input('role')) {
-                $role = Role::findOrFail($request->input('role'));
-            } else {
-                $role = Role::where('name', 'User#' . $business_id)->first();
-            }
+       
+            // $role = null;
+            // if ($request->input('role')) {
+            //     $role = Role::findOrFail($request->input('role'));
+            // } else {
+            //     $role = Role::where('name', 'User#' . $business_id)->first();
+            // }
 
-            //Remove Location permissions from role
-            $this->revokeLocationPermissionsFromRole($role);
+            // //Remove Location permissions from role
+            // $this->revokeLocationPermissionsFromRole($role);
 
-            $user->assignRole($role->name);
+            // $user->assignRole($role->name);
 
-            //Grant Location permissions
-            $this->giveLocationPermissions($user, $request);
+            // //Grant Location permissions
+            // $this->giveLocationPermissions($user, $request);
 
-            //Assign selected contacts
-            if ($user_details['selected_contacts'] == 1) {
-                $contact_ids = $request->get('selected_contact_ids');
-                $user->contactAccess()->sync($contact_ids);
-            }
+            // //Assign selected contacts
+            // if ($user_details['selected_contacts'] == 1) {
+            //     $contact_ids = $request->get('selected_contact_ids');
+            //     $user->contactAccess()->sync($contact_ids);
+            // }
 
             //Save module fields for user
             $moduleUtil = new \App\Utils\ModuleUtil;
             $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
             $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
-        }
+        
 
         return $user;
     }
