@@ -133,7 +133,6 @@ return [
     'contract_view'=>'عرض ملف العقد',
     'offer_details'=>'تفاصيل عرض السعر',
     'save'=>'حفظ',
-<<<<<<< HEAD
     'operation_order_number'=>'رقم طلب التشغيل',
     'example_operation_order_number'=>'مثال: OPO1111 ',
     'create_sale_operation'=>'إضافة طلب تشغيل',
@@ -163,7 +162,6 @@ return [
    
      
    
-=======
     'food_allowance'=>'بدل طعام',
     'housing_allowance'=>'بدل سكن',
     'transportation_allowance'=>'بدل نقل',     
@@ -176,5 +174,4 @@ return [
     'crud_contract_items'=>'حذف/ إضافة/تعديل  بنود العقود',
     'crud_contract_appendics'=>'حذف/ إضافة/تعديل ملاحق العقود',
 
->>>>>>> 886f83f6158a5b9746e4fa43af5f089f8a01d369
 ];
