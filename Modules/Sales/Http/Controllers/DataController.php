@@ -117,11 +117,7 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
                         )->order(4);
 
-                        $subMenu->url(
-                            action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
-                            __('sales::lang.sale_operation_orders'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
-                        )->order(7);
+                        
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
@@ -134,6 +130,11 @@ class DataController extends Controller
                             __('sales::lang.contract_appendics'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                         )->order(6);
+                        $subMenu->url(
+                            action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
+                            __('sales::lang.sale_operation_orders'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
+                        )->order(7);
                       },
                     [
                         'icon' => 'fa fas fa-users',
