@@ -385,7 +385,7 @@ class OfferPriceController extends Controller
      * @return Renderable
      */
     public function store(Request $request)
-    {  
+    { 
 
     try {
         $business_id = $request->session()->get('user.business_id');
@@ -413,22 +413,20 @@ class OfferPriceController extends Controller
        $client = Transaction::create($offer_details);
    
        $productIds = json_decode($request->input('productIds'));
-       $productData = json_decode($request->input('productData'));
-      
+        $productData = json_decode($request->input('productData'), true);
+
         if (count($productIds) === count($productData)) {
-            foreach ($productIds as $productId) {
-                $data = array_pop($productData);
-           
-                $transactionSellLine = new TransactionSellLine;
-                $transactionSellLine->additional_allwances =$data;
-                $transactionSellLine->product_id= $productId;
-                $transactionSellLine->transaction_id= $client->id;
+            foreach ($productIds as $key => $productId) {
+                $data = $productData[$key];
                 
-             
+                $transactionSellLine = new TransactionSellLine;
+                $transactionSellLine->additional_allwances= json_encode($data);
+                $transactionSellLine->product_id = $productId;
+                $transactionSellLine->transaction_id = $client->id;
+
                 $transactionSellLine->save();
             }
-          ;
-            };
+        }
      
         $output = [
             'success' => 1,

@@ -69,11 +69,11 @@
                             <td>
                                 {!! Form::select('salary_type[]',
                                 [
-                                'بدل سكن' => __('sales::lang.housing_allowance'),
-                                'بدل طعام' => __('sales::lang.food_allowance'),
-                                'بدل مواصلات' => __('sales::lang.transportation_allowance'),
-                                'ساعات إضافية' => __('sales::lang.overtime_hours'),
-                                'بدلات أخرى' => __('sales::lang.other_allowances')
+                                'housing_allowance ' => __('sales::lang.housing_allowance'),
+                                'food_allowance' => __('sales::lang.food_allowance'),
+                                'transportation_allowance' => __('sales::lang.transportation_allowance'),
+                                'overtime_hours' => __('sales::lang.overtime_hours'),
+                                'other_allowances' => __('sales::lang.other_allowances')
                                 ],
                                 null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
                             </td>
