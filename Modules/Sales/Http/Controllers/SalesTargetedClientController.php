@@ -68,8 +68,9 @@ class SalesTargetedClientController extends Controller
        
             $business_id = $request->session()->get('user.business_id');
             $input = $request->only(['profession', 'specialization', 'nationality', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
-            $input2['name'] = __('sales::lang.service');
-            $input2['type'] = 'service';
+           
+            $input2['name'] ='service';
+            $input2['type'] ='service';
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
             $input2['nationality_id'] = $input['nationality'];
