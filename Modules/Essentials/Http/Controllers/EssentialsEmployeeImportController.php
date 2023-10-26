@@ -205,7 +205,7 @@ class EssentialsEmployeeImportController extends Controller
                         $contract_array['contract_number'] = $value[23];
                     } 
                  
-                   
+                  
                     if (!empty($value[24])) {
                         if (is_numeric($value[24])) {
                             // Convert the float to a human-readable date
@@ -214,7 +214,7 @@ class EssentialsEmployeeImportController extends Controller
                             $date = date('Y-m-d', $unixTimestamp);
                             
                             $contract_array['contract_start_date'] = $date;
-                           // dd( $emp_array['contract_start_date'] );
+                          //  dd( $contract_array['contract_start_date'] );
                            // dd($emp_array['dob']);
                         } else {
                             // Try to parse it as a date string
@@ -222,10 +222,12 @@ class EssentialsEmployeeImportController extends Controller
                             if ($date) {
                                 $dob = $date->format('Y-m-d');
                                 $contract_array['contract_start_date'] = $dob;
+
                             }
+                          //  dd( $contract_array['contract_start_date'] );
                     }
                 }
-
+ 
                 if (!empty($value[25])) {
                     if (is_numeric($value[25])) {
                         // Convert the float to a human-readable date
@@ -285,7 +287,8 @@ class EssentialsEmployeeImportController extends Controller
                 if (! $is_valid) {
                     throw new \Exception($error_msg);
                 }//dd($formated_data);
-                if (! empty($formated_data)) {
+                if (! empty($formated_data)) 
+                {
                     foreach ($formated_data as $emp_data) {
                      
                        //dd($emp_data);
@@ -294,7 +297,10 @@ class EssentialsEmployeeImportController extends Controller
                         $emp = User::create($emp_data);
 
                     
-                       
+                        $contract_array['business_id'] = $business_id;
+                        $contract_array['employee_id'] = $emp->id;
+                        $contract_array['created_by'] = $user_id;
+                        $contract = EssentialsEmployeesContract::create($contract_array);
                       
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                         $essentials_employee_appointmets->employee_id = $emp->id;
@@ -321,19 +327,20 @@ class EssentialsEmployeeImportController extends Controller
                         }
                     }
                 }
-              // dd($formated_data2);
-                if (! empty($formated_data2)) {
-                    foreach ($formated_data2 as $con_data) {
+                
+            //   // dd($formated_data2);
+            //     if (! empty($formated_data2)) {
+            //         foreach ($formated_data2 as $con_data) {
                      
                        
-                        $con_data['business_id'] = $business_id;
-                        $con_data['employee_id'] = $emp->id;
-                        $con_data['created_by'] = $user_id;
-                        $contract = EssentialsEmployeesContract::create($con_data);
+            //             $con_data['business_id'] = $business_id;
+            //             $con_data['employee_id'] = $emp->id;
+            //             $con_data['created_by'] = $user_id;
+            //             $contract = EssentialsEmployeesContract::create($con_data);
 
                       
-                    }
-                }
+            //         }
+            //     }
                
                 $output = ['success' => 1,
                     'msg' => __('product.file_imported_successfully'),

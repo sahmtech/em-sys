@@ -51,7 +51,7 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('contract_id', [], null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('sales::lang.select_contacts'), 'required', 'id' => 'contact-select']) !!}
+            {!! Form::select('sale_contract_id', [], null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('sales::lang.select_contacts'), 'required', 'id' => 'contact-select']) !!}
         </div>
     </div>
 </div>
