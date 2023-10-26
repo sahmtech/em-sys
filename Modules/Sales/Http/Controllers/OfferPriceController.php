@@ -48,21 +48,22 @@ class OfferPriceController extends Controller
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->productUtil = $productUtil;
+        
         $this->statuses = [
             'approved' => [
-                'name' => __('essentials::lang.approved'),
+                'name' => __('sales::lang.approved'),
                 'class' => 'bg-green',
             ],
             'cancelled' => [
-                'name' => __('essentials::lang.cancelled'),
+                'name' => __('sales::lang.cancelled'),
                 'class' => 'bg-red',
             ],
             'transfared' => [
-                'name' => 'Transfared',
+                'name' => __('sales::lang.transfared'),
                 'class' => 'bg-blue',
             ],
             'under_study' => [
-                'name' =>'Under Study',
+                'name' =>__('sales::lang.under_study'),
                 'class' => 'bg-yellow',
             ],
         ];

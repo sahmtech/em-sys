@@ -20,7 +20,6 @@ return [
     'gender'=>'الجنس',
     'salary'=>'الراتب',
     'number_of_clients'=>'العدد',
-    'monthly_cost'=>'التكلفة الشهرية',
     'total'=>'الاجمالي',
     'female'=>'أنثى',
     'male'=>'ذكر',
@@ -174,6 +173,6 @@ return [
     'crud_contract_items'=>'حذف/ إضافة/تعديل  بنود العقود',
     'crud_contract_appendics'=>'حذف/ إضافة/تعديل ملاحق العقود',
     ////// to here we have the en lang file
-'first_choice'=>'الخيار الأول',
-'second_choice'=>'الخيار الثاني'
+    'allowances'=>'البدلات',
+    'allowance_name'=>'اسم البدل'
 ];

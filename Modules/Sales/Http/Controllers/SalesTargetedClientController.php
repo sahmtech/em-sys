@@ -80,21 +80,9 @@ class SalesTargetedClientController extends Controller
             $input2['business_id'] = $business_id;
             $input2['created_by'] = $request->session()->get('user.id');
 
-            // if (request()->selectedData) {
-                
-            //     $jsonData = json_decode(request()->selectedData, true); 
-            //     foreach ($jsonData as $item) {
-            //         error_log($item['salaryType']);
-            //         error_log($item['amount']);
-            //     }
-            // }
-
+           
             $client = Product::create($input2);
-            error_log("****  controller ******");
-            // error_log(json_decode(request()->selectedData, true));
-            // error_log("************");
-            error_log(request()->selectedData);
-            error_log("************");
+            
             $output = ['success' => 1,
                 'client' => $client,
                 'selectedData'=>json_decode(request()->selectedData, true)
@@ -120,7 +108,14 @@ class SalesTargetedClientController extends Controller
     {
         //
     }
- 
+    public function fetchSpecializations(Request $request)
+    {
+        $professionId = $request->input('profession_id');
+
+        $specializations = EssentialsSpecialization::where('profession_id', $professionId)->pluck('name', 'id');
+
+        return response()->json($specializations);
+    }
 
     /**
      * Show the specified resource.

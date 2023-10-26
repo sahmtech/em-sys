@@ -270,7 +270,9 @@ class BusinessController extends BaseController
 
             //Create owner.
             $owner_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password']);
-            $owner_details['language'] = env('APP_LOCALE');
+           // $owner_details['language'] = env('APP_LOCALE');
+            $owner_details['language'] ='en';
+
 
             $user = User::create_user($owner_details);
 
