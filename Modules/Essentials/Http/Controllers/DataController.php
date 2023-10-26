@@ -11,6 +11,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Menu;
 use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\DocumentShare;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -693,7 +694,8 @@ class DataController extends Controller
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name','id')->all();
             $contract_types = EssentialsContractType::pluck('type','id')->all();
-            return view('essentials::partials.user_form_part', compact('travel_ticket_categorie','contract_types','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $nationalities=EssentialsCountry::nationalityForDropdown();
+            return view('essentials::partials.user_form_part', compact('nationalities','travel_ticket_categorie','contract_types','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;

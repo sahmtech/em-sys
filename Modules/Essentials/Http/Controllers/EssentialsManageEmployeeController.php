@@ -17,6 +17,7 @@ use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsCountry;
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -208,9 +209,10 @@ class EssentialsManageEmployeeController extends Controller
         $contract_types = EssentialsContractType::all()->pluck('type','id');
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities=EssentialsCountry::nationalityForDropdown();
 
         return view('essentials::employee_affairs.employee_affairs.create')
-                ->with(compact('roles', 'username_ext', 'locations', 'contract_types','form_partials'));
+                ->with(compact('roles','nationalities' ,'username_ext', 'locations', 'contract_types','form_partials'));
     }
 
     /**

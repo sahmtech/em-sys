@@ -199,9 +199,7 @@ class OfferPriceController extends Controller
     }
     public function changeStatus(Request $request)
     {
-        error_log($request->offer_id);
-        error_log($request->status);
-
+     
         $business_id = request()->session()->get('user.business_id');
 
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.approve_leave')) {

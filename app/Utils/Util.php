@@ -1560,7 +1560,7 @@ error_log( $date);
             'surname', 'first_name', 'last_name', 'email','mid_name','profile_picture',
             'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
-            'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1',
+            'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1','nationality',
             'custom_field_2', 'custom_field_3', 'custom_field_4', 'guardian_name', 'id_proof_name', 'id_proof_number', 'permanent_address', 'current_address', 'bank_details', 'selected_contacts',
         ]);
         if ($request->hasFile('profile_picture')) {
@@ -1573,6 +1573,8 @@ error_log( $date);
 
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
+        $user_details['nationality_cs'] = $request->input('nationality');
+
 
         //Check if subscribed or not, then check for users quota
         if (Str::contains( $user_details['user_type'],'user') || Str::contains( $user_details['user_type'],'employee')

@@ -67,6 +67,14 @@
   <span id="idProofNumberError" class="text-danger"></span>
 </div>
 
+
+    <div class="form-group col-md-3">
+        {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
+    
+          {!! Form::select('nationality',$nationalities ,null, ['class' => 'form-control', 'required',
+          'placeholder' => __('sales::lang.nationality')]); !!}
+    </div>
+ 
 {{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
     {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
