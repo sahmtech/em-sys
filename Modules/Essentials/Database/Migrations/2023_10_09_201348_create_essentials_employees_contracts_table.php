@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('', function (Blueprint $table) {
+        Schema::create('essentials_employees_contracts', function (Blueprint $table) {
             $table->id();
             $table->integer('contract_number')->nullable();
             $table->unsignedInteger('employee_id');

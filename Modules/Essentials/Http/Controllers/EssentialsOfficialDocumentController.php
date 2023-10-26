@@ -126,11 +126,13 @@ class EssentialsOfficialDocumentController extends Controller
             $input2['employee_id'] = $input['employee'];
             $input2['status'] = $input['status'];
             $input2['issue_place'] = $input['issue_place'];
-            
-            $file = request()->file('file');
-            $filePath = $file->store('/officialDocuments');
-            
-            $input2['file_path'] = $filePath;
+            if (request()->hasFile('file')) {
+                $file = request()->file('file');
+                $filePath = $file->store('/officialDocuments');
+                
+                $input2['file_path'] = $filePath;
+            } 
+           
             
             EssentialsOfficialDocument::create($input2);
             

@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\BusinessLocation;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -32,15 +33,21 @@ class EssentialsBankAccountController extends Controller
          if (! $can_crud_bank_accounts) {
              abort(403, 'Unauthorized action.');
          }
-         
+         $locations = BusinessLocation::where('business_id', $business_id)->active()->pluck('name','id');
+
          if (request()->ajax()) {
         
             
              $banks = DB::table('essentials_bank_accounts')->select(['id','name', 'phone_number', 'mobile_number',
-             'address','details', 'is_active']);
+             'address','details', 'is_active','location_id']);
                         
  
              return Datatables::of($banks)
+             ->editColumn('location_id',function($row)use($locations){
+                $item = $locations[$row->location_id]??'';
+
+                return $item;
+            })
              ->addColumn(
                  'action',
                  function ($row) use ($is_admin) {
@@ -63,7 +70,8 @@ class EssentialsBankAccountController extends Controller
          
          
              }
-       return view('essentials::settings.partials.bank_accounts.index');
+           
+        return view('essentials::settings.partials.bank_accounts.index')->with(compact('locations'));
      }
 
     /**
@@ -91,6 +99,7 @@ class EssentialsBankAccountController extends Controller
      */
     public function store(Request $request)
     {
+        
       
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -100,25 +109,34 @@ class EssentialsBankAccountController extends Controller
         }
  
         try {
-            $input = $request->only(['name', 'phone_number', 'mobile_number',
+            $input = $request->only(['name', 'phone_number', 'mobile_number','location',
             'address','details', 'is_active']);
+            
             
 
             $input2['name'] = $input['name'];
+           
             
             $input2['phone_number'] = $input['phone_number'];
 
+
             $input2['mobile_number'] = $input['mobile_number'];
+         
 
             $input2['address'] = $input['address'];
+        
+
+            $input2['location_id'] = $input['location'];
+      
 
            
             $input2['details'] = $input['details'];
+          
             
             $input2['is_active'] = $input['is_active'];
             
-            EssentialsBankAccounts::create($input);
- 
+           EssentialsBankAccounts::create($input2);
+
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
@@ -159,8 +177,9 @@ class EssentialsBankAccountController extends Controller
 
         $bank = EssentialsBankAccounts::findOrFail($id);
 
+        $locations = BusinessLocation::where('business_id', $business_id)->active()->pluck('name','id');
 
-        return view('essentials::settings.partials.bank_accounts.edit')->with(compact('bank'));
+        return view('essentials::settings.partials.bank_accounts.edit')->with(compact('bank','locations'));
     }
 
     /**
@@ -180,10 +199,16 @@ class EssentialsBankAccountController extends Controller
         }
 
         try {
-            $input = $request->only(['name', 'phone_number', 'mobile_number',
+            $oldLocation=EssentialsBankAccounts::whereId($id)->first()->location_id;
+            $input = $request->only(['name', 'phone_number', 'mobile_number','location',
             'address','details', 'is_active']);
             
-
+            if (!($request->has('location')) || $request->input('location') == null) {
+                $input2['location_id'] = $oldLocation;
+            }
+            else{
+                $input2['location_id'] = $request->input('location');
+            }
             $input2['name'] = $input['name'];
             
             $input2['phone_number'] = $input['phone_number'];
@@ -192,7 +217,6 @@ class EssentialsBankAccountController extends Controller
 
             $input2['address'] = $input['address'];
 
-           
             $input2['details'] = $input['details'];
             
             $input2['is_active'] = $input['is_active'];
