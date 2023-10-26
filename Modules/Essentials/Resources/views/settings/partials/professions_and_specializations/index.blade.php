@@ -107,7 +107,7 @@
             specializationGroup.find("input").val('');
             $("#specializations-container").append(specializationGroup);
         });
-    });
+  
     $(document).on('click', 'button.delete_profession_button', function () {
             swal({
                 title: LANG.sure,
@@ -135,6 +135,6 @@
             });
         });
 
- 
+    });
 </script>
 @endsection

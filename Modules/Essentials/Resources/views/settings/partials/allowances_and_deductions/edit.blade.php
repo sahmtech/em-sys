@@ -18,7 +18,7 @@
      
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'essentials::lang.add_allowance' )</h4>
+      <h4 class="modal-title">@lang( 'essentials::lang.edit_allowance' )</h4>
     </div>
 
   

@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsContractType;
 
 class EssentialsEmployeeContractController extends Controller
 {
@@ -32,6 +34,7 @@ class EssentialsEmployeeContractController extends Controller
         if (! $can_crud_employee_contracts) {
             abort(403, 'Unauthorized action.');
         }
+        $contract_types = EssentialsContractType::pluck('type','id')->all();
         if (request()->ajax()) {
             $employees_contracts = EssentialsEmployeesContract::
                 join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')->where('u.business_id', $business_id)
@@ -44,18 +47,22 @@ class EssentialsEmployeeContractController extends Controller
                     'essentials_employees_contracts.contract_end_date',
                     'essentials_employees_contracts.contract_duration',
                     'essentials_employees_contracts.probation_period',
-                    'essentials_employees_contracts.status',
+                    'essentials_employees_contracts.contract_type_id',
                     'essentials_employees_contracts.is_renewable',
                     'essentials_employees_contracts.file_path',
+                    'essentials_employees_contracts.status',
+
 
 
                 ]);
 
 
+            if (!empty(request()->input('contract_type')) && request()->input('contract_type') !== 'all') {
+                $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
+            }
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
             }
-            
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end = request()->end_date;
@@ -64,6 +71,11 @@ class EssentialsEmployeeContractController extends Controller
             }
            
             return Datatables::of($employees_contracts)
+            ->editColumn('contract_type_id',function($row)use($contract_types){
+                $item = $contract_types[$row->contract_type_id]??'';
+
+                return $item;
+            })
             ->addColumn(
                 'action',
                  function ($row) {
@@ -93,7 +105,7 @@ class EssentialsEmployeeContractController extends Controller
                 $users = $all_users->pluck('full_name', 'id');
                
         
-        return view('essentials::employee_affairs.employees_contracts.index')->with(compact('users'));
+        return view('essentials::employee_affairs.employees_contracts.index')->with(compact('users','contract_types'));
     }
    
 
@@ -107,21 +119,54 @@ class EssentialsEmployeeContractController extends Controller
         }
  
         try {
-            $input = $request->only(['employee', 'contract_number', 'contract_start_date', 'contract_end_date', 'contract_duration', 'probation_period','status','is_renewable','file']);
-          
+            $input = $request->only(['employee','contract_type' ,'contract_start_date', 'contract_end_date', 'contract_duration', 'probation_period','status','is_renewable','file']);
+         
             $input2['employee_id'] = $input['employee'];
-            $input2['contract_number'] = $input['contract_number'];
-            $input2['contract_start_date'] = $input['contract_start_date'];
-            $input2['contract_end_date'] = $input['contract_end_date'];
-            $input2['contract_duration'] = $input['contract_duration'];
-            $input2['probation_period'] = $input['probation_period'];
-            $input2['status'] = $input['status'];
-            $input2['is_renewable'] = $input['is_renewable'];
         
+
+
+            $input2['contract_start_date'] = $input['contract_start_date'];
+          
+
+            $input2['contract_end_date'] = $input['contract_end_date'];
+
+          $start_date = Carbon::parse($input['contract_start_date']);
+          $end_date = Carbon::parse($input['contract_end_date']);
+          
+          
+          $contract_duration = $start_date->diffInDays($end_date);
+       
+          $input2['contract_duration'] = $contract_duration;
+          
+          
+
+            $input2['probation_period'] = $input['probation_period'];
+         
+
+            $input2['contract_type_id'] = $input['contract_type'];
+         
+
+
+            $input2['is_renewable'] = $input['is_renewable'];
+           
+            $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+
+        
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->contract_number;
+                $numericPart = (int)substr($latestRefNo, 3); 
+                $numericPart++;
+                $input2['contract_number'] = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+            } else {
+
+                $input2['contract_number'] = 'EC0001';
+            }
+            if (request()->hasFile('file')) {
             $file = request()->file('file');
             $filePath = $file->store('/employeeContracts');
+          
             
-            $input2['file_path'] = $filePath;
+            $input2['file_path'] = $filePath;}
        
             EssentialsEmployeesContract::create($input2);
             

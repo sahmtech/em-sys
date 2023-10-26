@@ -63,7 +63,7 @@
                             <tr>
                                 <th>@lang('essentials::lang.employee' )</th>
                                 <th>@lang('essentials::lang.national_id_number' )</th>
-                                <th>@lang('essentials::lang.department' )</th>
+                              
                                 <th>@lang('essentials::lang.admissions_date')</th>
                                 <th>@lang('essentials::lang.admissions_type' )</th>
                                 <th>@lang('essentials::lang.admissions_status' )</th>
@@ -91,10 +91,7 @@
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
                                 {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('department', __('essentials::lang.department') . ':*') !!}
-                                {!! Form::select('department',$departments, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_department'), 'required']) !!}
-                            </div>
+                         
                     
                           
                             <div class="form-group col-md-6">
@@ -169,8 +166,10 @@
                 columns: [
                         { data: 'user' },
                         { data: 'id_proof_number' },
-                        { data: 'department_id' },
+                        { data: 'admissions_date' },
                  
+                       
+                     
                         {
                             data: 'admissions_type',
                             render: function (data, type, row) {
@@ -181,6 +180,7 @@
                                 }
                             }
                         },
+                        
                         {
                             data: 'admissions_status',
                             render: function (data, type, row) {
@@ -191,7 +191,6 @@
                                 }
                             }
                         },
-                        { data: 'admissions_date' },
                         { data: 'action' },
                     ],
              });

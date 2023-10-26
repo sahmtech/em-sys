@@ -42,7 +42,7 @@ class EssentialsAdmissionToWorkController extends Controller
                     'essentials_admission_to_works.id',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'u.id_proof_number',
-                    'essentials_admission_to_works.department_id',
+              
                     'essentials_admission_to_works.admissions_type',
                     'essentials_admission_to_works.admissions_status',
                     'essentials_admission_to_works.admissions_date',
@@ -66,11 +66,7 @@ class EssentialsAdmissionToWorkController extends Controller
             }
 
             return Datatables::of($admissionToWork)
-            ->editColumn('department_id',function($row)use($departments){
-                $item = $departments[$row->department_id]??'';
-
-                return $item;
-            })
+         
             ->addColumn(
                 'action',
                  function ($row) {
@@ -118,10 +114,10 @@ class EssentialsAdmissionToWorkController extends Controller
         }
  
         try {
-            $input = $request->only(['employee', 'department', 'admissions_type', 'admissions_status', 'admissions_date']);
+            $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);
           
             $input2['employee_id'] = $input['employee'];
-            $input2['department_id'] = $input['department'];
+         
             $input2['admissions_type'] = $input['admissions_type'];
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];

@@ -11,18 +11,25 @@
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
       
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('qualification_type_filter', __('essentials::lang.qualification_type') . ':') !!}
-                        {!! Form::text('qualification_type_filter', null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                    </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('qualification_type_filter', __('essentials::lang.qualification_type') . ':') !!}
+                    {!! Form::select('qualification_type_filter', [
+                       'bachelors'=>__('essentials::lang.bachelors'),
+                        'master' =>__('essentials::lang.master'),
+                        'PhD' =>__('essentials::lang.PhD'),
+                        'diploma' =>__('essentials::lang.diploma'),
+                
+                    ], null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 </div>
+            </div>
         
         
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('major_filter', __('essentials::lang.major') . ':') !!}
-                    {!! Form::text('major_filter', null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    {!! Form::select('major_filter',$spacializations, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+            
                 </div>
             </div>
            
@@ -83,15 +90,21 @@
                         
                             <div class="form-group col-md-6">
                                 {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
-                                {!! Form::text('qualification_type', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.qualification_type'), 'required']) !!}
-                            </div>
+                                {!! Form::select('qualification_type', [
+                                    'bachelors'=>__('essentials::lang.bachelors'),
+                                     'master' =>__('essentials::lang.master'),
+                                     'PhD' =>__('essentials::lang.PhD'),
+                                     'diploma' =>__('essentials::lang.diploma'),
+                             
+                                 ], null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                {!! Form::text('major', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.major'), 'required']) !!}
+                                {!! Form::select('major',$spacializations, null, ['class' => 'form-control', 'placeholder' =>  __('essentials::lang.major'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':*') !!}
-                                {!! Form::number('graduation_year', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year'), 'required']) !!}
+                                {!! Form::date('graduation_year', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':*') !!}
@@ -147,8 +160,24 @@
                 
                 columns: [
                         { data: 'user' },
-                        { data: 'qualification_type' },
-                        { data: 'major' },
+                       
+                        {
+                            data: 'qualification_type',
+                            render: function (data, type, row) {
+                                if (data === 'bachelors') {
+                                    return  '@lang('essentials::lang.bachelors')';
+                                } else if (data === 'master') {
+                                    return  '@lang('essentials::lang.master')';
+                                }else if (data === 'PhD') {
+                                    return  '@lang('essentials::lang.PhD')';
+                                }else if (data === 'diploma') {
+                                    return  '@lang('essentials::lang.diploma')';
+                                }else{
+                                    return  ' ';
+                                }
+                            }
+                        },
+                        { data: 'major'},
                         { data: 'graduation_year' },
                         { data: 'graduation_institution' },
                         { data: 'graduation_country' },

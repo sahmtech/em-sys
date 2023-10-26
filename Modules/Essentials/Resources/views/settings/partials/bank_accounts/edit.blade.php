@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.bank_accounts'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_setting')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
@@ -31,7 +31,10 @@
                 {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':') !!}
                 {!! Form::text('phone_number',  $bank->phone_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
             </div>
-        
+            <div class="form-group col-md-6">
+                {!! Form::label('location', __('essentials::lang.department') . ':*') !!}
+                {!! Form::select('location',$locations, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_location')]) !!}
+            </div>
             <div class="form-group col-md-6">
                 {!! Form::label('mobile_number', __('essentials::lang.mobile_number') . ':') !!}
                 {!! Form::text('mobile_number',  $bank->mobile_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.mobile_number')]) !!}
@@ -41,14 +44,14 @@
                 {!! Form::text('address',  $bank->address, ['class' => 'form-control', 'placeholder' => __('essentials::lang.address')]) !!}
             </div>
             <div class="form-group col-md-6">
+                {!! Form::label('is_active', __('essentials::lang.is_active') . ':') !!}
+                {!! Form::select('is_active', ['1' => __('essentials::lang.is_active'), '0' => __('essentials::lang.is_unactive')],  $bank->is_active, ['class' => 'form-control']) !!}
+            </div>
+            <div class="form-group col-md-12">
                 {!! Form::label('details', __('essentials::lang.details') . ':') !!}
                 {!! Form::textarea('details',  $bank->details, ['class' => 'form-control', 'placeholder' => __('essentials::lang.details'), 'rows' => 2]) !!}
             </div>
         
-            <div class="form-group col-md-6">
-                {!! Form::label('is_active', __('essentials::lang.is_active') . ':') !!}
-                {!! Form::select('is_active', ['1' => __('essentials::lang.is_active'), '0' => __('essentials::lang.is_unactive')],  $bank->is_active, ['class' => 'form-control']) !!}
-            </div>
         </div>
         
       </div>
