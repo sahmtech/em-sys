@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
-            {!! Form::open(['method' => 'post', 'id' => 'create_cost_center_form']) !!}
+            {!! Form::open(['method' => 'post', 'id' => 'create_cost_center_form','route' => 'cost_center_store']) !!}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:red"><span
                         aria-hidden="true">&times;</span>

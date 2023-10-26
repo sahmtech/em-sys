@@ -37,11 +37,14 @@
             </table>
         @endcomponent
     </section>
-    @include('accounting::cost_center.edit')
     @include('accounting::cost_center.create')
+    @include('accounting::cost_center.edit')
+
 @stop
 
 {{-- @push('javascript') --}}
+
+
 @section('javascript')
     <script>
         $(document).ready(function() {
@@ -97,6 +100,7 @@
             $('.business_location_id_label').hide();
 
         });
+
         $(document).on('click', '.edit_cost_center', function(e) {
             $(this).find('#edit_business_location_id').select2({
                 tags: true,
@@ -141,7 +145,7 @@
 
         $(document).ready(function() {
             $('input[name=is_location]').change(function() {
-                console.log($(this).val());
+                // console.log($(this).val());
                 if ($(this).val() === 'yes') {
 
                     $('#business_location_id').next(".select2-container").show();
@@ -167,7 +171,7 @@
                     $('#create_parent_id').hide()
                     $('#create_parent_id_label').hide()
                     $('#create_parent_id').next(".select2-container").hide();
-                   
+
                 } else {
                     $('#create_parent_id').show()
 
@@ -190,60 +194,8 @@
                 }
             });
         });
-        $(document).on('submit', '#edit_cost_center_form', function(e) {
-            e.preventDefault()
-            let id = $('#cost_center_id').val()
 
-            let url = "{{ route('cost_centers.update', 'id') }}"
-            url = url.replace('id', id)
-            let form = $(this);
-            let data = form.serialize();
 
-            $.ajax({
-                method: 'POST',
-                url: url,
-                dataType: 'json',
-                beforeSend: function(xhr) {
-                    __disable_submit_button(form.find('button[type="submit"]'));
-                },
-                data: data,
-                success: function(result) {
-                    if (result.success == true) {
-                        $('div#edit_cost_center_modal').modal('hide');
-                        toastr.success(result.msg);
-                        $('#cost_center_table').DataTable().ajax.reload();
-                    } else {
-                        toastr.error(result.msg);
-                    }
-                },
-            });
-        })
-        $(document).on('submit', '#create_cost_center_form', function(e) {
-            e.preventDefault()
-
-            let url = "{{ route('cost_centers.store') }}"
-            let form = $(this);
-            let data = form.serialize();
-
-            $.ajax({
-                method: 'POST',
-                url: url,
-                dataType: 'json',
-                beforeSend: function(xhr) {
-                    __disable_submit_button(form.find('button[type="submit"]'));
-                },
-                data: data,
-                success: function(result) {
-                    if (result.success === true) {
-                        $('div#create_cost_center_modal').modal('hide');
-                        toastr.success(result.msg);
-                        $('#cost_center_table').DataTable().ajax.reload();
-                    } else {
-                        toastr.error(result.msg);
-                    }
-                },
-            });
-        })
 
         $(document).on('click', 'button.delete_cost_center_button', function() {
             swal({
@@ -274,6 +226,71 @@
                 }
             });
         });
+
+        function get_id() {
+            return $('#cost_center_id').val();
+        }
     </script>
     {{-- @endpush --}}
 @endsection
+
+@push('javascript')
+    <script>
+        $(document).on('submit', '#create_cost_center_form', function(e) {
+            e.preventDefault()
+
+            let url = "{{ route('cost_center_store') }}"
+            let form = $(this);
+            let data = form.serialize();
+
+            $.ajax({
+                method: 'POST',
+                url: url,
+                dataType: 'json',
+                beforeSend: function(xhr) {
+                    __disable_submit_button(form.find('button[type="submit"]'));
+                },
+                data: data,
+                success: function(result) {
+                    if (result.success === true) {
+                        $('div#create_cost_center_modal').modal('hide');
+                        toastr.success(result.msg);
+                        $('#cost_center_table').DataTable().ajax.reload();
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        })
+        $(document).on('submit', '#edit_cost_center_form', function(e) {
+
+            e.preventDefault()
+            let id = $('#cost_center_id').val()
+          
+
+            let url = `{{ route('cost_center_update', 'id') }}`
+            url = url.replace('id', id)
+            let form = $(this);
+            let data = form.serialize();
+
+            $.ajax({
+                method: 'PUT',
+                url: url,
+                dataType: 'json',
+                beforeSend: function(xhr) {
+                    __disable_submit_button(form.find('button[type="submit"]'));
+                },
+                data: data,
+                success: function(result) {
+                    if (result.success == true) {
+                        $('#edit_cost_center_modal').modal('hide');
+                        toastr.success(result.msg);
+                        $('#cost_center_table').DataTable().ajax.reload();
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        });
+    </script>
+@endpush
