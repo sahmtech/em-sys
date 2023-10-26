@@ -40,10 +40,16 @@ class Business extends Model
         'common_settings' => 'array',
         'weighing_scale_setting' => 'array',
     ];
-    public static function forDropdown()
+    public static function forDropdown($business_id = null)
     {
-        $businesses = Business::all()->pluck('name','id');
-        
+        $businesses = null;
+        if ($business_id) {
+            $businesses = Business::where('id', $business_id)->pluck('name', 'id');
+        } else {
+            $businesses = Business::all()->pluck('name', 'id');
+        }
+
+
         return $businesses;
     }
 
@@ -121,7 +127,7 @@ class Business extends Model
      */
     public static function update_business($business_id, $details)
     {
-        if (! empty($details)) {
+        if (!empty($details)) {
             Business::where('id', $business_id)
                 ->update($details);
         }
@@ -130,8 +136,8 @@ class Business extends Model
     public function getBusinessAddressAttribute()
     {
         $location = $this->locations->first();
-        $address = $location->landmark.', '.$location->city.
-        ', '.$location->state.'<br>'.$location->country.', '.$location->zip_code;
+        $address = $location->landmark . ', ' . $location->city .
+            ', ' . $location->state . '<br>' . $location->country . ', ' . $location->zip_code;
 
         return $address;
     }
