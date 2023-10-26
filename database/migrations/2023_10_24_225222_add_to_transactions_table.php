@@ -14,9 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('transactions', function (Blueprint $table) {
-        
+   
               
-                $table->enum('contract_form',['first','seconde'])->nullable();
                 $table->decimal('down_payment')->nullable();
     
         });

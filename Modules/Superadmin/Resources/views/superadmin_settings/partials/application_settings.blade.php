@@ -15,7 +15,7 @@
         <div class="col-xs-4">
             <div class="form-group">
             	{!! Form::label('APP_LOCALE', __('superadmin::lang.app_default_language') . ':') !!}
-            	{!! Form::select('APP_LOCALE', $languages, $default_values['APP_LOCALE'], ['class' => 'form-control']); !!}
+            	{!! Form::select('APP_LOCALE', $languages,null, ['class' => 'form-control']); !!}
             </div>
         </div>
     </div>

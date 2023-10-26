@@ -72,7 +72,7 @@ class EssentialsAdmissionToWorkController extends Controller
                  function ($row) {
                     $html = '';
                 //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+                    $html .= '<a  href="'. route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
                     $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     
                     return $html;
@@ -138,8 +138,8 @@ class EssentialsAdmissionToWorkController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)
-        ->user();
+        $query = User::where('business_id', $business_id);
+        
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         
@@ -193,26 +193,67 @@ class EssentialsAdmissionToWorkController extends Controller
      * @param int $id
      * @return Renderable
      */
+   
+   
     public function edit($id)
     {
-        return view('essentials::edit');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $work = EssentialsAdmissionToWork::findOrFail($id);
+        $departments=EssentialsDepartment::all()->pluck('name','id');
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        return view('essentials::employee_affairs.admission_to_work.edit')->with(compact('users','departments','work'));
+      
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
+ 
     public function update(Request $request, $id)
     {
-        //
-    }
+      
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-   
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);
+          
+            $input2['employee_id'] = $input['employee'];
+         
+            $input2['admissions_type'] = $input['admissions_type'];
+            $input2['admissions_status'] = $input['admissions_status'];
+            $input2['admissions_date'] = $input['admissions_date'];
+        
+         
+       
+            EssentialsAdmissionToWork::where('id', $id)->update($input2);
+            $output = ['success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        $query = User::where('business_id', $business_id);
+        
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        
+        $departments = EssentialsDepartment::forDropdown();
+
+       return redirect()->route('admissionToWork')->with(compact('users','departments'));
+    }
 }

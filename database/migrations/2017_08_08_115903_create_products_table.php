@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('business_id')->unsigned();
             $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
-            $table->enum('type', ['single', 'variable']);
+            $table->enum('type', ['single', 'variable','service']);
             $table->integer('unit_id')->unsigned();
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->integer('brand_id')->unsigned()->nullable();

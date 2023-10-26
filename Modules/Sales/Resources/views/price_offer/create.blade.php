@@ -69,8 +69,8 @@
 					<div class="form-group">
 					  {!! Form::label('contract_form', __('sales::lang.contract_form') . ':*') !!}
 					  {!! Form::select('contract_form',
-					 	 ['first' => __('sales::lang.first_choice'), 
-					 	'seconde' => __('sales::lang.second_choice')],
+					 	 ['monthly_cost' => __('sales::lang.monthly_cost'), 
+					 	'operating_fees' => __('sales::lang.operating_fees')],
 						null,
 						['class' => 'form-control', 'required',
 						'placeholder' => __('sales::lang.contract_form')]); !!}

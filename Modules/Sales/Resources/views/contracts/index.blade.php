@@ -26,8 +26,8 @@
                     {!! Form::label('contract_form_filter', __('sales::lang.contract_form') . ':') !!}
                     <select class="form-control select2" name="contract_form_filter" required id="contract_form_filter" style="width: 100%;">
                         <option value="all">@lang('lang_v1.all')</option>
-                        <option value="first">@lang('sales::lang.first_choice')</option>
-                        <option value="seconde">@lang('sales::lang.second_choice')</option>
+                        <option value="monthly_cost">@lang('sales::lang.monthly_cost')</option>
+                        <option value="operating_fees">@lang('sales::lang.operating_fees')</option>
                     </select>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                                 <th>@lang('sales::lang.start_date' )</th>
                                 <th>@lang('sales::lang.end_date' )</th>
                                 <th>@lang('sales::lang.contract_form' )</th>
-                                <th>@lang('sales::lang.sale_operation_orders' )</th>
+                            
                                 <th>@lang('messages.action' )</th>
                             </tr>
                         </thead>
@@ -130,10 +130,7 @@
                                 {!! Form::label('notes', __('sales::lang.notes') . ':') !!}
                                 {!! Form::textarea('notes', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.notes'), 'rows' => 2]) !!}
                             </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('operation_order', __('sales::lang.has_the_operating_order_been_issued?') . ':') !!}
-                                {!! Form::checkbox('operation_order', 1, false, ['class' => 'form-check-input']) !!}
-                            </div>
+                           
                             
                         </div>
                     </div>
@@ -202,7 +199,7 @@
                                 }
                             }
                         },
-                        {data: 'operation_order' },
+                     
                         { data: 'action' },
                     ],
              });
