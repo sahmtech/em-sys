@@ -157,10 +157,6 @@ return [
     'product_type'=>'نوع الصنف ',
     'service_price'=>'سعر الخدمة ',
     'monthly_cost_for_one'=>'التكلفة شهريا',
-
-   
-     
-   
     'food_allowance'=>'بدل طعام',
     'housing_allowance'=>'بدل سكن',
     'transportation_allowance'=>'بدل نقل',     
@@ -175,13 +171,10 @@ return [
     ////// to here we have the en lang file
 
     'allowances'=>'البدلات',
-    'allowance_name'=>'اسم البدل'
-
-'first_choice'=>'الخيار الأول',
-'second_choice'=>'الخيار الثاني',
-'nationality_name'=>'الجنسية ',
-'profession_name'=>'المهنة ',
-'specialization_name'=>'التخصص',
-'unit'=>'الوحدة'
+    'allowance_name'=>'اسم البدل',
+    'nationality_name'=>'الجنسية ',
+    'profession_name'=>'المهنة ',
+    'specialization_name'=>'التخصص',
+    'unit'=>'الوحدة'
 
 ];
