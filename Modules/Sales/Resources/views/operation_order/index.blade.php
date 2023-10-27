@@ -18,7 +18,7 @@
 <div class="col-md-3">
     <div class="form-group">
         <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
-        {!! Form::select('contract_id', $contracts->pluck('contract_number', 'contract_number'), null, [
+        {!! Form::select('contract-select', $contracts->pluck('contract_number', 'contract_number'), null, [
             'class' => 'form-control',
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.all'),
@@ -83,10 +83,18 @@
     // Countries table
     $(document).ready(function () {
     var customers_table = $('#operation_table').DataTable({
-        ajax:'', 
+       
         processing: true,
         serverSide: true,
-        
+        ajax: {
+                    url: "{{ route('sale.orderOperations') }}",
+                    data: function(d) {
+                        
+                         d.number_of_contract = $('#contract-select').val();
+                         d.Status = $('#status_filter').val();
+
+                    }
+                },
         
        
         columns: [

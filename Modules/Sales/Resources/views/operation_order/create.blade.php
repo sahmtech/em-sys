@@ -15,12 +15,11 @@
 
 
 
-	
-	<div class="row">
+<div class="row">
 		<div class="col-md-12 col-sm-12">
 			@component('components.widget', ['class' => 'box-solid'])
             {!! Form::open(['url' => action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store']), 'method' => 'post']) !!}       
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
         <div class="input-group">
@@ -32,7 +31,7 @@
     </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('operation_order_number', __('sales::lang.operation_order_number') . ':*') !!}
         <div class="input-group">
@@ -44,7 +43,7 @@
     </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('contract_id', __('sales::lang.contract') . ':*') !!}
         <div class="input-group">
@@ -56,19 +55,9 @@
     </div>
 </div>
 
-<div class="col-md-4">
-    <div class="form-group">
-        {!! Form::label('agency_id', __('sales::lang.agency_id') . ':*') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
-            </span>
-            {!! Form::select('agency_id',$agencies, null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('sales::lang.select_agency')]) !!}
-        </div>
-    </div>
-</div>
 
-<div class="col-md-4">
+
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('Industry', __('sales::lang.Industry') . ':') !!}
         <div class="input-group">
@@ -82,7 +71,7 @@
 
 
 				
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('operation_order_type', __('sales::lang.operation_order_type') . ':*') !!}
         <div class="input-group">
@@ -90,12 +79,12 @@
                 <i class="fa fa-id-badge"></i>
             </span>
             
-            {!! Form::select('operation_order_type', ['Internal' => __('sales::lang.Internal'), 'External' => __('sales::lang.external')], null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('sales::lang.operation_order_type')]); !!}
+            {!! Form::select('operation_order_type', ['Internal' => __('sales::lang.Internal'), 'External' => __('sales::lang.external')], null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.operation_order_type')]); !!}
         </div>
     </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('Interview', __('sales::lang.Interview') . ':*') !!}
         <div class="input-group">
@@ -103,12 +92,12 @@
                 <i class="fa fa-id-badge"></i>
             </span>
             
-            {!! Form::select('Interview', ['Client ' => __('sales::lang.Client'), 'Company' => __('sales::lang.Company')], null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Interview')]); !!}
+            {!! Form::select('Interview', ['Client ' => __('sales::lang.Client'), 'Company' => __('sales::lang.Company')], null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.Interview')]); !!}
         </div>
     </div>
 </div>
 		
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('Location', __('sales::lang.Location') . ':') !!}
         <div class="input-group">
@@ -120,7 +109,7 @@
     </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('Delivery', __('sales::lang.Delivery') . ':') !!}
         <div class="input-group">
@@ -132,7 +121,7 @@
     </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('Note', __('sales::lang.Note') . ':') !!}
         <div class="input-group">
@@ -144,17 +133,8 @@
     </div>
 </div>
 
-<div class="col-md-4">
-    <div class="form-group">
-        {!! Form::label('Status', __('sales::lang.Status') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
-            </span>
-            {!! Form::text('Status', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Status')]); !!}
-        </div>
-    </div>
-</div>
+
+
 		
 @endcomponent
 
