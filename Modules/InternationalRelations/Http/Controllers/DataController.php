@@ -22,129 +22,27 @@ class DataController extends Controller
      */
     public function user_permissions()
     {
-        return [
+        return
+         [
             [
-                'value' => 'internationalRelations.crud_leave_type',
-                'label' => __('internationalRelations::lang.crud_leave_type'),
+                'value' => 'internationalrelations.view_dashboard',
+                'label' => __('internationalrelations::lang.view_dashboard'),
                 'default' => false,
             ],
             [
-                'value' => 'internationalRelations.crud_all_leave',
-                'label' => __('internationalRelations::lang.crud_all_leave'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'leave_crud',
-            ],
-            [
-                'value' => 'internationalRelations.crud_own_leave',
-                'label' => __('internationalRelations::lang.crud_own_leave'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'leave_crud',
-            ],
-            [
-                'value' => 'internationalRelations.approve_leave',
-                'label' => __('internationalRelations::lang.approve_leave'),
+                'value' => 'internationalrelations.view_Airlines',
+                'label' => __('internationalrelations::lang.view_Airlines'),
                 'default' => false,
             ],
             [
-                'value' => 'internationalRelations.crud_all_attendance',
-                'label' => __('internationalRelations::lang.crud_all_attendance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'attendance_crud',
-            ],
-            [
-                'value' => 'internationalRelations.view_own_attendance',
-                'label' => __('internationalRelations::lang.view_own_attendance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'attendance_crud',
-            ],
-            [
-                'value' => 'internationalRelations.allow_users_for_attendance_from_web',
-                'label' => __('internationalRelations::lang.allow_users_for_attendance_from_web'),
+                'value' => 'internationalrelations.view_EmploymentCompanies',
+                'label' => __('internationalrelations::lang.view_EmploymentCompanies'),
                 'default' => false,
             ],
+            
             [
-                'value' => 'internationalRelations.allow_users_for_attendance_from_api',
-                'label' => __('internationalRelations::lang.allow_users_for_attendance_from_api'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.view_allowance_and_deduction',
-                'label' => __('internationalRelations::lang.view_pay_component'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.add_allowance_and_deduction',
-                'label' => __('internationalRelations::lang.add_pay_component'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.crud_department',
-                'label' => __('internationalRelations::lang.crud_department'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.crud_designation',
-                'label' => __('internationalRelations::lang.crud_designation'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'internationalRelations.view_all_payroll',
-                'label' => __('internationalRelations::lang.view_all_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.create_payroll',
-                'label' => __('internationalRelations::lang.add_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.update_payroll',
-                'label' => __('internationalRelations::lang.edit_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.delete_payroll',
-                'label' => __('internationalRelations::lang.delete_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.assign_todos',
-                'label' => __('internationalRelations::lang.assign_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.add_todos',
-                'label' => __('internationalRelations::lang.add_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.edit_todos',
-                'label' => __('internationalRelations::lang.edit_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.delete_todos',
-                'label' => __('internationalRelations::lang.delete_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.create_message',
-                'label' => __('internationalRelations::lang.create_message'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.view_message',
-                'label' => __('internationalRelations::lang.view_message'),
-                'default' => false,
-            ],
-            [
-                'value' => 'internationalRelations.access_sales_target',
-                'label' => __('internationalRelations::lang.access_sales_target'),
+                'value' => 'internationalrelations.crud_airlines',
+                'label' => __('internationalrelations::lang.crud_airlines'),
                 'default' => false,
             ],
         ];
@@ -177,10 +75,50 @@ class DataController extends Controller
 
         $business_id = session()->get('user.business_id');
         $is_internationalRelations_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'internationalRelations_module');
-        //dd($is_internationalRelations_enabled);
+      
         if ($is_internationalRelations_enabled) {
             Menu::modify('admin-sidebar-menu', function ($menu) {
-                $menu->url(action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']), 'العلاقات الدولية', ['icon' => 'fa fas fa-dharmachakra', 'active' => request()->segment(1) == 'notification-templates'])->order(86);
+
+                $menu->dropdown(
+                    __('internationalrelations::lang.International'),
+                    function ($subMenu) {
+
+                        if (auth()->user()->can('internationalrelations.view_dashboard')) 
+                        {
+                            $subMenu->url(
+                                action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
+                                __('internationalrelations::lang.dashboard'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'dashboard'],
+                            )->order(1);
+                        }
+
+                        
+                        if (auth()->user()->can('internationalrelations.view_Airlines')) 
+                        {
+                            $subMenu->url(
+                                action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
+                                __('internationalrelations::lang.Airlines'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'Airlines'],
+                            )->order(2);
+                        }
+                        if (auth()->user()->can('internationalrelations.view_EmploymentCompanies')) 
+                        {
+                            $subMenu->url(
+                                action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
+                                __('internationalrelations::lang.EmploymentCompanies'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'EmploymentCompanies'],
+                            )->order(3);
+                        
+                        }
+                      },
+                    [
+                        'icon' => 'fa fas fa-dharmachakra',
+                        'active' => request()->segment(1) == 'internationalRleations',
+                        'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+                    ]
+                )->order(20);
+                // $menu->url(action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
+                //  'العلاقات الدولية', ['icon' => 'fa fas fa-dharmachakra', 'active' => request()->segment(1) == 'notification-templates'])->order(86);
             });
         }
     }

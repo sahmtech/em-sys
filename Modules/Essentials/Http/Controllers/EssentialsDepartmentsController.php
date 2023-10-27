@@ -36,8 +36,11 @@ class EssentialsDepartmentsController extends Controller
     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
   
 
-    $departments = EssentialsDepartment::where('parent_department_id', '=', 0)->get();
-    $alldepartments = EssentialsDepartment::pluck('name','id')->all();
+    $departments = EssentialsDepartment::where('parent_department_id', '=', 0)
+    ->where('business_id','=',$business_id)->get();
+    $alldepartments = EssentialsDepartment::pluck('name','id')
+    ->where('business_id','=',$business_id)->all();
+
     return view('essentials::settings.partials.departments.index',  compact('departments','alldepartments'));
     
    }

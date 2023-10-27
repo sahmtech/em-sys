@@ -252,12 +252,7 @@ class ClientsController extends Controller
             $contract_follower_input['contact_user_type']='contract_follower';
             $contract_follower = User::create($contract_follower_input);
 
-     
-            event(new ContactCreatedOrModified($input, 'added'));
-
-            $this->moduleUtil->getModuleData('after_contact_saved', ['contact' => $output['data'], 'input' => $request->input()]);
-
-            $this->contactUtil->activityLog($output['data'], 'added');
+  
         } 
         
         catch (\Exception $e)

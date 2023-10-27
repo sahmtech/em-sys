@@ -169,10 +169,12 @@
                     }
                 },
                 
+
                 columns: [
                         { data: 'id' },
                         { data: 'number_of_contract' },
                         { data: 'contact_id' },
+                        
                         { data: 'status',render: function (data, type, row) {
                                 if (data === 'valid') {
                                     return  '@lang('sales::lang.valid')';
@@ -182,6 +184,7 @@
                                 }
                             } 
                         },
+
 
                         { data: 'start_date' },
                         { data: 'end_date' },
@@ -210,6 +213,8 @@
             $('#status_filter, #contract_form_filter').on('change', function() {
                 reloadDataTable();
             });
+
+
             $(document).on('click', 'button.delete_contract_button', function () {
                 swal({
                     title: LANG.sure,
