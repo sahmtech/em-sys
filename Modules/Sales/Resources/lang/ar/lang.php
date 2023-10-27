@@ -157,10 +157,6 @@ return [
     'product_type'=>'نوع الصنف ',
     'service_price'=>'سعر الخدمة ',
     'monthly_cost_for_one'=>'التكلفة شهريا',
-
-   
-     
-   
     'food_allowance'=>'بدل طعام',
     'housing_allowance'=>'بدل سكن',
     'transportation_allowance'=>'بدل نقل',     
@@ -174,5 +170,5 @@ return [
     'crud_contract_appendics'=>'حذف/ إضافة/تعديل ملاحق العقود',
     ////// to here we have the en lang file
     'allowances'=>'البدلات',
-    'allowance_name'=>'اسم البدل'
+    'allowance_name'=>'اسم البدل',
 ];
