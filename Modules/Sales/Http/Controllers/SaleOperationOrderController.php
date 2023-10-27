@@ -76,14 +76,7 @@ class SaleOperationOrderController extends Controller
             $query->where('sales_orders_operations.operation_order_type', request()->input('status_filter'));
         }
       
-  
 
-
-        //     foreach ($products as $pro)
-        //    {dd($pro);}
-
-   
-   
  
       $operations = DB::table('sales_orders_operations')
       ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')

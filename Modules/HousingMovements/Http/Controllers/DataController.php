@@ -323,7 +323,8 @@ class DataController extends Controller
         //dd($is_housingmoveement_enabled);
         if ($is_housingmoveement_enabled) {
             Menu::modify('admin-sidebar-menu', function ($menu) {
-                $menu->url(action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']), 'إدارة السكن والحركة', ['icon' => 'fa 	fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(85);
+                $menu->url(action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
+                __('housingmovements::lang.housing_move'), ['icon' => 'fa 	fas fa-dolly', 'active' => request()->segment(1) == 'notification-templates'])->order(85);
             });
         }
     }

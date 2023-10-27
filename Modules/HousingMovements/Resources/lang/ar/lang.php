@@ -1,4 +1,4 @@
 <?php
 return [
-    'housingmoveement_module' => 'Housing & Movement Module'
+    'housing_move'=>'إدارة السكن والحركة  '
 ];
