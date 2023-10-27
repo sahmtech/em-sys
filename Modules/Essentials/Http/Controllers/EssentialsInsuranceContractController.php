@@ -89,7 +89,7 @@ class EssentialsInsuranceContractController extends Controller
                     function ($row) {
                         $html = '';
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
-                        //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
+                        $html .= '<a href="'. route('insurance_contracts.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         return $html;
                     }
@@ -162,7 +162,9 @@ class EssentialsInsuranceContractController extends Controller
             ];
         }
 
-        return redirect()->route('insurance_contracts')->with('status', $output);
+     //   return redirect()->route('insurance_contracts')->with('status', $output);
+        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
+        return redirect()->route('insurance_contracts')->with(compact($insuramce_companies));
     }
 
     /**
@@ -182,7 +184,17 @@ class EssentialsInsuranceContractController extends Controller
      */
     public function edit($id)
     {
-        return view('essentials::edit');
+
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+        $contract = EssentialsInsuranceContract::findOrFail($id);
+        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
+
+        return view('essentials::insurance_contracts.edit')->with(compact('insuramce_companies','contract'));
     }
 
     /**
@@ -192,8 +204,38 @@ class EssentialsInsuranceContractController extends Controller
      * @return Renderable
      */
     public function update(Request $request, $id)
-    {
-        //
+    {  $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+        try {
+            $input = $request->only(['insurance_company', 'policy_number', 'policy_value', 'insurance_employees_count', 'insurance_dependents_count', 'insurance_start_date', 'insurance_end_date', 'insurance_attachments']);
+            if (request()->hasFile('file')) {
+            $file = request()->file('insurance_attachments');
+            $filePath = $file->store('/insuranceContracts');
+            $insurance_contract_data['attachments'] = $filePath;}
+            $insurance_contract_data['employees_count'] =  $input['insurance_employees_count'];
+            $insurance_contract_data['dependents_count'] = $input['insurance_dependents_count'];
+            $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
+            $insurance_contract_data['insurance_end_date'] =  $input['insurance_end_date'];
+            $insurance_contract_data['insurance_company_id'] = $input['insurance_company'];
+            $insurance_contract_data['policy_number'] =  $input['policy_number'];
+            $insurance_contract_data['policy_value'] = $input['policy_value'];
+            EssentialsInsuranceContract::where('id', $id)->update($insurance_contract_data);
+            $output = ['success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
+        return redirect()->route('insurance_contracts')->with(compact('insuramce_companies'));
     }
 
     /**
