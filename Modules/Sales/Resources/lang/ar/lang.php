@@ -169,6 +169,13 @@ return [
     'crud_contract_items'=>'حذف/ إضافة/تعديل  بنود العقود',
     'crud_contract_appendics'=>'حذف/ إضافة/تعديل ملاحق العقود',
     ////// to here we have the en lang file
+
     'allowances'=>'البدلات',
     'allowance_name'=>'اسم البدل',
+    'allowance_name'=>'اسم البدل',
+    'nationality_name'=>'الجنسية ',
+    'profession_name'=>'المهنة ',
+    'specialization_name'=>'التخصص',
+    'unit'=>'الوحدة'
+
 ];

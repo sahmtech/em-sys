@@ -189,6 +189,14 @@ return [
     'crud_contract'=>'Delete/Add/Modify  contract',
     'crud_contract_items'=>'Delete/Add/Modify  contract_items',
     'crud_contract_appendics'=>'Delete/Add/Modify  contract_appendics',
+    //added 
+    'first_choice'=>'first choice',
+    'second_choice'=>'second choice',
+//
+    'nationality_name'=>'nationality',
+    'profession_name'=>'profession',
+    'specialization_name'=>'specialization',
+    'unit'=>'unit',
 
 
     

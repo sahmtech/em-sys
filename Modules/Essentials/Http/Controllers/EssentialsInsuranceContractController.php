@@ -36,7 +36,7 @@ class EssentialsInsuranceContractController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
-        $insuramce_companies = Contact::where('business_id', $business_id)->pluck('supplier_business_name', 'id',);
+        $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
         if (request()->ajax()) {
             $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
                 'id',

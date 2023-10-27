@@ -107,6 +107,34 @@
      $('#contract-select, #status_filter').change(function () {
         customers_table.ajax.reload();
     });
+
+    $(document).on('click', 'button.delete_operation_button', function () {
+                swal({
+                    title: LANG.sure,
+                    text: LANG.confirm_contract,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        var href = $(this).data('href');
+                        console.log(href);
+                        $.ajax({
+                            method: "DELETE",
+                            url: href,
+                            dataType: "json",
+                            success: function (result) {
+                                if (result.success == true) {
+                                    toastr.success(result.msg);
+                                    contracts_table.ajax.reload();
+                                } else {
+                                    toastr.error(result.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
 });
 
 </script>
