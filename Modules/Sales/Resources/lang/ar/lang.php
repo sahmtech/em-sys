@@ -172,7 +172,6 @@ return [
 
     'allowances'=>'البدلات',
     'allowance_name'=>'اسم البدل',
-    'allowance_name'=>'اسم البدل',
     'nationality_name'=>'الجنسية ',
     'profession_name'=>'المهنة ',
     'specialization_name'=>'التخصص',
