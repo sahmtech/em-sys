@@ -170,11 +170,21 @@ return [
     'crud_contract_appendics'=>'حذف/ إضافة/تعديل ملاحق العقود',
     ////// to here we have the en lang file
 
-    'allowances'=>'البدلات',
-    'allowance_name'=>'اسم البدل',
-    'nationality_name'=>'الجنسية ',
-    'profession_name'=>'المهنة ',
-    'specialization_name'=>'التخصص',
-    'unit'=>'الوحدة'
+'first_choice'=>'الخيار الأول',
+'second_choice'=>'الخيار الثاني',
+'nationality_name'=>'الجنسية ',
+'profession_name'=>'المهنة ',
+'specialization_name'=>'التخصص',
+'unit'=>'الوحدة',
+'registered'=>'مسجل',
+// =======
 
+//     'allowances'=>'البدلات',
+//     'allowance_name'=>'اسم البدل',
+//     'nationality_name'=>'الجنسية ',
+//     'profession_name'=>'المهنة ',
+//     'specialization_name'=>'التخصص',
+//     'unit'=>'الوحدة'
+
+// >>>>>>> Development
 ];

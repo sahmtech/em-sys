@@ -197,6 +197,7 @@ return [
     'profession_name'=>'profession',
     'specialization_name'=>'specialization',
     'unit'=>'unit',
+    'registered'=>'registered',
 
 
     
