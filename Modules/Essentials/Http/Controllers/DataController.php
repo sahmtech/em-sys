@@ -473,9 +473,9 @@ class DataController extends Controller
         $is_essentials_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'essentials_module');
 
         // if ($is_essentials_enabled) {
-            Menu::modify('admin-sidebar-menu', function ($menu) {
+            Menu::create('custom_admin-sidebar-menu', function ($menu) {
 
-
+                $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ','active' => request()->segment(1) == 'home'])->order(5);
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
