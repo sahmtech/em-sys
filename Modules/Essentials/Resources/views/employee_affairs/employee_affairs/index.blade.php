@@ -72,7 +72,22 @@
                         {"data":"essentials_department_id"},
                         {"data":"contact_number"},
                         {"data":"email"},
-                        {"data":"status"},
+                        {
+                            data: 'status',
+                            render: function (data, type, row) {
+                                if (data === 'active') {
+                                    return  '@lang('essentials::lang.active')';
+                                } else if (data === 'vecation') {
+                                    return  '@lang('essentials::lang.vecation')';
+                                } else if(data === 'inactive'){
+                                    return  '@lang('essentials::lang.inactive')';
+                                }else if(data === 'terminated'){
+                                    return  '@lang('essentials::lang.terminated')';
+                                }else{
+                                    return  ' ';
+                                }
+                            }
+                        },
                         {"data":"action"}
                     ]
                 });

@@ -106,7 +106,7 @@
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     {!! Form::label('business_name', __('essentials::lang.business_name') . ':*') !!}
-                                    {!! Form::select('business_name', $businesses, null, ['class' => 'form-control select2',  'required']) !!}
+                                    {!! Form::select('business_name', $businesses, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.business_name'), 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}

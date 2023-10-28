@@ -29,6 +29,7 @@
                     <thead>
                         <tr>
                             <th>@lang('essentials::lang.name')</th>
+                            <th>@lang('essentials::lang.location')</th>
                             <th>@lang('essentials::lang.phone_number')</th>                           
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('essentials::lang.address')</th>
@@ -60,7 +61,10 @@
                           {!! Form::label('name', __('essentials::lang.bank_name') . ':*') !!}
                           {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.bank_name'), 'required']) !!}
                       </div>
-                  
+                      <div class="form-group col-md-6">
+                        {!! Form::label('location', __('essentials::lang.department') . ':*') !!}
+                        {!! Form::select('location',$locations, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_location'), 'required']) !!}
+                    </div>
                       <div class="form-group col-md-6">
                           {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':*') !!}
                           {!! Form::text('phone_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
@@ -111,6 +115,7 @@
             ajax: '{{ route("bank_accounts") }}', 
             columns: [
                 { data: 'name'},
+                { data: 'location_id'},
                 { data: 'phone_number'},
                 { data: 'mobile_number'},
                 { data: 'address'},

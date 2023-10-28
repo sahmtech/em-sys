@@ -615,7 +615,18 @@ return [
 'insurance_contracts'=>'Insurace Contracts',
 'facilities_management'=>'facilities Management',
 'qualifications'=>'Qualifications',
-'reports'=>'Reports'
+'reports'=>'Reports',
+'edit_bank_account'=>'Edit Bank Account',
+'editTravel_categorie'=>'Edit Travel Categorie',
+'edit_allowance'=>'Edit Allowance',
+'contract_type'=>'Contract Type',
+'canceled'=>'Canceled',
+'valid'=>'Valid',
+'active'=>'Active',
+'vecation'=>'Vecation',
+'inactive'=>'Inactive',
+'terminated'=>'Terminated',
+'add_AdmissionToWork'=>'add employee admission to work'
 ];
 
 

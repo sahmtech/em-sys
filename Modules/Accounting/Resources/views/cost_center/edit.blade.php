@@ -1,8 +1,9 @@
 <div class="modal fade" id="edit_cost_center_modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-
-            {!! Form::open(['method' => 'put', 'id' => 'edit_cost_center_form']) !!}
+           
+            {!! Form::open(['method' => 'put', 'id' => 'edit_cost_center_form','route' => 'cost_center_update']) !!}
+           
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:red"><span
                         aria-hidden="true">&times;</span>
@@ -135,3 +136,4 @@
 
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+

@@ -48,21 +48,22 @@ class OfferPriceController extends Controller
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->productUtil = $productUtil;
+        
         $this->statuses = [
             'approved' => [
-                'name' => __('essentials::lang.approved'),
+                'name' => __('sales::lang.approved'),
                 'class' => 'bg-green',
             ],
             'cancelled' => [
-                'name' => __('essentials::lang.cancelled'),
+                'name' => __('sales::lang.cancelled'),
                 'class' => 'bg-red',
             ],
             'transfared' => [
-                'name' => 'Transfared',
+                'name' => __('sales::lang.transfared'),
                 'class' => 'bg-blue',
             ],
             'under_study' => [
-                'name' =>'Under Study',
+                'name' =>__('sales::lang.under_study'),
                 'class' => 'bg-yellow',
             ],
         ];
@@ -198,9 +199,7 @@ class OfferPriceController extends Controller
     }
     public function changeStatus(Request $request)
     {
-        error_log($request->offer_id);
-        error_log($request->status);
-
+     
         $business_id = request()->session()->get('user.business_id');
 
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.approve_leave')) {

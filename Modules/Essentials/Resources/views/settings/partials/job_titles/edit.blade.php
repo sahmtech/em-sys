@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', __('essentials::lang.job_titles'))
-
+@include('essentials::layouts.nav_hrm_setting')
 @section('content')
 <section class="content-header">
     <h1>@lang('essentials::lang.job_titles')

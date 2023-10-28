@@ -69,6 +69,7 @@ class CostCenterController extends Controller
 
     protected function store(Request $request)
     {
+
         $rules = [
             'ar_name' => 'required|String|min:3|max:191|unique:accounting_cost_centers,ar_name',
             'en_name' => 'required|String|min:3|max:191|unique:accounting_cost_centers,en_name',
@@ -76,6 +77,7 @@ class CostCenterController extends Controller
             'parent_id' => 'nullable|exists:accounting_cost_centers,id',
             'business_location_id' => 'nullable|exists:business_locations,id',
         ];
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
 
@@ -87,20 +89,27 @@ class CostCenterController extends Controller
                 'success' => false,
                 'msg' => __("messages.something_went_wrong")
             ]);
-            
+            // return response()->json([
+            //     'success' => false,
+            //     'msg' => __("messages.something_went_wrong")
+            // ]);
         }
         $validated = $validator->validated();
         $validated['business_id'] = $request->session()->get('user.business_id');
         CostCenter::query()->create($validated);
+        //   return response()->json([
+        //     'success' => true,
+        //     'msg' => __("lang_v1.added_success")
+        // ]);
         return redirect()->back()->with([
             'success' => true,
             'msg' => __("lang_v1.added_success")
         ]);
-     
     }
 
-    protected function update(Request $request, $id)
+    public function update(Request $request,)
     {
+        $id = $request->id;
         $costCenter = CostCenter::query()->find($id);
         $rules = [
             'ar_name' => 'required|String|min:3|max:191|unique:accounting_cost_centers,ar_name,' . $id,
@@ -114,16 +123,26 @@ class CostCenterController extends Controller
 
             $failedRules = $validator->failed();
             if (isset($failedRules['ar_name']['min']) || isset($failedRules['ar_name']['max'])) {
-                return response()->json([
+                return redirect()->back()->with([
                     'success' => false,
                     'msg' => __("messages.something_went_wrong")
                 ]);
+                // return response()->json([
+                //     'success' => false,
+                //     'msg' => __("messages.something_went_wrong")
+                // ]);
             }
-            return response()->json([
+            return redirect()->back()->with([
                 'success' => false,
                 'msg' => __("messages.something_went_wrong")
             ]);
+            // return response()->json([
+            //     'success' => false,
+            //     'msg' => __("messages.something_went_wrong")
+            // ]);
         }
+
+
         $costCenter->update([
             'ar_name' => $request->ar_name,
             'en_name' => $request->en_name,
@@ -131,6 +150,14 @@ class CostCenterController extends Controller
             'parent_id' => $request->parent_id,
             'business_location_id' => $request->business_location_id,
         ]);
+
+        return redirect()->back()->with([
+            'success' => true,
+            'msg' => __("lang_v1.updated_success")
+        ]);
+
+
+
         return response()->json([
             'success' => true,
             'msg' => __("lang_v1.updated_success")

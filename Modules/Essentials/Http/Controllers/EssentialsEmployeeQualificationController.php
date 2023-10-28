@@ -11,6 +11,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 
 class EssentialsEmployeeQualificationController extends Controller
 {
@@ -32,6 +33,7 @@ class EssentialsEmployeeQualificationController extends Controller
         if (! $can_crud_employee_qualifications) {
             abort(403, 'Unauthorized action.');
         }
+        $spacializations=EssentialsSpecialization::all()->pluck('name','id');
         $countries= $countries = EssentialsCountry::forDropdown();
         if (request()->ajax()) {
             $employees_qualifications = EssentialsEmployeesQualification::
@@ -64,6 +66,11 @@ class EssentialsEmployeeQualificationController extends Controller
 
                 return $item;
             })
+            ->editColumn('major',function($row)use($spacializations){
+                $item = $spacializations[$row->major]??'';
+
+                return $item;
+            })
             ->addColumn(
                 'action',
                  function ($row) {
@@ -88,12 +95,13 @@ class EssentialsEmployeeQualificationController extends Controller
                 $users = $all_users->pluck('full_name', 'id');
                 $countries = EssentialsCountry::forDropdown();
 
-        return view('essentials::employee_affairs.employees_qualifications.index')->with(compact('users','countries'));
+        return view('essentials::employee_affairs.employees_qualifications.index')->with(compact('users','countries','spacializations'));
     }
    
 
     public function store(Request $request)
     {
+       
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 

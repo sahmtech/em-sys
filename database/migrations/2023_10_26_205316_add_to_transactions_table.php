@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -14,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        // DB::statement("ALTER TABLE system MODIFY COLUMN `value` VARCHAR(191) DEFAULT NULL");
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('status', ['active', 'inactive', 'terminated','vecation'])->default('active')->after('business_id');
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->enum('contract_form',['monthly_cost','operating_fees'])->nullable();
         });
     }
 
@@ -27,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('transactions', function (Blueprint $table) {
             //
         });
     }

@@ -36,7 +36,7 @@ return [
     'internal' => 'Internal',
     'external' => 'External',
     'approved' => 'Approved',
-    'transferred' => 'Transferred',
+    'transfared' => 'Transferred',
     'cancelled' => 'Cancelled',
     'custs' => 'Customers',
     'all_your_customers' => 'All Your Customers',

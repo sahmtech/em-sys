@@ -93,7 +93,7 @@ class OpeningBalanceController extends Controller
                 ])
                 ->make(true);
         }
-       
+
         return view('accounting::opening_balance.index', compact('sub_types'));
     }
 
@@ -112,35 +112,44 @@ class OpeningBalanceController extends Controller
             //            if (isset($failedRules['ar_name']['min']) || isset($failedRules['ar_name']['max'])) {
             //                return response()->json(['fail' => __("messages.something_went_wrong")]);
             //            }
+
             return response()->json([
                 'success' => false,
                 'msg' => __("messages.something_went_wrong")
             ]);
         }
-        $validated = $validator->validated();
-        $validated['created_by'] = auth()->user()->id;
-        $validated['business_id'] = $request->session()->get('user.business_id');
-        $transaction = AccountingAccountsTransaction::query()->create([
-            'accounting_account_id' => $validated['accounting_account_id'],
-            'amount' => $validated['value'],
-            'type' => $validated['type'] == 'credit' ? 'credit' : 'debit',
-            'sub_type' => 'opening_balance'
-        ]);
-        $validated['accounts_account_transaction_id'] = $transaction->id;
-        OpeningBalance::query()->create([
-            'year' => date('Y-m-d'),
-            'business_id' => $validated['business_id'],
-            'type' => $validated['type'],
-            'accounts_account_transaction_id' => $validated['accounts_account_transaction_id']
-        ]);
-        return redirect()->back();
-        return response()->json([
+        try {
+            DB::beginTransaction();
+
+            $validated = $validator->validated();
+            $validated['created_by'] = auth()->user()->id;
+            $validated['business_id'] = $request->session()->get('user.business_id');
+            $transaction = AccountingAccountsTransaction::query()->create([
+                'accounting_account_id' => $validated['accounting_account_id'],
+                'amount' => $validated['value'],
+                'type' => $validated['type'] == 'credit' ? 'credit' : 'debit',
+                'sub_type' => 'opening_balance'
+            ]);
+            $validated['accounts_account_transaction_id'] = $transaction->id;
+            OpeningBalance::query()->create([
+                'year' => date('Y-m-d'),
+                'business_id' => $validated['business_id'],
+                'type' => $validated['type'],
+                'accounts_account_transaction_id' => $validated['accounts_account_transaction_id']
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+        // return redirect()->back();
+        return redirect()->back()->with([
             'success' => true,
             'msg' => __("lang_v1.added_success")
         ]);
+        // return response()->json();
     }
 
-    protected function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $openingBalance = OpeningBalance::query()->find($id);
         $rules = [
@@ -161,16 +170,26 @@ class OpeningBalanceController extends Controller
                 'msg' => __("messages.something_went_wrong")
             ]);
         }
-        $openingBalance->update([
-            'year' => $request->year,
-            'value' => $request->value,
-            'accounting_account_id' => $request->accounting_account_id,
-            'type' => $request->type
-        ]);
-        return response()->json([
+        try {
+            $openingBalance->update([
+                'year' => $request->year,
+                'value' => $request->value,
+                'accounting_account_id' => $request->accounting_account_id,
+                'type' => $request->type
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+        // return redirect()->back();
+        return redirect()->back()->with([
             'success' => true,
             'msg' => __("lang_v1.updated_success")
         ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'msg' => __("lang_v1.updated_success")
+        // ]);
     }
 
     protected function destroy($id)

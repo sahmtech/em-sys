@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.allowances'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+@include('essentials::layouts.nav_hrm_setting')
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>

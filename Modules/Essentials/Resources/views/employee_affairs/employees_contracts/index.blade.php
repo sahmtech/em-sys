@@ -19,11 +19,20 @@
                 </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    {!! Form::label('status_filter', __('essentials::lang.status') . ':') !!}
-                    {!! Form::text('status_filter', null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    {!! Form::label('contract_type_filter', __('essentials::lang.contract_type') . ':') !!}
+                    {!! Form::select('contract_type_filter',$contract_types, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 </div>
             </div>
-           
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('status_filter', __('essentials::lang.status') . ':') !!}
+                    {!! Form::select('status_filter', [
+                        'valid'=>__('essentials::lang.valid'),
+                         'canceled' =>__('essentials::lang.canceled'),
+                 
+                     ], null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                </div>
+            </div>
         @endcomponent
         </div>
     </div>
@@ -52,6 +61,7 @@
                                 <th>@lang('essentials::lang.contract_end_date' )</th>
                                 <th>@lang('essentials::lang.contract_duration' )</th>
                                 <th>@lang('essentials::lang.probation_period' )</th>
+                                <th>@lang('essentials::lang.contract_type' )</th>
                                 <th>@lang('essentials::lang.status' )</th>
                                 <th>@lang('essentials::lang.is_renewable' )</th>
 
@@ -79,11 +89,7 @@
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
                                 {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
-                        
-                            <div class="form-group col-md-6">
-                                {!! Form::label('contract_number', __('essentials::lang.contract_number') . ':*') !!}
-                                {!! Form::text('contract_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contract_number'), 'required']) !!}
-                            </div>
+                           
                             <div class="form-group col-md-6">
                                 {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':*') !!}
                                 {!! Form::date('contract_start_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contract_start_date'), 'required']) !!}
@@ -92,19 +98,18 @@
                                 {!! Form::label('contract_end_date', __('essentials::lang.contract_end_date') . ':*') !!}
                                 {!! Form::date('contract_end_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contract_end_date'), 'required']) !!}
                             </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':*') !!}
-                                {!! Form::text('contract_duration', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contract_duration'), 'required']) !!}
-                            </div>
+                         
                             <div class="form-group col-md-6">
                                 {!! Form::label('probation_period', __('essentials::lang.probation_period') . ':*') !!}
-                                {!! Form::text('probation_period', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.probation_period'), 'required']) !!}
-                            </div>
-                            
+                                {!! Form::number('probation_period', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.probation_period_in_days'), 'required']) !!}
+                            </div>  
+                        
                             <div class="form-group col-md-6">
-                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-                                {!! Form::text('status', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.status'), 'required']) !!}
+                                {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
+                                {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2', 'required','placeholder' => __('messages.please_select')]); !!}
                             </div>
+                        
+                        
                             <div class="form-group col-md-6">
                                 {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
                                 {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control']) !!}
@@ -143,9 +148,10 @@
                     url: "{{ route('employeeContracts') }}",
                     data: function(d) {
                         
-                        if ($('#status_filter').length) {
-                            d.status = $('#status_filter').val();
+                        if ($('#contract_type_filter').length) {
+                            d.contract_type = $('#contract_type_filter').val();
                         }
+                        d.status=$('#status_filter').val();
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
@@ -161,13 +167,37 @@
                         { data: 'contract_number' },
                         { data: 'contract_start_date' },
                         { data: 'contract_end_date' },
-                        { data: 'contract_duration' },
-                        { data: 'probation_period' },
-                        { data: 'status' },
+                        {
+                             "data": 'contract_duration',
+                            "render": function (data, type, row) {
+                            return data + " @lang('essentials::lang.day')";
+                             
+                                 }
+                         },
+                         {
+                             "data": 'probation_period',
+                            "render": function (data, type, row) {
+                            return data + " @lang('essentials::lang.day')";
+                             
+                                 }
+                         },
+              
+                        { data: 'contract_type_id' },
+                        { 
+                        data: 'status',
+                            render: function (data, type, row) {
+                                if (data === 'valid') {
+                                    return  '@lang('essentials::lang.valid')';
+                                } else {
+                                    return  '@lang('essentials::lang.canceled')';
+                                }
+                            }
+                        },
+
                         {
                             data: 'is_renewable',
                             render: function (data, type, row) {
-                                if (data === 'valid') {
+                                if (data === 'is_renewable') {
                                     return  '@lang('essentials::lang.is_renewable')';
                                 } else {
                                     return  '@lang('essentials::lang.is_unrenewable')';
@@ -190,7 +220,7 @@
             });
             
           
-            $('#status_filter, #doc_filter_date_range').on('change', function() {
+            $('#contract_type_filter,#status_filter ,#doc_filter_date_range').on('change', function() {
                 reloadDataTable();
             });
             $(document).on('click', 'button.delete_employeeContract_button', function () {

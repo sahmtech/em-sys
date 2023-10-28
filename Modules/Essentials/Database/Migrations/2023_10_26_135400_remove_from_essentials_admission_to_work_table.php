@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('transactions', function (Blueprint $table) {
-   
-              
-                $table->decimal('down_payment')->nullable();
-    
+        
+        Schema::table('essentials_admission_to_works', function (Blueprint $table) {
+            $table->dropForeign(['department_id']);
         });
     }
 
@@ -28,8 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            //
+        Schema::table('', function (Blueprint $table) {
+
         });
     }
 };

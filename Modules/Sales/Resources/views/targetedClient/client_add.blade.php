@@ -12,7 +12,7 @@
             <div class="form-group">
               {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
               {!! Form::select('profession',$professions,null, ['class' => 'form-control', 'required',
-                 'placeholder' => __('sales::lang.profession')]); !!}
+                 'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
                  
             </div>
           </div>
@@ -21,7 +21,7 @@
             <div class="form-group">
                 {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
                 {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
-                    'placeholder' => __('sales::lang.specialization')]); !!}
+                    'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
               </div>
           </div>
           <div class="col-sm-4">
@@ -55,11 +55,11 @@
             <input type="hidden" id="selectedData" name="selectedData" value="">
             <br>
             <div class="col-md-12">
-            <h4>نفقات اضافية</h4>
+            <h4> @lang('sales::lang.allowances') </h4>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>{{ __('sales::lang.additional_account_name') }}</th>
+                            <th>{{ __('sales::lang.allowance_name') }}</th>
                             <th>{{ __('essentials::lang.type') }}</th>
                             <th>{{ __('essentials::lang.amount') }}</th>
                         </tr>
@@ -97,7 +97,7 @@
          
         
       </div>  
-      <div class="table-responsive">
+      <div class="table-responsive col-md-12">
           <table class="table table-bordered add-product-price-table table">
               <tr> 
                   <th>@lang('sales::lang.number_of_clients')</th>
@@ -275,6 +275,35 @@
     
       totalField.value = (parseFloat(numberInput.value) || 0) * (parseFloat(monthlyCostInput.value) || 0);
   }
+  var professionSelect = $('#professionSelect');
+  var specializationSelect = $('#specializationSelect');
+
+  professionSelect.on('change', function () {
+   
+           var selectedProfession = $(this).val();
+           console.log(selectedProfession);
+           var csrfToken = $('meta[name="csrf-token"]').attr('content');
+           $.ajax({
+              url: '{{ route('specializations') }}',
+              type: 'POST',
+              data: {
+                _token: csrfToken,
+                   profession_id: selectedProfession
+               },
+               success: function (data) {
+                  
+                   specializationSelect.empty();
+
+                
+                   $.each(data, function (id, name) {
+                       specializationSelect.append($('<option>', {
+                           value: id,
+                           text: name
+                       }));
+                   });
+               }
+           });
+       });
 });
 
 

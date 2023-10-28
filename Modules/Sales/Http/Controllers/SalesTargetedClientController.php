@@ -68,8 +68,9 @@ class SalesTargetedClientController extends Controller
        
             $business_id = $request->session()->get('user.business_id');
             $input = $request->only(['profession', 'specialization', 'nationality', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
-            $input2['name'] = __('sales::lang.service');
-            $input2['type'] = 'service';
+           
+            $input2['name'] ='service';
+            $input2['type'] ='service';
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
             $input2['nationality_id'] = $input['nationality'];
@@ -80,21 +81,9 @@ class SalesTargetedClientController extends Controller
             $input2['business_id'] = $business_id;
             $input2['created_by'] = $request->session()->get('user.id');
 
-            // if (request()->selectedData) {
-                
-            //     $jsonData = json_decode(request()->selectedData, true); 
-            //     foreach ($jsonData as $item) {
-            //         error_log($item['salaryType']);
-            //         error_log($item['amount']);
-            //     }
-            // }
-
+           
             $client = Product::create($input2);
-            error_log("****  controller ******");
-            // error_log(json_decode(request()->selectedData, true));
-            // error_log("************");
-            error_log(request()->selectedData);
-            error_log("************");
+            
             $output = ['success' => 1,
                 'client' => $client,
                 'selectedData'=>json_decode(request()->selectedData, true)
@@ -120,7 +109,14 @@ class SalesTargetedClientController extends Controller
     {
         //
     }
- 
+    public function fetchSpecializations(Request $request)
+    {
+        $professionId = $request->input('profession_id');
+
+        $specializations = EssentialsSpecialization::where('profession_id', $professionId)->pluck('name', 'id');
+
+        return response()->json($specializations);
+    }
 
     /**
      * Show the specified resource.

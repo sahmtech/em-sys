@@ -19,7 +19,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('insurance_company_filter', __('essentials::lang.insurance_company') . ':') !!}
-                    {!! Form::text('insurance_company_filter', null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    {!! Form::select('insurance_company_filter', $insuramce_companies, null, ['class' => 'form-control select2','style' => 'width:100%','placeholder' => __('lang_v1.all')]) !!}
                 </div>
             </div>
             <div class="col-md-3">
@@ -70,11 +70,11 @@
       
     @endcomponent
 
-    <div class="modal fade insurance_contract_model" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    </div>
+    
     <div class="modal fade" id="addInsuranceContractModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
+
                 {!! Form::open(['route' => 'insurance_contracts.store','enctype' => 'multipart/form-data']) !!}
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -82,10 +82,11 @@
                 </div>
     
                 <div class="modal-body">
+
                     <div class="row">
                         <div class="form-group col-md-6">
                             {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
-                            {!! Form::select('insurance_company', $insuramce_companies, null, ['class' => 'form-control select2',  'required']) !!}
+                            {!! Form::select('insurance_company', $insuramce_companies, null, ['class' => 'form-control select2','placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
                         </div>
                         <div class="form-group col-md-6">
                             {!! Form::label('policy_number', __('essentials::lang.insurance_policy_number') . ':*') !!}

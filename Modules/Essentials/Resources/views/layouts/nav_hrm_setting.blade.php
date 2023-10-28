@@ -47,11 +47,11 @@
                         </li>
                     @endif
 
-                    @if(auth()->user()->can('essentials.crud_basic_salary') )
+                    {{-- @if(auth()->user()->can('essentials.crud_basic_salary') )
                         <li @if(request()->segment(2) == 'basic_salary_types') class="active" @endif>
                             <a href="{{ route('basic_salary_types') }}">@lang('essentials::lang.basic_salary_types')</a>
                         </li>
-                    @endif
+                    @endif --}}
 
                     {{-- @if(auth()->user()->can('essentials.crud_entitlements') ) --}}
                         <li @if(request()->segment(2) == 'professions') class="active" @endif>
@@ -82,13 +82,13 @@
                             <a href="{{ action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']) }}">@lang('essentials::lang.sales_target')</a>
                         </li>
                     @endif --}}
-
+{{-- 
                     @if(auth()->user()->can('essentials.crud_designation')) 
                         <li @if(request()->get('type') == 'hrm_designation') class="active" @endif>
                             <a href="{{action([\App\Http\Controllers\TaxonomyController::class, 'index']) . '?type=hrm_designation'}}">@lang('essentials::lang.designations')</a></li>
 
                         </li>
-                    @endif
+                    @endif --}}
                 </ul>
 
             </div><!-- /.navbar-collapse -->

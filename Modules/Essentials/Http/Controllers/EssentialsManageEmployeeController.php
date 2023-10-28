@@ -16,7 +16,8 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
-
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsCountry;
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -128,7 +129,7 @@ class EssentialsManageEmployeeController extends Controller
         }
         $categories=Category::all()->pluck('name','id');
         $departments=EssentialsDepartment::all()->pluck('name','id');
-
+        $contract_types = EssentialsContractType::all()->pluck('type','id');
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
@@ -177,7 +178,7 @@ class EssentialsManageEmployeeController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('essentials::employee_affairs.employee_affairs.index');
+        return view('essentials::employee_affairs.employee_affairs.index')->with(compact('contract_types'));
 
     }
 
@@ -190,7 +191,6 @@ class EssentialsManageEmployeeController extends Controller
         if (! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
-
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota
@@ -206,12 +206,13 @@ class EssentialsManageEmployeeController extends Controller
         $locations = BusinessLocation::where('business_id', $business_id)
                                     ->Active()
                                     ->get();
-
+        $contract_types = EssentialsContractType::all()->pluck('type','id');
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities=EssentialsCountry::nationalityForDropdown();
 
         return view('essentials::employee_affairs.employee_affairs.create')
-                ->with(compact('roles', 'username_ext', 'locations', 'form_partials'));
+                ->with(compact('roles','nationalities' ,'username_ext', 'locations', 'contract_types','form_partials'));
     }
 
     /**

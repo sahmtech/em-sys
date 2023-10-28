@@ -15,6 +15,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
+use Modules\Essentials\Entities\EssentialsCountry;
 class ManageUserController extends Controller
 {
     /**
@@ -206,9 +207,9 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
-
+        $nationalities=EssentialsCountry::nationalityForDropdown();
         return view('manage_user.create')
-            ->with(compact('roles', 'username_ext', 'locations', 'form_partials'));
+            ->with(compact('roles', 'username_ext', 'locations', 'form_partials','nationalities'));
     }
 
     /**

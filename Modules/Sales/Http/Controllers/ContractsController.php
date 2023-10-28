@@ -39,13 +39,15 @@ class ContractsController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $contacts=Contact::all()->pluck('supplier_business_name','id');
-        $offer_prices = Transaction::where([['type','=','sell'],['status','=','approved']])->pluck('ref_no','id');
+        $offer_prices = Transaction::where([['transactions.type','=','sell'],['transactions.status','=','approved']])
+        ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+        ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no','transactions.id');
         $items=salesContractItem::pluck('name_of_item','id');
         if (request()->ajax()) {
     
                 $contracts = salesContract::join('transactions','transactions.id','=','sales_contracts.offer_price_id')->
                 select(['sales_contracts.number_of_contract','sales_contracts.id','sales_contracts.offer_price_id','sales_contracts.start_date',
-                'sales_contracts.end_date','sales_contracts.status','sales_contracts.operation_order','sales_contracts.file',
+                'sales_contracts.end_date','sales_contracts.status','sales_contracts.file',
                 'transactions.contract_form as contract_form','transactions.contact_id','transactions.id as tra']);
 
                 if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
@@ -62,13 +64,7 @@ class ContractsController extends Controller
 
                 return $item;
             })
-            ->addColumn('operation_order', function ($row) {
-                if ($row->operation_order == 0) {
-                    return '<button class="btn btn-xs btn-primary add-new-order-button">Add New Order</button>';
-                } else {
-                    return $row->operation_order;
-                }
-            })
+           
             
             ->addColumn(
                 'action',
@@ -90,7 +86,7 @@ class ContractsController extends Controller
                     $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
                 })
             
-                ->rawColumns(['action','operation_order'])
+                ->rawColumns(['action'])
                 ->make(true);
                 }
              
@@ -153,7 +149,7 @@ class ContractsController extends Controller
         }
  
         try {
-            $input = $request->only(['offer_price', 'start_date', 'end_date','status','contract_items','is_renewable','notes','operation_order','file']);
+            $input = $request->only(['offer_price', 'start_date', 'end_date','status','contract_items','is_renewable','notes','file']);
             
             $input2['offer_price_id'] = $input['offer_price'];
             $input2['start_date'] = $input['start_date'];
@@ -162,9 +158,7 @@ class ContractsController extends Controller
             $input2['is_renwable'] = $input['is_renewable'];
             $input2['notes'] = $input['notes'];
 
-            if ($request->has('operation_order')) {
-                $input2['operation_order'] = $input['operation_order'];
-            }
+           
             
             $latestRecord = salesContract::orderBy('number_of_contract', 'desc')->first();
             if ($latestRecord) {

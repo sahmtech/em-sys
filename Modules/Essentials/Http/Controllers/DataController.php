@@ -10,6 +10,8 @@ use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Menu;
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\DocumentShare;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsDepartment;
@@ -531,14 +533,14 @@ class DataController extends Controller
                             )->order(5);
                         }
 
-                        if (auth()->user()->can('essentials.crud_holidays')) 
-                        {
-                            $subMenu->url(
-                                action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
-                                __('essentials::lang.requests'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'holiday'],
-                            )->order(6);
-                        }
+                        // if (auth()->user()->can('essentials.crud_holidays')) 
+                        // {
+                        //     $subMenu->url(
+                        //         action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']),
+                        //         __('essentials::lang.requests'),
+                        //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'holiday'],
+                        //     )->order(6);
+                        // }
                        
                             $subMenu->url(
                                 action([\App\Http\Controllers\TaxonomyController::class, 'index']),
@@ -576,18 +578,29 @@ class DataController extends Controller
                             $subMenu->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
                                 __('essentials::lang.employees_settings'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'countries'],
-                            )->order(11);
-                        }
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'countries' ||
+                                request()->segment(2) == 'cities'
+                                || request()->segment(2) == 'bank_accounts' 
+                                || request()->segment(2) == 'holiday'
+                                || request()->segment(2) == 'travel_categories'
+                                || request()->segment(2) == 'professions' 
+                                || request()->segment(2) == 'allowances'
+                                || request()->segment(2) == 'contract_types'
+                                || request()->segment(2) == 'insurance_categories'
 
-                        if (auth()->user()->can('essentials.access_sales_target')) 
-                        {
-                            $subMenu->url(
-                                action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
-                                __('essentials::lang.sales_target'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'sales-target'],
+                                
+                                )],
                             )->order(11);
                         }
+                      
+                        // if (auth()->user()->can('essentials.access_sales_target')) 
+                        // {
+                        //     $subMenu->url(
+                        //         action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index']),
+                        //         __('essentials::lang.sales_target'),
+                        //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'sales-target'],
+                        //     )->order(11);
+                        // }
                         if (auth()->user()->can('essentials.crud_import_employee')) 
                         {
                             $subMenu->url(
@@ -680,8 +693,9 @@ class DataController extends Controller
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name','id')->all();
-        
-            return view('essentials::partials.user_form_part', compact('travel_ticket_categorie','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $contract_types = EssentialsContractType::pluck('type','id')->all();
+            $nationalities=EssentialsCountry::nationalityForDropdown();
+            return view('essentials::partials.user_form_part', compact('nationalities','travel_ticket_categorie','contract_types','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -736,7 +750,7 @@ class DataController extends Controller
             $contract->contract_duration = request()->input('contract_duration');
             $contract->probation_period = request()->input('probation_period');
             $contract->is_renewable = request()->input('is_renewable');
-            $contract->status = request()->input('status');
+            $contract->contract_type_id = request()->input('contract_type');
             if (request()->hasFile('contract_file')) {
             $file = request()->file('contract_file');
             $filePath = $file->store('/employee_contracts');
