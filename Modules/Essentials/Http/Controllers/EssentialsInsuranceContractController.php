@@ -137,9 +137,14 @@ class EssentialsInsuranceContractController extends Controller
 
         try {
             $input = $request->only(['insurance_company', 'policy_number', 'policy_value', 'insurance_employees_count', 'insurance_dependents_count', 'insurance_start_date', 'insurance_end_date', 'insurance_attachments']);
-            $file = request()->file('insurance_attachments');
-            $filePath = $file->store('/insuranceContracts');
-            $insurance_contract_data['attachments'] = $filePath;
+            if (request()->hasFile('file')) {
+                $file = request()->file('insurance_attachments');
+                $filePath = $file->store('/insuranceContracts');
+                $insurance_contract_data['attachments'] = $filePath;
+           
+           
+            }
+           
             $insurance_contract_data['employees_count'] =  $input['insurance_employees_count'];
             $insurance_contract_data['dependents_count'] = $input['insurance_dependents_count'];
             $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
@@ -164,7 +169,7 @@ class EssentialsInsuranceContractController extends Controller
 
      //   return redirect()->route('insurance_contracts')->with('status', $output);
         $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
-        return redirect()->route('insurance_contracts')->with(compact($insuramce_companies));
+        return redirect()->route('insurance_contracts');
     }
 
     /**
@@ -215,7 +220,10 @@ class EssentialsInsuranceContractController extends Controller
             if (request()->hasFile('file')) {
             $file = request()->file('insurance_attachments');
             $filePath = $file->store('/insuranceContracts');
-            $insurance_contract_data['attachments'] = $filePath;}
+            $insurance_contract_data['attachments'] = $filePath;
+       
+       
+        }
             $insurance_contract_data['employees_count'] =  $input['insurance_employees_count'];
             $insurance_contract_data['dependents_count'] = $input['insurance_dependents_count'];
             $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
