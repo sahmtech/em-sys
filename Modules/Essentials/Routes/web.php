@@ -166,6 +166,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/insurance_contracts.store', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'store'])->name('insurance_contracts.store');
         Route::delete('/insurance_contracts/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'destroy'])->name('insurance_contracts.destroy');
         Route::get('/insurance_contracts.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'show'])->name('insurance_contracts.view');
+        Route::put('/updateInsuranceContract/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'update'])->name('updateInsuranceContract');
+        Route::get('/insurance_contracts/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'edit'])->name('insurance_contracts.edit');
 
         Route::get('/official_documents', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index'])->name('official_documents');
         Route::post('/storeOfficialDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'store'])->name('storeOfficialDoc');
