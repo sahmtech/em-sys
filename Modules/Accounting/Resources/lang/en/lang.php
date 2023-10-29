@@ -408,4 +408,23 @@ return [
     'account_payable_ageing_report_description' => 'This reports shows summary of all the purchase pending 
     invoices in mentioned days range as per the due date.',
     'automatedMigration'=>'Automated Migration',
+ 'autoMigration'=>[
+    'sell'=>'Sell',
+    'sell_return'=>'Sell return',
+    'opening_stock'=>'Opening stock',
+    'purchase_'=>'Purchase',
+    'expens_'=>'Expens',
+    'purchase_order'=>'Purchase order',
+    'sell_transfer'=>'Sell transfer',
+    'purchase_transfer'=>'Purchase transfer',
+    'payroll'=>'Payroll',
+    'opening_balance'=>'Opening balance',
+    'purchase_return'=>'Purchase return',
+    'final'=>'Final',
+    'paid'=>'Paid',
+    'due'=>'Due',
+    'partial'=>'Partial',
+    'sales_bill'=>'Sales bill',
+ ],
+
 ];

@@ -50,7 +50,7 @@
                     {!! Form::label('account_sub_type', __('نوع العملية') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                     <select class="form-control" name="account_sub_type_id" id="account_sub_type" style="padding: 3px" required>
                         <option value="">@lang('messages.please_select')</option>
-                        <option value="">@lang('فاتورة مبيعات')</option>
+                        <option value="">@lang('accounting::lang.autoMigration.sales_bill')</option>
                     </select>
                 </div>
 
