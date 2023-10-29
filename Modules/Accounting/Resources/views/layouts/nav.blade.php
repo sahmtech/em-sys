@@ -55,8 +55,8 @@
                         </li>
                     @endif
 
-                    @if (auth()->user()->can('accounting.view_journal'))
-                        <li @if (request()->segment(2) == 'journal-entry') class="active" @endif><a
+                    @if (auth()->user()->can('accounting.AutomatedMigration'))
+                        <li @if (request()->segment(2) == 'AutomatedMigration') class="active" @endif><a
                                 href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@index') }}">@lang('accounting::lang.automatedMigration')</a>
                         </li>
                     @endif
