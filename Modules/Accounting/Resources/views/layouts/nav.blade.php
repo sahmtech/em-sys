@@ -4,85 +4,91 @@
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand"
-                   href="{{action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard')}}"><i
-                            class="fas fa fa-broadcast-tower"></i> {{__('accounting::lang.accounting')}}</a>
+                    href="{{ action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard') }}"><i
+                        class="fas fa fa-broadcast-tower"></i> {{ __('accounting::lang.accounting') }}</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    @if(auth()->user()->can('accounting.manage_accounts'))
-                        <li @if(request()->segment(2) == 'chart-of-accounts') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\CoaController@index')}}">@lang('accounting::lang.chart_of_accounts')</a>
+                    @if (auth()->user()->can('accounting.manage_accounts'))
+                        <li @if (request()->segment(2) == 'chart-of-accounts') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@index') }}">@lang('accounting::lang.chart_of_accounts')</a>
                         </li>
                     @endif
 
-                    @if(auth()->user()->can('accounting.cost_centers'))
-                        <li @if(request()->segment(2) == 'cost_centers') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\CostCenterController@index')}}">
+                    @if (auth()->user()->can('accounting.cost_centers'))
+                        <li @if (request()->segment(2) == 'cost_centers') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\CostCenterController@index') }}">
                                 @lang('accounting::lang.cost_centers')
                             </a></li>
                     @endif
-                    @if(auth()->user()->can('accounting.opening_balance'))
-                        <li @if(request()->segment(2) == 'opening_balances') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\OpeningBalanceController@index')}}">
+                    @if (auth()->user()->can('accounting.opening_balance'))
+                        <li @if (request()->segment(2) == 'opening_balances') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\OpeningBalanceController@index') }}">
                                 @lang('accounting::lang.opening_balances')
                             </a></li>
                     @endif
-                    @if(auth()->user()->can('accounting.receipt_vouchers'))
-                        <li @if(request()->segment(2) == 'receipt_vouchers') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\ReceiptVouchersController@index')}}">
+                    @if (auth()->user()->can('accounting.receipt_vouchers'))
+                        <li @if (request()->segment(2) == 'receipt_vouchers') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\ReceiptVouchersController@index') }}">
                                 @lang('accounting::lang.receipt_vouchers')
                             </a></li>
                     @endif
-                    @if(auth()->user()->can('accounting.payment_vouchers'))
-                        <li @if(request()->segment(2) == 'payment_vouchers') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\PaymentVouchersController@index')}}">
+                    @if (auth()->user()->can('accounting.payment_vouchers'))
+                        <li @if (request()->segment(2) == 'payment_vouchers') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\PaymentVouchersController@index') }}">
                                 @lang('accounting::lang.payment_vouchers')
                             </a></li>
                     @endif
 
-                    @if(auth()->user()->can('accounting.view_journal'))
-                        <li @if(request()->segment(2) == 'journal-entry') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\JournalEntryController@index')}}">@lang('accounting::lang.journal_entry')</a>
+                    @if (auth()->user()->can('accounting.view_journal'))
+                        <li @if (request()->segment(2) == 'journal-entry') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\JournalEntryController@index') }}">@lang('accounting::lang.journal_entry')</a>
                         </li>
                     @endif
 
-                    @if(auth()->user()->can('accounting.view_transfer'))
-                        <li @if(request()->segment(2) == 'transfer') class="active" @endif>
-                            <a href="{{action('\Modules\Accounting\Http\Controllers\TransferController@index')}}">
+                    @if (auth()->user()->can('accounting.view_journal'))
+                        <li @if (request()->segment(2) == 'journal-entry') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@index') }}">@lang('accounting::lang.automatedMigration')</a>
+                        </li>
+                    @endif
+
+                    @if (auth()->user()->can('accounting.view_transfer'))
+                        <li @if (request()->segment(2) == 'transfer') class="active" @endif>
+                            <a href="{{ action('\Modules\Accounting\Http\Controllers\TransferController@index') }}">
                                 @lang('accounting::lang.transfer')
                             </a>
                         </li>
                     @endif
 
-                    <li @if(request()->segment(2) == 'transactions') class="active" @endif><a
-                                href="{{action('\Modules\Accounting\Http\Controllers\TransactionController@index')}}">@lang('accounting::lang.transactions')</a>
+                    <li @if (request()->segment(2) == 'transactions') class="active" @endif><a
+                            href="{{ action('\Modules\Accounting\Http\Controllers\TransactionController@index') }}">@lang('accounting::lang.transactions')</a>
                     </li>
 
-                    @if(auth()->user()->can('accounting.manage_budget'))
-                        <li @if(request()->segment(2) == 'budget') class="active" @endif>
-                            <a href="{{action('\Modules\Accounting\Http\Controllers\BudgetController@index')}}">
+                    @if (auth()->user()->can('accounting.manage_budget'))
+                        <li @if (request()->segment(2) == 'budget') class="active" @endif>
+                            <a href="{{ action('\Modules\Accounting\Http\Controllers\BudgetController@index') }}">
                                 @lang('accounting::lang.budget')
                             </a>
                         </li>
                     @endif
-                    @if(auth()->user()->can('accounting.view_reports'))
-                        <li @if(request()->segment(2) == 'reports') class="active" @endif><a
-                                    href="{{action('\Modules\Accounting\Http\Controllers\ReportController@index')}}">
+                    @if (auth()->user()->can('accounting.view_reports'))
+                        <li @if (request()->segment(2) == 'reports') class="active" @endif><a
+                                href="{{ action('\Modules\Accounting\Http\Controllers\ReportController@index') }}">
                                 @lang('accounting::lang.reports')
                             </a></li>
                     @endif
 
-                    <li @if(request()->segment(2) == 'settings') class="active" @endif><a
-                                href="{{action('\Modules\Accounting\Http\Controllers\SettingsController@index')}}">@lang('messages.settings')</a>
+                    <li @if (request()->segment(2) == 'settings') class="active" @endif><a
+                            href="{{ action('\Modules\Accounting\Http\Controllers\SettingsController@index') }}">@lang('messages.settings')</a>
                     </li>
                 </ul>
 

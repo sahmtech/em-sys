@@ -407,4 +407,5 @@ return [
     'account_payable_ageing_report' => 'Account Payable Ageing Report (Summary)',
     'account_payable_ageing_report_description' => 'This reports shows summary of all the purchase pending 
     invoices in mentioned days range as per the due date.',
+    'automatedMigration'=>'Automated Migration',
 ];
