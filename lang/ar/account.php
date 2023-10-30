@@ -15,6 +15,7 @@ return [
 "account_book" => "دليل الحسابات",
 "credit" => "دائن",
 "debit" => "مدين",
+
 "account_name" => "أسم الحساب",
 "transaction_type" => "نوع المعاملة",
 "fund_transfer" => "تحويل الأموال",
