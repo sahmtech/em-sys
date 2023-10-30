@@ -138,21 +138,21 @@ class OfferPriceController extends Controller
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     ';
 
-                        if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
-                            if ($row->is_direct_sale == 1) {
-                                $html .= '<li>
-                                            <a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'">
-                                                <i class="fas fa-edit"></i>'.__('messages.edit').'
-                                            </a>
-                                        </li>';
-                            } else {
-                                $html .= '<li>
-                                            <a target="_blank" href="'.action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]).'">
-                                                <i class="fas fa-edit"></i>'.__('messages.edit').'
-                                            </a>
-                                        </li>';
-                            }
-                        }
+                        // if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
+                        //     if ($row->is_direct_sale == 1) {
+                        //         $html .= '<li>
+                        //                     <a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'">
+                        //                         <i class="fas fa-edit"></i>'.__('messages.edit').'
+                        //                     </a>
+                        //                 </li>';
+                        //     } else {
+                        //         $html .= '<li>
+                        //                     <a target="_blank" href="'.action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]).'">
+                        //                         <i class="fas fa-edit"></i>'.__('messages.edit').'
+                        //                     </a>
+                        //                 </li>';
+                        //     }
+                        // }
 
                         $html .= '<li>
                                     <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>

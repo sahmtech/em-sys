@@ -65,18 +65,6 @@ const productIds = [];
 function updateArray(resultsArrayItem,productIdsItem) {
 
 
-    // var productRows = document.querySelectorAll('.product_row');
-
-    // productRows.forEach(function (row) {
-    //     var selectedDataInput = row.querySelector('input[name="selectedData"]');
-    //     var productIdInput = row.querySelector('input[name="productIds"]');
-
-    //     if (selectedDataInput && productIdInput) {
-
-    //         resultsArray.push(selectedDataInput.value);
-    //         productIds.push(productIdInput.value);
-    //     }
-    // });
     resultsArray.push(resultsArrayItem);
     productIds.push(productIdsItem);
   
