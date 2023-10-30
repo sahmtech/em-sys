@@ -192,11 +192,11 @@
                         {
                             data: 'contract_form',
                             render: function (data, type, row) {
-                                if (data === 'first') {
-                                    return  '@lang('sales::lang.first_choice')';
+                                if (data === 'monthly_cost') {
+                                    return  '@lang('sales::lang.monthly_cost')';
                                     
-                                } else if (data === 'seconde') {
-                                    return  '@lang('sales::lang.second_choice')';
+                                } else if (data === 'operating_fees') {
+                                    return  '@lang('sales::lang.operating_fees')';
                                 } else {
                                     return  ' ';
                                 }
