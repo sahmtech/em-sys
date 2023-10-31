@@ -11,6 +11,7 @@ use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Sales\Entities\salesService;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Sales\Entities\salesTargetedClient;
 
@@ -20,24 +21,24 @@ class SalesTargetedClientController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
-    {
+    // public function index()
+    // {
     
-       $business_id = request()->session()->get('user.business_id');
+    //    $business_id = request()->session()->get('user.business_id');
 
 
-        if (request()->ajax()) {
-            $clients = DB::table('sales_targeted_clients')->select(['id','profession', 'specialization', 'nationality', 'gender'
-            ,'number','Salary','food_allowance','housing_allowance','monthly_cost']);
+    //     if (request()->ajax()) {
+    //         $clients = DB::table('sales_services')->select(['id','profession', 'specialization', 'nationality', 'gender'
+    //         ,'number','Salary','monthly_cost']);
                 
-            return datatables::of($clients)
-            ->removeColumn('id')
-            ->make(true);
+    //         return datatables::of($clients)
+    //         ->removeColumn('id')
+    //         ->make(true);
         
         
-            }
-      return view('sales::price_offers.index');
-    }
+    //         }
+    //   return view('sales::price_offers.index');
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -56,36 +57,39 @@ class SalesTargetedClientController extends Controller
         $specializations=EssentialsSpecialization::all()->pluck('name','id');
         $professions=EssentialsProfession::all()->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
-        $allowance_types=EssentialsAllowanceAndDeduction::all()->pluck('description','id');
-        $randomId = random_int(0, 1000);
-        return view('sales::targetedClient.client_add')->with(compact('allowance_types','randomId','specializations','professions','nationalities'));
+
+        return view('sales::targetedClient.client_add')->with(compact('specializations','professions','nationalities'));
     }
 
 
     public function saveQuickClient(Request $request) {
-      
+     
         try {
        
             $business_id = $request->session()->get('user.business_id');
             $input = $request->only(['profession', 'specialization', 'nationality', 'gender', 'monthly_cost', 'number', 'essentials_salary']);
-           
-            $input2['name'] ='service';
-            $input2['type'] ='service';
+          
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
             $input2['nationality_id'] = $input['nationality'];
             $input2['gender'] = $input['gender'];
-            $input2['alert_quantity'] = $input['number'];
             $input2['service_price'] = $input['essentials_salary'];
             $input2['monthly_cost_for_one'] = $input['monthly_cost'];
             $input2['business_id'] = $business_id;
             $input2['created_by'] = $request->session()->get('user.id');
 
            
-            $client = Product::create($input2);
-            
+            $client = salesService::create($input2);
+            $profession=DB::table('essentials_professions')->where('id',$client->profession_id)->first()->name;
+            $specialization=DB::table('essentials_specializations')->where('id',$client->specialization_id)->first()->name;
+            $nationality=DB::table('essentials_countries')->where('id',$client->nationality_id)->first()->nationality;
+
             $output = ['success' => 1,
                 'client' => $client,
+                'profession'=>$profession,
+                'specialization'=>$specialization,
+                'nationality'=>$nationality,
+                'quantity'=>request()->number,
                 'selectedData'=>json_decode(request()->selectedData, true)
                
             ];

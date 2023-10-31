@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
     {!! Form::open([ 'method' => 'post', 'id' => 'quick_add_client_form' ]) !!}
-      <input type="hidden" name="randomId" value="{{ $randomId }}">
+      <input type="hidden">
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="modalTitle">@lang( 'sales::lang.add_new_client' )</h4>

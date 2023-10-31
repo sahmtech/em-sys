@@ -4,7 +4,7 @@ namespace Modules\Sales\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class salesTargetedClient extends Model
+class salesService extends Model
 {
    
     protected $guarded = ['id'];

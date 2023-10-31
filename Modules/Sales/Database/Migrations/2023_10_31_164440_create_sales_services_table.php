@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sales_targeted_clients', function (Blueprint $table) {
+        Schema::create('sales_services', function (Blueprint $table) {
             $table->id();
-            $table->string('profession')->nullable();
-            $table->string('specialization')->nullable();
-            $table->string('nationality')->nullable();
+            $table->unsignedBigInteger('profession_id')->nullable();
+            $table->unsignedBigInteger('specialization_id')->nullable();
+            $table->unsignedBigInteger('nationality_id')->nullable();
+            $table->foreign('profession_id')->references('id')->on('essentials_professions')->onDelete('cascade'); 
+            $table->foreign('specialization_id')->references('id')->on('essentials_specializations')->onDelete('cascade'); 
+            $table->foreign('nationality_id')->references('id')->on('essentials_countries')->onDelete('cascade'); 
             $table->enum('gender',['male','female'])->nullable();
-            $table->integer('number')->nullable();
-            $table->decimal('salary')->nullable();
-            $table->enum('food_allowance',['cash','insured_by_the_other'])->nullable();
-            $table->enum('housing_allowance',['cash','insured_by_the_other'])->nullable();
-            $table->decimal('monthly_cost')->nullable();
+            $table->decimal('service_price')->nullable();
+            $table->decimal('monthly_cost_for_one')->nullable();
             $table->unsignedInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->integer('business_id')->unsigned();
@@ -39,6 +39,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_targeted_clients');
+        Schema::dropIfExists('sales_services');
     }
 };

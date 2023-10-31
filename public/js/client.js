@@ -6,21 +6,24 @@ function submittedDataFunc(response) {
       
         var resultItem = response.selectedData;
 
- 
-        var newTotal= submittedData.monthly_cost_for_one * submittedData.alert_quantity;
+        var quantity = response.quantity;
+
+        // 'profession'=>$profession,
+        // 'specialization'=>$specialization,
+        // 'nationality'=>$nationality,
+        var newTotal= submittedData.monthly_cost_for_one * quantity;
         var newRow = '<tr class="product_row">' +
             
-            '<td class="text-center">' + submittedData.profession_id + '</td>' +
-            '<td class="text-center">' + submittedData.specialization_id + '</td>' +
-            '<td class="text-center">' + submittedData.nationality_id + '</td>' +
+            '<td class="text-center">' + response.profession + '</td>' +
+            '<td class="text-center">' + response.specialization + '</td>' +
+            '<td class="text-center">' + response.nationality + '</td>' +
             '<td class="text-center">' + submittedData.gender + '</td>' +
             '<td class="text-center">' + submittedData.monthly_cost_for_one + '</td>' +
-            '<td class="text-center">' + submittedData.alert_quantity + '</td>' +
+            '<td class="text-center">' + quantity + '</td>' +
        
             '<td class="text-center total-column">' + newTotal + '</td>' +
             '<td class="text-center"><i class="fas fa-times" aria-hidden="true"></i></td>' +
-            // '<input type="hidden" id="selectedData" name="selectedData" value="' + resultItem + '"></input>' +
-            // '<input type="hidden" name="productIds" value="' + submittedData.id + '"></input>' +
+         
         '</tr>';
 
         $('#pos_table tbody').append(newRow);
@@ -35,7 +38,7 @@ function submittedDataFunc(response) {
 
         updatePriceTotal();
 
-        updateArray(resultItem,submittedData.id );
+        updateArray(resultItem,submittedData.id,quantity);
 
     } else {
     
@@ -58,20 +61,25 @@ function submittedDataFunc(response) {
   
 const resultsArray = [];
 const productIds = [];
+const quantityArr = [];
+
         
     
 
 
-function updateArray(resultsArrayItem,productIdsItem) {
+function updateArray(resultsArrayItem,productIdsItem,quantity) {
 
-
+    
     resultsArray.push(resultsArrayItem);
     productIds.push(productIdsItem);
+    quantityArr.push(quantity);
   
  
 
     $('#productData').val(JSON.stringify(resultsArray));
     $('#productIds').val(JSON.stringify(productIds));
+    $('#quantityArr').val(JSON.stringify(quantityArr));
+
 }
     
 
