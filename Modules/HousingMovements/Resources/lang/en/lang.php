@@ -16,4 +16,12 @@ return [
     'building_cleaner'=>'Building Cleaner',
     'add_building'=>'Add Building',
     'edit_building'=>'Edit Building',
+    'edit_room'=>'Edit Room',
+    'add_room'=>'Add Room',
+    'room_number'=>'Room Number',
+    'htr_building'=>'Building',
+    'area'=>'Area',
+    'beds_count'=>'Beds Count',
+    'contents'=>'Contents',
+    ''=>'',
 ];
