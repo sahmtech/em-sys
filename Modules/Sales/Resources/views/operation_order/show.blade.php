@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="row">
+    <div class="row">
       <div class="col-sm-12 col-xs-12">
         <h4>{{ __('sale.products') }}:</h4>
       </div>
