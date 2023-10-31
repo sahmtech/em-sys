@@ -7,9 +7,9 @@
 	<a href="{{route('home')}}" class="logo">
 		<span class="logo-lg">{{ Session::get('business.name') }}</span>
 	</a>
-
+  
     <!-- Sidebar Menu -->
-    {!! Menu::render('custom_admin-sidebar-menu', 'adminltecustom'); !!}
+    {!! Menu::render('admin-sidebar-menu', 'adminltecustom'); !!}
 
     <!-- /.sidebar-menu -->
   </section>

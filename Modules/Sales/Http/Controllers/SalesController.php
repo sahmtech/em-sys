@@ -2,6 +2,7 @@
 
 namespace Modules\Sales\Http\Controllers;
 
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -14,6 +15,8 @@ class SalesController extends Controller
      */
     public function index()
     {
+        $moduleUtil = new ModuleUtil;
+        $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return view('sales::index');
     }
 

@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -15,6 +16,8 @@ class EssentialsController extends Controller
      */
     public function index()
     {
+        $moduleUtil = new ModuleUtil;
+        $moduleUtil->getModuleData('modifyAdminMenu');
         return view('essentials::index');
     }
 

@@ -207,22 +207,21 @@ class HomeController extends Controller
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         $cards = [
-            ['title' => __('user.user_management'), 'icon' =>'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
-            ['title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('employees')],
-            ['title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
-            ['title' => 'Card Card  4', 'icon' => 'car', 'link' => ''],
-            ['title' => __('contact.contacts'), 'icon' =>'fas fa-id-card ', 'link' => ''],
-            ['title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
-            ['title' => 'Card Card  7', 'icon' => 'car', 'link' => ''],
-            ['title' => 'Card Card  8', 'icon' => 'car', 'link' => ''],
-            ['title' => 'Card Card  9', 'icon' => 'car', 'link' => ''],
-            ['title' => 'Card Card  10', 'icon' => 'car', 'link' => ''],
+            ['id' => 'user_management', 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
+            ['id' => 'hrm', 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
+            ['id' => 'essentials', 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => route('essentials_landing')],
+            ['id' => 'sales', 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
+            ['id' => 'contacts', 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
+            ['id' => 'products', 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
+            ['id' => 'internationalrelations', 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
+
         ];
-        
+
         return view('custom_views.custom_home', compact('cards', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
 
         // return view('custom_views.home', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
     }
+
 
     /**
      * Retrieves purchase and sell details for a given time period.

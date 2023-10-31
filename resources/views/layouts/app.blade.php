@@ -1,3 +1,6 @@
+
+
+
 @extends('layouts.custom_layouts.custom_app')
 {{-- @inject('request', 'Illuminate\Http\Request')
 
