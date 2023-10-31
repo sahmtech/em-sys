@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Utils\ModuleUtil;
 use Closure;
 use Menu;
-
+use Illuminate\Support\Str;
 class CustomAdminSidebarMenu
 {
     /**
@@ -28,14 +28,20 @@ class CustomAdminSidebarMenu
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
         });
-        $routeName = $request->route()->getName();
-
+        $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if ($routeName === 'users.index') {
+        if (Str::startsWith($currentPath, 'users')) {
             $this->userManagementMenu();
-        } elseif ($routeName === 'essentials') {
+        } elseif (Str::startsWith($currentPath, 'essentials') || Str::startsWith($currentPath, 'hrm')) {
             $this->essentialsMenu();
-        } else {
+        } elseif (Str::startsWith($currentPath, 'sale') ) {
+            $this->CUS_salesMenu();
+        } 
+        
+        
+        
+        
+        else {
         }
 
 
@@ -226,6 +232,74 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
             )
                 ->order(10);
+        });
+
+    }
+    public function CUS_salesMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
+            $menu->dropdown(
+                __('sales::lang.sales'),
+                function ($subMenu) {
+
+
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
+                        __('sales::lang.customers'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
+                    )->order(1);
+
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
+                         __('sales::lang.add_offer_price'),
+                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+                           )->order(2);
+
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
+                        __('sales::lang.offer_price'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
+                     
+                    )->order(3);
+
+
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
+                        __('sales::lang.contracts'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
+                    )->order(4);
+
+                    
+
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
+                        __('sales::lang.contract_itmes'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
+                    )->order(5);
+
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
+                        __('sales::lang.contract_appendics'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
+                    )->order(6);
+                    $subMenu->url(
+                        action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
+                        __('sales::lang.sale_operation_orders'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
+                    )->order(7);
+                  },
+                [
+                    'icon' => 'fa fas fa-users',
+                    'active' => request()->segment(1) == 'sales',
+                    'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+                ]
+            )->order(10);
+        
         });
 
     }

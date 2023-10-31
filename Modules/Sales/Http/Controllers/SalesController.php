@@ -15,8 +15,6 @@ class SalesController extends Controller
      */
     public function index()
     {
-        $moduleUtil = new ModuleUtil;
-        $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return view('sales::index');
     }
 

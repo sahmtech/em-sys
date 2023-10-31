@@ -16,8 +16,6 @@ class EssentialsController extends Controller
      */
     public function index()
     {
-        $moduleUtil = new ModuleUtil;
-        $moduleUtil->getModuleData('modifyAdminMenu');
         return view('essentials::index');
     }
 
