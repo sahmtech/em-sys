@@ -19,6 +19,7 @@
                 </span>
             </div>
         </div>
+
         <div class="col-md-4">
             <button class="btn btn-primary btn-sm" id="expand_all">@lang('accounting::lang.expand_all')</button>
             <button class="btn btn-primary btn-sm" id="collapse_all">@lang('accounting::lang.collapse_all')</button>
@@ -38,10 +39,19 @@
                                         @foreach ($accounts->where('account_sub_type_id', $sub_type->id)->sortBy('name')->all() as $account)
                                             <li
                                                 @if (count($account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right" }' @endif>
-                                                
-                                                {{ $account->name }} @if (!empty($account->gl_code))
-                                                    - ({{ $account->gl_code }})
+                                                @if (app()->getLocale() == 'ar')
+                                                    @if (!empty($account->gl_code))
+                                                        ({{ $account->gl_code }})
+                                                        -
+                                                    @endif
+                                                    @lang('accounting::lang.accounts_name.' . $account->name)
+                                                @else
+                                                    @lang('accounting::lang.accounts_name.' . $account->name) @if (!empty($account->gl_code))
+                                                        - ({{ $account->gl_code }})
+                                                    @endif
                                                 @endif
+
+
                                                 - @format_currency($account->balance)
                                                 @if ($account->status == 'active')
                                                     <span><i class="fas fa-check text-success"
@@ -87,7 +97,8 @@
                                                         @foreach ($account->child_accounts as $child_account)
                                                             <li
                                                                 @if (count($child_account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right"}' @endif>
-                                                                {{ $child_account->name }}
+                                                               {{$child_account->name}}
+
                                                                 @if (!empty($child_account->gl_code))
                                                                     - ({{ $child_account->gl_code }})
                                                                 @endif
