@@ -1,4 +1,19 @@
 <?php
 return [
-    'housing_move'=>'Housing and Movements '
+    'housing_move'=>'Housing and Movements',
+    'requests'=>'Requests',
+    'building_management'=>'Building Management',
+    'movement_management'=>'Movement Management',
+    'buildings'=>'Buildings',
+    'facilities'=>'Facilities',
+    'rooms'=>'Rooms',
+    'crud_buildings'=>'Add/Edit/Delete Building',
+    'building_name'=>'Building Name',
+    'city'=>'City',
+    'address'=>'Address',
+    'building_guard'=>'Building Guard',
+    'building_supervisor'=>'Building Supervisor',
+    'building_cleaner'=>'Building Cleaner',
+    'add_building'=>'Add Building',
+    'edit_building'=>'Edit Building',
 ];

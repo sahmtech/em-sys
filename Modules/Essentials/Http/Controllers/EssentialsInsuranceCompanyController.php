@@ -134,7 +134,7 @@ class EssentialsInsuranceCompanyController extends Controller
 
         try {
             $input = $request->only(['business_name', 'insurance_company', 'city', 'state', 'country', 'address', 'tax_number', 'phone_number', 'mobile_number']);
-            $Contact_data['business_id'] = $business_id;
+            $Contact_data['business_id'] =  $input['business_name'];
             $Contact_data['created_by'] = $user_id;
             $Contact_data['supplier_business_name'] = $input['insurance_company'];
             $Contact_data['name'] = $input['business_name'];

@@ -6,11 +6,7 @@ function submittedDataFunc(response) {
       
         var resultItem = response.selectedData;
 
-        console.log(" ******* submittedDataFunc *********");
-        console.log(resultItem);
-        // console.log("***************");  
-        // console.log();
-        console.log("***************");
+ 
         var newTotal= submittedData.monthly_cost_for_one * submittedData.alert_quantity;
         var newRow = '<tr class="product_row">' +
             
@@ -69,29 +65,10 @@ const productIds = [];
 function updateArray(resultsArrayItem,productIdsItem) {
 
 
-    // var productRows = document.querySelectorAll('.product_row');
-
-    // productRows.forEach(function (row) {
-    //     var selectedDataInput = row.querySelector('input[name="selectedData"]');
-    //     var productIdInput = row.querySelector('input[name="productIds"]');
-
-    //     if (selectedDataInput && productIdInput) {
-
-    //         resultsArray.push(selectedDataInput.value);
-    //         productIds.push(productIdInput.value);
-    //     }
-    // });
     resultsArray.push(resultsArrayItem);
     productIds.push(productIdsItem);
-    console.log(" ******* updateArray *********");
-    resultsArray.forEach(function(object) {
-        console.log(object);
-        console.log("***************");
-    });
-        // console.log(resultsArray);
-        // console.log("***************");  
-        // console.log(JSON.stringify(resultsArray));
-       // console.log("***************");
+  
+ 
 
     $('#productData').val(JSON.stringify(resultsArray));
     $('#productIds').val(JSON.stringify(productIds));

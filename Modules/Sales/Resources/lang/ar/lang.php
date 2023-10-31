@@ -175,6 +175,8 @@ return [
     'nationality_name'=>'الجنسية ',
     'profession_name'=>'المهنة ',
     'specialization_name'=>'التخصص',
-    'unit'=>'الوحدة'
+    'unit'=>'الوحدة',
+    'registered'=>'مسجل',
+
 
 ];

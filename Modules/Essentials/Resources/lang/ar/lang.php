@@ -676,7 +676,7 @@ return[
 'probation_period'=>'الفترة التجريبية',
 'monthly_cost'=>'التكلفة الشهرية',
 'edit_work'=>'تعديل مباشرة العمل',
-''=>'',
+'edit_contract'=>'تعديل العقد',
 
 
 

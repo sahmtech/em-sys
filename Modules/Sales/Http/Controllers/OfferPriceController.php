@@ -24,7 +24,7 @@ use App\Business;
 use App\InvoiceScheme;
 use App\TransactionSellLine;
 use App\TypesOfService;
-
+use Carbon\Carbon; 
 
 class OfferPriceController extends Controller
 {   
@@ -138,21 +138,21 @@ class OfferPriceController extends Controller
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     ';
 
-                        if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
-                            if ($row->is_direct_sale == 1) {
-                                $html .= '<li>
-                                            <a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'">
-                                                <i class="fas fa-edit"></i>'.__('messages.edit').'
-                                            </a>
-                                        </li>';
-                            } else {
-                                $html .= '<li>
-                                            <a target="_blank" href="'.action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]).'">
-                                                <i class="fas fa-edit"></i>'.__('messages.edit').'
-                                            </a>
-                                        </li>';
-                            }
-                        }
+                        // if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
+                        //     if ($row->is_direct_sale == 1) {
+                        //         $html .= '<li>
+                        //                     <a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'">
+                        //                         <i class="fas fa-edit"></i>'.__('messages.edit').'
+                        //                     </a>
+                        //                 </li>';
+                        //     } else {
+                        //         $html .= '<li>
+                        //                     <a target="_blank" href="'.action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]).'">
+                        //                         <i class="fas fa-edit"></i>'.__('messages.edit').'
+                        //                     </a>
+                        //                 </li>';
+                        //     }
+                        // }
 
                         $html .= '<li>
                                     <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
@@ -390,13 +390,16 @@ class OfferPriceController extends Controller
      */
     public function store(Request $request)
     { 
+        
 
     try {
         $business_id = $request->session()->get('user.business_id');
         $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
-
+        $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
         $offer_details = $request->only($offer);
         $offer_details['business_id'] = $business_id;
+        $offer_details['transaction_date'] = $transactionDate;
+
         $offer_details['created_by'] = $request->session()->get('user.id');
         $offer_details['type'] = 'sell';
         $latestRecord = Transaction::where('type', 'sell')->orderBy('ref_no', 'desc')->first();

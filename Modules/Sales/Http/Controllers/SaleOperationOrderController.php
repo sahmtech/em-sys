@@ -68,13 +68,7 @@ class SaleOperationOrderController extends Controller
         ->select('sales_contracts.number_of_contract as contract_number')
         ->get();
 
-        if (request()->input('contract_id')) {
-            $query->where('sales_orders_operations.sale_contract_id', request()->input('contract_id'));
-        }
-    
-        if (request()->input('status_filter')) {
-            $query->where('sales_orders_operations.operation_order_type', request()->input('status_filter'));
-        }
+
       
 
  
@@ -89,6 +83,18 @@ class SaleOperationOrderController extends Controller
           'sales_orders_operations.operation_order_type as operation_order_type',
           'sales_orders_operations.Status as Status'
       );
+
+
+
+      if (request()->input('number_of_contract')) {
+       // dd(request()->input('number_of_contract'));
+        $operations->where('sales_contracts.number_of_contract', request()->input('number_of_contract'));
+    }
+
+    if (request()->input('Status') && request()->input('Status') !== 'all') {
+        $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
+     
+    }
     //dd( $operations);
 
         if (request()->ajax()) {
@@ -188,7 +194,7 @@ class SaleOperationOrderController extends Controller
            
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                    'contact_id','sale_contract_id','agency_id','operation_order_no','operation_order_type', 
+                    'contact_id','sale_contract_id','operation_order_no','operation_order_type', 
                     'Interview', 'Location','Delivery', 'Note', 'Status', 'Industry'
                 ];
                 $operation_details = $request->only($operation_order);
@@ -207,6 +213,7 @@ class SaleOperationOrderController extends Controller
                 else
                 {$operation_details['operation_order_no'] = 'POP1111';}
               
+                $operation_details['Status']=__('sales::lang.registered');
              //dd($operation_details);
                 $operation = SalesOrdersOperation::create( $operation_details );
              //  dd( $operation );

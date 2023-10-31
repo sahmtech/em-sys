@@ -43,7 +43,8 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::post('settings/save_map', [SettingsController::class, 'saveMap'])
         ->name('settings.saveMap');
 
-    Route::resource('account-type', 'AccountTypeController');
+        Route::resource('account-type', 'AccountTypeController');
+        Route::resource('automated-migration', 'AutomatedMigrationController');
 
     Route::resource('transfer', 'TransferController')->except(['show']);
 
