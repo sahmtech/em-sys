@@ -197,6 +197,8 @@ class OfferPriceController extends Controller
         return view('sales::price_offer.index')
                 ->with(compact('business_locations','statuses' ,'customers', 'sales_representative'));
     }
+
+    
     public function changeStatus(Request $request)
     {
      
