@@ -68,8 +68,8 @@
                         {"data":"id"},
                         {"data":"full_name"},
                         {"data":"dob"},
-                        {"data":"essentials_designation_id"},
-                        {"data":"essentials_department_id"},
+                        {"data":"profession_id"},
+                        {"data":"specialization_id"},
                         {"data":"contact_number"},
                         {"data":"email"},
                         {

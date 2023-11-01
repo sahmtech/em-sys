@@ -18,6 +18,8 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsProfession;
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -129,30 +131,38 @@ class EssentialsManageEmployeeController extends Controller
         }
         $categories=Category::all()->pluck('name','id');
         $departments=EssentialsDepartment::all()->pluck('name','id');
+        $EssentialsProfession=EssentialsProfession::all()->pluck('name','id');
+        $EssentialsSpecialization=EssentialsSpecialization::all()->pluck('name','id');
         $contract_types = EssentialsContractType::all()->pluck('type','id');
+
+        $business_id = request()->session()->get('user.business_id');
+        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+        ->join('essentials_employee_appointmets','users.id','essentials_employee_appointmets.employee_id')
+        ->select(['users.id',
+                'users.username',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                'users.dob',
+                'users.email',
+                'users.allow_login',
+                'users.contact_number',
+                'essentials_employee_appointmets.profession_id',
+                'essentials_employee_appointmets.specialization_id',
+                'users.status'
+                    ]);
+
+                 
         if (request()->ajax()) {
-            $business_id = request()->session()->get('user.business_id');
-            $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->select(['users.id',
-                    'users.username',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
-                    'users.dob',
-                    'users.email',
-                    'users.allow_login',
-                    'users.contact_number',
-                    'users.essentials_department_id',
-                    'users.essentials_designation_id',
-                    'users.status'
-                        ]);
+         
+           
 
             return Datatables::of($users)
-                ->editColumn('essentials_department_id',function($row)use($departments){
-                        $item = $departments[$row->essentials_department_id]??'';
+                ->editColumn('profession_id',function($row)use($departments){
+                        $item = $EssentialsProfession[$row->profession_id]??'';
 
                         return $item;
                     })
-                ->editColumn('essentials_designation_id',function($row)use($categories){
-                        $item = $categories[$row->essentials_designation_id]??'';
+                ->editColumn('specialization_id',function($row)use($categories){
+                        $item = $EssentialsSpecialization[$row->specialization_id]??'';
 
                         return $item;
                     })
