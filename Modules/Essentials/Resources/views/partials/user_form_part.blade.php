@@ -155,6 +155,31 @@
 
 <script>
     var selectedData = [];
+    var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
+
+            professionSelect.on('change', function () {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function (data) {
+                        specializationSelect.empty();
+                        $.each(data, function (id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
 
     function addRow() {
         var newRow = $('#salary-table-body tr:first').clone();
@@ -217,33 +242,7 @@
     $(document).on('change', 'select[name="salary_type[]"]', function() {
         updateAmount(this); // Call the function to update the amount
     });
-
-    professionSelect.on('change', function () {
-   
-   var selectedProfession = $(this).val();
-   console.log(selectedProfession);
-   var csrfToken = $('meta[name="csrf-token"]').attr('content');
-   $.ajax({
-      url: '{{ route('specializations') }}',
-      type: 'POST',
-      data: {
-        _token: csrfToken,
-           profession_id: selectedProfession
-       },
-       success: function (data) {
-          
-           specializationSelect.empty();
-
-        
-           $.each(data, function (id, name) {
-               specializationSelect.append($('<option>', {
-                   value: id,
-                   text: name
-               }));
-           });
-       }
-   });
-});.
+  
 </script>
 
 
