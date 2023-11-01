@@ -217,6 +217,8 @@
 				<input type="hidden" name="final_total" id="price_total_input" value="0">
 				<input type="hidden" id="productData" name="productData" value="">
 				<input type="hidden" id="productIds" name="productIds" value="">
+				<input type="hidden" id="quantityArr" name="quantityArr" value="">
+
 
 
 

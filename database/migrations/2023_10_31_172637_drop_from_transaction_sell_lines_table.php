@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('contacts', function (Blueprint $table) {
-            $table->string('evaluation')->after('email')->nullable();
+        Schema::table('transaction_sell_lines', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
         });
-    }
+    } 
 
     /**
      * Reverse the migrations.
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('contacts', function (Blueprint $table) {
+        Schema::table('transaction_sell_lines', function (Blueprint $table) {
             //
         });
     }

@@ -22,30 +22,39 @@ class DataController extends Controller
      */
     public function user_permissions()
     {
-        return
+        return [
             [
-                [
-                    'value' => 'internationalrelations.view_dashboard',
-                    'label' => __('internationalrelations::lang.view_dashboard'),
-                    'default' => false,
-                ],
-                [
-                    'value' => 'internationalrelations.view_Airlines',
-                    'label' => __('internationalrelations::lang.view_Airlines'),
-                    'default' => false,
-                ],
-                [
-                    'value' => 'internationalrelations.view_EmploymentCompanies',
-                    'label' => __('internationalrelations::lang.view_EmploymentCompanies'),
-                    'default' => false,
-                ],
+                'value' => 'internationalrelations.view_dashboard',
+                'label' => __('internationalrelations::lang.view_dashboard'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_Airlines',
+                'label' => __('internationalrelations::lang.view_Airlines'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_EmploymentCompanies',
+                'label' => __('internationalrelations::lang.view_EmploymentCompanies'),
+                'default' => false,
+            ],
 
-                [
-                    'value' => 'internationalrelations.crud_airlines',
-                    'label' => __('internationalrelations::lang.crud_airlines'),
-                    'default' => false,
-                ],
-            ];
+            [
+                'value' => 'internationalrelations.crud_airlines',
+                'label' => __('internationalrelations::lang.crud_airlines'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.order_request_view',
+                'label' => __('internationalrelations::lang.order_request_view'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.crud_order_request',
+                'label' => __('internationalrelations::lang.crud_order_request'),
+                'default' => false,
+            ],
+        ];
     }
 
     /**
@@ -89,7 +98,7 @@ class DataController extends Controller
                             $subMenu->url(
                                 action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
                                 __('internationalrelations::lang.dashboard'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'dashboard'],
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'dashboard'],
                             )->order(1);
                         }
 
@@ -98,15 +107,22 @@ class DataController extends Controller
                             $subMenu->url(
                                 action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
                                 __('internationalrelations::lang.Airlines'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'Airlines'],
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                             )->order(2);
                         }
                         if (auth()->user()->can('internationalrelations.view_EmploymentCompanies')) {
                             $subMenu->url(
                                 action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
                                 __('internationalrelations::lang.EmploymentCompanies'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'EmploymentCompanies'],
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
                             )->order(3);
+                        }
+                        if (auth()->user()->can('internationalrelations.order_request_view')) {
+                            $subMenu->url(
+                                action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index']),
+                                __('internationalrelations::lang.order_request'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'OrderRequest'],
+                            )->order(4);
                         }
                     },
                     [

@@ -30,7 +30,11 @@ Route::prefix('housingmovements')->group(function() {
     
     //Rooms
     Route::get('/rooms', [\Modules\HousingMovements\Http\Controllers\RoomController::class,'index'])->name('rooms');
-
+    Route::get('/createRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'create'])->name('createRoom');
+    Route::post('/storeRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'store'])->name('storeRoom');
+    Route::get('/rooms/{id}/edit', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'edit'])->name('room.edit');
+    Route::delete('/rooms/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'destroy'])->name('room.destroy');
+    Route::put('/updateRoom/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'update'])->name('updateRoom');
 
     //facilities
     Route::get('/facilities', [\Modules\HousingMovements\Http\Controllers\FacitityController::class,'index'])->name('facilities');

@@ -24,6 +24,16 @@ return [
 'all_EmploymentCompanies'=>'جميع شركات التوظيف',
 'good'=>'جيد',
 'bad'=>'سيء',
+'order_request_view'=>'عرض امر الطلب',
+'order_request'=>'أمر الطلب',
+'crud_order_request'=>'تعديل / إضافة /حذف  أوامر الطلب',
+'Delegation'=>'التفويض',
+'add_deleation'=>'إضافة تفويض',
+'all_Delegation'=>'جميع أوامر الطلب',
+'agency_name'=>'اسم مكتب التفويض',
+'target_quantity'=>'العدد المطلوب',
+'currecnt_quantity'=>'العدد الحالي',
+
   
 
 

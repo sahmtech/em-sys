@@ -397,13 +397,16 @@ class OfferPriceController extends Controller
         $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
         $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
         $offer_details = $request->only($offer);
-        $offer_details['business_id'] = $business_id;
+        $offer_details['business_id'] = $request->input('business_id');
         $offer_details['transaction_date'] = $transactionDate;
 
         $offer_details['created_by'] = $request->session()->get('user.id');
+    
         $offer_details['type'] = 'sell';
-        $latestRecord = Transaction::where('type', 'sell')->orderBy('ref_no', 'desc')->first();
-
+        $offer_details['sub_type'] = 'service';	
+        $offer_details['is_quotation'] = 1;
+        $latestRecord = Transaction::where('sub_type', 'service')->orderBy('ref_no', 'desc')->first();
+ 
         
         if ($latestRecord) {
             $latestRefNo = $latestRecord->ref_no;
@@ -415,27 +418,32 @@ class OfferPriceController extends Controller
             $offer_details['ref_no'] = 'QN0003000';
         }
 
-
+     
 
        $client = Transaction::create($offer_details);
        Contact::where('id', $request->contact_id)->update(['type' => 'customer']);
-
+  
        $productIds = json_decode($request->input('productIds'));
+       $quantityArr = json_decode($request->input('quantityArr'));
         $productData = json_decode($request->input('productData'), true);
-
+      
         if (count($productIds) === count($productData)) {
             foreach ($productIds as $key => $productId) {
                 $data = $productData[$key];
+                $quantity=$quantityArr[$key];
                 
+                error_log($quantity);
+
                 $transactionSellLine = new TransactionSellLine;
                 $transactionSellLine->additional_allwances= json_encode($data);
-                $transactionSellLine->product_id = $productId;
+                $transactionSellLine->service_id = $productId;
+                $transactionSellLine->quantity = $quantity;
+                // $transactionSellLine->total = $request->input('final_total');;
                 $transactionSellLine->transaction_id = $client->id;
 
                 $transactionSellLine->save();
             }
         }
-     
         $output = [
             'success' => 1,
             'msg' => __('sales::lang.client_added_success'),
