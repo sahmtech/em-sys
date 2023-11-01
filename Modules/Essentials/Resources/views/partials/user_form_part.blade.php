@@ -65,7 +65,7 @@
         <div class="col-md-3">
             <div class="form-group">
             {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
-            {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2', 'required','placeholder' => __('messages.please_select')]); !!}
+            {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2','placeholder' => __('messages.please_select')]); !!}
             </div>
         </div>
         <div class="form-group col-md-3">
