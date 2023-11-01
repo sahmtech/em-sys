@@ -11,14 +11,17 @@
 |
 */
 
-Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu')->group(function () {
+Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
 
     Route::prefix('sale')->group(function () {
     
+
+        Route::get('/',[\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->name('sales_landing');
+
         Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('price_offer');
         Route::get('/createOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'create'])->name('createOfferPrice');
-         Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'store'])->name('storeOfferPrice');
+        Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'store'])->name('storeOfferPrice');
         Route::post('/change-status', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'changeStatus'])->name('changeStatus');
 
    

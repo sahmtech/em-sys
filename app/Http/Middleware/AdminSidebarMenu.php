@@ -795,11 +795,11 @@ class AdminSidebarMenu
         });
 
          //Add menus from modules
-        $moduleUtil = new ModuleUtil;
-        $moduleUtil->getModuleData('modifyAdminMenu');
-        $moduleUtil->getModuleData('modifyAdminMenu_hm');
-        $moduleUtil->getModuleData('modifyAdminMenu_IR');
-        $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
+        // $moduleUtil = new ModuleUtil;
+        // $moduleUtil->getModuleData('modifyAdminMenu');
+        // $moduleUtil->getModuleData('modifyAdminMenu_hm');
+        // $moduleUtil->getModuleData('modifyAdminMenu_IR');
+        // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
     }
 }

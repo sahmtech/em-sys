@@ -1,8 +1,4 @@
-
-
-
-@extends('layouts.custom_layouts.custom_app')
-{{-- @inject('request', 'Illuminate\Http\Request')
+@inject('request', 'Illuminate\Http\Request')
 
 @if (
     $request->segment(1) == 'pos' &&
@@ -40,6 +36,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
 
     @include('layouts.partials.css')
+    @include('layouts.custom_layouts.custom_partials.custom_css')
     @yield('css')
     <style>
         *,
@@ -125,7 +122,7 @@
         </script>
         @if (!$pos_layout)
             @include('layouts.partials.header')
-            @include('layouts.partials.sidebar')
+            @include('layouts.custom_layouts.custom_partials.custom_sidebar')
         @else
             @include('layouts.partials.header-pos')
         @endif
@@ -212,4 +209,4 @@
     @endif
 </body>
 
-</html> --}}
+</html>

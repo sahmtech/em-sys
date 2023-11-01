@@ -1,8 +1,4 @@
-
-
-
-@extends('layouts.custom_layouts.custom_app')
-{{-- @inject('request', 'Illuminate\Http\Request')
+@inject('request', 'Illuminate\Http\Request')
 
 @if (
     $request->segment(1) == 'pos' &&
@@ -40,6 +36,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
 
     @include('layouts.partials.css')
+    @include('layouts.custom_layouts.custom_partials.custom_css')
     @yield('css')
     <style>
         *,
@@ -114,21 +111,15 @@
 
 </head>
 
-<body
-    class="@if ($pos_layout) hold-transition lockscreen @else hold-transition skin-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'blue-light' }} @endif sidebar-mini @endif">
+<body 
+    class="@if ($pos_layout) hold-transition lockscreen @else hold-transition skin-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'blue-light' }} @endif  @endif">
     <div class="wrapper thetop">
         <script type="text/javascript">
-            if (localStorage.getItem("upos_sidebar_collapse") == 'true') {
-                var body = document.getElementsByTagName("body")[0];
-                body.className += " sidebar-collapse";
-            }
+            var body = document.getElementsByTagName("body")[0];
+            body.className += " sidebar-collapse";
         </script>
-        @if (!$pos_layout)
-            @include('layouts.partials.header')
-            @include('layouts.partials.sidebar')
-        @else
-            @include('layouts.partials.header-pos')
-        @endif
+               @include('layouts.custom_layouts.custom_partials.custom_header')
+
 
         @if (in_array($_SERVER['REMOTE_ADDR'], $whitelist))
             <input type="hidden" id="__is_localhost" value="true">
@@ -212,4 +203,4 @@
     @endif
 </body>
 
-</html> --}}
+</html>

@@ -30,10 +30,10 @@ class EssentialsEmployeeContractController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
-        if (! $can_crud_employee_contracts) {
-            abort(403, 'Unauthorized action.');
-        }
+        // $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
+        // if (! $can_crud_employee_contracts) {
+        //     abort(403, 'Unauthorized action.');
+        // }
         $contract_types = EssentialsContractType::pluck('type','id')->all();
         if (request()->ajax()) {
             $employees_contracts = EssentialsEmployeesContract::

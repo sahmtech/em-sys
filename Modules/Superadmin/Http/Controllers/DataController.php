@@ -113,7 +113,7 @@ class DataController extends Controller
     public function modifyAdminMenu()
     {
         if (auth()->user()->can('superadmin')) {
-            Menu::modify(
+            Menu::create(
                 'admin-sidebar-menu',
                 function ($menu) {
                     $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index']), __('superadmin::lang.superadmin'), ['icon' => 'fa fas fa-users-cog', 'active' => request()->segment(1) == 'superadmin'])->order(1);

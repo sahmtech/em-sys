@@ -17,7 +17,7 @@ use Modules\Accounting\Http\Controllers\PaymentVouchersController;
 use Modules\Accounting\Http\Controllers\ReceiptVouchersController;
 use Modules\Accounting\Http\Controllers\SettingsController;
 
-Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'AdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
+Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
     Route::get('dashboard', 'AccountingController@dashboard');
 
     Route::get('accounts-dropdown', 'AccountingController@AccountsDropdown')->name('accounts-dropdown');
