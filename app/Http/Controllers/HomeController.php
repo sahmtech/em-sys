@@ -74,7 +74,7 @@ class HomeController extends Controller
         $roles = auth()->user()->roles;
         $roleHasPermission = false;
         foreach ($roles as $role) {
-           
+            error_log($role->name);
             if ($role->hasPermissionTo('dashboard.data')) {
                 $roleHasPermission = true;
                 break;
@@ -226,6 +226,16 @@ class HomeController extends Controller
         $salesController = new $salesControllerClass();
         $salesPermissions = $salesController->user_permissions();
 
+        //internationalRelations
+        $irControllerClass = \Modules\InternationalRelations\Http\Controllers\DataController::class;
+        $irController = new $irControllerClass();
+        $irPermissions = $irController->user_permissions();
+
+        //housingMovements
+        $houseingMovementControllerClass = \Modules\HousingMovements\Http\Controllers\DataController::class;
+        $houseingMovementController = new $houseingMovementControllerClass();
+        $houseingMovementPermissions = $houseingMovementController->user_permissions();
+
         //superadmin
         $superadminControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
         $superadminController = new $superadminControllerClass();
@@ -241,10 +251,11 @@ class HomeController extends Controller
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => route('essentials_landing')],
+            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' => route('housingMovements_landingPage')],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
-            ['id' => 'internationalrelations',  'permissions' => [], 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
+            ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
         ];
         $cards = [];
 

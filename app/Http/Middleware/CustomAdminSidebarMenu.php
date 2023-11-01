@@ -100,135 +100,132 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
-            $menu->dropdown(
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+
+            $menu->url(
+                route('essentials_landing'),
                 __('essentials::lang.hrm'),
-                function ($subMenu) {
-                    if (auth()->user()->can('essentials.view_employee_affairs')) {
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' || request()->segment(1) == 'hrm' || request()->segment(1) == 'roles'],
+            )->order(0);
+            $menu->header("");
+            $menu->header("");
+            if (auth()->user()->can('essentials.view_employee_affairs') || true) {
+                $menu->url(
+                    route('employees'),
+                    __('essentials::lang.employees_affairs'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
+                        request()->segment(2) == 'roles'
+                        || request()->segment(2) == 'appointments'
+                        || request()->segment(2) == 'admissionToWork'
+                        || request()->segment(2) == 'employeeContracts'
+                        || request()->segment(2) == 'qualifications'
+                        || request()->segment(2) == 'official_documents'
+                        || request()->segment(2) == 'featureIndex')],
+                )->order(2);
+            }
 
-                        $subMenu->url(
-                            route('employees'),
-                            __('essentials::lang.employees_affairs'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
-                                request()->segment(2) == 'roles'
-                                || request()->segment(2) == 'appointments'
-                                || request()->segment(2) == 'admissionToWork'
-                                || request()->segment(2) == 'employeeContracts'
-                                || request()->segment(2) == 'qualifications'
-                                || request()->segment(2) == 'official_documents'
-                                || request()->segment(2) == 'featureIndex')],
-                        )->order(1);
-                    }
+            if (auth()->user()->can('essentials.view_facilities_management') || true) {
+                $menu->url(
+                    action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                    __('essentials::lang.facilities_management'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
+                )->order(3);
+            }
 
-                    if (auth()->user()->can('essentials.view_facilities_management')) {
-                        $subMenu->url(
-                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                            __('essentials::lang.facilities_management'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
-                        )->order(2);
-                    }
+            if (auth()->user()->can('essentials.crud_all_attendance') || true) {
+                $menu->url(
 
-                    if (auth()->user()->can('essentials.crud_all_attendance')) {
-                        $subMenu->url(
+                    action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
+                    __('essentials::lang.attendance'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
+                )->order(4);
+            }
 
-                            action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
-                            __('essentials::lang.attendance'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
-                        )->order(3);
-                    }
+            if (auth()->user()->can('essentials.crud_all_leave') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
+                    __('essentials::lang.leave_requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leave'],
+                )->order(5);
+            }
 
-                    if (auth()->user()->can('essentials.crud_all_leave')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
-                            __('essentials::lang.leave_requests'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leave'],
-                        )->order(4);
-                    }
+            if (auth()->user()->can('essentials.view_all_payroll') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
+                    __('essentials::lang.payroll'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
+                )->order(6);
+            }
+            $menu->url(
+                action([\App\Http\Controllers\TaxonomyController::class, 'index']),
+                __('essentials::lang.loan'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
+            )->order(7);
 
-                    if (auth()->user()->can('essentials.view_all_payroll')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
-                            __('essentials::lang.payroll'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
-                        )->order(5);
-                    }
-                    $subMenu->url(
-                        action([\App\Http\Controllers\TaxonomyController::class, 'index']),
-                        __('essentials::lang.loan'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
-                    )->order(7);
+            if (auth()->user()->can('essentials.crud_insurance_contracts') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index']),
+                    __('essentials::lang.insurance_contracts'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_contracts'],
+                )->order(8);
+            }
+            if (auth()->user()->can('essentials.crud_insurance_companies') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'index']),
+                    __('essentials::lang.insurance_companies'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_companies'],
+                )->order(9);
+            }
+            if (auth()->user()->can('essentials.crud_system_settings') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+                    __('essentials::lang.system_settings'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+                )->order(10);
+            }
 
-                    if (auth()->user()->can('essentials.crud_insurance_contracts')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index']),
-                            __('essentials::lang.insurance_contracts'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_contracts'],
-                        )->order(8);
-                    }
-                    if (auth()->user()->can('essentials.crud_insurance_companies')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'index']),
-                            __('essentials::lang.insurance_companies'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_companies'],
-                        )->order(9);
-                    }
-                    if (auth()->user()->can('essentials.crud_system_settings')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-                            __('essentials::lang.system_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                        )->order(10);
-                    }
-
-                    if (auth()->user()->can('essentials.view_employee_settings')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
-                            __('essentials::lang.employees_settings'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'countries' ||
-                                request()->segment(2) == 'cities'
-                                || request()->segment(2) == 'bank_accounts'
-                                || request()->segment(2) == 'holiday'
-                                || request()->segment(2) == 'travel_categories'
-                                || request()->segment(2) == 'professions'
-                                || request()->segment(2) == 'allowances'
-                                || request()->segment(2) == 'contract_types'
-                                || request()->segment(2) == 'insurance_categories'
+            if (auth()->user()->can('essentials.view_employee_settings') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
+                    __('essentials::lang.employees_settings'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'countries' ||
+                        request()->segment(2) == 'cities'
+                        || request()->segment(2) == 'bank_accounts'
+                        || request()->segment(2) == 'holiday'
+                        || request()->segment(2) == 'travel_categories'
+                        || request()->segment(2) == 'professions'
+                        || request()->segment(2) == 'allowances'
+                        || request()->segment(2) == 'contract_types'
+                        || request()->segment(2) == 'insurance_categories'
 
 
-                            )],
-                        )->order(11);
-                    }
+                    )],
+                )->order(11);
+            }
 
-                    if (auth()->user()->can('essentials.crud_import_employee')) {
-                        $subMenu->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
-                            __('essentials::lang.import_employees'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import_employee'],
-                        )->order(12);
-                    }
+            if (auth()->user()->can('essentials.crud_import_employee') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
+                    __('essentials::lang.import_employees'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import_employee'],
+                )->order(12);
+            }
 
-                    if (auth()->user()->can('essentials.curd_organizational_structure')) {
-                        $subMenu->url(
+            if (auth()->user()->can('essentials.curd_organizational_structure') || true) {
+                $menu->url(
 
-                            action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
-                            __('essentials::lang.organizational_structure'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                        )->order(13);
-                    }
-                },
-                [
-                    'icon' => 'fa fas fa-users',
-                    'active' => request()->segment(1) == 'essentials',
-                    'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
-                ]
-            )->order(10);
+                    action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
+                    __('essentials::lang.organizational_structure'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
+                )->order(13);
+            }
 
             $menu->url(
                 action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                 __('essentials::lang.essentials'),
                 ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
             )
-                ->order(10);
+                ->order(14);
         });
     }
     public function CUS_salesMenu()
@@ -238,63 +235,117 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
-            $menu->dropdown(
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+            $menu->url(
+                route('sales_landing'),
                 __('sales::lang.sales'),
-                function ($subMenu) {
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
+            )->order(0);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
+                __('sales::lang.customers'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
+            )->order(2);
 
 
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
-                        __('sales::lang.customers'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
-                    )->order(1);
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
+                __('sales::lang.add_offer_price'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+            )->order(3);
 
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-                        __('sales::lang.add_offer_price'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-                    )->order(2);
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
+                __('sales::lang.offer_price'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
 
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
-                        __('sales::lang.offer_price'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
-
-                    )->order(3);
+            )->order(4);
 
 
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
-                        __('sales::lang.contracts'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
-                    )->order(4);
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
+                __('sales::lang.contracts'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
+            )->order(5);
 
 
 
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
-                        __('sales::lang.contract_itmes'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
-                    )->order(5);
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
+                __('sales::lang.contract_itmes'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
+            )->order(6);
 
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
-                        __('sales::lang.contract_appendics'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
-                    )->order(6);
-                    $subMenu->url(
-                        action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
-                        __('sales::lang.sale_operation_orders'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
-                    )->order(7);
-                },
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
+                __('sales::lang.contract_appendics'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
+            )->order(7);
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
+                __('sales::lang.sale_operation_orders'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
+            )->order(8);
+        });
+    }
+    public function houseMovementsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+            $menu->url(
+                __('housingmovements::lang.housing_move'),
+
                 [
                     'icon' => 'fa fas fa-users',
-                    'active' => request()->segment(1) == 'sales',
+                    'active' => request()->segment(1) == 'housingmovements',
                     'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ]
-            )->order(10);
+            )->order(0);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
+                __('housingmovements::lang.requests'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
+            )->order(1);
+
+
+            $menu->dropdown(
+                __('housingmovements::lang.building_management'),
+                function ($buildingSubMenu) {
+                    $buildingSubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
+                        __('housingmovements::lang.buildings'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
+                    )->order(1);
+
+                    $buildingSubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
+                        __('housingmovements::lang.rooms'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
+                    )->order(2);
+
+                    $buildingSubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
+                        __('housingmovements::lang.facilities'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
+                    )->order(3);
+                }
+            )->order(2);
+
+
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
+                __('housingmovements::lang.movement_management'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+
+            )->order(3);
         });
     }
 

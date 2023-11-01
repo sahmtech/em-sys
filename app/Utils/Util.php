@@ -241,7 +241,7 @@ class Util
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
-error_log( $date);
+        error_log($date);
         return !empty($date_format) ? \Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
     }
 
@@ -1557,17 +1557,18 @@ error_log( $date);
     public function createUser($request)
     {
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email','mid_name','profile_picture',
+            'surname', 'first_name', 'last_name', 'email', 'mid_name', 'profile_picture',
             'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
-            'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1','nationality',
+            'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
             'custom_field_2', 'custom_field_3', 'custom_field_4', 'guardian_name', 'id_proof_name', 'id_proof_number', 'permanent_address', 'current_address', 'bank_details', 'selected_contacts',
         ]);
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
-             $profile= $image->store('/profile_images');
-            $user_details['profile_image'] = $profile;}
-    
+            $profile = $image->store('/profile_images');
+            $user_details['profile_image'] = $profile;
+        }
+
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'active';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
 
@@ -1577,8 +1578,9 @@ error_log( $date);
 
 
         //Check if subscribed or not, then check for users quota
-        if (Str::contains( $user_details['user_type'],'user') || Str::contains( $user_details['user_type'],'employee')
-            ) {
+        if (
+            Str::contains($user_details['user_type'], 'user') || Str::contains($user_details['user_type'], 'employee')
+        ) {
             $moduleUtil = new \App\Utils\ModuleUtil;
             if (!$moduleUtil->isSubscribed($business_id)) {
                 return $moduleUtil->expiredResponse();
@@ -1605,9 +1607,7 @@ error_log( $date);
             if (empty($user_details['username'])) {
                 $ref_count = $this->setAndGetReferenceCount('username', $business_id);
                 $user_details['username'] = $this->generateReferenceNumber('username', $ref_count, $business_id);
-            }
-
-            {
+            } {
                 $username_ext = $this->getUsernameExtension();
                 if (!empty($username_ext)) {
                     $user_details['username'] .= $username_ext;
@@ -1618,33 +1618,33 @@ error_log( $date);
         //Create the user
         $user = User::create($user_details);
 
-       
-            // $role = null;
-            // if ($request->input('role')) {
-            //     $role = Role::findOrFail($request->input('role'));
-            // } else {
-            //     $role = Role::where('name', 'User#' . $business_id)->first();
-            // }
 
-            // //Remove Location permissions from role
-            // $this->revokeLocationPermissionsFromRole($role);
+        $role = null;
+        if ($request->input('role')) {
+            $role = Role::findOrFail($request->input('role'));
+        } else {
+            $role = Role::where('name', 'User#' . $business_id)->first();
+        }
 
-            // $user->assignRole($role->name);
+        // //Remove Location permissions from role
+        // $this->revokeLocationPermissionsFromRole($role);
+        error_log($role);
+        $user->assignRole($role->name);
 
-            // //Grant Location permissions
-            // $this->giveLocationPermissions($user, $request);
+        // //Grant Location permissions
+        // $this->giveLocationPermissions($user, $request);
 
-            // //Assign selected contacts
-            // if ($user_details['selected_contacts'] == 1) {
-            //     $contact_ids = $request->get('selected_contact_ids');
-            //     $user->contactAccess()->sync($contact_ids);
-            // }
+        // //Assign selected contacts
+        // if ($user_details['selected_contacts'] == 1) {
+        //     $contact_ids = $request->get('selected_contact_ids');
+        //     $user->contactAccess()->sync($contact_ids);
+        // }
 
-            //Save module fields for user
-            $moduleUtil = new \App\Utils\ModuleUtil;
-            $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
-            $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
-        
+        //Save module fields for user
+        $moduleUtil = new \App\Utils\ModuleUtil;
+        $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
+        $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
+
 
         return $user;
     }
