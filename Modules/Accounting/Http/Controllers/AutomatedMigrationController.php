@@ -67,6 +67,7 @@ class AutomatedMigrationController extends Controller
 
             $account_ids_1 = $request->get('account_id1');
             $account_ids_2 = $request->get('account_id2');
+
             $type_1 = $request->get('type1');
             $type_2 = $request->get('type2');
             $amount_type_1 = $request->get('amount_type1');
@@ -97,32 +98,6 @@ class AutomatedMigrationController extends Controller
             $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
             $acc_trans_mapping->save();
 
-
-
-            //save details in account trnsactions table
-            foreach ($account_ids_2 as $index => $account_id) {
-                if (!empty($account_id)) {
-
-                    $transaction_row = [];
-                    $transaction_row['accounting_account_id'] = $account_id;
-
-
-                    $transaction_row['type'] =  $type_2[$index];
-
-
-
-
-                    $transaction_row['created_by'] = $user_id;
-                    $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
-                    $transaction_row['sub_type'] = 'journal_entry';
-                    $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
-
-                    $accounts_transactions = new AccountingAccountsTransaction();
-                    $accounts_transactions->fill($transaction_row);
-                    $accounts_transactions->save();
-                }
-            }
-
             foreach ($account_ids_1 as $index => $account_id) {
                 if (!empty($account_id)) {
 
@@ -145,6 +120,35 @@ class AutomatedMigrationController extends Controller
                     $accounts_transactions->save();
                 }
             }
+
+            //save details in account trnsactions table
+            if ($account_ids_2[1] != null) {
+                foreach ($account_ids_2 as $index => $account_id) {
+                    if (!empty($account_id)) {
+
+                        $transaction_row = [];
+                        $transaction_row['accounting_account_id'] = $account_id;
+
+
+                        $transaction_row['type'] =  $type_2[$index];
+
+
+
+
+                        $transaction_row['created_by'] = $user_id;
+                        $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
+                        $transaction_row['sub_type'] = 'journal_entry';
+                        $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+
+                        $accounts_transactions = new AccountingAccountsTransaction();
+                        $accounts_transactions->fill($transaction_row);
+                        $accounts_transactions->save();
+                    }
+                }
+            }
+
+
+
 
 
 
