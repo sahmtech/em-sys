@@ -148,6 +148,7 @@ class CustomAdminSidebarMenu
             }
 
             if (auth()->user()->can('essentials.crud_all_leave') || true) {
+
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
                     __('essentials::lang.leave_requests'),
