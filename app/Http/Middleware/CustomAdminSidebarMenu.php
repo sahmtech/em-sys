@@ -31,6 +31,8 @@ class CustomAdminSidebarMenu
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, 'sale')) {
             $this->CUS_salesMenu();
+        } elseif (Str::startsWith($currentPath, 'housingmovements')) {
+            $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, 'international')) {
             $this->getIRMenu();
         } else {
@@ -293,24 +295,21 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
             $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
                 __('housingmovements::lang.housing_move'),
 
                 [
                     'icon' => 'fa fas fa-users',
                     'active' => request()->segment(1) == 'housingmovements',
-                    'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+
                 ]
             )->order(0);
             $menu->header("");
             $menu->header("");
-            $menu->url(
-                action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
-                __('housingmovements::lang.requests'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
-            )->order(1);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(0);
 
+       
 
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
@@ -319,29 +318,77 @@ class CustomAdminSidebarMenu
                         action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
                         __('housingmovements::lang.buildings'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
-                    )->order(1);
+                    )->order(3);
 
                     $buildingSubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
                         __('housingmovements::lang.rooms'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
-                    )->order(2);
+                    )->order(4);
 
                     $buildingSubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
                         __('housingmovements::lang.facilities'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
-                    )->order(3);
+                    )->order(5);
                 }
-            )->order(2);
+            );
+            // $menu->url(
+            //     action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
+            //     __('housingmovements::lang.buildings'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
+            // )->order(2);
+
+            // $menu->url(
+            //     action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
+            //     __('housingmovements::lang.rooms'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
+            // )->order(3);
+
+            // $menu->url(
+            //     action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
+            //     __('housingmovements::lang.facilities'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
+            // )->order(4);
 
 
-            $menu->url(
-                action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
-                __('housingmovements::lang.movement_management'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+            // $menu->url(
+            //     action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
+            //     __('housingmovements::lang.requests'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
+            // )->order(1);
 
-            )->order(3);
+
+            // $menu->dropdown(
+            //     __('housingmovements::lang.building_management'),
+            //     function ($buildingSubMenu) {
+            //         $buildingSubMenu->url(
+            //             action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
+            //             __('housingmovements::lang.buildings'),
+            //             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
+            //         )->order(1);
+
+            //         $buildingSubMenu->url(
+            //             action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
+            //             __('housingmovements::lang.rooms'),
+            //             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
+            //         )->order(2);
+
+            //         $buildingSubMenu->url(
+            //             action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
+            //             __('housingmovements::lang.facilities'),
+            //             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
+            //         )->order(3);
+            //     }
+            // )->order(2);
+
+
+            // $menu->url(
+            //     action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
+            //     __('housingmovements::lang.movement_management'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+
+            // )->order(3);
         });
     }
 

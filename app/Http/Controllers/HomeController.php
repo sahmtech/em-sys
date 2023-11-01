@@ -251,7 +251,7 @@ class HomeController extends Controller
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => route('essentials_landing')],
-            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' => route('housingMovements_landingPage')],
+            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
@@ -586,7 +586,7 @@ class HomeController extends Controller
                 ->make(false);
         }
     }
-    
+
 
 
     public function loadMoreNotifications()

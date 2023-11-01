@@ -14,7 +14,7 @@
 Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('housingmovements')->group(function () {
-        // Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
+        Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
 
         //requests 
         Route::get('/requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->name('requests');
