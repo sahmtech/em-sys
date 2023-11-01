@@ -262,6 +262,7 @@ class HomeController extends Controller
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
+        //    ['id' => 'generalSettings',  'permissions' => $superadminPermissions, 'title' => "generalSettings", 'icon' => 'fas fa-chart-pie ', 'link' => ''],
         ];
         $cards = [];
 
