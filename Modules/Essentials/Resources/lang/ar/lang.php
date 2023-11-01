@@ -522,6 +522,7 @@ return[
 'doc_number'=>'رقم الوثيقة ',
 'doc_type'=>'نوع الوثيقة',
 'expired_date'=>' تاريخ الانتهاء',
+'expired'=>'منتهي',
 'issue_place'=>'مكان الإصدار',
 'issue_date'=>'تاريخ الإصدار',
 'doc_details'=>'تفاصيل الوثيقة',
