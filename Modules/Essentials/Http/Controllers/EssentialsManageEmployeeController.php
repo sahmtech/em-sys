@@ -246,6 +246,7 @@ class EssentialsManageEmployeeController extends Controller
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
+              //  dd( $request);
                 $user = $this->moduleUtil->createUser($request);
     
                 event(new UserCreatedOrModified($user, 'added'));
