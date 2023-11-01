@@ -71,8 +71,8 @@ class EssentialsEmployeeAppointmentController extends Controller
                     'essentials_employee_appointmets.superior',
                     'essentials_employee_appointmets.profession_id',
                     'essentials_employee_appointmets.specialization_id',
-
                     'u.status as status',
+
 
                 ]);
 
@@ -93,8 +93,6 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 return $item;
             })
-
-         
             ->editColumn('profession_id',function($row)use($professions){
                 $item = $professions[$row->profession_id]??'';
 
@@ -179,6 +177,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 $model->save();
             }
 
+
           //  $offer->status = $this->statuses[$user->status]['name'];
 
         
@@ -192,8 +191,11 @@ class EssentialsEmployeeAppointmentController extends Controller
 
      
 
-//return $collection;
+
        return redirect()->route('appointments')->with(compact('users','departments','business_locations'));
+
+     //   return view('essentials::employee_affairs.employee_appointments.index')->with(compact('users','departments','business_locations','specializations','professions'));
+
     }
 
     public function store(Request $request)

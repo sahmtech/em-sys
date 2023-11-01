@@ -729,10 +729,9 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
-
-      
+     
         if ($data['event'] = 'user_saved') {
-
+           
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -746,36 +745,36 @@ class DataController extends Controller
            
 
             if (request()->input('contract_number')!=null) {
-            $contract = new EssentialsEmployeesContract();
-            $contract->employee_id = $user->id;
-            $contract->contract_number = request()->input('contract_number');
-            $contract->contract_start_date = request()->input('contract_start_date');
-            $contract->contract_end_date = request()->input('contract_end_date');
-            $contract->contract_duration = request()->input('contract_duration');
-            $contract->probation_period = request()->input('probation_period');
-            $contract->is_renewable = request()->input('is_renewable');
-            $contract->contract_type_id = request()->input('contract_type');
-            if (request()->hasFile('contract_file')) {
-            $file = request()->file('contract_file');
-            $filePath = $file->store('/employee_contracts');
-            $contract->file_path = $filePath;
-            $contract->save();
+                $contract = new EssentialsEmployeesContract();
+                $contract->employee_id = $user->id;
+                $contract->contract_number = request()->input('contract_number');
+                $contract->contract_start_date = request()->input('contract_start_date');
+                $contract->contract_end_date = request()->input('contract_end_date');
+                $contract->contract_duration = request()->input('contract_duration');
+                $contract->probation_period = request()->input('probation_period');
+                $contract->is_renewable = request()->input('is_renewable');
+                $contract->contract_type_id = request()->input('contract_type');
+                if (request()->hasFile('contract_file')) {
+                $file = request()->file('contract_file');
+                $filePath = $file->store('/employee_contracts');
+                $contract->file_path = $filePath;
+                $contract->save();
 
             }}
       
        
             if (request()->input('travel_ticket_categorie')!=null){
-            $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
-            $travel_ticket_categorie->employee_id =$user->id;
-            $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
-            $travel_ticket_categorie->save();
+                $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+                $travel_ticket_categorie->employee_id =$user->id;
+                $travel_ticket_categorie->categorie_id=request()->input('travel_ticket_categorie');
+                $travel_ticket_categorie->save();
             }
-            error_log(request()->selectedData);
+           
             if (request()->selectedData) {
-            $jsonData = json_decode(request()->selectedData, true); 
-            foreach ($jsonData as $item) {
-                error_log($item['salaryType']);
-                error_log($item['amount']);
+                $jsonData = json_decode(request()->selectedData, true); 
+                foreach ($jsonData as $item) {
+                    error_log($item['salaryType']);
+                    error_log($item['amount']);
 
                     try {
                             $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
@@ -809,10 +808,12 @@ class DataController extends Controller
                 $essentials_employee_appointmets->department_id=request()->input('essentials_department_id');
                 $essentials_employee_appointmets->business_location_id= request()->input('location_id');
                 $essentials_employee_appointmets->superior = "superior";
-                $essentials_employee_appointmets->profession_id=request()->input('profession');
-                $essentials_employee_appointmets->specialization_id=request()->input('specialization');
+
+                $essentials_employee_appointmets->profession_id=(int)$data['request']['profession'];
+                $essentials_employee_appointmets->specialization_id=(int)$data['request']['specialization'];
                
-                // $essentials_employee_appointmets->employee_status ="active";
+         
+
                 $essentials_employee_appointmets->save();
 
                 
