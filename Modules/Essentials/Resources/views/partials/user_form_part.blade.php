@@ -14,14 +14,32 @@
               </div>
           </div>
 	</div>
-	<div class="col-md-6">
+    <div class="col-md-6">
+        <div class="form-group">
+          {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+          {!! Form::select('profession',$professions,null, ['class' => 'form-control', 'required',
+             'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
+             
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+            {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
+            {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
+                'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
+          </div>
+      </div>
+
+	{{-- <div class="col-md-6">
 		<div class="form-group">
             {!! Form::label('essentials_designation_id', __('essentials::lang.designation') . ':') !!}
             <div class="form-group">
                 {!! Form::select('essentials_designation_id', $designations, !empty($user->essentials_designation_id) ? $user->essentials_designation_id : null, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'required','placeholder' => __('messages.please_select') ]); !!}
             </div>
         </div>
-	</div>
+	</div> --}}
+
+
     {{-- <div class="form-group col-md-3">
         {!! Form::label('essentials::lang.qualification_type', __('essentials::lang.qualification_type') . ':') !!}
         {!! Form::select('qualification_type',  ['bachelors_degree' => __('essentials::lang.bachelors_degree'), 
@@ -200,7 +218,32 @@
         updateAmount(this); // Call the function to update the amount
     });
 
-    // Rest of your existing JavaScript code...
+    professionSelect.on('change', function () {
+   
+   var selectedProfession = $(this).val();
+   console.log(selectedProfession);
+   var csrfToken = $('meta[name="csrf-token"]').attr('content');
+   $.ajax({
+      url: '{{ route('specializations') }}',
+      type: 'POST',
+      data: {
+        _token: csrfToken,
+           profession_id: selectedProfession
+       },
+       success: function (data) {
+          
+           specializationSelect.empty();
+
+        
+           $.each(data, function (id, name) {
+               specializationSelect.append($('<option>', {
+                   value: id,
+                   text: name
+               }));
+           });
+       }
+   });
+});.
 </script>
 
 

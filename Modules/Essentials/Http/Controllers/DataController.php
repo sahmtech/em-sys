@@ -29,6 +29,8 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsBasicSalaryType;
 use Modules\Essentials\Entities\EssentialsAdmissionsToWork;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 
 class DataController extends Controller
 {
@@ -695,7 +697,9 @@ class DataController extends Controller
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name','id')->all();
             $contract_types = EssentialsContractType::pluck('type','id')->all();
             $nationalities=EssentialsCountry::nationalityForDropdown();
-            return view('essentials::partials.user_form_part', compact('nationalities','travel_ticket_categorie','contract_types','allowance_types', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $specializations=EssentialsSpecialization::all()->pluck('name','id');
+            $professions=EssentialsProfession::all()->pluck('name','id');
+            return view('essentials::partials.user_form_part', compact('nationalities','travel_ticket_categorie','contract_types','allowance_types','specializations','professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -805,8 +809,10 @@ class DataController extends Controller
                 $essentials_employee_appointmets->department_id=request()->input('essentials_department_id');
                 $essentials_employee_appointmets->business_location_id= request()->input('location_id');
                 $essentials_employee_appointmets->superior = "superior";
-                $essentials_employee_appointmets->job_title=request()->input('essentials_designation_id');
-                $essentials_employee_appointmets->employee_status ="active";
+                $essentials_employee_appointmets->profession_id=request()->input('profession');
+                $essentials_employee_appointmets->specialization_id=request()->input('specialization');
+               
+                // $essentials_employee_appointmets->employee_status ="active";
                 $essentials_employee_appointmets->save();
 
                 
