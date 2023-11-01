@@ -1629,8 +1629,11 @@ class Util
 
         // //Remove Location permissions from role
         // $this->revokeLocationPermissionsFromRole($role);
-        error_log($role);
-        $user->assignRole($role->name);
+        if($role){
+            $user->assignRole($role->name);
+        }
+      
+      
 
         // //Grant Location permissions
         // $this->giveLocationPermissions($user, $request);
