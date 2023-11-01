@@ -16,7 +16,15 @@ return [
     'building_cleaner'=>'عامل النظافة',
     'add_building'=>'إضافة سكن',
     'edit_building'=>'تعديل سكن',
-   
+   'edit_room'=>'تعديل غرفة',
+   'add_room'=>'إضافة غرفة',
+   'room_number'=>'رقم الغرفة',
+   'htr_building'=>'السكن',
+   'area'=>'المساحة',
+   'beds_count'=>'عدد الأسرّة',
+   'contents'=>'المحتويات',
+   ''=>'',
+
 
 
 ];
