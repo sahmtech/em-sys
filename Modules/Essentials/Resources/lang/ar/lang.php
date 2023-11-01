@@ -1,6 +1,6 @@
 <?php
 return[
-"essentials" => "الأعمال اليومية",
+"essentials" => "إدارة المهام اليومية",
 "document" => "المستندات",
 "description" => "الوصف",
 "submit" => "ارسال",
