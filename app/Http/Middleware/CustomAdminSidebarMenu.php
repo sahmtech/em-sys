@@ -309,8 +309,18 @@ class CustomAdminSidebarMenu
             $menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(0);
 
-       
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
+                __('housingmovements::lang.requests'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
+            );
 
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
+                __('housingmovements::lang.movement_management'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+             
+            )->order(2);
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
                 function ($buildingSubMenu) {
@@ -318,21 +328,22 @@ class CustomAdminSidebarMenu
                         action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
                         __('housingmovements::lang.buildings'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
-                    )->order(3);
+                    )->order(4);
 
                     $buildingSubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
                         __('housingmovements::lang.rooms'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
-                    )->order(4);
+                    )->order(5);
 
                     $buildingSubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
                         __('housingmovements::lang.facilities'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
-                    )->order(5);
-                }
+                    )->order(6);
+                },  ['icon' => 'fa fas fa-plus-circle', ],
             );
+       
             // $menu->url(
             //     action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
             //     __('housingmovements::lang.buildings'),
