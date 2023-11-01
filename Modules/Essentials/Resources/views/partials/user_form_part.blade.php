@@ -21,14 +21,18 @@
              'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
              
         </div>
+
     </div>
     <div class="col-sm-6">
+
         <div class="form-group">
             {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
             {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
                 'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
           </div>
+
     </div>
+
 
 	{{-- <div class="col-md-6">
 		<div class="form-group">
@@ -242,7 +246,7 @@
     $(document).on('change', 'select[name="salary_type[]"]', function() {
         updateAmount(this); // Call the function to update the amount
     });
-  
+
 </script>
 
 

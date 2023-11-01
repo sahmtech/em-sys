@@ -136,6 +136,9 @@ $(document).ready( function(){
             $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
             $('#change_status_modal').find('#offer_id').val($(this).data('offer-id'));
             $('#change_status_modal').modal('show');
+
+
+            
         });
 
     $(document).on('submit', 'form#change_status_form', function(e) {

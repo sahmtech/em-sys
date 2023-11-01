@@ -198,6 +198,10 @@ return [
     'specialization_name'=>'specialization',
     'unit'=>'unit',
     'registered'=>'registered',
+    'active'=>'active',
+    'inactive'=>'inactive',
+    'terminated'=>'terminated',
+    'vecation'=>'vecation',
 
 
     

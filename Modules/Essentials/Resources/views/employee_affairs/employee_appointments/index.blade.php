@@ -134,12 +134,13 @@
         </div>
     </div>
 </section>
+@include('essentials::employee_affairs.employee_appointments.change_status')
 @endsection
 @section('javascript')
 
 
     <script type="text/javascript">
-        $(document).ready(function() {
+$(document).ready(function() {
             var appointments_table;
             var professionSelect = $('#professionSelect');
             var specializationSelect = $('#specializationSelect');
@@ -234,13 +235,88 @@
                     }
                 });
             });
-
-            
-        });
-        
-        
-
-    </script> 
+            professionSelect.on('change', function () {
    
+                        var selectedProfession = $(this).val();
+                        console.log(selectedProfession);
+                        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                        $.ajax({
+                            url: '{{ route('specializations') }}',
+                            type: 'POST',
+                            data: {
+                                _token: csrfToken,
+                                profession_id: selectedProfession
+                            },
+                            success: function (data) {
+                                
+                                specializationSelect.empty();
+
+                                
+                                $.each(data, function (id, name) {
+                                    specializationSelect.append($('<option>', {
+                                        value: id,
+                                        text: name
+                                    }));
+                                });
+                            }
+   });
+
+
+   $(document).on('submit', 'form#change_status_form', function(e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            console.log(data);
+            var ladda = Ladda.create(document.querySelector('.update-offer-status'));
+            ladda.start();
+            $.ajax({
+                method: $(this).attr('method'),
+                url: $(this).attr('action'),
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    ladda.stop();
+                    if (result.success == true) {
+                        $('div#change_status_modal').modal('hide');
+                        toastr.success(result.msg);
+                       appointments_table.ajax.reload();
+                       // console.log(result.msg)
+                     //  reloadDataTable();
+                    } else {
+                        toastr.error(result.msg);
+                        console.log(result.msg)
+                    }
+                },
+            });
+        });
+
+});
+
+
+          
+
+
+        });
+    
+    </script>
+
+    <script>
+           $(document).ready(function() {
+            $(document).on('click', 'a.change_status', function(e) {
+            e.preventDefault();
+            $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
+            $('#change_status_modal').find('#offer_id').val($(this).data('offer-id'));
+            $('#change_status_modal').modal('show');
+        });
+
+       
+
+           });
+          
+
+        
+  
+    
+    </script>
+
 @endsection
 
