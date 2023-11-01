@@ -1,4 +1,8 @@
-@inject('request', 'Illuminate\Http\Request')
+
+
+
+@extends('layouts.custom_layouts.custom_app')
+{{-- @inject('request', 'Illuminate\Http\Request')
 
 @if (
     $request->segment(1) == 'pos' &&
@@ -208,4 +212,4 @@
     @endif
 </body>
 
-</html>
+</html> --}}

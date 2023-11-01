@@ -2,6 +2,9 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Charts\CommonChart;
+use App\Utils\ModuleUtil;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -15,9 +18,50 @@ class EssentialsController extends Controller
      */
     public function index()
     {
-        return view('essentials::index');
+
+        $num_employee_staff = User::where(function ($query) {
+            $types = ['worker', 'employee', 'manager'];
+
+            foreach ($types as $type) {
+                $query->orWhere('user_type', 'like', '%' . $type . '%');
+            }
+        })->count();
+        $num_workers = User::where('user_type', 'like', '%worker%')->count();
+        $num_employees = User::where('user_type', 'like', '%employee%')->count();
+     
+        
+        $num_managers = User::where('user_type', 'like', '%manager%')->count();
+        $chart = new CommonChart;
+        $colors = [
+            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
+            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+        ];
+        $labels = [__('user.worker'), __('user.employee'), __('user.manager')];
+        $values = [$num_workers, $num_employees, $num_managers];
+        $chart->labels($labels)
+            ->options($this->__chartOptions())
+            ->dataset(__('user.employee_staff'), 'pie', $values)
+            ->color($colors);
+
+        return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
     }
 
+    private function __chartOptions()
+    {
+        return [
+            'plotOptions' => [
+                'pie' => [
+                    'allowPointSelect' => true,
+                    'cursor' => 'pointer',
+                    'dataLabels' => [
+                        'enabled' => false
+                    ],
+                    'showInLegend' => true,
+                ],
+            ],
+        ];
+    }
     /**
      * Show the form for creating a new resource.
      *

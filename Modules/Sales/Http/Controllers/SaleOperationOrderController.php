@@ -166,7 +166,7 @@ class SaleOperationOrderController extends Controller
         $business_id = request()->session()->get('user.business_id');
      
 
-        $leads=Contact::where('type','lead')
+        $leads=Contact::where('type','customer')
         
         ->where('business_id',$business_id)
         ->pluck('supplier_business_name','id');

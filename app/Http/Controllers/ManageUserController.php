@@ -458,6 +458,7 @@ class ManageUserController extends Controller
                 }
 
                 $role = Role::findOrFail($role_id);
+                
                 $user->assignRole($role->name);
             }
 

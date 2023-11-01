@@ -2,6 +2,7 @@
 
 namespace Modules\InternationalRelations\Http\Controllers;
 
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -14,6 +15,8 @@ class InternationalRelationsController extends Controller
      */
     public function index()
     {
+        $moduleUtil = new ModuleUtil;
+        $moduleUtil->getModuleData('modifyAdminMenu_IR');
         return view('internationalrelations::index');
     }
 

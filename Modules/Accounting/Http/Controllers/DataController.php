@@ -35,10 +35,10 @@ class DataController extends Controller
 
         $commonUtil = new Util();
         $is_admin = $commonUtil->is_admin(auth()->user(), $business_id);
-
+        
         if (auth()->user()->can('accounting.access_accounting_module') && $is_accounting_enabled) {
-            Menu::modify(
-                'admin-sidebar-menu',
+            Menu::create(
+                'custom_admin-sidebar-menu',
                 function ($menu) use ($is_admin) {
                     $menu->url(action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'), __('accounting::lang.accounting'), ['icon' => 'fas fa-money-check fa', 'style' => config('app.env') == 'demo' ? 'background-color: #D483D9;' : '', 'active' => request()->segment(1) == 'accounting'])->order(50);
                 }

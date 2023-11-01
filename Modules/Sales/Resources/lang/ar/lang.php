@@ -177,6 +177,10 @@ return [
     'specialization_name'=>'التخصص',
     'unit'=>'الوحدة',
     'registered'=>'مسجل',
+    'active'=>'نشط',
+    'inactive'=>'غير نشط',
+    'terminated'=>'أنهيت',
+    'vecation'=>'إجازة',
 
 
 ];

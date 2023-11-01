@@ -14,6 +14,7 @@ class HousingMovementsController extends Controller
      */
     public function index()
     {
+        
         return view('housingmovements::index');
     }
 

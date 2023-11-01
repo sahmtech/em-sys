@@ -23,6 +23,15 @@ return [
 'add_empCompany'=>'add employee Company',
 'good'=>'good',
 'bad'=>'bad',
+'order_request_view'=>'order request view',
+'order_request'=>'order request',
+'crud_order_request'=>'add/edit/delete order request',
+'Delegation'=>'Delegation',
+'add_deleation'=>'add deleation',
+'all_Delegation'=>'all Delegation',
+'agency_name'=>'agency name',
+'target_quantity'=>'target quantity',
+'currecnt_quantity'=>'currecnt quantity',
   
 
 ];

@@ -18,10 +18,28 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 class EssentialsEmployeeAppointmentController extends Controller
 {
     protected $moduleUtil;
-
+    protected $statuses;
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->statuses = [
+            'active' => [
+                'name' => __('sales::lang.active'),
+                'class' => 'bg-green',
+            ],
+            'inactive' => [
+                'name' => __('sales::lang.inactive'),
+                'class' => 'bg-red',
+            ],
+            'terminated' => [
+                'name' => __('sales::lang.terminated'),
+                'class' => 'bg-blue',
+            ],
+            'vecation' => [
+                'name' =>__('sales::lang.vecation'),
+                'class' => 'bg-yellow',
+            ],
+        ];
     }
     
     
@@ -53,8 +71,8 @@ class EssentialsEmployeeAppointmentController extends Controller
                     'essentials_employee_appointmets.superior',
                     'essentials_employee_appointmets.profession_id',
                     'essentials_employee_appointmets.specialization_id',
+                    'u.status as status',
 
-                    'u.status',
 
                 ]);
 
@@ -90,6 +108,15 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 return $item;
             })
+            ->editColumn('status', function ($row) {
+                //   error_log($this->statuses); // Debug the statuses array
+                   error_log($row->status);
+                       $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
+                       .$this->statuses[$row->status]['name'].'</span>';
+                       $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
+                       
+                       return $status;
+                   })
             ->addColumn(
                 'action',
                  function ($row) {
@@ -106,17 +133,71 @@ class EssentialsEmployeeAppointmentController extends Controller
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->removeColumn('id')
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'status'])
                 ->make(true);
         }
                 $query = User::where('business_id', $business_id);
                 $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
                
-                
+                $statuses = $this->statuses;
 
-        return view('essentials::employee_affairs.employee_appointments.index')->with(compact('users','departments','business_locations','specializations','professions'));
+        return view('essentials::employee_affairs.employee_appointments.index')->with(compact('statuses','users','departments','business_locations','specializations','professions'));
     }
+
+
+ public function changeStatus(Request $request)
+    {
+     
+        $business_id = request()->session()->get('user.business_id');
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.approve_leave')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $query = User::where('business_id', $business_id)
+        ->user();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        
+        $departments = EssentialsDepartment::forDropdown();
+        $business_locations=BusinessLocation::all()->pluck('name','id');
+
+        try {
+            $input = $request->only(['status','offer_id']);
+            $user=EssentialsEmployeeAppointmet::find($input['offer_id'])->select('employee_id')->first();
+            // $user =User::find($userId);
+
+            //  $user->status = $input['status'];
+         
+            // $user->save();
+            $collection = User::where('id','=',$user->employee_id)->get();
+
+            foreach ($collection as $model) {
+                $model->update(['status' => $input['status']]);
+                $model->save();
+            }
+
+
+          //  $offer->status = $this->statuses[$user->status]['name'];
+
+        
+            $output = ['success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            $output = ['success' => false, 'msg' => $e->getMessage()];
+        }
+
+     
+
+
+       return redirect()->route('appointments')->with(compact('users','departments','business_locations'));
+
+     //   return view('essentials::employee_affairs.employee_appointments.index')->with(compact('users','departments','business_locations','specializations','professions'));
+
+    }
+
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');

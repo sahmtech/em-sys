@@ -19,23 +19,24 @@ class EssentialsOfficialDocumentController extends Controller
     {
         $this->moduleUtil = $moduleUtil;
     }
-    
+
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+            error_log("1111");
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
-        if (!$can_crud_official_documents) {
-            abort(403, 'Unauthorized action.');
-        }
+        // $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
+        // if (!$can_crud_official_documents) {
+        //     error_log("2222");
+        //     abort(403, 'Unauthorized action.');
+        // }
         if (request()->ajax()) {
-            $official_documents = EssentialsOfficialDocument::
-                join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+            $official_documents = EssentialsOfficialDocument::join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
                 ->where('u.business_id', $business_id)
-                
+
                 ->select([
                     'essentials_official_documents.id',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -63,20 +64,22 @@ class EssentialsOfficialDocumentController extends Controller
                 $official_documents->whereDate('essentials_official_documents.expiration_date', '>=', $start)
                     ->whereDate('essentials_official_documents.expiration_date', '<=', $end);
             }
-
+            if (!empty(request()->isForHome)) {
+                $official_documents->where('essentials_official_documents.type', 'residence_permit');
+            }
             return Datatables::of($official_documents)
-            ->addColumn(
-                'action',
-                function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a> &nbsp;';
-                    $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '';
+                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                        $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                        $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
-                    return $html;
-                }
-            )
-            
+                        return $html;
+                    }
+                )
+
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
@@ -91,7 +94,7 @@ class EssentialsOfficialDocumentController extends Controller
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
     }
 
-    
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -111,13 +114,13 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
- 
+
         try {
-            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status','expiration_date','file']);
-          
+            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status', 'expiration_date', 'file']);
+
 
             $input2['type'] = $input['doc_type'];
             $input2['number'] = $input['doc_number'];
@@ -129,21 +132,23 @@ class EssentialsOfficialDocumentController extends Controller
             if (request()->hasFile('file')) {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
-                
+
                 $input2['file_path'] = $filePath;
-            } 
-           
-            
+            }
+
+
             EssentialsOfficialDocument::create($input2);
-            
- 
-            $output = ['success' => true,
+
+
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -151,10 +156,9 @@ class EssentialsOfficialDocumentController extends Controller
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-    
-    
-       return redirect()->route('official_documents')->with(compact('users'));
 
+
+        return redirect()->route('official_documents')->with(compact('users'));
     }
 
     /**
@@ -164,17 +168,17 @@ class EssentialsOfficialDocumentController extends Controller
      */
     public function show($id)
     {
-        if (! auth()->user()->can('user.view')) {
+        if (!auth()->user()->can('user.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
-       $doc = EssentialsOfficialDocument::findOrFail($id);
+        $doc = EssentialsOfficialDocument::findOrFail($id);
 
-       $user = User::where('id', $doc->employee_id)->first();
-        
-        return view('essentials::employee_affairs.official_docs.show')->with(compact('doc','user'));
+        $user = User::where('id', $doc->employee_id)->first();
+
+        return view('essentials::employee_affairs.official_docs.show')->with(compact('doc', 'user'));
     }
 
 
@@ -188,32 +192,31 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
         $doc = EssentialsOfficialDocument::where('essentials_official_documents.id', $id)
-        ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
-        ->select([
-            'essentials_official_documents.id as id',
-            'essentials_official_documents.employee_id as employee_id',
-            DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as employee"),
-            'essentials_official_documents.type as type',
-            'essentials_official_documents.status as status',
-            'essentials_official_documents.number as number',
-            'essentials_official_documents.issue_date as issue_date',
-            'essentials_official_documents.issue_place as issue_place',
-            'essentials_official_documents.expiration_date as expiration_date',
-            'essentials_official_documents.file_path as file_path',
-        ])
-        ->firstOrFail();
-        
+            ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+            ->select([
+                'essentials_official_documents.id as id',
+                'essentials_official_documents.employee_id as employee_id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as employee"),
+                'essentials_official_documents.type as type',
+                'essentials_official_documents.status as status',
+                'essentials_official_documents.number as number',
+                'essentials_official_documents.issue_date as issue_date',
+                'essentials_official_documents.issue_place as issue_place',
+                'essentials_official_documents.expiration_date as expiration_date',
+                'essentials_official_documents.file_path as file_path',
+            ])
+            ->firstOrFail();
+
         $query = User::where('business_id', $business_id);
         $all_users = $query->select(['id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name")])->get();
         $users = $all_users->pluck('full_name', 'id');
-        $var=$users[$doc->employee_id];
-      
-        return view('essentials::employee_affairs.official_docs.edit')->with(compact('users','doc','var'));
+        $var = $users[$doc->employee_id];
 
+        return view('essentials::employee_affairs.official_docs.edit')->with(compact('users', 'doc', 'var'));
     }
 
     /**
@@ -222,66 +225,67 @@ class EssentialsOfficialDocumentController extends Controller
      * @param int $id
      * @return Renderable
      */
-   
-     public function update(Request $request, $id)
-     {
-        
-        $business_id = $request->session()->get('user.business_id');
-         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
- 
-         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-             abort(403, 'Unauthorized action.');
-         }
-         
-       
-         try {
-      
-            $file2=EssentialsOfficialDocument::where('id', $id)->get()[0]->file_path;
-            $employee2=EssentialsOfficialDocument::where('id', $id)->get()[0]->employee_id;
 
-            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status','expiration_date','file']);
-           
+    public function update(Request $request, $id)
+    {
+
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+
+        try {
+
+            $file2 = EssentialsOfficialDocument::where('id', $id)->get()[0]->file_path;
+            $employee2 = EssentialsOfficialDocument::where('id', $id)->get()[0]->employee_id;
+
+            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status', 'expiration_date', 'file']);
+
             $input2['type'] = $input['doc_type'];
             $input2['number'] = $input['doc_number'];
             $input2['issue_date'] = $input['issue_date'];
             $input2['expiration_date'] = $input['expiration_date'];
-            
+
             $input2['status'] = $input['status'];
             $input2['issue_place'] = $input['issue_place'];
-            if($input['employee']==null){
-                $input2['file_path']=$employee2;
-            }
-            else{
+            if ($input['employee'] == null) {
+                $input2['file_path'] = $employee2;
+            } else {
                 $input2['employee_id'] = $input['employee'];
             }
-            if($input['file']==null){
-                $input2['file_path']=$file2;
-            }
-            else{
+            if ($input['file'] == null) {
+                $input2['file_path'] = $file2;
+            } else {
                 $file = request()->file('file');
                 $filePath = $file->store('/officialDocuments');
-                
-                $input2['file_path'] = $filePath;}
-            
+
+                $input2['file_path'] = $filePath;
+            }
+
             EssentialsOfficialDocument::where('id', $id)->update($input2);
-             $output = ['success' => true,
-                 'msg' => __('lang_v1.updated_success'),
-             ];
-         } catch (\Exception $e) {
-             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
- 
-             $output = ['success' => false,
-                 'msg' => __('messages.something_went_wrong'),
-             ];
-         }
- 
-         $query = User::where('business_id', $business_id);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-    
-    
-       return redirect()->route('official_documents')->with(compact('users'));
-     }
+
+
+        return redirect()->route('official_documents')->with(compact('users'));
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -293,27 +297,27 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             EssentialsOfficialDocument::where('id', $id)
-                        ->delete();
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
-       return $output;
 
+        return $output;
     }
 }
