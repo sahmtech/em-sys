@@ -98,7 +98,7 @@
                                 {!! Form::select('department',$departments, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_department'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('location', __('essentials::lang.department') . ':*') !!}
+                                {!! Form::label('location', __('essentials::lang.location') . ':*') !!}
                                 {!! Form::select('location',$business_locations, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_location'), 'required']) !!}
                             </div>
                           
@@ -136,13 +136,13 @@
 </section>
 @endsection
 @section('javascript')
+
+
     <script type="text/javascript">
         $(document).ready(function() {
             var appointments_table;
-
-            function reloadDataTable() {
-                appointments_table.ajax.reload();
-            }
+            var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
 
             appointments_table  = $('#appointments_table').DataTable({
                 processing: true,
@@ -177,6 +177,32 @@
                         { data: 'action' },
                     ],
              });
+            professionSelect.on('change', function () {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function (data) {
+                        specializationSelect.empty();
+                        $.each(data, function (id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
+            function reloadDataTable() {
+                appointments_table.ajax.reload();
+            }
+
 
            
             $('#job_title_filter,#location_filter, #department_filter').on('change', function() {
@@ -208,35 +234,13 @@
                     }
                 });
             });
-            professionSelect.on('change', function () {
-   
-   var selectedProfession = $(this).val();
-   console.log(selectedProfession);
-   var csrfToken = $('meta[name="csrf-token"]').attr('content');
-   $.ajax({
-      url: '{{ route('specializations') }}',
-      type: 'POST',
-      data: {
-        _token: csrfToken,
-           profession_id: selectedProfession
-       },
-       success: function (data) {
-          
-           specializationSelect.empty();
 
-        
-           $.each(data, function (id, name) {
-               specializationSelect.append($('<option>', {
-                   value: id,
-                   text: name
-               }));
-           });
-       }
-   });
-});
             
         });
-    
-    </script>
+        
+        
+
+    </script> 
+   
 @endsection
 

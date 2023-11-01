@@ -1556,8 +1556,9 @@ class Util
      */
     public function createUser($request)
     {
+      
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email', 'mid_name', 'profile_picture',
+            'surname', 'first_name', 'last_name', 'email','mid_name','profile_picture','profession','specialization',
             'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
@@ -1640,11 +1641,16 @@ class Util
         //     $user->contactAccess()->sync($contact_ids);
         // }
 
-        //Save module fields for user
-        $moduleUtil = new \App\Utils\ModuleUtil;
-        $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
-        $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
+        // //Save module fields for user
+        // $moduleUtil = new \App\Utils\ModuleUtil;
+        // $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
+        // $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
 
+            //Save module fields for user
+            $moduleUtil = new \App\Utils\ModuleUtil;
+            $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user,'request'=>$user_details]);
+            $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
+        
 
         return $user;
     }

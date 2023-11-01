@@ -21,14 +21,14 @@
              'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
              
         </div>
-      </div>
-      <div class="col-sm-6">
+    </div>
+    <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
             {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
                 'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
           </div>
-      </div>
+    </div>
 
 	{{-- <div class="col-md-6">
 		<div class="form-group">
@@ -54,9 +54,9 @@
     
     </div> --}}
    
-    <div class="col-md-12">
-        <hr>
-        <h4>@lang('essentials::lang.contract_details'):</h4>
+        <div class="col-md-12">
+            <hr>
+            <h4>@lang('essentials::lang.contract_details'):</h4>
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_number', __( 'essentials::lang.contract_number') . ':') !!}
@@ -65,7 +65,7 @@
         <div class="col-md-3">
             <div class="form-group">
             {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
-            {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2', 'required','placeholder' => __('messages.please_select')]); !!}
+            {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2','placeholder' => __('messages.please_select')]); !!}
             </div>
         </div>
         <div class="form-group col-md-3">
@@ -97,7 +97,7 @@
             {!! Form::file('contract_file', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_file') ]); !!}
         </div>
 
-    </div>
+</div>
         
 @endcomponent
 @component('components.widget', ['title' => __('essentials::lang.payroll')])
@@ -155,6 +155,31 @@
 
 <script>
     var selectedData = [];
+    var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
+
+            professionSelect.on('change', function () {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function (data) {
+                        specializationSelect.empty();
+                        $.each(data, function (id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
+            });
 
     function addRow() {
         var newRow = $('#salary-table-body tr:first').clone();
@@ -217,33 +242,7 @@
     $(document).on('change', 'select[name="salary_type[]"]', function() {
         updateAmount(this); // Call the function to update the amount
     });
-
-    professionSelect.on('change', function () {
-   
-   var selectedProfession = $(this).val();
-   console.log(selectedProfession);
-   var csrfToken = $('meta[name="csrf-token"]').attr('content');
-   $.ajax({
-      url: '{{ route('specializations') }}',
-      type: 'POST',
-      data: {
-        _token: csrfToken,
-           profession_id: selectedProfession
-       },
-       success: function (data) {
-          
-           specializationSelect.empty();
-
-        
-           $.each(data, function (id, name) {
-               specializationSelect.append($('<option>', {
-                   value: id,
-                   text: name
-               }));
-           });
-       }
-   });
-});.
+  
 </script>
 
 

@@ -222,7 +222,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //    return $request;
+           
             if (! auth()->user()->can('user.create')) {
                 abort(403, 'Unauthorized action.');
             }
