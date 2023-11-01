@@ -60,7 +60,7 @@ class AutomatedMigrationController extends Controller
         ) {
             abort(403, 'Unauthorized action.');
         }
-        try {
+        // try {
             DB::beginTransaction();
 
             $user_id = request()->session()->get('user.id');
@@ -89,7 +89,8 @@ class AutomatedMigrationController extends Controller
                 $accounting_settings['journal_entry_prefix'] : '';
 
 
-            $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+                $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+                $_ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
             $acc_trans_mapping = new AccountingAccTransMapping();
             $acc_trans_mapping->business_id = $business_id;
             $acc_trans_mapping->ref_no = $ref_no;
@@ -98,6 +99,14 @@ class AutomatedMigrationController extends Controller
             $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
             $acc_trans_mapping->save();
 
+            $_acc_trans_mapping = new AccountingAccTransMapping();
+            $_acc_trans_mapping->business_id = $business_id;
+            $_acc_trans_mapping->ref_no = $_ref_no;
+            $_acc_trans_mapping->type = 'journal_entry';
+            $_acc_trans_mapping->created_by = $user_id;
+            $_acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
+            $_acc_trans_mapping->save();
+            
             foreach ($account_ids_1 as $index => $account_id) {
                 if (!empty($account_id)) {
 
@@ -114,6 +123,8 @@ class AutomatedMigrationController extends Controller
                     $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
                     $transaction_row['sub_type'] = 'journal_entry';
                     $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+                    $transaction_row['transaction_id'] =$transaction->id;
+                   
 
                     $accounts_transactions = new AccountingAccountsTransaction();
                     $accounts_transactions->fill($transaction_row);
@@ -122,30 +133,31 @@ class AutomatedMigrationController extends Controller
             }
 
             //save details in account trnsactions table
-            if ($account_ids_2[1] != null) {
-                foreach ($account_ids_2 as $index => $account_id) {
-                    if (!empty($account_id)) {
+            // if ($account_ids_2[1] != null) {
+                foreach ($account_ids_2 as $index => $account_id_) {
+                    if (!empty($account_id_)) {
 
-                        $transaction_row = [];
-                        $transaction_row['accounting_account_id'] = $account_id;
-
-
-                        $transaction_row['type'] =  $type_2[$index];
+                        $transaction_row_ = [];
+                        $transaction_row_['accounting_account_id'] = $account_id_;
 
 
+                        $transaction_row_['type'] =  $type_2[$index];
 
 
-                        $transaction_row['created_by'] = $user_id;
-                        $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
-                        $transaction_row['sub_type'] = 'journal_entry';
-                        $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
 
-                        $accounts_transactions = new AccountingAccountsTransaction();
-                        $accounts_transactions->fill($transaction_row);
-                        $accounts_transactions->save();
+
+                        $transaction_row_['created_by'] = $user_id;
+                        $transaction_row_['operation_date'] = $this->util->uf_date($journal_date, true);
+                        $transaction_row_['sub_type'] = 'journal_entry';
+                        $transaction_row_['acc_trans_mapping_id'] = $_acc_trans_mapping->id;
+                        $transaction_row_['transaction_id'] =$transaction->id;
+
+                        $accounts_transactions_ = new AccountingAccountsTransaction();
+                        $accounts_transactions_->fill($transaction_row_);
+                        $accounts_transactions_->save();
                     }
                 }
-            }
+            // }
 
 
 
@@ -159,15 +171,15 @@ class AutomatedMigrationController extends Controller
                 'success' => 1,
                 'msg' => __('lang_v1.added_success')
             ];
-        } catch (\Exception $e) {
-            // DB::rollBack();
-            Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+        // } catch (\Exception $e) {
+        //     // DB::rollBack();
+        //     Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
-            $output = [
-                'success' => 0,
-                'msg' => __('messages.something_went_wrong')
-            ];
-        }
+        //     $output = [
+        //         'success' => 0,
+        //         'msg' => __('messages.something_went_wrong')
+        //     ];
+        // }
 
 
         return redirect()->route('journal-entry.index')->with('status', $output);
