@@ -2,12 +2,17 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\Transaction;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Entities\AccountingAccountsTransaction;
+use Modules\Accounting\Entities\AccountingAccTransMapping;
 use Modules\Accounting\Utils\AccountingUtil;
+use Illuminate\Support\Facades\Log;
 
 class AutomatedMigrationController extends Controller
 {
@@ -46,7 +51,122 @@ class AutomatedMigrationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+
+        if (
+            !(auth()->user()->can('superadmin') ||
+                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
+            !(auth()->user()->can('accounting.add_journal'))
+        ) {
+            abort(403, 'Unauthorized action.');
+        }
+        try {
+            DB::beginTransaction();
+
+            $user_id = request()->session()->get('user.id');
+
+            $account_ids_1 = $request->get('account_id1');
+            $account_ids_2 = $request->get('account_id2');
+            $type_1 = $request->get('type1');
+            $type_2 = $request->get('type2');
+            $amount_type_1 = $request->get('amount_type1');
+            $amount_type_2 = $request->get('amount_type2');
+
+            $journal_date = $request->get('journal_date');
+
+            $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+
+            $transaction = Transaction::create([
+                'business_id' => $business_id,
+                'type' => $request->get('type'),
+                'status' => 'final',
+                'payment_status' => $request->get('payment_status'),
+                'created_by' => $user_id,
+            ]);
+            $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
+            $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
+                $accounting_settings['journal_entry_prefix'] : '';
+
+
+            $ref_no = $this->util->generateReferenceNumber('journal_entry', $ref_count, $business_id, $prefix);
+            $acc_trans_mapping = new AccountingAccTransMapping();
+            $acc_trans_mapping->business_id = $business_id;
+            $acc_trans_mapping->ref_no = $ref_no;
+            $acc_trans_mapping->type = 'journal_entry';
+            $acc_trans_mapping->created_by = $user_id;
+            $acc_trans_mapping->operation_date = $this->util->uf_date($journal_date, true);
+            $acc_trans_mapping->save();
+
+
+
+            //save details in account trnsactions table
+            foreach ($account_ids_2 as $index => $account_id) {
+                if (!empty($account_id)) {
+
+                    $transaction_row = [];
+                    $transaction_row['accounting_account_id'] = $account_id;
+
+
+                    $transaction_row['type'] =  $type_2[$index];
+
+
+
+
+                    $transaction_row['created_by'] = $user_id;
+                    $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
+                    $transaction_row['sub_type'] = 'journal_entry';
+                    $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+
+                    $accounts_transactions = new AccountingAccountsTransaction();
+                    $accounts_transactions->fill($transaction_row);
+                    $accounts_transactions->save();
+                }
+            }
+
+            foreach ($account_ids_1 as $index => $account_id) {
+                if (!empty($account_id)) {
+
+                    $transaction_row = [];
+                    $transaction_row['accounting_account_id'] = $account_id;
+
+
+                    $transaction_row['type'] =  $type_1[$index];
+
+
+
+
+                    $transaction_row['created_by'] = $user_id;
+                    $transaction_row['operation_date'] = $this->util->uf_date($journal_date, true);
+                    $transaction_row['sub_type'] = 'journal_entry';
+                    $transaction_row['acc_trans_mapping_id'] = $acc_trans_mapping->id;
+
+                    $accounts_transactions = new AccountingAccountsTransaction();
+                    $accounts_transactions->fill($transaction_row);
+                    $accounts_transactions->save();
+                }
+            }
+
+
+
+            DB::commit();
+
+
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success')
+            ];
+        } catch (\Exception $e) {
+            // DB::rollBack();
+            Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong')
+            ];
+        }
+
+
+        return redirect()->route('journal-entry.index')->with('status', $output);
     }
 
     /**

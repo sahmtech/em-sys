@@ -32,6 +32,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
 
     Route::resource('journal-entry', 'JournalEntryController');
     Route::get('journal-entry/map/show', 'JournalEntryController@map');
+    // Route::delete('journal-entry/{id}', 'JournalEntryController@destroy')->name('delete_journal');
     Route::post('journal-entry/map/save', 'JournalEntryController@saveMap');
 
     Route::get('settings', 'SettingsController@index');
@@ -43,8 +44,8 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::post('settings/save_map', [SettingsController::class, 'saveMap'])
         ->name('settings.saveMap');
 
-        Route::resource('account-type', 'AccountTypeController');
-        Route::resource('automated-migration', 'AutomatedMigrationController');
+    Route::resource('account-type', 'AccountTypeController');
+    Route::resource('automated-migration', 'AutomatedMigrationController');
 
     Route::resource('transfer', 'TransferController')->except(['show']);
 
