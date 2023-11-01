@@ -19,6 +19,9 @@ use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsProfession;
+
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
 class EssentialsEmployeeImportController extends Controller
@@ -195,10 +198,69 @@ class EssentialsEmployeeImportController extends Controller
                     $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
                   // dd( $emp_array['bank_details']);
                     $emp_array['location_id'] = $value[20];
+
+                    if ($emp_array['location_id'] !== null) {
+                        // Check if the specialization_id exists in the database
+                        $specialization = Business::find($emp_array['location_id']);
+                        if (!$specialization) {
+                            // Specialization ID doesn't exist, handle the error
+                            $is_valid = false;
+                            $error_msg = "Invalid location ID in row no. $row_no";
+                            break;
+                        }
+                    } else {
+                        // Set a default value or handle it as needed
+                        $emp_array['location_id'] = null;
+                    }
+
+
                     $emp_array['essentials_department_id'] = $value[21];
+                    if ($emp_array['essentials_department_id'] !== null) {
+                        // Check if the specialization_id exists in the database
+                        $specialization = EssentialsDepartment::find($emp_array['essentials_department_id']);
+                        if (!$specialization) {
+                            // Specialization ID doesn't exist, handle the error
+                            $is_valid = false;
+                            $error_msg = "Invalid department ID in row no. $row_no";
+                            break;
+                        }
+                    } else {
+                        // Set a default value or handle it as needed
+                        $emp_array['essentials_department_id'] = null;
+                    }
+
+
                     $emp_array['specialization_id']=$value[22];
+                  
+
+                    if ($emp_array['specialization_id'] !== null) {
+                        // Check if the specialization_id exists in the database
+                        $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
+                        if (!$specialization) {
+                            // Specialization ID doesn't exist, handle the error
+                            $is_valid = false;
+                            $error_msg = "Invalid specialization ID in row no. $row_no";
+                            break;
+                        }
+                    } else {
+                        // Set a default value or handle it as needed
+                        $emp_array['specialization_id'] = null;
+                    }
                     $emp_array['profession_id']=$value[23];
 
+                    if ($emp_array['profession_id'] !== null) {
+                        // Check if the specialization_id exists in the database
+                        $specialization = EssentialsProfession::find($emp_array['profession_id']);
+                        if (!$specialization) {
+                            // Specialization ID doesn't exist, handle the error
+                            $is_valid = false;
+                            $error_msg = "Invalid profession ID in row no. $row_no";
+                            break;
+                        }
+                    } else {
+                        // Set a default value or handle it as needed
+                        $emp_array['profession_id'] = null;
+                    }
                     
                   
                     if (!empty($value[24])) {
