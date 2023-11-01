@@ -229,7 +229,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                 __('essentials::lang.essentials'),
-                ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
+                ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'todo', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
             )
                 ->order(14);
         });
