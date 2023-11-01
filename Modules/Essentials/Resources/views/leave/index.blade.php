@@ -178,9 +178,9 @@
             $('#add_leave_modal').on('shown.bs.modal', function(e) {
                 $('#add_leave_modal .select2').select2();
 
-                $('form#add_leave_form #start_date, form#add_leave_form #end_date').datepicker({
-                    autoclose: true,
-                });
+                // $('form#add_leave_form #start_date, form#add_leave_form #end_date').datepicker({
+                //     autoclose: true,
+                // });
             });
 
             $(document).on('submit', 'form#add_leave_form', function(e) {
