@@ -22,7 +22,13 @@ class CustomAdminSidebarMenu
             return $next($request);
         }
 
-
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
+        });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, 'users')) {
@@ -35,6 +41,8 @@ class CustomAdminSidebarMenu
             $this->houseMovementsMenu();
         } elseif (Str::startsWith($currentPath, 'international')) {
             $this->getIRMenu();
+        } elseif (Str::startsWith($currentPath, 'accounting')) {
+            $this->accountingMenu();
         } else {
         }
 
@@ -319,7 +327,7 @@ class CustomAdminSidebarMenu
                 action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
                 __('housingmovements::lang.movement_management'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
-             
+
             )->order(2);
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
@@ -341,65 +349,38 @@ class CustomAdminSidebarMenu
                         __('housingmovements::lang.facilities'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
                     )->order(6);
-                },  ['icon' => 'fa fas fa-plus-circle', ],
+                },
+                ['icon' => 'fa fas fa-plus-circle',],
             );
-       
-            // $menu->url(
-            //     action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
-            //     __('housingmovements::lang.buildings'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
-            // )->order(2);
+        });
+    }
 
-            // $menu->url(
-            //     action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
-            //     __('housingmovements::lang.rooms'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
-            // )->order(3);
-
-            // $menu->url(
-            //     action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
-            //     __('housingmovements::lang.facilities'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
-            // )->order(4);
-
-
-            // $menu->url(
-            //     action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
-            //     __('housingmovements::lang.requests'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
-            // )->order(1);
-
-
-            // $menu->dropdown(
-            //     __('housingmovements::lang.building_management'),
-            //     function ($buildingSubMenu) {
-            //         $buildingSubMenu->url(
-            //             action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
-            //             __('housingmovements::lang.buildings'),
-            //             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
-            //         )->order(1);
-
-            //         $buildingSubMenu->url(
-            //             action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
-            //             __('housingmovements::lang.rooms'),
-            //             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
-            //         )->order(2);
-
-            //         $buildingSubMenu->url(
-            //             action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
-            //             __('housingmovements::lang.facilities'),
-            //             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
-            //         )->order(3);
-            //     }
-            // )->order(2);
-
-
-            // $menu->url(
-            //     action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
-            //     __('housingmovements::lang.movement_management'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
-
-            // )->order(3);
+    public function accountingMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(
+                action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
+                __('accounting::lang.accounting'),
+                [
+                    'icon' => 'fas fa-money-check fa',
+                    'style' => config('app.env') == 'demo' ? 'background-color: #D483D9;' : '',
+                    'active' => request()->segment(1) == 'accounting'
+                ]
+            );
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
         });
     }
 
