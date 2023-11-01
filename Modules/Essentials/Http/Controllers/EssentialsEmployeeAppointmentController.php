@@ -12,7 +12,8 @@ use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 
 class EssentialsEmployeeAppointmentController extends Controller
 {
@@ -38,6 +39,8 @@ class EssentialsEmployeeAppointmentController extends Controller
         }
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $business_locations=BusinessLocation::all()->pluck('name','id');
+        $specializations=EssentialsSpecialization::all()->pluck('name','id');
+        $professions=EssentialsProfession::all()->pluck('name','id');
         if (request()->ajax()) {
             $employeeAppointments = EssentialsEmployeeAppointmet::
                 join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')->where('u.business_id', $business_id)
@@ -48,8 +51,10 @@ class EssentialsEmployeeAppointmentController extends Controller
                     'essentials_employee_appointmets.business_location_id',
                     'essentials_employee_appointmets.department_id',
                     'essentials_employee_appointmets.superior',
-                    'essentials_employee_appointmets.job_title',
-                    'essentials_employee_appointmets.employee_status',
+                    'essentials_employee_appointmets.profession_id',
+                    'essentials_employee_appointmets.specialization_id',
+
+                    'u.status',
 
                 ]);
 
@@ -67,6 +72,16 @@ class EssentialsEmployeeAppointmentController extends Controller
             return Datatables::of($employeeAppointments)
             ->editColumn('department_id',function($row)use($departments){
                 $item = $departments[$row->department_id]??'';
+
+                return $item;
+            })
+            ->editColumn('profession_id',function($row)use($professions){
+                $item = $professions[$row->profession_id]??'';
+
+                return $item;
+            })
+            ->editColumn('specialization_id',function($row)use($specializations){
+                $item = $specializations[$row->specialization_id]??'';
 
                 return $item;
             })
@@ -100,7 +115,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                
                 
 
-        return view('essentials::employee_affairs.employee_appointments.index')->with(compact('users','departments','business_locations'));
+        return view('essentials::employee_affairs.employee_appointments.index')->with(compact('users','departments','business_locations','specializations','professions'));
     }
     public function store(Request $request)
     {
@@ -112,15 +127,15 @@ class EssentialsEmployeeAppointmentController extends Controller
         }
  
         try {
-            $input = $request->only(['employee', 'department','location', 'superior', 'job_title', 'employee_status']);
+            $input = $request->only(['employee', 'department','location', 'superior', 'profession', 'specialization']);
           
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $input['department'];
             $input2['business_location_id'] = $input['location'];
 
             $input2['superior'] = $input['superior'];
-            $input2['job_title'] = $input['job_title'];
-            $input2['employee_status'] = $input['employee_status'];
+            $input2['profession_id'] = $input['profession'];
+            $input2['specialization_id'] = $input['specialization'];
         
          
        

@@ -66,7 +66,8 @@
                                 <th>@lang('essentials::lang.department' )</th>
                                 <th>@lang('essentials::lang.location')</th>
                                 <th>@lang('essentials::lang.superior' )</th>
-                                <th>@lang('essentials::lang.job_title' )</th>
+                                <th>@lang('sales::lang.profession' )</th>
+                                <th>@lang('essentials::lang.specialization' )</th>
                                 <th>@lang('essentials::lang.employee_status' )</th>
                                 <th>@lang('messages.action' )</th>
                             </tr>
@@ -101,21 +102,24 @@
                                 {!! Form::select('location',$business_locations, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_location'), 'required']) !!}
                             </div>
                           
-                           
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('superior', __('essentials::lang.superior') . ':*') !!}
                                 {!! Form::text('superior', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.superior'), 'required']) !!}
                             </div>
+                            <div class="form-group">
+                                {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+                                {!! Form::select('profession',$professions,null, ['class' => 'form-control', 'required',
+                                   'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
+                                   
+                              </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('job_title', __('essentials::lang.job_title') . ':*') !!}
-                                {!! Form::text('job_title', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.job_title'), 'required']) !!}
+                                {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
+                                {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
+                                    'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
                             </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('employee_status', __('essentials::lang.employee_status') . ':*') !!}
-                                {!! Form::text('employee_status', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.employee_status'), 'required']) !!}
-                            </div>
-                       
+                            
+                           
                            
                         </div>
                     </div>
@@ -167,8 +171,9 @@
                         { data: 'department_id' },
                         { data: 'business_location_id' },
                         { data: 'superior' },
-                        { data: 'job_title' },
-                        { data: 'employee_status'},
+                        { data: 'profession_id'},
+                        { data: 'specialization_id'},
+                        { data: 'status'},
                         { data: 'action' },
                     ],
              });
@@ -203,7 +208,32 @@
                     }
                 });
             });
+            professionSelect.on('change', function () {
+   
+   var selectedProfession = $(this).val();
+   console.log(selectedProfession);
+   var csrfToken = $('meta[name="csrf-token"]').attr('content');
+   $.ajax({
+      url: '{{ route('specializations') }}',
+      type: 'POST',
+      data: {
+        _token: csrfToken,
+           profession_id: selectedProfession
+       },
+       success: function (data) {
+          
+           specializationSelect.empty();
 
+        
+           $.each(data, function (id, name) {
+               specializationSelect.append($('<option>', {
+                   value: id,
+                   text: name
+               }));
+           });
+       }
+   });
+});
             
         });
     
