@@ -21,14 +21,14 @@
              'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
              
         </div>
-      </div>
-      <div class="col-sm-6">
+    </div>
+    <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
             {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
                 'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
           </div>
-      </div>
+    </div>
 
 	{{-- <div class="col-md-6">
 		<div class="form-group">
@@ -54,9 +54,9 @@
     
     </div> --}}
    
-    <div class="col-md-12">
-        <hr>
-        <h4>@lang('essentials::lang.contract_details'):</h4>
+        <div class="col-md-12">
+            <hr>
+            <h4>@lang('essentials::lang.contract_details'):</h4>
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_number', __( 'essentials::lang.contract_number') . ':') !!}
@@ -97,7 +97,7 @@
             {!! Form::file('contract_file', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_file') ]); !!}
         </div>
 
-    </div>
+</div>
         
 @endcomponent
 @component('components.widget', ['title' => __('essentials::lang.payroll')])
