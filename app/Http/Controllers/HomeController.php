@@ -586,6 +586,8 @@ class HomeController extends Controller
                 ->make(false);
         }
     }
+    
+
 
     public function loadMoreNotifications()
     {

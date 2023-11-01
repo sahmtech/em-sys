@@ -22,13 +22,7 @@ class CustomAdminSidebarMenu
             return $next($request);
         }
 
-        Menu::create('admin-sidebar-menu', function ($menu) {
-            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
-            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
-            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
-        });
+
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, 'users')) {
@@ -37,6 +31,8 @@ class CustomAdminSidebarMenu
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, 'sale')) {
             $this->CUS_salesMenu();
+        } elseif (Str::startsWith($currentPath, 'international')) {
+            $this->getIRMenu();
         } else {
         }
 
@@ -346,6 +342,58 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
 
             )->order(3);
+        });
+    }
+
+    public function getIRMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+            $menu->url(
+                action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
+                __('internationalrelations::lang.International'),
+                [
+                    'icon' => 'fa fas fa-dharmachakra',
+                    'active' => request()->segment(1) == 'internationalRleations',
+                    'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+                ],
+            )->order(0);
+            $menu->header("");
+            $menu->header("");
+            if (auth()->user()->can('internationalrelations.view_dashboard') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
+                    __('internationalrelations::lang.dashboard'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'dashboard'],
+                )->order(1);
+            }
+
+
+            if (auth()->user()->can('internationalrelations.view_Airlines') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
+                    __('internationalrelations::lang.Airlines'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
+                )->order(2);
+            }
+            if (auth()->user()->can('internationalrelations.view_EmploymentCompanies') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
+                    __('internationalrelations::lang.EmploymentCompanies'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
+                )->order(3);
+            }
+            if (auth()->user()->can('internationalrelations.order_request_view') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index']),
+                    __('internationalrelations::lang.order_request'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'OrderRequest'],
+                )->order(4);
+            }
         });
     }
 
