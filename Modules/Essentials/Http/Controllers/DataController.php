@@ -808,10 +808,12 @@ class DataController extends Controller
                 $essentials_employee_appointmets->department_id=request()->input('essentials_department_id');
                 $essentials_employee_appointmets->business_location_id= request()->input('location_id');
                 $essentials_employee_appointmets->superior = "superior";
+
                 $essentials_employee_appointmets->profession_id=(int)$data['request']['profession'];
                 $essentials_employee_appointmets->specialization_id=(int)$data['request']['specialization'];
                
          
+
                 $essentials_employee_appointmets->save();
 
                 
