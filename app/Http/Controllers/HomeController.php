@@ -255,13 +255,14 @@ class HomeController extends Controller
         $cardsPack = [
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
-            ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => route('essentials_landing')],
+            ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
+        //    ['id' => 'generalSettings',  'permissions' => $superadminPermissions, 'title' => "generalSettings", 'icon' => 'fas fa-chart-pie ', 'link' => ''],
         ];
         $cards = [];
 

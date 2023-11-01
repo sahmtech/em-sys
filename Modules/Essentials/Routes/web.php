@@ -51,7 +51,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/dashboard', [Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard'])->name('hrmDashboard');
         Route::resource('/leave-type', 'Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController');
         Route::resource('/leave', 'Modules\Essentials\Http\Controllers\EssentialsLeaveController');
-        Route::post('/change-status', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'changeStatus']);
+        Route::post('/change-status', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'changeStatus'])->name('changeLeavStatus');
         Route::get('/leave/activity/{id}', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'activity']);
         Route::get('/user-leave-summary', [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getUserLeaveSummary']);
 
@@ -199,7 +199,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         
         Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
 
-        Route::post('/change-status', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('change-status');
+        Route::post('/change-status2', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('change-status');
         Route::post('/storeAppointment', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'store'])->name('storeAppointment');
         Route::delete('/appointments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'destroy'])->name('appointment.destroy');
         Route::get('/appointments.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'show'])->name('appointment.view');
