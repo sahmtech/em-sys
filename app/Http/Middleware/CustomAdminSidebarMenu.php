@@ -6,6 +6,7 @@ use App\Utils\ModuleUtil;
 use Closure;
 use Menu;
 use Illuminate\Support\Str;
+
 class CustomAdminSidebarMenu
 {
     /**
@@ -20,7 +21,7 @@ class CustomAdminSidebarMenu
         if ($request->ajax()) {
             return $next($request);
         }
-       
+
         Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
@@ -32,16 +33,11 @@ class CustomAdminSidebarMenu
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, 'users')) {
             $this->userManagementMenu();
-        } elseif (Str::startsWith($currentPath, 'essentials') || Str::startsWith($currentPath, 'hrm')) {
+        } elseif (Str::startsWith($currentPath, 'essentials') || Str::startsWith($currentPath, 'hrm') || Str::startsWith($currentPath, 'roles')) {
             $this->essentialsMenu();
-        } elseif (Str::startsWith($currentPath, 'sale') ) {
+        } elseif (Str::startsWith($currentPath, 'sale')) {
             $this->CUS_salesMenu();
-        } 
-        
-        
-        
-        
-        else {
+        } else {
         }
 
 
@@ -56,43 +52,44 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
     }
-    public function userManagementMenu(){
+    public function userManagementMenu()
+    {
         Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
-                        //User management dropdown
-                        if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
-                            $menu->dropdown(
-                                __('user.user_management'),
-                                function ($sub) {
-                                    if (auth()->user()->can('user.view')) {
-                                        $sub->url(
-                                            action([\App\Http\Controllers\ManageUserController::class, 'index']),
-                                            __('user.users'),
-                                            ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
-                                        );
-                                    }
-                                    // if (auth()->user()->can('roles.view')) {
-                                    //     $sub->url(
-                                    //         action([\App\Http\Controllers\RoleController::class, 'index']),
-                                    //         __('user.roles'),
-                                    //         ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
-                                    //     );
-                                    // }
-                                    // if (auth()->user()->can('user.create')) {
-                                    //     $sub->url(
-                                    //         action([\App\Http\Controllers\SalesCommissionAgentController::class, 'index']),
-                                    //         __('lang_v1.sales_commission_agents'),
-                                    //         ['icon' => 'fa fas fa-handshake', 'active' => request()->segment(1) == 'sales-commission-agents']
-                                    //     );
-                                    // }
-                                },
-                                ['icon' => 'fas fa-user-tie ']
-                            )->order(10);
+            //User management dropdown
+            if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
+                $menu->dropdown(
+                    __('user.user_management'),
+                    function ($sub) {
+                        if (auth()->user()->can('user.view')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ManageUserController::class, 'index']),
+                                __('user.users'),
+                                ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
+                            );
                         }
+                        // if (auth()->user()->can('roles.view')) {
+                        //     $sub->url(
+                        //         action([\App\Http\Controllers\RoleController::class, 'index']),
+                        //         __('user.roles'),
+                        //         ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+                        //     );
+                        // }
+                        // if (auth()->user()->can('user.create')) {
+                        //     $sub->url(
+                        //         action([\App\Http\Controllers\SalesCommissionAgentController::class, 'index']),
+                        //         __('lang_v1.sales_commission_agents'),
+                        //         ['icon' => 'fa fas fa-handshake', 'active' => request()->segment(1) == 'sales-commission-agents']
+                        //     );
+                        // }
+                    },
+                    ['icon' => 'fas fa-user-tie ']
+                )->order(10);
+            }
         });
     }
     public function essentialsMenu()
@@ -108,7 +105,7 @@ class CustomAdminSidebarMenu
                 __('essentials::lang.hrm'),
                 function ($subMenu) {
                     if (auth()->user()->can('essentials.view_employee_affairs')) {
-    
+
                         $subMenu->url(
                             route('employees'),
                             __('essentials::lang.employees_affairs'),
@@ -122,7 +119,7 @@ class CustomAdminSidebarMenu
                                 || request()->segment(2) == 'featureIndex')],
                         )->order(1);
                     }
-    
+
                     if (auth()->user()->can('essentials.view_facilities_management')) {
                         $subMenu->url(
                             action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
@@ -130,16 +127,16 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
                         )->order(2);
                     }
-    
+
                     if (auth()->user()->can('essentials.crud_all_attendance')) {
                         $subMenu->url(
-    
+
                             action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
                             __('essentials::lang.attendance'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                         )->order(3);
                     }
-    
+
                     if (auth()->user()->can('essentials.crud_all_leave')) {
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
@@ -147,7 +144,7 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leave'],
                         )->order(4);
                     }
-    
+
                     if (auth()->user()->can('essentials.view_all_payroll')) {
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
@@ -160,7 +157,7 @@ class CustomAdminSidebarMenu
                         __('essentials::lang.loan'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
                     )->order(7);
-    
+
                     if (auth()->user()->can('essentials.crud_insurance_contracts')) {
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index']),
@@ -182,7 +179,7 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(10);
                     }
-    
+
                     if (auth()->user()->can('essentials.view_employee_settings')) {
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'index']),
@@ -196,12 +193,12 @@ class CustomAdminSidebarMenu
                                 || request()->segment(2) == 'allowances'
                                 || request()->segment(2) == 'contract_types'
                                 || request()->segment(2) == 'insurance_categories'
-    
-    
+
+
                             )],
                         )->order(11);
                     }
-    
+
                     if (auth()->user()->can('essentials.crud_import_employee')) {
                         $subMenu->url(
                             action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
@@ -209,10 +206,10 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import_employee'],
                         )->order(12);
                     }
-    
+
                     if (auth()->user()->can('essentials.curd_organizational_structure')) {
                         $subMenu->url(
-    
+
                             action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
                             __('essentials::lang.organizational_structure'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
@@ -225,7 +222,7 @@ class CustomAdminSidebarMenu
                     'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ]
             )->order(10);
-    
+
             $menu->url(
                 action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                 __('essentials::lang.essentials'),
@@ -233,7 +230,6 @@ class CustomAdminSidebarMenu
             )
                 ->order(10);
         });
-
     }
     public function CUS_salesMenu()
     {
@@ -256,15 +252,15 @@ class CustomAdminSidebarMenu
 
                     $subMenu->url(
                         action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-                         __('sales::lang.add_offer_price'),
-                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-                           )->order(2);
+                        __('sales::lang.add_offer_price'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+                    )->order(2);
 
                     $subMenu->url(
                         action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                         __('sales::lang.offer_price'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
-                     
+
                     )->order(3);
 
 
@@ -274,7 +270,7 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
                     )->order(4);
 
-                    
+
 
                     $subMenu->url(
                         action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
@@ -292,16 +288,14 @@ class CustomAdminSidebarMenu
                         __('sales::lang.sale_operation_orders'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
                     )->order(7);
-                  },
+                },
                 [
                     'icon' => 'fa fas fa-users',
                     'active' => request()->segment(1) == 'sales',
                     'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ]
             )->order(10);
-        
         });
-
     }
 
     public function oldHandle($request, Closure $next)

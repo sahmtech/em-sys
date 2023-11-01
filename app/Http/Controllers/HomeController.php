@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Str;
 
+
 class HomeController extends Controller
 {
     /**
@@ -62,6 +63,7 @@ class HomeController extends Controller
     public function index()
     {
         $user = auth()->user();
+
         if (Str::contains($user->user_type, 'user_customer')) {
             return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
         }
@@ -69,8 +71,16 @@ class HomeController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = $this->businessUtil->is_admin(auth()->user());
-
-        if (!auth()->user()->can('dashboard.data')) {
+        $roles = auth()->user()->roles;
+        $roleHasPermission = false;
+        foreach ($roles as $role) {
+           
+            if ($role->hasPermissionTo('dashboard.data')) {
+                $roleHasPermission = true;
+                break;
+            }
+        }
+        if (!(auth()->user()->can('dashboard.data') || $roleHasPermission)) {
             return view('home.index');
         }
 
@@ -206,16 +216,59 @@ class HomeController extends Controller
 
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
-        $cards = [
-            ['id' => 'user_management', 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
-            ['id' => 'hrm', 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
-            ['id' => 'essentials', 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => route('essentials_landing')],
-            ['id' => 'sales', 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
-            ['id' => 'contacts', 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
-            ['id' => 'products', 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
-            ['id' => 'internationalrelations', 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
+        //essentials
+        $essentialsControllerClass = \Modules\Essentials\Http\Controllers\DataController::class;
+        $essentialsController = new $essentialsControllerClass();
+        $essentialsPermissions = $essentialsController->user_permissions();
 
+        //sales
+        $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
+        $salesController = new $salesControllerClass();
+        $salesPermissions = $salesController->user_permissions();
+
+        //superadmin
+        $superadminControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
+        $superadminController = new $superadminControllerClass();
+        $superadminPermissions = $superadminController->user_permissions();
+
+        $userManagementPermissions = [
+            ['value' => 'user.view'],
+            ['value' => 'user.create'],
+            ['value' => 'user.update'],
+            ['value' => 'user.delete'],
         ];
+        $cardsPack = [
+            ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
+            ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
+            ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => route('essentials_landing')],
+            ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
+            ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
+            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
+            ['id' => 'internationalrelations',  'permissions' => [], 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
+        ];
+        $cards = [];
+
+
+        foreach ($cardsPack as $card) {
+            if (!empty($card['permissions'])) {
+                $canAccessCard = false;
+                foreach ($card['permissions'] as $permission) {
+                    if (auth()->user()->can($permission['value'])) {
+                        $canAccessCard = true;
+                        break;
+                    }
+                }
+                if ($canAccessCard) {
+                    $cards[] = $card;
+                    error_log($card['title']);
+                } else {
+                    error_log("cant " . $card['title']);
+                }
+            } else {
+                //$cards[] = $card;
+                error_log("empty " . $card['title']);
+            }
+        }
 
         return view('custom_views.custom_home', compact('cards', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
 

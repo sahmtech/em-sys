@@ -321,4 +321,5 @@ class User extends Authenticatable
 
         return $img_src;
     }
+    
 }
