@@ -98,7 +98,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => 'Select employee', 'required']) !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
@@ -110,7 +110,7 @@
                                     'drivers_license'=>__('essentials::lang.drivers_license'),
                                     'car_registration'=>__('essentials::lang.car_registration'),
                                     'international_certificate'=>__('essentials::lang.international_certificate'),
-                                ], null, ['class' => 'form-control', 'placeholder' => 'Select type', 'required']) !!}
+                                ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_type'), 'required']) !!}
                             </div>
         
                             <div class="form-group col-md-6">
@@ -132,7 +132,7 @@
                                 'valid' => __('essentials::lang.valid'),
                                 'expired' => __('essentials::lang.expired'),
                               
-                            ], null, ['class' => 'form-control', 'placeholder' => 'Select status', 'required']) !!}
+                            ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_status'), 'required']) !!}
                         </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}

@@ -473,11 +473,11 @@ class DataController extends Controller
 
         $business_id = session()->get('user.business_id');
         $is_essentials_enabled = (bool) $module_util->hasThePermissionInSubscription($business_id, 'essentials_module');
-
+        
         // if ($is_essentials_enabled) {
-            Menu::modify('admin-sidebar-menu', function ($menu) {
+            Menu::create('custom_admin-sidebar-menu', function ($menu) {
 
-
+                $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ','active' => request()->segment(1) == 'home'])->order(5);
                 $menu->dropdown(
                     __('essentials::lang.hrm'),
                     function ($subMenu) {
@@ -624,7 +624,7 @@ class DataController extends Controller
                 },
                     [
                         'icon' => 'fa fas fa-users',
-                        'active' => request()->segment(1) == 'essentials',
+                        'active' => request()->segment(1) == 'essentials' ,
                         'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                     ]
                 )->order(10);
@@ -632,7 +632,7 @@ class DataController extends Controller
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),
-                    ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
+                    ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'essentials', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
                 )
                 ->order(10);
             });

@@ -82,7 +82,7 @@ class JournalEntryController extends Controller
 
                     if (auth()->user()->can('accounting.delete_journal')) {
                         $html .= '<li>
-                                    <a href="#" data-href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
+                                    <a href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
                                         <i class="fas fa-trash" aria-hidden="true"></i>' . __("messages.delete") . '
                                     </a>
                                     </li>';
@@ -122,7 +122,8 @@ class JournalEntryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-
+       
+      
         try {
             DB::beginTransaction();
 
@@ -134,9 +135,19 @@ class JournalEntryController extends Controller
             $journal_date = $request->get('journal_date');
 
             $accounting_settings = $this->accountingUtil->getAccountingSettings($business_id);
+          
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('journal_entry');
+            // return [
+            //     'account_ids'=>$account_ids,
+            //     'credits'=>$credits,
+            //     'debits'=>$debits,
+            //     'journal_date'=>$journal_date,
+            //     'accounting_settings'=>$accounting_settings,
+            //     'ref_no'=>$ref_no,
+            //     'ref_count'=>$ref_count,
+            // ];
             if (empty($ref_no)) {
                 $prefix = !empty($accounting_settings['journal_entry_prefix']) ?
                     $accounting_settings['journal_entry_prefix'] : '';

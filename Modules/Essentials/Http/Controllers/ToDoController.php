@@ -61,7 +61,7 @@ class ToDoController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -72,19 +72,19 @@ class ToDoController extends Controller
 
         if (request()->ajax()) {
             $todos = ToDo::where('business_id', $business_id)
-                        ->with(['users', 'assigned_by'])
-                        ->select('*');
+                ->with(['users', 'assigned_by'])
+                ->select('*');
 
-            if (! empty($request->priority)) {
+            if (!empty($request->priority)) {
                 $todos->where('priority', $request->priority);
             }
 
-            if (! empty($request->status)) {
+            if (!empty($request->status)) {
                 $todos->where('status', $request->status);
             }
 
             //If not admin show only assigned task
-            if (! $is_admin) {
+            if (!$is_admin) {
                 $todos->where(function ($query) use ($auth_id) {
                     $query->where('created_by', $auth_id)
                         ->orWhereHas('users', function ($q) use ($auth_id) {
@@ -94,7 +94,7 @@ class ToDoController extends Controller
             }
 
             //Filter by user id.
-            if (! empty($request->user_id)) {
+            if (!empty($request->user_id)) {
                 $user_id = $request->user_id;
                 $todos->whereHas('users', function ($q) use ($user_id) {
                     $q->where('user_id', $user_id);
@@ -102,11 +102,11 @@ class ToDoController extends Controller
             }
 
             //Filter by date.
-            if (! empty($request->start_date) && ! empty($request->end_date)) {
+            if (!empty($request->start_date) && !empty($request->end_date)) {
                 $start = $request->start_date;
                 $end = $request->end_date;
                 $todos->whereDate('date', '>=', $start)
-                            ->whereDate('date', '<=', $end);
+                    ->whereDate('date', '<=', $end);
             }
 
             return Datatables::of($todos)
@@ -114,21 +114,21 @@ class ToDoController extends Controller
                     'action',
                     function ($row) {
                         $html = '<div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">'.__('messages.actions').'<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
+                            <button type="button" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">' . __('messages.actions') . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
                         if (auth()->user()->can('essentials.edit_todos')) {
-                            $html .= '<li><a href="#" data-href="'.action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'edit'], [$row->id]).'" class="btn-modal" data-container="#task_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a></li>';
+                            $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'edit'], [$row->id]) . '" class="btn-modal" data-container="#task_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a></li>';
                         }
 
                         if (auth()->user()->can('essentials.delete_todos')) {
-                            $html .= '<li><a href="#" data-href="'.action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'destroy'], [$row->id]).'" class="delete_task" ><i class="fa fa-trash"></i> '.__('messages.delete').'</a></li>';
+                            $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'destroy'], [$row->id]) . '" class="delete_task" ><i class="fa fa-trash"></i> ' . __('messages.delete') . '</a></li>';
                         }
 
-                        $html .= '<li><a href="'.action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]).'" ><i class="fa fa-eye"></i> '.__('messages.view').'</a></li>';
+                        $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" ><i class="fa fa-eye"></i> ' . __('messages.view') . '</a></li>';
 
-                        $html .= '<li><a href="#" class="change_status" data-status="'.$row->status.'" data-task_id="'.$row->id.'"><i class="fas fa-check-circle"></i> '.__('essentials::lang.change_status').'</a></li>';
+                        $html .= '<li><a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><i class="fas fa-check-circle"></i> ' . __('essentials::lang.change_status') . '</a></li>';
 
                         $html .= '</ul></div>';
 
@@ -136,13 +136,13 @@ class ToDoController extends Controller
                     }
                 )
                 ->editColumn('task', function ($row) use ($priorities) {
-                    $html = '<a href="'.action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]).'" >'.$row->task.'</a> <br>
-                        <a data-href="'.action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs'], [$row->id]).'" class="btn btn-primary btn-xs view-shared-docs">'.__('essentials::lang.docs').'</a>';
+                    $html = '<a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" >' . $row->task . '</a> <br>
+                        <a data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs'], [$row->id]) . '" class="btn btn-primary btn-xs view-shared-docs">' . __('essentials::lang.docs') . '</a>';
 
-                    if (! empty($row->priority)) {
-                        $bg_color = ! empty($this->priority_colors[$row->priority]) ? $this->priority_colors[$row->priority] : 'bg-gray';
+                    if (!empty($row->priority)) {
+                        $bg_color = !empty($this->priority_colors[$row->priority]) ? $this->priority_colors[$row->priority] : 'bg-gray';
 
-                        $html .= ' &nbsp; <span class="label '.$bg_color.'"> '.$priorities[$row->priority].'</span>';
+                        $html .= ' &nbsp; <span class="label ' . $bg_color . '"> ' . $priorities[$row->priority] . '</span>';
                     }
 
                     return $html;
@@ -163,10 +163,10 @@ class ToDoController extends Controller
                 ->editColumn('end_date', '@if(!empty($end_date)) {{@format_datetime($end_date)}} @endif')
                 ->editColumn('status', function ($row) use ($task_statuses) {
                     $html = '';
-                    if (! empty($task_statuses[$row->status])) {
-                        $bg_color = ! empty($this->status_colors[$row->status]) ? $this->status_colors[$row->status] : 'bg-gray';
+                    if (!empty($task_statuses[$row->status])) {
+                        $bg_color = !empty($this->status_colors[$row->status]) ? $this->status_colors[$row->status] : 'bg-gray';
 
-                        $html = '<a href="#" class="change_status" data-status="'.$row->status.'" data-task_id="'.$row->id.'"><span class="label '.$bg_color.'"> '.$task_statuses[$row->status].'</span></a>';
+                        $html = '<a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><span class="label ' . $bg_color . '"> ' . $task_statuses[$row->status] . '</span></a>';
                     }
 
                     return $html;
@@ -181,6 +181,8 @@ class ToDoController extends Controller
             $users = User::forDropdown($business_id, false);
         }
 
+        
+
         return view('essentials::todo.index')->with(compact('users', 'task_statuses', 'priorities'));
     }
 
@@ -193,7 +195,7 @@ class ToDoController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.add_todos')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !auth()->user()->can('essentials.add_todos')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -201,7 +203,7 @@ class ToDoController extends Controller
         if (auth()->user()->can('essentials.assign_todos')) {
             $users = User::forDropdown($business_id, false);
         }
-        if (! empty(request()->input('from_calendar'))) {
+        if (!empty(request()->input('from_calendar'))) {
             $users = [];
         }
 
@@ -219,24 +221,24 @@ class ToDoController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         $query = ToDo::where('business_id', $business_id)
-                    ->with([
-                        'assigned_by',
-                        'comments',
-                        'comments.added_by',
-                        'media',
-                        'users',
-                        'media.uploaded_by_user',
-                    ]);
+            ->with([
+                'assigned_by',
+                'comments',
+                'comments.added_by',
+                'media',
+                'users',
+                'media.uploaded_by_user',
+            ]);
 
         //If not admin show only assigned task
-        if (! $is_admin) {
+        if (!$is_admin) {
             $query->where(function ($query) {
                 $query->where('created_by', auth()->user()->id)
                     ->orWhereHas('users', function ($q) {
@@ -255,9 +257,9 @@ class ToDoController extends Controller
         $priorities = ToDo::getTaskPriorities();
 
         $activities = Activity::forSubject($todo)
-           ->with(['causer', 'subject'])
-           ->latest()
-           ->get();
+            ->with(['causer', 'subject'])
+            ->latest()
+            ->get();
 
         return view('essentials::todo.view')->with(compact(
             'todo',
@@ -276,7 +278,7 @@ class ToDoController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.edit_todos')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !auth()->user()->can('essentials.edit_todos')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -285,7 +287,7 @@ class ToDoController extends Controller
 
         //Non admin can update only assigned tasks
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        if (! $is_admin) {
+        if (!$is_admin) {
             $query->where(function ($query) {
                 $query->where('created_by', auth()->user()->id)
                     ->orWhereHas('users', function ($q) {
@@ -316,7 +318,7 @@ class ToDoController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.add_todos')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !auth()->user()->can('essentials.add_todos')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -334,22 +336,22 @@ class ToDoController extends Controller
                 );
 
                 $input['date'] = $this->commonUtil->uf_date($input['date'], true);
-                $input['end_date'] = ! empty($input['end_date']) ? $this->commonUtil->uf_date($input['end_date'], true) : null;
+                $input['end_date'] = !empty($input['end_date']) ? $this->commonUtil->uf_date($input['end_date'], true) : null;
                 $input['business_id'] = $business_id;
                 $input['created_by'] = $created_by;
-                $input['status'] = ! empty($input['status']) ? $input['status'] : 'new';
+                $input['status'] = !empty($input['status']) ? $input['status'] : 'new';
 
                 $users = $request->input('users');
                 //Can add only own tasks if permission not given
-                if (! auth()->user()->can('essentials.assign_todos') || empty($users)) {
+                if (!auth()->user()->can('essentials.assign_todos') || empty($users)) {
                     $users = [$created_by];
                 }
 
                 $ref_count = $this->commonUtil->setAndGetReferenceCount('essentials_todos');
                 //Generate reference number
                 $settings = request()->session()->get('business.essentials_settings');
-                $settings = ! empty($settings) ? json_decode($settings, true) : [];
-                $prefix = ! empty($settings['essentials_todos_prefix']) ? $settings['essentials_todos_prefix'] : '';
+                $settings = !empty($settings) ? json_decode($settings, true) : [];
+                $prefix = !empty($settings['essentials_todos_prefix']) ? $settings['essentials_todos_prefix'] : '';
                 $input['task_id'] = $this->commonUtil->generateReferenceNumber('essentials_todos', $ref_count, null, $prefix);
 
                 $to_dos = ToDo::create($input);
@@ -371,7 +373,7 @@ class ToDoController extends Controller
                     'todo_id' => $to_dos->id,
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                 $output = [
                     'success' => false,
@@ -392,13 +394,13 @@ class ToDoController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.edit_todos')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !auth()->user()->can('essentials.edit_todos')) {
             abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             try {
-                if (! $request->has('only_status')) {
+                if (!$request->has('only_status')) {
                     $input = $request->only(
                         'task',
                         'date',
@@ -410,18 +412,18 @@ class ToDoController extends Controller
                     );
 
                     $input['date'] = $this->commonUtil->uf_date($input['date'], true);
-                    $input['end_date'] = ! empty($input['end_date']) ? $this->commonUtil->uf_date($input['end_date'], true) : null;
+                    $input['end_date'] = !empty($input['end_date']) ? $this->commonUtil->uf_date($input['end_date'], true) : null;
 
-                    $input['status'] = ! empty($input['status']) ? $input['status'] : 'new';
+                    $input['status'] = !empty($input['status']) ? $input['status'] : 'new';
                 } else {
-                    $input = ['status' => ! empty($request->input('status')) ? $request->input('status') : null];
+                    $input = ['status' => !empty($request->input('status')) ? $request->input('status') : null];
                 }
 
                 $query = ToDo::where('business_id', $business_id);
 
                 //Non admin can update only assigned tasks
                 $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-                if (! $is_admin) {
+                if (!$is_admin) {
                     $query->where(function ($query) {
                         $query->where('created_by', auth()->user()->id)
                             ->orWhereHas('users', function ($q) {
@@ -436,7 +438,7 @@ class ToDoController extends Controller
 
                 $todo->update($input);
 
-                if (auth()->user()->can('essentials.assign_todos') && ! $request->has('only_status')) {
+                if (auth()->user()->can('essentials.assign_todos') && !$request->has('only_status')) {
                     $users = $request->input('users');
                     $todo->users()->sync($users);
                 }
@@ -448,7 +450,7 @@ class ToDoController extends Controller
                     'msg' => __('lang_v1.success'),
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                 $output = [
                     'success' => false,
@@ -468,7 +470,7 @@ class ToDoController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.delete_todos')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !auth()->user()->can('essentials.delete_todos')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -478,7 +480,7 @@ class ToDoController extends Controller
 
                 $todo = ToDo::where('business_id', $business_id);
                 //Can destroy only own created tasks if not admin
-                if (! $is_admin) {
+                if (!$is_admin) {
                     $todo->where('created_by', auth()->user()->id);
                 }
                 $todo->where('id', $id)
@@ -489,7 +491,7 @@ class ToDoController extends Controller
                     'msg' => __('lang_v1.success'),
                 ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                 $output = [
                     'success' => false,
@@ -510,7 +512,7 @@ class ToDoController extends Controller
     public function addComment(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -518,12 +520,12 @@ class ToDoController extends Controller
             try {
                 $input = $request->only(['task_id', 'comment']);
                 $query = ToDo::where('business_id', $business_id)
-                            ->with('users');
+                    ->with('users');
                 $auth_id = auth()->user()->id;
 
                 //Non admin can add comment to only assigned tasks
                 $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-                if (! $is_admin) {
+                if (!$is_admin) {
                     $query->where(function ($query) {
                         $query->where('created_by', auth()->user()->id)
                             ->orWhereHas('users', function ($q) {
@@ -539,8 +541,8 @@ class ToDoController extends Controller
                 $comment = EssentialsTodoComment::create($input);
 
                 $comment_html = view('essentials::todo.comment')
-                                ->with(compact('comment'))
-                                ->render();
+                    ->with(compact('comment'))
+                    ->render();
                 $output = [
                     'success' => true,
                     'comment_html' => $comment_html,
@@ -554,7 +556,7 @@ class ToDoController extends Controller
 
                 \Notification::send($users, new NewTaskCommentNotification($comment));
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
                 $output = [
                     'success' => false,
@@ -575,7 +577,7 @@ class ToDoController extends Controller
     public function uploadDocument(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -586,7 +588,7 @@ class ToDoController extends Controller
 
             //Non admin can add comment to only assigned tasks
             $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-            if (! $is_admin) {
+            if (!$is_admin) {
                 $query->where(function ($query) {
                     $query->where('created_by', auth()->user()->id)
                         ->orWhereHas('users', function ($q) {
@@ -618,7 +620,7 @@ class ToDoController extends Controller
                 'msg' => __('lang_v1.success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -638,20 +640,20 @@ class ToDoController extends Controller
     public function deleteComment($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $comment = EssentialsTodoComment::where('comment_by', auth()->user()->id)
-                                    ->where('id', $id)
-                                    ->delete();
+                ->where('id', $id)
+                ->delete();
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -671,7 +673,7 @@ class ToDoController extends Controller
     public function deleteDocument($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -691,7 +693,7 @@ class ToDoController extends Controller
                 'msg' => __('lang_v1.success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
@@ -710,7 +712,7 @@ class ToDoController extends Controller
             $module_data = $this->moduleUtil->getModuleData('getSharedSpreadsheetForGivenData', ['business_id' => $business_id, 'shared_with' => 'todo', 'shared_id' => $id]);
 
             $sheets = [];
-            if (! empty($module_data['Spreadsheet'])) {
+            if (!empty($module_data['Spreadsheet'])) {
                 $sheets = $module_data['Spreadsheet'];
             }
 

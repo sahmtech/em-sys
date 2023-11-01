@@ -56,6 +56,7 @@ class EssentialsLeaveController extends Controller
      */
     public function index()
     {
+        
         $business_id = request()->session()->get('user.business_id');
 
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
@@ -67,7 +68,9 @@ class EssentialsLeaveController extends Controller
         if (! $can_crud_all_leave && ! $can_crud_own_leave) {
             abort(403, 'Unauthorized action.');
         }
+   
         if (request()->ajax()) {
+           
             $leaves = EssentialsLeave::where('essentials_leaves.business_id', $business_id)
                         ->join('users as u', 'u.id', '=', 'essentials_leaves.user_id')
                         ->join('essentials_leave_types as lt', 'lt.id', '=', 'essentials_leaves.essentials_leave_type_id')
@@ -149,6 +152,7 @@ class EssentialsLeaveController extends Controller
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
+        
         $users = [];
         if ($can_crud_all_leave || auth()->user()->can('essentials.approve_leave')) {
             $users = User::forDropdown($business_id, false);
