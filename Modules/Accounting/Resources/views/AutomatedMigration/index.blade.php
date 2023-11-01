@@ -13,7 +13,7 @@
     <section class="content">
 
         {!! Form::open([
-            'url' => action('\Modules\Accounting\Http\Controllers\JournalEntryController@store'),
+            'url' => action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@store'),
             'method' => 'post',
             'id' => 'journal_add_form',
         ]) !!}
@@ -57,7 +57,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         {!! Form::label('name_ar', __('اسم الترحيل') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                        {!! Form::text('ar_name', '', [
+                        {!! Form::text('migration_name', '', [
                             'class' => 'form-control',
                             'required',
                             'placeholder' => __('اسم الترحيل'),
@@ -66,45 +66,52 @@
                     </div>
                 </div>
 
+                <div hidden>
+                    {!! Form::text('journal_date', @format_datetime('now'), [
+                        'class' => 'form-control datetimepicker',
+                        'readonly',
+                    ]) !!}
+
+                </div>
 
                 <div class="col-sm-3">
 
                     {!! Form::label('account_sub_type', __('نوع العملية') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                    <select class="form-control" name="account_sub_type_id" id="account_sub_type"style="padding: 3px" required>
+                    <select class="form-control" name="type" id="account_sub_type"style="padding: 3px" required>
                         <option value="">@lang('messages.please_select')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.sell')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.sell_return')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.opening_stock')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.purchase_')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.purchase_order')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.purchase_return')</option>
+                        <option value="sell">@lang('accounting::lang.autoMigration.sell')</option>
+                        <option value="sell_return">@lang('accounting::lang.autoMigration.sell_return')</option>
+                        <option value="opening_stock">@lang('accounting::lang.autoMigration.opening_stock')</option>
+                        <option value="purchase">@lang('accounting::lang.autoMigration.purchase_')</option>
+                        <option value="purchase_order">@lang('accounting::lang.autoMigration.purchase_order')</option>
+                        <option value="purchase_return">@lang('accounting::lang.autoMigration.purchase_return')</option>
 
-                        <option value="">@lang('accounting::lang.autoMigration.expens_')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.sell_transfer')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.purchase_transfer')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.payroll')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.opening_balance')</option>
+                        <option value="expens">@lang('accounting::lang.autoMigration.expens_')</option>
+                        <option value="sell_transfer">@lang('accounting::lang.autoMigration.sell_transfer')</option>
+                        <option value="purchase_transfer">@lang('accounting::lang.autoMigration.purchase_transfer')</option>
+                        <option value="payroll">@lang('accounting::lang.autoMigration.payroll')</option>
+                        <option value="opening_balance">@lang('accounting::lang.autoMigration.opening_balance')</option>
                     </select>
                 </div>
                 <div class="col-sm-3">
                     {!! Form::label('account_sub_type', __('حالة الدفع') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                    <select class="form-control" name="account_sub_type_id" id="account_sub_type" style="padding: 3px" required>
+                    <select class="form-control" name="payment_status" id="account_sub_type" style="padding: 3px" required>
                         <option value="">@lang('messages.please_select')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.paid')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.due')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.partial')</option>
+                        <option value="paid">@lang('accounting::lang.autoMigration.paid')</option>
+                        <option value="due">@lang('accounting::lang.autoMigration.due')</option>
+                        <option value="partial">@lang('accounting::lang.autoMigration.partial')</option>
                     </select>
                 </div>
 
                 <div class="col-sm-3">
 
                     {!! Form::label('account_sub_type', __('طريقة الدفع') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                    <select class="form-control" name="account_sub_type_id" id="account_sub_type"style="padding: 3px" required>
+                    <select class="form-control" name="method" id="account_sub_type"style="padding: 3px" required>
                         <option value="">@lang('messages.please_select')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.cash')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.card')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.bank_transfer')</option>
-                        <option value="">@lang('accounting::lang.autoMigration.cheque')</option>
+                        <option value="cash">@lang('accounting::lang.autoMigration.cash')</option>
+                        <option value="card">@lang('accounting::lang.autoMigration.card')</option>
+                        <option value="bank_transfer">@lang('accounting::lang.autoMigration.bank_transfer')</option>
+                        <option value="cheque">@lang('accounting::lang.autoMigration.cheque')</option>
                     </select>
                 </div>
 
@@ -132,12 +139,12 @@
                             <tbody id="tbody1">
                                 <tr>
                                     <td>
-                                        <button class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="1"
-                                            name="1" value="1"
+                                        <button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer"
+                                            data-id="1" name="1" value="1"
                                             style="    background: transparent; border: 0px;"></button>
                                     </td>
                                     <td>
-                                        {!! Form::select('account_id[' . 1 . ']', [], null, [
+                                        {!! Form::select('account_id1[' . 1 . ']', [], null, [
                                             'class' => 'form-control accounts-dropdown account_id',
                                             'placeholder' => __('messages.please_select'),
                                             'style' => 'width: 100%; padding:3px;',
@@ -149,10 +156,10 @@
                                         {{-- <div class="row"> --}}
                                         {{-- <div style="width: 100%"> --}}
                                         <label class="radio-inline">
-                                            <input value="debit" type="radio" name="type01" checked>@lang('accounting::lang.debtor')
+                                            <input value="debit" type="radio" name="type1[1]" checked>@lang('accounting::lang.debtor')
                                         </label>
                                         <label class="radio-inline">
-                                            <input value="credit" type="radio" name="type01">@lang('accounting::lang.creditor')
+                                            <input value="credit" type="radio" name="type1[1]">@lang('accounting::lang.creditor')
                                         </label>
                                         {{-- </div> --}}
                                         {{-- </div> --}}
@@ -165,13 +172,13 @@
 
                                     </td> --}}
                                     <td>
-                                        <select class="form-control" name="account_sub_type_id"
+                                        <select class="form-control" name="amount_type1[1]"
                                             id="account_sub_type"style="padding: 3px" required>
-                                            <option value="">@lang('accounting::lang.autoMigration.final_total')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.total_before_tax')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.tax_amount')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.shipping_charges')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.discount_amount')</option>
+                                            <option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option>
+                                            <option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option>
+                                            <option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option>
+                                            <option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option>
+                                            <option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -208,12 +215,12 @@
                             </thead>
                             <tbody id="tbody2">
                                 <tr>
-                                    <td><button class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="1"
-                                            name="2" value="2"
+                                    <td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer"
+                                            data-id="1" name="2" value="2"
                                             style="    background: transparent; border: 0px;"></button>
                                     </td>
                                     <td>
-                                        {!! Form::select('account_id[' . 1 . ']', [], null, [
+                                        {!! Form::select('account_id2[' . 1 . ']', [], null, [
                                             'class' => 'form-control accounts-dropdown account_id',
                                             'placeholder' => __('messages.please_select'),
                                             'style' => 'width: 100%; padding:3px;',
@@ -225,10 +232,10 @@
                                         {{-- <div class="row"> --}}
                                         {{-- <div style="width: 100%"> --}}
                                         <label class="radio-inline">
-                                            <input value="debit" type="radio" name="type02" checked>@lang('accounting::lang.debtor')
+                                            <input value="debit" type="radio" name="type2[1]" checked>@lang('accounting::lang.debtor')
                                         </label>
                                         <label class="radio-inline">
-                                            <input value="credit" type="radio" name="type02">@lang('accounting::lang.creditor')
+                                            <input value="credit" type="radio" name="type2[1]">@lang('accounting::lang.creditor')
                                         </label>
                                         {{-- </div> --}}
                                         {{-- </div> --}}
@@ -241,13 +248,13 @@
 
                                     </td> --}}
                                     <td>
-                                        <select class="form-control" name="account_sub_type_id"
+                                        <select class="form-control" name="amount_type2[1]"
                                             id="account_sub_type"style="padding: 3px" required>
-                                            <option value="">@lang('accounting::lang.autoMigration.final_total')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.total_before_tax')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.tax_amount')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.shipping_charges')</option>
-                                            <option value="">@lang('accounting::lang.autoMigration.shipping_charges')</option>
+                                            <option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option>
+                                            <option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option>
+                                            <option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option>
+                                            <option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option>
+                                            <option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -358,18 +365,23 @@
             var tbode_number = $(this).val();
             let counter = $('#journal_table' + tbode_number + ' tr').length - 1;
             $('#tbody' + tbode_number).append(
-                '<tr><td><button class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
+                '<tr><td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
                 counter +
                 '" name="' + tbode_number + '" value="' + tbode_number +
-                '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id[' +
+                '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id' +
+                tbode_number + '[' +
                 counter +
                 ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><label class="radio-inline"><input value="debit" type="radio" name="type' +
-                tbode_number + '' + counter +
-                '" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
-                tbode_number + '' + counter +
-                '">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="account_sub_type_id"id="account_sub_type"style="padding: 3px" required><option value="">@lang('accounting::lang.autoMigration.final_total')</option><option value="">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                tbode_number + '[' +
+                counter +
+                ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                tbode_number + '[' +
+                counter +
+                ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
+                '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
             )
-            $('select[name="account_id[' + counter + ']"]').select2({
+            $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
                 ajax: {
                     url: '{{ route('accounts-dropdown') }}',
                     dataType: 'json',
