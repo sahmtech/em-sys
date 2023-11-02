@@ -17,7 +17,11 @@ use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -127,9 +131,14 @@ class EssentialsManageEmployeeController extends Controller
         if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
+        $appointments=EssentialsEmployeeAppointmet::all()->pluck('profession_id','employee_id');
+        $appointments2=EssentialsEmployeeAppointmet::all()->pluck('specialization_id','employee_id');
         $categories=Category::all()->pluck('name','id');
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
@@ -141,7 +150,7 @@ class EssentialsManageEmployeeController extends Controller
                     'users.allow_login',
                     'users.contact_number',
                     'users.essentials_department_id',
-                    'users.essentials_designation_id',
+                    
                     'users.status'
                         ]);
 
@@ -151,12 +160,20 @@ class EssentialsManageEmployeeController extends Controller
 
                         return $item;
                     })
-                ->editColumn('essentials_designation_id',function($row)use($categories){
-                        $item = $categories[$row->essentials_designation_id]??'';
-
-                        return $item;
-                    })
+                    ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                        $professionId = $appointments[$row->id] ?? '';
                 
+                        $professionName = $professions[$professionId] ?? '';
+                
+                        return $professionName;
+                    })
+                    ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
+                        $specializationId = $appointments2[$row->id] ?? '';
+                
+                        $specializationName = $specializations[$specializationId] ?? '';
+                
+                        return $specializationName;
+                    })
                 ->addColumn(
                     'action',
                     '@can("user.update")
@@ -175,10 +192,10 @@ class EssentialsManageEmployeeController extends Controller
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 
-                ->rawColumns(['action'])
+                ->rawColumns(['action','profession','specialization'])
                 ->make(true);
         }
-        return view('essentials::employee_affairs.employee_affairs.index')->with(compact('contract_types'));
+        return view('essentials::employee_affairs.employee_affairs.index')->with(compact('contract_types','nationalities','specializations','professions'));
 
     }
 
@@ -301,11 +318,22 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->findOrFail($id);
-
+        $appointments=EssentialsEmployeeAppointmet::select([
+          
+            'profession_id',
+            'specialization_id'
+        ])->where('employee_id', $id)
+        ->get()[0];
+        $user->profession_id =$appointments['profession_id'];
+        $user->specialization_id =$appointments['specialization_id'];
+       
         $roles = $this->getRolesArray($business_id);
 
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
-
+        $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('id', 'name');
+        $professions = EssentialsProfession::all()->pluck('id', 'name');
         if ($user->status == 'active') {
             $is_checked_checkbox = true;
         } else {
@@ -322,7 +350,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
         return view('essentials::employee_affairs.employee_affairs.edit')
-                ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+                ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
     }
 
     /**
@@ -333,12 +361,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function update(Request $request,$id)
     {
-        
-            //Disable in demo
-            // $notAllowed = $this->moduleUtil->notAllowedInDemo();
-            // if (!empty($notAllowed)) {
-            //     return $notAllowed;
-            // }
+       
             if (!auth()->user()->can('user.update')) {
                 abort(403, 'Unauthorized action.');
             }
@@ -346,8 +369,8 @@ class EssentialsManageEmployeeController extends Controller
                 $user_data = $request->only([
                     'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status',
                     'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1',
-                    'social_media_2', 'permanent_address', 'current_address',
-                    'guardian_name', 'custom_field_1', 'custom_field_2',
+                    'social_media_2', 'permanent_address', 'current_address','profession','specialization',
+                    'guardian_name', 'custom_field_1', 'custom_field_2','nationality',
                     'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'max_sales_discount_percent', 'family_number', 'alt_number',
                 ]);
     
@@ -374,7 +397,8 @@ class EssentialsManageEmployeeController extends Controller
                 if (!empty($request->input('dob'))) {
                     $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
                 }
-    
+                if (!empty($request->input('nationality'))) 
+                     { $user_data['nationality_cs'] = $request->input('nationality');}
                 if (!empty($request->input('bank_details'))) {
                     $user_data['bank_details'] = json_encode($request->input('bank_details'));
                 }
@@ -401,7 +425,7 @@ class EssentialsManageEmployeeController extends Controller
              
     
                 //Update module fields for user
-                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user,'request'=>$user_data]);
     
                 $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
     
