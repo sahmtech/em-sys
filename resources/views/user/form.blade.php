@@ -71,7 +71,7 @@
     <div class="form-group col-md-3">
         {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
     
-          {!! Form::select('nationality',$nationalities ,null, ['class' => 'form-control', 'required',
+          {!! Form::select('nationality',$nationalities , !empty($user->nationality_cs) ? $user->nationality_cs : null, ['class' => 'form-control', 'required',
           'placeholder' => __('sales::lang.nationality')]); !!}
     </div>
  

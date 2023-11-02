@@ -17,20 +17,16 @@
     <div class="col-md-6">
         <div class="form-group">
           {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-          {!! Form::select('profession',$professions,null, ['class' => 'form-control', 'required',
+          {!! Form::select('profession',$professions,!empty($user->profession_id) ? $user->profession_id : null, ['class' => 'form-control', 'required',
              'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
-             
         </div>
-
     </div>
     <div class="col-sm-6">
-
         <div class="form-group">
             {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-            {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
+            {!! Form::select('specialization',$specializations ,!empty($user->specialization_id) ? $user->specialization_id : null, ['class' => 'form-control', 'required',
                 'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
           </div>
-
     </div>
 
 

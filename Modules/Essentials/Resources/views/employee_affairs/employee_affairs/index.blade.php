@@ -35,8 +35,9 @@
                             <th>@lang('essentials::lang.employee_number' )</th>
                             <th>@lang('essentials::lang.employee_name' )</th>
                             <th>@lang('essentials::lang.dob')</th>
-                            <th>@lang('essentials::lang.designation' )</th>
                             <th>@lang('essentials::lang.department' )</th>
+                            <th>@lang('essentials::lang.profession' )</th>
+                            <th>@lang('essentials::lang.specialization' )</th>
                             <th>@lang('essentials::lang.mobile_number' )</th>
                             <th>@lang( 'business.email' )</th>
                             <th>@lang( 'essentials::lang.status' )</th>
@@ -68,8 +69,9 @@
                         {"data":"id"},
                         {"data":"full_name"},
                         {"data":"dob"},
-                        {"data":"essentials_designation_id"},
                         {"data":"essentials_department_id"},
+                        {"data":"profession"},
+                        {"data":"specialization"},
                         {"data":"contact_number"},
                         {"data":"email"},
                         {
