@@ -108,14 +108,7 @@
   
            
         </td>
-        <td>
-          @if ($sell_line['service']['gender'] === 'male')
-              ذكر
-          @elseif ($sell_line['service']['gender'] === 'male')
-              أنثى
-            @else  {{ $sell_line['service']['gender'] }}
-          @endif
-      </td>
+        <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td>
         <td>{{ $sell_line['service']['service_price']}}</td>
         <td>{{  $sell_line['service']['monthly_cost_for_one'] }}</td>
         <td>{{  $sell_line['service']['profession']['name']  }}</td>
