@@ -270,22 +270,23 @@ class SaleOperationOrderController extends Controller
             ->first();
          
             $products = DB::table('transaction_sell_lines')
-            ->join('products', 'transaction_sell_lines.product_id', '=', 'products.id')
-            ->leftJoin('essentials_countries', 'products.nationality_id', '=', 'essentials_countries.id')
-            ->leftJoin('essentials_professions', 'products.profession_id', '=', 'essentials_professions.id')
-            ->leftJoin('essentials_specializations', 'products.specialization_id', '=', 'essentials_specializations.id')
-            ->leftJoin('units', 'products.unit_id', '=', 'units.id')
+            ->join('sales_services', 'transaction_sell_lines.service_id', '=', 'sales_services.id')
+         
+            ->leftJoin('essentials_professions', 'sales_services.profession_id', '=', 'essentials_professions.id')
+            ->leftJoin('essentials_specializations', 'sales_services.specialization_id', '=', 'essentials_specializations.id')
+          
             ->where('transaction_id', '=', $transactionID->id)
-            ->select('products.*', 'essentials_countries.nationality as nationality_name',
-             'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name',
-             'units.actual_name as unit')
+            ->select('sales_services.*',
+             'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name'
+           )
             ->get();
        
     
         
         //  dd($prod);
 
-
+        return view('sales::operation_order.show')
+        ->with(compact('operations','products'));
         }
         catch (\Exception $e) {
             DB::rollBack();
@@ -299,8 +300,7 @@ class SaleOperationOrderController extends Controller
         
     
      
-        return view('sales::operation_order.show')
-        ->with(compact('operations','products'));
+      
            
     }
 

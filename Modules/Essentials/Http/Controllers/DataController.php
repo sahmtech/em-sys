@@ -718,7 +718,7 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
-
+     
         if ($data['event'] = 'user_saved') {
 
             $user = $data['model_instance'];
@@ -799,6 +799,7 @@ class DataController extends Controller
                         error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                     }
                 }
+        
             }
 
             //   //  EssentialsUserAllowancesAndDeduction

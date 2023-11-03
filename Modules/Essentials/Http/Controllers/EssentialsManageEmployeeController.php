@@ -22,6 +22,7 @@ use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 
+
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -135,6 +136,8 @@ class EssentialsManageEmployeeController extends Controller
         $appointments2=EssentialsEmployeeAppointmet::all()->pluck('specialization_id','employee_id');
         $categories=Category::all()->pluck('name','id');
         $departments=EssentialsDepartment::all()->pluck('name','id');
+        $EssentialsProfession=EssentialsProfession::all()->pluck('name','id');
+        $EssentialsSpecialization=EssentialsSpecialization::all()->pluck('name','id');
         $contract_types = EssentialsContractType::all()->pluck('type','id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -155,8 +158,8 @@ class EssentialsManageEmployeeController extends Controller
                         ]);
 
             return Datatables::of($users)
-                ->editColumn('essentials_department_id',function($row)use($departments){
-                        $item = $departments[$row->essentials_department_id]??'';
+                ->editColumn('profession_id',function($row)use($departments){
+                        $item = $EssentialsProfession[$row->profession_id]??'';
 
                         return $item;
                     })
@@ -253,6 +256,7 @@ class EssentialsManageEmployeeController extends Controller
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
+              //  dd( $request);
                 $user = $this->moduleUtil->createUser($request);
     
                 event(new UserCreatedOrModified($user, 'added'));

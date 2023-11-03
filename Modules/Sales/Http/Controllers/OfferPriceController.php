@@ -136,8 +136,12 @@ class OfferPriceController extends Controller
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    ';
-
+                                    <li>
+                                    <a href="#" data-href="'.action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>'.__('messages.view').'
+                                    </a>
+                                    </li>';
+                                 
                         // if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
                         //     if ($row->is_direct_sale == 1) {
                         //         $html .= '<li>
@@ -178,14 +182,7 @@ class OfferPriceController extends Controller
                 ->filterColumn('added_by', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->setRowAttr([
-                    'data-href' => function ($row) {
-                        if (auth()->user()->can('sell.view')) {
-                            return  action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
-                        } else {
-                            return '';
-                        }
-                    }, ])
+               
                 ->rawColumns(['action', 'invoice_no', 'status','transaction_date', 'conatct_name'])
                 ->make(true);
         }
@@ -348,12 +345,12 @@ class OfferPriceController extends Controller
 
         $change_return = $this->dummyPaymentLine;
 
-    //    $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
-        $leads = Contact::whereIn('type', ['lead', 'customer'])
-        ->where('business_id', $business_id)
-        ->pluck('supplier_business_name', 'id');
-    
-        return view('sales::price_offer.create')
+        //    $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
+            $leads = Contact::whereIn('type', ['lead', 'customer'])
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
+        
+            return view('sales::price_offer.create')
             ->with(compact(
                
                 'business_details',
@@ -394,75 +391,75 @@ class OfferPriceController extends Controller
     { 
         
 
-    try {
-        $business_id = $request->session()->get('user.business_id');
-        $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
-        $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
-        $offer_details = $request->only($offer);
-        $offer_details['business_id'] = $request->input('business_id');
-        $offer_details['transaction_date'] = $transactionDate;
+        try {
+            $business_id = $request->session()->get('user.business_id');
+            $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
+            $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
+            $offer_details = $request->only($offer);
+            $offer_details['business_id'] = $request->input('business_id');
+            $offer_details['transaction_date'] = $transactionDate;
 
-        $offer_details['created_by'] = $request->session()->get('user.id');
-    
-        $offer_details['type'] = 'sell';
-        $offer_details['sub_type'] = 'service';	
-        $offer_details['is_quotation'] = 1;
-        $latestRecord = Transaction::where('sub_type', 'service')->orderBy('ref_no', 'desc')->first();
- 
+            $offer_details['created_by'] = $request->session()->get('user.id');
         
-        if ($latestRecord) {
-            $latestRefNo = $latestRecord->ref_no;
-            $numericPart = (int)substr($latestRefNo, 5); 
-            $numericPart++;
-            $offer_details['ref_no'] = 'QN' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
-        } else {
-            // No previous records, start from 3000
-            $offer_details['ref_no'] = 'QN0003000';
-        }
-
-     
-
-       $client = Transaction::create($offer_details);
-       Contact::where('id', $request->contact_id)->update(['type' => 'customer']);
-  
-       $productIds = json_decode($request->input('productIds'));
-       $quantityArr = json_decode($request->input('quantityArr'));
-        $productData = json_decode($request->input('productData'), true);
-      
-        if (count($productIds) === count($productData)) {
-            foreach ($productIds as $key => $productId) {
-                $data = $productData[$key];
-                $quantity=$quantityArr[$key];
-                
-                error_log($quantity);
-
-                $transactionSellLine = new TransactionSellLine;
-                $transactionSellLine->additional_allwances= json_encode($data);
-                $transactionSellLine->service_id = $productId;
-                $transactionSellLine->quantity = $quantity;
-                // $transactionSellLine->total = $request->input('final_total');;
-                $transactionSellLine->transaction_id = $client->id;
-
-                $transactionSellLine->save();
+            $offer_details['type'] = 'sell';
+            $offer_details['sub_type'] = 'service';	
+            $offer_details['is_quotation'] = 1;
+            $latestRecord = Transaction::where('sub_type', 'service')->orderBy('ref_no', 'desc')->first();
+    
+            
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->ref_no;
+                $numericPart = (int)substr($latestRefNo, 5); 
+                $numericPart++;
+                $offer_details['ref_no'] = 'QN' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
+            } else {
+                // No previous records, start from 3000
+                $offer_details['ref_no'] = 'QN0003000';
             }
+
+        
+
+        $client = Transaction::create($offer_details);
+        Contact::where('id', $request->contact_id)->update(['type' => 'customer']);
+    
+        $productIds = json_decode($request->input('productIds'));
+        $quantityArr = json_decode($request->input('quantityArr'));
+            $productData = json_decode($request->input('productData'), true);
+        
+            if (count($productIds) === count($productData)) {
+                foreach ($productIds as $key => $productId) {
+                    $data = $productData[$key];
+                    $quantity=$quantityArr[$key];
+                    
+                    error_log($quantity);
+
+                    $transactionSellLine = new TransactionSellLine;
+                    $transactionSellLine->additional_allwances= json_encode($data);
+                    $transactionSellLine->service_id = $productId;
+                    $transactionSellLine->quantity = $quantity;
+                    // $transactionSellLine->total = $request->input('final_total');;
+                    $transactionSellLine->transaction_id = $client->id;
+
+                    $transactionSellLine->save();
+                }
+            }
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.client_added_success'),
+                'client' => $client
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
-        $output = [
-            'success' => 1,
-            'msg' => __('sales::lang.client_added_success'),
-            'client' => $client
-        ];
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-        $output = [
-            'success' => 0,
-            'msg' => __('messages.something_went_wrong'),
-        ];
+        return redirect()->route('price_offer');
     }
-
-    return redirect()->route('price_offer');
-}
 
 
     /**
@@ -472,8 +469,37 @@ class OfferPriceController extends Controller
      */
     public function show($id)
     {
-        return view('sales::show');
+ 
+      $business_id = request()->session()->get('user.business_id');
+       
+      $query = Transaction::where('business_id', $business_id)
+      ->where('id', $id)
+      ->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service:id,profession_id,specialization_id,nationality_id,gender,service_price,monthly_cost_for_one'])
+   
+      ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
+    
+      )->get()[0];
+                    
+   
+      $products = DB::table('transaction_sell_lines')
+      ->join('sales_services', 'transaction_sell_lines.service_id', '=', 'sales_services.id')
+   
+      ->leftJoin('essentials_professions', 'sales_services.profession_id', '=', 'essentials_professions.id')
+      ->leftJoin('essentials_specializations', 'sales_services.specialization_id', '=', 'essentials_specializations.id')
+    
+      ->where('transaction_id', '=', $id)
+      ->select('sales_services.*',
+       'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name'
+     )
+      ->get();
+      
+        return view('sales::price_offer.show')
+            ->with(compact(
+              'query'
+            ));
+      
     }
+
 
     /**
      * Show the form for editing the specified resource.
