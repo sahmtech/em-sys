@@ -48,7 +48,7 @@
         var roles_table = $('#roles_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/roles',
+                    ajax: '{{ route('roles')}}',
                     buttons:[],
                     columnDefs: [ {
                         "targets": 1,
