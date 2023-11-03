@@ -9,5 +9,14 @@ class salesService extends Model
    
     protected $guarded = ['id'];
 
-  
+    public function profession()
+    {
+     
+        return $this->belongsTo(\Modules\Essentials\Entities\EssentialsProfession::class, 'profession_id');
+    }
+    public function specialization()
+    {
+     
+        return $this->belongsTo(\Modules\Essentials\Entities\EssentialsSpecialization::class, 'specialization_id');
+    }
 }
