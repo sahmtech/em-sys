@@ -470,33 +470,18 @@ class OfferPriceController extends Controller
     public function show($id)
     {
  
-      $business_id = request()->session()->get('user.business_id');
-       
-      $query = Transaction::where('business_id', $business_id)
-      ->where('id', $id)
-      ->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service:id,profession_id,specialization_id,nationality_id,gender,service_price,monthly_cost_for_one'])
-   
-      ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
-    
-      )->get()[0];
-                    
-   
-      $products = DB::table('transaction_sell_lines')
-      ->join('sales_services', 'transaction_sell_lines.service_id', '=', 'sales_services.id')
-   
-      ->leftJoin('essentials_professions', 'sales_services.profession_id', '=', 'essentials_professions.id')
-      ->leftJoin('essentials_specializations', 'sales_services.specialization_id', '=', 'essentials_specializations.id')
-    
-      ->where('transaction_id', '=', $id)
-      ->select('sales_services.*',
-       'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name'
-     )
-      ->get();
-      
+        $business_id = request()->session()->get('user.business_id');
+            
+        $query = Transaction::where('business_id', $business_id)
+            ->where('id', $id)->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service'])
+        
+            ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
+            
+            )->get()[0];
+
+        
         return view('sales::price_offer.show')
-            ->with(compact(
-              'query'
-            ));
+            ->with(compact('query'));
       
     }
 

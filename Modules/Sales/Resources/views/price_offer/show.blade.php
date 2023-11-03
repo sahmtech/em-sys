@@ -7,26 +7,43 @@
 </div>
 <div class="modal-body">
 
-        <div class="row">
-            <div class="col-xs-12">
-                <p class="pull-right"><b>@lang('messages.date'):</b> </p>
-            </div>
-        </div>
+      
 
         <div class="row">
             <div class="col-sm-3 col-sm-4">
             <b>{{ __('sales::lang.transaction_number') }} :</b></b> {{ $query->ref_no }}<br>
             <b>{{ __('sales::lang.transaction_date') }} :</b></b> {{ $query->transaction_date }}<br>
-            <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->name }}<br>
-            <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->mobile }}<br>
+            <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->contact->name }}<br>
+            <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->contact->mobile }}<br>
             </div>
 
             <div class="col-sm-2 col-sm-4">
             <b>{{ __('sales::lang.final_total') }} :</b></b> {{ $query->final_total }}<br>
-            <b>{{ __('sales::lang.Status') }} :</b></b> {{ $query->status }}<br>
+            <b>{{ __('sales::lang.Status') }} :</b>
+            {{ __('sales::lang.' . $query->status) }}
+            <br>
+            {{-- <b>{{ __('sales::lang.Status') }} :</b>
+                  @if ($query->status === 'approved')
+                     ('sales::lang.' . $query->status)
+                  @elseif ($query->status === 'cancelled')
+                      ملغي
+                  @elseif ($query->status === 'transfared')
+                      محوّل
+                  @elseif ($query->status === 'under_study')
+                      قيد الدراسة
+                  @else
+                      {{ $query->status }}
+                  @endif
+                  <br> --}}
             <b>{{ __('sales::lang.down_payment') }} :</b></b> {{ $query->down_payment }}<br>
-            <b>{{ __('sales::lang.contract_form') }} :</b></b> {{ $query->contract_form }}<br>
-
+            <b>{{ __('sales::lang.contract_form') }} :</b></b> {{ __('sales::lang.' . $query->contract_form) }} <br>
+            {{-- @if ($query->contract_form === 'monthly_cost')
+            تكلفة شهرية
+             @elseif ($query->contract_form === 'operating_fees')
+            رسوم التشغيل
+            @else
+                      {{ $query->contract_form }}
+            @endif --}}
             </div>
 
         </div>
@@ -42,28 +59,69 @@
             <tr @if(empty($for_ledger)) class="bg-green" @endif>
         
           
-            <th>{{ __('sales::lang.gender') }}</th>
+            <th>{{ __('sales::lang.quantity') }}</th>
+           <th>{{ __('sales::lang.additional_allwances') }}</th>
+           <th>{{ __('sales::lang.gender') }}</th>
             <th>{{ __('sales::lang.service_price') }}</th>
             <th>{{ __('sales::lang.monthly_cost_for_one') }}</th>
-          
             <th>{{ __('sales::lang.profession_name') }}</th>
             <th>{{ __('sales::lang.specialization_name') }}</th>
-          
+      
     </tr>
-            @foreach($products as $product)
-            <tr>
-              
-               
-                <td> {{ $product->gender }}</td>
-                <td> {{ $product->service_price }}</td>
-                <td> {{ $product->monthly_cost_for_one }}</td>
-             
-                <td> {{ $product->profession_name }}</td>
-                <td> {{ $product->specialization_name }}</td>
-            
-                
-            </tr>
-            @endforeach
+    @foreach($query->sell_lines as $sell_line)
+    
+    <tr>
+        <td>{{ $sell_line->quantity }}</td>
+        {{-- <td>{{ $sell_line->additional_allwances }}</td> --}}
+    <td>
+          @if (!empty($sell_line->additional_allwances))
+          <ul>
+              @foreach(json_decode($sell_line->additional_allwances) as $allwance)
+                  @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
+                     <li>
+                      {{ __('sales::lang.' . $allwance->salaryType) }}: {{ $allwance->amount }} 
+                      {{-- @if ($allwance->salaryType === 'housing_allowance')
+                      بدل سكن: {{ $allwance->amount }}
+                     
+                      @elseif ($allwance->salaryType === 'overtime_hours')
+                          ساعات اضافية: {{ $allwance->amount }}
+                     
+                      @elseif ($allwance->salaryType === 'food_allowance')
+                      بدل طعام: {{ $allwance->amount }}
+                   
+                      @elseif ($allwance->salaryType === 'transportation_allowance')
+                      بدل نقل: {{ $allwance->amount }}
+                      
+                      @elseif ($allwance->salaryType === 'other_allowances')
+                      بدلات أخرى : {{ $allwance->amount }}
+                 
+                      @else
+                          {{ $allwance->salaryType }}: {{ $allwance->amount }}
+                      @endif --}}
+                  </li>
+                  @endif
+              @endforeach
+          </ul>
+      
+      @endif
+ 
+  
+           
+        </td>
+        <td>
+          @if ($sell_line['service']['gender'] === 'male')
+              ذكر
+          @elseif ($sell_line['service']['gender'] === 'male')
+              أنثى
+            @else  {{ $sell_line['service']['gender'] }}
+          @endif
+      </td>
+        <td>{{ $sell_line['service']['service_price']}}</td>
+        <td>{{  $sell_line['service']['monthly_cost_for_one'] }}</td>
+        <td>{{  $sell_line['service']['profession']['name']  }}</td>
+        <td>{{ $sell_line['service']['specialization']['name']  }}</td>
+    </tr>
+@endforeach
     </table>
         </div>
       </div>

@@ -69,7 +69,7 @@
                             <td>
                                 {!! Form::select('salary_type[]',
                                 [
-                                'housing_allowance ' => __('sales::lang.housing_allowance'),
+                                'housing_allowance' => __('sales::lang.housing_allowance'),
                                 'food_allowance' => __('sales::lang.food_allowance'),
                                 'transportation_allowance' => __('sales::lang.transportation_allowance'),
                                 'overtime_hours' => __('sales::lang.overtime_hours'),

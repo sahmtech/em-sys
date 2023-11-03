@@ -181,6 +181,14 @@ return [
     'inactive'=>'غير نشط',
     'terminated'=>'أنهيت',
     'vecation'=>'إجازة',
+    'quantity'=>'الكمية',
+    'additional_allwances'=>'بدلات إضافية',
+    'final_total'=>'الاجمالي',
+    'transaction_number'=>'رقم عرض السعر',
+    'transaction_date'=>'تاريخ عرض السعر',
+    'offer_price_details'=>'تفاصيل عرض السعر',
+    ''=>'',
+
 
 
 ];
