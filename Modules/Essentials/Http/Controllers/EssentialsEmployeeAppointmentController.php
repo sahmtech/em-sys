@@ -109,8 +109,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 return $item;
             })
             ->editColumn('status', function ($row) {
-                //   error_log($this->statuses); // Debug the statuses array
-                   error_log($row->status);
+             
                        $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
                        .$this->statuses[$row->status]['name'].'</span>';
                        $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';

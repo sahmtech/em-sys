@@ -74,7 +74,7 @@ class HomeController extends Controller
         $roles = auth()->user()->roles;
         $roleHasPermission = false;
         foreach ($roles as $role) {
-            error_log($role->name);
+            
             if ($role->hasPermissionTo('dashboard.data')) {
                 $roleHasPermission = true;
                 break;

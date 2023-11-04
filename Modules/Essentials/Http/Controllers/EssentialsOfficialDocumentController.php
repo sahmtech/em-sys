@@ -25,7 +25,7 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            error_log("1111");
+           
             abort(403, 'Unauthorized action.');
         }
         // $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
