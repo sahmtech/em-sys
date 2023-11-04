@@ -57,10 +57,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('create/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'create'])->name('create.sale.orderOperations');
         Route::post('/get-contracts',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'getContracts'] )->name('get-contracts');
         Route::post('/store/orderOperations',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'] )->name('sale.store.orderOperations');
-        Route::post('sale/operation/edit/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'edit'] )->name('sale.operation.edit');
+        Route::get('sale/operation/edit/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'edit'] )->name('sale.operation.edit');
         Route::get('show_operation/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'] )->name('sale.show_operation');
         Route::delete('destroy/show_operation/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'destroy'] )->name('sale.delete.order_operation');
-
+ 
         Route::get('/contract_itmes', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'index'])->name('contract_itmes');
         Route::get('/createItme', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'create'])->name('createItem');
         Route::post('/storeItem', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'store'])->name('storeItem');

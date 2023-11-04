@@ -13,7 +13,7 @@
                 {!! Form::select('user_id', $users, $user->id , ['class' => 'form-control select2', 'id' => 'user_id']); !!}
             </div>
         </div>
-        <br>
+</br>
         <div class="row">
             <div class="col-md-3">
                 <!-- Profile Image -->
@@ -65,6 +65,14 @@
                                 @lang("messages.edit")
                             </a>
                         @endcan
+
+
+                       
+                            <button   type="button"  class="btn btn-primary btn-block btn-modal" data-toggle="modal" data-target="#addDocModal">
+                                <i class="glyphicon glyphicon-plus"></i>
+                                @lang("essentials::lang.add_doc")
+                            </button>
+                       
                         </div>
                     <!-- /.box-body -->
                 </div>
@@ -122,7 +130,83 @@
                                 </div>
                             </div>
                             @include('user.show_details')
+    
+       
                         </div>
+
+                        <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    {!! Form::open(['route' => 'storeOfficialDoc' , 'enctype' => 'multipart/form-data']) !!}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
+                    </div>
+        
+                    <div class="modal-body">
+    
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                                {!! Form::select('doc_type', [
+                                   
+                                    'national_id'=>__('essentials::lang.national_id'),
+                                    'passport'=>__('essentials::lang.passport'),
+                                    'residence_permit'=>__('essentials::lang.residence_permit'),
+                                    'drivers_license'=>__('essentials::lang.drivers_license'),
+                                    'car_registration'=>__('essentials::lang.car_registration'),
+                                    'international_certificate'=>__('essentials::lang.international_certificate'),
+                                ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_type'), 'required']) !!}
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
+                                {!! Form::number('doc_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.doc_number'), 'required']) !!}
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
+                                {!! Form::date('issue_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_date'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
+                                {!! Form::text('issue_place', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_place'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
+                                {!! Form::select('status', [
+                                'valid' => __('essentials::lang.valid'),
+                                'expired' => __('essentials::lang.expired'),
+                              
+                            ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_status'), 'required']) !!}
+                        </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
+                                {!! Form::date('expiration_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.expiration_date'), 'required']) !!}
+                            </div>
+                        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+          
+	
                         <div class="tab-pane" id="documents_and_notes_tab">
                             <!-- model id like project_id, user_id -->
                             <input type="hidden" name="notable_id" id="notable_id" value="{{$user->id}}">
@@ -156,5 +240,17 @@
                 }
             });
         });
+
+       
+
+       
+
+		
+  
+
+		
     </script>
+
+
+
 @endsection

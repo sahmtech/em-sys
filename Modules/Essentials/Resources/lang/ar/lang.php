@@ -852,5 +852,5 @@ return[
     'number_managers' => 'عدد المدراء',
     'residence_permits' => 'اللإقامات',
     'contracts' => 'العقود',
-
+    'add_doc'=>'إضافة وثيقة',
 ];

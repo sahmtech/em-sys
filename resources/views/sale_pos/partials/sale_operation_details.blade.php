@@ -14,9 +14,9 @@
         <tr>
           
            
-            <td> {{ $line->gender }}</td>
-            <td> {{ $line->service_price }}</td>
-            <td> {{ $line->monthly_cost_for_one }}</td>
+            <td> {{ $line->service->gender }}</td>
+            <td> {{ $line->service->service_price }}</td>
+            <td> {{ $line->service->monthly_cost_for_one }}</td>
          
             <td> {{ $line->service->profession->name }}</td>
             <td> {{$line->service->specialization->name }}</td>

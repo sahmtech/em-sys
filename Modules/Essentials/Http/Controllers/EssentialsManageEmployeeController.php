@@ -10,6 +10,7 @@ use App\BusinessLocation;
 use App\User;
 use App\Category;
 use DB;
+use Modules\Essentials\Http\RequestsempRequest;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
@@ -240,7 +241,7 @@ class EssentialsManageEmployeeController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(empRequest $request)
     {
            
             if (! auth()->user()->can('user.create')) {

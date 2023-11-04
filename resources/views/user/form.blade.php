@@ -29,7 +29,7 @@
 </div>
 <div class="clearfix"></div>
 <div class="form-group col-md-3">
-    {!! Form::label('contact_number', __( 'lang_v1.mobile_number' ) . ':') !!}
+    {!! Form::label('contact_number', __( 'lang_v1.mobile_number' ) . ':*') !!}
     {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.mobile_number') ]); !!}
 </div>
 <div class="form-group col-md-3">
@@ -129,7 +129,7 @@
     {!! Form::text('bank_details[bank_name]', !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null, ['class' => 'form-control', 'id' => 'bank_name', 'placeholder' => __( 'lang_v1.bank_name') ]); !!}
 </div>
 <div class="form-group col-md-3">
-    {!! Form::label('bank_code', __( 'lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+    {!! Form::label('bank_code', __( 'lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
     {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : null, ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __( 'lang_v1.bank_code') ]); !!}
 </div>
 <div class="form-group col-md-3">
