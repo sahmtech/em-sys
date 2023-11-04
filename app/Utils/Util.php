@@ -241,7 +241,7 @@ class Util
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
-        error_log($date);
+      
         return !empty($date_format) ? \Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
     }
 

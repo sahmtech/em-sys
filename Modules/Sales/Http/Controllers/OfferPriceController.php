@@ -69,28 +69,28 @@ class OfferPriceController extends Controller
         ];
 
         $this->dummyPaymentLine = ['method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
-        'is_return' => 0, 'transaction_no' => '', ];
+                'is_return' => 0, 'transaction_no' => '', ];
 
         $this->shipping_status_colors = [
-            'ordered' => 'bg-yellow',
-            'packed' => 'bg-info',
-            'shipped' => 'bg-navy',
-            'delivered' => 'bg-green',
-            'cancelled' => 'bg-red',
-    ];
+                    'ordered' => 'bg-yellow',
+                    'packed' => 'bg-info',
+                    'shipped' => 'bg-navy',
+                    'delivered' => 'bg-green',
+                    'cancelled' => 'bg-red',
+            ];
        
     }
     
     public function index()
     {
-        // if (! auth()->user()->can('quotation.view_all') && ! auth()->user()->can('quotation.view_own')) {
-        //     abort(403, 'Unauthorized action.');
-        // }
+      
         $business_id = request()->session()->get('user.business_id');
         $can_crud_offer_price= auth()->user()->can('sales.crud_offer_prices');
         if (! $can_crud_offer_price) {
             abort(403, 'Unauthorized action.');
         }
+        $business_locations = BusinessLocation::forDropdown($business_id, false);
+   
         if (request()->ajax()) {
         
             
@@ -99,6 +99,7 @@ class OfferPriceController extends Controller
                 ->where('transactions.type', 'sell')
                 ->select(
                     'transactions.id as id',
+                    'transactions.location_id as location_id',
                     'transactions.transaction_date',
                     'transactions.ref_no',
                     'transactions.final_total',
@@ -118,13 +119,17 @@ class OfferPriceController extends Controller
           
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
-                 //   error_log($this->statuses); // Debug the statuses array
-                    error_log($row->status);
+         
                         $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
                         .$this->statuses[$row->status]['name'].'</span>';
                         $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
                         
                         return $status;
+                    })
+                ->editColumn('location_id',function($row)use($business_locations){
+                        $item = $business_locations[$row->location_id]??'';
+        
+                        return $item;
                     })
                 ->addColumn(
                     'action', function ($row) {
@@ -142,25 +147,19 @@ class OfferPriceController extends Controller
                                     </a>
                                     </li>';
                                  
-                        // if (auth()->user()->can('draft.update') || auth()->user()->can('quotation.update')) {
-                        //     if ($row->is_direct_sale == 1) {
-                        //         $html .= '<li>
-                        //                     <a target="_blank" href="'.action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]).'">
-                        //                         <i class="fas fa-edit"></i>'.__('messages.edit').'
-                        //                     </a>
-                        //                 </li>';
-                        //     } else {
-                        //         $html .= '<li>
-                        //                     <a target="_blank" href="'.action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]).'">
-                        //                         <i class="fas fa-edit"></i>'.__('messages.edit').'
-                        //                     </a>
-                        //                 </li>';
-                        //     }
-                        // }
+                        
+                            if ($row->status == "under_study") {
+                                $html .= '<li>
+                                            <a target="_blank" href="'.action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'edit'], [$row->id]).'">
+                                                <i class="fas fa-edit"></i>'.__('messages.edit').'
+                                            </a>
+                                        </li>';
+                                } 
+                        
 
-                        $html .= '<li>
-                                    <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
-                                </li>';
+                        // $html .= '<li>
+                        //             <a href="#" class="print-invoice" data-href="'.route('sell.printInvoice', [$row->id]).'"><i class="fas fa-print" aria-hidden="true"></i>'.__('messages.print').'</a>
+                        //         </li>';
 
                       
                       
@@ -186,7 +185,7 @@ class OfferPriceController extends Controller
                 ->rawColumns(['action', 'invoice_no', 'status','transaction_date', 'conatct_name'])
                 ->make(true);
         }
-        $business_locations = BusinessLocation::forDropdown($business_id, false);
+      
         $customers = Contact::customersDropdown($business_id, false);
         $statuses = $this->statuses;
         $sales_representative = User::forDropdown($business_id, false, false, true);
@@ -393,10 +392,11 @@ class OfferPriceController extends Controller
 
         try {
             $business_id = $request->session()->get('user.business_id');
-            $offer = ['contract_form', 'contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
+            $offer = ['contract_form', 'location_id','contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
             $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
             $offer_details = $request->only($offer);
-            $offer_details['business_id'] = $request->input('business_id');
+            $offer_details['location_id'] = $request->input('location_id');
+            $offer_details['business_id'] = $business_id;
             $offer_details['transaction_date'] = $transactionDate;
 
             $offer_details['created_by'] = $request->session()->get('user.id');
@@ -493,18 +493,60 @@ class OfferPriceController extends Controller
      */
     public function edit($id)
     {
-        return view('sales::edit');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $offer_price=Transaction::find($id);
+        $business_locations = BusinessLocation::forDropdown($business_id, false);
+        $leads = Contact::whereIn('type', ['lead', 'customer'])
+        ->where('business_id', $business_id)
+        ->pluck('supplier_business_name', 'id');
+        return view('sales::price_offer.edit')->with(compact('offer_price','business_locations','leads'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
+
     public function update(Request $request, $id)
-    {
-        //
+    { 
+        
+        try {
+         
+                $offer = ['contract_form', 'location_id','contact_id', 'down_payment', 'transaction_date', 'status'];
+                
+               // $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
+                error_log('2222222222');
+
+                $offer_details = $request->only($offer);
+                error_log('33333333333');
+
+                $offer_details['location_id'] = $request->input('location_id');
+                error_log('4444444444');
+
+                $offer_details['transaction_date'] =$request->input('transaction_date');
+                $offer_details['created_by'] = $request->session()->get('user.id');
+             
+            
+            Transaction::where('id', $id)->update($offer_details);
+            error_log('555555555');
+
+           
+        
+           
+                $output = [
+                    'success' => 1,
+                    'msg' => __('sales::lang.client_updated_success'),
+                 
+                ];
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+                $output = [
+                    'success' => 0,
+                    'msg' => __('messages.something_went_wrong'),
+                ];
+            }
+    
+            return redirect()->route('price_offer');
+        
     }
 
     /**
@@ -512,17 +554,7 @@ class OfferPriceController extends Controller
      * @param int $id
      * @return Renderable
      */
-    // public function updateStatus(Request $request)
-    // {
-    //     error_log('1111111111');
-    //     $rowId = $request->input('rowId');
-    //     $newStatus = $request->input('newStatus');
-
-    //     // Update the status in the database using Eloquent (replace 'YourModel' with your actual model)
-    //     Transaction::where('id', $rowId)->update(['status' => $newStatus]);
-
-    //     return response()->json(['message' => 'Status updated successfully']);
-    // }
+  
     public function destroy($id)
     {
         //

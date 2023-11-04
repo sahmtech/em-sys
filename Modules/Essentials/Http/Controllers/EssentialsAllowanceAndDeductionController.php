@@ -134,12 +134,11 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id);
+                $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
                 $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
                 $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
 
-               
                 return view('essentials::employee_affairs.employee_features.index')->with(compact('allowance_types','users'));
     }
 
@@ -220,7 +219,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         }
 
         
-        $query = User::where('business_id', $business_id);
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
@@ -283,7 +282,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
  
          $UserAllowance = EssentialsUserAllowancesAndDeduction::findOrFail($id);
  
-         $query = User::where('business_id', $business_id);
+         $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
          $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
          $users = $all_users->pluck('full_name', 'id');
          $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();
@@ -354,7 +353,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id);
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description','id')->all();

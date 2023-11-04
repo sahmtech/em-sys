@@ -86,7 +86,7 @@ class EssentialsAdmissionToWorkController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id);
+                $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
                 $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
               
@@ -138,7 +138,7 @@ class EssentialsAdmissionToWorkController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id);
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
@@ -206,7 +206,7 @@ class EssentialsAdmissionToWorkController extends Controller
 
         $work = EssentialsAdmissionToWork::findOrFail($id);
         $departments=EssentialsDepartment::all()->pluck('name','id');
-        $query = User::where('business_id', $business_id);
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         return view('essentials::employee_affairs.admission_to_work.edit')->with(compact('users','departments','work'));
@@ -247,7 +247,7 @@ class EssentialsAdmissionToWorkController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id);
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');

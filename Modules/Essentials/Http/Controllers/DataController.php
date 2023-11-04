@@ -773,8 +773,7 @@ class DataController extends Controller
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
                 foreach ($jsonData as $item) {
-                    error_log($item['salaryType']);
-                    error_log($item['amount']);
+           
 
                     try {
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();

@@ -44,6 +44,7 @@
                 <thead>
                     <tr>
                         
+                        <th>@lang('sales::lang.location')</th>
                         <th>@lang('sales::lang.offer_number')</th>
                         <th>@lang('sales::lang.customer_name')</th>
                         <th>@lang('sales::lang.customer_number')</th>
@@ -83,6 +84,7 @@ $(document).ready( function(){
       
         columns: [
            
+            { data: 'location_id'},
             { data: 'ref_no'},
             { data: 'name'},
             { data: 'mobile'}, 

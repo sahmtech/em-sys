@@ -165,7 +165,7 @@ class ContractAppendixController extends Controller
         $appendix =salesContractAppendic::findOrFail($id);
         $item=salesContractItem::whereId($appendix->contract_item_id)->first();
         $contract=salesContract::whereId($appendix->contract_id)->first()->number_of_contract;
-        error_log($contract);
+      
         return view('sales::contract_appendics.edit')->with(compact('item','appendix','contract','contracts'));
     }
 
