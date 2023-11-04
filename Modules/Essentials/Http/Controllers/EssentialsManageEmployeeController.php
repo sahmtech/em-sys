@@ -145,6 +145,7 @@ class EssentialsManageEmployeeController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+            ->where('users.user_type','!=' ,'admin')
             ->select(['users.id',
                     'users.username',
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
