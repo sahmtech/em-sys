@@ -241,69 +241,92 @@ class SaleOperationOrderController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
-    {
-        try {
+    // public function show($id)
+    // {
+    //     try {
 
-            $operations = DB::table('sales_orders_operations')
-            ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
-            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-            ->where('sales_orders_operations.id','=',$id)
-            ->select(
-                'sales_orders_operations.id as id',
-                'sales_orders_operations.operation_order_no as operation_order_no',
-                'contacts.name as contact_name',
-                'sales_contracts.number_of_contract as contract_number',
-                'sales_orders_operations.operation_order_type as operation_order_type',
-                'sales_orders_operations.Status as Status',
-                'sales_orders_operations.Location as Location',
-                'sales_orders_operations.Delivery as Delivery',
-                'sales_orders_operations.Interview as Interview',
-                'sales_orders_operations.Industry as Industry',
-                'contacts.email as email',
-            )->first();
+    //         $operations = DB::table('sales_orders_operations')
+    //         ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
+    //         ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+    //         ->where('sales_orders_operations.id','=',$id)
+    //         ->select(
+    //             'sales_orders_operations.id as id',
+    //             'sales_orders_operations.operation_order_no as operation_order_no',
+    //             'contacts.name as contact_name',
+    //             'sales_contracts.number_of_contract as contract_number',
+    //             'sales_orders_operations.operation_order_type as operation_order_type',
+    //             'sales_orders_operations.Status as Status',
+    //             'sales_orders_operations.Location as Location',
+    //             'sales_orders_operations.Delivery as Delivery',
+    //             'sales_orders_operations.Interview as Interview',
+    //             'sales_orders_operations.Industry as Industry',
+    //             'contacts.email as email',
+    //         )->first();
 
-            $transactionID=DB::table('sales_orders_operations')
-            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-           ->join('transactions', 'sales_contracts.offer_price_id', '=', 'transactions.id')
-            ->where('sales_orders_operations.id','=',$id)
-            ->first();
+    //         $transactionID=DB::table('sales_orders_operations')
+    //         ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+    //        ->join('transactions', 'sales_contracts.offer_price_id', '=', 'transactions.id')
+    //         ->where('sales_orders_operations.id','=',$id)
+    //         ->first();
          
-            $products = DB::table('transaction_sell_lines')
-            ->join('sales_services', 'transaction_sell_lines.service_id', '=', 'sales_services.id')
+    //         $products = DB::table('transaction_sell_lines')
+    //         ->join('sales_services', 'transaction_sell_lines.service_id', '=', 'sales_services.id')
          
-            ->leftJoin('essentials_professions', 'sales_services.profession_id', '=', 'essentials_professions.id')
-            ->leftJoin('essentials_specializations', 'sales_services.specialization_id', '=', 'essentials_specializations.id')
+    //         ->leftJoin('essentials_professions', 'sales_services.profession_id', '=', 'essentials_professions.id')
+    //         ->leftJoin('essentials_specializations', 'sales_services.specialization_id', '=', 'essentials_specializations.id')
           
-            ->where('transaction_id', '=', $transactionID->id)
-            ->select('sales_services.*',
-             'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name'
-           )
-            ->get();
+    //         ->where('transaction_id', '=', $transactionID->id)
+    //         ->select('sales_services.*',
+    //          'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name'
+    //        )
+    //         ->get();
        
     
         
-        //  dd($prod);
+    //     //  dd($prod);
 
-        return view('sales::operation_order.show')
-        ->with(compact('operations','products'));
-        }
-        catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    //     return view('sales::operation_order.show')
+    //     ->with(compact('operations','products'));
+    //     }
+    //     catch (\Exception $e) {
+    //         DB::rollBack();
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         
-            $output = [
-                'success' => 0,
-                'msg' => $e->getMessage(),
-            ];
-        }
+    //         $output = [
+    //             'success' => 0,
+    //             'msg' => $e->getMessage(),
+    //         ];
+    //     }
         
     
      
       
            
-    }
+    // }
 
+
+    public function show($id)
+{
+    try {
+        $operations = SalesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
+            ->where('id', $id)
+            ->first();
+         
+        $sell_lines = $operations->salesContract->transaction->sell_lines;
+        // foreach($sell_lines as $line)
+        // {
+        //     dd($line->service);
+        // }
+
+      
+      //  $services = $sell_line->salesServices;
+       
+        return view('sales::operation_order.show')
+            ->with(compact('operations', 'sell_lines'));
+    } catch (\Exception $e) {
+        // Handle exceptions here
+    }
+}
     /**
      * Show the form for editing the specified resource.
      * @param int $id
