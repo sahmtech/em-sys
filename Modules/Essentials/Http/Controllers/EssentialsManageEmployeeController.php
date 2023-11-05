@@ -161,13 +161,13 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
-        if (request()->ajax()) {
+     
             $business_id = request()->session()->get('user.business_id');
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
             ->select(['users.id',
                     'users.username',
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
-                    'users.dob',
+                    'users.id_proof_number',
                     'users.email',
                     'users.allow_login',
                     'users.contact_number',
@@ -179,7 +179,8 @@ class EssentialsManageEmployeeController extends Controller
                   
          
      
-        if (request()->ajax()) {
+        if (request()->ajax()) 
+        {
           
 
 
@@ -251,6 +252,7 @@ class EssentialsManageEmployeeController extends Controller
                 ->make(true);
 
         }
+        
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
@@ -271,11 +273,10 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.index')
         ->with(compact('contract_types','nationalities',
         'specializations','professions','users','countries','spacializations','status',
-        'offer_prices','items'
-    ));
+        'offer_prices','items'));
 
     }
-
+    
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -331,27 +332,27 @@ class EssentialsManageEmployeeController extends Controller
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
             
-//emp_number
-$business_id = request()->session()->get('user.business_id');
+                    //emp_number
+                    $business_id = request()->session()->get('user.business_id');
 
-if ($business_id) {
-    $numericPart = (int)substr($business_id, 3);
-    $lastEmployee = User::orderBy('emp_number', 'desc')->first(); 
+                    if ($business_id) {
+                        $numericPart = (int)substr($business_id, 3);
+                        $lastEmployee = User::orderBy('emp_number', 'desc')->first(); 
 
-    if ($lastEmployee) {
-        $lastNumericPart = (int)substr($lastEmployee->emp_number, 3);
-        $nextNumericPart = $lastNumericPart + 1;
-        $request['emp_number'] = $business_id . str_pad($nextNumericPart, 4, '0', STR_PAD_LEFT);
-    }
-     else {
-        // If there are no existing records, start with 1000
-        $request['emp_number'] = $business_id+'000';
-    }
-} else {
-    // Handle the case when there is no business_id
-    $request['emp_number'] = $business_id;
-}
-//-------------------
+                        if ($lastEmployee) {
+                            $lastNumericPart = (int)substr($lastEmployee->emp_number, 3);
+                            $nextNumericPart = $lastNumericPart + 1;
+                            $request['emp_number'] = $business_id . str_pad($nextNumericPart, 4, '0', STR_PAD_LEFT);
+                        }
+                        else {
+                            // If there are no existing records, start with 1000
+                            $request['emp_number'] = $business_id+'000';
+                        }
+                    } else {
+                        // Handle the case when there is no business_id
+                        $request['emp_number'] = $business_id;
+                    }
+                    //-------------------
 
 
 
