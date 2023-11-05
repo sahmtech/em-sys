@@ -361,12 +361,12 @@ class BusinessController extends Controller
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
-                        $html .= '<a href="'. route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> '.__('messages.view').'</a>
+                        $html .= '<a href="'. route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-view"></i> '.__('messages.view').'</a>
                         &nbsp;';
                         $html .= '<a href="'. route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> '.__('business.view_business_docs').'</a>
                         &nbsp;';
-                   //    $html .= '<button class="btn btn-xs btn-danger delete_business_button" data-href="' . route('business.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    }   
+                        $html .= '<a href="'. route('business_subscriptions.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> '.__('essentials::lang.view_business_subscriptions').'</a>';
+                    }
         
                     return $html;
                 }
