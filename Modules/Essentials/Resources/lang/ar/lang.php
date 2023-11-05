@@ -878,4 +878,18 @@ return[
     'add_family'=>'إضافة مرافق',
     'first_name'=>'الاسم الأول',
     'edit_family'=>'تعديل المرافق',
+    'subscriptions'=>'الاشتراكات',
+    'subscription_type'=>'نوع الاشتراك',
+    'subscription_number'=>'رقم الاشتراك',
+    'subscription_date'=>'تاريخ الاشتراك',
+    'add_subscriptions'=>'إضافةاشتراك',
+    'Muqeem'=>'قوى',
+    'Qiwa'=>'مقيم',
+    'Tamm'=>'تم',
+    'select_subscription_type'=>'اختر نوع الاشتراك',
+    'view_business_subscriptions'=>'عرض اشتراكات الشركة',
+    
+    
+    
+
 ];
