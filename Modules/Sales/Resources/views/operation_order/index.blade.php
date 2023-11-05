@@ -116,6 +116,8 @@
         customers_table.ajax.reload();
     });
 
+
+    
     $(document).on('click', 'button.delete_operation_button', function () {
                 swal({
                     title: LANG.sure,

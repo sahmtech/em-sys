@@ -852,5 +852,9 @@ return[
     'number_managers' => 'عدد المدراء',
     'residence_permits' => 'اللإقامات',
     'contracts' => 'العقود',
+    
     'add_doc'=>'إضافة وثيقة',
+    'qualifications_add'=>'إضافة مؤهل',
+    'is_profile_complete'=>'استكمال البروفايل',
+
 ];

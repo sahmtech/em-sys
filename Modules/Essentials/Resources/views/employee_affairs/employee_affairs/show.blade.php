@@ -77,7 +77,45 @@
                     <!-- /.box-body -->
                 </div>
                 <!-- /.box -->
+
+
+                  <!-- Profile Image -->
+                  <div class="box box-primary">
+                    <div class="box-body box-profile">
+                      
+
+                     
+        <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
+        <!-- Other user details go here -->
+
+        <div>
+           
+            <label>
+                <input type="checkbox" name="contracts" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="admissions_to_work" {{ $Qualification ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="qualifications"  {{ $Contract ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="health_insurance"> @lang( 'essentials::lang.health_insurance' )
+            </label>
+        </div>
+
+                      
+                       
+                        </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
             </div>
+
+            
             <div class="col-md-9">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs nav-justified">

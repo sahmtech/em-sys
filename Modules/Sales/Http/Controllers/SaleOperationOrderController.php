@@ -86,7 +86,7 @@ class SaleOperationOrderController extends Controller
 
 
 
-      if (request()->input('number_of_contract')) {
+    if (request()->input('number_of_contract')) {
        
         $operations->where('sales_contracts.number_of_contract', request()->input('number_of_contract'));
     }
