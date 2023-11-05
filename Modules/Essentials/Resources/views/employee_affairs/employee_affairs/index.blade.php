@@ -313,7 +313,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                    url: "{{ route('hrm.employees') }}",
+                    url: "{{ route('employees') }}",
                     data: function(d) {
                         
                          d.specialization = $('#specializations-select').val();
