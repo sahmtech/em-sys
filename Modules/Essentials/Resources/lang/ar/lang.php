@@ -852,5 +852,13 @@ return[
     'number_managers' => 'عدد المدراء',
     'residence_permits' => 'اللإقامات',
     'contracts' => 'العقود',
+    'COMMERCIALREGISTER' => 'السجل التجاري',
+    'Gosi' =>'التأمينات الاجتماعية',
+    'Zatca' =>'الزكاة والدخل',
+    'Chamber' =>'الغرفة التجارية',
+    'Balady' =>'بلدي',
+    'saudizationCertificate'=>'شهادة السعودة',
+    'VAT'=>'ضريبة القيمة المضافة',
+    'select_licence_type'=>'اختر نوع الترخيص'                                                                                         
 
 ];

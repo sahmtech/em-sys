@@ -16,13 +16,13 @@ return new class extends Migration
         Schema::create('business_documents', function (Blueprint $table) {
           
                 $table->id();
-                $table->enum('licence_type',['COMMERCIALREGISTER','Gosi','Zatca','Chamber','Balady','Investment','Rent','Contract']);
+                $table->enum('licence_type',['COMMERCIALREGISTER','Gosi','Zatca','Chamber','Balady','saudizationCertificate','VAT','Investment','Rent','Contract']);
                 $table->integer('licence_number');
                 $table->date('licence_date');
                 $table->date('renew_date');
                 $table->date('expiration_date');
                 $table->string('issuing_location');
-                $table->text('details');
+                $table->text('details')->nullable();
                 $table->text('path_file');
                 $table->integer('business_id')->unsigned();
                 $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');

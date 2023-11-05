@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.licenses'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm')
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
@@ -68,12 +68,15 @@
                         <div class="form-group col-md-6">
                             {!! Form::label('licence_type', __('essentials::lang.licence_type') . ':*') !!}
                             {!! Form::select('licence_type', [
-                                'COMMERCIALREGISTER' => 'Commercial Register',
-                                'Gosi' => 'Gosi',
-                                'Zatca' => 'Zatca',
-                                'Chamber' => 'Chamber',
-                                'Balady' => 'Balady',
-                            ], null, ['class' => 'form-control', 'placeholder' => 'Select Licence Type', 'required']) !!}
+                                'COMMERCIALREGISTER' => __('essentials::lang.COMMERCIALREGISTER'),
+                                'Gosi' => __('essentials::lang.Gosi'),
+                                'Zatca' =>__('essentials::lang.Zatca'),
+                                'Chamber' =>__('essentials::lang.Chamber'),
+                                'Balady' => __('essentials::lang.Balady'),
+                                'saudizationCertificate'=> __('essentials::lang.saudizationCertificate'),
+                                'VAT'=> __('essentials::lang.VAT'),
+
+                            ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
                         </div>
                         <div class="form-group col-md-6">
                             {!! Form::label('licence_number', __('essentials::lang.licence_number') . ':*') !!}
@@ -131,12 +134,40 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('business_documents.view', ['id' => ':id']) }}".replace(':id', id), // Replace ':id' with the actual id
+                url: "{{ route('business_documents.view', ['id' => ':id']) }}".replace(':id', id),
                 type: 'GET',
             },
              
             columns: [
-                { data: 'licence_type' },
+          
+                {
+                            data: 'licence_type',
+                            render: function (data, type, row) {
+                                if (data === 'COMMERCIALREGISTER') {
+                                    return  '@lang('essentials::lang.COMMERCIALREGISTER')';
+                                } else if (data === 'Gosi'){
+                                    return  '@lang('essentials::lang.Gosi')';
+                                }
+                                else if (data === 'Zatca'){
+                                    return  '@lang('essentials::lang.Zatca')';
+                                }
+                                else if (data === 'Chamber'){
+                                    return  '@lang('essentials::lang.Chamber')';
+                                }
+                                else if (data === 'Balady'){
+                                    return  '@lang('essentials::lang.Balady')';
+                                }
+                                else if (data === 'saudizationCertificate'){
+                                    return  '@lang('essentials::lang.saudizationCertificate')';
+                                }
+                                else if (data === 'VAT'){
+                                    return  '@lang('essentials::lang.VAT')';
+                                }
+                                else {
+                                    return  data;
+                                }
+                            }
+                        },
                 { data: 'licence_number' },
                 { data: 'licence_date' },
                 { data: 'renew_date' },
