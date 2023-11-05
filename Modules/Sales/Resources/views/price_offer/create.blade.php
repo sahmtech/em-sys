@@ -51,7 +51,7 @@
 	<div class="row">
 		<div class="col-md-12 col-sm-12">
 			@component('components.widget', ['class' => 'box-solid'])
-				{!! Form::hidden('business_id', !empty($default_location) ? $default_location->id : null , ['id' => 'location_id', 'data-receipt_printer_type' => !empty($default_location->receipt_printer_type) ? $default_location->receipt_printer_type : 'browser', 'data-default_payment_accounts' => !empty($default_location) ? $default_location->default_payment_accounts : '']); !!}
+				{!! Form::hidden('location_id', !empty($default_location) ? $default_location->id : null , ['id' => 'location_id', 'data-receipt_printer_type' => !empty($default_location->receipt_printer_type) ? $default_location->receipt_printer_type : 'browser', 'data-default_payment_accounts' => !empty($default_location) ? $default_location->default_payment_accounts : '']); !!}
 
 
 				{!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}

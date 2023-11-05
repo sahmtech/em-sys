@@ -23,9 +23,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/createOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'create'])->name('createOfferPrice');
         Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'store'])->name('storeOfferPrice');
         Route::post('/change-status', [\Modules\Sales\Http\Controllers\OfferPriceController::class,'changeStatus'])->name('changeStatus');
-     //   Route::get('/offerPriceShow/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'])->name('showOfferPrice');
-       Route::get('/offerPriceShow/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show']);
-      //  Route::get('/sale/offerPriceShow/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show']);
+        Route::get('/offerPriceShow/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show']);
+        Route::get('/offer-price/edit/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'edit']);
+        Route::PUT('/updateOfferPrice/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'update'])->name('updateOfferPrice');
 
    
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class,'clientAdd'])->name('clientAdd');

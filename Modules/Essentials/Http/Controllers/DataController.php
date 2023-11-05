@@ -442,6 +442,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_employee_features'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.crud_employee_families',
+                'label' => __('essentials::lang.crud_employee_families'),
+                'default' => false,
+            ],
 
         ];
     }
@@ -773,8 +778,7 @@ class DataController extends Controller
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
                 foreach ($jsonData as $item) {
-                    error_log($item['salaryType']);
-                    error_log($item['amount']);
+           
 
                     try {
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();

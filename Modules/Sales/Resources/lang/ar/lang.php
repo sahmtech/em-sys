@@ -187,7 +187,7 @@ return [
     'transaction_number'=>'رقم عرض السعر',
     'transaction_date'=>'تاريخ عرض السعر',
     'offer_price_details'=>'تفاصيل عرض السعر',
-    ''=>'',
+    'location'=>'الفرع',
 
 
 

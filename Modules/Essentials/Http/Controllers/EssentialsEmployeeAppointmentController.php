@@ -108,12 +108,11 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 return $item;
             })
-            // ->editColumn('status', function ($row) {
-            //     //   error_log($this->statuses); // Debug the statuses array
-            //        error_log($row->status);
-            //            $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
-            //            .$this->statuses[$row->status]['name'].'</span>';
-            //            $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
+            ->editColumn('status', function ($row) {
+             
+                       $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
+                       .$this->statuses[$row->status]['name'].'</span>';
+                       $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
                        
             //            return $status;
             //        })
@@ -136,7 +135,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id);
+                $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
                 $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
                 $users = $all_users->pluck('full_name', 'id');
                
@@ -154,8 +153,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.approve_leave')) {
             abort(403, 'Unauthorized action.');
         }
-        $query = User::where('business_id', $business_id)
-        ->user();
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         
@@ -234,8 +232,7 @@ class EssentialsEmployeeAppointmentController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)
-        ->user();
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         

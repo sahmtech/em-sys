@@ -68,7 +68,14 @@
                         <li @if(request()->segment(2) == 'health_insurance') class="active" @endif>
                             <a href="">@lang('essentials::lang.health_insurance')</a>
                         </li>
+
                         {{-- {{ route('insurances') }} --}}
+
+                        @can('essentials.crud_employee_families')
+                        <li @if(request()->segment(2) == 'employee_families') class="active" @endif>
+                            <a href="{{ route('employee_families') }}">@lang('essentials::lang.employee_families')</a>
+                        </li>
+                        @endcan  
 
                         @can('essentials.crud_employee_features')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'featureIndex') class="active" @endif>
