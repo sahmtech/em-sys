@@ -78,7 +78,9 @@
 		</div>
 	</section>
 	<!-- document share model -->
-	<div class="modal fade document" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+	<div class="modal fade document" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		
+	</div>
 @endsection
 
 @section('javascript')

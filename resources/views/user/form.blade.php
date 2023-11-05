@@ -29,8 +29,9 @@
 </div>
 <div class="clearfix"></div>
 <div class="form-group col-md-3">
-    {!! Form::label('contact_number', __( 'lang_v1.mobile_number' ) . ':') !!}
-    {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.mobile_number') ]); !!}
+    {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
+    {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'minlength' => '10']) !!}
+    <span id="contactNumberError" class="text-danger"></span>
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('alt_number', __( 'business.alternate_number' ) . ':') !!}
@@ -129,8 +130,9 @@
     {!! Form::text('bank_details[bank_name]', !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null, ['class' => 'form-control', 'id' => 'bank_name', 'placeholder' => __( 'lang_v1.bank_name') ]); !!}
 </div>
 <div class="form-group col-md-3">
-    {!! Form::label('bank_code', __( 'lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
-    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : null, ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __( 'lang_v1.bank_code') ]); !!}
+    {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'minlength' => '24']) !!}
+    <span id="bankCodeError" class="text-danger"></span>
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('branch', __( 'lang_v1.branch') . ':') !!}
@@ -145,18 +147,39 @@
 
 
 <script>
-    let validationLength = 10; 
+    let validationLength = 10;
 
-   
-    function updateValidationCondition(select) {
-    const idProofNumberInput = document.getElementById('id_proof_number');
-    if (select.value === 'eqama') {
-        validationLength = 13;
+    function validateContactNumber(input) {
+    const contactNumber = input.value;
+
+    if (contactNumber.length !== 10 || !contactNumber.startsWith('05')) {
+        document.getElementById('contactNumberError').innerText = 'Mobile number must be 10 digits.';
     } else {
-        validationLength = 10;
+        document.getElementById('contactNumberError').innerText = '';
     }
-    idProofNumberInput.minLength = validationLength;
 }
+
+function validateBankCode(input) {
+    const bankCode = input.value;
+
+    if (bankCode.length !== 24 || !bankCode.startsWith('SA')) {
+        document.getElementById('bankCodeError').innerText = 'Bank code must be 24 characters and start with "SA".';
+    } else {
+        document.getElementById('bankCodeError').innerText = '';
+    }
+}
+
+    function updateValidationCondition(select) {
+        const idProofNumberInput = document.getElementById('id_proof_number');
+        if (select.value === 'eqama') {
+            validationLength = 10;
+            idProofNumberInput.value = '21'; // Set the default value to '21' for "eqama"
+        } else {
+            validationLength = 10;
+            idProofNumberInput.value = '10'; // Set the default value to '10' for other options
+        }
+        idProofNumberInput.minLength = validationLength;
+    }
 
     function validateIdProofNumber(input) {
         const idProofNumber = input.value;

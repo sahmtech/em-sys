@@ -68,8 +68,8 @@
                                 <th>@lang('essentials::lang.superior' )</th>
                                 <th>@lang('sales::lang.profession' )</th>
                                 <th>@lang('essentials::lang.specialization' )</th>
-                                <th>@lang('essentials::lang.employee_status' )</th>
-                                <th>@lang('messages.action' )</th>
+                                <!-- <th>@lang('essentials::lang.employee_status' )</th>
+                                <th>@lang('messages.action' )</th> -->
                             </tr>
                         </thead>
                     </table>
@@ -174,8 +174,7 @@ $(document).ready(function() {
                         { data: 'superior' },
                         { data: 'profession_id'},
                         { data: 'specialization_id'},
-                        { data: 'status'},
-                        { data: 'action' },
+                     
                     ],
              });
             professionSelect.on('change', function () {

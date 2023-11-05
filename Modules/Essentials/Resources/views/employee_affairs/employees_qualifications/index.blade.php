@@ -103,20 +103,20 @@
                                 {!! Form::select('major',$spacializations, null, ['class' => 'form-control', 'placeholder' =>  __('essentials::lang.major'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':*') !!}
+                                {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
                                 {!! Form::date('graduation_year', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':*') !!}
+                                {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
                                 {!! Form::text('graduation_institution', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_institution'), 'required']) !!}
                             </div>
                             
                             <div class="form-group col-md-6">
-                                {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':*') !!}
+                                {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
                                 {!! Form::select('graduation_country',$countries, null, ['class' => 'form-control', 'placeholder' =>  __('essentials::lang.select_country'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('degree', __('essentials::lang.degree') . ':*') !!}
+                                {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
                                 {!! Form::number('degree', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'required']) !!}
                             </div>
                             

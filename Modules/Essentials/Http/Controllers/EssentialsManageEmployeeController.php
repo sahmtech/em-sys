@@ -9,7 +9,10 @@ use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
 use App\Category;
+use App\Transaction;
+use Modules\Sales\Entities\salesContractItem;
 use DB;
+use Modules\Essentials\Http\RequestsempRequest;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
@@ -21,7 +24,9 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
-
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -101,6 +106,15 @@ class EssentialsManageEmployeeController extends Controller
                         ->select(['id', 'username',
                             DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
 
+                            if (!empty(request('specializations-select'))) {
+                                $users->where('specialization', request('specializations-select'));
+                            }
+                            if (!empty(request('professions-select'))) {
+                                $users->where('profession', request('professions-select'));
+                            }
+                            if (!empty(request('status-select'))) {
+                                $users->where('status', request('status-select'));
+                            }
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
@@ -129,9 +143,14 @@ class EssentialsManageEmployeeController extends Controller
    
     public function index()
     {
+        $business_id = request()->session()->get('user.business_id');
+
+      
         if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
+
+
         $appointments=EssentialsEmployeeAppointmet::all()->pluck('profession_id','employee_id');
         $appointments2=EssentialsEmployeeAppointmet::all()->pluck('specialization_id','employee_id');
         $categories=Category::all()->pluck('name','id');
@@ -142,14 +161,13 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
-        if (request()->ajax()) {
+     
             $business_id = request()->session()->get('user.business_id');
             $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->where('users.user_type','!=' ,'admin')
             ->select(['users.id',
                     'users.username',
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
-                    'users.dob',
+                    'users.id_proof_number',
                     'users.email',
                     'users.allow_login',
                     'users.contact_number',
@@ -157,6 +175,14 @@ class EssentialsManageEmployeeController extends Controller
                     
                     'users.status'
                         ]);
+
+                  
+         
+     
+        if (request()->ajax()) 
+        {
+          
+
 
             return Datatables::of($users)
                 ->editColumn('profession_id',function($row)use($departments){
@@ -178,31 +204,79 @@ class EssentialsManageEmployeeController extends Controller
                 
                         return $specializationName;
                     })
-                ->addColumn(
-                    'action',
-                    '@can("user.update")
-                        <a href="{{route(\'editEmployee\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                        &nbsp;
-                    @endcan
-                    @can("user.view")
-                    <a href="{{route(\'showEmployee\',[\'id\'=>$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                    &nbsp;
-                    @endcan
-                    @can("user.delete")
-                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                    @endcan'
-                )
+                    ->addColumn(
+                        'action', function ($row) {
+                            $html = '<div class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                        data-toggle="dropdown" aria-expanded="false">'.
+                                        __('messages.actions').
+                                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li>
+                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.qualifications_add').'</a>
+                                     
+                                        </a>
+                                        </li>';
+                                     
+                          
+    
+                           
+    
+                            $html .= '<li>
+                                    <a href="#" class="btn-modal"  data-toggle="modal" data-target="#add_doc" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_doc').'</a>
+                                </li>';
+                          
+                            $html .= '<li>
+                                <a class=" btn-modal" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_contract').'</a>
+                            </li>';
+    
+                            $html .= '</ul></div>';
+    
+                            return $html;
+                        })
+                        ->addColumn('view', function ($row) {
+                
+                            $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                          
+                            return $html;
+                        })
+                   
+
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 
-                ->rawColumns(['action','profession','specialization'])
+                ->rawColumns(['action','profession','specialization','view'])
                 ->make(true);
+
         }
-        return view('essentials::employee_affairs.employee_affairs.index')->with(compact('contract_types','nationalities','specializations','professions'));
+        
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        $countries = EssentialsCountry::forDropdown();
+        $spacializations=EssentialsSpecialization::all()->pluck('name','id');
+     
+        $status = ['active' => 'active',
+                  'inactive' => 'inactive',
+                  'terminated' => 'terminated',
+                  'vecation' => 'vecation',];
+
+
+                  $offer_prices = Transaction::where([['transactions.type','=','sell'],['transactions.status','=','approved']])
+                  ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                  ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no','transactions.id');
+                  $items=salesContractItem::pluck('name_of_item','id');
+
+        return view('essentials::employee_affairs.employee_affairs.index')
+        ->with(compact('contract_types','nationalities',
+        'specializations','professions','users','countries','spacializations','status',
+        'offer_prices','items'));
 
     }
-
+    
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -241,7 +315,7 @@ class EssentialsManageEmployeeController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(empRequest $request)
     {
            
             if (! auth()->user()->can('user.create')) {
@@ -257,7 +331,35 @@ class EssentialsManageEmployeeController extends Controller
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
-              //  dd( $request);
+            
+                    //emp_number
+                    $business_id = request()->session()->get('user.business_id');
+
+                    if ($business_id) {
+                        $numericPart = (int)substr($business_id, 3);
+                        $lastEmployee = User::orderBy('emp_number', 'desc')->first(); 
+
+                        if ($lastEmployee) {
+                            $lastNumericPart = (int)substr($lastEmployee->emp_number, 3);
+                            $nextNumericPart = $lastNumericPart + 1;
+                            $request['emp_number'] = $business_id . str_pad($nextNumericPart, 4, '0', STR_PAD_LEFT);
+                        }
+                        else {
+                            // If there are no existing records, start with 1000
+                            $request['emp_number'] = $business_id+'000';
+                        }
+                    } else {
+                        // Handle the case when there is no business_id
+                        $request['emp_number'] = $business_id;
+                    }
+                    //-------------------
+
+
+
+
+
+
+
                 $user = $this->moduleUtil->createUser($request);
     
                 event(new UserCreatedOrModified($user, 'added'));
@@ -294,8 +396,12 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->find($id);
+        
+        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
+       // $admissions_to_work = EssentialsEmployeesContract::where('employee_id', $user->id)->first(); 
 
-        //Get user view part from modules
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
        
         $users = User::forDropdown($business_id, false);
@@ -305,7 +411,9 @@ class EssentialsManageEmployeeController extends Controller
            ->latest()
            ->get();
 
-        return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user', 'view_partials', 'users', 'activities'));
+        return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user',
+         'view_partials', 'users', 'activities',
+        'admissions_to_work','Qualification','Contract'));
     }
 
     /**

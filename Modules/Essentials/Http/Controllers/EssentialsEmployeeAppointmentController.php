@@ -108,25 +108,25 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 return $item;
             })
-            ->editColumn('status', function ($row) {
+            // ->editColumn('status', function ($row) {
              
-                       $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
-                       .$this->statuses[$row->status]['name'].'</span>';
-                       $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
+            //            $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
+            //            .$this->statuses[$row->status]['name'].'</span>';
+            //            $status = '<a href="#" class="change_status" data-offer-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
                        
-                       return $status;
-                   })
-            ->addColumn(
-                'action',
-                 function ($row) {
-                    $html = '';
-                //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
-                    $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+            // //            return $status;
+            // //        })
+            // // ->addColumn(
+            // //     'action',
+            // //      function ($row) {
+            // //         $html = '';
+            // //     //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+            // //     //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+            // //      //   $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     
-                    return $html;
-                 }
-                )
+            // //         return $html;
+            // //      }
+            // //     )
             
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);

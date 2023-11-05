@@ -10,16 +10,16 @@
         <th>{{ __('sales::lang.specialization_name') }}</th>
       
 </tr>
-        @foreach($products as $product)
+        @foreach($sell_lines as $line)
         <tr>
           
            
-            <td> {{ $product->gender }}</td>
-            <td> {{ $product->service_price }}</td>
-            <td> {{ $product->monthly_cost_for_one }}</td>
+            <td> {{ $line->service->gender }}</td>
+            <td> {{ $line->service->service_price }}</td>
+            <td> {{ $line->service->monthly_cost_for_one }}</td>
          
-            <td> {{ $product->profession_name }}</td>
-            <td> {{ $product->specialization_name }}</td>
+            <td> {{ $line->service->profession->name }}</td>
+            <td> {{$line->service->specialization->name }}</td>
         
             
         </tr>

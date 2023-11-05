@@ -95,7 +95,8 @@ class EssentialsEmployeeQualificationController extends Controller
                 $users = $all_users->pluck('full_name', 'id');
                 $countries = EssentialsCountry::forDropdown();
 
-        return view('essentials::employee_affairs.employees_qualifications.index')->with(compact('users','countries','spacializations'));
+        return view('essentials::employee_affairs.employees_qualifications.index')
+        ->with(compact('users','countries','spacializations'));
     }
    
 

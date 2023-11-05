@@ -633,4 +633,5 @@ return [
     'number_managers' => 'managers count',
     'residence_permits' => 'residence permits',
     'contracts' => 'contracts',
+    'add_doc'=>'add documnet',
 ];

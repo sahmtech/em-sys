@@ -90,7 +90,7 @@
                     <tr>
                         <td>4</td>
                         <td>@lang('essentials::lang.employee_type') <small class="text-muted">(@lang('lang_v1.required'))</small></td>
-                        <td>@lang('essentials::lang.employee_type_example') </td>
+                        <td>worker ,manager,user,employee, </td>
                     </tr>
                     <tr>
                         <td>5</td>
@@ -111,7 +111,7 @@
                     <tr>
                         <td>8</td>
                         <td>@lang('essentials::lang.marital_status') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>@lang('essentials::lang.marital_status_example') </td>
+                        <td>single,married </td>
                     </tr>
                  
                     <tr>
@@ -127,7 +127,7 @@
                     <tr>
                         <td>11</td>
                         <td>@lang('essentials::lang.Alternative_mobile_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
+                        <td>05******</td>
                     </tr>
                     <tr>
                         <td>12</td>
@@ -175,7 +175,7 @@
                     <tr>
                         <td>20</td>
                         <td>@lang('essentials::lang.IBAN_number') <small class="text-muted">(@lang('lang_v1.optional'))</small></td>
-                        <td>&nbsp;</td>
+                        <td>SA*********</td>
                     </tr>
                     <tr>
                         <td>21</td>
