@@ -141,7 +141,7 @@ class EssentialsManageEmployeeController extends Controller
      * @return Renderable
      */ 
    
-    public function index()
+    public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
 
@@ -162,34 +162,48 @@ class EssentialsManageEmployeeController extends Controller
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
      
-            $business_id = request()->session()->get('user.business_id');
-            $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->select(['users.id',
-                    'users.username',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
-                    'users.id_proof_number',
-                    'users.email',
-                    'users.allow_login',
-                    'users.contact_number',
-                    'users.essentials_department_id',
-                    
-                    'users.status'
-                        ]);
+        $business_id = request()->session()->get('user.business_id');
+        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+        ->leftjoin('essentials_employee_appointmets','essentials_employee_appointmets.employee_id','users.id')
+        ->select(['users.id',
+        'users.emp_number',
+                'users.username',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                'users.id_proof_number',
+                'users.email',
+                'users.allow_login',
+                'users.contact_number',
+                'users.essentials_department_id',
+                'users.status',
+                'essentials_employee_appointmets.profession_id as profession_id',
+                'essentials_employee_appointmets.specialization_id as specialization_id'
+                    ]);
 
-                  
-         
-     
+       
+                    if (!empty($request->input('specializations-select'))) {
+                        //dd($request->input('specializations-select'));
+                           $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
+                          
+                   }
+                 
+                 
+                       if (!empty($request->input('professions-select'))) {
+                           $users->where('essentials_employee_appointmets.profession_id', $request->input('profession'));
+                       }
+                       if (!empty($request->input('status-select'))) {
+                           $users->where('users.status', $request->input('status'));
+                       }
+                                   
         if (request()->ajax()) 
         {
-          
-
+           
 
             return Datatables::of($users)
-                ->editColumn('profession_id',function($row)use($departments){
-                        $item = $EssentialsProfession[$row->profession_id]??'';
+                // ->editColumn('profession_id',function($row)use($departments){
+                //         $item = $EssentialsProfession[$row->profession_id]??'';
 
-                        return $item;
-                    })
+                //         return $item;
+                //     })
                     ->addColumn('profession', function ($row) use ($appointments, $professions) {
                         $professionId = $appointments[$row->id] ?? '';
                 
@@ -197,13 +211,18 @@ class EssentialsManageEmployeeController extends Controller
                 
                         return $professionName;
                     })
+
+                  
+            
                     ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
                         $specializationId = $appointments2[$row->id] ?? '';
-                
                         $specializationName = $specializations[$specializationId] ?? '';
-                
+
                         return $specializationName;
                     })
+                  
+
+                   
                     ->addColumn(
                         'action', function ($row) {
                             $html = '<div class="btn-group">
@@ -215,7 +234,7 @@ class EssentialsManageEmployeeController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                         <li>
-                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.qualifications_add').'</a>
+                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
                                      
                                         </a>
                                         </li>';
@@ -247,7 +266,8 @@ class EssentialsManageEmployeeController extends Controller
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                
+              
+                ->removecolumn('id')
                 ->rawColumns(['action','profession','specialization','view'])
                 ->make(true);
 
@@ -348,13 +368,14 @@ class EssentialsManageEmployeeController extends Controller
                             // If there are no existing records, start with 1000
                             $request['emp_number'] = $business_id+'000';
                         }
-                    } else {
+                    }
+                     else {
                         // Handle the case when there is no business_id
                         $request['emp_number'] = $business_id;
                     }
                     //-------------------
 
-
+                //  dd($request['emp_number'] );
 
 
 

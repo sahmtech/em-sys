@@ -21,11 +21,10 @@
 <div class="col-md-3">
     <div class="form-group">
         <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
-        {!! Form::select('specializations-select', $specializations, null, [
+        {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
             'class' => 'form-control',
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.all'),
-            'required',
             'id' => 'specializations-select'
         ]) !!}
     </div>
@@ -33,12 +32,11 @@
      
 <div class="col-md-3">
     <div class="form-group">
-        <label for="specializations_filter">@lang('essentials::lang.professions'):</label>
-        {!! Form::select('professions-select', $professions, null, [
+        <label for="professions_filter">@lang('essentials::lang.professions'):</label>
+        {!! Form::select('professions-select', $professions, request('professions-select'), [
             'class' => 'form-control',
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.all'),
-            'required',
             'id' => 'professions-select'
         ]) !!}
     </div>
@@ -47,16 +45,14 @@
 <div class="col-md-3">
     <div class="form-group">
         <label for="status_filter">@lang('essentials::lang.status'):</label>
-        {!! Form::select('status-select', $status, null, [
+        {!! Form::select('status-select', $status, request('status-select'), [
             'class' => 'form-control',
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.all'),
-            'required',
             'id' => 'status-select'
         ]) !!}
     </div>
 </div>
-     
 
 
 
@@ -313,24 +309,23 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                    url: "{{ route('employees') }}",
-                    data: function(d) {
-                        
-                         d.specialization = $('#specializations-select').val();
-                         d.profession = $('#professions-select').val();
-                         d.status = $('#status-select').val();
-
-                    }
-                },
-                   
+                        url: "{{ route('employees') }}",
+                        data: function (d) {
+                d.specialization = $('#specializations-select').val();
+                d.profession = $('#professions-select').val();
+                d.status = $('#status-select').val();
+                console.log(d);
+            },
+                    },
+                            
                     
                     "columns":[
-                        {"data":"id"},
+                        {"data":"emp_number"},
                         {"data":"full_name"},
                         {"data":"id_proof_number"},
                         {"data":"essentials_department_id"},
-                        {"data":"profession"},
-                        {"data":"specialization"},
+                        {"data": "profession", name: 'profession'},
+                        {"data": "specialization", name: 'specialization'},
                         {"data":"contact_number"},
                         {"data":"email"},
                         {
@@ -356,49 +351,58 @@
               });
      
 
-
-$('#specializations-select, #professions-select, #status-select').change(function () {
-                users_table.ajax.reload();
-                
+            
+              $('#specializations-select, #professions-select, #status-select').change(function () {
+                    console.log('Specialization selected: ' + $(this).val());
+                    console.log('Profession selected: ' + $('#professions-select').val());
+                    console.log('Status selected: ' + $('#status-select').val());
     });
-                });
+     
+//     $(document).on('change', '#specializations-select, #professions-select, #status-select', function () {
+//         users_table.ajax.reload();
+// });
+              
            
                 
 
-
-        $(document).on('click', 'button.delete_user_button', function(){
-            swal({
-              title: LANG.sure,
-              text: LANG.confirm_delete_user,
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    var href = $(this).data('href');
-                    var data = $(this).serialize();
-                    $.ajax({
-                        method: "DELETE",
-                        url: href,
-                        dataType: "json",
-                        data: data,
-                        success: function(result){
-                            if(result.success == true){
-                                toastr.success(result.msg);
-                                users_table.ajax.reload();
-                            } else {
-                                toastr.error(result.msg);
-                            }
+      
+                $(document).on('click', 'button.delete_user_button', function(){
+                    swal({
+                    title: LANG.sure,
+                    text: LANG.confirm_delete_user,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            var href = $(this).data('href');
+                            var data = $(this).serialize();
+                            $.ajax({
+                                method: "DELETE",
+                                url: href,
+                                dataType: "json",
+                                data: data,
+                                success: function(result){
+                                    if(result.success == true){
+                                        toastr.success(result.msg);
+                                        users_table.ajax.reload();
+                                    } else {
+                                        toastr.error(result.msg);
+                                    }
+                                }
+                            });
                         }
                     });
-                }
-             });
-        });
+                });
 
 
-        
- 
+
+     
+    });
+  
     
     
 </script>
+
+
 @endsection

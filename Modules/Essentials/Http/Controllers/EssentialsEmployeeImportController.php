@@ -342,6 +342,10 @@ class EssentialsEmployeeImportController extends Controller
                     }
                     else{ $emp_array['travel_ticket_categorie']=null;}
 
+
+                     
+                      //-------------------
+
                    // $emp_array['health_insurance']=$value[34];
                     $formated_data[] = $emp_array;
                     $formated_data2[] = $contract_array;
@@ -356,6 +360,39 @@ class EssentialsEmployeeImportController extends Controller
                        //dd($emp_data);
                         $emp_data['business_id'] = $business_id;
                         $emp_data['created_by'] = $user_id;
+                        
+      
+          
+            $numericPart = (int)substr($business_id, 3);
+            $lastEmployee = User::where('business_id', $business_id)
+                ->orderBy('emp_number', 'desc')
+                ->first();
+            
+            if ($lastEmployee) {
+                // Get the numeric part from the last employee's emp_number
+                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+        
+                // Increment the numeric part
+                $nextNumericPart = $lastEmpNumber + 1;
+
+                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 5, '0', STR_PAD_LEFT);
+            } 
+           
+            else {
+                // If no previous employee, start from 1
+                $emp_data['emp_number'] =  $business_id .'0000';
+            }
+        
+          
+         
+       
+        
+       
+        
+                     
+
+                        
+                     
                         $emp = User::create($emp_data);
 
                     

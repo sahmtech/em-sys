@@ -889,7 +889,8 @@ return[
     'select_subscription_type'=>'اختر نوع الاشتراك',
     'view_business_subscriptions'=>'عرض اشتراكات الشركة',
     
-    
+    'add_doc'=>'إضافة وثيقة',
+    'add_qualification'=>'إضافة مؤهل',
     
 
 ];
