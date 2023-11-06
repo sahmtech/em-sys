@@ -234,7 +234,7 @@ class EssentialsManageEmployeeController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                         <li>
-                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.qualifications_add').'</a>
+                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
                                      
                                         </a>
                                         </li>';
