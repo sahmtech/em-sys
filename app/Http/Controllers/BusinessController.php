@@ -600,7 +600,7 @@ class BusinessController extends Controller
                 'decimal_separator' => $currency->decimal_separator,
             ]);
 
-            //update current financial year to session
+
             $financial_year = $this->businessUtil->getCurrentFinancialYear($business->id);
             $request->session()->put('financial_year', $financial_year);
 
