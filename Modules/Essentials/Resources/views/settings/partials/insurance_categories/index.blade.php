@@ -7,49 +7,7 @@
     <h1>@lang('essentials::lang.insurance_categories')</h1>
 </section>
 <section class="content">
-    {{-- <div class="row">
-        <div class="col-md-12">
-            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                @if(!empty($users))
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('user_id_filter', __('essentials::lang.employee') . ':') !!}
-                        {!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                    </div>
-                </div>
-                @endif
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('doc_type_filter', __('essentials::lang.doc_type') . ':') !!}
-                        <select class="form-control select2" name="doc_type_filter" required id="doc_type_filter" style="width: 100%;">
-                            <option value="national_id">@lang('essentials::lang.national_id')</option>
-                            <option value="passport">@lang('essentials::lang.passport')</option>
-                            <option value="residence_permit">@lang('essentials::lang.residence_permit')</option>
-                            <option value="drivers_license">@lang('essentials::lang.drivers_license')</option>
-                            <option value="car_registration">@lang('essentials::lang.car_registration')</option>
-                            <option value="international_certificate">@lang('essentials::lang.international_certificate')</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="status_filter">@lang( 'essentials::lang.status' ):</label>
-                        <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
-                            <option value="valid">@lang('essentials::lang.valid')</option>
-                            <option value="expired">@lang('essentials::lang.expired')</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('doc_filter_date_range', __('report.date_range') . ':') !!}
-                        {!! Form::text('doc_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
-                    </div>
-                </div>
-            @endcomponent
-        </div>
-    </div> --}}
+   
 
     <div class="row">
         <div class="col-md-12">
@@ -70,6 +28,8 @@
                         <thead>
                             <tr>
                                 <th>@lang('essentials::lang.insurance_category_name' )</th>
+                                <th>@lang('essentials::lang.insurance_company' )</th>
+
                                 <th>@lang('messages.action' )</th>
                             </tr>
                         </thead>
@@ -106,6 +66,11 @@
                                  null, ['class' => 'form-control', 'required']) !!}
                             </div>        
                         </div>
+                        <div class="form-group col-md-6">
+                            {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
+                 
+                            {!! Form::select('insurance_company', $insurance_companies, null, ['class' => 'form-control','placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
+                        </div>
                     </div>
         
                     <div class="modal-footer">
@@ -133,23 +98,12 @@
                 serverSide: true,
                 ajax: {
                     "url": "{{ route('insurance_categories') }}",
-                    // "data": function(d) {
-                    //     if ($('#user_id_filter').length) {
-                    //         d.user_id = $('#user_id_filter').val();
-                    //     }
-                    //     d.status = $('#status_filter').val();
-                    //     d.doc_type = $('#doc_type_filter').val();
-                    //     if ($('#doc_filter_date_range').val()) {
-                    //         var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
-                    //         var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
-                    //         d.start_date = start;
-                    //         d.end_date = end;
-                    //     }
-                    // }
+                   
                 },
                 
                 columns: [
                     { data: 'name' },
+                    { data: 'insurance_company_id' },
                     { data: 'action' },
                 ],
             });
