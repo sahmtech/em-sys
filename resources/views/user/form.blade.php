@@ -25,8 +25,10 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('blood_group', __( 'lang_v1.blood_group' ) . ':') !!}
-    {!! Form::text('blood_group', !empty($user->blood_group) ? $user->blood_group : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.blood_group') ]); !!}
+    <!-- {!! Form::text('blood_group', !empty($user->blood_group) ? $user->blood_group : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.blood_group') ]); !!} -->
+    {!! Form::select('blood_group',$blood_types, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.blood_group')]) !!}
 </div>
+
 <div class="clearfix"></div>
 <div class="form-group col-md-3">
     {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
@@ -66,6 +68,13 @@
     {{-- {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)']); !!} --}}
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)', 'minlength' => '']) !!}
   <span id="idProofNumberError" class="text-danger"></span>
+</div>
+
+
+<div class="form-group col-md-3">
+    {!! Form::label('border_number', __('essentials::lang.border_number') . ':*') !!}
+    {!! Form::text('border_number', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.border_number'), 'minlength' => '']) !!}
+ 
 </div>
 
 
@@ -148,16 +157,23 @@
 
 <script>
     let validationLength = 10;
-
+    
     function validateContactNumber(input) {
-    const contactNumber = input.value;
+    let contactNumber = input.value;
+    
+    // Remove any non-numeric characters (e.g., spaces or dashes)
+    contactNumber = contactNumber.replace(/\D/g, '');
 
-    if (contactNumber.length !== 10 || !contactNumber.startsWith('05')) {
-        document.getElementById('contactNumberError').innerText = 'Mobile number must be 10 digits.';
-    } else {
+    if (contactNumber.length === 10) {
         document.getElementById('contactNumberError').innerText = '';
+    } else {
+        document.getElementById('contactNumberError').innerText = 'Mobile number must be 10 digits.';
+        
+        // Truncate the input to the first 10 digits
+        input.value = contactNumber.substr(0, 10);
     }
 }
+
 
 function validateBankCode(input) {
     const bankCode = input.value;
@@ -173,7 +189,7 @@ function validateBankCode(input) {
         const idProofNumberInput = document.getElementById('id_proof_number');
         if (select.value === 'eqama') {
             validationLength = 10;
-            idProofNumberInput.value = '21'; // Set the default value to '21' for "eqama"
+            idProofNumberInput.value = '2'; // Set the default value to '21' for "eqama"
         } else {
             validationLength = 10;
             idProofNumberInput.value = '10'; // Set the default value to '10' for other options
@@ -181,15 +197,15 @@ function validateBankCode(input) {
         idProofNumberInput.minLength = validationLength;
     }
 
-    function validateIdProofNumber(input) {
-        const idProofNumber = input.value;
+    // function validateIdProofNumber(input) {
+    //     const idProofNumber = input.value;
 
-        if (idProofNumber.length !== validationLength) {
-            document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
-        } else {
-            document.getElementById('idProofNumberError').innerText = '';
-        }
-    }
+    //     if (idProofNumber.length !== validationLength) {
+    //         document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
+    //     } else {
+    //         document.getElementById('idProofNumberError').innerText = '';
+    //     }
+    // }
 </script>
 
 </body>

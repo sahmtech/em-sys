@@ -891,6 +891,8 @@ return[
     
     'add_doc'=>'إضافة وثيقة',
     'add_qualification'=>'إضافة مؤهل',
+    'is_profile_complete'=>'استكمال بيانات الموظف',
+    'border_number'=>'رقم الحدود',
     
 
 ];
