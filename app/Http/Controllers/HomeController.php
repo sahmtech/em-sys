@@ -252,8 +252,9 @@ class HomeController extends Controller
             ['value' => 'user.update'],
             ['value' => 'user.delete'],
         ];
+        //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
-            ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   action([\App\Http\Controllers\ManageUserController::class, 'index'])],
+            ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
@@ -276,8 +277,10 @@ class HomeController extends Controller
                         break;
                     }
                 }
+              
                 if ($canAccessCard) {
                     $cards[] = $card;
+                
                     error_log($card['title']);
                 } else {
                     error_log("cant " . $card['title']);
