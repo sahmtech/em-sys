@@ -31,13 +31,14 @@
                     <thead>
                         <tr>
                             <th>@lang('essentials::lang.licence_type')</th>
+                            <th>@lang('essentials::lang.unified_number')</th>
                             <th>@lang('essentials::lang.licence_number')</th>
                             <th>@lang('essentials::lang.licence_date')</th>                           
                             <th>@lang('essentials::lang.renew_date')</th>
                             <th>@lang('essentials::lang.expiration_date')</th>
                             <th>@lang('essentials::lang.issuing_location')</th>
                             <th>@lang('essentials::lang.details')</th>
-                     
+                            
                             <th>@lang('essentials::lang.action')</th>
 
                             
@@ -76,7 +77,11 @@
                                 'saudizationCertificate'=> __('essentials::lang.saudizationCertificate'),
                                 'VAT'=> __('essentials::lang.VAT'),
 
-                            ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
+                            ], null, ['class' => 'form-control', 'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="unified_number" style="display: none;">
+                            {!! Form::label('unified_number', __('essentials::lang.unified_number') . ':*') !!}
+                            {!! Form::number('unified_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.unified_number')]) !!}
                         </div>
                         <div class="form-group col-md-6">
                             {!! Form::label('licence_number', __('essentials::lang.licence_number') . ':*') !!}
@@ -168,6 +173,8 @@
                                 }
                             }
                         },
+              
+                { data: 'unified_number' },        
                 { data: 'licence_number' },
                 { data: 'licence_date' },
                 { data: 'renew_date' },
@@ -204,6 +211,13 @@
                     });
                 }
             });
+        });
+        $('#licence_type').change(function() {
+            if (this.value === 'COMMERCIALREGISTER') {
+                $('#unified_number').show();
+            } else {
+                $('#unified_number').hide();
+            }
         });
 
      

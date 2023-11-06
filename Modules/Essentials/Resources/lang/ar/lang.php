@@ -898,7 +898,7 @@ return[
     'does_not_include'=>'لا تشمل',
     'have_an_insurance'=>'يملك تأمين طبي',
     'not_have_an_insurance'=>'لا يملك تأمين طبي',
-    ''=>'',
+    'unified_number'=>'الرقم الموحد',
 
 
 
