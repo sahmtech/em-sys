@@ -60,41 +60,41 @@
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_number', __( 'essentials::lang.contract_number') . ':*') !!}
-            {!! Form::text('contract_number', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_number') ]); !!}
+            {!! Form::text('contract_number', null , ['class' => 'form-control','required',  'placeholder' => __( 'essentials::lang.contract_number') ]); !!}
         </div>
         <div class="col-md-3">
             <div class="form-group">
             {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':*') !!}
-            {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2','placeholder' => __('messages.please_select')]); !!}
+            {!! Form::select('contract_type', $contract_types, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2','required', 'placeholder' => __('messages.please_select')]); !!}
             </div>
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_start_date', __( 'essentials::lang.contract_start_date') . ':*') !!}
-            {!! Form::date('contract_start_date', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_start_date') ]); !!}
+            {!! Form::date('contract_start_date', null , ['class' => 'form-control','required',  'placeholder' => __( 'essentials::lang.contract_start_date') ]); !!}
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_end_date', __( 'essentials::lang.contract_end_date') . ':') !!}
-            {!! Form::date('contract_end_date', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_end_date') ]); !!}
+            {!! Form::date('contract_end_date', null , ['class' => 'form-control','required',  'placeholder' => __( 'essentials::lang.contract_end_date') ]); !!}
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_duration', __( 'essentials::lang.contract_duration') . ':*') !!}
-            {!! Form::text('contract_duration', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_duration') ]); !!}
+            {!! Form::text('contract_duration', null , ['class' => 'form-control','required',  'placeholder' => __( 'essentials::lang.contract_duration') ]); !!}
         </div>   
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.probation_period', __( 'essentials::lang.probation_period') . ':*') !!}
-            {!! Form::text('probation_period', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.probation_period') ]); !!}
+            {!! Form::text('probation_period', null , ['class' => 'form-control', 'required', 'placeholder' => __( 'essentials::lang.probation_period') ]); !!}
         </div>
         <div class="form-group col-md-3">
             {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
-            {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control']) !!}
+            {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control', 'required']) !!}
         </div>
         {{-- <div class="form-group col-md-3">
             {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-            {!! Form::select('status', ['valid' =>__('essentials::lang.valid'), 'canceled' =>__('essentials::lang.canceled')], null, ['class' => 'form-control']) !!}
+            {!! Form::select('status', ['valid' =>__('essentials::lang.valid'), 'canceled' =>__('essentials::lang.canceled')], null, ['class' => 'form-control', 'required']) !!}
         </div> --}}
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_file', __( 'essentials::lang.contract_file') . ':*') !!}
-            {!! Form::file('contract_file', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.contract_file') ]); !!}
+            {!! Form::file('contract_file', null , ['class' => 'form-control', 'required', 'placeholder' => __( 'essentials::lang.contract_file') ]); !!}
         </div>
 
 </div>
