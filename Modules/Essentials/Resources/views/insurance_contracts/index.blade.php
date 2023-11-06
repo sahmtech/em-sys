@@ -56,12 +56,8 @@
                         <tr>
                             <th>@lang('essentials::lang.insurance_company')</th>
                             <th>@lang('essentials::lang.insurance_policy_number')</th>
-                            <th>@lang('essentials::lang.insurance_policy_value')</th>
-                            <th>@lang('essentials::lang.insurance_employees_count')</th>
-                            <th>@lang('essentials::lang.insurance_dependents_count')</th>
                             <th>@lang('essentials::lang.insurance_start_date')</th>
                             <th>@lang('essentials::lang.insurance_end_date')</th>
-                            <th>@lang('essentials::lang.insurance_attachments')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -86,28 +82,13 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
-                            {!! Form::select('insurance_company', $insuramce_companies, null, ['class' => 'form-control select2','placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
+                            {!! Form::select('insurance_company', $insuramce_companies, null, ['class' => 'form-control','placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
                         </div>
                         <div class="form-group col-md-6">
                             {!! Form::label('policy_number', __('essentials::lang.insurance_policy_number') . ':*') !!}
                             {!! Form::number('policy_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_policy_number'), 'required']) !!}
                         </div>
 
-                        <div class="form-group col-md-6">
-                            {!! Form::label('policy_value', __('essentials::lang.insurance_policy_value') . ':*') !!}
-                            {!! Form::number('policy_value', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_policy_value'), 'required']) !!}
-                        </div>
-
-                        
-                        <div class="form-group col-md-6">
-                            {!! Form::label('insurance_employees_count', __('essentials::lang.insurance_employees_count') . ':*') !!}
-                            {!! Form::number('insurance_employees_count', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_employees_count'), 'required']) !!}
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            {!! Form::label('insurance_dependents_count', __('essentials::lang.insurance_dependents_count') . ':*') !!}
-                            {!! Form::number('insurance_dependents_count', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_dependents_count'), 'required']) !!}
-                        </div>
 
                         <div class="form-group col-md-6">
                             {!! Form::label('insurance_start_date', __('essentials::lang.insurance_start_date') . ':*') !!}
@@ -119,10 +100,7 @@
                             {!! Form::label('insurance_end_date', __('essentials::lang.insurance_end_date') . ':*') !!}
                             {!! Form::date('insurance_end_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_end_date'), 'required']) !!}
                         </div>
-                        <div class="form-group col-md-6">
-                            {!! Form::label('insurance_attachments', __('essentials::lang.insurance_attachments') . ':') !!}
-                            {!! Form::file('insurance_attachments', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_attachments'), 'required']) !!}
-                        </div>
+                       
                         
                     </div>
                 </div>
@@ -168,12 +146,10 @@
             columns: [
                 { data: 'insurance_company_id' },
                 { data: 'policy_number' },
-                { data: 'policy_value' },
-                { data: 'employees_count'},
-                { data: 'dependents_count'},
+
                 { data: 'insurance_start_date'},
                 { data: 'insurance_end_date'},              
-                { data: 'attachments2', name: 'attachments2', orderable: false, searchable: false  },
+           
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });

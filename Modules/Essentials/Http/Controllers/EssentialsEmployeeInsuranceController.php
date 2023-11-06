@@ -3,19 +3,19 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\Contact;
+use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
 
-class EssentialsInsuranceCategoryController extends Controller
+class EssentialsEmployeeInsuranceController extends Controller
 {
-
-
     protected $moduleUtil;
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -32,23 +32,35 @@ class EssentialsInsuranceCategoryController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
-        if (! $can_crud_insurance_companies) {
+        $can_crud_employees_insurances = auth()->user()->can('essentials.crud_employees_insurances');
+        if (! $can_crud_employees_insurances) {
             abort(403, 'Unauthorized action.');
         }
         $insurance_companies= Contact::where('type','insurance')->pluck('supplier_business_name','id');
+        $insurance_classes= EssentialsInsuranceClass::all()->pluck('name','id');
+        
         if (request()->ajax()) {
-            $insuranceCategories = DB::table('essentials_insurance_classes')->select([
-                'id',
-                'name',
-                'insurance_company_id'
+           
+
+                $insurances = EssentialsEmployeesInsurance::
+                join('users as u', 'u.id', '=', 'essentials_employees_insurances.employee_id')->select([
+                    'essentials_employees_insurances.id as id',
+                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                    'essentials_employees_insurances.insurance_classes_id as insurance_classes_id',
+                    'essentials_employees_insurances.insurance_company_id as insurance_company_id',
+                    'essentials_employees_insurances.status as status'
             ]);
 
     
             
-            return Datatables::of($insuranceCategories)
+            return Datatables::of($insurances)
             ->editColumn('insurance_company_id',function($row)use($insurance_companies){
                 $item = $insurance_companies[$row->insurance_company_id]??'';
+
+                return $item;
+            })
+            ->editColumn('insurance_classes_id',function($row)use($insurance_classes){
+                $item = $insurance_classes[$row->insurance_classes_id]??'';
 
                 return $item;
             })
@@ -58,7 +70,7 @@ class EssentialsInsuranceCategoryController extends Controller
                     $html = '';
                     //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
                     //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                    $html .= '<button class="btn btn-xs btn-danger delete_insurance_category_button" data-href="' . route('insurance_categories.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    $html .= '<button class="btn btn-xs btn-danger delete_insurance_button" data-href="' . route('employee_insurance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
 
             
                     return $html;
@@ -68,14 +80,15 @@ class EssentialsInsuranceCategoryController extends Controller
                     $query->where('name',"LIKE", "%{$keyword}%");
                 })
                 ->removeColumn('id')
+                ->removeColumn('status')
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
-        return view('essentials::settings.partials.insurance_categories.index')->with(compact('insurance_companies'));
-     }
-
-   
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        return view('essentials::employee_affairs.employee_insurance.index')->with(compact('insurance_companies','insurance_classes','users'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -93,19 +106,26 @@ class EssentialsInsuranceCategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $business_id = $request->session()->get('user.business_id');
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
             abort(403, 'Unauthorized action.');
         }
+        
+        $insurance_companies= Contact::where('type','insurance')->pluck('id');
 
         try {
-            $input = $request->only(['insurance_category_name','insurance_company']);
+            
+            $input = $request->only(['insurance_class','employee']);
             
 
-            $insurance_category_data['name'] = $input['insurance_category_name'];
-            $insurance_category_data['insurance_company_id'] = $input['insurance_company'];
+            $insurance_data['insurance_classes_id'] = $input['insurance_class'];
+            $insurance_data['employee_id'] = $input['employee'];
+            $business=User::find($input['employee'])->business_id;
+            $insurance_data['insurance_company_id'] =Contact::where('type','insurance')->where('business_id',$business)->first()->id;
 
 
-            EssentialsInsuranceClass::create($insurance_category_data);
+
+            EssentialsEmployeesInsurance::create($insurance_data);
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
@@ -120,17 +140,29 @@ class EssentialsInsuranceCategoryController extends Controller
             ];
         }
 
-        return redirect()->route('insurance_categories')->with('status', $output);
+        return redirect()->route('employee_insurance')->with('status', $output);
     }
+
 
     /**
      * Show the specified resource.
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
+    public function fetchClasses(Request $request)
     {
-        return view('essentials::show');
+      
+        $employee_id = $request->input('employee_id');
+        $employee=User::find($employee_id)->business_id;
+    
+      
+
+        $insurance_company=Contact::where('type','insurance')->where('business_id',$employee)->first()->id;
+  
+
+        $classes = EssentialsInsuranceClass::where( 'insurance_company_id', $insurance_company)->pluck('name', 'id');
+
+        return response()->json($classes);
     }
 
     /**
@@ -164,26 +196,28 @@ class EssentialsInsuranceCategoryController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
-            EssentialsInsuranceClass::where('id', $id)
-                        ->delete();
+            EssentialsEmployeesInsurance
+            ::where('id', $id)
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
+
         return $output;
     }
 }

@@ -32,21 +32,6 @@
                 {!! Form::number('policy_number', $contract->policy_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_policy_number'), 'required']) !!}
             </div>
 
-            <div class="form-group col-md-6">
-                {!! Form::label('policy_value', __('essentials::lang.insurance_policy_value') . ':*') !!}
-                {!! Form::number('policy_value', $contract->policy_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_policy_value'), 'required']) !!}
-            </div>
-
-            
-            <div class="form-group col-md-6">
-                {!! Form::label('insurance_employees_count', __('essentials::lang.insurance_employees_count') . ':*') !!}
-                {!! Form::number('insurance_employees_count', $contract->employees_count, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_employees_count'), 'required']) !!}
-            </div>
-
-            <div class="form-group col-md-6">
-                {!! Form::label('insurance_dependents_count', __('essentials::lang.insurance_dependents_count') . ':*') !!}
-                {!! Form::number('insurance_dependents_count', $contract->dependents_count, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_dependents_count'), 'required']) !!}
-            </div>
 
             <div class="form-group col-md-6">
                 {!! Form::label('insurance_start_date', __('essentials::lang.insurance_start_date') . ':*') !!}
@@ -58,10 +43,7 @@
                 {!! Form::label('insurance_end_date', __('essentials::lang.insurance_end_date') . ':*') !!}
                 {!! Form::date('insurance_end_date', $contract->insurance_end_date, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_end_date'), 'required']) !!}
             </div>
-            <div class="form-group col-md-6">
-                {!! Form::label('insurance_attachments', __('essentials::lang.insurance_attachments') . ':') !!}
-                {!! Form::file('insurance_attachments', $contract->attachments2, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_attachments'), 'required']) !!}
-            </div>
+          
             
         </div>
         
