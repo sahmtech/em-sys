@@ -285,6 +285,7 @@ class EssentialsManageEmployeeController extends Controller
                   'vecation' => 'vecation',];
 
 
+
                   $offer_prices = Transaction::where([['transactions.type','=','sell'],['transactions.status','=','approved']])
                   ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
                   ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no','transactions.id');
@@ -326,8 +327,17 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities=EssentialsCountry::nationalityForDropdown();
 
+        $blood_types = ['A+' => 'A positive (A+).',
+        'A-' => 'A negative (A-).',
+        'B+' => 'B positive (B+)',
+        'B-' => 'B negative (B-).',
+          'AB+'=>'AB positive (AB+).',
+          'AB-'=>'AB negative (AB-).',
+          'O+'=>'O positive (O+).',
+          'O-'=>'O positive (O-).',];
         return view('essentials::employee_affairs.employee_affairs.create')
-                ->with(compact('roles','nationalities' ,'username_ext', 'locations', 'contract_types','form_partials'));
+                ->with(compact('roles','nationalities' ,'username_ext','blood_types',
+                 'locations', 'contract_types','form_partials'));
     }
 
     /**
