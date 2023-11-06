@@ -169,6 +169,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateInsuranceContract/{id}', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'update'])->name('updateInsuranceContract');
         Route::get('/insurance_contracts/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'edit'])->name('insurance_contracts.edit');
 
+        Route::get('/employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'index'])->name('employee_insurance');
+        Route::post('/employee_insurance.store', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'store'])->name('employee_insurance.store');
+        Route::delete('/employee_insurance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'destroy'])->name('employee_insurance.destroy');
+        Route::get('/employee_insurance.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'show'])->name('employee_insurance.view');
+        Route::put('/updateInsuranceContract/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'update'])->name('updateInsuranceContract');
+        Route::get('/employee_insurance/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'edit'])->name('employee_insurance.edit');
+        Route::post('/classes', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class,'fetchClasses'])->name('classes');
+        
         Route::get('/official_documents', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'index'])->name('official_documents');
         Route::post('/storeOfficialDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'store'])->name('storeOfficialDoc');
         Route::delete('/official_documents/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'destroy'])->name('offDoc.destroy');

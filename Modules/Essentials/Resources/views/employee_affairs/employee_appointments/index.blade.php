@@ -258,8 +258,9 @@ $(document).ready(function() {
                                     }));
                                 });
                             }
-   });
-
+                });
+         
+            });
 
    $(document).on('submit', 'form#change_status_form', function(e) {
             e.preventDefault();
@@ -288,7 +289,6 @@ $(document).ready(function() {
             });
         });
 
-});
 
 
           

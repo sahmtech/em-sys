@@ -41,13 +41,11 @@ class EssentialsInsuranceContractController extends Controller
             $insuranceContracts = DB::table('essentials_insurance_contracts')->select([
                 'id',
                 'insurance_company_id',
-                'employees_count',
-                'dependents_count',
+           
                 'insurance_start_date',
                 'insurance_end_date',
                 'policy_number',
-                'policy_value',
-                'attachments',
+       
             ]);
 
 
@@ -75,15 +73,7 @@ class EssentialsInsuranceContractController extends Controller
                     $item = $insuramce_companies[$row->insurance_company_id] ?? '';
                     return $item;
                 })
-                ->addColumn(
-                    'attachments2',
-                    function ($row) {
-                        $html = '';
-                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->attachments . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>';
-
-                        return $html;
-                    }
-                )
+              
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -98,8 +88,7 @@ class EssentialsInsuranceContractController extends Controller
                 //     $query->where('supplier_business_name',"LIKE", "%{$keyword}%");
                 // })
                 ->removeColumn('id')
-                ->removeColumn('attachments')
-                ->rawColumns(['attachments2', 'action'])
+                ->rawColumns([ 'action'])
                 ->make(true);
         }
 
@@ -136,22 +125,15 @@ class EssentialsInsuranceContractController extends Controller
         }
 
         try {
-            $input = $request->only(['insurance_company', 'policy_number', 'policy_value', 'insurance_employees_count', 'insurance_dependents_count', 'insurance_start_date', 'insurance_end_date', 'insurance_attachments']);
-            if (request()->hasFile('file')) {
-                $file = request()->file('insurance_attachments');
-                $filePath = $file->store('/insuranceContracts');
-                $insurance_contract_data['attachments'] = $filePath;
+            $input = $request->only(['insurance_company', 'policy_number', 'insurance_start_date', 'insurance_end_date']);
+            
            
-           
-            }
-           
-            $insurance_contract_data['employees_count'] =  $input['insurance_employees_count'];
-            $insurance_contract_data['dependents_count'] = $input['insurance_dependents_count'];
+   
             $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
             $insurance_contract_data['insurance_end_date'] =  $input['insurance_end_date'];
             $insurance_contract_data['insurance_company_id'] = $input['insurance_company'];
             $insurance_contract_data['policy_number'] =  $input['policy_number'];
-            $insurance_contract_data['policy_value'] = $input['policy_value'];
+ 
             EssentialsInsuranceContract::create($insurance_contract_data);
             $output = [
                 'success' => true,
@@ -216,21 +198,14 @@ class EssentialsInsuranceContractController extends Controller
             abort(403, 'Unauthorized action.');
         }
         try {
-            $input = $request->only(['insurance_company', 'policy_number', 'policy_value', 'insurance_employees_count', 'insurance_dependents_count', 'insurance_start_date', 'insurance_end_date', 'insurance_attachments']);
-            if (request()->hasFile('file')) {
-            $file = request()->file('insurance_attachments');
-            $filePath = $file->store('/insuranceContracts');
-            $insurance_contract_data['attachments'] = $filePath;
-       
-       
-        }
-            $insurance_contract_data['employees_count'] =  $input['insurance_employees_count'];
-            $insurance_contract_data['dependents_count'] = $input['insurance_dependents_count'];
+            $input = $request->only(['insurance_company', 'policy_number', 'insurance_start_date', 'insurance_end_date']);
+        
+      
             $insurance_contract_data['insurance_start_date'] = $input['insurance_start_date'];
             $insurance_contract_data['insurance_end_date'] =  $input['insurance_end_date'];
             $insurance_contract_data['insurance_company_id'] = $input['insurance_company'];
             $insurance_contract_data['policy_number'] =  $input['policy_number'];
-            $insurance_contract_data['policy_value'] = $input['policy_value'];
+   
             EssentialsInsuranceContract::where('id', $id)->update($insurance_contract_data);
             $output = ['success' => true,
                 'msg' => __('lang_v1.updated_success'),
