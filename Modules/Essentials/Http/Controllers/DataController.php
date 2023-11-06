@@ -737,7 +737,9 @@ class DataController extends Controller
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->location_id = request()->input('location_id');
-
+            if (request()->input('health_insurance') != null){
+            $user->has_insurance= request()->input('health_insurance');
+            }
             $user->save();
 
 
@@ -760,8 +762,7 @@ class DataController extends Controller
                 }
             }
 
-
-            if (request()->input('travel_ticket_categorie') != null) {
+            if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
                 $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
                 $travel_ticket_categorie->employee_id = $user->id;
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');

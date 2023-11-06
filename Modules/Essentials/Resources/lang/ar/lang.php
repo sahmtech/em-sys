@@ -891,7 +891,17 @@ return[
     'employee_insurance'=>'التأمين الطبي',
     'insurance_class'=>'فئة التأمين',
     'add_Insurance'=>'إضافة تأمين',
-    'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف'
+    'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف',
+    'select_for_travel'=>'هل تشمله التذاكر',
+    'includes'=>'تشمل',
+    'does_not_include'=>'لا تشمل',
+    'have_an_insurance'=>'يملك تأمين طبي',
+    'not_have_an_insurance'=>'لا يملك تأمين طبي',
+    ''=>'',
+
+
+
+
     
     
 
