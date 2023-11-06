@@ -14,5 +14,10 @@ class EssentialsEmployeeAppointmet extends Model
 
         return $employeeAppointment;
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'employee_id'); // Assuming the foreign key is 'user_id'
+    }
    
 }

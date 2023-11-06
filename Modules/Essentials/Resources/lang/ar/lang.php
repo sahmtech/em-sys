@@ -888,6 +888,7 @@ return[
     'Tamm'=>'تم',
     'select_subscription_type'=>'اختر نوع الاشتراك',
     'view_business_subscriptions'=>'عرض اشتراكات الشركة',
+
     'employee_insurance'=>'التأمين الطبي',
     'insurance_class'=>'فئة التأمين',
     'add_Insurance'=>'إضافة تأمين',
@@ -903,6 +904,10 @@ return[
 
 
     
+
     
+    'add_doc'=>'إضافة وثيقة',
+    'add_qualification'=>'إضافة مؤهل',
+
 
 ];
