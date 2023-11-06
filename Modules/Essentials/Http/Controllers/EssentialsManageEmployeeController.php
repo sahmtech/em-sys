@@ -315,7 +315,7 @@ class EssentialsManageEmployeeController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(empRequest $request)
+    public function store(Request $request)
     {
            
             if (! auth()->user()->can('user.create')) {
