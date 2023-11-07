@@ -177,7 +177,7 @@ class EssentialsManageEmployeeController extends Controller
                 'users.status',
                 'essentials_employee_appointmets.profession_id as profession_id',
                 'essentials_employee_appointmets.specialization_id as specialization_id'
-                    ]);
+                    ])->orderby('id','desc');
 
        
                     if (!empty($request->input('specializations-select'))) {
