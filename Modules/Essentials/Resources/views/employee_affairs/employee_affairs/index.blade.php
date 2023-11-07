@@ -44,13 +44,16 @@
 
 <div class="col-md-3">
     <div class="form-group">
-        <label for="status_filter">@lang('essentials::lang.status'):</label>
-        {!! Form::select('status-select', $status, request('status-select'), [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
-            'id' => 'status-select'
-        ]) !!}
+    <label for="professions_filter">@lang('essentials::lang.status'):</label>
+    <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
+                    <option value="all">@lang('lang_v1.all')</option>
+                    <option value="active">@lang('sales::lang.active')</option>
+                    <option value="inactive">@lang('sales::lang.inactive')</option>
+                    <option value="terminated">@lang('sales::lang.terminated')</option>
+                    <option value="vecation">@lang('sales::lang.vecation')</option>
+
+
+                </select>
     </div>
 </div>
 
@@ -313,7 +316,7 @@
                         data: function (d) {
                 d.specialization = $('#specializations-select').val();
                 d.profession = $('#professions-select').val();
-                d.status = $('#status-select').val();
+                d.status = $('#status_filter').val();
                 console.log(d);
             },
                     },
@@ -355,7 +358,8 @@
               $('#specializations-select, #professions-select, #status-select').change(function () {
                     console.log('Specialization selected: ' + $(this).val());
                     console.log('Profession selected: ' + $('#professions-select').val());
-                    console.log('Status selected: ' + $('#status-select').val());
+                    console.log('Status selected: ' + $('#status_filter').val());
+                    users_table.ajax.reload();
     });
      
 //     $(document).on('change', '#specializations-select, #professions-select, #status-select', function () {

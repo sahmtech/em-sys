@@ -399,6 +399,7 @@ class EssentialsEmployeeImportController extends Controller
                         $contract_array['business_id'] = $business_id;
                         $contract_array['employee_id'] = $emp->id;
                         $contract_array['created_by'] = $user_id;
+                        $contract_array['contract_type_id'] = null;
                         $contract = EssentialsEmployeesContract::create($contract_array);
                       
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
@@ -408,6 +409,7 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->superior = "superior";
                         $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
                         $essentials_employee_appointmets->specialization_id =$emp_data["specialization_id"];
+
                         $essentials_employee_appointmets->save();
                         
 
