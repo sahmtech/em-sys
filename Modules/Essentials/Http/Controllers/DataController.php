@@ -448,6 +448,17 @@ class DataController extends Controller
                 'default' => false,
             ],
 
+            [
+                'value' => 'essentials.crud_employees_insurances',
+                'label' => __('essentials::lang.crud_employees_insurances'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_regions',
+                'label' => __('essentials::lang.crud_regions'),
+                'default' => false,
+            ],
+
         ];
     }
 
@@ -736,7 +747,7 @@ class DataController extends Controller
     {
      
         if ($data['event'] = 'user_saved') {
-
+           error_log('0000000000000000000000000000000');
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -744,7 +755,9 @@ class DataController extends Controller
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->location_id = request()->input('location_id');
-
+            if (request()->input('health_insurance') != null){
+            $user->has_insurance= request()->input('health_insurance');
+            }
             $user->save();
 
 
@@ -767,23 +780,22 @@ class DataController extends Controller
                 }
             }
 
-
-            if (request()->input('travel_ticket_categorie') != null) {
+            if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
                 $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
                 $travel_ticket_categorie->employee_id = $user->id;
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                 $travel_ticket_categorie->save();
             }
-
+            if (request()->input('essentials_department_id')){
             $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
             $essentials_employee_appointmets->employee_id = $user->id;
             $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
             $essentials_employee_appointmets->business_location_id = request()->input('location_id');
             $essentials_employee_appointmets->superior = "superior";
-
             $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
             $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
             $essentials_employee_appointmets->save();
+        }
 
             
             if (request()->selectedData) {

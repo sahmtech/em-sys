@@ -6,7 +6,11 @@
 
 <div class="col-md-6">
     <p><strong>@lang('essentials::lang.department'):</strong> {{$user_department->name ?? ''}}</p>
-    <p><strong>@lang('essentials::lang.designation'):</strong> {{$user_designstion->name ?? ''}}</p>
+     
+
+    <p><strong>@lang('essentials::lang.profession'):</strong> {{$user->profession?? ''}}</p>
+    <p><strong>@lang('essentials::lang.specialization'):</strong> {{$user->specialization ?? ''}}</p>
+
 </div>
 
 <div class="col-md-6">

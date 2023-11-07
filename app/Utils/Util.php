@@ -1576,11 +1576,11 @@ class Util
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
         $user_details['nationality_cs'] = $request->input('nationality');
-
+    
 
         //Check if subscribed or not, then check for users quota
         if (
-            Str::contains($user_details['user_type'], 'user') || Str::contains($user_details['user_type'], 'employee')
+            Str::contains($user_details['user_type'], 'admin') || Str::contains($user_details['user_type'], 'user') || Str::contains($user_details['user_type'], 'employee')
         ) {
             $moduleUtil = new \App\Utils\ModuleUtil;
             if (!$moduleUtil->isSubscribed($business_id)) {
@@ -1599,7 +1599,11 @@ class Util
         }
 
         $user_details['selected_contacts'] = isset($user_details['selected_contacts']) ? $user_details['selected_contacts'] : 0;
-
+        if ($request->hasFile('bank_details.Iban_file')) {
+            $file = $request->file('bank_details.Iban_file');
+            $path = $file->store('/employee_bank_ibans');
+            $user_details['bank_details']['Iban_file'] = $path;
+        }
         $user_details['bank_details'] = !empty($user_details['bank_details']) ? json_encode($user_details['bank_details']) : null;
 
         $user_details['password'] = $user_details['allow_login'] ? Hash::make($user_details['password']) : null;
@@ -1624,17 +1628,20 @@ class Util
 
         $role = null;
         if ($request->input('role')) {
+           
             $role = Role::findOrFail($request->input('role'));
+            $user->assignRole($role->name);
         } else {
             $role = Role::where('name', 'User#' . $business_id)->first();
         }
-
+       
         // //Remove Location permissions from role
         // $this->revokeLocationPermissionsFromRole($role);
-        if($role){
-            $user->assignRole($role->name);
-        }
       
+        // {"_token":"E9u4vfdXl3uLr42OhSZidjpMt3Wdkdt6RUBO7SS7","surname":"rrr",
+        //     "first_name":"rrr","last_name":"rrr","email":"rr@gmail.com","password":"1234",
+        //     "confirm_password":"1234","is_active":"active","username":"rr",
+        //     "allow_login":"1","role":"1","access_all_locations":"access_all_locations"}
       
 
         // //Grant Location permissions
@@ -1646,16 +1653,10 @@ class Util
         //     $user->contactAccess()->sync($contact_ids);
         // }
 
-        // //Save module fields for user
-        // $moduleUtil = new \App\Utils\ModuleUtil;
-        // $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
-        // $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
-
-            //Save module fields for user
             $moduleUtil = new \App\Utils\ModuleUtil;
             $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user,'request'=>$user_details]);
             $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
-        
+            
 
         return $user;
     }

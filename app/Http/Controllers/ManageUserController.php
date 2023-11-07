@@ -47,7 +47,7 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
            
-            $users = User::where('business_id', $business_id) //->where('user_type', 'LIKE', '%user%' )
+            $users = User::where('business_id', $business_id)->where('user_type', '!=', 'admin' )
                 //->user()
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
@@ -220,11 +220,11 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
-        //    return $request;
+       
         if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
-
+      
         try {
             if (!empty($request->input('dob'))) {
                 $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));

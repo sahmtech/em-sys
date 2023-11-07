@@ -427,12 +427,23 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->find($id);
-        
+       
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
-       // $admissions_to_work = EssentialsEmployeesContract::where('employee_id', $user->id)->first(); 
-
+    
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+      
+        if($professionId) {  
+        $profession = EssentialsProfession::find($professionId)->name;
+        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+        $specialization = EssentialsSpecialization::find($specializationId)->name;
+   
+      
+        $user->profession = $profession;
+        $user->specialization = $specialization;
+ }
+        
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
        
         $users = User::forDropdown($business_id, false);
@@ -441,7 +452,7 @@ class EssentialsManageEmployeeController extends Controller
            ->with(['causer', 'subject'])
            ->latest()
            ->get();
-
+       
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user',
          'view_partials', 'users', 'activities',
         'admissions_to_work','Qualification','Contract'));

@@ -349,13 +349,30 @@ class BusinessController extends Controller
         }
        
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
+        $allLicenseTypes = [
+            'COMMERCIALREGISTER',
+            'Gosi',
+            'Zatca',
+            'Chamber',
+            'Balady',
+            'saudizationCertificate',
+            'VAT',
+        ];
             if (request()->ajax()) {
             $business = DB::table('business')->select(['business.id','business.name','business.en_name','business.start_date','business.tax_label_1','business.tax_number_1'])
             ;
             
             return Datatables::of($business)
-           
+            ->addColumn('missing_license_types', function ($row) use ($allLicenseTypes) {
+                $addedLicenseTypes = DB::table('business_documents')
+                    ->where('business_id', $row->id)
+                    ->pluck('licence_type')
+                    ->toArray();
+        
+                $missingLicenseTypes = array_diff($allLicenseTypes, $addedLicenseTypes);
+        
+                return implode(', ', $missingLicenseTypes);
+            })
             ->addColumn(
                 'action',
                 function ($row) use ($is_admin) {
@@ -375,7 +392,7 @@ class BusinessController extends Controller
                 $query->where('name', 'like', "%{$keyword}%");
             })
             ->removeColumn('id')
-            ->rawColumns(['action'])
+            ->rawColumns(['action','missing_license_types'])
             ->make(true);
         
             }

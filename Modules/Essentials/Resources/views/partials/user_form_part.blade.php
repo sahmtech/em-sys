@@ -141,22 +141,36 @@
 <div class="col-md-12">
     <hr>
     <h4>@lang('essentials::lang.features'):</h4>
-    </div>
+</div>
+
+<div>
     <div class="form-group col-md-3">
+        {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
+        {{-- <input type="checkbox" id="can_add_category" name="can_add_category" value="1"> --}}
+        <select id="can_add_category" name="can_add_category" class ="form-control">
+            <option value="#">@lang('essentials::lang.select_for_travel')</option>
+            <option value="1">@lang('essentials::lang.includes')</option>
+            <option value="0">@lang('essentials::lang.does_not_include')</option>
+        </select>
+    
+    </div>
+    <div class="form-group col-md-3" id="category_input" style="display: none;">
         {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
-        {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie,null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
+        {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie,null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
     </div>
+</div>
+
     <div class="form-group col-md-3">
-        {!! Form::label('health_insurance', __('essentials::lang.health_insurance') . ':') !!}
-        {!! Form::text('health_insurance',null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.health_insurance') ]); !!}
-        
+            {!! Form::label('health_insurance', __('essentials::lang.health_insurance') . ':') !!}
+            {!! Form::select('health_insurance', ['1' =>__('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.health_insurance')]) !!}
+        </div>
     </div>
 
 
 <script>
     var selectedData = [];
     var professionSelect = $('#professionSelect');
-            var specializationSelect = $('#specializationSelect');
+    var specializationSelect = $('#specializationSelect');
 
             professionSelect.on('change', function () {
                 var selectedProfession = $(this).val();
@@ -180,6 +194,13 @@
                     }
                 });
             });
+            $('#can_add_category').change(function() {
+                if (this.value === '1') {
+                $('#category_input').show();
+            } else {
+                $('#category_input').hide();
+            }
+        });
 
     function addRow() {
         var newRow = $('#salary-table-body tr:first').clone();
