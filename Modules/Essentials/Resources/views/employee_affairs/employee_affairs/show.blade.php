@@ -290,5 +290,10 @@
     </script>
 
 
-
+<script type="text/javascript">
+   
+    $(document).ready(function() {
+        $('input[type="checkbox"]').prop('disabled', true);
+    });
+</script>
 @endsection

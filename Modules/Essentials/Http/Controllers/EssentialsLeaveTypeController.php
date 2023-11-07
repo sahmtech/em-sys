@@ -44,21 +44,32 @@ class EssentialsLeaveTypeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $leave_types = EssentialsLeaveType::where('business_id', $business_id)
+        ->select(['leave_type','duration', 'max_leave_count', 'id']);
+
+       // dd($leave_types->get());
         if (request()->ajax()) {
-            $leave_types = EssentialsLeaveType::where('business_id', $business_id)
-                        ->select(['leave_type', 'max_leave_count', 'id']);
+           
 
             return Datatables::of($leave_types)
+
+            ->addColumn(
+                'leave_type', function ($leave_type) {
+                    return trans("essentials::lang.$leave_type->leave_type");
+                }
+            )
                 ->addColumn(
                     'action',
                     '<button data-href="{{action(\'\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>'
                 )
                 ->removeColumn('id')
-                ->rawColumns([2])
-                ->make(false);
+                ->rawColumns(['action'])
+                ->make(true);
         }
 
-        return view('essentials::leave_type.index');
+        $leave_types=['Annual'=>__('essentials::lang.Annual')
+        ,'Urgent'=>__('essentials::lang.Urgent')];
+        return view('essentials::leave_type.index')->with(compact('leave_types'));
     }
 
     /**
@@ -72,6 +83,8 @@ class EssentialsLeaveTypeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+     
+      
         return view('essentials::create');
     }
 
@@ -94,7 +107,7 @@ class EssentialsLeaveTypeController extends Controller
         }
 
         try {
-            $input = $request->only(['leave_type', 'max_leave_count', 'leave_count_interval']);
+            $input = $request->only(['leave_type','duration','allowance','Deportable', 'max_leave_count', 'leave_count_interval']);
 
             $input['business_id'] = $business_id;
 

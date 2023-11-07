@@ -13,13 +13,20 @@
 	    <div class="modal-body">
 	      	<div class="form-group">
 	        	{!! Form::label('leave_type', __( 'essentials::lang.leave_type' ) . ':*') !!}
-	          	{!! Form::text('leave_type', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'essentials::lang.leave_type' ) ]); !!}
+				{!! Form::select('leave_type', $leave_types, null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('essentials::lang.select_leave_type'), 'required']) !!}
 	      	</div>
 
 	      	<div class="form-group">
 	        	{!! Form::label('max_leave_count', __( 'essentials::lang.max_leave_count' ) . ':') !!}
 	          	{!! Form::number('max_leave_count', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.max_leave_count' ) ]); !!}
 	      	</div>
+
+			<div class="form-group">
+	        	{!! Form::label('leave_duration', __( 'essentials::lang.leave_duration' ) . ':') !!}
+	          	{!! Form::number('duration', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.leave_duration' ) ]); !!}
+	      	</div>
+
+
 
 	      	<div class="form-group">
 	      		<strong>@lang('essentials::lang.leave_count_interval')</strong><br>
@@ -33,8 +40,25 @@
 	      			{!! Form::radio('leave_count_interval', null, false); !!} @lang('lang_v1.none')
 	      		</label>
 	      	</div>
+			  <div id="annualOptionsContainer" style="display: none;">
+					<div class="form-group">
+							<strong>@lang('essentials::lang.Annual_options')</strong><br>
+							
+							
+
+						
+							{!! Form::text('allowance', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.leave_type_allowance' ) ]); !!}
+							</br>
+							<label class="radio-inline">
+												{!! Form::radio('Deportable', 'month', false); !!} @lang('essentials::lang.Deportable')
+							</label>
+					</div>
+             </div>
+		
+				
 	    </div>
 
+		
 	    <div class="modal-footer">
 	      <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
 	      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
@@ -45,3 +69,33 @@
 	  </div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       
+        function isCurrentYearEnded() {
+            var currentDate = new Date();
+            var currentYear = currentDate.getFullYear();
+            var yearEndDate = new Date(currentYear, 11, 31); 
+            return currentDate > yearEndDate;
+        }
+
+        
+        function toggleAnnualOptions() {
+            var leaveType = $("select[name='leave_type']").val();
+            var annualOptionsContainer = $("#annualOptionsContainer");
+
+            if (leaveType === 'Annual' && isCurrentYearEnded()) {
+                annualOptionsContainer.show();
+            } else {
+                annualOptionsContainer.hide();
+            }
+        }
+
+        // Initial check on page load
+        toggleAnnualOptions();
+
+        // Add an event listener to the leave_type select element
+        $("select[name='leave_type']").on('change', toggleAnnualOptions);
+    });
+</script>

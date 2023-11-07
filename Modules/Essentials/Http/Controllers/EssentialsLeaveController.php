@@ -10,10 +10,13 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsLeaveType;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Notifications\LeaveStatusNotification;
 use Modules\Essentials\Notifications\NewLeaveNotification;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class EssentialsLeaveController extends Controller
 {
@@ -54,6 +57,8 @@ class EssentialsLeaveController extends Controller
      *
      * @return Response
      */
+
+
     public function index()
     {
         
@@ -155,8 +160,11 @@ class EssentialsLeaveController extends Controller
         
         $users = [];
         if ($can_crud_all_leave || auth()->user()->can('essentials.approve_leave')) {
-            $users = User::forDropdown($business_id, false);
+            $query = User::where('business_id', $business_id);
+            $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $users = $all_users->pluck('full_name', 'id');
         }
+        
         $leave_statuses = $this->leave_statuses;
 
         $leave_types = EssentialsLeaveType::forDropdown($business_id);
@@ -169,6 +177,25 @@ class EssentialsLeaveController extends Controller
      *
      * @return Response
      */
+
+     public function getAdmissionDate(Request $request)
+{
+    $employeeIds = $request->input('employeeIds');
+
+ 
+    $admissionDates=EssentialsAdmissionToWork::where('employee_id', $employeeIds)->pluck('admissions_date');
+
+    if (!empty($admissionDates)) {
+       
+        $formattedDate = date('Y-m-d', strtotime($admissionDates)); 
+   
+    } else {
+        $formattedDate = 'N/A';
+    }
+
+    return $formattedDate;
+    
+}
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -181,11 +208,20 @@ class EssentialsLeaveController extends Controller
         $instructions = ! empty($settings['leave_instructions']) ? $settings['leave_instructions'] : '';
 
         $employees = [];
+        $alt_employee=[];
         if (auth()->user()->can('essentials.crud_all_leave')) {
-            $employees = User::forDropdown($business_id, false, false, false, true);
+            $query = User::where('business_id', $business_id);
+            $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $employees = $all_users->pluck('full_name', 'id');
+            $alt_employee = $all_users->pluck('full_name', 'id');
+          //  $employees = User::forDropdown($business_id, false, false, false, true);
+          //  $alt_employee=User::forDropdown($business_id, false, false, false, true);
         }
+        $travel_ticket_categorie=EssentialsTravelTicketCategorie::pluck('id','name');
 
-        return view('essentials::leave.create')->with(compact('leave_types', 'instructions', 'employees'));
+        return view('essentials::leave.create')
+        ->with(compact('leave_types', 'instructions',
+         'employees','alt_employee','travel_ticket_categorie'));
     }
 
     /**
@@ -209,20 +245,66 @@ class EssentialsLeaveController extends Controller
         }
 
         try {
-            $input = $request->only(['essentials_leave_type_id', 'start_date', 'end_date', 'reason']);
+            $input = $request->only(
+                ['essentials_leave_type_id',
+                 'start_date',
+                  'end_date', 
+                  'reason',
+                  'attachments_path',
+                  'travel_destination',
+                  'travel_ticket_categorie',
+                   'alt_employee',
+                  ]);
+            
+          
+
+            // if ($input->hasFile('attachments_path'))
+            //  {
+            //     $file =$input['attachments_path'];
+            //     $filePath = $file->store('/');
+                
+            //     $input['attachments_path'] = $filePath;
+            // }
+            // else{ $input['attachments_path'] = null;}
+
+            $input['user_id']=$request->input('employee_id');
+            $user_id=  $input['user_id'];
+            $input['Alternative_id']=$request->input('altemployee_id');
             $mysql_format = 'Y-m-d';
             $input['business_id'] = $business_id;
             $input['status'] = 'pending';
             $input['start_date'] = \Carbon::parse($input['start_date'])->format($mysql_format);
             $input['end_date'] = \Carbon::parse($input['end_date'])->format($mysql_format);
-  
             DB::beginTransaction();
+
+
             if (auth()->user()->can('essentials.crud_all_leave') && ! empty($request->input('employees'))) {
-                foreach ($request->input('employees') as $user_id) {
-                    $this->__addLeave($input, $user_id);
+              
+                $input['user_id'] = ! empty($user_id) ? $user_id : request()->session()->get('user.id');
+               
+                $ref_count = $this->moduleUtil->setAndGetReferenceCount('leave');
+               
+                if (empty($input['ref_no'])) {
+                    $settings = request()->session()->get('business.essentials_settings');
+                    $settings = ! empty($settings) ? json_decode($settings, true) : [];
+                    $prefix = ! empty($settings['leave_ref_no_prefix']) ? $settings['leave_ref_no_prefix'] : '';
+                    $input['ref_no'] = $this->moduleUtil->generateReferenceNumber('leave', $ref_count, null, $prefix);
                 }
-            } else {
-                $this->__addLeave($input);
+        
+                $leave = EssentialsLeave::create($input);
+        
+                $admins = $this->moduleUtil->get_admins($input['business_id']);
+        
+                \Notification::send($admins, new NewLeaveNotification($leave));
+               // $this->__addLeave($input, $user_id);
+                // foreach ($request->input('alt_employees') as $user_id) 
+                // {
+                //     $this->__addLeave($input, $user_id);
+                // }
+            }
+             else 
+            {
+                 $this->__addLeave($input);
             }
 
             DB::commit();
@@ -230,16 +312,18 @@ class EssentialsLeaveController extends Controller
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
+
+
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
             error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
 
-        return $output;
+        return  $output;
     }
 
     private function __addLeave($input, $user_id = null)

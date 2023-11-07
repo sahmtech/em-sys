@@ -56,34 +56,30 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-    <select id="id_proof_name" name="id_proof_name" class="form-control" onchange="updateValidationCondition(this)">
+    <select id="id_proof_name" name="id_proof_name" class="form-control" onchange="updateNationalityOptions(this)">
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
+        <option value="border_no">@lang('essentials::lang.border_number')</option>
     </select>
 </div>
 
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
-    {{-- {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)']); !!} --}}
-    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'), 'oninput' => 'validateIdProofNumber(this)', 'minlength' => '']) !!}
-  <span id="idProofNumberError" class="text-danger"></span>
+    {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null,
+         ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'),
+          'oninput' => 'validateIdProofNumber(this)']) !!}
+    <span id="idProofNumberError" class="text-danger"></span>
 </div>
+
+
+
 
 
 <div class="form-group col-md-3">
-    {!! Form::label('border_number', __('essentials::lang.border_number') . ':*') !!}
-    {!! Form::text('border_number', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.border_number'), 'minlength' => '']) !!}
- 
+    {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
+    {!! Form::select('nationality', $nationalities, !empty($user->nationality_cs) ? $user->nationality_cs : null, ['class' => 'form-control', 'required', 'placeholder' => __('sales::lang.nationality')]); !!}
 </div>
-
-
-    <div class="form-group col-md-3">
-        {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
-    
-          {!! Form::select('nationality',$nationalities , !empty($user->nationality_cs) ? $user->nationality_cs : null, ['class' => 'form-control', 'required',
-          'placeholder' => __('sales::lang.nationality')]); !!}
-    </div>
  
 {{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
@@ -165,13 +161,13 @@
     function validateContactNumber(input) {
     let contactNumber = input.value;
     
-    // Remove any non-numeric characters (e.g., spaces or dashes)
+  
     contactNumber = contactNumber.replace(/\D/g, '');
 
     if (contactNumber.length === 10) {
         document.getElementById('contactNumberError').innerText = '';
     } else {
-        document.getElementById('contactNumberError').innerText = 'Mobile number must be 10 digits.';
+        document.getElementById('contactNumberError').innerText = 'رقم البنك يجب أن يبدأ 05  ولا يتجاوز 10 رقم';
         
         // Truncate the input to the first 10 digits
         input.value = contactNumber.substr(0, 10);
@@ -182,35 +178,115 @@
 function validateBankCode(input) {
     const bankCode = input.value;
 
+    if (bankCode.length > 24) {
+        input.value = bankCode.slice(0, 24); 
+    }
+
     if (bankCode.length !== 24 || !bankCode.startsWith('SA')) {
-        document.getElementById('bankCodeError').innerText = 'Bank code must be 24 characters and start with "SA".';
+        document.getElementById('bankCodeError').innerText = ' رقم البنك يجب أن يبدأ SA  ولا يتجاوز 24 رقم';
     } else {
         document.getElementById('bankCodeError').innerText = '';
     }
 }
 
-    function updateValidationCondition(select) {
-        const idProofNumberInput = document.getElementById('id_proof_number');
-        if (select.value === 'eqama') {
-            validationLength = 10;
-            idProofNumberInput.value = '2'; // Set the default value to '21' for "eqama"
-        } else {
-            validationLength = 10;
-            idProofNumberInput.value = '10'; // Set the default value to '10' for other options
-        }
-        idProofNumberInput.minLength = validationLength;
+
+   
+
+function updateNationalityOptions(selectElement) {
+    const idProofNumberInput = document.getElementById('id_proof_number');
+    idProofNumberInput.minLength = validationLength;
+    var selectedOption = selectElement.value;
+    const nationalitySelect = document.querySelector('#nationality');
+    const options = nationalitySelect.querySelectorAll('option');
+
+    if (selectedOption === 'eqama') {
+
+        validationLength = 10;
+        idProofNumberInput.value = '2';
+        options.forEach(function (option) {
+            option.style.display = 'block';
+        }); 
+
+    
+    } 
+    
+    else if (selectedOption === 'national_id') {
+        validationLength = 10;
+        idProofNumberInput.value = '10';
+        
+        options.forEach(function (option) {
+            if (option.value === '5') {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    
+    }
+    else
+     {
+        validationLength = 10;
+        idProofNumberInput.value = '3';
+        options.forEach(function (option) {
+            option.style.display = 'block';
+        });
     }
 
-    // function validateIdProofNumber(input) {
-    //     const idProofNumber = input.value;
 
-    //     if (idProofNumber.length !== validationLength) {
-    //         document.getElementById('idProofNumberError').innerText = 'ID proof number must be ' + validationLength + ' numbers.';
-    //     } else {
-    //         document.getElementById('idProofNumberError').innerText = '';
-    //     }
-    // }
+  
+
+
+   
+}
+
+function validateIdProofNumber(input) {
+    const idProofName = document.getElementById('id_proof_name').value;
+    const idProofNumberInput = input;
+    const idProofNumber = idProofNumberInput.value;
+   // idProofNumber = idProofNumber.replace(/\D/g, '');
+  
+
+    const idProofNumberError = document.getElementById('idProofNumberError');
+    idProofNumberError.innerText = '';
+
+    if (idProofName === 'eqama') 
+    {
+       
+        if (idProofNumber.length > 10 || !idProofNumber.startsWith('2')) {
+           
+            idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
+            input.value = idProofNumber.slice(0, 10); 
+        }
+        
+       
+    
+       
+    } 
+    
+    
+    else if (idProofName === 'national_id')
+     {
+        
+        if (idProofNumber.length > 10 || !idProofNumber.startsWith('10')) {
+            idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
+            input.value = idProofNumber.slice(0, 10); 
+        }
+
+    }
+    
+    else if (idProofName === 'border_no') {
+    
+        if (idProofNumber.length !== 10 || (!idProofNumber.startsWith('3') && !idProofNumber.startsWith('4'))) {
+            idProofNumberError.innerText =  'يجب أن تبدأ بالرقم 3 أو 4 ولاتتجاوز 10 أرقام';
+            input.value = idProofNumber.slice(0, 10); 
+        }
+    }
+   
+}
 </script>
+
+
+
 
 </body>
 </html>
