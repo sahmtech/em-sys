@@ -59,7 +59,7 @@
 
            @can('essentials.crud_all_leave')
     		<div class="form-group col-md-12">
-		        {!! Form::label('alt_employees', __('essentials::lang.select_employee') . ':') !!}
+		        {!! Form::label('alt_employees', __('essentials::lang.select_altemployee') . ':') !!}
 		        {!! Form::select('alt_employees[]', $alt_employees, null, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'alt_employees', 'required' ]); !!}
     		</div>
     		@endcan

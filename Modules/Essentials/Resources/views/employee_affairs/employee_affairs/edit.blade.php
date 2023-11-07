@@ -34,24 +34,24 @@
                 </div>
             </div>
             {{-- <div class="clearfix"></div>
-            <div class="col-md-4">
-                <div class="form-group">
-                  {!! Form::label('email', __( 'business.email' ) . ':*') !!}
-                    {!! Form::text('email', $user->email, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
+                <div class="col-md-4">
+                    <div class="form-group">
+                      {!! Form::label('email', __( 'business.email' ) . ':*') !!}
+                        {!! Form::text('email', $user->email, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="form-group">
-                  <div class="checkbox">
-                    <br>
-                    <label>
-                         {!! Form::checkbox('is_active', $user->status, $is_checked_checkbox, ['class' => 'input-icheck status']); !!} {{ __('lang_v1.status_for_user') }}
-                    </label>
-                    @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
-                  </div>
-                </div>
-            </div> --}}
+                <div class="col-md-4">
+                    <div class="form-group">
+                      <div class="checkbox">
+                        <br>
+                        <label>
+                            {!! Form::checkbox('is_active', $user->status, $is_checked_checkbox, ['class' => 'input-icheck status']); !!} {{ __('lang_v1.status_for_user') }}
+                        </label>
+                        @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
+                      </div>
+                    </div>
+                </div> --}}
         @endcomponent
         </div>
         {{-- <div class="col-md-12">
@@ -132,8 +132,11 @@
                 </div>
               @endforeach
             </div>
+
         @endcomponent
         </div> --}}
+
+       
 
         {{-- <div class="col-md-12">
             @component('components.widget', ['title' => __('sale.sells')])
@@ -174,6 +177,8 @@
                     </div>
                 </div>
             </div>
+
+    
             @endcomponent
         </div> --}}
     </div>
@@ -184,11 +189,14 @@
         {!! $partial !!}
       @endforeach
     @endif
+
+    @component('components.widget')
     <div class="row">
-        <div class="col-md-12 text-center">
-            <button type="submit" class="btn btn-primary btn-big" id="submit_user_button">@lang( 'messages.update' )</button>
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary btn-big" id="submit_user_button">@lang( 'messages.update' )</button>
+            </div>
         </div>
-    </div>
+    @endcomponent
     {!! Form::close() !!}
   @stop
 @section('javascript')

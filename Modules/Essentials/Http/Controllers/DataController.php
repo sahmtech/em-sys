@@ -762,7 +762,7 @@ class DataController extends Controller
 
 
 
-            if (request()->input('contract_number') != null) {
+           
                 $contract = new EssentialsEmployeesContract();
                 $contract->employee_id = $user->id;
                 $contract->contract_number = request()->input('contract_number');
@@ -772,13 +772,15 @@ class DataController extends Controller
                 $contract->probation_period = request()->input('probation_period');
                 $contract->is_renewable = request()->input('is_renewable');
                 $contract->contract_type_id = request()->input('contract_type');
+                
                 if (request()->hasFile('contract_file')) {
                     $file = request()->file('contract_file');
                     $filePath = $file->store('/employee_contracts');
                     $contract->file_path = $filePath;
-                    $contract->save();
+                   
                 }
-            }
+                $contract->save();
+            
 
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
                 $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();

@@ -7,6 +7,8 @@
 			<h4>@lang('lang_v1.more_info')</h4>
 		</div>
 		<div class="col-md-4">
+	     	<p><strong>@lang( 'lang_v1.admission_date' ):</strong> @if(!empty($admissions_to_work->admissions_date)) {{@format_date($admissions_to_work->admissions_date)}} @endif</p>
+
 			<p><strong>@lang( 'lang_v1.dob' ):</strong> @if(!empty($user->dob)) {{@format_date($user->dob)}} @endif</p>
 			<p><strong>@lang( 'lang_v1.gender' ):</strong> @if(!empty($user->gender)) @lang('lang_v1.' .$user->gender) @endif</p>
 			<p><strong>@lang( 'lang_v1.marital_status' ):</strong> @if(!empty($user->marital_status)) @lang('lang_v1.' .$user->marital_status) @endif</p>
