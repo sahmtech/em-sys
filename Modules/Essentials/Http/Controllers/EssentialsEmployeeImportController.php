@@ -22,6 +22,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsCountry;
 
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
@@ -284,6 +285,22 @@ class EssentialsEmployeeImportController extends Controller
                     
                     $emp_array['border_no']=$value[25];
                     $emp_array['nationality_id']=$value[26];
+
+                    if ($emp_array['nationality_id'] !== null) {
+                       
+                        $nationality_id = EssentialsCountry::find($emp_array['nationality_id']);
+                        if (!$nationality_id) {
+                           
+                            $is_valid = false;
+                            $error_msg = "Invalid nationality ID in row no. $row_no";
+                            break;
+                        }
+                    } else {
+                      
+                        $emp_array['nationality_id'] = null;
+                    }
+
+
                     
                     if (!empty($value[27])) {
                         $contract_array['contract_number'] = $value[27];
