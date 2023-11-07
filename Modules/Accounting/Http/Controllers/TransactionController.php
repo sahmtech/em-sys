@@ -43,7 +43,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        
+
         if (request()->ajax()) {
 
             if (request()->input('datatable') == 'payment') {
@@ -80,7 +80,7 @@ class TransactionController extends Controller
         $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
         $sales_order_statuses = Transaction::sales_order_statuses();
 
-        $datatable = Datatables::of($sells)
+          $datatable = Datatables::of($sells)
             ->addColumn(
                 'action',
                 function ($row) use ($sale_type) {
