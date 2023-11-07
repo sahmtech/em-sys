@@ -77,8 +77,8 @@
 </div>
 
 <div class="form-group col-md-6">
-    {!! Form::label('border_no', __( 'essentials::lang.border_number') . ':') !!}
-    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.border_number'), 'id' => 'border_no_input']); !!}
+    {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
+    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10']) !!}
     <div id="border_no_error" class="text-danger"></div>
 </div>
 
@@ -164,19 +164,29 @@
 </div> --}}
 
 <script>
-$(document).ready(function() {
-    $('#border_no_input').on('input', function() {
-        var borderNo = $(this).val().trim();
+    // Function to validate the "border_no" field
+    function validateBorderNumber() {
+        var borderNoInput = document.getElementById('border_no');
+        var borderNo = borderNoInput.value.trim();
+
         
-        // Check if the input starts with 3 or 4 and is between 3 to 10 characters long
-        if (!/^[34]\d{2,8}$/.test(borderNo)) {
-            $('#border_no_error').text('رقم الحدود يبدا ب 3 أو 4 ولا يتجاوز 10 أرقام');
-        } else {
-            $('#border_no_error').text('');
+        if (borderNo.length === 0) {
+            document.getElementById('border_no_error').textContent = '';
+            return;
         }
-    });
-});
+
+       
+        if (!/^[3-4]\d{0,9}$/.test(borderNo)) {
+            document.getElementById('border_no_error').textContent = 'Border number must start with 3 or 4 and contain at most 10 digits.';
+        } else {
+            document.getElementById('border_no_error').textContent = '';
+        }
+    }
+
+  
+    document.getElementById('border_no').addEventListener('input', validateBorderNumber);
 </script>
+
 
 <script>
     let validationLength = 10;
