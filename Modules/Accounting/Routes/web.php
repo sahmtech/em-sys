@@ -46,6 +46,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
 
     Route::resource('account-type', 'AccountTypeController');
     Route::resource('automated-migration', 'AutomatedMigrationController');
+    Route::get('automated-migration-delete-dialog/{id}', 'AutomatedMigrationController@delete_dialog');
 
     Route::resource('transfer', 'TransferController')->except(['show']);
 
@@ -76,7 +77,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('/accounting/payment_vouchers/load/data', [PaymentVouchersController::class, 'loadNeededData'])->name('payment_vouchers.load');
 
 
-    Route::get('transactions', 'TransactionController@index');
+    Route::get('transactions', 'TransactionController@index')->name('getTransaction');
     Route::get('transactions/map', 'TransactionController@map');
     Route::post('transactions/save-map', 'TransactionController@saveMap');
     Route::post('save-settings', 'SettingsController@saveSettings');

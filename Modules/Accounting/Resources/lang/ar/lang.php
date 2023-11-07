@@ -463,8 +463,12 @@ return [
     'sub_type' => 'النوع',
     'method' => 'طريقة تحويل المبلغ',
     'type' => 'النوع',
-    'automatedMigration' => 'الترحيل الالى',
-    'first_journal' => 'القيد الاول',
+    'automatedMigration' => 'الترحيل الالي',
+    'add_auto_migration' => 'إضافة ترحيل الي',
+'delete_auto_migration'=>'حذف ترحيل الي',
+'delete_auto_migration_message'=>'في حال قمت بحذف الترحيل سيتم حذف جميع العمليات التابعة له.',
+   'worning'=>'تنبيه',
+'first_journal' => 'القيد الاول',
     'second_journal' => 'القيد الثاني',
     'third_journal' => 'القيد الثالث',
     'autoMigration' => [
@@ -579,8 +583,8 @@ return [
         "Accrued liabilities" => "التزامات مستحقة",
         "Accrued holiday payable" => "أجور الإجازات المستحقة",
         "Accounts Receivable (A/R)" => "المدينونيات التجارية (A/R)",
-    
-       
+
+
     ],
 
 ];
