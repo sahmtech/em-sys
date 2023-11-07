@@ -116,6 +116,12 @@ class EssentialsLeaveController extends Controller
             }
 
             return Datatables::of($leaves)
+
+            ->addColumn(
+                'leave_type', function ($leave_type) {
+                    return trans("essentials::lang.$leave_type->leave_type");
+                }
+            )
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -183,15 +189,16 @@ class EssentialsLeaveController extends Controller
     $employeeIds = $request->input('employeeIds');
 
  
-    $admissionDates=EssentialsAdmissionToWork::where('employee_id', $employeeIds)->pluck('admissions_date');
+    $admissionDates=EssentialsAdmissionToWork::where('employee_id', $employeeIds)->pluck('admissions_date')->first();
 
     if (!empty($admissionDates)) {
        
-        $formattedDate = date('Y-m-d', strtotime($admissionDates)); 
+        $formattedDate =  $admissionDates; 
    
     } else {
         $formattedDate = 'N/A';
     }
+    //dd($formattedDate);
 
     return $formattedDate;
     
@@ -213,7 +220,7 @@ class EssentialsLeaveController extends Controller
             $query = User::where('business_id', $business_id);
             $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
             $employees = $all_users->pluck('full_name', 'id');
-            $alt_employee = $all_users->pluck('full_name', 'id');
+            $alt_employees = $all_users->pluck('full_name', 'id');
           //  $employees = User::forDropdown($business_id, false, false, false, true);
           //  $alt_employee=User::forDropdown($business_id, false, false, false, true);
         }
@@ -221,7 +228,7 @@ class EssentialsLeaveController extends Controller
 
         return view('essentials::leave.create')
         ->with(compact('leave_types', 'instructions',
-         'employees','alt_employee','travel_ticket_categorie'));
+         'employees','alt_employees','travel_ticket_categorie'));
     }
 
     /**
@@ -247,29 +254,30 @@ class EssentialsLeaveController extends Controller
         try {
             $input = $request->only(
                 ['essentials_leave_type_id',
-                 'start_date',
+                  'start_date',
                   'end_date', 
                   'reason',
                   'attachments_path',
                   'travel_destination',
                   'travel_ticket_categorie',
-                   'alt_employee',
+                   'alt_employees',
+
                   ]);
             
           
 
-            // if ($input->hasFile('attachments_path'))
-            //  {
-            //     $file =$input['attachments_path'];
-            //     $filePath = $file->store('/');
+              if ($request->hasFile('attachments_path')) {
+                    $file = $request->file('attachments_path');
+                    $filePath = $file->store('/public'); 
                 
-            //     $input['attachments_path'] = $filePath;
-            // }
-            // else{ $input['attachments_path'] = null;}
+                    $input['attachments_path'] = $filePath;
+                } else {
+                    $input['attachments_path'] = null;
+                }
 
             $input['user_id']=$request->input('employee_id');
             $user_id=  $input['user_id'];
-            $input['Alternative_id']=$request->input('altemployee_id');
+            $input['Alternative_id']=$request->input('alt_employee_id');
             $mysql_format = 'Y-m-d';
             $input['business_id'] = $business_id;
             $input['status'] = 'pending';
@@ -302,10 +310,7 @@ class EssentialsLeaveController extends Controller
                 //     $this->__addLeave($input, $user_id);
                 // }
             }
-             else 
-            {
-                 $this->__addLeave($input);
-            }
+            
 
             DB::commit();
 

@@ -2,7 +2,8 @@
 	
   <div class="modal-content">
 
-{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'store']), 'method' => 'post', 'id' => 'add_leave_form' ]) !!}
+  {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'store']), 'method' => 'post', 'id' => 'add_leave_form', 'enctype' => 'multipart/form-data' ]) !!}
+
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -14,7 +15,9 @@
     		@can('essentials.crud_all_leave')
     		<div class="form-group col-md-12">
 		        {!! Form::label('employees', __('essentials::lang.select_employee') . ':') !!}
-		        {!! Form::select('employees[]', $employees, null, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'employees', 'required' ]); !!}
+		        {!! Form::select('employees[]', $employees, null,
+					 ['class' => 'form-control select2', 'style' => 'width: 100%;', 
+					 'id' => 'employees', 'required' ]); !!}
     		</div>
     		@endcan
 			{!! Form::hidden('employee_id', null, ['id' => 'employee_id']) !!}
@@ -24,11 +27,13 @@
     {!! Form::text('admission_date', null, ['class' => 'form-control', 'id' => 'admission_date', 'readonly' => 'readonly']) !!}
 </div>
 
-    		<div class="form-group col-md-12">
-	        	{!! Form::label('essentials_leave_type_id', __( 'essentials::lang.leave_type' ) . ':*') !!}
-	          	{!! Form::select('essentials_leave_type_id', $leave_types, null, ['class' => 'form-control select2', 'required', 'placeholder' => __( 'messages.please_select' ) ]); !!}
-	      	</div>
-
+<div class="form-group col-md-12">
+    {!! Form::label('essentials_leave_type_id', __('essentials::lang.leave_type') . ':*') !!}
+    {!! Form::select('essentials_leave_type_id', $leave_types->mapWithKeys(function ($leave_type, $id) {
+        return [$id => __('essentials::lang.' . $leave_type)];
+    }), null, ['class' => 'form-control select2', 'required', 'placeholder' => __('messages.please_select') ]);
+    !!}
+</div>
 	      	<div class="form-group col-md-6">
 	        	{!! Form::label('start_date', __( 'essentials::lang.start_date' ) . ':*') !!}
 				{!! Form::date('start_date', null , ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.start_date'), 'required' ]); !!}
@@ -48,15 +53,17 @@
 	        	</div> --}}
 	      	</div>
 			  <div class="form-group col-md-6">
-                                {!! Form::label('attachments_path', __('essentials::lang.attachments_path') . ':') !!}
-                                {!! Form::file('attachments_path', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.attachments_path')]) !!}
-            </div>
+    {!! Form::label('attachments_path', __('essentials::lang.attachments_path') . ':') !!}
+    {!! Form::file('attachments_path', ['class' => 'form-control']) !!}
+</div>
 
-			<div class="form-group col-md-12">
-		        {!! Form::label('alt_employee', __('essentials::lang.select_altemployee') . ':') !!}
-		        {!! Form::select('alt_employee[]', $alt_employee, null, ['class' => 'form-control select2', 'style' => 'width: 100%;' ]); !!}
+           @can('essentials.crud_all_leave')
+    		<div class="form-group col-md-12">
+		        {!! Form::label('alt_employees', __('essentials::lang.select_employee') . ':') !!}
+		        {!! Form::select('alt_employees[]', $alt_employees, null, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'alt_employees', 'required' ]); !!}
     		</div>
-			{!! Form::hidden('altemployee_id', null, ['id' => 'altemployee_id']) !!}
+    		@endcan
+			{!! Form::hidden('alt_employee_id', null, ['id' => 'alt_employee_id']) !!}
 
 			<div class="form-group col-md-12">
                <label for="travel_destination">@lang('essentials::lang.travel_destination'):</label>
@@ -67,7 +74,7 @@
                </select>
            </div>
 
-		   <div class="form-group col-md-12 travel-ticket-category-section" style="display: none;">
+		   <div class="form-group col-md-12 travel-ticket-category-section" style="display: none;" id="travel-ticket-category-section">
     {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
     {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
 </div>
@@ -127,34 +134,45 @@
 
 <script>
 $(document).ready(function () {
-    $('#employee').on('change', function () {
+    $('#employees').on('change', function () {
         var selectedEmployeeId = $(this).val();
         $('#employee_id').val(selectedEmployeeId);
+console.log( $('#employee_id').val(selectedEmployeeId));
+		
     });
 
+	$('#alt_employees').on('change', function () {
+        var selectedEmployeeId2 = $(this).val();
+        $('#alt_employee_id').val(selectedEmployeeId2);
+		
+		console.log( $('#alt_employee_id').val(selectedEmployeeId2));
 
-	$('#alt_employee').on('change', function () {
-        var selectedEmployeeId = $(this).val();
-        $('#altemployee_id').val(selectedEmployeeId);
+		
     });
+
    
 });
+
+
 </script>
+
+
 <script>
 $(document).ready(function () {
     $('#travel_destination').on('change', function () {
         var selectedDestination = $(this).val();
         var admissionDateInput = $('#admission_date');
-        var travelTicketCategorySection = $('.travel-ticket-category-section');
-
+        var travelTicketCategorySection = $('#travel-ticket-category-section');
+console.log(travelTicketCategorySection);
         if (selectedDestination === 'external') {
             var admissionDate = admissionDateInput.val();
-
-            if (admissionDate) {
+			console.log(admissionDate);
+            if (admissionDate) 
+			{
                 var currentDate = new Date();
                 var admissionDateObj = new Date(admissionDate);
                 admissionDateObj.setMonth(admissionDateObj.getMonth() + 11);
-
+				console.log(admissionDateObj);
                 if (currentDate > admissionDateObj) {
                    
                     travelTicketCategorySection.show();
