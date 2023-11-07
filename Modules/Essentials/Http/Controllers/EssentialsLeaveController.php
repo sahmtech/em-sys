@@ -267,16 +267,17 @@ class EssentialsLeaveController extends Controller
             // }
             // else{ $input['attachments_path'] = null;}
 
-            $input['user_id']=$request->input('employees');
+            $input['user_id']=$request->input('employee_id');
             $user_id=  $input['user_id'];
-            $input['Alternative_id']=$request->input('alt_employees');
+          //  $input['Alternative_id']=$request->input('alt_employees');
             $mysql_format = 'Y-m-d';
             $input['business_id'] = $business_id;
             $input['status'] = 'pending';
             $input['start_date'] = \Carbon::parse($input['start_date'])->format($mysql_format);
             $input['end_date'] = \Carbon::parse($input['end_date'])->format($mysql_format);
-         
             DB::beginTransaction();
+
+
             if (auth()->user()->can('essentials.crud_all_leave') && ! empty($request->input('employees'))) {
               
                 $input['user_id'] = ! empty($user_id) ? $user_id : request()->session()->get('user.id');

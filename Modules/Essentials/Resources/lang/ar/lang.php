@@ -892,7 +892,7 @@ return[
     'employee_insurance'=>'التأمين الطبي',
     'insurance_class'=>'فئة التأمين',
     'add_Insurance'=>'إضافة تأمين',
-    'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف'
+    'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف',
     
 
     

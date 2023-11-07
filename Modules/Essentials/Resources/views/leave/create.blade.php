@@ -2,7 +2,7 @@
 	
   <div class="modal-content">
 
-    {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'store']), 'method' => 'post', 'id' => 'add_leave_form' ]) !!}
+{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'store']), 'method' => 'post', 'id' => 'add_leave_form' ]) !!}
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -17,7 +17,7 @@
 		        {!! Form::select('employees[]', $employees, null, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'employees', 'required' ]); !!}
     		</div>
     		@endcan
-
+			{!! Form::hidden('employee_id', null, ['id' => 'employee_id']) !!}
 			
 <div class="form-group col-md-12 date-of-admission-section" style="display: none;">
     {!! Form::label('admission_date', 'Admission Date:') !!}
@@ -124,6 +124,16 @@
 
 </script>
 
+<script>
+$(document).ready(function () {
+    $('#employee').on('change', function () {
+        var selectedEmployeeId = $(this).val();
+        $('#employee_id').val(selectedEmployeeId);
+    });
+
+   
+});
+</script>
 <script>
 $(document).ready(function () {
     $('#travel_destination').on('change', function () {
