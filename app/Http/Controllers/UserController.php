@@ -7,6 +7,7 @@ use App\User;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Modules\Essentials\Entities\EssentialsCountry;
 
 class UserController extends Controller
 {
@@ -49,8 +50,18 @@ class UserController extends Controller
         foreach ($config_languages as $key => $value) {
             $languages[$key] = $value['full_name'];
         }
+        $blood_types = ['A+' => 'A positive (A+).',
+        'A-' => 'A negative (A-).',
+        'B+' => 'B positive (B+)',
+        'B-' => 'B negative (B-).',
+          'AB+'=>'AB positive (AB+).',
+          'AB-'=>'AB negative (AB-).',
+          'O+'=>'O positive (O+).',
+          'O-'=>'O positive (O-).',];
 
-        return view('user.profile', compact('user', 'languages'));
+        $nationalities=EssentialsCountry::nationalityForDropdown();
+
+        return view('user.profile', compact('user', 'languages','blood_types','nationalities'));
     }
 
     /**

@@ -437,7 +437,9 @@ class EssentialsManageEmployeeController extends Controller
         if($professionId) {  
         $profession = EssentialsProfession::find($professionId)->name;
         $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-        $specialization = EssentialsSpecialization::find($specializationId)->name;
+        if ( $specializationId !== null)
+        {$specialization = EssentialsSpecialization::find($specializationId)->name;}
+        else{$specialization="";}
    
       
         $user->profession = $profession;
