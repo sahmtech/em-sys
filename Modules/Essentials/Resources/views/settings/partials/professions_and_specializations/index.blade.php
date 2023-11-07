@@ -24,6 +24,7 @@
                 <table class="table table-bordered table-striped" id="professions_table">
                     <thead>
                         <tr>
+                        <th>#</th>
                             <th>@lang('essentials::lang.profession_name')</th>
                             <th>@lang('essentials::lang.en_name')</th>
                             <th>@lang('essentials::lang.specializations')</th>
@@ -90,6 +91,7 @@
             serverSide: true,
             ajax: '{{ route("professions") }}', 
             columns: [
+                { data: 'id'},
                 { data: 'name'},
                 { data: 'en_name'},
                 {

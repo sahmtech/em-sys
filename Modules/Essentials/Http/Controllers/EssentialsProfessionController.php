@@ -34,7 +34,8 @@ class EssentialsProfessionController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         if (request()->ajax()) {
-            $professions = EssentialsProfession::with('specializations');
+            $professions = EssentialsProfession::with('specializations')
+            ->orderby('id','desc');
                        
 
             return Datatables::of($professions)
@@ -60,7 +61,7 @@ class EssentialsProfessionController extends Controller
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             })
-            ->removeColumn('id')
+           
             ->rawColumns(['action'])
             ->make(true);
         

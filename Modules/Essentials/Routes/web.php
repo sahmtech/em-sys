@@ -90,7 +90,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/professions/{id}',[\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'destroy'])->name('profession.destroy');
 
         Route::get('/workCards', [\Modules\Essentials\Http\Controllers\WorkCardsController::class, 'index'])->name('workCards');
-        
+        Route::get('/workCards/create', [\Modules\Essentials\Http\Controllers\WorkCardsController::class, 'create'])->name('create.workCards');
+        Route::post('/workCards/store', [\Modules\Essentials\Http\Controllers\WorkCardsController::class, 'store'])->name('create.store');
+
+
         Route::get('/cities', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'index'])->name('cities');
         Route::get('/createCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'create'])->name('createCity');
         Route::post('/storeCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'store'])->name('storeCity');
