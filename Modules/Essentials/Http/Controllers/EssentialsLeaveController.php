@@ -189,15 +189,16 @@ class EssentialsLeaveController extends Controller
     $employeeIds = $request->input('employeeIds');
 
  
-    $admissionDates=EssentialsAdmissionToWork::where('employee_id', $employeeIds)->pluck('admissions_date');
+    $admissionDates=EssentialsAdmissionToWork::where('employee_id', $employeeIds)->pluck('admissions_date')->first();
 
     if (!empty($admissionDates)) {
        
-        $formattedDate = date('Y-m-d', strtotime($admissionDates)); 
+        $formattedDate =  $admissionDates; 
    
     } else {
         $formattedDate = 'N/A';
     }
+    //dd($formattedDate);
 
     return $formattedDate;
     

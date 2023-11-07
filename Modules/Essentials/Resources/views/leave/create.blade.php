@@ -74,7 +74,7 @@
                </select>
            </div>
 
-		   <div class="form-group col-md-12 travel-ticket-category-section" style="display: none;">
+		   <div class="form-group col-md-12 travel-ticket-category-section" style="display: none;" id="travel-ticket-category-section">
     {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
     {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
 </div>
@@ -137,8 +137,7 @@ $(document).ready(function () {
     $('#employees').on('change', function () {
         var selectedEmployeeId = $(this).val();
         $('#employee_id').val(selectedEmployeeId);
-
-		console.log( $('#employee_id').val(selectedEmployeeId));
+console.log( $('#employee_id').val(selectedEmployeeId));
 		
     });
 
@@ -163,16 +162,17 @@ $(document).ready(function () {
     $('#travel_destination').on('change', function () {
         var selectedDestination = $(this).val();
         var admissionDateInput = $('#admission_date');
-        var travelTicketCategorySection = $('.travel-ticket-category-section');
-
+        var travelTicketCategorySection = $('#travel-ticket-category-section');
+console.log(travelTicketCategorySection);
         if (selectedDestination === 'external') {
             var admissionDate = admissionDateInput.val();
-
-            if (admissionDate) {
+			console.log(admissionDate);
+            if (admissionDate) 
+			{
                 var currentDate = new Date();
                 var admissionDateObj = new Date(admissionDate);
                 admissionDateObj.setMonth(admissionDateObj.getMonth() + 11);
-
+				console.log(admissionDateObj);
                 if (currentDate > admissionDateObj) {
                    
                     travelTicketCategorySection.show();
