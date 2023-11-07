@@ -34,6 +34,7 @@
                             <th>@lang('essentials::lang.start_date')</th>
                             <th>@lang('business.tax_label_1')</th>
                             <th>@lang('business.tax_number_1')</th>
+                            <th>@lang('essentials::lang.missing_license_types')</th>
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -429,6 +430,27 @@
                 { data: 'start_date'},
                 { data: 'tax_label_1'},
                 { data: 'tax_number_1'},
+                {
+                data: 'missing_license_types',
+                render: function (data, type, row) {
+                    if (type === 'display') {
+             
+                    var licenseTypes = data.split(', ');
+
+                    
+                    var listHtml = '<ul style="color: red;">';
+                    for (var i = 0; i < licenseTypes.length; i++) {
+                        var localizedName = getLocalizedLicenseName(licenseTypes[i]);
+                        listHtml += '<li>' + localizedName + '</li>';
+                    }
+                    listHtml += '</ul>';
+
+                            return listHtml;
+                        }
+                        return data;
+                    }
+                },
+
                 
 
                 { data: 'action', name: 'action', orderable: false, searchable: false }
@@ -461,6 +483,26 @@
                 }
             });
         });
+        function getLocalizedLicenseName(data) {
+            switch (data) {
+                case 'COMMERCIALREGISTER':
+                    return '@lang('essentials::lang.COMMERCIALREGISTER')';
+                case 'Gosi':
+                    return '@lang('essentials::lang.Gosi')';
+                case 'Zatca':
+                    return '@lang('essentials::lang.Zatca')';
+                case 'Chamber':
+                    return '@lang('essentials::lang.Chamber')';
+                case 'Balady':
+                    return '@lang('essentials::lang.Balady')';
+                case 'saudizationCertificate':
+                    return '@lang('essentials::lang.saudizationCertificate')';
+                case 'VAT':
+                    return '@lang('essentials::lang.VAT')';
+                default:
+                    return data;
+            }
+}
 
     });
 

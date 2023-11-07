@@ -899,13 +899,7 @@ return[
     'have_an_insurance'=>'يملك تأمين طبي',
     'not_have_an_insurance'=>'لا يملك تأمين طبي',
     'unified_number'=>'الرقم الموحد',
-
-
-
-
-    
-
-    
+    'missing_license_types'=>'التراخيص المتبقية',    
     'add_doc'=>'إضافة وثيقة',
     'add_qualification'=>'إضافة مؤهل',
 

@@ -63,6 +63,7 @@ class BusinessDocumentController extends Controller
 
     public function store(Request $request)
     {
+       
 
         $businessDocument = new BusinessDocument();
         $businessDocument->licence_type = $request->licence_type;
@@ -76,8 +77,10 @@ class BusinessDocumentController extends Controller
         if ($request->input('licence_type') === 'COMMERCIALREGISTER') {
             $businessDocument->unified_number = $request->unified_number;
         }
+        else {$businessDocument->unified_number=Null;
+        }
     
-            
+      
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filePath = $file->store('/business_documents'); 
