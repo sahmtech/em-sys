@@ -27,8 +27,13 @@
                         <li @if(request()->segment(2) == 'cities') class="active" @endif>
                             <a href="{{ route('cities') }}">@lang('essentials::lang.cities')</a>
                         </li>   
-                    @endif
+                    @endif 
 
+                    @if(auth()->user()->can('essentials.crud_regions') )
+                    <li @if(request()->segment(2) == 'regions') class="active" @endif>
+                        <a href="{{ route('regions') }}">@lang('essentials::lang.regions')</a>
+                    </li>   
+                @endif
                     @if(auth()->user()->can('essentials.crud_bank_accounts') )
                         <li @if(request()->segment(2) == 'bank_accounts') class="active" @endif>
                             <a href="{{ route('bank_accounts') }}">@lang('essentials::lang.bank_accounts')</a>

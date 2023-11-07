@@ -95,6 +95,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/cities/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'destroy'])->name('city.destroy');
         Route::put('/updateCity/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'update'])->name('updateCity');
         
+        Route::get('/regions', [\Modules\Essentials\Http\Controllers\EssentialsRegionController::class, 'index'])->name('regions');
+        Route::get('/createRegion', [\Modules\Essentials\Http\Controllers\EssentialsRegionController::class, 'create'])->name('createRegion');
+        Route::post('/storeRegion', [\Modules\Essentials\Http\Controllers\EssentialsRegionController::class, 'store'])->name('storeRegion');
+        Route::get('/regions/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsRegionController::class, 'edit'])->name('region.edit');
+        Route::delete('/regions/{id}', [\Modules\Essentials\Http\Controllers\EssentialsRegionController::class, 'destroy'])->name('region.destroy');
+        Route::put('/updateRegion/{id}', [\Modules\Essentials\Http\Controllers\EssentialsRegionController::class, 'update'])->name('updateRegion');
+
         Route::get('/organizations', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'index'])->name('organizations');
         Route::get('/createOrganization', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'create'])->name('createOrganization');
         Route::post('/storeOrganization', [\Modules\Essentials\Http\Controllers\EssentialsOrganizationController::class, 'store'])->name('storeOrganization');

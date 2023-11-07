@@ -26,9 +26,9 @@ class BusinessDocumentController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $auth_id);
        if (request()->ajax()) {  
             $business = BusinessDocument::where('business_id', $business_id)
-            ->select(['id','business_id','licence_type','licence_number','licence_date','renew_date','expiration_date','issuing_location','path_file','details']);
+            ->select(['id','business_id','licence_type','licence_number','licence_date','renew_date','expiration_date','issuing_location','path_file','details','unified_number']);
        
-          //  $file=env('APP_URL') . ':8000/storage' . explode("public", $business->path_file)[1];
+       
             return Datatables::of($business)
             ->addColumn(
                 'action',
@@ -63,6 +63,7 @@ class BusinessDocumentController extends Controller
 
     public function store(Request $request)
     {
+       
 
         $businessDocument = new BusinessDocument();
         $businessDocument->licence_type = $request->licence_type;
@@ -73,8 +74,13 @@ class BusinessDocumentController extends Controller
         $businessDocument->expiration_date = $request->expiration_date;
         $businessDocument->issuing_location = $request->issuing_location;
         $businessDocument->details = $request->details;
-        
-            
+        if ($request->input('licence_type') === 'COMMERCIALREGISTER') {
+            $businessDocument->unified_number = $request->unified_number;
+        }
+        else {$businessDocument->unified_number=Null;
+        }
+    
+      
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filePath = $file->store('/business_documents'); 
