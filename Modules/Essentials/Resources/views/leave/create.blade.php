@@ -56,6 +56,7 @@
 		        {!! Form::label('alt_employee', __('essentials::lang.select_altemployee') . ':') !!}
 		        {!! Form::select('alt_employee[]', $alt_employee, null, ['class' => 'form-control select2', 'style' => 'width: 100%;' ]); !!}
     		</div>
+			{!! Form::hidden('altemployee_id', null, ['id' => 'altemployee_id']) !!}
 
 			<div class="form-group col-md-12">
                <label for="travel_destination">@lang('essentials::lang.travel_destination'):</label>
@@ -131,6 +132,11 @@ $(document).ready(function () {
         $('#employee_id').val(selectedEmployeeId);
     });
 
+
+	$('#alt_employee').on('change', function () {
+        var selectedEmployeeId = $(this).val();
+        $('#altemployee_id').val(selectedEmployeeId);
+    });
    
 });
 </script>

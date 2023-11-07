@@ -269,7 +269,7 @@ class EssentialsLeaveController extends Controller
 
             $input['user_id']=$request->input('employee_id');
             $user_id=  $input['user_id'];
-          //  $input['Alternative_id']=$request->input('alt_employees');
+            $input['Alternative_id']=$request->input('altemployee_id');
             $mysql_format = 'Y-m-d';
             $input['business_id'] = $business_id;
             $input['status'] = 'pending';
