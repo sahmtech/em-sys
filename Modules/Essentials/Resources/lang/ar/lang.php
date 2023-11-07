@@ -892,6 +892,7 @@ return[
     'insurance_class'=>'فئة التأمين',
     'add_Insurance'=>'إضافة تأمين',
     'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف',
+
     'select_for_travel'=>'هل تشمله التذاكر',
     'includes'=>'تشمل',
     'does_not_include'=>'لا تشمل',
@@ -904,11 +905,15 @@ return[
     'crud_regions'=>'إضافة/حذف/تعديل منطقة',
     'regions'=>'المناطق',
     'add_region'=>'إضافة منطقة',
-    ''=>'',
-    ''=>'',
-    ''=>'',
-    ''=>'',
-    ''=>'',
+
+    
+
+    
+    'is_profile_complete'=>'استكمال بيانات الموظف',
+    'border_number'=>'رقم الحدود',
+    
+
+
 
 
 
