@@ -432,13 +432,17 @@ class EssentialsManageEmployeeController extends Controller
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
     
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+      
+        if($professionId) {  
+        $profession = EssentialsProfession::find($professionId)->name;
         $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
         $specialization = EssentialsSpecialization::find($specializationId)->name;
-        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
-        $profession = EssentialsProfession::find($professionId)->name;
+   
+      
         $user->profession = $profession;
         $user->specialization = $specialization;
-
+ }
         
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
        

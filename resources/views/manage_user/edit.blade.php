@@ -52,7 +52,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 {!! Form::label('email', __( 'business.email' ) . ':*') !!}
-                  {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
+                  {!! Form::text('email', $user->email, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
               </div>
             </div>
             <div class="col-md-4">
@@ -104,7 +104,7 @@
                       {!! Form::label('username', __( 'business.username' ) . ':') !!}
                       @if(!empty($username_ext))
                         <div class="input-group">
-                          {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __( 'business.username' ) ]); !!}
+                          {!! Form::text('username', $user->username, ['class' => 'form-control', 'placeholder' => __( 'business.username' ) ]); !!}
                           <span class="input-group-addon">{{$username_ext}}</span>
                         </div>
                         <p class="help-block" id="show_username"></p>
