@@ -888,9 +888,17 @@ return[
     'Tamm'=>'تم',
     'select_subscription_type'=>'اختر نوع الاشتراك',
     'view_business_subscriptions'=>'عرض اشتراكات الشركة',
+
+    'employee_insurance'=>'التأمين الطبي',
+    'insurance_class'=>'فئة التأمين',
+    'add_Insurance'=>'إضافة تأمين',
+    'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف'
+    
+
     
     'add_doc'=>'إضافة وثيقة',
     'add_qualification'=>'إضافة مؤهل',
+
     'is_profile_complete'=>'استكمال بيانات الموظف',
     'border_number'=>'رقم الحدود',
     'validate_eqama'=>'بالنسبة لـ "الإقامة"، يجب أن يكون الرقم 10 أرقام ويبدأ بـ "10".',
@@ -908,5 +916,8 @@ return[
     'alt_employee'=>'اسم البديل',
     'select_altemployee'=>'اختر اسم البديل',
     'travel_destination'=>'جهة السفر',
+
+
+
 
 ];

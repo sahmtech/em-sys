@@ -68,10 +68,10 @@
                
 
                         <li @if(request()->segment(2) == 'health_insurance') class="active" @endif>
-                            <a href="">@lang('essentials::lang.health_insurance')</a>
+                            <a href="{{ route('employee_insurance') }}">@lang('essentials::lang.health_insurance')</a>
                         </li>
 
-                        {{-- {{ route('insurances') }} --}}
+                 
 
                         @can('essentials.crud_employee_families')
                         <li @if(request()->segment(2) == 'employee_families') class="active" @endif>
