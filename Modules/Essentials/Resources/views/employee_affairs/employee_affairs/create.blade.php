@@ -297,6 +297,7 @@
                                 username: function() {
                                     return $( "#username" ).val();
                                 },
+                               
                                 @if(!empty($username_ext))
                                   username_ext: "{{$username_ext}}"
                                 @endif
@@ -304,7 +305,8 @@
                         }
                     }
                 },
-                messages: {
+                messages:
+                 {
                     password: {
                         minlength: 'Password should be minimum 5 characters',
                     },
@@ -315,7 +317,7 @@
                         remote: 'Invalid username or User already exist'
                     },
                     email: {
-                        remote: '{{ __("validation.unique", ["attribute" => __("business.email")]) }}'
+                        remote:'{{ __("validation.unique", ["attribute" => __("business.email")]) }}'
                     }
                 }
             });

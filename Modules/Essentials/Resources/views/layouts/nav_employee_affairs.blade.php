@@ -43,7 +43,9 @@
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'admissions_to_work') class="active" @endif>
                             <a href="{{ route('admissionToWork') }}">@lang('essentials::lang.admissions_to_work')</a>
                         </li>
-                    @endcan  
+                    @endcan 
+                    
+                 
 
                     @can('essentials.crud_employee_contracts')
                         <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'employee_contracts') class="active" @endif>

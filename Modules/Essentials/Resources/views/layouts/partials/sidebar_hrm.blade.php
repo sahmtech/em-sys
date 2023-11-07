@@ -30,6 +30,7 @@
                 <span class="title">@lang('essentials::lang.attendance')</span>
             </a>
         </li>
+      
         @can('essentials.add_allowance_and_deduction')
         <li class="{{ $request->segment(2) == 'allowance-deduction' ? 'active active-sub' : '' }}">
             <a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'index'])}}">

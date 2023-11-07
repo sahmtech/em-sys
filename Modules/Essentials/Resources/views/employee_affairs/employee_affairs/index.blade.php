@@ -239,8 +239,8 @@
     
                         <div class="row">
                             <div class="form-group col-md-6">
-                                {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
-                                {!! Form::select('offer_price',$offer_prices, null, ['class' => 'form-control','id'=>'offer_price', 'placeholder' => __('sales::lang.select_offer_price'), 'required']) !!}
+                                {!! Form::label('offer_price', __('sales::lang.offer_price') . ':') !!}
+                                {!! Form::select('offer_price',$offer_prices, null, ['class' => 'form-control','id'=>'offer_price', 'placeholder' => __('sales::lang.select_offer_price')]) !!}
                             </div>
                         
                             <div class="form-group col-md-6">
@@ -280,8 +280,8 @@
                                 {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control']) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
-                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                                {!! Form::label('file', __('essentials::lang.file') . ':') !!}
+                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file')]) !!}
                             </div>
                             <div class="form-group col-md-12">
                                 {!! Form::label('notes', __('sales::lang.notes') . ':') !!}

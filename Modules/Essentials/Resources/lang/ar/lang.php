@@ -893,6 +893,20 @@ return[
     'add_qualification'=>'إضافة مؤهل',
     'is_profile_complete'=>'استكمال بيانات الموظف',
     'border_number'=>'رقم الحدود',
-    
+    'validate_eqama'=>'بالنسبة لـ "الإقامة"، يجب أن يكون الرقم 10 أرقام ويبدأ بـ "10".',
+    'mobile_no'=>'رقم الموبايل يجب أن يكون 10 أرقام ويبدأ ب 05',
+    'view_work_cards'=>'إظهار كروت العمل',
+    'work_cards'=>'العلاقات الحكومية',
+    'leave_duration'=>'المدة',
+    'Urgent'=>'اضطرارية',
+    'Annual'=>'سنوية',
+    'select_leave_type'=>'اختر نوع الإجازة',
+    'Deportable'=>'قابل للترحيل',
+    'Annual_options'=>'خيارات نهاية العام',
+    'leave_type_allowance'=>'البدل',
+    'attachments_path'=>'مرفقات الطلب',
+    'alt_employee'=>'اسم البديل',
+    'select_altemployee'=>'اختر اسم البديل',
+    'travel_destination'=>'جهة السفر',
 
 ];

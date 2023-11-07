@@ -21,6 +21,7 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
@@ -229,78 +230,96 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_array['essentials_department_id'] = null;
                     }
 
+                    $emp_array['addmission_date']=$value[22];
 
-                    $emp_array['specialization_id']=$value[22];
-                  
 
+
+                    if (!empty($value[22])) {
+                        if (is_numeric($value[22])) {
+                           
+                            $excelDateValue = (float)$value[22];
+                            $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                            $date = date('Y-m-d', $unixTimestamp);
+                            $emp_array['addmission_date'] = $date;
+                         
+                        } else {
+                           
+                            $date = DateTime::createFromFormat('d/m/Y', $value[22]);
+                            if ($date) {
+                                $dob = $date->format('Y-m-d');
+                                $emp_array['addmission_date'] = $dob;
+                            }
+                    }
+                }
+
+                    $emp_array['specialization_id']=$value[23];
                     if ($emp_array['specialization_id'] !== null) {
-                        // Check if the specialization_id exists in the database
+                       
                         $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
                         if (!$specialization) {
-                            // Specialization ID doesn't exist, handle the error
+                         
                             $is_valid = false;
                             $error_msg = "Invalid specialization ID in row no. $row_no";
                             break;
                         }
                     } else {
-                        // Set a default value or handle it as needed
+                       
                         $emp_array['specialization_id'] = null;
                     }
-                    $emp_array['profession_id']=$value[23];
+                    $emp_array['profession_id']=$value[24];
 
                     if ($emp_array['profession_id'] !== null) {
-                        // Check if the specialization_id exists in the database
+                       
                         $specialization = EssentialsProfession::find($emp_array['profession_id']);
                         if (!$specialization) {
-                            // Specialization ID doesn't exist, handle the error
+                           
                             $is_valid = false;
                             $error_msg = "Invalid profession ID in row no. $row_no";
                             break;
                         }
                     } else {
-                        // Set a default value or handle it as needed
+                      
                         $emp_array['profession_id'] = null;
                     }
                     
                   
-                    if (!empty($value[24])) {
-                        $contract_array['contract_number'] = $value[24];
+                    if (!empty($value[25])) {
+                        $contract_array['contract_number'] = $value[25];
                     } 
                  
                   
-                    if (!empty($value[25])) {
-                        if (is_numeric($value[25])) {
-                            // Convert the float to a human-readable date
-                            $excelDateValue = (float)$value[25];
-                            $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
+                    if (!empty($value[26])) {
+                        if (is_numeric($value[26])) {
+                         
+                            $excelDateValue = (float)$value[26];
+                            $unixTimestamp = ($excelDateValue - 25569) * 86400; 
                             $date = date('Y-m-d', $unixTimestamp);
                             
                             $contract_array['contract_start_date'] = $date;
-                          //  dd( $contract_array['contract_start_date'] );
-                           // dd($emp_array['dob']);
+                         
                         } else {
-                            // Try to parse it as a date string
-                            $date = DateTime::createFromFormat('d/m/Y', $value[25]);
+                          
+                            $date = DateTime::createFromFormat('d/m/Y', $value[26]);
                             if ($date) {
                                 $dob = $date->format('Y-m-d');
                                 $contract_array['contract_start_date'] = $dob;
 
                             }
-                          //  dd( $contract_array['contract_start_date'] );
+                         
                     }
                 }
  
-                if (!empty($value[26])) {
-                    if (is_numeric($value[25])) {
+                if (!empty($value[27])) {
+                    if (is_numeric($value[27])) {
                         // Convert the float to a human-readable date
-                        $excelDateValue = (float)$value[26];
+                        $excelDateValue = (float)$value[27];
                         $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
                         $date = date('Y-m-d', $unixTimestamp);
                         $contract_array['contract_end_date'] = $date;
                        // dd($emp_array['dob']);
                     } else {
                         // Try to parse it as a date string
-                        $date = DateTime::createFromFormat('d/m/Y', $value[26]);
+                        $date = DateTime::createFromFormat('d/m/Y', $value[27]);
                         if ($date) {
                             $dob = $date->format('Y-m-d');
                             $contract_array['contract_end_date'] = $dob;
@@ -312,16 +331,16 @@ class EssentialsEmployeeImportController extends Controller
                    
                    
                     
-                    $contract_array['contract_duration'] = $value[27];
-                    $contract_array['probation_period'] = $value[28];
-                    $contract_array['is_renewable'] = $value[29];
-                    $contract_array['status'] = $value[30];
+                    $contract_array['contract_duration'] = $value[28];
+                    $contract_array['probation_period'] = $value[29];
+                    $contract_array['is_renewable'] = $value[30];
+                    $contract_array['status'] = $value[31];
                   
                   
 
-                    $emp_array['essentials_salary'] = $value[31];
+                    $emp_array['essentials_salary'] = $value[32];
                    // dd($value[30]);
-                    $allowancename=$value[32];
+                    $allowancename=$value[33];
                     $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
                     if ($allowancetype) {
                         
@@ -329,11 +348,11 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_array['allowance_deduction_id']=$allowancetypeId;
                     }
                     else{ $emp_array['allowance_deduction_id']=null;}
-                    $emp_array['amount']=$value[33];
+                    $emp_array['amount']=$value[34];
 
 
 
-                    $travelcategoryname=$value[34];
+                    $travelcategoryname=$value[35];
                     $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
                     if ($traveltype) {
                         
@@ -409,10 +428,18 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->superior = "superior";
                         $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
                         $essentials_employee_appointmets->specialization_id =$emp_data["specialization_id"];
-
                         $essentials_employee_appointmets->save();
-                        
 
+
+
+                        $essentials_admission_to_works = new EssentialsAdmissionToWork();
+                        $essentials_admission_to_works->admissions_date=$emp_data['addmission_date'];
+                        $essentials_admission_to_works->employee_id = $emp->id;
+                        $essentials_admission_to_works->admissions_type="first_time";
+                        $essentials_admission_to_works->admissions_status="on_date";
+                        $essentials_admission_to_works->save();
+
+                        
                         if ($emp_data['amount']!=null || $emp_data['allowance_deduction_id']!=null ){
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
                         $userAllowancesAndDeduction->user_id = $user_id;

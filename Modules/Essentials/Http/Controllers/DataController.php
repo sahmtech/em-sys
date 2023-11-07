@@ -447,6 +447,12 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_employee_families'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.view_work_cards',
+                'label' => __('essentials::lang.view_work_cards'),
+                'default' => false,
+            ],
+            
 
         ];
     }
@@ -535,6 +541,14 @@ class DataController extends Controller
                         )->order(5);
                     }
 
+                    if (auth()->user()->can('essentials.view_work_cards')) {
+                        $subMenu->url(
+                            action([\Modules\Essentials\Http\Controllers\WorkCardsController::class, 'index']),
+                            __('essentials::lang.work_cards'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards'],
+                        )->order(5);
+                    }
+
                     // if (auth()->user()->can('essentials.crud_holidays')) 
                     // {
                     //     $subMenu->url(
@@ -589,6 +603,8 @@ class DataController extends Controller
 
                             )],
                         )->order(11);
+
+
                     }
 
                     // if (auth()->user()->can('essentials.access_sales_target')) 
@@ -615,6 +631,7 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(13);
                     }
+                  
                 },
                 [
                     'icon' => 'fa fas fa-users',

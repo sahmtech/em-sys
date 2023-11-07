@@ -21,6 +21,7 @@
                 <thead>
                     <tr>
                         <th>@lang( 'essentials::lang.leave_type' )</th>
+                        <th>@lang( 'essentials::lang.leave_duration' )</th>
                         <th>@lang( 'essentials::lang.max_leave_count' )</th>
                         <th>@lang( 'messages.action' )</th>
                     </tr>
@@ -44,16 +45,20 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'index'])}}",
-                columnDefs: [
-                    {
-                        targets: 2,
-                        orderable: false,
-                        searchable: false,
-                    },
-                ],
+                columns: [
+          
+         
+          { data: 'leave_type', name: 'leave_type' },
+          { data: 'duration', name: 'duration' },
+          { data: 'max_leave_count', name: 'max_leave_count' },
+          { data: 'action', name: 'action', orderable: false, searchable: false },
+         
+      ]
             });
 
         });
+
+
 
         $(document).on('submit', 'form#add_leave_type_form, form#edit_leave_type_form', function (e) {
             e.preventDefault();
