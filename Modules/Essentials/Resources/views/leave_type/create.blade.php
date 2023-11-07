@@ -13,7 +13,8 @@
 	    <div class="modal-body">
 	      	<div class="form-group">
 	        	{!! Form::label('leave_type', __( 'essentials::lang.leave_type' ) . ':*') !!}
-				{!! Form::select('leave_type', $leave_types, null, ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('essentials::lang.select_leave_type'), 'required']) !!}
+				
+			 {!! Form::text('leave_type', null, ['class' => 'form-control', 'placeholder' => __( 'essentials::lang.leave_type' ) ]); !!}
 	      	</div>
 
 	      	<div class="form-group">

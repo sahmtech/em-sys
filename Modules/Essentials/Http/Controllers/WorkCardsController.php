@@ -13,7 +13,7 @@ use App\Utils\TransactionUtil;
 use App\BusinessLocation;
 use App\Utils\Util;
 use DB;
-
+use App\User;
 class WorkCardsController extends Controller
 {
     protected $commonUtil;
@@ -96,6 +96,8 @@ class WorkCardsController extends Controller
      */
     public function create()
     {
+        
+        $business_id = request()->session()->get('user.business_id');
         $employees = User::forDropdown($business_id, false, false, false, true);
         $business_id = request()->session()->get('user.business_id');
         return view('essentials::work_cards.create')

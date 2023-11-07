@@ -482,6 +482,7 @@ return [
 "parent_purchase" => "المشتريات الأصل",
 "purchase_return_details" => "تفاصيل مردود المشتريات",
 "return_date" => "تاريخ المردود",
+"admission_date"=>'تاريخ المباشرة',
 "parent_sale" => "المبيعات الأصل",
 "sell_quantity" => "كمية المبيعات",
 "total_return_discount" => "إجمالي خصم المردود",

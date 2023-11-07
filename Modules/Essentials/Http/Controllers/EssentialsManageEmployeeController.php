@@ -181,7 +181,7 @@ class EssentialsManageEmployeeController extends Controller
 
        
                     if (!empty($request->input('specializations-select'))) {
-                        //dd($request->input('specializations-select'));
+                      
                            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
                           
                    }
@@ -199,11 +199,13 @@ class EssentialsManageEmployeeController extends Controller
            
 
             return Datatables::of($users)
-                // ->editColumn('profession_id',function($row)use($departments){
-                //         $item = $EssentialsProfession[$row->profession_id]??'';
+               
+                  ->editColumn('essentials_department_id',function($row)use($departments){
+                        $item = $departments[$row->essentials_department_id]??'';
 
-                //         return $item;
-                //     })
+                        return $item;
+                    })
+              
                     ->addColumn('profession', function ($row) use ($appointments, $professions) {
                         $professionId = $appointments[$row->id] ?? '';
                 
@@ -483,9 +485,25 @@ class EssentialsManageEmployeeController extends Controller
             'profession_id',
             'specialization_id'
         ])->where('employee_id', $id)
-        ->get()[0];
-        $user->profession_id =$appointments['profession_id'];
+        ->first();
+    if($appointments !== null)
+       {
+         $user->profession_id =$appointments['profession_id'];
         $user->specialization_id =$appointments['specialization_id'];
+       }
+       else
+       {
+        $user->profession_id =null;
+        $user->specialization_id =null;
+       }
+       $blood_types = ['A+' => 'A positive (A+).',
+       'A-' => 'A negative (A-).',
+       'B+' => 'B positive (B+)',
+       'B-' => 'B negative (B-).',
+         'AB+'=>'AB positive (AB+).',
+         'AB-'=>'AB negative (AB-).',
+         'O+'=>'O positive (O+).',
+         'O-'=>'O positive (O-).',];
        
         $roles = $this->getRolesArray($business_id);
 
@@ -510,7 +528,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
         return view('essentials::employee_affairs.employee_affairs.edit')
-                ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
+                ->with(compact('roles', 'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
     }
 
     /**

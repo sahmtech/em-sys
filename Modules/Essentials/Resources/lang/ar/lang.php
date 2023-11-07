@@ -939,6 +939,7 @@ return[
    'fixed_no'=>'رقم ثابت',
    'company_name'=>'اسم الشركة',
    'create_work_cards'=>'إضافة كرت عمل',
+   'select_altemployee'=>'اختر البديل',
 
 
 

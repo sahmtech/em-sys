@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsLeave;
+
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Notifications\LeaveStatusNotification;
 use Modules\Essentials\Notifications\NewLeaveNotification;
 use Spatie\Activitylog\Models\Activity;
@@ -117,11 +119,11 @@ class EssentialsLeaveController extends Controller
 
             return Datatables::of($leaves)
 
-            ->addColumn(
-                'leave_type', function ($leave_type) {
-                    return trans("essentials::lang.$leave_type->leave_type");
-                }
-            )
+            // ->addColumn(
+            //     'leave_type', function ($leave_type) {
+            //         return trans("essentials::lang.$leave_type->leave_type");
+            //     }
+            // )
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -224,7 +226,7 @@ class EssentialsLeaveController extends Controller
           //  $employees = User::forDropdown($business_id, false, false, false, true);
           //  $alt_employee=User::forDropdown($business_id, false, false, false, true);
         }
-        $travel_ticket_categorie=EssentialsTravelTicketCategorie::pluck('id','name');
+        $travel_ticket_categorie=EssentialsTravelTicketCategorie::forDropdown();
 
         return view('essentials::leave.create')
         ->with(compact('leave_types', 'instructions',
@@ -261,6 +263,8 @@ class EssentialsLeaveController extends Controller
                   'travel_destination',
                   'travel_ticket_categorie',
                    'alt_employees',
+                   'travel_ticket_categorie',
+                   'travel_ticket_categorie_id'
 
                   ]);
             
@@ -284,12 +288,19 @@ class EssentialsLeaveController extends Controller
             $input['start_date'] = \Carbon::parse($input['start_date'])->format($mysql_format);
             $input['end_date'] = \Carbon::parse($input['end_date'])->format($mysql_format);
             DB::beginTransaction();
-
+            
+           
+            if(!empty($request->input('travel_ticket_categorie')))
+            {
+                $travel= new EssentialsEmployeeTravelCategorie();
+                $travel->employee_id= $user_id;
+                $travel->categorie_id= $request->input('travel_ticket_categorie_id');
+                $travel->save();
+            }
 
             if (auth()->user()->can('essentials.crud_all_leave') && ! empty($request->input('employees'))) {
               
                 $input['user_id'] = ! empty($user_id) ? $user_id : request()->session()->get('user.id');
-               
                 $ref_count = $this->moduleUtil->setAndGetReferenceCount('leave');
                
                 if (empty($input['ref_no'])) {
@@ -298,6 +309,8 @@ class EssentialsLeaveController extends Controller
                     $prefix = ! empty($settings['leave_ref_no_prefix']) ? $settings['leave_ref_no_prefix'] : '';
                     $input['ref_no'] = $this->moduleUtil->generateReferenceNumber('leave', $ref_count, null, $prefix);
                 }
+                
+
         
                 $leave = EssentialsLeave::create($input);
         

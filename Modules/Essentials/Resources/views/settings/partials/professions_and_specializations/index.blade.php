@@ -48,13 +48,13 @@
                     <div class="modal-body">
                         <div class="form-group">
                             {!! Form::label('name',   __('essentials::lang.profession_name') .':*') !!}
-                            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Profession Name', 'required']) !!}
+                            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.profession_name'), 'required']) !!}
                         </div>
 
                         <div class="form-group">
                             {!! Form::label('en_name', __('essentials::lang.en_name') . ' (' . __('essentials::lang.optional') . '):') !!}
 
-                            {!! Form::text('en_name', null, ['class' => 'form-control', 'placeholder' => 'English Name']) !!}
+                            {!! Form::text('en_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.en_name')]) !!}
                         </div>
 
                         <div id="specializations-container"> 
