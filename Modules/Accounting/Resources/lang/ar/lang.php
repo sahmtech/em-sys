@@ -466,7 +466,7 @@ return [
     'automatedMigration' => 'الترحيل الالي',
     'add_auto_migration' => 'إضافة ترحيل الي',
 'delete_auto_migration'=>'حذف ترحيل الي',
-'delete_auto_migration_message'=>'في حال قمت بحث الترحيل سيتم حذف جميع العمليات التابعة له.',
+'delete_auto_migration_message'=>'في حال قمت بحذف الترحيل سيتم حذف جميع العمليات التابعة له.',
    'worning'=>'تنبيه',
 'first_journal' => 'القيد الاول',
     'second_journal' => 'القيد الثاني',
