@@ -181,7 +181,7 @@ class EssentialsManageEmployeeController extends Controller
 
        
                     if (!empty($request->input('specializations-select'))) {
-                        //dd($request->input('specializations-select'));
+                      
                            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
                           
                    }
@@ -199,11 +199,12 @@ class EssentialsManageEmployeeController extends Controller
            
 
             return Datatables::of($users)
-                // ->editColumn('profession_id',function($row)use($departments){
-                //         $item = $EssentialsProfession[$row->profession_id]??'';
+               
+                  ->editColumn('essentials_department_id',function($row)use($departments){
+                        $item = $departments[$row->essentials_department_id]??'';
 
-                //         return $item;
-                //     })
+                        return $item;
+                    })
               
                     ->addColumn('profession', function ($row) use ($appointments, $professions) {
                         $professionId = $appointments[$row->id] ?? '';

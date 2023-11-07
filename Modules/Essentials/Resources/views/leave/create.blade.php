@@ -30,7 +30,7 @@
 <div class="form-group col-md-12">
     {!! Form::label('essentials_leave_type_id', __('essentials::lang.leave_type') . ':*') !!}
     {!! Form::select('essentials_leave_type_id', $leave_types->mapWithKeys(function ($leave_type, $id) {
-        return [$id => __('essentials::lang.' . $leave_type)];
+        return [$id => $leave_type];
     }), null, ['class' => 'form-control select2', 'required', 'placeholder' => __('messages.please_select') ]);
     !!}
 </div>
@@ -60,7 +60,9 @@
            @can('essentials.crud_all_leave')
     		<div class="form-group col-md-12">
 		        {!! Form::label('alt_employees', __('essentials::lang.select_altemployee') . ':') !!}
-		        {!! Form::select('alt_employees[]', $alt_employees, null, ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'alt_employees', 'required' ]); !!}
+		        {!! Form::select('alt_employees[]', $alt_employees, null,
+                     ['class' => 'form-control select2', 
+                     'style' => 'width: 100%;', 'id' => 'alt_employees', 'required' ]); !!}
     		</div>
     		@endcan
 			{!! Form::hidden('alt_employee_id', null, ['id' => 'alt_employee_id']) !!}
@@ -76,8 +78,12 @@
 
 		   <div class="form-group col-md-12 travel-ticket-category-section" style="display: none;" id="travel-ticket-category-section">
     {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
-    {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
+    {!! Form::select('travel_ticket_categorie[]', $travel_ticket_categorie, null, 
+        ['class' => 'form-control select2', 'id' => 'travel_ticket_categorie',
+         'placeholder' => __('essentials::lang.travel_ticket_categorie')]) !!}
 </div>
+
+{!! Form::hidden('travel_ticket_categorie_id', null, ['id' => 'travel_ticket_categorie_id']) !!}
 
 	      	<div class="form-group col-md-12">
 	        	{!! Form::label('reason', __( 'essentials::lang.reason' ) . ':') !!}
@@ -146,6 +152,15 @@ console.log( $('#employee_id').val(selectedEmployeeId));
         $('#alt_employee_id').val(selectedEmployeeId2);
 		
 		console.log( $('#alt_employee_id').val(selectedEmployeeId2));
+
+		
+    });
+
+    $('#travel_ticket_categorie').on('change', function () {
+        var selectedEmployeeId3 = $(this).val();
+        $('#travel_ticket_categorie_id').val(selectedEmployeeId3);
+		
+		console.log( $('#travel_ticket_categorie_id').val(selectedEmployeeId3));
 
 		
     });
