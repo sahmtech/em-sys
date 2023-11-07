@@ -147,6 +147,14 @@ class CustomAdminSidebarMenu
                 )->order(4);
             }
 
+            if (auth()->user()->can('essentials.view_work_cards')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\WorkCardsController::class, 'index']),
+                    __('essentials::lang.work_cards'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards'],
+                )->order(5);
+            }
+
             if (auth()->user()->can('essentials.crud_all_leave') || true) {
 
                 $menu->url(

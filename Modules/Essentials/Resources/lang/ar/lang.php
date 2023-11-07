@@ -927,6 +927,19 @@ return[
     'alt_employee'=>'اسم البديل',
     'select_altemployee'=>'اختر اسم البديل',
     'travel_destination'=>'جهة السفر',
+  //  'work_cards'=>'كروت العمل',
+    'all_work_cards'=>'جميع كروت العمل',
+    'add_work_card'=>'إضافة كرت عمل',
+    'Residency_no'=>'رقم الاقامة ',
+    'Residency_end_date'=>'تاريخ انتهاء الاقامة  ',
+    'project'=>'المشروع',
+    'work_card_duration'=>'مدة المشروع',
+    'pay_number'=>' رقم السداد',
+    'fees'=>' الرسوم ',
+   'fixed_no'=>'رقم ثابت',
+   'company_name'=>'اسم الشركة',
+   'create_work_cards'=>'إضافة كرت عمل',
+
 
 
 

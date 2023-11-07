@@ -431,11 +431,14 @@ class EssentialsManageEmployeeController extends Controller
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
-    
+       // dd( $Qualification);
+        
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
       
-        if($professionId) {  
-        $profession = EssentialsProfession::find($professionId)->name;
+        if($professionId !== null)   
+       { $profession = EssentialsProfession::find($professionId)->name;}
+       else{$profession ="";}
+        
         $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
         if ( $specializationId !== null)
         {$specialization = EssentialsSpecialization::find($specializationId)->name;}
@@ -444,7 +447,7 @@ class EssentialsManageEmployeeController extends Controller
       
         $user->profession = $profession;
         $user->specialization = $specialization;
- }
+ 
         
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
        

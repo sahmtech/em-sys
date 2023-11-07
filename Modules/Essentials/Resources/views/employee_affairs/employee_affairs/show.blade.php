@@ -91,15 +91,15 @@
         <div>
            
             <label>
-                <input type="checkbox" name="contracts" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
+                <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
             </label>
             <br>
             <label>
-                <input type="checkbox" name="admissions_to_work" {{ $Qualification ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
+                <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
             </label>
             <br>
             <label>
-                <input type="checkbox" name="qualifications"  {{ $Contract ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
+                <input type="checkbox" name="qualifications"  {{ $Qualification ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
             </label>
             <br>
             <label>

@@ -282,16 +282,18 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_array['profession_id'] = null;
                     }
                     
-                  
-                    if (!empty($value[25])) {
-                        $contract_array['contract_number'] = $value[25];
+                    $emp_array['border_no']=$value[25];
+                    $emp_array['nationality_id']=$value[26];
+                    
+                    if (!empty($value[27])) {
+                        $contract_array['contract_number'] = $value[27];
                     } 
                  
                   
-                    if (!empty($value[26])) {
-                        if (is_numeric($value[26])) {
+                    if (!empty($value[28])) {
+                        if (is_numeric($value[28])) {
                          
-                            $excelDateValue = (float)$value[26];
+                            $excelDateValue = (float)$value[28];
                             $unixTimestamp = ($excelDateValue - 25569) * 86400; 
                             $date = date('Y-m-d', $unixTimestamp);
                             
@@ -299,7 +301,7 @@ class EssentialsEmployeeImportController extends Controller
                          
                         } else {
                           
-                            $date = DateTime::createFromFormat('d/m/Y', $value[26]);
+                            $date = DateTime::createFromFormat('d/m/Y', $value[28]);
                             if ($date) {
                                 $dob = $date->format('Y-m-d');
                                 $contract_array['contract_start_date'] = $dob;
@@ -309,17 +311,17 @@ class EssentialsEmployeeImportController extends Controller
                     }
                 }
  
-                if (!empty($value[27])) {
-                    if (is_numeric($value[27])) {
+                if (!empty($value[29])) {
+                    if (is_numeric($value[29])) {
                         // Convert the float to a human-readable date
-                        $excelDateValue = (float)$value[27];
+                        $excelDateValue = (float)$value[29];
                         $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
                         $date = date('Y-m-d', $unixTimestamp);
                         $contract_array['contract_end_date'] = $date;
                        // dd($emp_array['dob']);
                     } else {
                         // Try to parse it as a date string
-                        $date = DateTime::createFromFormat('d/m/Y', $value[27]);
+                        $date = DateTime::createFromFormat('d/m/Y', $value[29]);
                         if ($date) {
                             $dob = $date->format('Y-m-d');
                             $contract_array['contract_end_date'] = $dob;
@@ -331,16 +333,16 @@ class EssentialsEmployeeImportController extends Controller
                    
                    
                     
-                    $contract_array['contract_duration'] = $value[28];
-                    $contract_array['probation_period'] = $value[29];
-                    $contract_array['is_renewable'] = $value[30];
-                    $contract_array['status'] = $value[31];
+                    $contract_array['contract_duration'] = $value[30];
+                    $contract_array['probation_period'] = $value[31];
+                    $contract_array['is_renewable'] = $value[32];
+                    $contract_array['status'] = $value[33];
                   
                   
 
-                    $emp_array['essentials_salary'] = $value[32];
+                    $emp_array['essentials_salary'] = $value[34];
                    // dd($value[30]);
-                    $allowancename=$value[33];
+                    $allowancename=$value[35];
                     $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
                     if ($allowancetype) {
                         
@@ -348,11 +350,12 @@ class EssentialsEmployeeImportController extends Controller
                         $emp_array['allowance_deduction_id']=$allowancetypeId;
                     }
                     else{ $emp_array['allowance_deduction_id']=null;}
-                    $emp_array['amount']=$value[34];
+                   
+                    $emp_array['amount']=$value[36];
 
 
 
-                    $travelcategoryname=$value[35];
+                    $travelcategoryname=$value[37];
                     $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
                     if ($traveltype) {
                         
@@ -382,25 +385,25 @@ class EssentialsEmployeeImportController extends Controller
                         
       
           
-            $numericPart = (int)substr($business_id, 3);
-            $lastEmployee = User::where('business_id', $business_id)
-                ->orderBy('emp_number', 'desc')
-                ->first();
-            
-            if ($lastEmployee) {
-                // Get the numeric part from the last employee's emp_number
-                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-        
-                // Increment the numeric part
-                $nextNumericPart = $lastEmpNumber + 1;
+                            $numericPart = (int)substr($business_id, 3);
+                            $lastEmployee = User::where('business_id', $business_id)
+                                ->orderBy('emp_number', 'desc')
+                                ->first();
+                            
+                            if ($lastEmployee) {
+                                // Get the numeric part from the last employee's emp_number
+                                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+                        
+                                // Increment the numeric part
+                                $nextNumericPart = $lastEmpNumber + 1;
 
-                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 5, '0', STR_PAD_LEFT);
-            } 
-           
-            else {
-                // If no previous employee, start from 1
-                $emp_data['emp_number'] =  $business_id .'0000';
-            }
+                                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 5, '0', STR_PAD_LEFT);
+                            } 
+                        
+                            else {
+                                // If no previous employee, start from 1
+                                $emp_data['emp_number'] =  $business_id .'0000';
+                            }
         
           
          
