@@ -15,7 +15,8 @@ class EssentialsDepartment extends Model
     'creation_date',
     'location',
     'details',
-    'is_active',];
+    'is_active',
+    'is_main'];
     
     protected static function newFactory()
     {
