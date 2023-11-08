@@ -573,9 +573,9 @@ class EssentialsManageEmployeeController extends Controller
                 if (!empty($request->input('password'))) {
                     $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
                 }
-                //Sales commission percentage
+               
                 $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
-                //$user_data['max_sales_discount_percent'] = ! is_null($user_data['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_data['max_sales_discount_percent']) : null;
+               
                 $user_data['max_sales_discount_percent'] = null;
                 if (!empty($request->input('dob'))) {
                     $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
