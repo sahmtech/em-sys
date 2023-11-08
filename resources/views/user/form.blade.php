@@ -65,7 +65,7 @@
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
-        <!-- <option value="border_no">@lang('essentials::lang.border_number')</option> -->
+    
     </select>
 </div>
 
@@ -155,7 +155,7 @@
     {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, ['class' => 'form-control', 'id' => 'branch', 'placeholder' => __( 'lang_v1.branch') ]); !!}
 </div>
 <div class="form-group col-md-6">
-    {!! Form::label('Iban_file', __('lang_v1.Iban_file') . ':*') !!}
+    {!! Form::label('Iban_file', __('lang_v1.Iban_file') . ':') !!}
     {!! Form::file('bank_details[Iban_file]', null, ['class' => 'form-control', 'id' => 'Iban_file','placeholder' => __('lang_v1.Iban_file'), 'required']) !!}
 </div>
 {{-- <div class="form-group col-md-3">

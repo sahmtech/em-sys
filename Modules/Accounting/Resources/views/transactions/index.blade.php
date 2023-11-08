@@ -155,7 +155,8 @@
                         data: 'staff_note',
                         name: 'staff_note'
                     }
-                ],
+                ]
+                ,
                 "fnDrawCallback": function(oSettings) {
                     __currency_convert_recursively($('#sell_table'));
                 }
@@ -167,6 +168,7 @@
                 "ajax": {
                     "url": "/accounting/transactions?transaction_type=sell&datatable=payment",
                     "data": function(d) {
+
                         // d.account_id = $('#account_id').val();
                         // var start_date = '';
                         // var endDate = '';
@@ -281,6 +283,7 @@
                 ajax: {
                     url: '/accounting/transactions?datatable=purchase',
                     data: function(d) {
+
                         if ($('#purchase_list_filter_location_id').length) {
                             d.location_id = $('#purchase_list_filter_location_id').val();
                         }
@@ -375,11 +378,13 @@
                     dataType: 'json',
                     data: data,
                     success: function(result) {
+
                         if (result.success == true) {
                             $('div.view_modal').modal('hide');
                             toastr.success(result.msg);
                             if (transaction_type == 'sell') {
                                 sell_table.ajax.reload();
+
                             } else if (transaction_type == 'sell_payment') {
                                 sell_payment_table.ajax.reload();
                             } else if (transaction_type == 'purchase') {
