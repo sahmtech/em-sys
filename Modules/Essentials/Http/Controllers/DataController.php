@@ -695,7 +695,7 @@ class DataController extends Controller
     {
         if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
             $business_id = session()->get('business.id');
-            //   $departments = Category::forDropdown($business_id, 'hrm_department');
+          
             $designations = Category::forDropdown($business_id, 'hrm_designation');
             $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
@@ -708,6 +708,16 @@ class DataController extends Controller
                     ->pluck('allowance_deduction_id')
                     ->toArray();
             }
+            
+            if (!empty($user)) {
+                $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+                // if($contract->contract_type)
+                // $contractType= EssentialsContractType::where('type', $contract->contract_type)->first()->type;
+            }
+            else {
+                $contract=null;
+            }
+          
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
@@ -715,7 +725,7 @@ class DataController extends Controller
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
-            return view('essentials::partials.user_form_part', compact('nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            return view('essentials::partials.user_form_part', compact('contract','nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -733,7 +743,7 @@ class DataController extends Controller
                 'essentials_employees_contracts.is_renewable',
 
             ])->first();
-            return view('essentials::partials.user_details_part', compact('contract', 'user_department', 'user_designstion', 'user', 'work_location'))
+            return view('essentials::partials.user_details_part', compact('contract','user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
     }
@@ -745,10 +755,10 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
-     
-        if ($data['event'] = 'user_saved') {
-            
-           error_log('0000000000000000000000000000000');
+
+        if ($data['event'] == 'user_saved') {
+           
+
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -758,7 +768,7 @@ class DataController extends Controller
             $user->location_id = request()->input('location_id');
             if (request()->input('health_insurance') != null){
             $user->has_insurance= request()->input('health_insurance');
-            }
+                }
             $user->save();
 
 
@@ -798,7 +808,7 @@ class DataController extends Controller
             $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
             $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
             $essentials_employee_appointmets->save();
-        }
+            }
 
             
             if (request()->selectedData) {
@@ -848,6 +858,97 @@ class DataController extends Controller
             //         EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
             //     }
             // }
+        }
+        if ($data['event'] == 'user_updated'){
+            $user = $data['model_instance'];
+            $user->essentials_department_id = request()->input('essentials_department_id');
+            $user->essentials_designation_id = request()->input('essentials_designation_id');
+            $user->essentials_salary = request()->input('essentials_salary');
+            $user->essentials_pay_period = request()->input('essentials_pay_period');
+            $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
+            $user->location_id = request()->input('location_id');
+            if (request()->input('health_insurance') != null){
+                $user->has_insurance= request()->input('health_insurance');
+            }
+
+            $user->update();
+            $id=$data['model_instance']['id'];
+            $contract = EssentialsEmployeesContract::where('employee_id', $id)->first();
+
+        if ($contract) {
+            $contract->contract_number = request()->input('contract_number');
+            $contract->contract_start_date = request()->input('contract_start_date');
+            $contract->contract_end_date = request()->input('contract_end_date');
+            $contract->contract_duration = request()->input('contract_duration');
+            $contract->probation_period = request()->input('probation_period');
+            $contract->is_renewable = request()->input('is_renewable');
+            $contract->contract_type_id = request()->input('contract_type');
+
+            if (request()->hasFile('contract_file')) {
+                $file = request()->file('contract_file');
+                $filePath = $file->store('/employee_contracts');
+                $contract->file_path = $filePath;
+            }
+
+            $contract->save();
+        }
+
+        if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
+            
+            $travel_ticket_categorie = EssentialsEmployeeTravelCategorie::where('employee_id', $id)->first();
+
+            if ($travel_ticket_categorie) {
+                $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+                $travel_ticket_categorie->save();
+            }
+        }
+
+        if (request()->input('essentials_department_id')) {
+    
+        $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id)->first();
+
+            if ($essentials_employee_appointmets) {
+                $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
+                $essentials_employee_appointmets->business_location_id = request()->input('location_id');
+                $essentials_employee_appointmets->superior = "superior";
+                $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
+                $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+                $essentials_employee_appointmets->save();
+            }
+            }
+
+        if (request()->selectedData) {
+        $jsonData = json_decode(request()->selectedData, true);
+
+        foreach ($jsonData as $item) {
+            try {
+                $userAllowancesAndDeduction = EssentialsUserAllowancesAndDeduction::where('user_id', $id)
+                    ->where('allowance_deduction_id', (int)$item['salaryType'])
+                    ->first();
+
+                if ($userAllowancesAndDeduction) {
+                    if ($item['amount'] !== null) {
+                        $userAllowancesAndDeduction->amount = $item['amount'];
+                    } else {
+                        $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                            ->where('id', $item['salaryType'])
+                            ->first();
+
+                        if ($allowanceDeduction) {
+                            $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                        }
+                    }
+                    $userAllowancesAndDeduction->save();
+                }
+            } catch (\Exception $e) {
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+                error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            }
+        }
+        }
+
+
         }
     }
 

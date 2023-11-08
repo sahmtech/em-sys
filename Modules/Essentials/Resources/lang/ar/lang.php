@@ -372,8 +372,8 @@ return[
 'manage_organizations'=>'إدارة الجهات',
 'organization_name'=>'اسم الجهة',
 'organization_code'=>'كود الجهة',                         
-'organization_level_type'=>'نوع المستوى',
-'organization_parent_level'=>'المستوى الأعلى',
+'level'=>'المستوى',
+'parent_level'=>'المستوى الأعلى',
 'organization_account_number'=>'رقم الحساب',
 'organization_bank_name'=>'اسم البنك',
 'is_active'=>'التفعيل',
@@ -398,7 +398,7 @@ return[
 'add_organization'=>'إضافة جهة',
 'bank'=>'الحساب البنكي',
 'organization_bank'=>'الحساب البنكي',
-'one_level'=>'المستوى الأول',
+'first_level'=>'المستوى الأول',
 'other_level'=>'مستوى آخر',
 'add_job_title'=>'إضافة مسمى وظيفي',
 'manage_bank_accounts'=>'إدارة الحسابات البنكية',
@@ -892,8 +892,6 @@ return[
     'insurance_class'=>'فئة التأمين',
     'add_Insurance'=>'إضافة تأمين',
     'crud_employees_insurances'=>'إضافة/حذف/تعديل تأمين موظف',
-
-
     'select_for_travel'=>'هل تشمله التذاكر',
     'includes'=>'تشمل',
     'does_not_include'=>'لا تشمل',
@@ -906,10 +904,6 @@ return[
     'crud_regions'=>'إضافة/حذف/تعديل منطقة',
     'regions'=>'المناطق',
     'add_region'=>'إضافة منطقة',
-
-    
-
-    
     'is_profile_complete'=>'استكمال بيانات الموظف',
     'border_number'=>'رقم الحدود',
     'validate_eqama'=>'بالنسبة لـ "الإقامة"، يجب أن يكون الرقم 10 أرقام ويبدأ بـ "10".',
@@ -940,6 +934,16 @@ return[
    'company_name'=>'اسم الشركة',
    'create_work_cards'=>'إضافة كرت عمل',
    'select_altemployee'=>'اختر البديل',
+   'parent_department_id'=>'المستوى الأعلى',
+   'creation_date'=>'تاريخ التأسيس',
+   'is_main_dep'=>'إدارة رئيسية',
+   'is_not_main_dep'=>'ليست إدارة رئيسية',
+   'subsidiary_dep'=>'إدارة فرعية',
+   'main_dep'=>'إدارة رئيسية',
+  'dep_is_active'=>'مفعل',
+  'add_department'=>'إضافة إدارة',
+
+
 
 
 
