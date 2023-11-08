@@ -927,7 +927,7 @@ return[
     'Residency_no'=>'رقم الاقامة ',
     'Residency_end_date'=>'تاريخ انتهاء الاقامة  ',
     'project'=>'المشروع',
-    'work_card_duration'=>'مدة المشروع',
+    'work_card_duration'=>'مدة كرت العمل',
     'pay_number'=>' رقم السداد',
     'fees'=>' الرسوم ',
    'fixed_no'=>'رقم ثابت',
