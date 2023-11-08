@@ -27,6 +27,7 @@
                 <table class="table table-bordered table-striped" id="countries_table">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>@lang('essentials::lang.contry_ar_name')</th>
                             <th>@lang('essentials::lang.contry_en_name')</th>                           
                             <th>@lang('essentials::lang.contry_nationality')</th>
@@ -61,12 +62,12 @@
 
                     <div class="form-group col-md-6">
                         {!! Form::label('english_name', __('essentials::lang.country_en_name') . ':*') !!}
-                        {!! Form::text('english_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_en_name'), 'required']) !!}
+                        {!! Form::text('english_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_en_name')]) !!}
                     </div>
 
                     <div class="form-group col-md-6">
                         {!! Form::label('nationality', __('essentials::lang.contry_nationality') . ':*') !!}
-                        {!! Form::text('nationality', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_nationality'), 'required']) !!}
+                        {!! Form::text('nationality', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_nationality')]) !!}
                     </div>
 
                     <div class="form-group col-md-6">
@@ -104,6 +105,7 @@
             serverSide: true,
             ajax: '{{ route("countries") }}', 
             columns: [
+                { data: 'id'},
                 { data: 'nameAr'},
                 { data: 'nameEn'},
                 { data: 'nationality'},

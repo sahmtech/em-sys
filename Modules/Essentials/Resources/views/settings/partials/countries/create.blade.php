@@ -23,17 +23,17 @@
         <div class="row">
             <div class="form-group col-md-6">
                 {!! Form::label('arabic_name', __('essentials::lang.country_ar_name') . ':*') !!}
-                {!! Form::text('arabic_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_ar_name'), 'required']) !!}
+                {!! Form::text('arabic_name', null, ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.country_ar_name')]) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('english_name', __('essentials::lang.country_en_name') . ':*') !!}
-                {!! Form::text('english_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_en_name'), 'required']) !!}
+                {!! Form::label('english_name', __('essentials::lang.country_en_name') . ':') !!}
+                {!! Form::text('english_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_en_name'),]) !!}
             </div>
         
             <div class="form-group col-md-6">
-                {!! Form::label('nationality', __('essentials::lang.contry_nationality') . ':*') !!}
-                {!! Form::text('nationality', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_nationality'), 'required']) !!}
+                {!! Form::label('nationality', __('essentials::lang.contry_nationality') . ':') !!}
+                {!! Form::text('nationality', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_nationality')]) !!}
             </div>
         
             <div class="form-group col-md-6">
