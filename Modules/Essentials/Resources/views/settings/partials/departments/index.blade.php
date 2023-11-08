@@ -66,9 +66,10 @@
                         {!! Form::label('level', __('essentials::lang.level') . ':*') !!}
                         {!! Form::select('level', ['1' => __('essentials::lang.first_level'), '2' => __('essentials::lang.other_level')], null, ['class' => 'form-control']) !!}
                     </div>
+                   
                     <div class="form-group col-md-6">
                         {!! Form::label('parent_level', __('essentials::lang.parent_level') . ':*') !!}
-                        {!! Form::select('parent_level', $parent_departments, ['class' => 'form-control', 'placeholder' => __('essentials::lang.parent_level'), 'required']) !!}
+                        {!! Form::select('parent_level', $parent_departments, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.parent_level'), 'required']) !!}
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('is_main', __('essentials::lang.is_main_dep') . ':*') !!}
