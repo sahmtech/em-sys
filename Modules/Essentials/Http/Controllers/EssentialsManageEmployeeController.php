@@ -545,11 +545,16 @@ class EssentialsManageEmployeeController extends Controller
             }
             try {
                 $user_data = $request->only([
-                    'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status',
-                    'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1',
+                    'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status','border_no','bank_details',
+                    'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1','location_id',
                     'social_media_2', 'permanent_address', 'current_address','profession','specialization',
-                    'guardian_name', 'custom_field_1', 'custom_field_2','nationality',
-                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'max_sales_discount_percent', 'family_number', 'alt_number',
+                    'guardian_name', 'custom_field_1', 'custom_field_2','nationality','contract_type','contract_start_date','contract_end_date',
+                    'contract_duration','probation_period',
+                    'is_renewable','contract_file','essentials_salary','essentials_pay_period',
+                    'salary_type','amount','can_add_category',
+                    'travel_ticket_categorie','health_insurance','selectedData',
+                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
+                    'max_sales_discount_percent', 'family_number', 'alt_number',
                 ]);
     
                 $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
@@ -575,12 +580,17 @@ class EssentialsManageEmployeeController extends Controller
                 if (!empty($request->input('dob'))) {
                     $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
                 }
+                if (!empty($request->input('border_no'))) 
+                { $user_data['border_no'] = $request->input('border_no');}
                 if (!empty($request->input('nationality'))) 
                      { $user_data['nationality_cs'] = $request->input('nationality');}
                 if (!empty($request->input('bank_details'))) {
                     $user_data['bank_details'] = json_encode($request->input('bank_details'));
                 }
-    
+                if (!empty($request->input('has_insurance'))) {
+                    $user_data['has_insurance'] = json_encode($request->input('has_insurance'));
+                }
+                
                 DB::beginTransaction();
                 if ($user_data['allow_login'] && $request->has('username')) {
                     $user_data['username'] = $request->input('username');
@@ -603,7 +613,7 @@ class EssentialsManageEmployeeController extends Controller
              
     
                 //Update module fields for user
-                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user,'request'=>$user_data]);
+                $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_updated', 'model_instance' => $user,'request'=>$user_data]);
     
                 $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
     
