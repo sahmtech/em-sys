@@ -509,6 +509,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $contract=EssentialsEmployeesContract::where('employee_id','=',$user->id)->select('*')->get();
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('id', 'name');
         $professions = EssentialsProfession::all()->pluck('id', 'name');
@@ -549,8 +550,11 @@ class EssentialsManageEmployeeController extends Controller
                     'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1',
                     'social_media_2', 'permanent_address', 'current_address','profession','specialization',
                     'guardian_name', 'custom_field_1', 'custom_field_2','nationality',
-                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'max_sales_discount_percent', 'family_number', 'alt_number',
+                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent',
+                    'gender', 'max_sales_discount_percent', 'family_number', 'alt_number','border_no'
                 ]);
+
+
     
                 $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
                 $business_id = request()->session()->get('user.business_id');
@@ -568,9 +572,9 @@ class EssentialsManageEmployeeController extends Controller
                 if (!empty($request->input('password'))) {
                     $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
                 }
-                //Sales commission percentage
+               
                 $user_data['cmmsn_percent'] = !empty($user_data['cmmsn_percent']) ? $this->moduleUtil->num_uf($user_data['cmmsn_percent']) : 0;
-                //$user_data['max_sales_discount_percent'] = ! is_null($user_data['max_sales_discount_percent']) ? $this->moduleUtil->num_uf($user_data['max_sales_discount_percent']) : null;
+               
                 $user_data['max_sales_discount_percent'] = null;
                 if (!empty($request->input('dob'))) {
                     $user_data['dob'] = $this->moduleUtil->uf_date($request->input('dob'));

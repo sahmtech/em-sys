@@ -747,6 +747,7 @@ class DataController extends Controller
     {
      
         if ($data['event'] = 'user_saved') {
+            
            error_log('0000000000000000000000000000000');
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
