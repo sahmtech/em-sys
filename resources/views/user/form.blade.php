@@ -64,7 +64,7 @@
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
-        <!-- <option value="border_no">@lang('essentials::lang.border_number')</option> -->
+    
     </select>
 </div>
 
