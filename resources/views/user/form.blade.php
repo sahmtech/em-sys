@@ -147,7 +147,7 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
-    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'minlength' => '24']) !!}
+    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'maxlength' => '24']) !!}
     <span id="bankCodeError" class="text-danger"></span>
 </div>
 <div class="form-group col-md-3">
@@ -223,24 +223,22 @@ function validateBorderNumber() {
     function validateBankCode(input) {
     const bankCode = input.value;
 
-  
-    const cleanBankCode = bankCode.replace(/\D/g, '');
-
-    if (cleanBankCode.length === 24 && cleanBankCode.startsWith('SA')) {
-       
+    if (bankCode.length === 24 && bankCode.startsWith('SA')) {
         document.getElementById('bankCodeError').innerText = '';
     } else {
-       
-        if (cleanBankCode.length !== 24) {
+        if (bankCode.length !== 24) {
             document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يحتوي على 24 رقم';
-        } else if (!cleanBankCode.startsWith('SA')) {
+        } else if (!bankCode.startsWith('SA')) {
             document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يبدأ بـ SA';
         }
 
-       
-        input.value = cleanBankCode.substr(0, 24);
+        // Trim the input if it's longer than 24 characters
+        if (bankCode.length > 24) {
+            input.value = bankCode.substr(0, 24);
+        }
     }
 }
+
 
 
    
