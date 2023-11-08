@@ -149,9 +149,9 @@ class CustomAdminSidebarMenu
 
             if (auth()->user()->can('essentials.view_work_cards')) {
                 $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\WorkCardsController::class, 'index']),
+                    action( [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
                     __('essentials::lang.work_cards'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                 )->order(5);
             }
 

@@ -755,8 +755,10 @@ class DataController extends Controller
      */
     public function afterModelSaved($data)
     {
+
         if ($data['event'] == 'user_saved') {
            
+
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
