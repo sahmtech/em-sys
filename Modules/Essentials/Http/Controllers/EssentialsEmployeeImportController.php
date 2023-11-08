@@ -414,12 +414,12 @@ class EssentialsEmployeeImportController extends Controller
                                 // Increment the numeric part
                                 $nextNumericPart = $lastEmpNumber + 1;
 
-                                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 5, '0', STR_PAD_LEFT);
+                                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
                             } 
                         
                             else {
                                 // If no previous employee, start from 1
-                                $emp_data['emp_number'] =  $business_id .'0000';
+                                $emp_data['emp_number'] =  $business_id .'000';
                             }
         
           
