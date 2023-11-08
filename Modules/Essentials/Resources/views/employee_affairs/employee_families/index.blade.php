@@ -89,7 +89,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('eqama_number', __('essentials::lang.eqama_number') . ':*') !!}
-                                {!! Form::text('eqama_number', '21', ['class' => 'form-control', 'id' => 'eqama_number', 'placeholder' => __('essentials::lang.eqama_number')]) !!}
+                                {!! Form::text('eqama_number', '2', ['class' => 'form-control', 'id' => 'eqama_number', 'placeholder' => __('essentials::lang.eqama_number')]) !!}
                                 <div id="idProofNumberError" style="color: red;"></div>
                             </div>
                             
@@ -214,13 +214,13 @@
         
         eqamaNumberInput.addEventListener('input', function () {
             var inputValue = eqamaNumberInput.value;
-            if (/^21\d{0,8}$/.test(inputValue)) {
+            if (/^2\d{0,9}$/.test(inputValue)) {
                 idProofNumberError.textContent = '';
             } else {
-                idProofNumberError.textContent = 'رقم الإقامة يجب أن يبدأ ب 21 ويحتوي فقط 10 خانات';
+                idProofNumberError.textContent = 'رقم الإقامة يجب أن يبدأ ب 2 ويحتوي فقط 10 خانات';
                 
-                var validInput = inputValue.match(/^21\d{0,8}/);
-                eqamaNumberInput.value = validInput ? validInput[0] : '21';
+                var validInput = inputValue.match(/^2\d{0,9}/);
+                eqamaNumberInput.value = validInput ? validInput[0] : '2';
             }
             
             if (idProofNumberError.textContent === '') {
