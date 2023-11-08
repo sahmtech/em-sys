@@ -36,7 +36,8 @@ class EssentialsCountryController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         if (request()->ajax()) {
-            $countries = DB::table('essentials_countries')->select(['id','name', 'nationality', 'details', 'is_active']);
+            $countries = DB::table('essentials_countries')->select(['id','name', 'nationality', 'details', 'is_active'])
+            ->orderby('id','desc');
                        
 
             return Datatables::of($countries)
@@ -70,7 +71,7 @@ class EssentialsCountryController extends Controller
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             })
-            ->removeColumn('id')
+          
             ->rawColumns(['action'])
             ->make(true);
         

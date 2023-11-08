@@ -65,7 +65,7 @@ class EssentialsCardsController extends Controller
     
         $operations = DB::table('essentials_work_cards')
         ->join('essentials_official_documents', 'essentials_work_cards.Residency_id', '=', 'essentials_official_documents.id')
-       ->leftjoin('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+       ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
        ->where('essentials_official_documents.type','=','residence_permit')
        ->where('u.business_id', $business_id)
         ->select(
@@ -157,8 +157,10 @@ class EssentialsCardsController extends Controller
     {
         
         $business_id = request()->session()->get('user.business_id');
-        $employees = User::forDropdown($business_id, false, false, false, true);
-        $business_id = request()->session()->get('user.business_id');
+        $all_users = User::where('business_id',$business_id)
+        ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+       
+        $employees = $all_users->pluck('full_name', 'id');
         return view('essentials::cards.create')
         ->with(compact('employees'));
     }
