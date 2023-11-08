@@ -13,7 +13,7 @@
                 {!! Form::select('user_id', $users, $user->id , ['class' => 'form-control select2', 'id' => 'user_id']); !!}
             </div>
         </div>
-</br>
+
         <div class="row">
             <div class="col-md-3">
                 <!-- Profile Image -->

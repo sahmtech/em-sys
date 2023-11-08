@@ -89,7 +89,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('eqama_number', __('essentials::lang.eqama_number') . ':*') !!}
-                                {!! Form::number('eqama_number', null, ['class' => 'form-control', 'id' => 'eqama_number', 'pattern' => "21\d{8}", 'placeholder' => __('essentials::lang.eqama_number')]) !!}
+                                {!! Form::text('eqama_number', '21', ['class' => 'form-control', 'id' => 'eqama_number', 'placeholder' => __('essentials::lang.eqama_number')]) !!}
                                 <div id="idProofNumberError" style="color: red;"></div>
                             </div>
                             
@@ -206,23 +206,34 @@
         });
     
     </script>
-    <script>
-       
-        const eqamaNumberInput = document.getElementById('eqama_number');
-        const idProofNumberError = document.getElementById('idProofNumberError');
-    
-        eqamaNumberInput.addEventListener('input', function() {
-            const eqamaNumber = eqamaNumberInput.value;
-    
-            if (eqamaNumber.length !== 10) {
-                idProofNumberError.innerText = 'Eqama number must be 10 digits.';
-            } else if (!/^21\d{8}$/.test(eqamaNumber)) {
-                idProofNumberError.innerText = 'Eqama number must start with "21" and be followed by 8 digits.';
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var eqamaNumberInput = document.getElementById('eqama_number');
+        var idProofNumberError = document.getElementById('idProofNumberError');
+        
+        eqamaNumberInput.addEventListener('input', function () {
+            var inputValue = eqamaNumberInput.value;
+            if (/^21\d{0,8}$/.test(inputValue)) {
+                idProofNumberError.textContent = '';
             } else {
-                idProofNumberError.innerText = '';
+                idProofNumberError.textContent = 'رقم الإقامة يجب أن يبدأ ب 21 ويحتوي فقط 10 خانات';
+                
+                var validInput = inputValue.match(/^21\d{0,8}/);
+                eqamaNumberInput.value = validInput ? validInput[0] : '21';
+            }
+            
+            if (idProofNumberError.textContent === '') {
+                idProofNumberError.textContent = '';
             }
         });
-    
-    </script>
+    });
+</script>
+
+
+
+
+
+
 @endsection
 

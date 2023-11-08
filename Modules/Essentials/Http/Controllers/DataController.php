@@ -695,7 +695,7 @@ class DataController extends Controller
     {
         if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
             $business_id = session()->get('business.id');
-            //   $departments = Category::forDropdown($business_id, 'hrm_department');
+          
             $designations = Category::forDropdown($business_id, 'hrm_designation');
             $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
@@ -708,6 +708,13 @@ class DataController extends Controller
                     ->pluck('allowance_deduction_id')
                     ->toArray();
             }
+            
+            if (!empty($user)) {
+                $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+                // if($contract->contract_type)
+                // $contractType= EssentialsContractType::where('type', $contract->contract_type)->first()->type;
+            }
+          
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
@@ -715,7 +722,7 @@ class DataController extends Controller
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
-            return view('essentials::partials.user_form_part', compact('nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            return view('essentials::partials.user_form_part', compact('contract','nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -733,7 +740,7 @@ class DataController extends Controller
                 'essentials_employees_contracts.is_renewable',
 
             ])->first();
-            return view('essentials::partials.user_details_part', compact('contract', 'user_department', 'user_designstion', 'user', 'work_location'))
+            return view('essentials::partials.user_details_part', compact('contract','user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
     }
@@ -747,7 +754,7 @@ class DataController extends Controller
     {
      
         if ($data['event'] = 'user_saved') {
-           error_log('0000000000000000000000000000000');
+           
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
