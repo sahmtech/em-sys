@@ -942,6 +942,11 @@ return[
    'main_dep'=>'إدارة رئيسية',
   'dep_is_active'=>'مفعل',
   'add_department'=>'إضافة إدارة',
+  'add_manager'=>'إضافة مدير',
+  'manager_delegating'=>'تفويض مدير',
+  'manager_name'=>'الرئيس المباشر',
+  'delegatingManager_name'=>'اسم المفوّض'
+
 
 
 
