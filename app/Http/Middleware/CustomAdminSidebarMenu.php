@@ -21,7 +21,7 @@ class CustomAdminSidebarMenu
         if ($request->ajax()) {
             return $next($request);
         }
-
+        $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
         Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
@@ -43,7 +43,9 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, 'accounting')) {
             $this->accountingMenu();
-        } else {
+        } elseif ($is_admin) {
+            $this->settingsMenu();
+        }else {
         }
 
 
@@ -442,6 +444,104 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'OrderRequest'],
                 )->order(4);
             }
+        });
+    }
+
+    public function settingsMenu(){
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(
+                action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings']),
+                __('business.settings'),
+                [
+                    'icon' => 'fa fas fa-cog',
+                   // 'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->dropdown(
+                __('business.settings'),
+                function ($sub) use ($enabled_modules) {
+                    if (auth()->user()->can('business_settings.access')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings']),
+                            __('business.business_settings'),
+                            ['icon' => 'fa fas fa-cogs', 'active' => request()->segment(1) == 'business', 'id' => 'tour_step2']
+                        );
+                        $sub->url(
+                            action([\App\Http\Controllers\BusinessLocationController::class, 'index']),
+                            __('business.business_locations'),
+                            ['icon' => 'fa fas fa-map-marker', 'active' => request()->segment(1) == 'business-location']
+                        );
+                    }
+                    if (auth()->user()->can('invoice_settings.access')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\InvoiceSchemeController::class, 'index']),
+                            __('invoice.invoice_settings'),
+                            ['icon' => 'fa fas fa-file', 'active' => in_array(request()->segment(1), ['invoice-schemes', 'invoice-layouts'])]
+                        );
+                    }
+                    if (auth()->user()->can('barcode_settings.access')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\BarcodeController::class, 'index']),
+                            __('barcode.barcode_settings'),
+                            ['icon' => 'fa fas fa-barcode', 'active' => request()->segment(1) == 'barcodes']
+                        );
+                    }
+                    if (auth()->user()->can('access_printers')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\PrinterController::class, 'index']),
+                            __('printer.receipt_printers'),
+                            ['icon' => 'fa fas fa-share-alt', 'active' => request()->segment(1) == 'printers']
+                        );
+                    }
+
+                    if (auth()->user()->can('tax_rate.view') || auth()->user()->can('tax_rate.create')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\TaxRateController::class, 'index']),
+                            __('tax_rate.tax_rates'),
+                            ['icon' => 'fa fas fa-bolt', 'active' => request()->segment(1) == 'tax-rates']
+                        );
+                    }
+
+                    if (in_array('tables', $enabled_modules) && auth()->user()->can('access_tables')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\Restaurant\TableController::class, 'index']),
+                            __('restaurant.tables'),
+                            ['icon' => 'fa fas fa-table', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'tables']
+                        );
+                    }
+
+                    if (in_array('modifiers', $enabled_modules) && (auth()->user()->can('product.view') || auth()->user()->can('product.create'))) {
+                        $sub->url(
+                            action([\App\Http\Controllers\Restaurant\ModifierSetsController::class, 'index']),
+                            __('restaurant.modifiers'),
+                            ['icon' => 'fa fas fa-pizza-slice', 'active' => request()->segment(1) == 'modules' && request()->segment(2) == 'modifiers']
+                        );
+                    }
+
+                    if (in_array('types_of_service', $enabled_modules) && auth()->user()->can('access_types_of_service')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\TypesOfServiceController::class, 'index']),
+                            __('lang_v1.types_of_service'),
+                            ['icon' => 'fa fas fa-user-circle', 'active' => request()->segment(1) == 'types-of-service']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-cog', 'id' => 'tour_step3']
+            );
         });
     }
 
