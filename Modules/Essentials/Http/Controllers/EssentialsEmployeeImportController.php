@@ -467,7 +467,7 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
                         $essentials_employee_appointmets->business_location_id= $emp_data['location_id'];
-                        $essentials_employee_appointmets->superior = "superior";
+                  //      $essentials_employee_appointmets->superior = "superior";
                         $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
                         $essentials_employee_appointmets->specialization_id =$emp_data["specialization_id"];
                         $essentials_employee_appointmets->save();
