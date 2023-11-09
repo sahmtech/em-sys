@@ -45,7 +45,7 @@ class CustomAdminSidebarMenu
             $this->accountingMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
-        }else {
+        } else {
         }
 
 
@@ -151,7 +151,7 @@ class CustomAdminSidebarMenu
 
             if (auth()->user()->can('essentials.view_work_cards')) {
                 $menu->url(
-                    action( [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+                    action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
                     __('essentials::lang.work_cards'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                 )->order(5);
@@ -447,7 +447,8 @@ class CustomAdminSidebarMenu
         });
     }
 
-    public function settingsMenu(){
+    public function settingsMenu()
+    {
         Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
@@ -458,7 +459,7 @@ class CustomAdminSidebarMenu
                 __('business.settings'),
                 [
                     'icon' => 'fa fas fa-cog',
-                   // 'active' => request()->segment(1) == 'home'
+                    // 'active' => request()->segment(1) == 'home'
                 ]
             );
             $menu->header("");
@@ -542,6 +543,190 @@ class CustomAdminSidebarMenu
                 },
                 ['icon' => 'fa fas fa-cog', 'id' => 'tour_step3']
             );
+
+            $menu->dropdown(
+                __('report.reports'),
+                function ($sub) use ($enabled_modules, $is_admin) {
+                    if (auth()->user()->can('profit_loss_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getProfitLoss']),
+                            __('report.profit_loss'),
+                            ['icon' => 'fa fas fa-file-invoice-dollar', 'active' => request()->segment(2) == 'profit-loss']
+                        );
+                    }
+                    if (config('constants.show_report_606') == true) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'purchaseReport']),
+                            'Report 606 (' . __('lang_v1.purchase') . ')',
+                            ['icon' => 'fa fas fa-arrow-circle-down', 'active' => request()->segment(2) == 'purchase-report']
+                        );
+                    }
+                    if (config('constants.show_report_607') == true) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'saleReport']),
+                            'Report 607 (' . __('business.sale') . ')',
+                            ['icon' => 'fa fas fa-arrow-circle-up', 'active' => request()->segment(2) == 'sale-report']
+                        );
+                    }
+                    if ((in_array('purchases', $enabled_modules) || in_array('add_sale', $enabled_modules) || in_array('pos_sale', $enabled_modules)) && auth()->user()->can('purchase_n_sell_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getPurchaseSell']),
+                            __('report.purchase_sell_report'),
+                            ['icon' => 'fa fas fa-exchange-alt', 'active' => request()->segment(2) == 'purchase-sell']
+                        );
+                    }
+
+                    if (auth()->user()->can('tax_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getTaxReport']),
+                            __('report.tax_report'),
+                            ['icon' => 'fa fas fa-percent', 'active' => request()->segment(2) == 'tax-report']
+                        );
+                    }
+                    if (auth()->user()->can('contacts_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getCustomerSuppliers']),
+                            __('report.contacts'),
+                            ['icon' => 'fa fas fa-address-book', 'active' => request()->segment(2) == 'customer-supplier']
+                        );
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getCustomerGroup']),
+                            __('lang_v1.customer_groups_report'),
+                            ['icon' => 'fa fas fa-users', 'active' => request()->segment(2) == 'customer-group']
+                        );
+                    }
+                    if (auth()->user()->can('stock_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getStockReport']),
+                            __('report.stock_report'),
+                            ['icon' => 'fa fas fa-hourglass-half', 'active' => request()->segment(2) == 'stock-report']
+                        );
+                        if (session('business.enable_product_expiry') == 1) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ReportController::class, 'getStockExpiryReport']),
+                                __('report.stock_expiry_report'),
+                                ['icon' => 'fa fas fa-calendar-times', 'active' => request()->segment(2) == 'stock-expiry']
+                            );
+                        }
+                        if (session('business.enable_lot_number') == 1) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ReportController::class, 'getLotReport']),
+                                __('lang_v1.lot_report'),
+                                ['icon' => 'fa fas fa-hourglass-half', 'active' => request()->segment(2) == 'lot-report']
+                            );
+                        }
+
+                        if (in_array('stock_adjustment', $enabled_modules)) {
+                            $sub->url(
+                                action([\App\Http\Controllers\ReportController::class, 'getStockAdjustmentReport']),
+                                __('report.stock_adjustment_report'),
+                                ['icon' => 'fa fas fa-sliders-h', 'active' => request()->segment(2) == 'stock-adjustment-report']
+                            );
+                        }
+                    }
+
+                    if (auth()->user()->can('trending_product_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getTrendingProducts']),
+                            __('report.trending_products'),
+                            ['icon' => 'fa fas fa-chart-line', 'active' => request()->segment(2) == 'trending-products']
+                        );
+                    }
+
+                    if (auth()->user()->can('purchase_n_sell_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'itemsReport']),
+                            __('lang_v1.items_report'),
+                            ['icon' => 'fa fas fa-tasks', 'active' => request()->segment(2) == 'items-report']
+                        );
+
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getproductPurchaseReport']),
+                            __('lang_v1.product_purchase_report'),
+                            ['icon' => 'fa fas fa-arrow-circle-down', 'active' => request()->segment(2) == 'product-purchase-report']
+                        );
+
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getproductSellReport']),
+                            __('lang_v1.product_sell_report'),
+                            ['icon' => 'fa fas fa-arrow-circle-up', 'active' => request()->segment(2) == 'product-sell-report']
+                        );
+
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'purchasePaymentReport']),
+                            __('lang_v1.purchase_payment_report'),
+                            ['icon' => 'fa fas fa-search-dollar', 'active' => request()->segment(2) == 'purchase-payment-report']
+                        );
+
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'sellPaymentReport']),
+                            __('lang_v1.sell_payment_report'),
+                            ['icon' => 'fa fas fa-search-dollar', 'active' => request()->segment(2) == 'sell-payment-report']
+                        );
+                    }
+                    if (in_array('expenses', $enabled_modules) && auth()->user()->can('expense_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getExpenseReport']),
+                            __('report.expense_report'),
+                            ['icon' => 'fa fas fa-search-minus', 'active' => request()->segment(2) == 'expense-report']
+                        );
+                    }
+                    if (auth()->user()->can('register_report.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getRegisterReport']),
+                            __('report.register_report'),
+                            ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(2) == 'register-report']
+                        );
+                    }
+                    if (auth()->user()->can('sales_representative.view')) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getSalesRepresentativeReport']),
+                            __('report.sales_representative'),
+                            ['icon' => 'fa fas fa-user', 'active' => request()->segment(2) == 'sales-representative-report']
+                        );
+                    }
+                    if (auth()->user()->can('purchase_n_sell_report.view') && in_array('tables', $enabled_modules)) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getTableReport']),
+                            __('restaurant.table_report'),
+                            ['icon' => 'fa fas fa-table', 'active' => request()->segment(2) == 'table-report']
+                        );
+                    }
+
+                    if (auth()->user()->can('tax_report.view') && !empty(config('constants.enable_gst_report_india'))) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'gstSalesReport']),
+                            __('lang_v1.gst_sales_report'),
+                            ['icon' => 'fa fas fa-percent', 'active' => request()->segment(2) == 'gst-sales-report']
+                        );
+
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'gstPurchaseReport']),
+                            __('lang_v1.gst_purchase_report'),
+                            ['icon' => 'fa fas fa-percent', 'active' => request()->segment(2) == 'gst-purchase-report']
+                        );
+                    }
+
+                    if (auth()->user()->can('sales_representative.view') && in_array('service_staff', $enabled_modules)) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'getServiceStaffReport']),
+                            __('restaurant.service_staff_report'),
+                            ['icon' => 'fa fas fa-user-secret', 'active' => request()->segment(2) == 'service-staff-report']
+                        );
+                    }
+
+                    if ($is_admin) {
+                        $sub->url(
+                            action([\App\Http\Controllers\ReportController::class, 'activityLog']),
+                            __('lang_v1.activity_log'),
+                            ['icon' => 'fa fas fa-user-secret', 'active' => request()->segment(2) == 'activity-log']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-chart-bar', 'id' => 'tour_step8']
+            );
+
+            $menu->url(action([\App\Http\Controllers\BackUpController::class, 'index']), __('lang_v1.backup'), ['icon' => 'fa fas fa-hdd', 'active' => request()->segment(1) == 'backup'])->order(60);
         });
     }
 

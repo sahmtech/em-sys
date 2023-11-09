@@ -261,7 +261,23 @@ class HomeController extends Controller
             ['value' => 'tax_rate.view'],
             ['value' => 'tax_rate.create'],
             ['value' => 'access_package_subscriptions'],
+
+            ['value' => 'purchase_n_sell_report.view'],
+            ['value' => 'contacts_report.view'],
+            ['value' => 'stock_report.view'],
+            ['value' => 'tax_report.view'],
+            ['value' => 'trending_product_report.view'],
+            ['value' => 'sales_representative.view'],
+            ['value' => 'expense_report.view'],
+            ['value' => 'backup'],
         ];
+
+
+
+
+
+
+
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
