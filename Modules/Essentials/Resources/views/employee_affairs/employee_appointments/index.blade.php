@@ -65,11 +65,11 @@
                                 <th>@lang('essentials::lang.national_id_number' )</th>
                                 <th>@lang('essentials::lang.department' )</th>
                                 <th>@lang('essentials::lang.location')</th>
-                                <th>@lang('essentials::lang.superior' )</th>
+                                {{-- <th>@lang('essentials::lang.superior' )</th> --}}
                                 <th>@lang('sales::lang.profession' )</th>
                                 <th>@lang('essentials::lang.specialization' )</th>
-                                <!-- <th>@lang('essentials::lang.employee_status' )</th>
-                                <th>@lang('messages.action' )</th> -->
+                                {{-- <th>@lang('essentials::lang.employee_status' )</th>
+                                <th>@lang('messages.action' )</th> --}}
                             </tr>
                         </thead>
                     </table>
@@ -171,7 +171,7 @@ $(document).ready(function() {
                         { data: 'id_proof_number' },
                         { data: 'department_id' },
                         { data: 'business_location_id' },
-                        { data: 'superior' },
+                        // { data: 'superior' },
                         { data: 'profession_id'},
                         { data: 'specialization_id'},
                      
