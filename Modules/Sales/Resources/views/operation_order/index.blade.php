@@ -105,7 +105,7 @@
             { data: 'contract_number', name: 'contract_number' },
             { data: 'operation_order_type', name: 'operation_order_type' },
             { data: 'Status', name: 'Status' },
-            {data: 'show_operation' ,name:'show_operation'},
+            {data:  'show_operation' ,name:'show_operation'},
             { data: 'action', name: 'action', orderable: false, searchable: false },
            
         ]

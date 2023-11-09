@@ -29,7 +29,7 @@
         
             <div class="form-group col-md-6">
                 {!! Form::label('english_name', __('essentials::lang.country_en_name') . ':') !!}
-                {!! Form::text('english_name', (json_decode($country->name,true))['en'], ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_en_name'), 'required']) !!}
+                {!! Form::text('english_name', (json_decode($country->name,true))['en'], ['class' => 'form-control', 'placeholder' => __('essentials::lang.country_en_name')]) !!}
             </div>
         
             <div class="form-group col-md-6">

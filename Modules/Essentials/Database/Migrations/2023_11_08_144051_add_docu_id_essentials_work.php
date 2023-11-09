@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('essentials_leave_types', function (Blueprint $table) {
-            $table->string('leave_type')->nullable()->after('id');
-         
-
+        Schema::table('essentials_work_cards', function (Blueprint $table) {
+            
+            $table->unsignedBigInteger('Residency_id')->nullable()->after('employee_id');
+            $table->foreign('Residency_id')->references('id')->on('essentials_official_documents')->onDelete('cascade');
         });
     }
 

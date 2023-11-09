@@ -32,9 +32,10 @@
 <div class="clearfix"></div>
 <div class="form-group col-md-3">
     {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
-    {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'minlength' => '10']) !!}
+    {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'maxlength' => '10']) !!}
     <span id="contactNumberError" class="text-danger"></span>
 </div>
+
 <div class="form-group col-md-3">
     {!! Form::label('alt_number', __( 'business.alternate_number' ) . ':') !!}
     {!! Form::text('alt_number', !empty($user->alt_number) ? $user->alt_number : null, ['class' => 'form-control', 'placeholder' => __( 'business.alternate_number') ]); !!}
@@ -146,7 +147,7 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
-    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'minlength' => '24']) !!}
+    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'maxlength' => '24']) !!}
     <span id="bankCodeError" class="text-danger"></span>
 </div>
 <div class="form-group col-md-3">
@@ -164,24 +165,23 @@
 </div> --}}
 
 <script>
-    // Function to validate the "border_no" field
-    function validateBorderNumber() {
-        var borderNoInput = document.getElementById('border_no');
-        var borderNo = borderNoInput.value.trim();
 
-        
-        if (borderNo.length === 0) {
-            document.getElementById('border_no_error').textContent = '';
-            return;
-        }
+function validateBorderNumber() {
+    var borderNoInput = document.getElementById('border_no');
+    var borderNo = borderNoInput.value.trim();
 
-       
-        if (!/^[3-4]\d{0,9}$/.test(borderNo)) {
-            document.getElementById('border_no_error').textContent = 'Border number must start with 3 or 4 and contain at most 10 digits.';
-        } else {
-            document.getElementById('border_no_error').textContent = '';
-        }
+    if (borderNo.length === 0) {
+        document.getElementById('border_no_error').textContent = '';
+        return;
     }
+
+    if (/^[3-4]\d{8}$/.test(borderNo)) {
+        document.getElementById('border_no_error').textContent = '';
+    } else {
+        document.getElementById('border_no_error').textContent = 'رقم الحدود يجب أن يحتوي على 10 أرقام ويبدأ ب 3 أو 4';
+    }
+}
+
 
   
     document.getElementById('border_no').addEventListener('input', validateBorderNumber);
@@ -189,38 +189,56 @@
 
 
 <script>
+    function validateContactNumber(input) {
+        let contactNumber = input.value.trim();
+
+      
+        contactNumber = contactNumber.replace(/\D/g, '');
+
+        if (contactNumber.length === 10 && contactNumber.startsWith('05')) {
+          
+            document.getElementById('contactNumberError').innerText = '';
+        } else {
+           
+            if (contactNumber.length !== 10) {
+                document.getElementById('contactNumberError').innerText = 'رقم الموبايل يجب أن يحتوي على 10 أرقام';
+            } 
+            else if (!contactNumber.startsWith('05')) {
+                document.getElementById('contactNumberError').innerText = 'رقم الموبايل يجب أن يبدأ بـ 05';
+            }
+
+           
+            input.value = contactNumber.substr(0, 10);
+        }
+    }
+</script>
+
+
+<script>
     let validationLength = 10;
     
-    function validateContactNumber(input) {
-    let contactNumber = input.value;
-    
-  
-    contactNumber = contactNumber.replace(/\D/g, '');
-
-    if (contactNumber.length === 10) {
-        document.getElementById('contactNumberError').innerText = '';
-    } else {
-        document.getElementById('contactNumberError').innerText = 'رقم الموبايل يجب أن يبدأ 05  ولا يتجاوز 10 رقم';
-        
-        // Truncate the input to the first 10 digits
-        input.value = contactNumber.substr(0, 10);
-    }
-}
 
 
-function validateBankCode(input) {
+
+    function validateBankCode(input) {
     const bankCode = input.value;
 
-    if (bankCode.length > 24) {
-        input.value = bankCode.slice(0, 24); 
-    }
-
-    if (bankCode.length !== 24 || !bankCode.startsWith('SA')) {
-        document.getElementById('bankCodeError').innerText = ' رقم البنك يجب أن يبدأ SA  ولا يتجاوز 24 رقم';
-    } else {
+    if (bankCode.length === 24 && bankCode.startsWith('SA')) {
         document.getElementById('bankCodeError').innerText = '';
+    } else {
+        if (bankCode.length !== 24) {
+            document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يحتوي على 24 رقم';
+        } else if (!bankCode.startsWith('SA')) {
+            document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يبدأ بـ SA';
+        }
+
+        // Trim the input if it's longer than 24 characters
+        if (bankCode.length > 24) {
+            input.value = bankCode.substr(0, 24);
+        }
     }
 }
+
 
 
    
@@ -276,39 +294,61 @@ function validateIdProofNumber(input) {
     const idProofName = document.getElementById('id_proof_name').value;
     const idProofNumberInput = input;
     const idProofNumber = idProofNumberInput.value;
-   // idProofNumber = idProofNumber.replace(/\D/g, '');
-  
 
     const idProofNumberError = document.getElementById('idProofNumberError');
     idProofNumberError.innerText = '';
 
-    if (idProofName === 'eqama') 
-    {
-       
-        if (idProofNumber.length != 10 || !idProofNumber.startsWith('2')) {
-           
+    if (idProofName === 'eqama') {
+        if (idProofNumber.length !== 10 || !idProofNumber.startsWith('2')) {
             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
-            input.value = idProofNumber.slice(0, 10); 
+            input.value = idProofNumber.slice(0, 10);
         }
-        
-       
-       
-    } 
-    
-    
-    else if (idProofName === 'national_id')
-     {
-        
-        if (idProofNumber.length != 10 || !idProofNumber.startsWith('10')) {
+    } else if (idProofName === 'national_id') {
+        if (idProofNumber.length !== 10 || !idProofNumber.startsWith('10')) {
             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
-            input.value = idProofNumber.slice(0, 10); 
+            input.value = idProofNumber.slice(0, 10);
         }
-
     }
+}
+
+
+// function validateIdProofNumber(input) {
+//     const idProofName = document.getElementById('id_proof_name').value;
+//     const idProofNumberInput = input;
+//     const idProofNumber = idProofNumberInput.value;
+//    // idProofNumber = idProofNumber.replace(/\D/g, '');
+  
+
+//     const idProofNumberError = document.getElementById('idProofNumberError');
+//     idProofNumberError.innerText = '';
+
+//     if (idProofName === 'eqama') 
+//     {
+       
+//         if (idProofNumber.length != 10 || !idProofNumber.startsWith('2')) {
+           
+//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
+//             input.value = idProofNumber.slice(0, 10); 
+//         }
+        
+       
+       
+//     } 
+    
+    
+//     else if (idProofName === 'national_id')
+//      {
+        
+//         if (idProofNumber.length != 10 || !idProofNumber.startsWith('10')) {
+//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
+//             input.value = idProofNumber.slice(0, 10); 
+//         }
+
+//     }
     
   
    
-}
+// }
 </script>
 
 

@@ -177,7 +177,7 @@ class EssentialsManageEmployeeController extends Controller
                 'users.status',
                 'essentials_employee_appointmets.profession_id as profession_id',
                 'essentials_employee_appointmets.specialization_id as specialization_id'
-                    ]);
+                    ])->orderby('id','desc');
 
        
                     if (!empty($request->input('specializations-select'))) {
@@ -509,6 +509,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $contract=EssentialsEmployeesContract::where('employee_id','=',$user->id)->select('*')->get();
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('id', 'name');
         $professions = EssentialsProfession::all()->pluck('id', 'name');
@@ -548,6 +549,7 @@ class EssentialsManageEmployeeController extends Controller
                     'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status','border_no','bank_details',
                     'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1','location_id',
                     'social_media_2', 'permanent_address', 'current_address','profession','specialization',
+
                     'guardian_name', 'custom_field_1', 'custom_field_2','nationality','contract_type','contract_start_date','contract_end_date',
                     'contract_duration','probation_period',
                     'is_renewable','contract_file','essentials_salary','essentials_pay_period',
@@ -555,7 +557,10 @@ class EssentialsManageEmployeeController extends Controller
                     'travel_ticket_categorie','health_insurance','selectedData',
                     'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
                     'max_sales_discount_percent', 'family_number', 'alt_number',
+
                 ]);
+
+
     
                 $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
                 $business_id = request()->session()->get('user.business_id');
