@@ -402,24 +402,46 @@ class EssentialsEmployeeImportController extends Controller
                         
       
           
+                            // $numericPart = (int)substr($business_id, 3);
+                            // $lastEmployee = User::where('business_id', $business_id)
+                            //     ->orderBy('emp_number', 'desc')
+                            //     ->first();
+                            
+                            // if ($lastEmployee) {
+                            //     // Get the numeric part from the last employee's emp_number
+                            //     $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+                        
+                            //     // Increment the numeric part
+                            //     $nextNumericPart = $lastEmpNumber + 1;
+
+                            //     $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+                            // } 
+                        
+                            // else {
+                            //     // If no previous employee, start from 1
+                            //     $emp_data['emp_number'] =  $business_id .'000';
+                            // }
+
+
                             $numericPart = (int)substr($business_id, 3);
                             $lastEmployee = User::where('business_id', $business_id)
                                 ->orderBy('emp_number', 'desc')
                                 ->first();
-                            
+
                             if ($lastEmployee) {
                                 // Get the numeric part from the last employee's emp_number
                                 $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-                        
+
                                 // Increment the numeric part
                                 $nextNumericPart = $lastEmpNumber + 1;
 
-                                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-                            } 
-                        
-                            else {
-                                // If no previous employee, start from 1
-                                $emp_data['emp_number'] =  $business_id .'000';
+                                // Ensure the numeric part has at least 6 digits
+                                $nextNumericPartStr = str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+
+                                $emp_data['emp_number'] = $business_id . $nextNumericPartStr;
+                            } else {
+                                // If no previous employee, start from 1 and ensure it has at least 6 digits
+                                $emp_data['emp_number'] = $business_id . str_pad('1', 6, '0', STR_PAD_LEFT);
                             }
         
           
