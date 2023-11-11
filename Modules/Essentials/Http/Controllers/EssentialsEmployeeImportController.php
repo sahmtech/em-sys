@@ -83,11 +83,7 @@ class EssentialsEmployeeImportController extends Controller
             if ($request->hasFile('employee_csv')) {
                 $file = $request->file('employee_csv');
                 $parsed_array = Excel::toArray([], $file);
-                 //dd($parsed_array);
-                //Remove header row
                 $imported_data = array_splice($parsed_array[0], 1);
-
-
                 $business_id = $request->session()->get('user.business_id');
                 $user_id = $request->session()->get('user.id');
 
@@ -95,308 +91,340 @@ class EssentialsEmployeeImportController extends Controller
                 $is_valid = true;
                 $error_msg = '';
 
-                DB::beginTransaction();
-                foreach ($imported_data as $key => $value) {
+                $column_mapping = [
+                    0 => 'first_name',
+                    1 => 'mid_name',
+                    2 => 'last_name',
+                    3=>'employee_type',
                    
-                    // if (count($value) != 34) {
-                    //     $is_valid = false;
-                    //     $error_msg = 'Number of columns mismatch';
-                    //     break;
-                    // }
-
-                    $row_no = $key + 1;
-                    $emp_array = [];
-                    $contract_array=[];
-                    $emp="";
-                    //Check contact type
-                    
-                    if (!empty($value[0])) {
-                        $emp_array['first_name'] = $value[0];
-                    } else {
-                        // $is_valid = false;
-                        // $error_msg = "First name is required in row no. $row_no";
-                        // break;
-                    }
-                    $emp_array['mid_name'] = $value[1];
-                   
-                   
-                    if (!empty($value[2])) 
-                    {
-                        $emp_array['last_name'] = $value[2];
-                    } else {
-                        // $is_valid = false;
-                        // $error_msg = "First name is required in row no. $row_no";
-                        // break;
-                    }
-                  
-                    $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
-                    if(!empty($value[3])){
-                        $emp_array['user_type'] = $value[3];
-                    }
-                    else
-                    {
-                        //  $is_valid = false;
-                        // $error_msg = "Mobile number is required in row no. $row_no";
-                        // break;
-                    }
-                   
-                    $emp_array['email'] = $value[4];
-          
-                    
-                    if (!empty($value[5])) {
-                        if (is_numeric($value[5])) {
-                            // Convert the float to a human-readable date
-                            $excelDateValue = (float)$value[5];
-                            $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
-                            $date = date('Y-m-d', $unixTimestamp);
-                            $emp_array['dob'] = $date;
-                           // dd($emp_array['dob']);
-                        } else {
-                            // Try to parse it as a date string
-                            $date = DateTime::createFromFormat('d/m/Y', $value[5]);
-                            if ($date) {
-                                $dob = $date->format('Y-m-d');
-                                $emp_array['dob'] = $dob;
-                            }
-                    }
-                }
-
-                 
-                    $emp_array['gender'] = $value[6];
-                    $emp_array['marital_status'] = $value[7];
-                   // $emp_array['name'] = implode(' ', [$emp_array['prefix'], $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
-                   $emp_array['blood_group'] = $value[8];
-                  
-                    
-                    //Mobile number
-                    if (! empty(trim($value[9]))) {
-                        $emp_array['contact_number'] = $value[9];
-                    } 
-                    else {
-                        // $is_valid = false;
-                        // $error_msg = "Mobile number is required in row no. $row_no";
-                        // break;
-                    }
-
-                    //Alt contact number
-                    $emp_array['alt_number'] = $value[10];
-                    $emp_array['family_number'] = $value[11];
-                    $emp_array['current_address'] = $value[12];
-                    $emp_array['permanent_address'] = $value[13];
-                  
-
-
-                    $emp_array['id_proof_name'] = $value[14];
-                    $emp_array['id_proof_number'] = $value[15];
-                   // $emp_array['bank_details']=implode(' ', [$value[16], $value[17], $value[18],$value[19]]);
-                   $emp_array['bank_details'] = [
-                    'account_holder_name' => $value[16],
-                    'account_number' => $value[17],
-                    'bank_name' => $value[18],
-                    'bank_code' => $value[19],
                 ];
-                
-                // Convert the 'bank_details' array to JSON
-                    $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
-                  // dd( $emp_array['bank_details']);
-                    $emp_array['location_id'] = $value[20];
+              
+            DB::beginTransaction();
+            foreach ($imported_data as $key => $value)
+             {
+                $row_no = $key + 1;
+                $emp_array = [];     
+                $emp="";
 
-                    if ($emp_array['location_id'] !== null) {
-                        // Check if the specialization_id exists in the database
-                        $specialization = Business::find($emp_array['location_id']);
-                        if (!$specialization) {
-                            // Specialization ID doesn't exist, handle the error
-                            $is_valid = false;
-                            $error_msg = "Invalid location ID in row no. $row_no";
-                            break;
-                        }
-                    } else {
-                        // Set a default value or handle it as needed
-                        $emp_array['location_id'] = null;
-                    }
-
-
-                    $emp_array['essentials_department_id'] = $value[21];
-                    if ($emp_array['essentials_department_id'] !== null) {
-                        // Check if the specialization_id exists in the database
-                        $specialization = EssentialsDepartment::find($emp_array['essentials_department_id']);
-                        if (!$specialization) {
-                            // Specialization ID doesn't exist, handle the error
-                            $is_valid = false;
-                            $error_msg = "Invalid department ID in row no. $row_no";
-                            break;
-                        }
-                    } else {
-                        // Set a default value or handle it as needed
-                        $emp_array['essentials_department_id'] = null;
-                    }
-
-                    $emp_array['addmission_date']=$value[22];
-
-
-
-                    if (!empty($value[22])) {
-                        if (is_numeric($value[22])) {
-                           
-                            $excelDateValue = (float)$value[22];
-                            $unixTimestamp = ($excelDateValue - 25569) * 86400; 
-                            $date = date('Y-m-d', $unixTimestamp);
-                            $emp_array['addmission_date'] = $date;
-                         
-                        } else {
-                           
-                            $date = DateTime::createFromFormat('d/m/Y', $value[22]);
-                            if ($date) {
-                                $dob = $date->format('Y-m-d');
-                                $emp_array['addmission_date'] = $dob;
-                            }
-                    }
-                }
-
-                    $emp_array['specialization_id']=$value[23];
-                    if ($emp_array['specialization_id'] !== null) {
-                       
-                        $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
-                        if (!$specialization) {
-                         
-                            $is_valid = false;
-                            $error_msg = "Invalid specialization ID in row no. $row_no";
-                            break;
-                        }
-                    } else {
-                       
-                        $emp_array['specialization_id'] = null;
-                    }
-                    $emp_array['profession_id']=$value[24];
-
-                    if ($emp_array['profession_id'] !== null) {
-                       
-                        $specialization = EssentialsProfession::find($emp_array['profession_id']);
-                        if (!$specialization) {
-                           
-                            $is_valid = false;
-                            $error_msg = "Invalid profession ID in row no. $row_no";
-                            break;
-                        }
-                    } else {
-                      
-                        $emp_array['profession_id'] = null;
-                    }
-                    
-                    $emp_array['border_no']=$value[25];
-                    $emp_array['nationality_id']=$value[26];
-
-                    if ($emp_array['nationality_id'] !== null) {
-                       
-                        $nationality_id = EssentialsCountry::find($emp_array['nationality_id']);
-                        if (!$nationality_id) {
-                           
-                            $is_valid = false;
-                            $error_msg = "Invalid nationality ID in row no. $row_no";
-                            break;
-                        }
-                    } else {
-                      
-                        $emp_array['nationality_id'] = null;
-                    }
-
-
-                    
-                    if (!empty($value[27])) {
-                        $contract_array['contract_number'] = $value[27];
-                    } 
-                 
-                  
-                    if (!empty($value[28])) {
-                        if (is_numeric($value[28])) {
-                         
-                            $excelDateValue = (float)$value[28];
-                            $unixTimestamp = ($excelDateValue - 25569) * 86400; 
-                            $date = date('Y-m-d', $unixTimestamp);
+                                      
+                                
+                                     
+                                        
+                 if (!empty($value[0])) 
+                 {
+                     $emp_array['first_name'] = $value[0];
+                 }
+              
+                                        
+                                        $emp_array['mid_name'] = $value[1];
+                                    
+                                    
+                                        if (!empty($value[2])) 
+                                        {
+                                            $emp_array['last_name'] = $value[2];
+                                        } else {
+                                            // $is_valid = false;
+                                            // $error_msg = "First name is required in row no. $row_no";
+                                            // break;
+                                        }
+                                    
+                                        $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
+                                        if(!empty($value[3])){
+                                            $emp_array['user_type'] = $value[3];
+                                        }
+                                        else
+                                        {
+                                            //  $is_valid = false;
+                                            // $error_msg = "Mobile number is required in row no. $row_no";
+                                            // break;
+                                        }
+                                    
+                                        $emp_array['email'] = $value[4];
                             
-                            $contract_array['contract_start_date'] = $date;
-                         
-                        } else {
-                          
-                            $date = DateTime::createFromFormat('d/m/Y', $value[28]);
-                            if ($date) {
-                                $dob = $date->format('Y-m-d');
-                                $contract_array['contract_start_date'] = $dob;
+                                        
+                                    if (!empty($value[5])) {
+                                            if (is_numeric($value[5])) {
+                                            
+                                                $excelDateValue = (float)$value[5];
+                                                $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                                                $date = date('Y-m-d', $unixTimestamp);
+                                                $emp_array['dob'] = $date;
+                                            
+                                            } else {
+                                            
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[5]);
+                                                if ($date) {
+                                                    $dob = $date->format('Y-m-d');
+                                                    $emp_array['dob'] = $dob;
+                                                }
+                                        }
+                                    }
+                                    else{ $emp_array['dob'] = null;}
 
-                            }
-                         
-                    }
-                }
- 
-                if (!empty($value[29])) {
-                    if (is_numeric($value[29])) {
-                        // Convert the float to a human-readable date
-                        $excelDateValue = (float)$value[29];
-                        $unixTimestamp = ($excelDateValue - 25569) * 86400; // Convert Excel date to Unix timestamp
-                        $date = date('Y-m-d', $unixTimestamp);
-                        $contract_array['contract_end_date'] = $date;
-                       // dd($emp_array['dob']);
-                    } else {
-                        // Try to parse it as a date string
-                        $date = DateTime::createFromFormat('d/m/Y', $value[29]);
-                        if ($date) {
-                            $dob = $date->format('Y-m-d');
-                            $contract_array['contract_end_date'] = $dob;
-                        }
-                }
-            }
+                                    
+                                    $emp_array['gender'] = $value[6];
+                                    $emp_array['marital_status'] = $value[7];
+                                    // $emp_array['name'] = implode(' ', [$emp_array['prefix'], $emp_array['first_name'], $emp_array['middle_name'], $emp_array['last_name']]);
+                                    $emp_array['blood_group'] = $value[8];
+                                    
+                                        
+                                    
+                                        if (! empty(trim($value[9]))) {
+                                            $emp_array['contact_number'] = $value[9];
+                                        } 
+                                        else {
+                                            // $is_valid = false;
+                                            // $error_msg = "Mobile number is required in row no. $row_no";
+                                            // break;
+                                        }
+
+                                    
+                                        $emp_array['alt_number'] = $value[10];
+                                        $emp_array['family_number'] = $value[11];
+                                        $emp_array['current_address'] = $value[12];
+                                        $emp_array['permanent_address'] = $value[13];
+                                    
 
 
-                   
-                   
+                                        $emp_array['id_proof_name'] = $value[14];
+                                        $emp_array['id_proof_number'] = $value[15];
+                                    
+                                    $emp_array['bank_details'] = [
+                                        'account_holder_name' => $value[16],
+                                        'account_number' => $value[17],
+                                        'bank_name' => $value[18],
+                                        'bank_code' => $value[19],
+                                    ];
+                                    
+                                
+                                        $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
+                                    
+                                        $emp_array['location_id'] = $value[20];
+
+                                        if ($emp_array['location_id'] !== null) {
+                                        
+                                            $specialization = Business::find($emp_array['location_id']);
+                                            if (!$specialization) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = "Invalid location ID in row no. $row_no";
+                                                break;
+                                            }
+                                        } else {
+                                        
+                                            $emp_array['location_id'] = null;
+                                        }
+
+
+                                        $emp_array['essentials_department_id'] = $value[21];
+                                        if ($emp_array['essentials_department_id'] !== null) {
+                                    
+                                            $specialization = EssentialsDepartment::find($emp_array['essentials_department_id']);
+                                            if (!$specialization) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = "Invalid department ID in row no. $row_no";
+                                                break;
+                                            }
+                                        } else
+                                        {
+                                            
+                                            $emp_array['essentials_department_id'] = null;
+                                        }
+
+                                        $emp_array['addmission_date']=$value[22];
+
+
+
+                                        if (!empty($value[22])) {
+                                            if (is_numeric($value[22])) {
+                                            
+                                                $excelDateValue = (float)$value[22];
+                                                $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                                                $date = date('Y-m-d', $unixTimestamp);
+                                                $emp_array['addmission_date'] = $date;
+                                            
+                                            } else {
+                                            
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[22]);
+                                                if ($date) {
+                                                    $dob = $date->format('Y-m-d');
+                                                    $emp_array['addmission_date'] = $dob;
+                                                }
+                                        }
+                                               }
+
+                                        $emp_array['specialization_id']=$value[23];
+                                        if ($emp_array['specialization_id'] !== null) {
+                                        
+                                            $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
+                                            if (!$specialization) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = "Invalid specialization ID in row no. $row_no";
+                                                break;
+                                            }
+                                        } else {
+                                        
+                                            $emp_array['specialization_id'] = null;
+                                        }
+                                        $emp_array['profession_id']=$value[24];
+
+                                        if ($emp_array['profession_id'] !== null) {
+                                        
+                                            $specialization = EssentialsProfession::find($emp_array['profession_id']);
+                                            if (!$specialization) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = "Invalid profession ID in row no. $row_no";
+                                                break;
+                                            }
+                                        } else {
+                                        
+                                            $emp_array['profession_id'] = null;
+                                        }
+                                        
+                                        $emp_array['border_no']=$value[25];
+                                        $emp_array['nationality_id']=$value[26];
+
+                                        if ($emp_array['nationality_id'] !== null) {
+                                        
+                                            $nationality_id = EssentialsCountry::find($emp_array['nationality_id']);
+                                            if (!$nationality_id) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = "Invalid nationality ID in row no. $row_no";
+                                                break;
+                                            }
+                                        } else {
+                                        
+                                            $emp_array['nationality_id'] = null;
+                                        }
+
+
+                                        
+                                        if (!empty($value[27])) {
+                                            $emp_array['contract_number'] = $value[27];
+                                        } 
+                                        else{$emp_array['contract_number'] = null;}
+                                    
+                                    
+                                        if (!empty($value[28])) {
+                                            if (is_numeric($value[28])) {
+                                            
+                                                $excelDateValue = (float)$value[28];
+                                                $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                                                $date = date('Y-m-d', $unixTimestamp);
+                                                
+                                                $emp_array['contract_start_date'] = $date;
+                                            
+                                            } else
+                                             {
+                                            
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[28]);
+                                                if ($date) {
+                                                    $dob = $date->format('Y-m-d');
+                                                    $emp_array['contract_start_date'] = $dob;
+
+                                                }
+                                            
+                                        }
+                                    }
+                                    else{ $emp_array['contract_start_date'] = null;}
                     
-                    $contract_array['contract_duration'] = $value[30];
-                    $contract_array['probation_period'] = $value[31];
-                    $contract_array['is_renewable'] = $value[32];
-                    $contract_array['status'] = $value[33];
-                  
-                  
-
-                    $emp_array['essentials_salary'] = $value[34];
-                   // dd($value[30]);
-                    $allowancename=$value[35];
-                    $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
-                    if ($allowancetype) {
-                        
-                        $allowancetypeId = $allowancetype->id;
-                        $emp_array['allowance_deduction_id']=$allowancetypeId;
-                    }
-                    else{ $emp_array['allowance_deduction_id']=null;}
-                   
-                    $emp_array['amount']=$value[36];
-
+                                    if (!empty($value[29])) {
+                                        if (is_numeric($value[29])) {
+                                        
+                                            $excelDateValue = (float)$value[29];
+                                            $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                                            $date = date('Y-m-d', $unixTimestamp);
+                                            $emp_array['contract_end_date'] = $date;
+                                        
+                                        } else {
+                                            
+                                            $date = DateTime::createFromFormat('d/m/Y', $value[29]);
+                                            if ($date) {
+                                                $dob = $date->format('Y-m-d');
+                                                $emp_array['contract_end_date'] = $dob;
+                                            }
+                                    }
+                                }
+                                else{ $emp_array['contract_end_date'] = null;}
 
 
-                    $travelcategoryname=$value[37];
-                    $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
-                    if ($traveltype) {
-                        
-                        $traveltypeId = $traveltype->id;
-                        $emp_array['travel_ticket_categorie']=$traveltypeId;
-                    }
-                    else{ $emp_array['travel_ticket_categorie']=null;}
+                                    
+                                    
+                                if (!empty($value[30])) {
+                                    $emp_array['contract_duration'] = $value[30];
+                                } 
+                                else{$emp_array['contract_duration'] = null;}
+
+                                if (!empty($value[31])) {
+                                    $emp_array['probation_period'] = $value[31];
+                                } 
+                                else{  $emp_array['probation_period'] = null;}
+                                    
+                                
+                                if (!empty($value[31])) {
+                                    $emp_array['is_renewable'] = $value[32];
+                                } 
+                                else{   $emp_array['is_renewable'] = null;}
+                                    
+                                    //  $emp_array['status'] = "vaild";
+                                    
+                                    
+
+                                        $emp_array['essentials_salary'] = $value[34];
+                                
+                                        $allowancename=$value[35];
+                                        $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
+                                        if ($allowancetype) {
+                                            
+                                            $allowancetypeId = $allowancetype->id;
+                                            $emp_array['allowance_deduction_id']=$allowancetypeId;
+                                        }
+                                        else{ $emp_array['allowance_deduction_id']=null;}
+                                    
+                                        $emp_array['amount']=$value[36];
 
 
-                     
-                      //-------------------
 
-                   // $emp_array['health_insurance']=$value[34];
-                    $formated_data[] = $emp_array;
-                    $formated_data2[] = $contract_array;
-                }
-                if (! $is_valid) {
-                    throw new \Exception($error_msg);
-                }//dd($formated_data);
+                                        $travelcategoryname=$value[37];
+                                        $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
+                                        if ($traveltype) {
+                                            
+                                            $traveltypeId = $traveltype->id;
+                                            $emp_array['travel_ticket_categorie']=$traveltypeId;
+                                        }
+                                        else{ $emp_array['travel_ticket_categorie']=null;}
+
+
+
+                                    // $emp_array['health_insurance']=$value[34];
+                                      
+                                    $formated_data[] = $emp_array;
+                                   // dd( $formated_data);       
+                        }
+                      
+                                    if (!$is_valid) 
+                                    {
+                                        throw new \Exception($error_msg);
+                                    }
+
+                $defaultContractData = [
+                        'contract_start_date' => null,
+                        'contract_end_date' => null,
+                                               
+                                            ]; 
+
+                // Iterate over the formated data and add the default keys
+$formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data); 
+      
                 if (! empty($formated_data)) 
                 {
                     foreach ($formated_data as $emp_data) {
                      
-                       //dd($emp_data);
+                    
                         $emp_data['business_id'] = $business_id;
                         $emp_data['created_by'] = $user_id;
                         
@@ -408,39 +436,47 @@ class EssentialsEmployeeImportController extends Controller
                                 ->first();
                             
                             if ($lastEmployee) {
-                                // Get the numeric part from the last employee's emp_number
+                              
                                 $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
                         
-                                // Increment the numeric part
+                               
                                 $nextNumericPart = $lastEmpNumber + 1;
 
                                 $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
                             } 
                         
                             else {
-                                // If no previous employee, start from 1
+                              
                                 $emp_data['emp_number'] =  $business_id .'000';
                             }
         
-          
-         
-       
-        
-       
-        
-                     
 
-                        
-                     
                         $emp = User::create($emp_data);
 
                     
-                        $contract_array['business_id'] = $business_id;
-                        $contract_array['employee_id'] = $emp->id;
-                        $contract_array['created_by'] = $user_id;
-                        $contract_array['contract_type_id'] = null;
-                        $contract = EssentialsEmployeesContract::create($contract_array);
+                        $emp_data['business_id'] = $business_id;
+                        $emp_data['employee_id'] = $emp->id;
+                        $emp_data['created_by'] = $user_id;
+                        $emp_data['contract_type_id'] = null;
+                       
+                        $contract =new EssentialsEmployeesContract();
+                        $contract->employee_id  = $emp->id;
+                        $contract->contract_number= $emp_data['contract_number'];
+                        if($emp_data['contract_start_date'] == null){ $contract->contract_start_date=null;}
+                        else{$contract->contract_start_date= $emp_data['contract_start_date'];}
+                       
+                        if($emp_data['contract_end_date'] == null){ $contract->contract_end_date=null;}
+                        else{$contract->contract_end_date= $emp_data['contract_end_date'];}
                       
+                        // $contract->contract_end_date= $emp_data['contract_end_date'];
+                        $contract->contract_duration=$emp_data['contract_duration'];
+                        $contract->probation_period =$emp_data["probation_period"];
+                        $contract->contract_type_id  =$emp_data["contract_type_id"];
+                        $contract->status = "vaild";
+                        $contract->save();
+
+
+
                         $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
