@@ -577,9 +577,9 @@
           <hr>
         @endif
         <div class="row check_group">
-            <div class="col-md-1">
+            {{-- <div class="col-md-1">
                 <h4>@lang( 'sale.pos_sale' )</h4>
-            </div>
+            </div> --}}
             <div class="col-md-2">
                 <div class="checkbox">
                     <label>
