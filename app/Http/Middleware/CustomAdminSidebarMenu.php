@@ -149,7 +149,7 @@ class CustomAdminSidebarMenu
                 )->order(4);
             }
 
-            if (auth()->user()->can('essentials.view_work_cards')) {
+            if (auth()->user()->can('essentials.view_work_cards') || true) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
                     __('essentials::lang.work_cards'),
