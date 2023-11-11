@@ -37,6 +37,7 @@
                                     <th class="col-md-3">نوع العملية</th>
                                     <th class="col-md-3">حالة الدفع</th>
                                     <th class="col-md-3">طريقة الدفع</th>
+                                    <th class="col-md-3">الحالة</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody">
@@ -59,46 +60,68 @@
                                                         <i class="fas fa-edit" style="padding: 2px;color:rgb(8, 158, 16);"></i>
                                                         @lang('messages.edit') </a>
 
-                                                    <a class="dropdown-item" style="margin: 2px;" title="@lang('messages.edit')"
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@delete_dialog', $row->id) }}"
-                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@delete_dialog', $row->id) }}"
-                                                        data-target="#delete_auto_migration" data-toggle="modal"
-                                                        {{-- id="delete_auto_migration" --}}>
+                                                    <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
+                                                        href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@active_toggle', $row->id) }}"
+                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@active_toggle', $row->id) }}"
+                                                        {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
+                                                        @if (!$row->active)
+                                                            <i class="fa fa-bullseye" style="padding: 2px;color: green;"
+                                                                title="state of automated migration is active"
+                                                                aria-hidden="true"></i>
+                                                            @lang('accounting::lang.active')
 
-                                                        <i class="fa fa-trash" style="padding: 2px;color:red;"></i>
-                                                        @lang('messages.delete') </a>
-
-
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            {{ $row->name }}
-
-                                        </td>
-                                        <td>
-                                            @lang('accounting::lang.autoMigration.' . $row->type)
-
-                                        </td>
-                                        <td>
-
-                                            @lang('accounting::lang.autoMigration.' . $row->payment_status)
-
-                                        </td>
-                                        <td>
-                                            @lang('accounting::lang.autoMigration.' . $row->method)
-
-                                        </td>
+                                                            <i class=""></i>
+                                                        @else
+                                                            <i class="fa fa-ban" style="padding: 2px;color:red;"
+                                                                title="state of automated migration is inactive"></i>
+                                                            @lang('accounting::lang.inactive')
+                                                    </a>
+                                @endif
 
 
 
 
-                                    </tr>
-                                @endforeach
+                    </div>
+                </div>
+                </td>
+                <td>
+                    {{ $row->name }}
 
-                            </tbody>
+                </td>
+                <td>
+                    @lang('accounting::lang.autoMigration.' . $row->type)
 
-                            {{-- <tfoot>
+                </td>
+                <td>
+
+                    @lang('accounting::lang.autoMigration.' . $row->payment_status)
+
+                </td>
+                <td>
+                    @lang('accounting::lang.autoMigration.' . $row->method)
+
+                </td>
+
+                <td>
+                    @if ($row->active)
+                        <i class="fa fa-bullseye" title="state of automated migration is active" aria-hidden="true"
+                            style="color: green"></i>
+                    @else
+                        <i class="fa fa-ban" title="state of automated migration is inactive" aria-hidden="true"
+                            style="color:red"></i>
+                    @endif
+
+                </td>
+
+
+
+
+                </tr>
+                @endforeach
+
+                </tbody>
+
+                {{-- <tfoot>
                                 <tr>
                                     <th></th>
                                     <th class="text-center">@lang('accounting::lang.total')</th>
@@ -107,11 +130,11 @@
                                     </th>
                                 </tr>
                             </tfoot> --}}
-                        </table>
+                </table>
 
-                    </div>
-                @endcomponent
             </div>
+        @endcomponent
+        </div>
         </div>
     </section>
 
@@ -247,6 +270,5 @@
             });
 
         });
-       
     </script>
 @endsection

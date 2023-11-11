@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('type', ['sell', 'sell_return', 'opening_stock', 'purchase', 'purchase_order', 'purchase_return', 'expens', 'sell_transfer', 'purchase_transfer', 'payroll', 'opening_balance', 'other']);
             $table->string('name');
             $table->string('status');
+            $table->boolean('active')->default(true);
             $table->enum('payment_status', ['paid', 'due', 'partial']);
             $table->enum('method', ['cash', 'card', 'cheque', 'bank_transfer', 'other']);
             $table->integer('created_by');

@@ -16,7 +16,7 @@
             <div class="col-md-12">
                 <section class="content">
                     {!! Form::open([
-                        'url' => action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@update',$mappingSetting->id),
+                        'url' => action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@update', $mappingSetting->id),
                         'method' => 'put',
                         'id' => 'update_auto_migration',
                     ]) !!}
@@ -119,11 +119,18 @@
                                         <tbody id="tbody1">
                                             @foreach ($journal_entry_1 as $index => $journal_entry)
                                                 <tr>
-                                                    <td>
+                                                    <td style="display: flex;font-size: smaller;align-items:center">
+                                                        <a type="button" class="fa fa-trash fa-2x cursor-pointer"
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                            data-id="1" name="1" value="{{ $journal_entry->id }}"
+                                                            style="background: transparent; border: 0px;color: red;
+                                                            font-size: small;"></a>
                                                         <button type="button"
                                                             class="fa fa-plus-square fa-2x text-primary cursor-pointer"
                                                             data-id="1" name="1" value="1"
                                                             style="    background: transparent; border: 0px;"></button>
+
                                                     </td>
                                                     <td>
 
@@ -214,7 +221,14 @@
                                         <tbody id="tbody2">
                                             @foreach ($journal_entry_2 as $index => $journal_entry)
                                                 <tr>
-                                                    <td><button type="button"
+                                                    <td style="display: flex;font-size: smaller;align-items:center">
+                                                        <a type="button" class="fa fa-trash fa-2x cursor-pointer"
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@destroy_acc_trans_mapping_setting', $journal_entry->id) }}"
+                                                            data-id="2" name="2" value="{{ $journal_entry->id }}"
+                                                            style="background: transparent; border: 0px;color: red;
+                                                            font-size: small;"></a>
+                                                        <button type="button"
                                                             class="fa fa-plus-square fa-2x text-primary cursor-pointer"
                                                             data-id="1" name="2" value="2"
                                                             style="    background: transparent; border: 0px;"></button>
@@ -230,7 +244,8 @@
                                                             <option value="{{ $journal_entry->accounting_account_id }}"
                                                                 selected>
 
-                                                                {{ $journal_entry->account_name }} - <small class="text-muted">
+                                                                {{ $journal_entry->account_name }} - <small
+                                                                    class="text-muted">
                                                                     @lang('accounting::lang.' . $journal_entry->account_primary_type)
                                                                     -
                                                                     @lang('accounting::lang.' . $journal_entry->account_sub_type)</small>
@@ -394,11 +409,153 @@
             $('.total_credit').text(__currency_trans_from_en(total_credit));
             $('.total_debit').text(__currency_trans_from_en(total_debit));
         }
-        $(document).on('click', '.fa-plus-square', function() {
+        $(document).on("click", ".fa-trash", function() {
+            // console.log("amen");
             var tbode_number = $(this).val();
             let counter = $('#journal_table' + tbode_number + ' tr').length - 1;
+            console.log(counter);
+            if (counter > 1) {
+                $(this).parents("tr").remove();
+
+
+            }
+
+        })
+        $(document).ready(function() {
+            // console.log("amen");
+            // $(this).parents("tr").remove();
+
+            var tbode_number1 = 1
+            var tbode_number2 = 2
+            let counter1 = $('#journal_table' + tbode_number1 + ' tr').length - 1;
+            let counter2 = $('#journal_table' + tbode_number2 + ' tr').length - 1;
+            if (counter1 == 0) {
+                counter = 1;
+                tbode_number = tbode_number1;
+
+                $('#tbody' + tbode_number).append(
+                    '<tr><td style="display: flex;font-size: smaller;align-items:center"><button type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="' +
+                    counter +
+                    '" name="' + tbode_number + '" value="' + tbode_number +
+                    '" style="background: transparent; border: 0px;color: red;font-size: small;"></button><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
+                    counter +
+                    '" name="' + tbode_number + '" value="' + tbode_number +
+                    '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id' +
+                    tbode_number + '[' +
+                    counter +
+                    ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><label class="radio-inline"><input value="debit" type="radio" name="type' +
+                    tbode_number + '[' +
+                    counter +
+                    ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                    tbode_number + '[' +
+                    counter +
+                    ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                    tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
+                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                )
+                $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
+                    ajax: {
+                        url: '{{ route('accounts-dropdown') }}',
+                        dataType: 'json',
+                        processResults: function(data) {
+                            return {
+                                results: data
+                            }
+                        },
+                    },
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    },
+                    templateResult: function(data) {
+                        return data.html;
+                    },
+                    templateSelection: function(data) {
+                        return data.text;
+                    }
+                });
+                $('.credit').change(function() {
+                    if ($(this).val() > 0) {
+                        $(this).parents('tr').find('.debit').val('');
+                    }
+                    calculate_total();
+                });
+                $('.debit').change(function() {
+                    if ($(this).val() > 0) {
+                        $(this).parents('tr').find('.credit').val('');
+                    }
+                    calculate_total();
+                });
+
+            }
+            if (counter2 == 0) {
+                counter = 1;
+                tbode_number = tbode_number2;
+
+                $('#tbody' + tbode_number).append(
+                    '<tr><td style="display: flex;font-size: smaller;align-items:center"><button type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="' +
+                    counter +
+                    '" name="' + tbode_number + '" value="' + tbode_number +
+                    '" style="background: transparent; border: 0px;color: red;font-size: small;"></button><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
+                    counter +
+                    '" name="' + tbode_number + '" value="' + tbode_number +
+                    '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id' +
+                    tbode_number + '[' +
+                    counter +
+                    ']"><option selected="selected" value="">يرجى الاختيار</option></select> </td> <td><label class="radio-inline"><input value="debit" type="radio" name="type' +
+                    tbode_number + '[' +
+                    counter +
+                    ']" checked>@lang('accounting::lang.debtor')</label><label class="radio-inline"><input value="credit" type="radio" name="type' +
+                    tbode_number + '[' +
+                    counter +
+                    ']">@lang('accounting::lang.creditor')</label></td><td><select class="form-control" name="amount_type' +
+                    tbode_number + '[' + counter + ']' + '" id="amount_type' + tbode_number + '' + counter +
+                    '"style="padding: 3px" required><option value="final_total">@lang('accounting::lang.autoMigration.final_total')</option><option value="total_before_tax">@lang('accounting::lang.autoMigration.total_before_tax')</option><option value="tax_amount">@lang('accounting::lang.autoMigration.tax_amount')</option><option value="shipping_charges">@lang('accounting::lang.autoMigration.shipping_charges')</option><option value="discount_amount">@lang('accounting::lang.autoMigration.discount_amount')</option></select></td></tr>'
+                )
+                $('select[name="account_id' + tbode_number + '[' + counter + ']"]').select2({
+                    ajax: {
+                        url: '{{ route('accounts-dropdown') }}',
+                        dataType: 'json',
+                        processResults: function(data) {
+                            return {
+                                results: data
+                            }
+                        },
+                    },
+                    escapeMarkup: function(markup) {
+                        return markup;
+                    },
+                    templateResult: function(data) {
+                        return data.html;
+                    },
+                    templateSelection: function(data) {
+                        return data.text;
+                    }
+                });
+                $('.credit').change(function() {
+                    if ($(this).val() > 0) {
+                        $(this).parents('tr').find('.debit').val('');
+                    }
+                    calculate_total();
+                });
+                $('.debit').change(function() {
+                    if ($(this).val() > 0) {
+                        $(this).parents('tr').find('.credit').val('');
+                    }
+                    calculate_total();
+                });
+
+            }
+            console.log(counter);
+        });
+        $(document).on('click', '.fa-plus-square', function() {
+            var tbode_number = $(this).val();
+            let counter = $('#journal_table' + tbode_number + ' tr').length;
+            // console.log(counter);
             $('#tbody' + tbode_number).append(
-                '<tr><td><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
+                '<tr><td style="display: flex;font-size: smaller;align-items:center"><button type="button" class="fa fa-trash fa-2x cursor-pointer" data-id="' +
+                counter +
+                '" name="' + tbode_number + '" value="' + tbode_number +
+                '" style="background: transparent; border: 0px;color: red;font-size: small;"></button><button type="button" class="fa fa-plus-square fa-2x text-primary cursor-pointer" data-id="' +
                 counter +
                 '" name="' + tbode_number + '" value="' + tbode_number +
                 '" style="background: transparent; border: 0px;"></button></td><td><select class="form-control accounts-dropdown account_id" style="width: 100%;" name="account_id' +
