@@ -945,7 +945,14 @@ return[
   'add_manager'=>'إضافة مدير',
   'manager_delegating'=>'تفويض مدير',
   'manager_name'=>'الرئيس المباشر',
-  'delegatingManager_name'=>'اسم المفوّض'
+  'delegate_name'=>'اسم المفوّض',
+  'delegate_Details'=>'تفاصيل الشخص المفوّض',
+  'manager_Details'=>'تفاصيل المدير ',
+  'department_Details'=>'تفاصيل الإدارة ',
+  'edit_department'=>'تعديل معلومات الإدارة',
+  'manager'=>'المدير',
+  'delegate'=>'المفوّض',
+
 
 
 

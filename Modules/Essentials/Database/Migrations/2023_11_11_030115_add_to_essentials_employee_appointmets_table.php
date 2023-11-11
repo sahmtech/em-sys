@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('essentials_employee_appointmets', function (Blueprint $table) {
-            $table->enum('type',['appoint','delegating '])->default('appoint')->after('business_location_id');
+            $table->enum('type',['appoint','delegating'])->default('appoint')->after('business_location_id');
             $table->date('start_from')->nullable()->after('type');
             $table->date('end_at')->nullable()->after('start_from');
 
