@@ -83,18 +83,18 @@
                                                     <div class="col-md-3 mt-15">
                                                     
                                                     <label class="radio-inline">
-                                                        <input type="radio" name="business"  checked="checked" id="inlineRadio2" value="business">
+                                                        <input type="radio" name="business"  checked="checked" id="business" value="business">
                                                         @lang('business.business')
                                                     </label>
 
                                                     <label class="radio-inline">
-                                                        <input type="radio" name="customer" id="inlineRadio3" value="customer">
+                                                        <input type="radio" name="business" id="customer" value="customer">
                                                         @lang('sales::lang.customer')
                                                     </label>
                                                     </div>
                                                     <div class="clearfix"></div>
 
-                                                    <div class="col-md-4 ">
+                                                    <div class="col-md-4 customer">
                                                             <div class="form-group">
                                                                 {!! Form::label('first_name', __('sales::lang.first_name')  . ':*') !!}
                                                                 <div class="input-group">
@@ -106,7 +106,7 @@
                                                             </div>
                                                     </div>
 
-                                                    <div class="col-md-4 ">
+                                                    <div class="col-md-4 customer">
                                                             <div class="form-group">
                                                                 {!! Form::label('last_name', __('sales::lang.last_name')  . ':*') !!}
                                                                 <div class="input-group">
@@ -118,7 +118,7 @@
                                                             </div>
                                                     </div>
 
-                                                    <div class="col-md-4 ">
+                                                    <div class="col-md-4 customer">
                                                             <div class="form-group">
                                                                 {!! Form::label('name_en', __('sales::lang.name_en') . ':*') !!}
                                                                 <div class="input-group">
@@ -524,6 +524,29 @@
 @endsection
 
 @section('javascript')
+
+
+<script>
+    $(document).ready(function () {
+        // Initially hide the business-related fields
+        $('.customer').hide();
+
+        // Listen for changes in the radio button selection
+        $('input[type="radio"]').change(function () {
+            // If the customer radio button is selected, show customer-related fields and hide business-related fields
+            if ($(this).val() === 'customer') {
+                $('.business').hide();
+                $('.customer').show();
+            } else {
+                // If the business radio button is selected, show business-related fields and hide customer-related fields
+                $('.customer').hide();
+                $('.business').show();
+            }
+        });
+    });
+</script>
+
+
 <script type="text/javascript">
     // Countries table
     $(document).ready(function () {
