@@ -206,7 +206,7 @@ class AutomatedMigrationController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-
+        // return $request;
         if (
             !(auth()->user()->can('superadmin') ||
                 $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
@@ -319,6 +319,36 @@ class AutomatedMigrationController extends Controller
         $mappingSetting = AccountingMappingSettingTest::find($id);
         AccountingAccTransMappingSettingTest::where('mapping_setting_id', $mappingSetting->id)->delete();
         $mappingSetting->delete();
+        $output = [
+            'success' => 1,
+            'msg' => __('lang_v1.updated_success')
+        ];
+        return redirect()->route('automated-migration.index')->with('status', $output);
+    }
+
+
+    public function destroy_acc_trans_mapping_setting($id)
+    {
+        // $mappingSetting = AccountingMappingSettingTest::find($id);
+        $acc_trans = AccountingAccTransMappingSettingTest::find($id);
+        $mappingSetting_id = $acc_trans->mapping_setting_id;
+        $acc_trans->delete();
+        $output = [
+            'success' => 1,
+            'msg' => __('lang_v1.updated_success')
+        ];
+        return redirect()->back()->with('status', $output);
+    }
+
+
+    public function active_toggle($id)
+    {
+        $mappingSetting = AccountingMappingSettingTest::find($id);
+        $new_state = $mappingSetting->active ? false : true;
+        $mappingSetting->update([
+            'active' => $new_state,
+        ]);
+
         $output = [
             'success' => 1,
             'msg' => __('lang_v1.updated_success')

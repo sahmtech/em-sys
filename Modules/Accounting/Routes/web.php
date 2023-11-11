@@ -47,7 +47,11 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::resource('account-type', 'AccountTypeController');
     Route::resource('automated-migration', 'AutomatedMigrationController');
     Route::get('automated-migration-delete-dialog/{id}', 'AutomatedMigrationController@delete_dialog');
+    Route::get('automated-migration-active-toggle/{id}', 'AutomatedMigrationController@active_toggle');
+    Route::get('automated-migration-delete-acc-trans-mapping/{id}', 'AutomatedMigrationController@destroy_acc_trans_mapping_setting');
 
+    
+    
     Route::resource('transfer', 'TransferController')->except(['show']);
 
     Route::resource('budget', 'BudgetController')->except(['show', 'edit', 'update', 'destroy']);
