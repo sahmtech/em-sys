@@ -74,7 +74,7 @@ class HomeController extends Controller
         $roles = auth()->user()->roles;
         $roleHasPermission = false;
         foreach ($roles as $role) {
-            
+
             if ($role->hasPermissionTo('dashboard.data')) {
                 $roleHasPermission = true;
                 break;
@@ -252,6 +252,32 @@ class HomeController extends Controller
             ['value' => 'user.update'],
             ['value' => 'user.delete'],
         ];
+
+
+        $settingsPermissions = [
+            ['value' => 'business_settings.access'],
+            ['value' => 'barcode_settings.access'],
+            ['value' => 'invoice_settings.access'],
+            ['value' => 'tax_rate.view'],
+            ['value' => 'tax_rate.create'],
+            ['value' => 'access_package_subscriptions'],
+
+            ['value' => 'purchase_n_sell_report.view'],
+            ['value' => 'contacts_report.view'],
+            ['value' => 'stock_report.view'],
+            ['value' => 'tax_report.view'],
+            ['value' => 'trending_product_report.view'],
+            ['value' => 'sales_representative.view'],
+            ['value' => 'expense_report.view'],
+            ['value' => 'backup'],
+        ];
+
+
+
+
+
+
+
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
@@ -261,26 +287,27 @@ class HomeController extends Controller
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
-            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie ', 'link' => ''],
+            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' => ''],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
-        //    ['id' => 'generalSettings',  'permissions' => $superadminPermissions, 'title' => "generalSettings", 'icon' => 'fas fa-chart-pie ', 'link' => ''],
+            ['id' => 'settings',  'permissions' => $settingsPermissions, 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
+            //    ['id' => 'generalSettings',  'permissions' => $superadminPermissions, 'title' => "generalSettings", 'icon' => 'fas fa-chart-pie ', 'link' => ''],
         ];
         $cards = [];
 
-
+        $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
         foreach ($cardsPack as $card) {
             if (!empty($card['permissions'])) {
                 $canAccessCard = false;
                 foreach ($card['permissions'] as $permission) {
-                    if (auth()->user()->can($permission['value'])) {
+                    if (auth()->user()->can($permission['value']) || $is_admin) {
                         $canAccessCard = true;
                         break;
                     }
                 }
-              
+
                 if ($canAccessCard) {
                     $cards[] = $card;
-                
+
                     error_log($card['title']);
                 } else {
                     error_log("cant " . $card['title']);

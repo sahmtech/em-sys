@@ -5,8 +5,8 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header no-print">
-    <h1>@lang('sale.pos_sale')
-    </h1>
+    {{-- <h1>@lang('sale.pos_sale')
+    </h1> --}}
 </section>
 
 <!-- Main content -->

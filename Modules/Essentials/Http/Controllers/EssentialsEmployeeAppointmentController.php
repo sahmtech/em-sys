@@ -68,7 +68,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                     'u.id_proof_number',
                     'essentials_employee_appointmets.business_location_id',
                     'essentials_employee_appointmets.department_id',
-                    'essentials_employee_appointmets.superior',
+              //      'essentials_employee_appointmets.superior',
                     'essentials_employee_appointmets.profession_id',
                     'essentials_employee_appointmets.specialization_id',
                     'u.status as status',
@@ -187,13 +187,13 @@ class EssentialsEmployeeAppointmentController extends Controller
         }
  
         try {
-            $input = $request->only(['employee', 'department','location', 'superior', 'profession', 'specialization']);
+            $input = $request->only(['employee', 'department','location', 'profession', 'specialization']);
           
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $input['department'];
             $input2['business_location_id'] = $input['location'];
 
-            $input2['superior'] = $input['superior'];
+    //        $input2['superior'] = $input['superior'];
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
         

@@ -5,10 +5,17 @@ namespace Modules\Essentials\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Utils\ModuleUtil;
-use Modules\Essentials\Entities\EssentialsDepartment;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+
+use App\BusinessLocation;
+use App\User;
+
 class EssentialsDepartmentsController extends Controller
 {
     /**
@@ -122,7 +129,7 @@ class EssentialsDepartmentsController extends Controller
        
     }
   
-    ////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     public function index()
     {
     
@@ -139,8 +146,8 @@ class EssentialsDepartmentsController extends Controller
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $parent_departments=EssentialsDepartment::where('is_main','1')->pluck('name','id');
        if (request()->ajax()) {
-            $depatments = DB::table('essentials_departments')->select(['id','name', 'level','is_main','parent_department_id','creation_date' ,'location','details','business_id','is_active'])->orderBy('id', 'asc');
-                       
+            $depatments = DB::table('essentials_departments')->select(['id','name', 'level','is_main','parent_department_id','creation_date','details','business_id','is_active'])->orderBy('id', 'asc');
+           
 
             return Datatables::of($depatments)
             ->editColumn('parent_department_id',function($row)use($departments){
@@ -148,13 +155,37 @@ class EssentialsDepartmentsController extends Controller
 
                 return $item;
             })
+            ->addColumn('manager_name', function ($row) {
+               
+                $manager = DB::table('essentials_employee_appointmets')
+                    ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                    ->where('essentials_employee_appointmets.department_id', $row->id)
+                    ->where('essentials_employee_appointmets.type', 'appoint')
+                    ->where('users.user_type', 'manager')
+                    ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
+                    ->first();
+    
+                return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addAppointmentModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_manager') . '</button>';
+            })
+            ->addColumn('delegatingManager_name', function ($row) {
+               
+                $delegatingManager = DB::table('essentials_employee_appointmets')
+                    ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                    ->where('essentials_employee_appointmets.department_id', $row->id)
+                    ->where('essentials_employee_appointmets.type', 'delegating')
+                    ->where('users.user_type', 'manager')
+                    ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
+                    ->first();
+    
+                return $delegatingManager ? $delegatingManager->user : '<button type="button" class="btn btn-xs btn-success open-modal" data-toggle="modal" data-target="#addDelegatingModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.manager_delegating') . '</button>';
+            })
             ->addColumn(
                 'action',
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
-                     //   $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                     //   &nbsp;';
+                        $html .= '<a href="'. route('contractType.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                        &nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_department_button" data-href="' . route('department.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         
@@ -164,13 +195,21 @@ class EssentialsDepartmentsController extends Controller
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             })
-            ->removeColumn('id')
-            ->rawColumns(['action'])
+           
+            ->rawColumns(['action','manager_name','delegatingManager_name'])
             ->make(true);
         
         
             }
-      return view('essentials::settings.partials.departments.index')->with(compact('parent_departments'));
+            $query = User::where('business_id', $business_id)->where('users.user_type','=' ,'manager');
+            $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $users = $all_users->pluck('full_name', 'id');
+           
+            $departments=EssentialsDepartment::all()->pluck('name','id');
+            $business_locations=BusinessLocation::all()->where('business_id',$business_id)->pluck('name','id');
+            $specializations=EssentialsSpecialization::all()->pluck('name','id');
+            $professions=EssentialsProfession::all()->pluck('name','id');
+      return view('essentials::settings.partials.departments.index')->with(compact('parent_departments','users','departments','business_locations','specializations','professions'));
     }
 
     public function destroy($id)
@@ -241,5 +280,81 @@ class EssentialsDepartmentsController extends Controller
    
        return redirect()->route('departments');
     }
-   
+    public function storeManager($id,Request $request)
+    {
+        
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+ 
+        try {
+            $input = $request->only(['employee','location','profession', 'specialization']);
+          
+            $input2['employee_id'] = $input['employee'];
+            $input2['department_id'] = $id;
+            $input2['business_location_id'] = $input['location'];
+            $input2['profession_id'] = $input['profession'];
+            $input2['specialization_id'] = $input['specialization'];
+            $input2['type'] = 'appoint';
+
+        
+       
+            EssentialsEmployeeAppointmet::create($input2);
+            
+ 
+            $output = ['success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+       return $output;
+    }
+    
+    public function manager_delegating($id,Request $request)
+    {
+        
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+ 
+        try {
+            $input = $request->only(['employee','location','profession', 'specialization','start_date','end_date']);
+          
+            $input2['employee_id'] = $input['employee'];
+            $input2['department_id'] = $id;
+            $input2['business_location_id'] = $input['location'];
+            $input2['profession_id'] = $input['profession'];
+            $input2['specialization_id'] = $input['specialization'];
+            $input2['start_from'] = $input['start_date'];
+            $input2['end_at'] = $input['end_date'];
+            $input2['type'] = 'delegating';
+
+        
+       
+            EssentialsEmployeeAppointmet::create($input2);
+            
+ 
+            $output = ['success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+       return $output;
+    }
 }
