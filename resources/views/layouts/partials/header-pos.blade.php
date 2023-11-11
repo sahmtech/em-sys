@@ -97,13 +97,13 @@
         @include('repair::layouts.partials.pos_header')
       @endif
 
-        @if(in_array('pos_sale', $enabled_modules) && !empty($transaction_sub_type))
+        {{-- @if(in_array('pos_sale', $enabled_modules) && !empty($transaction_sub_type))
           @can('sell.create')
             <a href="{{action([\App\Http\Controllers\SellPosController::class, 'create'])}}" title="@lang('sale.pos_sale')" class="btn btn-success btn-flat m-6 btn-xs m-5 pull-right">
               <strong><i class="fa fa-th-large"></i> &nbsp; @lang('sale.pos_sale')</strong>
             </a>
           @endcan
-        @endif
+        @endif --}}
         @can('expense.add')
         <button type="button" title="{{ __('expense.add_expense') }}"   
           data-placement="bottom" class="btn bg-purple btn-flat m-6 btn-xs m-5 btn-modal pull-right" id="add_expense">

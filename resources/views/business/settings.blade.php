@@ -25,7 +25,7 @@
                     <a href="#" class="list-group-item text-center">@lang('business.product')</a>
                     <a href="#" class="list-group-item text-center">@lang('contact.contact')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.sale')</a>
-                    <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
+                   // <a href="#" class="list-group-item text-center">@lang('sale.pos_sale')</a>
                     <a href="#" class="list-group-item text-center">@lang('purchase.purchases')</a>
                     <a href="#" class="list-group-item text-center">@lang('lang_v1.payment')</a>
                     <a href="#" class="list-group-item text-center">@lang('business.dashboard')</a>
