@@ -146,7 +146,7 @@ class EssentialsDepartmentsController extends Controller
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $parent_departments=EssentialsDepartment::where('is_main','1')->pluck('name','id');
        if (request()->ajax()) {
-            $depatments = DB::table('essentials_departments')->select(['id','name', 'level','is_main','parent_department_id','creation_date','details','business_id','is_active'])->orderBy('id', 'asc');
+            $depatments = DB::table('essentials_departments')->select(['id','name', 'level','is_main','parent_department_id','business_id','is_active'])->orderBy('id', 'asc');
            
 
             return Datatables::of($depatments)
@@ -184,8 +184,10 @@ class EssentialsDepartmentsController extends Controller
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
-                        $html .= '<a href="'. route('contractType.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                        &nbsp;';
+                     //   $html .='<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+                        $html .= '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '" data-info-route="' . route('getDepartmentInfo', $row->id) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+
+                        '&nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_department_button" data-href="' . route('department.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         
@@ -242,7 +244,7 @@ class EssentialsDepartmentsController extends Controller
     }
     public function store(Request $request)
     {
-        
+       
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -251,18 +253,21 @@ class EssentialsDepartmentsController extends Controller
         }
  
         try {
-            $input = $request->only(['name', 'level', 'parent_level','is_main','creation_date','address', 'details', 'is_active']);
+            $input = $request->only(['name', 'level','is_main','address']);
             
 
             $input2['name'] = $input['name'];
             $input2['level'] = $input['level'];
-            $input2['parent_department_id'] = $input['parent_level'];
+            if($request->parent_level != Null)
+            {
+            $input2['parent_department_id'] = $input['parent_level'];}
+            else{
+                $input2['parent_department_id'] ='0';
+            }
             $input2['is_main'] = $input['is_main'];
-            $input2['creation_date'] = $input['creation_date'];
             $input2['address'] = $input['address'];
             $input2['business_id'] = $business_id;           
-            $input2['details'] = $input['details'];
-            $input2['is_active'] = $input['is_active'];
+        
      
             EssentialsDepartment::create($input2);
  
@@ -291,17 +296,16 @@ class EssentialsDepartmentsController extends Controller
         }
  
         try {
-            $input = $request->only(['employee','location','profession', 'specialization']);
+            $input = $request->only(['employee','start_date','profession', 'specialization']);
           
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $id;
-            $input2['business_location_id'] = $input['location'];
+            $input2['start_from'] = $input['start_date'];
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
             $input2['type'] = 'appoint';
 
         
-       
             EssentialsEmployeeAppointmet::create($input2);
             
  
@@ -329,11 +333,11 @@ class EssentialsDepartmentsController extends Controller
         }
  
         try {
-            $input = $request->only(['employee','location','profession', 'specialization','start_date','end_date']);
+            $input = $request->only(['employee','profession', 'specialization','start_date','end_date']);
           
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $id;
-            $input2['business_location_id'] = $input['location'];
+         
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
             $input2['start_from'] = $input['start_date'];
@@ -357,4 +361,143 @@ class EssentialsDepartmentsController extends Controller
         }
        return $output;
     }
+    public function getDepartmentInfo($id)
+    {
+        $department = EssentialsDepartment::find($id);
+        $manager = DB::table('essentials_employee_appointmets')
+        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+        ->where('essentials_employee_appointmets.department_id', $id)
+        ->where('essentials_employee_appointmets.type', 'appoint')
+        ->where('users.user_type', 'manager')
+        ->select(
+        'users.id as id',
+        'essentials_employee_appointmets.profession_id as profession_id',
+        'essentials_employee_appointmets.profession_id as specialization_id',
+        'essentials_employee_appointmets.start_from as start_from',
+        )
+        ->first();
+        $delegate = DB::table('essentials_employee_appointmets')
+        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+        ->where('essentials_employee_appointmets.department_id', $id)
+        ->where('essentials_employee_appointmets.type', 'delegating')
+        ->where('users.user_type', 'manager')
+        ->select(
+        'users.id as id',
+        'essentials_employee_appointmets.profession_id as profession_id',
+        'essentials_employee_appointmets.profession_id as specialization_id',
+        'essentials_employee_appointmets.start_from as start_from',
+        'essentials_employee_appointmets.end_at as end_at',
+
+        )
+        ->first();
+        return response()->json([
+            'name' => $department->name,
+            'level' => $department->level,
+            'is_main' => $department->is_main,
+            'parent_department_id' => $department->parent_department_id,
+            'address' => $department->address,
+            'is_active' => $department->is_active,
+            'manager' => $manager ? $manager->id : null,
+            'profession_id' => $manager ? $manager->profession_id : null,
+            'specialization_id' => $manager ? $manager->specialization_id : null,
+            'manager_start_from' => $manager ? $manager->start_from : null,
+            'delegate' => $delegate ? $delegate->id : null,
+            'delegate_profession_id' => $delegate ? $delegate->profession_id : null,
+            'delegate_specialization_id' => $delegate ? $delegate->specialization_id : null,
+            'delegate_start_from' => $delegate ? $delegate->start_from : null,
+            'delegate_end_at' => $delegate ? $delegate->end_at : null,
+        ]);
+    }
+
+    public function update(Request $request,$id){
+        try{
+            $department = EssentialsDepartment::find($id);
+
+            $departmentData = [
+                'name' => $request->filled('name') ? $request->input('name') : $department->name,
+                'level' => $request->filled('level') ? $request->input('level') : $department->level,
+                'is_main' => $request->filled('is_main') ? $request->input('is_main') : $department->is_main,
+                'parent_department_id' => $request->filled('parent_department_id') ? $request->input('parent_department_id') : $department->parent_department_id,
+                'address' => $request->filled('address') ? $request->input('address') : $department->address,
+                'is_active' => $request->filled('is_active') ? $request->input('is_active') : $department->is_active,
+            ];
+      
+            if (!empty($departmentData)) {
+                EssentialsDepartment::where('id', $id)->update($departmentData);
+            }
+         
+            $managerId = $request->input('manager');
+            $delegateId= $request->input('delegate');
+            if ($managerId) {
+             
+                $managerAppointment = EssentialsEmployeeAppointmet ::where('employee_id', $managerId)
+                    ->where('department_id', $id)
+                    ->where('type', 'appoint')
+                    ->first();
+            
+                if ($managerAppointment) {
+              
+                    $managerAppointment->update([
+                        'profession_id' => $request->filled('profession') ? $request->input('profession') : $managerAppointment->profession_id,
+                        'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : $managerAppointment->specialization_id,
+                        'start_from' => $request->filled('start_date') ? $request->input('start_date') : $managerAppointment->start_from,
+                    ]);
+                } else {
+             
+                    
+                    EssentialsEmployeeAppointmet::create([
+                        'employee_id' => $managerId,
+                        'department_id' => $id,
+                        'type' => 'appoint',
+                        'profession_id' => $request->filled('profession') ? $request->input('profession') : null,
+                        'specialization_id' => $request->filled('specialization') ? $request->input('specialization') : null,
+                        'start_from' => $request->filled('start_date') ? $request->input('start_date') : null,
+                    ]);
+                }
+            }
+            if ($delegateId) {
+          
+
+                $delegateAppointment = EssentialsEmployeeAppointmet::where('employee_id', $delegateId)
+                    ->where('department_id', $id)
+                    ->where('type', 'delegating')
+                    ->first();
+            
+                if ($delegateAppointment) {
+     
+
+                    $delegateAppointment->update([
+                        'profession_id' => $request->filled('profession2') ? $request->input('profession2') : $delegateAppointment->profession_id,
+                        'specialization_id' => $request->filled('specialization2') ? $request->input('specialization2') : $delegateAppointment->specialization_id,
+                        'start_from' => $request->filled('start_date2') ? $request->input('start_date2') : $delegateAppointment->start_from,
+                        'end_at' => $request->filled('end_date2') ? $request->input('end_date2') : $delegateAppointment->end_at,
+                    ]);
+                } else {
+                
+                
+                    EssentialsEmployeeAppointmet::create([
+                        'employee_id' => $delegateId,
+                        'department_id' => $id,
+                        'type' => 'delegating',
+                        'profession_id' => $request->filled('profession2') ? $request->input('profession2') : null,
+                        'specialization_id' => $request->filled('specialization2') ? $request->input('specialization2') : null,
+                        'start_from' => $request->filled('start_date2') ? $request->input('start_date2') : null,
+                        'end_at' => $request->filled('end_date2') ? $request->input('end_date2') : null,
+                    ]);
+                }
+            }
+            
+            $output = ['success' => true,
+            'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return $output;
+    }
+
 }
