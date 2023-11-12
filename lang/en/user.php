@@ -10,6 +10,7 @@ return [
     | The following language lines are used during registration of a business.
     |
     */
+    'responsible_of_clients'=>'responsible for client',
     'edit_profile' => 'Edit Profile',
     'change_password' => 'Change Password',
     'current_password' => 'Current password',

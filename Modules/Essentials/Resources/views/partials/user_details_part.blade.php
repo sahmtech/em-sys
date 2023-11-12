@@ -52,18 +52,21 @@
     <ul>
        
             <li><strong>@lang('essentials::lang.contract_number'):</strong> {{ $contract->contract_number ?? '' }}</li>
-            <li><strong>@lang('essentials::lang.contract_start_date'):</strong> {{ $contract->contract_start_date ?? '' }}</li>
-            <li><strong>@lang('essentials::lang.contract_end_date'):</strong> {{ $contract->contract_end_date ?? '' }}</li>
+            <li><strong>@lang('essentials::lang.contract_start_date'):</strong>  @if(!empty($contract->contract_start_date)) {{@format_date($contract->contract_start_date)}} @endif</li>
+            <li><strong>@lang('essentials::lang.contract_end_date'):</strong>  @if(!empty($contract->contract_end_date)) {{@format_date($contract->contract_end_date)}} @endif</li>
             <li><strong>@lang('essentials::lang.contract_duration'):</strong> {{ $contract->contract_duration ?? '' }}</li>
             <li><strong>@lang('essentials::lang.probation_period'):</strong> {{ $contract->probation_period ?? '' }}</li>
             <li><strong>@lang('essentials::lang.status'):</strong> {{ $contract->status ?? '' }}</li>
-            <li><strong>@lang('essentials::lang.is_renewable'):</strong> 
-                @if ($contract->is_renewable == 1)
-                    @lang('essentials::lang.is_renewable')
-                @else
-                    @lang('essentials::lang.is_unrenewable')
-                @endif
-            </li>
+            <li>
+    <strong>@lang('essentials::lang.is_renewable'):</strong> 
+    @if ($contract->is_renewable === null)
+    {{ '' }}
+@elseif ($contract->is_renewable == 1)
+    @lang('essentials::lang.is_renewable')
+@else
+    @lang('essentials::lang.is_unrenewable')
+@endif
+</li>
         
   
     </ul>

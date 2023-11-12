@@ -503,7 +503,7 @@ $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $e
                         if($emp_data['contract_end_date'] == null){ $contract->contract_end_date=null;}
                         else{$contract->contract_end_date= $emp_data['contract_end_date'];}
                       
-                        // $contract->contract_end_date= $emp_data['contract_end_date'];
+                        $contract->is_renewable= $emp_data['is_renewable'];
                         $contract->contract_duration=$emp_data['contract_duration'];
                         $contract->probation_period =$emp_data["probation_period"];
                         $contract->contract_type_id  =$emp_data["contract_type_id"];

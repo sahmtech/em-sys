@@ -44,4 +44,5 @@ return [
     'create_new_user' => 'إضافة مستخدم جديد',
     'add_10_numbers' => 'ادخل 10 أرقام',
     'add_13_numbers' => 'ادخل 13 أرقام',
+    'responsible_of_clients'=>'مسؤول عن عميل'
 ];
