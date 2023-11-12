@@ -184,6 +184,7 @@ class EssentialsDepartmentsController extends Controller
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
+                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('dep.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                      //   $html .='<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                         $html .= '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '" data-info-route="' . route('getDepartmentInfo', $row->id) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
 
@@ -500,4 +501,65 @@ class EssentialsDepartmentsController extends Controller
         return $output;
     }
 
+    public function show ($id)
+    {
+      
+        $department = EssentialsDepartment::find($id);
+
+        $manager = DB::table('essentials_employee_appointmets')
+        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+        ->where('essentials_employee_appointmets.department_id', $id)
+        ->where('essentials_employee_appointmets.type', 'appoint')
+        ->where('users.user_type', 'manager')
+        ->select(
+        DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as managername"),
+        'essentials_employee_appointmets.profession_id as profession_id',
+        'essentials_employee_appointmets.profession_id as specialization_id',
+        'essentials_employee_appointmets.start_from as start_from',
+        )
+        ->first();
+
+        $delegate = DB::table('essentials_employee_appointmets')
+        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+        ->where('essentials_employee_appointmets.department_id', $id)
+        ->where('essentials_employee_appointmets.type', 'delegating')
+        ->where('users.user_type', 'manager')
+        ->select(
+        DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as delegatename"),
+        'essentials_employee_appointmets.profession_id as profession_id',
+        'essentials_employee_appointmets.profession_id as specialization_id',
+        'essentials_employee_appointmets.start_from as start_from',
+        'essentials_employee_appointmets.end_at as end_at',
+
+        )
+        ->first();
+        $parentDepartment = EssentialsDepartment::find($department->parent_department_id);
+        $parentDepartmentName = $parentDepartment ? $parentDepartment->name : null;
+
+        $professionName = $manager ? EssentialsProfession::find($manager->profession_id)->name : null;
+        $specializationName = $manager ? EssentialsProfession::find($manager->specialization_id)->name : null;
+
+        $professionNamedelegate = $delegate ? EssentialsProfession::find($delegate->profession_id)->name : null;
+        $specializationNamedelegate = $delegate ? EssentialsProfession::find($delegate->specialization_id)->name : null;
+       
+        return view('essentials::settings.partials.departments.show', [
+            'name' => $department->name,
+            'level' => $department->level,
+            'is_main' => $department->is_main,
+            'parent_department_id' => $parentDepartmentName,
+            'address' => $department->address,
+            'is_active' => $department->is_active,
+
+            'manager' => $manager ? $manager->managername : null,
+            'profession_id' => $professionName,
+            'specialization_id' => $specializationName,
+            'manager_start_from' => $manager ? $manager->start_from : null,
+
+            'delegate' => $delegate ? $delegate->delegatename : null,
+            'delegate_profession_id' => $professionNamedelegate,
+            'delegate_specialization_id' => $specializationNamedelegate,
+            'delegate_start_from' => $delegate ? $delegate->start_from : null,
+            'delegate_end_at' => $delegate ? $delegate->end_at : null,
+        ]);
+    }
 }
