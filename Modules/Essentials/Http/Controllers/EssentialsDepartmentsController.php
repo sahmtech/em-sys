@@ -256,12 +256,14 @@ class EssentialsDepartmentsController extends Controller
         try {
             $input = $request->only(['name', 'level','is_main','address']);
             
-
+         
             $input2['name'] = $input['name'];
             $input2['level'] = $input['level'];
             if($request->parent_level != Null)
             {
-            $input2['parent_department_id'] = $input['parent_level'];}
+            
+            $input2['parent_department_id'] = $request->parent_level;
+        }
             else{
                 $input2['parent_department_id'] ='0';
             }

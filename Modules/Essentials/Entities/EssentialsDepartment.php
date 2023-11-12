@@ -9,15 +9,8 @@ class EssentialsDepartment extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'name',
-    'level',
-    'parent_department_id',
-    'creation_date',
-    'location',
-    'details',
-    'is_active',
-    'is_main'];
-    
+
+    protected $guarded = ['id'];
     protected static function newFactory()
     {
         return \Modules\Essentials\Database\factories\EssentialsDepartmentFactory::new();

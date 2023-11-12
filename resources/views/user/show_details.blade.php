@@ -62,7 +62,7 @@
 			<p><strong>@lang('lang_v1.account_number'):</strong> {{$bank_details['account_number'] ?? ''}}</p>
 		</div>
 		<div class="col-md-4">
-			<p><strong>@lang('lang_v1.bank_name'):</strong> {{$bank_details['bank_name'] ?? ''}}</p>
+			<p><strong>@lang('lang_v1.bank_name'):</strong> {{$bank_name ?? ''}}</p>
 			<p><strong>@lang('lang_v1.bank_code'):</strong> {{$bank_details['bank_code'] ?? ''}}</p>
 		</div>
 		<div class="col-md-4">

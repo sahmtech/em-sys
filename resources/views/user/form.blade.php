@@ -143,7 +143,7 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('bank_name', __( 'lang_v1.bank_name') . ':') !!}
-    {!! Form::text('bank_details[bank_name]', !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null, ['class' => 'form-control', 'id' => 'bank_name', 'placeholder' => __( 'lang_v1.bank_name') ]); !!}
+    {!! Form::select('bank_details[bank_name]',$banks ,!empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null, ['class' => 'form-control', 'id' => 'bank_name', 'placeholder' => __( 'lang_v1.bank_name') ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
