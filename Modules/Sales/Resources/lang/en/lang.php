@@ -8,6 +8,7 @@ return [
     'offer_number' => 'Offer Number',
     'customer_number' => 'Customer Number',
     'customer_name' => 'Customer Name',
+    'supplier_business_name'=>'supplier business name',
     'date' => 'Date',
     'value' => 'Value',
     'offer_type' => 'Offer Type',

@@ -61,7 +61,7 @@
 
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-    <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control" onchange="updateProofNumberPrefix(this)">
+    <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control" onchange="updateNationalityOptions(this)">
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
@@ -251,6 +251,11 @@ function updateNationalityOptions(selectElement) {
     const nationalitySelect = document.querySelector('#nationality');
     const options = nationalitySelect.querySelectorAll('option');
 
+    const input = document.getElementById('id_proof_number');
+    const prefix = selectElement.value === 'eqama' ? '2' : '1';
+    input.setAttribute('data-prefix', prefix); 
+    input.value = prefix;
+
     if (selectedOption === 'eqama') {
 
         validationLength = 10;
@@ -264,7 +269,7 @@ function updateNationalityOptions(selectElement) {
     
     else if (selectedOption === 'national_id') {
         validationLength = 10;
-        idProofNumberInput.value = '10';
+        idProofNumberInput.value = '1';
         
         options.forEach(function (option) {
             if (option.value === '5') {
@@ -319,11 +324,8 @@ function updateNationalityOptions(selectElement) {
 
 
 <script>
-function updateProofNumberPrefix(select) {
-    const input = document.getElementById('id_proof_number');
-    const prefix = select.value === 'eqama' ? '2' : '10';
-    input.setAttribute('data-prefix', prefix); // Store the prefix for reference
-    input.value = prefix;
+function updateberPProofNumrefix(select) {
+   
 }
 
 function validateIdProofNumber(input) {

@@ -8,6 +8,7 @@ return [
     'offer_number'=>'رقم العرض',
     'customer_number'=>'رقم العميل',
     'customer_name'=>'اسم العميل',
+    'supplier_business_name'=>'اسم الشركة',
     'date'=>'التاريخ',
     'value'=>'القيمة',
     'offer_type'=>'نوع العرض',

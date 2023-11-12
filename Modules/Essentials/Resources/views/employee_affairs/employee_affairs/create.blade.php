@@ -53,7 +53,7 @@
             {!! Form::select('user_type',['manager' => __('user.manager'),
               'employee' => __('user.employee'),
               'worker' => __('user.worker'),
-              'Responsible_of_client'=>__('user.responsible_of_clients'),
+          
         
               ]
             , null, ['class' => 'form-control', 'required', 'placeholder' => __( 'user.user_type' ) ]); !!}
