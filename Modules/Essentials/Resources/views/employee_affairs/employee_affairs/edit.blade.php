@@ -162,7 +162,7 @@
                       <label>
                         {!! Form::checkbox('selected_contacts', 1, 
                         $user->selected_contacts, 
-                        [ 'class' => 'input-icheck', 'id' => 'selected_contacts']); !!} {{ __( 'lang_v1.allow_selected_contacts' ) }}
+                        [ 'class' => 'input-icheck','style'=>'height:40px', 'id' => 'selected_contacts']); !!} {{ __( 'lang_v1.allow_selected_contacts' ) }}
                       </label>
                       @show_tooltip(__('lang_v1.allow_selected_contacts_tooltip'))
                     </div>
@@ -173,7 +173,7 @@
                 <div class="form-group">
                   {!! Form::label('user_allowed_contacts', __('lang_v1.selected_contacts') . ':') !!}
                     <div class="form-group">
-                      {!! Form::select('selected_contact_ids[]', $contact_access, array_keys($contact_access), ['class' => 'form-control select2', 'multiple', 'style' => 'width: 100%;', 'id' => 'user_allowed_contacts' ]); !!}
+                      {!! Form::select('selected_contact_ids[]', $contact_access, array_keys($contact_access), ['class' => 'form-control select2','style'=>'height:40px', 'multiple', 'style' => 'width: 100%;', 'id' => 'user_allowed_contacts' ]); !!}
                     </div>
                 </div>
             </div>

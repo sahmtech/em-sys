@@ -952,7 +952,12 @@ return[
   'edit_department'=>'تعديل معلومات الإدارة',
   'manager'=>'المدير',
   'delegate'=>'المفوّض',
-  'dep_type'=>'نوع الادارة'
+
+   'eqama'=>'إقامة ',
+   'national_id'=>'هوية وطنية',
+
+  'dep_type'=>'نوع الادارة',
+
 
 
 

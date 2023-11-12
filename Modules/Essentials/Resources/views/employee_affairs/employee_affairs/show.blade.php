@@ -123,9 +123,7 @@
                             <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user" aria-hidden="true"></i> @lang( 'essentials::lang.employee_info')</a>
                         </li>
                         
-                        <li>
-                            <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-paperclip" aria-hidden="true"></i> @lang('lang_v1.documents_and_notes')</a>
-                        </li>
+                     
 
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square" aria-hidden="true"></i> @lang('lang_v1.activities')</a>
@@ -172,7 +170,7 @@
        
                         </div>
 
-                        <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
@@ -204,16 +202,16 @@
         
                             <div class="form-group col-md-6">
                                 {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
-                                {!! Form::number('doc_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.doc_number'), 'required']) !!}
+                                {!! Form::number('doc_number', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.doc_number'), 'required']) !!}
                             </div>
         
                             <div class="form-group col-md-6">
                                 {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
-                                {!! Form::date('issue_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_date'), 'required']) !!}
+                                {!! Form::date('issue_date', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.issue_date'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
-                                {!! Form::text('issue_place', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_place'), 'required']) !!}
+                                {!! Form::text('issue_place', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.issue_place'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
@@ -221,11 +219,11 @@
                                 'valid' => __('essentials::lang.valid'),
                                 'expired' => __('essentials::lang.expired'),
                               
-                            ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_status'), 'required']) !!}
+                            ], null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.select_status'), 'required']) !!}
                         </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
-                                {!! Form::date('expiration_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.expiration_date'), 'required']) !!}
+                                {!! Form::date('expiration_date', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.expiration_date'), 'required']) !!}
                             </div>
                         
                             <div class="form-group col-md-6">
@@ -245,14 +243,7 @@
         </div>
           
 	
-                        <div class="tab-pane" id="documents_and_notes_tab">
-                            <!-- model id like project_id, user_id -->
-                            <input type="hidden" name="notable_id" id="notable_id" value="{{$user->id}}">
-                            <!-- model name like App\User -->
-                            <input type="hidden" name="notable_type" id="notable_type" value="App\User">
-                            <div class="document_note_body">
-                            </div>
-                        </div>
+                      
                         <div class="tab-pane" id="activities_tab">
                             <div class="row">
                                 <div class="col-md-12">
@@ -268,7 +259,7 @@
 @endsection
 @section('javascript')
     <!-- document & note.js -->
-    @include('documents_and_notes.document_and_note_js')
+   
 
     <script type="text/javascript">
         $(document).ready( function(){

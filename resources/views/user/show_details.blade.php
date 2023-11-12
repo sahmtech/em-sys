@@ -11,6 +11,9 @@
 
 			
 			<p><strong>@lang( 'lang_v1.dob' ):</strong> @if(!empty($user->dob)) {{@format_date($user->dob)}} @endif</p>
+			<p><strong>@lang( 'lang_v1.nationality' ):</strong> {{ !empty($nationality) ? json_decode($nationality, true)['nationality'] : '' }}</p>
+
+
 			<p><strong>@lang( 'lang_v1.gender' ):</strong> @if(!empty($user->gender)) @lang('lang_v1.' .$user->gender) @endif</p>
 			<p><strong>@lang( 'lang_v1.marital_status' ):</strong> @if(!empty($user->marital_status)) @lang('lang_v1.' .$user->marital_status) @endif</p>
 			<p><strong>@lang( 'lang_v1.blood_group' ):</strong> {{$user->blood_group ?? ''}}</p>
@@ -30,11 +33,24 @@
 			<p><strong>{{ $custom_labels['user']['custom_field_3'] ?? __('lang_v1.user_custom_field3' )}}:</strong> {{$user->custom_field_3 ?? ''}}</p>
 			<p><strong>{{ $custom_labels['user']['custom_field_4'] ?? __('lang_v1.user_custom_field4' )}}:</strong> {{$user->custom_field_4 ?? ''}}</p>
 		</div> --}}
+
+
 		<div class="clearfix"></div>
 		<div class="col-md-4">
 			<p><strong>@lang('lang_v1.id_proof_name'):</strong>
-			{{$user->id_proof_name ?? ''}}</p>
+			@if ($user->id_proof_name === null)
+                          {{ '' }}
+			@elseif ($user->id_proof_name  === 'eqama')
+		            	@lang('essentials::lang.' .$user->id_proof_name) 
+
+			@elseif ($user->id_proof_name  === 'national_id')
+		            	@lang('essentials::lang.' .$user->id_proof_name) 
+        
+			@endif
+		</p>
 		</div>
+
+
 		<div class="col-md-4">
 			<p><strong>@lang('lang_v1.id_proof_number'):</strong>
 			{{$user->id_proof_number ?? ''}}</p>
