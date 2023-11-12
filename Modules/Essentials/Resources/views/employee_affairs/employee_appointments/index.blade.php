@@ -101,13 +101,8 @@
                                 {!! Form::label('location', __('essentials::lang.location') . ':*') !!}
                                 {!! Form::select('location',$business_locations, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_location'), 'required']) !!}
                             </div>
-                          
-
+                     
                             <div class="form-group col-md-6">
-                                {!! Form::label('superior', __('essentials::lang.superior') . ':*') !!}
-                                {!! Form::text('superior', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.superior'), 'required']) !!}
-                            </div>
-                            <div class="form-group">
                                 {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
                                 {!! Form::select('profession',$professions,null, ['class' => 'form-control', 'required',
                                    'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
