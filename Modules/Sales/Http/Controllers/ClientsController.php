@@ -65,7 +65,10 @@ class ClientsController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $users = User::forDropdown($business_id);
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (! $can_crud_customers) {
             abort(403, 'Unauthorized action.');
@@ -76,9 +79,9 @@ class ClientsController extends Controller
             $contacts = DB::table('contacts')
             ->select([
                 'id',
+                'supplier_business_name',
                 'contact_id',
-                DB::raw("CONCAT(first_name, ' ', last_name) as name"),
-                'english_name',
+              
                 'commercial_register_no',
                 'mobile',
                 'email',
@@ -86,14 +89,14 @@ class ClientsController extends Controller
             ])->where('business_id',$business_id);
             //dd($contacts);
             return Datatables::of($contacts)
-                ->addColumn('nameAr', function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['ar'] ?? '';
-                })
-                ->addColumn('nameEn', function ($row) {
-                    $name = json_decode($row->name, true);
-                    return $name['en'] ?? '';
-                })
+                // ->addColumn('nameAr', function ($row) {
+                //     $name = json_decode($row->name, true);
+                //     return $name['ar'] ?? '';
+                // })
+                // ->addColumn('nameEn', function ($row) {
+                //     $name = json_decode($row->name, true);
+                //     return $name['en'] ?? '';
+                // })
                 ->addColumn('action', function ($row) {
                 
                     $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
@@ -163,14 +166,15 @@ class ClientsController extends Controller
                 return $this->moduleUtil->expiredResponse();
             }
 
-            $input = $request->only(['type','contact_id','name_en','first_name','last_name', 'supplier_business_name','commercial_register_no','mobile'
-        ,'alternate_number','email','assigned_to_users',
+            $input = $request->only(['type','contact_id','name_en','first_name','last_name', 
+            'supplier_business_name','commercial_register_no','mobile'
+             ,'alternate_number','email','assigned_to_users','user_id','selected_user_id',
              'last_name_cs','first_name_cs','english_name_cs','capacity_cs','nationality_cs',
                 'email_cs','identityNO_cs','mobile_cs','allow_login','username_cs','password_cs',
             'first_name_cf','last_name_cf','english_name_cf','email_cf','mobile_cf','allow_login_cf','username_cf','password_cf']);
 
      
-
+           // dd($input['user_id']);
             $name_array = [];
 
            
@@ -187,8 +191,8 @@ class ClientsController extends Controller
             $input['english_name']=$request->input('name_en');
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
-
-        
+            $input['responsible_user_id']= $input['selected_user_id'];
+      //  dd( $input);
             DB::beginTransaction();
             $output = $this->contactUtil->createNewContact($input);
             $responseData = $output['data']; // Accessing the 'data' array from the response
@@ -331,7 +335,11 @@ class ClientsController extends Controller
            ->get();
        
         return view('sales::contacts.show')
-             ->with(compact('contact','contactSigners','contactFollower', 'contact_dropdown', 'business_locations', 'view_type', 'contact_view_tabs', 'activities'));
+             ->with(compact('contact',
+             'contactSigners',
+             'contactFollower',
+              'contact_dropdown',
+               'business_locations', 'view_type', 'contact_view_tabs', 'activities'));
     }
 
     /**

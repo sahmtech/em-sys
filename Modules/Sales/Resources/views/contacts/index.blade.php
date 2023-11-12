@@ -33,14 +33,15 @@
                 <table class="table table-bordered table-striped" id="cust_table">
                     <thead>
                         <tr>
-                         <th>@lang('messages.action')</th>
+                      
                             <th>@lang('sales::lang.contact_number')</th>
-                            <th>@lang('sales::lang.contact_name_ar')</th>
-                            <th>@lang('sales::lang.contact_name_en')</th>                           
+                            <th>@lang('sales::lang.supplier_business_name')</th>
+                                                    
                             <th>@lang('sales::lang.commercial_register_no')</th>
                             <th>@lang('sales::lang.contact_mobile')</th>
                             <th>@lang('sales::lang.contact_email')</th>
-                            <th>@lang('sales::lang.contact_city')</th>
+                            <th>@lang('messages.action')</th>
+                           
                          
                         </tr>
                     </thead>
@@ -87,10 +88,7 @@
                                                         @lang('business.business')
                                                     </label>
 
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="business" id="customer" value="customer">
-                                                        @lang('sales::lang.customer')
-                                                    </label>
+                                                 
                                                     </div>
                                                     <div class="clearfix"></div>
 
@@ -209,19 +207,22 @@
                                                         
                                                         <div class="clearfix"></div>
                                                        
-                                                        <!-- User in create leads -->
                                                         <div class="col-md-6 lead_additional_div">
-                                                            <div class="form-group">
-                                                                {!! Form::label('user_id', __('lang_v1.assigned_to') . ':' ) !!}
-                                                                <div class="input-group">
-                                                                    <span class="input-group-addon">
-                                                                        <i class="fa fa-user"></i>
-                                                                    </span>
-                                                                    {!! Form::select('user_id[]', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'user_id', 'multiple', 'required', 'style' => 'width: 100%;']); !!}
-                                                                </div>
-                                                            </div>
-                                                            <div class="clearfix"></div>
-                                                        </div>  
+                                                        <div class="col-md-6 lead_additional_div">
+    <div class="form-group">
+        {!! Form::label('user_id', __('lang_v1.assigned_to') . ':' ) !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-user"></i>
+            </span>
+            {!! Form::select('user_id[]', $users ?? [], null, ['class' => 'form-control select2', 'id' => 'user_id', 'required', 'style' => 'width: 100%;', 'onchange' => 'updateInputValue(this)']); !!}
+        </div>
+    </div>
+    <input type="hidden" name="selected_user_id" id="selected_user_id" value="">
+    <div class="clearfix"></div>
+</div>
+    <div class="clearfix"></div>
+</div>
                                                                                                 
                                         <div class="row">
                                                     <div class="col-md-12">
@@ -544,6 +545,9 @@
             }
         });
     });
+
+
+
 </script>
 
 
@@ -558,14 +562,15 @@
         
        
         columns: [
-            { data: 'action', name: 'action', orderable: false, searchable: false },
+       
             { data: 'contact_id', name: 'contact_id' },
-            { data: 'name', name: 'name' },
-            { data: 'english_name', name: 'english_name' },
+            { data: 'supplier_business_name', name: 'supplier_business_name' },
+         
             { data: 'commercial_register_no', name: 'commercial_register_no' },
             { data: 'mobile', name: 'mobile' },
             { data: 'email', name: 'email' },
-            { data: 'city', name: 'city' }
+            { data: 'action', name: 'action', orderable: false, searchable: false },
+          
         ]
     });
    
@@ -623,7 +628,13 @@
 
 </script>
 
-
+<script>
+    function updateInputValue(select) {
+        var selectedId = select.value; 
+        document.getElementById('selected_user_id').value = selectedId; 
+        console.log(selectedId);
+    }
+</script>
 <script>
     $(document).ready(function () {
         $('#moreInfoButton').click(function () {

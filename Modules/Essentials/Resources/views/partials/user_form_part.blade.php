@@ -107,9 +107,9 @@
             <div class="multi-input">
                 {!! Form::label('essentials_salary', __('essentials::lang.salary') . ':') !!}
                 <br/>
-                {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, ['class' => 'form-control width-40 pull-left', 'placeholder' => __('essentials::lang.salary')]); !!}
+                {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, ['class' => 'form-control width-40 pull-left','style'=>'height:40px', 'placeholder' => __('essentials::lang.salary')]); !!}
 
-                {!! Form::select('essentials_pay_period', ['month' => __('essentials::lang.per'). ' '.__('lang_v1.month'), 'week' => __('essentials::lang.per'). ' '.__('essentials::lang.week'), 'day' => __('essentials::lang.per'). ' '.__('lang_v1.day')], !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null, ['class' => 'form-control width-60 pull-left']); !!}
+                {!! Form::select('essentials_pay_period', ['month' => __('essentials::lang.per'). ' '.__('lang_v1.month'), 'week' => __('essentials::lang.per'). ' '.__('essentials::lang.week'), 'day' => __('essentials::lang.per'). ' '.__('lang_v1.day')], !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null, ['class' => 'form-control width-60 pull-left','style'=>'height:40px',]); !!}
             </div>
         </div>
     </div>
@@ -124,7 +124,7 @@
         <tbody id="salary-table-body">
             <tr>
                 <td>
-                    {!! Form::select('salary_type[]', $allowance_types, null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+                    {!! Form::select('salary_type[]', $allowance_types, null, ['class' => 'form-control width-60 pull-left','style'=>'height:40px', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
                 </td>
                 <td>
                     {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount')]); !!}
