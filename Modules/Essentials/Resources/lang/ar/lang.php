@@ -378,6 +378,7 @@ return[
 'organization_bank_name'=>'اسم البنك',
 'is_active'=>'التفعيل',
 'is_unactive'=>'غير مفعل',
+'isActive'=>'مفعل',
 'manage_job_titles'=>'إدارة المسميات الوظيفية',
 'job_title'=>'المسمى الوظيفي',
 'job_code'=>'كود المسمى الوظيفي',
@@ -835,7 +836,6 @@ return[
     'valid' => 'ساري',
     'active' => 'على رأس العمل',
     'vecation' => 'إجازة',
-    'inactive' => 'موقوف',
     'terminated' => 'إقالة',
     'add_AdmissionToWork' => 'إضافة مباشرة عمل لموظف',
     'bachelors' => 'بكالوريوس',
@@ -952,6 +952,7 @@ return[
   'edit_department'=>'تعديل معلومات الإدارة',
   'manager'=>'المدير',
   'delegate'=>'المفوّض',
+  'dep_type'=>'نوع الادارة'
 
 
 
