@@ -27,6 +27,9 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+
+
 
 class EssentialsManageEmployeeController extends Controller
 {
@@ -325,10 +328,11 @@ class EssentialsManageEmployeeController extends Controller
                                     ->Active()
                                     ->get();
         $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $banks = EssentialsBankAccounts::all()->pluck('name','id');
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities=EssentialsCountry::nationalityForDropdown();
-
+        
         $blood_types = ['A+' => 'A positive (A+).',
         'A-' => 'A negative (A-).',
         'B+' => 'B positive (B+)',
@@ -339,7 +343,7 @@ class EssentialsManageEmployeeController extends Controller
           'O-'=>'O positive (O-).',];
         return view('essentials::employee_affairs.employee_affairs.create')
                 ->with(compact('roles','nationalities' ,'username_ext','blood_types',
-                 'locations', 'contract_types','form_partials'));
+                 'locations','banks', 'contract_types','form_partials'));
     }
 
     /**
@@ -432,7 +436,10 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->find($id);
-       
+        $dataArray = json_decode($user->bank_details, true)['bank_name'];
+     
+     
+        $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
@@ -474,8 +481,10 @@ class EssentialsManageEmployeeController extends Controller
      
       
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user',
-         'view_partials', 'users', 'activities',
+
+         'view_partials', 'users', 'activities','bank_name',
         'admissions_to_work','Qualification','Contract','nationalities','nationality'));
+
     }
 
     /**
@@ -539,12 +548,12 @@ class EssentialsManageEmployeeController extends Controller
 
         $permitted_locations = $user->permitted_locations();
         $username_ext = $this->moduleUtil->getUsernameExtension();
-
+        $banks = EssentialsBankAccounts::all()->pluck('name','id');
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
         return view('essentials::employee_affairs.employee_affairs.edit')
-                ->with(compact('roles', 'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
+                ->with(compact('roles','banks' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
     }
 
     /**
