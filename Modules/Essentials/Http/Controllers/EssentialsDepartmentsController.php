@@ -417,7 +417,7 @@ class EssentialsDepartmentsController extends Controller
                 'name' => $request->filled('name') ? $request->input('name') : $department->name,
                 'level' => $request->filled('level') ? $request->input('level') : $department->level,
                 'is_main' => $request->filled('is_main') ? $request->input('is_main') : $department->is_main,
-                'parent_department_id' => $request->filled('parent_department_id') ? $request->input('parent_department_id') : $department->parent_department_id,
+                'parent_department_id' => ($request->filled('level') && $request->input('level') == 'first_level') ? null : ($request->filled('parent_level') ? $request->input('parent_level') : $department->parent_department_id),
                 'address' => $request->filled('address') ? $request->input('address') : $department->address,
                 'is_active' => $request->filled('is_active') ? $request->input('is_active') : $department->is_active,
             ];

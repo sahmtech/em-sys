@@ -546,11 +546,6 @@ $(document).ready(function () {
                 console.log('Data:', data);
                 $('#department_name').val(data.name);
                 $('#department_level').val(data.level);
-                
-
-
-             
-                
 
                 if (data.level === 'first_level') {
                     $('#first_level').prop('checked', true);
