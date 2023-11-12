@@ -367,27 +367,29 @@ class EssentialsManageEmployeeController extends Controller
                     //emp_number
                     $business_id = request()->session()->get('user.business_id');
 
-                    if ($business_id) {
-                        $numericPart = (int)substr($business_id, 3);
-                        $lastEmployee = User::orderBy('emp_number', 'desc')->first(); 
+                    $numericPart = (int)substr($business_id, 3);
+                    $lastEmployee = User::where('business_id', $business_id)
+                        ->orderBy('emp_number', 'desc')
+                        ->first();
 
-                        if ($lastEmployee) {
-                            $lastNumericPart = (int)substr($lastEmployee->emp_number, 3);
-                            $nextNumericPart = $lastNumericPart + 1;
-                            $request['emp_number'] = $business_id . str_pad($nextNumericPart, 4, '0', STR_PAD_LEFT);
-                        }
-                        else {
-                            // If there are no existing records, start with 1000
-                            $request['emp_number'] = $business_id+'000';
-                        }
-                    }
-                     else {
-                        // Handle the case when there is no business_id
-                        $request['emp_number'] = $business_id;
-                    }
-                    //-------------------
+                    if ($lastEmployee) {
+                      
+                        $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
 
-                //  dd($request['emp_number'] );
+                
+                       
+                        $nextNumericPart = $lastEmpNumber + 1;
+
+                        $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+                    } 
+                
+                    else
+                     {
+                      
+                        $emp_data['emp_number'] =  $business_id .'000';
+
+                    }
+
 
 
 

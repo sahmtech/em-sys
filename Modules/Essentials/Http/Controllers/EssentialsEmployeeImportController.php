@@ -459,7 +459,7 @@ $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $e
                             if ($lastEmployee) {
                               
                                 $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-// <<<<<<< Rahaf
+
                         
                                
                                 $nextNumericPart = $lastEmpNumber + 1;
@@ -470,19 +470,7 @@ $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $e
                             else {
                               
                                 $emp_data['emp_number'] =  $business_id .'000';
-// =======
 
-//                                 // Increment the numeric part
-//                                 $nextNumericPart = $lastEmpNumber + 1;
-
-//                                 // Ensure the numeric part has at least 6 digits
-//                                 $nextNumericPartStr = str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-
-//                                 $emp_data['emp_number'] = $business_id . $nextNumericPartStr;
-//                             } else {
-//                                 // If no previous employee, start from 1 and ensure it has at least 6 digits
-//                                 $emp_data['emp_number'] = $business_id . str_pad('1', 6, '0', STR_PAD_LEFT);
-// >>>>>>> Development
                             }
         
 
