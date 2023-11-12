@@ -19,18 +19,20 @@ class EssentialsController extends Controller
     public function index()
     {
 
-        $num_employee_staff = User::where(function ($query) {
+        $business_id = request()->session()->get('user.business_id');
+
+        $num_employee_staff = User::where('business_id', $business_id)->where(function ($query) {
             $types = ['worker', 'employee', 'manager'];
 
             foreach ($types as $type) {
                 $query->orWhere('user_type', 'like', '%' . $type . '%');
             }
         })->count();
-        $num_workers = User::where('user_type', 'like', '%worker%')->count();
-        $num_employees = User::where('user_type', 'like', '%employee%')->count();
-     
-        
-        $num_managers = User::where('user_type', 'like', '%manager%')->count();
+        $num_workers = User::where('business_id', $business_id)->where('user_type', 'like', '%worker%')->count();
+        $num_employees = User::where('business_id', $business_id)->where('user_type', 'like', '%employee%')->count();
+
+
+        $num_managers = User::where('business_id', $business_id)->where('user_type', 'like', '%manager%')->count();
         $chart = new CommonChart;
         $colors = [
             '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
