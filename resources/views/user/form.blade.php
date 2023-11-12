@@ -13,15 +13,15 @@
 @endphp
 <div class="form-group col-md-3">
     {!! Form::label('user_dob', __( 'lang_v1.dob' ) . ':') !!}
-    {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.dob'), 'readonly', 'id' => 'user_dob' ]); !!}
+    {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.dob'), 'readonly', 'id' => 'user_dob' ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('gender', __( 'lang_v1.gender' ) . ':') !!}
-    {!! Form::select('gender', ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
+    {!! Form::select('gender', ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control','style'=>'height:36px', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('marital_status', __( 'lang_v1.marital_status' ) . ':') !!}
-    {!! Form::select('marital_status', ['married' => __( 'lang_v1.married'), 'unmarried' => __( 'lang_v1.unmarried' ), 'divorced' => __( 'lang_v1.divorced' )], !empty($user->marital_status) ? $user->marital_status : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.marital_status') ]); !!}
+    {!! Form::select('marital_status', ['married' => __( 'lang_v1.married'), 'unmarried' => __( 'lang_v1.unmarried' ), 'divorced' => __( 'lang_v1.divorced' )], !empty($user->marital_status) ? $user->marital_status : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.marital_status') ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('blood_group', __( 'lang_v1.blood_group' ) . ':') !!}
@@ -32,7 +32,7 @@
 <div class="clearfix"></div>
 <div class="form-group col-md-3">
     {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
-    {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'maxlength' => '10']) !!}
+    {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', ['class' => 'form-control','require','style'=>'height:36px', 'placeholder' => __('lang_v1.mobile_number'), 'oninput' => 'validateContactNumber(this)', 'maxlength' => '10']) !!}
     <span id="contactNumberError" class="text-danger"></span>
 </div>
 
@@ -42,18 +42,18 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('family_number', __( 'lang_v1.family_contact_number' ) . ':') !!}
-    {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.family_contact_number') ]); !!}
+    {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.family_contact_number') ]); !!}
 </div>
 
 
 <div class="clearfix"></div>
 <div class="form-group col-md-6">
     {!! Form::label('permanent_address', __( 'lang_v1.permanent_address') . ':') !!}
-    {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.permanent_address'), 'rows' => 3 ]); !!}
+    {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.permanent_address'), 'rows' => 3 ]); !!}
 </div>
 <div class="form-group col-md-6">
     {!! Form::label('current_address', __( 'lang_v1.current_address') . ':') !!}
-    {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
+    {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
 </div>
 
 
@@ -61,73 +61,72 @@
 
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-    <select id="id_proof_name" name="id_proof_name" class="form-control" onchange="updateNationalityOptions(this)">
+    <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control" onchange="updateProofNumberPrefix(this)">
         <option value="">@lang('user.select_proof_name')</option>
         <option value="national_id">@lang('user.national_id')</option>
         <option value="eqama">@lang('user.eqama')</option>
-    
     </select>
 </div>
 
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null,
-         ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.id_proof_number'),
+         ['class' => 'form-control','style'=>'height:40px', 'required', 'placeholder' => __('lang_v1.id_proof_number'),
           'oninput' => 'validateIdProofNumber(this)']) !!}
     <span id="idProofNumberError" class="text-danger"></span>
 </div>
 
 <div class="form-group col-md-6">
     {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
-    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10']) !!}
+    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10']) !!}
     <div id="border_no_error" class="text-danger"></div>
 </div>
 
 <div class="form-group col-md-3">
     {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
-    {!! Form::select('nationality', $nationalities, !empty($user->nationality_cs) ? $user->nationality_cs : null, ['class' => 'form-control', 'required', 'placeholder' => __('sales::lang.nationality')]); !!}
+    {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, ['class' => 'form-control','style'=>'height:40px', 'required', 'placeholder' => __('sales::lang.nationality')]); !!}
 </div>
- 
+
 
 
 
 
 {{-- <div class="form-group col-md-3">
     {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
-    {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
+    {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
 </div> --}}
 {{-- <div class="form-group col-md-3">
     {!! Form::label('twitter_link', __( 'lang_v1.twitter_link' ) . ':') !!}
-    {!! Form::text('twitter_link', !empty($user->twitter_link) ? $user->twitter_link : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.twitter_link') ]); !!}
+    {!! Form::text('twitter_link', !empty($user->twitter_link) ? $user->twitter_link : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.twitter_link') ]); !!}
 </div> --}}
 {{-- <div class="form-group col-md-3">
     {!! Form::label('social_media_1', __( 'lang_v1.social_media', ['number' => 1] ) . ':') !!}
-    {!! Form::text('social_media_1', !empty($user->social_media_1) ? $user->social_media_1 : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.social_media', ['number' => 1] ) ]); !!}
+    {!! Form::text('social_media_1', !empty($user->social_media_1) ? $user->social_media_1 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.social_media', ['number' => 1] ) ]); !!}
 </div>
 <div class="clearfix"></div>
 <div class="form-group col-md-3">
     {!! Form::label('social_media_2', __( 'lang_v1.social_media', ['number' => 2] ) . ':') !!}
-    {!! Form::text('social_media_2', !empty($user->social_media_2) ? $user->social_media_2 : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.social_media', ['number' => 2] ) ]); !!}
+    {!! Form::text('social_media_2', !empty($user->social_media_2) ? $user->social_media_2 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.social_media', ['number' => 2] ) ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('custom_field_1', $user_custom_field1 . ':') !!}
-    {!! Form::text('custom_field_1', !empty($user->custom_field_1) ? $user->custom_field_1 : null, ['class' => 'form-control', 'placeholder' => $user_custom_field1 ]); !!}
+    {!! Form::text('custom_field_1', !empty($user->custom_field_1) ? $user->custom_field_1 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => $user_custom_field1 ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('custom_field_2', $user_custom_field2 . ':') !!}
-    {!! Form::text('custom_field_2', !empty($user->custom_field_2) ? $user->custom_field_2 : null, ['class' => 'form-control', 'placeholder' => $user_custom_field2 ]); !!}
+    {!! Form::text('custom_field_2', !empty($user->custom_field_2) ? $user->custom_field_2 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => $user_custom_field2 ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('custom_field_3', $user_custom_field3 . ':') !!}
-    {!! Form::text('custom_field_3', !empty($user->custom_field_3) ? $user->custom_field_3 : null, ['class' => 'form-control', 'placeholder' => $user_custom_field3 ]); !!}
+    {!! Form::text('custom_field_3', !empty($user->custom_field_3) ? $user->custom_field_3 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => $user_custom_field3 ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('custom_field_4', $user_custom_field4 . ':') !!}
-    {!! Form::text('custom_field_4', !empty($user->custom_field_4) ? $user->custom_field_4 : null, ['class' => 'form-control', 'placeholder' => $user_custom_field4 ]); !!}
+    {!! Form::text('custom_field_4', !empty($user->custom_field_4) ? $user->custom_field_4 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => $user_custom_field4 ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('guardian_name', __( 'lang_v1.guardian_name') . ':') !!}
-    {!! Form::text('guardian_name', !empty($user->guardian_name) ? $user->guardian_name : null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.guardian_name' ) ]); !!}
+    {!! Form::text('guardian_name', !empty($user->guardian_name) ? $user->guardian_name : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.guardian_name' ) ]); !!}
 </div> --}}
 <div class="col-md-12">
     <hr>
@@ -135,33 +134,33 @@
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('account_holder_name', __( 'lang_v1.account_holder_name') . ':') !!}
-    {!! Form::text('bank_details[account_holder_name]', !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null , ['class' => 'form-control', 'id' => 'account_holder_name', 'placeholder' => __( 'lang_v1.account_holder_name') ]); !!}
+    {!! Form::text('bank_details[account_holder_name]', !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null , ['class' => 'form-control','style'=>'height:40px', 'id' => 'account_holder_name', 'placeholder' => __( 'lang_v1.account_holder_name') ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('account_number', __( 'lang_v1.account_number') . ':') !!}
-    {!! Form::text('bank_details[account_number]', !empty($bank_details['account_number']) ? $bank_details['account_number'] : null, ['class' => 'form-control', 'id' => 'account_number', 'placeholder' => __( 'lang_v1.account_number') ]); !!}
+    {!! Form::text('bank_details[account_number]', !empty($bank_details['account_number']) ? $bank_details['account_number'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'account_number', 'placeholder' => __( 'lang_v1.account_number') ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('bank_name', __( 'lang_v1.bank_name') . ':') !!}
-    {!! Form::text('bank_details[bank_name]', !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null, ['class' => 'form-control', 'id' => 'bank_name', 'placeholder' => __( 'lang_v1.bank_name') ]); !!}
+    {!! Form::text('bank_details[bank_name]', !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'bank_name', 'placeholder' => __( 'lang_v1.bank_name') ]); !!}
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
-    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'maxlength' => '24']) !!}
+    {!! Form::text('bank_details[bank_code]', !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA', ['class' => 'form-control','style'=>'height:40px', 'id' => 'bank_code', 'placeholder' => __('lang_v1.bank_code'), 'oninput' => 'validateBankCode(this)', 'maxlength' => '24']) !!}
     <span id="bankCodeError" class="text-danger"></span>
 </div>
 <div class="form-group col-md-3">
     {!! Form::label('branch', __( 'lang_v1.branch') . ':') !!}
-    {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, ['class' => 'form-control', 'id' => 'branch', 'placeholder' => __( 'lang_v1.branch') ]); !!}
+    {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'branch', 'placeholder' => __( 'lang_v1.branch') ]); !!}
 </div>
 <div class="form-group col-md-6">
     {!! Form::label('Iban_file', __('lang_v1.Iban_file') . ':') !!}
-    {!! Form::file('bank_details[Iban_file]', null, ['class' => 'form-control', 'id' => 'Iban_file','placeholder' => __('lang_v1.Iban_file'), 'required']) !!}
+    {!! Form::file('bank_details[Iban_file]', null, ['class' => 'form-control', 'id' => 'Iban_file','placeholder' => __('lang_v1.Iban_file'), 'required','style'=>'height:40px',]) !!}
 </div>
 {{-- <div class="form-group col-md-3">
     {!! Form::label('tax_payer_id', __( 'lang_v1.tax_payer_id') . ':') !!}
     @show_tooltip(__('lang_v1.tax_payer_id_help'))
-    {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
+    {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
 
 <script>
@@ -290,69 +289,64 @@ function updateNationalityOptions(selectElement) {
    
 }
 
+// function validateIdProofNumber(input) {
+//     const idProofName = document.getElementById('id_proof_name').value;
+//     const idProofNumberInput = input;
+//     const idProofNumber = idProofNumberInput.value;
+
+//     const idProofNumberError = document.getElementById('idProofNumberError');
+//     idProofNumberError.innerText = '';
+
+//     if (idProofName === 'eqama') {
+//         if (idProofNumber.length !== 10 || !idProofNumber.startsWith('2')) {
+//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
+//             input.value = idProofNumber.slice(0, 10);
+//         }
+//     } else if (idProofName === 'national_id') {
+//         if (idProofNumber.length !== 10 || !idProofNumber.startsWith('10')) {
+//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
+//             input.value = idProofNumber.slice(0, 10);
+//         }
+//     }
+// }
+
+
+
+</script>
+
+
+
+<script>
+function updateProofNumberPrefix(select) {
+    const input = document.getElementById('id_proof_number');
+    const prefix = select.value === 'eqama' ? '2' : '10';
+    input.setAttribute('data-prefix', prefix); // Store the prefix for reference
+    input.value = prefix;
+}
+
 function validateIdProofNumber(input) {
     const idProofName = document.getElementById('id_proof_name').value;
     const idProofNumberInput = input;
     const idProofNumber = idProofNumberInput.value;
 
     const idProofNumberError = document.getElementById('idProofNumberError');
+    const prefix = input.getAttribute('data-prefix');
+
     idProofNumberError.innerText = '';
 
-    if (idProofName === 'eqama') {
-        if (idProofNumber.length !== 10 || !idProofNumber.startsWith('2')) {
-            idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
+    if (idProofNumber.startsWith(prefix)) {
+        if (idProofName === 'eqama' && idProofNumber.length !== 10) {
+            idProofNumberError.innerText = 'يجب أن تكون مكونة من 10 أرقام';
+            input.value = idProofNumber.slice(0, 10);
+        } else if (idProofName === 'national_id' && idProofNumber.length !== 10) {
+            idProofNumberError.innerText = 'يجب أن تكون مكونة من 10 أرقام';
             input.value = idProofNumber.slice(0, 10);
         }
-    } else if (idProofName === 'national_id') {
-        if (idProofNumber.length !== 10 || !idProofNumber.startsWith('10')) {
-            idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
-            input.value = idProofNumber.slice(0, 10);
-        }
+    } else {
+        input.value = prefix + idProofNumber;
     }
 }
-
-
-// function validateIdProofNumber(input) {
-//     const idProofName = document.getElementById('id_proof_name').value;
-//     const idProofNumberInput = input;
-//     const idProofNumber = idProofNumberInput.value;
-//    // idProofNumber = idProofNumber.replace(/\D/g, '');
-  
-
-//     const idProofNumberError = document.getElementById('idProofNumberError');
-//     idProofNumberError.innerText = '';
-
-//     if (idProofName === 'eqama') 
-//     {
-       
-//         if (idProofNumber.length != 10 || !idProofNumber.startsWith('2')) {
-           
-//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
-//             input.value = idProofNumber.slice(0, 10); 
-//         }
-        
-       
-       
-//     } 
-    
-    
-//     else if (idProofName === 'national_id')
-//      {
-        
-//         if (idProofNumber.length != 10 || !idProofNumber.startsWith('10')) {
-//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
-//             input.value = idProofNumber.slice(0, 10); 
-//         }
-
-//     }
-    
-  
-   
-// }
 </script>
-
-
-
 
 </body>
 </html>

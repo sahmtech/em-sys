@@ -952,7 +952,8 @@ return[
   'edit_department'=>'تعديل معلومات الإدارة',
   'manager'=>'المدير',
   'delegate'=>'المفوّض',
-
+   'eqama'=>'إقامة ',
+   'national_id'=>'هوية وطنية'
 
 
 

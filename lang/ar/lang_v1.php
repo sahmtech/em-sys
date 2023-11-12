@@ -1422,5 +1422,6 @@ return [
 'Invalid_specialization'=>'التخصص  غير موجود للسطر رقم ',
 'Invalid_department'=>'القسم غير موجود للسطر رقم ',
 'Invalid_location'=>'الفرع غير موجود للسطر رقم',
+'nationality'=>'الجنسية ',
 
 ];

@@ -380,21 +380,22 @@ class EssentialsManageEmployeeController extends Controller
                        
                         $nextNumericPart = $lastEmpNumber + 1;
 
-                        $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+                        $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
                     } 
                 
                     else
                      {
                       
-                        $emp_data['emp_number'] =  $business_id .'000';
+                        $request['emp_number'] =  $business_id .'000';
 
                     }
 
 
 
 
-
-
+              //  $request['nationality_id']=  $request->input('nationality');
+             //   dd( $request);
+                 
                 $user = $this->moduleUtil->createUser($request);
     
                 event(new UserCreatedOrModified($user, 'added'));
@@ -461,10 +462,20 @@ class EssentialsManageEmployeeController extends Controller
            ->with(['causer', 'subject'])
            ->latest()
            ->get();
-       
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationality_id=$user->nationality_id;
+        $nationality="";
+        if(!empty($nationality_id))
+        {
+            $nationality = EssentialsCountry::select('nationality')->where('id','=',$nationality_id)->first() ;
+        }
+        
+     
+      
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user',
          'view_partials', 'users', 'activities',
-        'admissions_to_work','Qualification','Contract'));
+        'admissions_to_work','Qualification','Contract','nationalities','nationality'));
     }
 
     /**
@@ -506,13 +517,15 @@ class EssentialsManageEmployeeController extends Controller
          'AB-'=>'AB negative (AB-).',
          'O+'=>'O positive (O+).',
          'O-'=>'O positive (O-).',];
-       
-        $roles = $this->getRolesArray($business_id);
 
+      
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        
+        $roles = $this->getRolesArray($business_id);
         $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
         $contract_types = EssentialsContractType::all()->pluck('type','id');
         $contract=EssentialsEmployeesContract::where('employee_id','=',$user->id)->select('*')->get();
-        $nationalities = EssentialsCountry::nationalityForDropdown();
+      
         $specializations = EssentialsSpecialization::all()->pluck('id', 'name');
         $professions = EssentialsProfession::all()->pluck('id', 'name');
         if ($user->status == 'active') {

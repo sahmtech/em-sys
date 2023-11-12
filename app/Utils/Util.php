@@ -1575,7 +1575,7 @@ class Util
 
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
-        $user_details['nationality_cs'] = $request->input('nationality');
+        $user_details['nationality_id'] = $request->input('nationality');
     
 
         //Check if subscribed or not, then check for users quota
