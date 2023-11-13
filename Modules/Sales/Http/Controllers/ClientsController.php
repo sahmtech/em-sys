@@ -81,7 +81,6 @@ class ClientsController extends Controller
                 'id',
                 'supplier_business_name',
                 'contact_id',
-              
                 'commercial_register_no',
                 'mobile',
                 'email',
@@ -173,8 +172,9 @@ class ClientsController extends Controller
                 'email_cs','identityNO_cs','mobile_cs','allow_login','username_cs','password_cs',
             'first_name_cf','last_name_cf','english_name_cf','email_cf','mobile_cf','allow_login_cf','username_cf','password_cf']);
 
-     
-           // dd($input['user_id']);
+            $input['allow_login'] = $request->filled('allow_login');
+            $input['allow_login_cf'] = $request->filled('allow_login_cf');
+           // dd($input);
             $name_array = [];
 
            
@@ -219,18 +219,20 @@ class ClientsController extends Controller
             $contract_signer_input['contact_number']=$request->input('mobile_cs');
             $contract_signer_input['business_id']=$request->session()->get('user.id');
          
-            if($request->input('allow_login')==true)
+            if($input['allow_login']==true)
             {
                 $contract_signer_input['type']='customer_user'; 
                 $contract_signer_input['username']=$request->input('username_cs'); 
                 if (!empty($input['password_cs'])) {
                     $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
                 } 
+                $contract_signer_input['allow_login']=$input['allow_login'];
             }
             else
             {
                 $contract_signer_input['type']='user'; 
             }
+
             $contract_signer_input['contact_user_type']='contact_signer';
             $contract_signer = User::create($contract_signer_input);
 
@@ -243,20 +245,24 @@ class ClientsController extends Controller
             $contract_follower_input['contact_number']=$input['mobile_cf'];
             $contract_follower_input['business_id']=$request->session()->get('user.id');
 
-            if($request->input('allow_login_cf')==true)
+            if($input['allow_login_cf']==true)
             {
                 $contract_follower_input['type']="customer_user"; 
                 $contract_follower_input['username']=$input['username_cs']; 
                 if (!empty($input['password_cs'])) {
                     $contract_follower_input['password'] = Hash::make($input['password_cs']);
                 } 
+                $contract_follower_input['allow_login']=$input['allow_login_cf'];
             }
             else
             {$contract_follower_input['type']="user"; }
+
+
+            dd( $contract_follower);
             $contract_follower_input['contact_user_type']='contract_follower';
             $contract_follower = User::create($contract_follower_input);
 
-  
+   
         } 
         
         catch (\Exception $e)
@@ -272,8 +278,8 @@ class ClientsController extends Controller
         $errors = $e->errors();
         return response()->json(['success' => false, 'errors' => $errors], 422);
     }
-
-    return redirect()->route('sale.clients');
+ // return $output;
+   return redirect()->route('sale.clients');
     }
 
     /**

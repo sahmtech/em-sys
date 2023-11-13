@@ -21,24 +21,34 @@
 <div class="col-md-3">
     <div class="form-group">
         <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
-        {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
-            'id' => 'specializations-select'
-        ]) !!}
+        {!! Form::select(
+    'specializations-select',
+    $specializations,
+    request('specializations-select'),
+    [
+        'class' => 'form-control select2', // Add the select2 class
+        'style' => 'height:36px',
+        'placeholder' => __('lang_v1.all'),
+        'id' => 'specializations-select',
+    ]
+) !!}
     </div>
 </div>
      
 <div class="col-md-3">
     <div class="form-group">
         <label for="professions_filter">@lang('essentials::lang.professions'):</label>
-        {!! Form::select('professions-select', $professions, request('professions-select'), [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
-            'id' => 'professions-select'
-        ]) !!}
+        {!! Form::select(
+    'professions-select',
+    $professions,
+    request('professions-select'),
+    [
+        'class' => 'form-control select2', // Add the select2 class
+        'style' => 'height:36px',
+        'placeholder' => __('lang_v1.all'),
+        'id' => 'professions-select',
+    ]
+) !!}
     </div>
 </div>
 
@@ -407,6 +417,7 @@
     
     
 </script>
+
 
 
 @endsection

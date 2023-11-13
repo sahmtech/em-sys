@@ -394,11 +394,6 @@ class EssentialsManageEmployeeController extends Controller
 
                     }
 
-
-
-
-              //  $request['nationality_id']=  $request->input('nationality');
-             //   dd( $request);
                  
                 $user = $this->moduleUtil->createUser($request);
     
@@ -436,6 +431,7 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->find($id);
+
         $dataArray = json_decode($user->bank_details, true)['bank_name'];
      
      

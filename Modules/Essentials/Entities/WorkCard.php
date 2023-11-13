@@ -19,7 +19,9 @@ class WorkCard extends Model
         'fees',
         'company_name',
         'fixnumber',
-        'Residency_id'
+        'responsible_user_id' ,
+        'border_end_date',
+        'residency_end_date'
     ];
 
     public function employee()

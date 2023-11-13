@@ -56,7 +56,7 @@
                                                                 <span class="input-group-addon">
                                                                     <i class="fa fa-id-badge"></i>
                                                                 </span>
-                                                                {!! Form::text('contact_id', null, ['class' => 'form-control','placeholder' => __('lang_v1.contact_id')]); !!}
+                                                                {!! Form::text('contact_id', null, ['class' => 'form-control']); !!}
                                                             </div>
                                                             <p class="help-block">
                                                                 @lang('lang_v1.leave_empty_to_autogenerate')
@@ -72,7 +72,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-briefcase"></i>
                                                                     </span>
-                                                                    {!! Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.first_name')]); !!}
+                                                                    {!! Form::text('first_name', null, ['class' => 'form-control']); !!}
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -84,7 +84,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-briefcase"></i>
                                                                     </span>
-                                                                    {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.last_name')]); !!}
+                                                                    {!! Form::text('last_name', null, ['class' => 'form-control']); !!}
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -96,7 +96,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-briefcase"></i>
                                                                     </span>
-                                                                    {!! Form::text('name_en', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.name_en')]); !!}
+                                                                    {!! Form::text('name_en', null, ['class' => 'form-control']); !!}
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -108,7 +108,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-briefcase"></i>
                                                                     </span>
-                                                                    {!! Form::text('supplier_business_name', null, ['class' => 'form-control', 'placeholder' => __('business.business_name')]); !!}
+                                                                    {!! Form::text('supplier_business_name', null, ['class' => 'form-control',]); !!}
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -120,7 +120,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-briefcase"></i>
                                                                     </span>
-                                                                    {!! Form::text('commercial_register_no', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.commercial_register_no')]); !!}
+                                                                    {!! Form::text('commercial_register_no', null, ['class' => 'form-control']); !!}
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -137,7 +137,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-mobile"></i>
                                                                     </span>
-                                                                    {!! Form::text('mobile', null, ['class' => 'form-control', 'required', 'placeholder' => __('contact.mobile')]); !!}
+                                                                    {!! Form::text('mobile', null, ['class' => 'form-control', 'required']); !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -150,7 +150,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-phone"></i>
                                                                     </span>
-                                                                    {!! Form::text('alternate_number', null, ['class' => 'form-control', 'placeholder' => __('contact.alternate_contact_number')]); !!}
+                                                                    {!! Form::text('alternate_number', null, ['class' => 'form-control',]); !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -162,7 +162,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-phone"></i>
                                                                     </span>
-                                                                    {!! Form::text('landline', null, ['class' => 'form-control', 'placeholder' => __('contact.landline')]); !!}
+                                                                    {!! Form::text('landline', null, ['class' => 'form-control']); !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -173,7 +173,7 @@
                                                                     <span class="input-group-addon">
                                                                         <i class="fa fa-envelope"></i>
                                                                     </span>
-                                                                    {!! Form::email('email', null, ['class' => 'form-control','placeholder' => __('business.email')]); !!}
+                                                                    {!! Form::email('email', null, ['class' => 'form-control']); !!}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -211,7 +211,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('first_name_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.first_name_cs'),'required']); !!}
+                                                                            {!! Form::text('first_name_cs', null, ['class' => 'form-control','required']); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -222,7 +222,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('last_name_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.last_name_cs'),'required']); !!}
+                                                                            {!! Form::text('last_name_cs', null, ['class' => 'form-control','required']); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -235,7 +235,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('english_name_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.english_name_cs'),'required']); !!}
+                                                                            {!! Form::text('english_name_cs', null, ['class' => 'form-control','required']); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -247,7 +247,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('capacity_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.capacity_cs')]); !!}
+                                                                            {!! Form::text('capacity_cs', null, ['class' => 'form-control', ]); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -259,7 +259,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('nationality_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.nationality_cs')]); !!}
+                                                                            {!! Form::text('nationality_cs', null, ['class' => 'form-control',]); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -271,7 +271,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('email_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.email_cs')]); !!}
+                                                                            {!! Form::text('email_cs', null, ['class' => 'form-control',]); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -282,7 +282,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('identityNO_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.identityNO_cs')]); !!}
+                                                                            {!! Form::text('identityNO_cs', null, ['class' => 'form-control',]); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -293,7 +293,7 @@
                                                                                                 <span class="input-group-addon">
                                                                                                     <i class="fa fa-info"></i>
                                                                                                 </span>
-                                                                                                {!! Form::text('mobile_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.mobile_cs')]); !!}
+                                                                                                {!! Form::text('mobile_cs', null, ['class' => 'form-control',]); !!}
                                                                                                 </div>
                                                                                             </div>
                                                                             </div>
@@ -315,7 +315,7 @@
                                                                                                 <span class="input-group-addon">
                                                                                                     <i class="fa fa-info"></i>
                                                                                                 </span>
-                                                                                                {!! Form::text('username_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cs')]); !!}
+                                                                                                {!! Form::text('username_cs', null, ['class' => 'form-control', ]); !!}
                                                                                             </div>
                                                                                         </div>
                                                                                                                                                                             </div>
@@ -327,7 +327,7 @@
                                                                                                     <span class="input-group-addon">
                                                                                                         <i class="fa fa-info"></i>
                                                                                                     </span>
-                                                                                                    {!! Form::text('password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
+                                                                                                    {!! Form::password('password_cs', null, ['class' => 'form-control', ]); !!}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -339,7 +339,7 @@
                                                                                                     <span class="input-group-addon">
                                                                                                         <i class="fa fa-info"></i>
                                                                                                     </span>
-                                                                                                    {!! Form::text('confirm_password_cs', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cs')]); !!}
+                                                                                                    {!! Form::password('confirm_password_cs', null, ['class' => 'form-control',]); !!}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -368,7 +368,7 @@
                                                                                                                                                                             <span class="input-group-addon">
                                                                                                                                                                                 <i class="fa fa-info"></i>
                                                                                                                                                                             </span>
-                                                                                                                                                                            {!! Form::text('first_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.first_name_cf')]); !!}
+                                                                                                                                                                            {!! Form::text('first_name_cf', null, ['class' => 'form-control']); !!}
                                                                                                                                                                             </div>
                                                                                                                                                                         </div>
                                                                                                                                                         </div>
@@ -379,7 +379,7 @@
                                                                                                                                                                             <span class="input-group-addon">
                                                                                                                                                                                 <i class="fa fa-info"></i>
                                                                                                                                                                             </span>
-                                                                                                                                                                            {!! Form::text('last_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.last_name_cf')]); !!}
+                                                                                                                                                                            {!! Form::text('last_name_cf', null, ['class' => 'form-control',]); !!}
                                                                                                                                                                             </div>
                                                                                                                                                                         </div>
                                                                                                                                                         </div>
@@ -393,7 +393,7 @@
                                                                                                                                                                             <span class="input-group-addon">
                                                                                                                                                                                 <i class="fa fa-info"></i>
                                                                                                                                                                             </span>
-                                                                                                                                                                            {!! Form::text('english_name_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.english_name_cf')]); !!}
+                                                                                                                                                                            {!! Form::text('english_name_cf', null, ['class' => 'form-control',]); !!}
                                                                                                                                                                             </div>
                                                                                                                                                                         </div>
                                                                                                                                                         </div>
@@ -407,7 +407,7 @@
                                                                                                                                                                             <span class="input-group-addon">
                                                                                                                                                                                 <i class="fa fa-info"></i>
                                                                                                                                                                             </span>
-                                                                                                                                                                            {!! Form::text('email_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.email_cf')]); !!}
+                                                                                                                                                                            {!! Form::text('email_cf', null, ['class' => 'form-control',]); !!}
                                                                                                                                                                             </div>
                                                                                                                                                                         </div>
                                                                                                                                                         </div>
@@ -419,7 +419,7 @@
                                                                                                                                                                                                 <span class="input-group-addon">
                                                                                                                                                                                                     <i class="fa fa-info"></i>
                                                                                                                                                                                                 </span>
-                                                                                                                                                                                                {!! Form::text('mobile_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.mobile_cf')]); !!}
+                                                                                                                                                                                                {!! Form::text('mobile_cf', null, ['class' => 'form-control', ]); !!}
                                                                                                                                                                                                 </div>
                                                                                                                                                                                             </div>
                                                                                                                                                                             </div>
@@ -441,7 +441,7 @@
                                                                                                             <span class="input-group-addon">
                                                                                                                 <i class="fa fa-info"></i>
                                                                                                             </span>
-                                                                                                            {!! Form::text('username_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.username_cf')]); !!}
+                                                                                                            {!! Form::text('username_cf', null, ['class' => 'form-control']); !!}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -453,7 +453,7 @@
                                                                                                             <span class="input-group-addon">
                                                                                                                 <i class="fa fa-info"></i>
                                                                                                             </span>
-                                                                                                            {!! Form::text('password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.password_cf')]); !!}
+                                                                                                            {!! Form::password('password_cf', null, ['class' => 'form-control',]); !!}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -465,7 +465,7 @@
                                                                                                             <span class="input-group-addon">
                                                                                                                 <i class="fa fa-info"></i>
                                                                                                             </span>
-                                                                                                            {!! Form::text('confirm_password_cf', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.confirm_password_cf')]); !!}
+                                                                                                            {!! Form::password('confirm_password_cf', null, ['class' => 'form-control',]); !!}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>

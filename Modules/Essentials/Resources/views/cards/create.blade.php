@@ -18,7 +18,7 @@
     {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'store']), 'method' => 'post','id' => 'workCardForm']) !!}       
           
 
-            <div class="col-md-9">
+<div class="col-md-9">
     <div class="form-group">
         {!! Form::label('employees', __('essentials::lang.select_employee') . ':*') !!}
         <div class="input-group">
@@ -34,8 +34,29 @@
         </div>
     </div>
 </div>
+
+<div class="col-md-9">
+    <div class="form-group">
+        {!! Form::label('all_responsible_users', __('essentials::lang.select_responsible_users') . ':*') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-id-badge"></i>
+            </span>
+            {!! Form::select('all_responsible_users[]', $all_responsible_users, null, [
+                'class' => 'form-control select2',
+                'style' => 'width: 100%;',
+                'placeholder' => __('lang_v1.all'),
+                'id' => 'all_responsible_users', 'required'
+            ]) !!}
+        </div>
+    </div>
+</div>
 <div class="form-group">
     {!! Form::hidden('employee_id', null, ['id' => 'employee_id']) !!}
+</div>
+
+<div class="form-group">
+    {!! Form::hidden('responsible_user_id', null, ['id' => 'responsible_user_id']) !!}
 </div>
 
 <div class="form-group">
@@ -206,12 +227,23 @@
 </script>
 
 <script  type="text/javascript">
-    $(document).ready(function () {
+$(document).ready(function () {
     $('#employees').on('change', function () {
         var employeeId = $(this).val();
         $('#employee_id').val(employeeId);
+        console.log(employeeId);
     });
 });
+
+
+$(document).ready(function () {
+    $('#all_responsible_users').on('change', function () {
+        var employee = $(this).val();
+        $('#responsible_user_id').val(employee);
+        console.log(employee);
+    });
+});
+
 
 </script>
 @endsection

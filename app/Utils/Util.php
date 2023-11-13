@@ -1605,7 +1605,7 @@ class Util
             $user_details['bank_details']['Iban_file'] = $path;
         }
         $user_details['bank_details'] = !empty($user_details['bank_details']) ? json_encode($user_details['bank_details']) : null;
-
+//dd(  $user_details['bank_details']);
         $user_details['password'] = $user_details['allow_login'] ? Hash::make($user_details['password']) : null;
 
         if ($user_details['allow_login']) {

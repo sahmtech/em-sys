@@ -634,4 +634,5 @@ return [
     'residence_permits' => 'residence permits',
     'contracts' => 'contracts',
     'add_doc'=>'add documnet',
+    'select_responsible_users'=>'select responsible of clients',
 ];
