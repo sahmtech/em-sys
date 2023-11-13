@@ -96,10 +96,11 @@
 				<span class="input-group-addon">
 					<i class="fa fa-map-marker"></i>
 				</span>
-					{!! Form::select('select_location_id', $business_locations, $default_location->id ?? null,
+					{!! Form::select('select_location_id', $business_locations, null,
                          ['class' => 'form-control input-sm',
 					'id' => 'select_location_id', 
                     'style'=>'height:36px; width:100%',
+                    'placeholder' => __('lang_v1.all'),
 					'required', 'autofocus'], $bl_attributes); !!}
 						
 					<span class="input-group-addon">
@@ -364,6 +365,8 @@
                 d.specialization = $('#specializations-select').val();
                 d.profession = $('#professions-select').val();
                 d.status = $('#status_filter').val();
+                d.location = $('#select_location_id').val(); 
+           
                 console.log(d);
             },
                     },
@@ -402,16 +405,17 @@
      
 
             
-              $('#specializations-select, #professions-select, #status-select').change(function () {
-                    console.log('Specialization selected: ' + $(this).val());
+  
+    $('#specializations-select, #professions-select, #status-select, #select_location_id').change(function () {
+        console.log('Specialization selected: ' + $(this).val());
                     console.log('Profession selected: ' + $('#professions-select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
+                    console.log('loc selected: ' + $('#select_location_id').val());
                     users_table.ajax.reload();
+        
     });
      
-//     $(document).on('change', '#specializations-select, #professions-select, #status-select', function () {
-//         users_table.ajax.reload();
-// });
+
               
            
                 

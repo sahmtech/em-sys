@@ -183,23 +183,26 @@ class EssentialsManageEmployeeController extends Controller
                     ])->orderby('id','desc');
 
        
-                    if (!empty($request->input('specializations-select'))) {
+                    if (!empty($request->input('specialization'))) {
                       
                            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
                           
                    }
                  
                  
-                       if (!empty($request->input('professions-select'))) {
+                       if (!empty($request->input('profession')))
+                        {
+                           
                            $users->where('essentials_employee_appointmets.profession_id', $request->input('profession'));
                        }
                        if (!empty($request->input('status-select'))) {
                            $users->where('users.status', $request->input('status'));
                        }
 
-                       if (!empty($request->input('select_location_id'))) {
-                        // Fetch users based on the location ID
-                        $users->where('users.location_id', $request->input('select_location_id'));
+                       if (!empty($request->input('location'))) {
+                      
+                        $users->where('users.location_id', $request->input('location'));
+                    
                     }
                                    
         if (request()->ajax()) 
