@@ -133,15 +133,16 @@ class EssentialsCardsController extends Controller
         ->select('users.id',
             DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")
         )
-        ->where(function ($query) {
-            $query->where('users.id_proof_name', 'eqama')
-                  ->orWhereNotNull('users.border_no');
-        })
+        ->where('users.id_proof_name', 'eqama')
         ->whereNotIn('users.id', function ($query) {
             $query->select('contacts.responsible_user_id')
-                ->from('contacts');
+                ->from('contacts')
+                // Adjust this condition if the column name in the 'contacts' table is different
+                ->whereNotNull('contacts.responsible_user_id');
         })
         ->get();
+//dd($all_users);    
+        
     
   
 
