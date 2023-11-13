@@ -57,7 +57,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get-admission-date',  [Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'getAdmissionDate'])->name('get-admission-date');
 
 
-
+        Route::get('/fetch-user/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'fetch_user'])->name('fetch_user');
         Route::get('/settings', [Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']);
         Route::post('/settings', [Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'update']);
      

@@ -57,6 +57,14 @@ class EssentialsManageEmployeeController extends Controller
         return response()->json($categories); // Return 0 if allowance not found
     }
 
+    public function fetch_user($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $user = User::where('business_id', $business_id)
+                   
+                    ->findOrFail($id);
+        return response()->json($user);
+    }
     public function employ($id)
     {
         if (! auth()->user()->can('user.update')) {
@@ -247,7 +255,7 @@ class EssentialsManageEmployeeController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                         <li>
-                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
+                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
                                      
                                         </a>
                                         </li>';
@@ -449,10 +457,11 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->find($id);
-
-        $dataArray = json_decode($user->bank_details, true)['bank_name'];
+        $dataArray=[];
+        if(!empty($user->bank_details))
+         {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
      
-     
+        
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          

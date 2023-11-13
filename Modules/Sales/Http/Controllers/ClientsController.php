@@ -18,6 +18,7 @@ use App\Utils\ModuleUtil;
 use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
+use Modules\Essentials\Entities\EssentialsCountry;
 use DB;
 use App\Events\ContactCreatedOrModified;
 use Illuminate\Support\Facades\Hash;
@@ -116,8 +117,8 @@ class ClientsController extends Controller
             $types['lead'] = __('report.customer');
         }
        
-     
-        return view('sales::contacts.index')->with(compact('types','users'));
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        return view('sales::contacts.index')->with(compact('types','users','nationalities'));
            
     }
 
@@ -141,8 +142,8 @@ class ClientsController extends Controller
             return $this->moduleUtil->expiredResponse();
         }
 
-      
-        return view('sales::contacts.create')->with(compact( 'types' ));
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        return view('sales::contacts.create')->with(compact( 'types' ,'nationalities'));
            
  
 
@@ -187,7 +188,7 @@ class ClientsController extends Controller
             }
 
             $input['name'] = trim(implode(' ', $name_array));
-
+           // $input['nationality_id']=$request->input('nationality_cs');
             $input['english_name']=$request->input('name_en');
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
@@ -213,7 +214,7 @@ class ClientsController extends Controller
             $contract_signer_input['last_name']=$request->input('last_name_cs');
             $contract_signer_input['english_name']=$request->input('english_name_cs');
             $contract_signer_input['capacity_cs']=$request->input('capacity_cs');
-            $contract_signer_input['nationality_cs']=$request->input('nationality_cs');
+            $contract_signer_input['nationality_id']=$request->input('nationality_cs');
             $contract_signer_input['email']=$request->input('email_cs');
             $contract_signer_input['identity_number']=$request->input('identityNO_cs');
             $contract_signer_input['contact_number']=$request->input('mobile_cs');
@@ -258,7 +259,7 @@ class ClientsController extends Controller
             {$contract_follower_input['type']="user"; }
 
 
-            dd( $contract_follower);
+          
             $contract_follower_input['contact_user_type']='contract_follower';
             $contract_follower = User::create($contract_follower_input);
 
