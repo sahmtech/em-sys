@@ -183,19 +183,27 @@ class EssentialsManageEmployeeController extends Controller
                     ])->orderby('id','desc');
 
        
-                    if (!empty($request->input('specializations-select'))) {
+                    if (!empty($request->input('specialization'))) {
                       
                            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
                           
                    }
                  
                  
-                       if (!empty($request->input('professions-select'))) {
+                       if (!empty($request->input('profession')))
+                        {
+                           
                            $users->where('essentials_employee_appointmets.profession_id', $request->input('profession'));
                        }
                        if (!empty($request->input('status-select'))) {
                            $users->where('users.status', $request->input('status'));
                        }
+
+                       if (!empty($request->input('location'))) {
+                      
+                        $users->where('users.location_id', $request->input('location'));
+                    
+                    }
                                    
         if (request()->ajax()) 
         {
@@ -284,6 +292,16 @@ class EssentialsManageEmployeeController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $spacializations=EssentialsSpecialization::all()->pluck('name','id');
      
+        
+        $business_locations = BusinessLocation::forDropdown($business_id, false, true);
+        $bl_attributes = $business_locations['attributes'];
+        $business_locations = $business_locations['locations'];
+
+        $default_location = null;
+        foreach ($business_locations as $id => $name) {
+            $default_location = BusinessLocation::findOrFail($id);
+            break;
+        }
         $status = ['active' => 'active',
                   'inactive' => 'inactive',
                   'terminated' => 'terminated',
@@ -299,7 +317,7 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.index')
         ->with(compact('contract_types','nationalities',
         'specializations','professions','users','countries','spacializations','status',
-        'offer_prices','items'));
+        'offer_prices','items','business_locations','bl_attributes','default_location'));
 
     }
     
@@ -394,11 +412,6 @@ class EssentialsManageEmployeeController extends Controller
 
                     }
 
-
-
-
-              //  $request['nationality_id']=  $request->input('nationality');
-             //   dd( $request);
                  
                 $user = $this->moduleUtil->createUser($request);
     
@@ -436,6 +449,7 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->find($id);
+
         $dataArray = json_decode($user->bank_details, true)['bank_name'];
      
      

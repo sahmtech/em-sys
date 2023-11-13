@@ -28,17 +28,7 @@
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="user_info_tab">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="col-md-6">
-                                            <p><strong>@lang( 'sales::lang.first_name' ): </strong> {{$contact->first_name}}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                            <p><strong>@lang( 'sales::lang.last_name' ): </strong> {{$contact->last_name}}</p>
-                                    </div>
-                                    
-                                </div>
-                            </div>
+                          
                             @include('sales::contacts.show_contact_details')
                         </div>
                        

@@ -21,24 +21,34 @@
 <div class="col-md-3">
     <div class="form-group">
         <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
-        {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
-            'id' => 'specializations-select'
-        ]) !!}
+        {!! Form::select(
+    'specializations-select',
+    $specializations,
+    request('specializations-select'),
+    [
+        'class' => 'form-control select2', // Add the select2 class
+        'style' => 'height:36px',
+        'placeholder' => __('lang_v1.all'),
+        'id' => 'specializations-select',
+    ]
+) !!}
     </div>
 </div>
      
 <div class="col-md-3">
     <div class="form-group">
         <label for="professions_filter">@lang('essentials::lang.professions'):</label>
-        {!! Form::select('professions-select', $professions, request('professions-select'), [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
-            'id' => 'professions-select'
-        ]) !!}
+        {!! Form::select(
+    'professions-select',
+    $professions,
+    request('professions-select'),
+    [
+        'class' => 'form-control select2', // Add the select2 class
+        'style' => 'height:36px',
+        'placeholder' => __('lang_v1.all'),
+        'id' => 'professions-select',
+    ]
+) !!}
     </div>
 </div>
 
@@ -62,15 +72,53 @@
 
 @endcomponent
     @component('components.widget', ['class' => 'box-primary'])
+
         @can('user.create')
             @slot('tool')
-                <div class="box-tools">
+
+              
+
+    
+
+
+<div class="row">
+<div class="col-sm-3">
+<div class="box-tools">
                     <a class="btn btn-block btn-primary" 
                     href="{{ route('createEmployee') }}" >
                     <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
                  </div> 
+</div>
+@if(count($business_locations) > 0)
+	<div class="col-sm-3">
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-map-marker"></i>
+				</span>
+					{!! Form::select('select_location_id', $business_locations, null,
+                         ['class' => 'form-control input-sm',
+					'id' => 'select_location_id', 
+                    'style'=>'height:36px; width:100%',
+                    'placeholder' => __('lang_v1.all'),
+					'required', 'autofocus'], $bl_attributes); !!}
+						
+					<span class="input-group-addon">
+							@show_tooltip(__('tooltip.sale_location'))
+						</span> 
+			</div>
+		</div>
+	</div>
+    @endif
+</div>
+
+
             @endslot
+
+
+
         @endcan
+
         @can('user.view')
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="employees">
@@ -317,6 +365,8 @@
                 d.specialization = $('#specializations-select').val();
                 d.profession = $('#professions-select').val();
                 d.status = $('#status_filter').val();
+                d.location = $('#select_location_id').val(); 
+           
                 console.log(d);
             },
                     },
@@ -355,16 +405,17 @@
      
 
             
-              $('#specializations-select, #professions-select, #status-select').change(function () {
-                    console.log('Specialization selected: ' + $(this).val());
+  
+    $('#specializations-select, #professions-select, #status-select, #select_location_id').change(function () {
+        console.log('Specialization selected: ' + $(this).val());
                     console.log('Profession selected: ' + $('#professions-select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
+                    console.log('loc selected: ' + $('#select_location_id').val());
                     users_table.ajax.reload();
+        
     });
      
-//     $(document).on('change', '#specializations-select, #professions-select, #status-select', function () {
-//         users_table.ajax.reload();
-// });
+
               
            
                 
@@ -407,6 +458,7 @@
     
     
 </script>
+
 
 
 @endsection

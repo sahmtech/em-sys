@@ -67,18 +67,9 @@
        
         columns: [
           
-         
-            // { data: 'operation_order_no', name: 'operation_order_no' },
-            // { data: 'contact_name', name: 'contact_name' },
-            // { data: 'contract_number', name: 'contract_number' },
-            // { data: 'operation_order_type', name: 'operation_order_type' },
-            // { data: 'Status', name: 'Status' },
-            // {data:  'show_operation' ,name:'show_operation'},
-            // { data: 'action', name: 'action', orderable: false, searchable: false },
-
 
             { data: 'user', name: 'user' },
-            { data: 'number', name: 'number' },
+            { data: 'id_proof_number', name: 'id_proof_number' },
             { data: 'expiration_date', name: 'expiration_date' },
             { data: 'project', name: 'project' },
             {data: 'workcard_duration' ,name:'workcard_duration'},

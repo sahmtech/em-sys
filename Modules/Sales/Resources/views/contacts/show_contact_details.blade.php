@@ -10,7 +10,7 @@
         <br>
 		<div class="col-md-4">
 			<p><strong>@lang( 'sales::lang.contact_number' ):</strong>{{$contact->contact_id}}</p>
-			<p><strong>@lang( 'sales::lang.contact_name_en' ):</strong> @if(!empty($contact->english_name)) {{$contact->english_name}}@endif</p>
+			
 			<p><strong>@lang( 'sales::lang.commercial_register_no' ):</strong> @if(!empty($contact->commercial_register_no)){{$contact->commercial_register_no}} @endif</p>
             <p><strong>@lang( 'sales::lang.contact_mobile'):</strong> @if(!empty($contact->mobile)){{$contact->mobile}} @endif</p>
             <p><strong>@lang( 'sales::lang.alternate_number'):</strong> @if(!empty($contact->alternate_number)){{$contact->alternate_number}} @endif</p>
