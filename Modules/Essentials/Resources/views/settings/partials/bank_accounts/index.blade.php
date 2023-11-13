@@ -28,8 +28,9 @@
                 <table class="table table-bordered table-striped" id="bank_accounts_table">
                     <thead>
                         <tr>
+                        <th>#</th>
                             <th>@lang('essentials::lang.name')</th>
-                            <th>@lang('essentials::lang.location')</th>
+                       
                             <th>@lang('essentials::lang.phone_number')</th>                           
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('essentials::lang.address')</th>
@@ -111,8 +112,9 @@
             serverSide: true,
             ajax: '{{ route("bank_accounts") }}', 
             columns: [
+                { data: 'id'},
                 { data: 'name'},
-                { data: 'location_id'},
+             
                 { data: 'phone_number'},
                 { data: 'mobile_number'},
                 { data: 'address'},

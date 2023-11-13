@@ -39,15 +39,15 @@ class EssentialsBankAccountController extends Controller
         
             
              $banks = DB::table('essentials_bank_accounts')->select(['id','name', 'phone_number', 'mobile_number',
-             'address','details', 'is_active','location_id']);
+             'address','details', 'is_active'])->orderby('id','desc');
                         
  
              return Datatables::of($banks)
-             ->editColumn('location_id',function($row)use($locations){
-                $item = $locations[$row->location_id]??'';
+            //  ->editColumn('location_id',function($row)use($locations){
+            //     $item = $locations[$row->location_id]??'';
 
-                return $item;
-            })
+            //     return $item;
+            // })
              ->addColumn(
                  'action',
                  function ($row) use ($is_admin) {
@@ -64,7 +64,7 @@ class EssentialsBankAccountController extends Controller
              ->filterColumn('name', function ($query, $keyword) {
                  $query->where('name', 'like', "%{$keyword}%");
              })
-             ->removeColumn('id')
+            
              ->rawColumns(['action'])
              ->make(true);
          
@@ -109,7 +109,8 @@ class EssentialsBankAccountController extends Controller
         }
  
         try {
-            $input = $request->only(['name', 'phone_number', 'mobile_number','location',
+            $input = $request->only(['name', 'phone_number', 'mobile_number',
+          
             'address','details', 'is_active']);
             
             
@@ -126,7 +127,7 @@ class EssentialsBankAccountController extends Controller
             $input2['address'] = $input['address'];
         
 
-            $input2['location_id'] = $input['location'];
+           // $input2['location_id'] = $input['location'];
       
 
            
@@ -144,9 +145,10 @@ class EssentialsBankAccountController extends Controller
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
+       // return $output;
         return redirect()->route('bank_accounts');
        
     }
