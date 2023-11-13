@@ -14,17 +14,20 @@
               </div>
           </div>
 	</div>
+
     <div class="col-md-6">
         <div class="form-group">
           {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-          {!! Form::select('profession',$professions,!empty($user->profession_id) ? $user->profession_id : null, ['class' => 'form-control', 'required','style'=>'height:40px',
+          {!! Form::select('profession',$professions,!empty($user->profession_id) ? $user->profession_id : null,
+             ['class' => 'form-control select2', 'required','style'=>'height:40px',
              'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
         </div>
     </div>
     <div class="col-sm-6">
         <div class="form-group">
             {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-            {!! Form::select('specialization',$specializations ,!empty($user->specialization_id) ? $user->specialization_id : null, ['class' => 'form-control','style'=>'height:40px', 'required',
+            {!! Form::select('specialization',$specializations ,!empty($user->specialization_id) ? $user->specialization_id : null,
+                 ['class' => 'form-control select2','style'=>'height:40px', 'required',
                 'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
           </div>
     </div>

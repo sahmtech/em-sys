@@ -40,11 +40,18 @@
 			<p><strong>@lang('lang_v1.id_proof_name'):</strong>
 			@if ($user->id_proof_name === null)
                           {{ '' }}
-			@elseif ($user->id_proof_name  === 'eqama')
+			@elseif ($user->id_proof_name  === 'eqama' )
 		            	@lang('essentials::lang.' .$user->id_proof_name) 
+		    
+			@elseif ($user->id_proof_name  === 'إقامة' )
+		            	@lang($user->id_proof_name) 
 
-			@elseif ($user->id_proof_name  === 'national_id')
+			@elseif ($user->id_proof_name  === 'national_id' || $user->id_proof_name  === 'هوية وطنية' )
 		            	@lang('essentials::lang.' .$user->id_proof_name) 
+			
+			@elseif ( $user->id_proof_name  === 'هوية وطنية' )
+		            	@lang($user->id_proof_name) 
+			
         
 			@endif
 		</p>
