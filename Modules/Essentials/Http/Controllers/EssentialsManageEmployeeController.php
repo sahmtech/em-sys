@@ -196,6 +196,11 @@ class EssentialsManageEmployeeController extends Controller
                        if (!empty($request->input('status-select'))) {
                            $users->where('users.status', $request->input('status'));
                        }
+
+                       if (!empty($request->input('select_location_id'))) {
+                        // Fetch users based on the location ID
+                        $users->where('users.location_id', $request->input('select_location_id'));
+                    }
                                    
         if (request()->ajax()) 
         {
@@ -284,6 +289,16 @@ class EssentialsManageEmployeeController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $spacializations=EssentialsSpecialization::all()->pluck('name','id');
      
+        
+        $business_locations = BusinessLocation::forDropdown($business_id, false, true);
+        $bl_attributes = $business_locations['attributes'];
+        $business_locations = $business_locations['locations'];
+
+        $default_location = null;
+        foreach ($business_locations as $id => $name) {
+            $default_location = BusinessLocation::findOrFail($id);
+            break;
+        }
         $status = ['active' => 'active',
                   'inactive' => 'inactive',
                   'terminated' => 'terminated',
@@ -299,7 +314,7 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.index')
         ->with(compact('contract_types','nationalities',
         'specializations','professions','users','countries','spacializations','status',
-        'offer_prices','items'));
+        'offer_prices','items','business_locations','bl_attributes','default_location'));
 
     }
     
