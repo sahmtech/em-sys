@@ -43,9 +43,12 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, 'accounting')) {
             $this->accountingMenu();
+        }elseif (Str::startsWith($currentPath, 'followup')) {
+            $this->followUpMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
-        } else {
+        } 
+        else {
         }
 
 
@@ -243,6 +246,31 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'todo', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
             )
                 ->order(14);
+        });
+    }
+    public function followUpMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+          //  $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']),
+             __('followup::lang.followUp'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+        
         });
     }
     public function CUS_salesMenu()
