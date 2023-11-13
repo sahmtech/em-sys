@@ -68,8 +68,8 @@
                                 {{-- <th>@lang('essentials::lang.superior' )</th> --}}
                                 <th>@lang('sales::lang.profession' )</th>
                                 <th>@lang('essentials::lang.specialization' )</th>
-                                {{-- <th>@lang('essentials::lang.employee_status' )</th>
-                                <th>@lang('messages.action' )</th> --}}
+                                {{-- <th>@lang('essentials::lang.employee_status' )</th>--}}
+                                <th>@lang('messages.action' )</th> 
                             </tr>
                         </thead>
                     </table>
@@ -134,8 +134,8 @@
 @section('javascript')
 
 
-    <script type="text/javascript">
-$(document).ready(function() {
+<script type="text/javascript">
+    $(document).ready(function() {
             var appointments_table;
             var professionSelect = $('#professionSelect');
             var specializationSelect = $('#specializationSelect');
@@ -169,6 +169,8 @@ $(document).ready(function() {
                         // { data: 'superior' },
                         { data: 'profession_id'},
                         { data: 'specialization_id'},
+                        { data: 'action'},
+
                      
                     ],
              });
@@ -229,35 +231,9 @@ $(document).ready(function() {
                     }
                 });
             });
-            professionSelect.on('change', function () {
-   
-                        var selectedProfession = $(this).val();
-                        console.log(selectedProfession);
-                        var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                        $.ajax({
-                            url: '{{ route('specializations') }}',
-                            type: 'POST',
-                            data: {
-                                _token: csrfToken,
-                                profession_id: selectedProfession
-                            },
-                            success: function (data) {
-                                
-                                specializationSelect.empty();
-
-                                
-                                $.each(data, function (id, name) {
-                                    specializationSelect.append($('<option>', {
-                                        value: id,
-                                        text: name
-                                    }));
-                                });
-                            }
-                });
          
-            });
 
-   $(document).on('submit', 'form#change_status_form', function(e) {
+            $(document).on('submit', 'form#change_status_form', function(e) {
             e.preventDefault();
             var data = $(this).serialize();
             console.log(data);
@@ -291,7 +267,7 @@ $(document).ready(function() {
 
         });
     
-    </script>
+</script>
 
     <script>
            $(document).ready(function() {

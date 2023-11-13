@@ -957,7 +957,7 @@ return[
    'national_id'=>'هوية وطنية',
 
   'dep_type'=>'نوع الادارة',
-
+'edit_Appointme'=>'تعديل التعيين',
 
 
 
