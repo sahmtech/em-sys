@@ -957,7 +957,11 @@ return[
    'national_id'=>'هوية وطنية',
 
   'dep_type'=>'نوع الادارة',
+
   'select_responsible_users'=>'اختر مسؤول عن عميل',
+
+
+'edit_Appointme'=>'تعديل التعيين',
 
 
 

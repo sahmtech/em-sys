@@ -221,7 +221,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateAdmissionToWork/{id}', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'update'])->name('updateAdmissionToWork');
         Route::get('/admissionToWork/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsAdmissionToWorkController::class, 'edit'])->name('admissionToWork.edit');
         
-        Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
         
         Route::get('/employee_families', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'index'])->name('employee_families');
         Route::post('/storeEmployeeFamily', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'store'])->name('storeEmployeeFamily');
@@ -230,7 +229,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateEmployeeFamily/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'update'])->name('updateEmployeeFamily');
         Route::get('/employee_families/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'edit'])->name('employee_families.edit');
         
-
+        Route::get('/appointments', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'index'])->name('appointments');
         Route::post('/changeStatusApp', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'changeStatus'])->name('changeStatusApp');
         Route::post('/storeAppointment', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'store'])->name('storeAppointment');
         Route::delete('/appointments/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeAppointmentController::class, 'destroy'])->name('appointment.destroy');
