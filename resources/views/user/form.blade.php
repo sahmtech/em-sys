@@ -71,7 +71,7 @@
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':*') !!}
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null,
-         ['class' => 'form-control','style'=>'height:40px', 'required', 'placeholder' => __('lang_v1.id_proof_number'),
+         ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('lang_v1.id_proof_number'),
           'oninput' => 'validateIdProofNumber(this)']) !!}
     <span id="idProofNumberError" class="text-danger"></span>
 </div>

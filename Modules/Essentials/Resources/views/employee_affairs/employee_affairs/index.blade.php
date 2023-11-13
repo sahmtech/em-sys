@@ -160,9 +160,12 @@
                     <div class="modal-body">
     
                         <div class="row">
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                                {!! Form::select('employee',$users, null,
+                                     ['class' => 'form-control','style'=>'height:40px',
+                                      'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
                         
                             <div class="form-group col-md-6">
@@ -354,6 +357,23 @@
 @stop
 @section('javascript')
 <script type="text/javascript">
+$(document).on('click', '.btn-modal', function (e) {
+    e.preventDefault();
+    var userId = $(this).data('row-id');
+    var userName = $(this).data('row-name'); 
+
+    $('#addQualificationModal').modal('show');
+
+   
+    $('#employee').empty(); // Clear previous options
+    $('#employee').append('<option value="' + userId + '">' + userName + '</option>'); 
+});
+
+</script>
+<script type="text/javascript">
+
+
+
     //Roles table
     $(document).ready( function(){
         var users_table = $('#employees').DataTable({

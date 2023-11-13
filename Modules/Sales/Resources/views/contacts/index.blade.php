@@ -157,18 +157,17 @@
                                             
                                                     <div class="clearfix"></div>
                                                         
-                                                        <div class="col-md-3">
-                                                            <div class="form-group">
-                                                                {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
-                                                                <div class="input-group">
-                                                                    <span class="input-group-addon">
-                                                                        <i class="fa fa-mobile"></i>
-                                                                    </span>
-                                                                    {!! Form::text('mobile', null, ['class' => 'form-control', 'required', ]); !!}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                                            
+                                                    <div class="col-md-3">
+    <div class="form-group">
+        {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-mobile"></i>
+            </span>
+            {!! Form::text('mobile', null, ['class' => 'form-control', 'required']) !!}
+        </div>
+    </div>
+</div>           
                                             
                                                         <div class="col-md-3">
                                                             <div class="form-group">
@@ -270,17 +269,17 @@
                                                                         </div>
                                                         </div>
                                                 
-                                                        <div class="col-md-4">
-                                                                        <div class="form-group">
-                                                                        {!! Form::label('capacity_cs', __('sales::lang.capacity_cs') . ':') !!}
-                                                                            <div class="input-group">
-                                                                            <span class="input-group-addon">
-                                                                                <i class="fa fa-info"></i>
-                                                                            </span>
-                                                                            {!! Form::text('capacity_cs', null, ['class' => 'form-control']); !!}
-                                                                            </div>
-                                                                        </div>
-                                                        </div>
+                                                        <div class="col-md-3">
+    <div class="form-group">
+        {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-mobile"></i>
+            </span>
+            {!! Form::text('mobile', null, ['class' => 'form-control', 'required', 'pattern' => '05\d{8}', 'title' => 'Mobile number must start with 05 and be 10 digits long']); !!}
+        </div>
+    </div>
+</div>
 
                                                         <div class="col-md-4">
                                                                         <div class="form-group">
@@ -289,7 +288,7 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            {!! Form::text('nationality_cs', null, ['class' => 'form-control']); !!}
+                                                                            {!! Form::select('nationality_cs', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('sales::lang.nationality')]); !!}
                                                                             </div>
                                                                         </div>
                                                         </div>
@@ -526,6 +525,27 @@
 
 @section('javascript')
 
+<script>
+    $(document).ready(function() {
+        $('input[name="mobile"]').on('input', function() {
+            let mobileNumber = $(this).val();
+            
+            // Ensure the length does not exceed 10
+            if (mobileNumber.length > 10) {
+                mobileNumber = mobileNumber.slice(0, 10);
+                $(this).val(mobileNumber);
+            }
+            
+            // Ensure it starts with '05'
+            if (!mobileNumber.startsWith('05')) {
+                if (mobileNumber.length >= 2) {
+                    mobileNumber = '05' + mobileNumber.slice(2);
+                    $(this).val(mobileNumber);
+                }
+            }
+        });
+    });
+</script>
 
 <script>
     $(document).ready(function () {
@@ -628,7 +648,11 @@
 
 </script>
 
+
+
+
 <script>
+ 
     function updateInputValue(select) {
         var selectedId = select.value; 
         document.getElementById('selected_user_id').value = selectedId; 
