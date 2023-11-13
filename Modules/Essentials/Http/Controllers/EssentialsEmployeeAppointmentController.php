@@ -108,7 +108,19 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 return $item;
             })
-    
+     
+            ->addColumn(
+                'action',
+                 function ($row) {
+                    $html = ''; 
+             
+                    $html .= '<a  href="'. route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';'&nbsp;';
+                    $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    
+                    return $html;
+                 }
+                )
+            
             ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
@@ -254,4 +266,63 @@ class EssentialsEmployeeAppointmentController extends Controller
 
     }
 
+  
+    public function edit($id)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $Appointmet = EssentialsEmployeeAppointmet::findOrFail($id);
+        $departments=EssentialsDepartment::all()->pluck('name','id');
+        $business_locations=BusinessLocation::all()->pluck('name','id');
+        $specializations=EssentialsSpecialization::all()->pluck('name','id');
+        $professions=EssentialsProfession::all()->pluck('name','id');
+        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        return view('essentials::employee_affairs.employee_appointments.edit')->with(compact('Appointmet','users','departments','business_locations','specializations','professions'));
+    }
+    public function update(Request $request, $id)
+    {
+      
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+       
+        try {
+            $input = $request->only(['employee', 'department','location', 'profession', 'specialization']);
+          
+            $input2['employee_id'] = $input['employee'];
+            $input2['department_id'] = $input['department'];
+            $input2['business_location_id'] = $input['location'];
+
+    //        $input2['superior'] = $input['superior'];
+            $input2['profession_id'] = $input['profession'];
+            $input2['specialization_id'] = $input['specialization'];
+        
+         
+       
+            EssentialsEmployeeAppointmet::where('id', $id)->update($input2);
+            $output = ['success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+
+        return redirect()->route('appointments');
+    }
 }
