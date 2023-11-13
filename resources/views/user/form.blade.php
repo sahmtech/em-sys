@@ -283,7 +283,7 @@ function updateNationalityOptions(selectElement) {
     else
      {
         validationLength = 10;
-        idProofNumberInput.value = '3';
+        idProofNumberInput.value = '';
         options.forEach(function (option) {
             option.style.display = 'block';
         });
