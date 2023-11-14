@@ -31,7 +31,8 @@ return [
     'project_status'=>'حالة المشروع',
     'external'=>'خارجي',
     'internal'=>'داخلي',
-    'project_type'=>'نوع المشروع'
+    'project_type'=>'نوع المشروع',
+    'workers_details'=>'تفاصيل العمال',
 
 
 
