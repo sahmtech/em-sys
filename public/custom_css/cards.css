@@ -1,8 +1,9 @@
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 5%;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10%;
     padding: 2%;
+    margin: 5%;
 }
 
 .card-link {
@@ -19,11 +20,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 15px;
+    padding: 10px;
     text-align: center;
     height: 100%;
     width: 100%;
-    /* box-shadow: 8px 8px 10px rgba(0, 0, 0, 0.7); */
+    /* box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5); */
 }
 
 .custom_card{
@@ -56,7 +57,12 @@
 }
 .card i {
     color: black; /* Set the icon color to black */
-    font-size: 500%; /* Adjust the icon size as desired */
+    font-size: 300%; /* Adjust the icon size as desired */
+}
+
+.card h3 {
+   
+    font-size: 125%; /* Adjust the icon size as desired */
 }
 .card:hover {
     transform: scale(1.05);
