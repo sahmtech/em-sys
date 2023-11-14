@@ -22,7 +22,7 @@
 
             <div class="col-sm-2 col-sm-4">
             <b>{{ __('sales::lang.operation_order_type') }} :</b></b> {{ $operations->operation_order_type }}<br>
-            <b>{{ __('sales::lang.Status') }} :</b></b> {{ $operations->Status }}<br>
+            <b>{{ __('sales::lang.Status') }} :</b> {{ __('sales::lang.' . $operations->Status) }}<br>
             <b>{{ __('sales::lang.Location') }} :</b></b> {{ $operations->Location }}<br>
             </div>
 

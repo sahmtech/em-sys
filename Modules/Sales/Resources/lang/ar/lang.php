@@ -189,6 +189,10 @@ return [
     'transaction_date'=>'تاريخ عرض السعر',
     'offer_price_details'=>'تفاصيل عرض السعر',
     'location'=>'الفرع',
+    'Done'=>'منتهية',
+    'select_status'=>'اختر الحالة',
+    'Not_started'=>'لم تبدأ ',
+    'Under_process'=>'تتم معالجتها',
 
 
 
