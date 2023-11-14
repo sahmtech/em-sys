@@ -96,18 +96,7 @@
 
         ajax: {
                     url: "{{ route('projects') }}",
-                    data: function(d) {
-                        if ($('#project_name_filter').val()) {
-                            d.project_name = $('#project_name_filter').val();
-                        }
-                        if ($('#offer_status_filter').val()) {
-                            d.offer_status = $('#offer_status_filter').val();
-                        }
-                        if ($('#type_filter').val()) {
-                            d.type = $('#type_filter').val();
-                        }
-                        
-                    }
+                  
                 },
         columns: [
             { data: 'contact_name' },
