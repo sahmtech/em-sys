@@ -40,7 +40,17 @@ return [
     'general_management'=>'الإدارة العامة',
     'action'=>'العمليات',
     'view_worker'=>'عرض العامل',
-    'view_worker_details'=>'عرض العامل'
+    'view_worker_details'=>'عرض العامل',
+    'exitRequest'=>'طلب خروح نهائي',
+    'returnRequest'=>'طلب خروج وعودة',
+    'escapeRequest'=>'طلب هروب',
+    'advanceSalary'=>'السلف',
+    'leavesAndDepartures'=>'الإجازات والمغادرات',
+    'atmCard'=>'بطاقة صراف آلي',
+    'residenceRenewal'=>'طلب تجديد إقامة',
+    'residenceCard'=>'بطاقة إقامة',
+    'workerTransfer'=>'طلبات نقل العمال',
+
 
 
 
