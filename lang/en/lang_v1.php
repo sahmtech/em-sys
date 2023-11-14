@@ -1150,6 +1150,8 @@ return [
     'recomended_for_80mm' => 'Recommended for thermal line receipt printer, 80mm paper size',
     'recomended_for_58mm' => 'Recommended for thermal line receipt printer, 80mm and 58mm paper size',
     'classic' => 'Classic',
+    "mavlex" => "mavlex",
+
     'elegant' => 'Elegant',
     'slim' => 'Slim',
     'detailed' => 'Detailed',
@@ -1531,9 +1533,9 @@ return [
     'price_group_price_type_tooltip' => 'If <b>Fixed</b> - the entered price will be used. If <b>Percentage</b> - price will be that much % of default selling price',
     'dropdown' => 'Dropdown',
     'enter_dropdown_values' => 'Enter dropdown options, one option per line',
-    'Invalid_nationality'=>'nationality not found for row number ',
-'Invalid_profession'=>'profession not found for row number ',
-'Invalid_specialization'=>'specialization not found for row number ',
-'Invalid_department'=>'department not found for row number ',
-'Invalid_location'=>'location not found for row number ',
+    'Invalid_nationality' => 'nationality not found for row number ',
+    'Invalid_profession' => 'profession not found for row number ',
+    'Invalid_specialization' => 'specialization not found for row number ',
+    'Invalid_department' => 'department not found for row number ',
+    'Invalid_location' => 'location not found for row number ',
 ];
