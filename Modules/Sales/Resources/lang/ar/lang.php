@@ -200,7 +200,10 @@ return [
     'day' => 'يوم',
     'days' => 'أيام',
     'assigned_to'=>'تابع إلى',
-
+    'Done'=>'منتهية',
+    'select_status'=>'اختر الحالة',
+    'Not_started'=>'لم تبدأ ',
+    'Under_process'=>'تتم معالجتها',
 
 
 
