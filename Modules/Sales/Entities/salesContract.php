@@ -15,6 +15,6 @@ class salesContract extends Model
 
     public function salesOrderOperation() {
       
-        return $this->hasOne(salesOrdersOperation::class, 'sale_contract_id');
+        return $this->hasOne(SalesOrdersOperation::class, 'sale_contract_id');
     }
 }
