@@ -144,32 +144,33 @@ class EssentialsCardsController extends Controller
      */
 
      public function get_responsible_data(Request $request)
-     {   
-        $employeeId = $request->get('employeeId');
-        // $responsible_users = contact::where('type', 'customer')
-        //     ->join('users as u','u.assigned_to','=','contacts.id')
-        //     ->where('u.id','=', $employeeId)
-        //     ->first();
-    
-       $all_responsible_users=user::join('contacts','users.assigned_to','=','contacts.id')
-      -> where('contacts.type', 'customer')
-       ->where('users.id','=', 1278)
-       ->select('contacts.supplier_business_name', 'contacts.id')
-       ->first();
-      //  $all_responsible_users = $assigned_to_user->pluck('supplier_business_name', 'id');
-  //   dd( $assigned_to_user->id);
-    
-      
-        $responsible_clients = user::join('contacts','contacts.responsible_user_id','=','users.id')
-          ->where('contacts.id','=',$all_responsible_users->id)
-            ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
-            ->get();
-    
-        return response()->json([
-            'all_responsible_users' => $all_responsible_users,
-            'responsible_client' => $responsible_clients,
-        ]);
+     {
+         $employeeId = $request->get('employeeId');
+     
+         $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
+             ->where('contacts.type', 'customer')
+             ->where('users.id', '=', $employeeId)
+             ->select('contacts.supplier_business_name', 'contacts.id')
+             ->first();
+     
+         if (!$all_responsible_users) {
+             return response()->json(['error' => 'No responsible users found for the given employee ID']);
+         }
+     
+         $responsible_clients = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
+             ->where('contacts.id', '=', $all_responsible_users->id)
+             ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+             ->get();
+     
+         return response()->json([
+             'all_responsible_users' => [
+                 'id' => $all_responsible_users->id,
+                 'name' => $all_responsible_users->supplier_business_name,
+             ],
+             'responsible_client' => $responsible_clients,
+         ]);
      }
+     
      
     public function create(Request $request)
     {

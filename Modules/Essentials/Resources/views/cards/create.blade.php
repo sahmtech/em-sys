@@ -59,7 +59,7 @@
             {!! Form::select('all_responsible_users[]', $all_responsible_users, null, [
                 'class' => 'form-control select2',
                 'style' => 'width: 100%;',
-                'id' => 'all_responsible_users',
+                'id' => 'responsible_users',
                 'required',
             ]) !!}
         </div>
@@ -194,25 +194,24 @@
         url: "{{ route('get_responsible_data') }}",
         type: 'GET',
         data: { employeeId: employeeId },
-        success: function (data) {
-            // Populate the "responsible_client" dropdown
-            $('#responsible_client').empty();
-            $.each(data.responsible_client, function (id, name) {
-                $('#responsible_client').append($('<option>', {
-                    value: id,
-                    text: name
-                }));
-            });
+success: function (data) {
+    console.log(data); // Log the received data to the console for debugging
 
-            // Populate the "all_responsible_users" dropdown
-            $('#all_responsible_users').empty();
-            $.each(data.all_responsible_users, function (id, full_name) {
-                $('#all_responsible_users').append($('<option>', {
-                    value: id,
-                    text: full_name
-                }));
-            });
-        },
+    $('#responsible_client').empty();
+    $.each(data.responsible_client, function (index, item) {
+        $('#responsible_client').append($('<option>', {
+            value: item.id,
+            text: item.name
+        }));
+    });
+
+    // Clear and populate #all_responsible_users dropdown
+    $('#responsible_users').empty();
+    $('#responsible_users').append($('<option>', {
+        value: data.all_responsible_users.id,
+        text: data.all_responsible_users.name
+    }));
+},
         error: function (xhr, status, error) {
             console.error(error);
         }
