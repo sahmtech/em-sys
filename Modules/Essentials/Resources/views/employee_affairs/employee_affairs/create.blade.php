@@ -49,17 +49,24 @@
       </div>
       <div class="col-md-5">
         <div class="form-group">
-          {!! Form::label('user_type', __( 'user.user_type' ) . ':*') !!}
-            {!! Form::select('user_type',['manager' => __('user.manager'),
-              'employee' => __('user.employee'),
-              'worker' => __('user.worker'),
-          
-        
-              ]
-            , null, ['class' => 'form-control', 'required', 'placeholder' => __( 'user.user_type' ) ]); !!}
+            {!! Form::label('user_type', __('user.user_type') . ':*') !!}
+            {!! Form::select('user_type', [
+                'manager' => __('user.manager'),
+                'employee' => __('user.employee'),
+                'worker' => __('user.worker'),
+            ], null, ['class' => 'form-control',
+            'style'=>'height:40px',
+             'required', 'id' => 'userTypeSelect'
+             , 'placeholder' => __('user.user_type') ]); !!}
         </div>
-      </div>
-   
+    </div>
+      
+      <div id="workerInput" style="display: none;" class="col-md-5">
+        <div class="form-group">
+            {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':*') !!}
+            {!! Form::select('assigned_to',$contacts, null, ['class' => 'form-control',   'style'=>'height:40px', 'placeholder' => __('sales::lang.assigned_to')]); !!}
+        </div>
+    </div>
       {{-- <div class="clearfix"></div>
       <div class="col-md-4">
         <div class="form-group">
@@ -215,6 +222,18 @@
   @stop
 @section('javascript')
 <script type="text/javascript">
+  $(document).ready(function(){
+    $('#userTypeSelect').on('change', function () {
+      var userType = $('#userTypeSelect').val();
+      if (userType === 'worker') {
+          $('#workerInput').show();
+      } else {
+          $('#workerInput').hide();
+      }
+    });
+  });
+</script>
+<script type="text/javascript">
   __page_leave_confirmation('#user_add_form');
   $(document).ready(function(){
     $('#selected_contacts').on('ifChecked', function(event){
@@ -263,9 +282,8 @@
             return markup;
         },
     });
-  });
-
-  $('form#user_add_form').validate({
+  
+    $('form#user_add_form').validate({
                 rules: {
                     first_name: {
                         required: true,
@@ -289,22 +307,7 @@
                     confirm_password: {
                         equalTo: "#password"
                     },
-                    username: {
-                        minlength: 5,
-                        remote: {
-                            url: "/business/register/check-username",
-                            type: "post",
-                            data: {
-                                username: function() {
-                                    return $( "#username" ).val();
-                                },
-                               
-                                @if(!empty($username_ext))
-                                  username_ext: "{{$username_ext}}"
-                                @endif
-                            }
-                        }
-                    }
+                 
                 },
                 messages:
                  {
@@ -321,15 +324,9 @@
                         remote:'{{ __("validation.unique", ["attribute" => __("business.email")]) }}'
                     }
                 }
-            });
-  $('#username').change( function(){
-    if($('#show_username').length > 0){
-      if($(this).val().trim() != ''){
-        $('#show_username').html("{{__('lang_v1.your_username_will_be')}}: <b>" + $(this).val() + "{{$username_ext}}</b>");
-      } else {
-        $('#show_username').html('');
-      }
-    }
+    });
+ 
+    
   });
 </script>
 @endsection

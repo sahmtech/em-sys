@@ -1,4 +1,64 @@
 <?php
 return [
-    'followup_module' => 'FollowUp Module'
+    'followup_module' => 'FollowUp Module',
+    'followUp'=>'إدارة المتابعة',
+    'projects'=>'المشاريع',
+    'name'=>'الاسم الكامل',
+    'sponsor'=>'الكفيل',
+    'nationality'=>'الجنسية',
+    'eqama'=>'رقم الاقامة',
+    'eqama_end_date'=>'تاريخ انتهاء الاقامة',
+    'work_card'=>'كرت العمل',
+    'insurance'=>'التأمين',
+    'has_insurance'=>'مؤمن',
+    'not_have_insurance'=>'غير مؤمن',
+    'contract_end_date'=>'تاريخ انتهاء العقد',
+    'passport'=>'رقم جواز السفر',
+    'gender'=>'الجنس',
+    'salary'=>'الراتب',
+    'profession'=>'المهنة',
+    'passport_end_date'=>'تاريخ انتهاء جواز السفر',
+    'workers'=>'عمال المشاريع',
+    'project_name'=>'اسم المشروع',
+    'select_project_name'=>'اختر اسم المشروع',
+    'male'=>'ذكر',
+    'female'=>'أنثى',
+    'allowances'=>'البدلات',
+    'basic_salary'=>'الراتب الأساسي',
+    'not_started'=>'لم يتم البدء',
+    'under_process'=>'قيد العمل',
+    'done'=>'تمت',
+    'project_status'=>'حالة المشروع',
+    'external'=>'خارجي',
+    'internal'=>'داخلي',
+    'project_type'=>'نوع المشروع',
+    'workers_details'=>'تفاصيل العمال',
+    'requests'=>'الطلبات',
+    'request_type'=>'نوع الطلب',
+    'request_creation'=>'إنشاء الطلب',
+    'direct_management'=>'الإدارة المباشرة',
+    'general_management'=>'الإدارة العامة',
+    'action'=>'العمليات',
+    'view_worker'=>'عرض العامل',
+    'view_worker_details'=>'عرض العامل',
+    'exitRequest'=>'طلب خروح نهائي',
+    'returnRequest'=>'طلب خروج وعودة',
+    'escapeRequest'=>'طلب هروب',
+    'advanceSalary'=>'السلف',
+    'leavesAndDepartures'=>'الإجازات والمغادرات',
+    'atmCard'=>'بطاقة صراف آلي',
+    'residenceRenewal'=>'طلب تجديد إقامة',
+    'residenceCard'=>'بطاقة إقامة',
+    'workerTransfer'=>'طلبات نقل العمال',
+    'crud_workers'=>'عمال المشاريع',
+    'crud_projects'=> 'المشاريع',
+
+
+
+
+
+
+
+
 ];
+  

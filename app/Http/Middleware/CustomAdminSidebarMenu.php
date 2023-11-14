@@ -43,9 +43,12 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, 'accounting')) {
             $this->accountingMenu();
+        }elseif (Str::startsWith($currentPath, 'followup')) {
+            $this->followUpMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
-        } else {
+        } 
+        else {
         }
 
 
@@ -244,6 +247,105 @@ class CustomAdminSidebarMenu
             )
                 ->order(14);
         });
+    }
+    public function followUpMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+          //  $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']),
+             __('followup::lang.followUp'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
+          //  $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']);
+          $menu->dropdown(
+            __('followup::lang.requests'),
+            function ($sub) use ($enabled_modules) {
+                if (auth()->user()->can('followup::lang.exitRequest')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.exitRequest'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.returnRequest')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.returnRequest'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.escapeRequest')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.escapeRequest'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.advanceSalary')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.advanceSalary'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.leavesAndDepartures')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.leavesAndDepartures'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.atmCard')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.atmCard'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.residenceRenewal')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.residenceRenewal'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.residenceCard')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.residenceCard'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+                if (auth()->user()->can('followup::lang.workerTransfer')) {
+                    $sub->url(
+                        action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']),
+                        __('followup::lang.workerTransfer'),
+                        ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']
+                    );
+                }
+              
+            },
+            ['icon' => 'fa fas fa-meteor']
+      
+        );
+        
+        
+        
+       });
     }
     public function CUS_salesMenu()
     {

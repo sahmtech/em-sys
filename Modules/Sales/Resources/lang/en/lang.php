@@ -203,6 +203,10 @@ return [
     'inactive'=>'inactive',
     'terminated'=>'terminated',
     'vecation'=>'vecation',
+    'Done'=>'Done',
+    'select_status'=>'select status',
+    'Not_started'=>'Not started',
+    'Under_process'=>'Under process',
 
 
     

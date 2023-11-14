@@ -11,7 +11,25 @@
 
 <!-- Main content -->
 <section class="content">
+@component('components.filters', ['title' => __('report.filters')])
 
+<div class="col-md-3">
+    <div class="form-group">
+        <label for="offer_type_filter">@lang('essentials::lang.project'):</label>
+        {!! Form::select('contact-select', $contacts, null, [
+            'class' => 'form-control',
+            'style' => 'height:36px',
+            'placeholder' => __('lang_v1.all'),
+            'required',
+            'id' => 'contact-select'
+        ]) !!}
+    </div>
+</div>
+     
+
+     
+
+@endcomponent
 
 @component('components.widget', ['class' => 'box-primary'])
 
@@ -26,15 +44,15 @@
             <table class="table table-bordered table-striped ajax_view" id="operation_table">
                 <thead>
                     <tr>
+                    <th>@lang('essentials::lang.card_no')</th>
                     <th>@lang('essentials::lang.employee_name')</th>
                     <th>@lang('essentials::lang.Residency_no')</th>
                     <th>@lang('essentials::lang.Residency_end_date')</th>
-                         <th>@lang('essentials::lang.project')</th>
+                    <th>@lang('essentials::lang.project')</th>
                     <th>@lang('essentials::lang.work_card_duration')</th>
                     <th>@lang('essentials::lang.pay_number')</th>
                     <th>@lang('essentials::lang.fixed_no')</th>
                     <th>@lang('essentials::lang.fees')</th>
-               
                     <th>@lang('essentials::lang.company_name')</th>
                     <th>@lang('messages.action')</th>
                     </tr>
@@ -47,7 +65,7 @@
 
 
 </section>
-<!-- /.content -->
+
 
 @endsection
 
@@ -61,15 +79,19 @@
         serverSide: true,
         ajax: {
                     url: "{{ route('cards') }}",
-                   
+                data: function (d) {
+                d.project = $('#contact-select').val();
+                console.log(d);
+            },
                 },
         
        
         columns: [
           
-
+            
+            { data: 'card_no', name: 'card_no' },
             { data: 'user', name: 'user' },
-            { data: 'id_proof_number', name: 'id_proof_number' },
+            { data: 'proof_number', name: 'proof_number' },
             { data: 'expiration_date', name: 'expiration_date' },
             { data: 'project', name: 'project' },
             {data: 'workcard_duration' ,name:'workcard_duration'},
@@ -83,7 +105,10 @@
     });
    
  
- 
+$('#contact-select').on('change', function () {
+    customers_table.ajax.reload();
+    console.log('loc selected: ' + $('#contact-select').val());
+});
 
 
     

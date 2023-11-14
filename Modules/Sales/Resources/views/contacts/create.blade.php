@@ -180,7 +180,7 @@
                                                         
                                                         <div class="clearfix"></div>
                                                        
-                                                        <!-- User in create leads -->
+                                                      
                                                         <div class="col-md-6 lead_additional_div">
                                                             <div class="form-group">
                                                                 {!! Form::label('user_id', __('lang_v1.assigned_to') . ':' ) !!}

@@ -16,7 +16,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
     Route::prefix('followup')->group(function() {
         Route::get('/dashboard', [Modules\FollowUp\Http\Controllers\DashboardController::class, 'index'])->name('followup.dashboard');
-       
+        Route::get('/', [Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->name('followup_landing');
+      
+        Route::get('/projects',[\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index'])->name('projects');
+        Route::get('/projectShow/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show'])->name('projectView');
+    
+        Route::get('/workers',[\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
+        Route::get('/workers/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'show'])->name('showWorker');
+     
+        Route::get('/requests',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index'])->name('requests');
+    
+    
     });
     
     

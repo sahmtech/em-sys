@@ -1533,9 +1533,12 @@ return [
     'price_group_price_type_tooltip' => 'If <b>Fixed</b> - the entered price will be used. If <b>Percentage</b> - price will be that much % of default selling price',
     'dropdown' => 'Dropdown',
     'enter_dropdown_values' => 'Enter dropdown options, one option per line',
-    'Invalid_nationality' => 'nationality not found for row number ',
-    'Invalid_profession' => 'profession not found for row number ',
-    'Invalid_specialization' => 'specialization not found for row number ',
-    'Invalid_department' => 'department not found for row number ',
-    'Invalid_location' => 'location not found for row number ',
+
+    'Invalid_nationality'=>'nationality not found for row number ',
+    'Invalid_profession'=>'profession not found for row number ',
+    'Invalid_specialization'=>'specialization not found for row number ',
+    'Invalid_department'=>'department not found for row number ',
+    'Invalid_location'=>'location not found for row number ',
+    'eqama_end_date'=>'eqama end date',
+
 ];

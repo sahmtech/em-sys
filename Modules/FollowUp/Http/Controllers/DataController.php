@@ -167,129 +167,19 @@ class DataController extends Controller
     {
         return [
             [
-                'value' => 'followup.crud_leave_type',
-                'label' => __('followup::lang.crud_leave_type'),
+                'value' => 'followup.crud_workers',
+                'label' => __('followup::lang.crud_workers'),
                 'default' => false,
             ],
             [
-                'value' => 'followup.crud_all_leave',
-                'label' => __('followup::lang.crud_all_leave'),
+                'value' => 'followup.crud_projects',
+                'label' => __('followup::lang.crud_projects'),
                 'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'leave_crud',
+      
             ],
-            [
-                'value' => 'followup.crud_own_leave',
-                'label' => __('followup::lang.crud_own_leave'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'leave_crud',
-            ],
-            [
-                'value' => 'followup.approve_leave',
-                'label' => __('followup::lang.approve_leave'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.crud_all_attendance',
-                'label' => __('followup::lang.crud_all_attendance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'attendance_crud',
-            ],
-            [
-                'value' => 'followup.view_own_attendance',
-                'label' => __('followup::lang.view_own_attendance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'attendance_crud',
-            ],
-            [
-                'value' => 'followup.allow_users_for_attendance_from_web',
-                'label' => __('followup::lang.allow_users_for_attendance_from_web'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.allow_users_for_attendance_from_api',
-                'label' => __('followup::lang.allow_users_for_attendance_from_api'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.view_allowance_and_deduction',
-                'label' => __('followup::lang.view_pay_component'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.add_allowance_and_deduction',
-                'label' => __('followup::lang.add_pay_component'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.crud_department',
-                'label' => __('followup::lang.crud_department'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.crud_designation',
-                'label' => __('followup::lang.crud_designation'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'followup.view_all_payroll',
-                'label' => __('followup::lang.view_all_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.create_payroll',
-                'label' => __('followup::lang.add_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.update_payroll',
-                'label' => __('followup::lang.edit_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.delete_payroll',
-                'label' => __('followup::lang.delete_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.assign_todos',
-                'label' => __('followup::lang.assign_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.add_todos',
-                'label' => __('followup::lang.add_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.edit_todos',
-                'label' => __('followup::lang.edit_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.delete_todos',
-                'label' => __('followup::lang.delete_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.create_message',
-                'label' => __('followup::lang.create_message'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.view_message',
-                'label' => __('followup::lang.view_message'),
-                'default' => false,
-            ],
-            [
-                'value' => 'followup.access_sales_target',
-                'label' => __('followup::lang.access_sales_target'),
-                'default' => false,
-            ],
+           
+           
+   
         ];
     }
 

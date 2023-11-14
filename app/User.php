@@ -9,6 +9,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\WorkCard;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -321,5 +327,33 @@ class User extends Authenticatable
 
         return $img_src;
     }
-    
+    public function country()
+    {
+        return $this->belongsTo(EssentialsCountry::class, 'nationality_id');
+    }
+
+    public function appointment()
+    {
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+    }
+
+    public function contract()
+    {
+        return $this->hasOne(EssentialsEmployeesContract::class, 'employee_id');
+    }
+
+    public function workCard()
+    {
+      
+        return $this->hasOne(WorkCard::class, 'employee_id');
+    }
+    public function OfficialDocument()
+    {
+      
+        return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id');
+    }
+    public function allowancesAndDeductions()
+    {
+        return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');
+    }
 }

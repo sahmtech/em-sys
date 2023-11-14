@@ -189,6 +189,21 @@ return [
     'transaction_date'=>'تاريخ عرض السعر',
     'offer_price_details'=>'تفاصيل عرض السعر',
     'location'=>'الفرع',
+    'active_worker_count'=>'عدد العمال على رأس العمل',
+    'worker_count'=>'عدد العمال ',
+    'contractDuration'=>'مدة العقد',
+    'project_name'=>'اسم المشروع',
+    'year' => 'سنة',
+    'years' => 'سنوات',
+    'month' => 'شهر',
+    'months' => 'أشهر',
+    'day' => 'يوم',
+    'days' => 'أيام',
+    'assigned_to'=>'تابع إلى',
+    'Done'=>'منتهية',
+    'select_status'=>'اختر الحالة',
+    'Not_started'=>'لم تبدأ ',
+    'Under_process'=>'تتم معالجتها',
 
 
 

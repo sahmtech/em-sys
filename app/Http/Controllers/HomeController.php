@@ -246,6 +246,11 @@ class HomeController extends Controller
         $accountingController = new $accountingControllerClass();
         $accountingPermissions = $accountingController->user_permissions();
 
+        //followUp
+        $FollowUpControllerClass = \Modules\FollowUp\Http\Controllers\DataController::class;
+        $FollowUpController = new $FollowUpControllerClass();
+        $FollowUpPermissions = $FollowUpController->user_permissions();
+
         $userManagementPermissions = [
             ['value' => 'user.view'],
             ['value' => 'user.create'],
@@ -290,6 +295,8 @@ class HomeController extends Controller
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' => ''],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
             ['id' => 'settings',  'permissions' => $settingsPermissions, 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
+            ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index'])],
+          
             //    ['id' => 'generalSettings',  'permissions' => $superadminPermissions, 'title' => "generalSettings", 'icon' => 'fas fa-chart-pie ', 'link' => ''],
         ];
         $cards = [];
