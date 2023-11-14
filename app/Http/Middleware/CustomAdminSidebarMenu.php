@@ -43,9 +43,12 @@ class CustomAdminSidebarMenu
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, 'accounting')) {
             $this->accountingMenu();
+        }elseif (Str::startsWith($currentPath, 'followup')) {
+            $this->followUpMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
-        } else {
+        } 
+        else {
         }
 
 
@@ -245,6 +248,31 @@ class CustomAdminSidebarMenu
                 ->order(14);
         });
     }
+    public function followUpMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+          //  $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']),
+             __('followup::lang.followUp'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
+        
+        });
+    }
     public function CUS_salesMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
@@ -373,6 +401,10 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+
+            // $menu->header("");
+
+            // $menu->header("");
             $menu->url(
                 action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
                 __('accounting::lang.accounting'),
@@ -382,8 +414,6 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'accounting'
                 ]
             );
-            $menu->header("");
-            $menu->header("");
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
@@ -392,6 +422,66 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
+                __('accounting::lang.chart_of_accounts'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'chart-of-accounts']
+            )->order(0);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index']),
+                __('accounting::lang.cost_center'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
+            )->order(1);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
+                __('accounting::lang.opening_balances'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
+            )->order(2);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index']),
+                __('accounting::lang.receipt_vouchers'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'receipt_vouchers']
+            )->order(3);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index']),
+                __('accounting::lang.payment_vouchers'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'payment_vouchers']
+            )->order(4);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index']),
+                __('accounting::lang.journal_entry'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
+            )->order(5);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
+                __('accounting::lang.automatedMigration'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'AutomatedMigration']
+            )->order(6);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
+                __('accounting::lang.transfer'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transfer']
+            )->order(7);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index']),
+                __('accounting::lang.transactions'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
+            )->order(8);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
+                __('accounting::lang.budget'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'budget']
+            )->order(9);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index']),
+                __('accounting::lang.reports'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'reports']
+            )->order(10);
+            $menu->url(
+                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                __('messages.settings'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+            )->order(11);
         });
     }
 

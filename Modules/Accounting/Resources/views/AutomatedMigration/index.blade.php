@@ -4,13 +4,13 @@
 
 @section('content')
 
-    @include('accounting::layouts.nav')
+    {{-- @include('accounting::layouts.nav') --}}
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('accounting::lang.automatedMigration')</h1>
     </section>
-    </section>
+
     <section class="content">
         <div class="row">
             <div class="col-md-12">
@@ -75,53 +75,53 @@
                                                             <i class="fa fa-ban" style="padding: 2px;color:red;"
                                                                 title="state of automated migration is inactive"></i>
                                                             @lang('accounting::lang.inactive')
+                                                        @endif
                                                     </a>
-                                @endif
+                                                </div>
+                                            </div>
 
 
 
 
-                    </div>
-                </div>
-                </td>
-                <td>
-                    {{ $row->name }}
+                                        </td>
+                                        <td>
+                                            {{ $row->name }}
 
-                </td>
-                <td>
-                    @lang('accounting::lang.autoMigration.' . $row->type)
+                                        </td>
+                                        <td>
+                                            @lang('accounting::lang.autoMigration.' . $row->type)
 
-                </td>
-                <td>
+                                        </td>
+                                        <td>
 
-                    @lang('accounting::lang.autoMigration.' . $row->payment_status)
+                                            @lang('accounting::lang.autoMigration.' . $row->payment_status)
 
-                </td>
-                <td>
-                    @lang('accounting::lang.autoMigration.' . $row->method)
+                                        </td>
+                                        <td>
+                                            @lang('accounting::lang.autoMigration.' . $row->method)
 
-                </td>
+                                        </td>
 
-                <td>
-                    @if ($row->active)
-                        <i class="fa fa-bullseye" title="state of automated migration is active" aria-hidden="true"
-                            style="color: green"></i>
-                    @else
-                        <i class="fa fa-ban" title="state of automated migration is inactive" aria-hidden="true"
-                            style="color:red"></i>
-                    @endif
+                                        <td>
+                                            @if ($row->active)
+                                                <i class="fa fa-bullseye" title="state of automated migration is active"
+                                                    aria-hidden="true" style="color: green"></i>
+                                            @else
+                                                <i class="fa fa-ban" title="state of automated migration is inactive"
+                                                    aria-hidden="true" style="color:red"></i>
+                                            @endif
 
-                </td>
+                                        </td>
 
 
 
 
-                </tr>
-                @endforeach
+                                    </tr>
+                                @endforeach
 
-                </tbody>
+                            </tbody>
 
-                {{-- <tfoot>
+                            {{-- <tfoot>
                                 <tr>
                                     <th></th>
                                     <th class="text-center">@lang('accounting::lang.total')</th>
@@ -130,11 +130,11 @@
                                     </th>
                                 </tr>
                             </tfoot> --}}
-                </table>
+                        </table>
 
+                    </div>
+                @endcomponent
             </div>
-        @endcomponent
-        </div>
         </div>
     </section>
 

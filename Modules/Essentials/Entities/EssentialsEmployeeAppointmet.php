@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Entities;
 
+use App\BusinessLocation;
 use Illuminate\Database\Eloquent\Model;
 
 class EssentialsEmployeeAppointmet extends Model
@@ -17,7 +18,14 @@ class EssentialsEmployeeAppointmet extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'employee_id'); // Assuming the foreign key is 'user_id'
+        return $this->belongsTo(User::class, 'employee_id');
     }
-   
+    public function profession()
+    {
+        return $this->belongsTo(EssentialsProfession::class, 'profession_id');
+    }
+    public function location()
+    {
+        return $this->belongsTo(BusinessLocation::class, 'business_location_id');
+    }
 }

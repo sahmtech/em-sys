@@ -10,6 +10,7 @@ use App\BusinessLocation;
 use App\User;
 use App\Category;
 use App\Transaction;
+use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
 use DB;
 use Modules\Essentials\Http\RequestsempRequest;
@@ -358,7 +359,7 @@ class EssentialsManageEmployeeController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities=EssentialsCountry::nationalityForDropdown();
-        
+        $contacts=Contact::where('type','customer')->pluck('name','id');
         $blood_types = ['A+' => 'A positive (A+).',
         'A-' => 'A negative (A-).',
         'B+' => 'B positive (B+)',
@@ -368,7 +369,7 @@ class EssentialsManageEmployeeController extends Controller
           'O+'=>'O positive (O+).',
           'O-'=>'O positive (O-).',];
         return view('essentials::employee_affairs.employee_affairs.create')
-                ->with(compact('roles','nationalities' ,'username_ext','blood_types',
+                ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
                  'locations','banks', 'contract_types','form_partials'));
     }
 
