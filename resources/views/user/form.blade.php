@@ -68,6 +68,11 @@
     </select>
 </div>
 
+<div id="eqamaEndDateInput" class="form-group col-md-3" style="display: none;">
+    {!! Form::label('eqama_end_date', __('lang_v1.eqama_end_date') . ':') !!}
+    {!! Form::text('eqama_end_date', null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.eqama_end_date'), 'id' => 'eqama_end_date']) !!}
+</div>
+
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null,
@@ -163,7 +168,23 @@
     @show_tooltip(__('lang_v1.tax_payer_id_help'))
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
+<script>
+    $(document).ready(function () {
+        $('#id_proof_name').change(function () {
+            var selectedProof = $(this).val();
+            var eqamaEndDateInput = $('#eqamaEndDateInput');
 
+            if (selectedProof === 'eqama') {
+               
+                eqamaEndDateInput.show();
+            } else {
+               
+                eqamaEndDateInput.hide();
+                $('#eqama_end_date').val('');
+            }
+        });
+    });
+</script>
 
 <script>
     $(document).ready(function () {

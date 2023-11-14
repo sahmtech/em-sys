@@ -193,6 +193,7 @@ class ClientsController extends Controller
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
             $input['responsible_user_id']= $input['selected_user_id'];
+            $input['type']='lead';
       //  dd( $input);
             DB::beginTransaction();
             $output = $this->contactUtil->createNewContact($input);
