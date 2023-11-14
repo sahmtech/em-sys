@@ -48,26 +48,23 @@
         
       </div>
       <div class="col-md-5">
-    <div class="form-group">
-        {!! Form::label('user_type', __('user.user_type') . ':*') !!}
-        {!! Form::select('user_type', [
-            'manager' => __('user.manager'),
-            'employee' => __('user.employee'),
-            'worker' => __('user.worker'),
-        ], null, [
-            'class' => 'form-control',
-            'style' => 'height:40px',
-            'required', 'id' => 'userTypeSelect',
-            'placeholder' => __('user.user_type'),
-         
-        ]); !!}
+        <div class="form-group">
+            {!! Form::label('user_type', __('user.user_type') . ':*') !!}
+            {!! Form::select('user_type', [
+                'manager' => __('user.manager'),
+                'employee' => __('user.employee'),
+                'worker' => __('user.worker'),
+            ], null, ['class' => 'form-control',
+            'style'=>'height:40px',
+             'required', 'id' => 'userTypeSelect'
+             , 'placeholder' => __('user.user_type') ]); !!}
+        </div>
     </div>
-</div>
       
       <div id="workerInput" style="display: none;" class="col-md-5">
         <div class="form-group">
             {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':*') !!}
-            {!! Form::select('assigned_to',$contacts, null, ['class' => 'form-control',  'style'=>'height:40px', 'placeholder' => __('sales::lang.assigned_to')]); !!}
+            {!! Form::select('assigned_to',$contacts, null, ['class' => 'form-control',   'style'=>'height:40px', 'placeholder' => __('sales::lang.assigned_to')]); !!}
         </div>
     </div>
       {{-- <div class="clearfix"></div>
