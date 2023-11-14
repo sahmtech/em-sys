@@ -64,12 +64,17 @@ class EssentialsCardsController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
+        ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
+       ->get();
+       
 
         $assgin_to_client = contact::where('type', 'customer')
         ->join('users as u','u.assigned_to','=','contacts.id')
          ->select('contacts.id','contacts.supplier_business_name')
          ->get();
-
+       
+        
         $operations = DB::table('essentials_work_cards')
         ->join('users as u','essentials_work_cards.employee_id','=','u.id')
         ->join('contacts', 'u.assigned_to', '=', 'contacts.id')
@@ -126,6 +131,7 @@ class EssentialsCardsController extends Controller
         $employeeId = $request->input('employee_id');
 
         $residencyData = User::where('business_id', $business_id)
+        ->where('users.id','=', $employeeId)
         ->join('essentials_official_documents as doc','doc.employee_id','=','users.id')
             ->select('doc.id', 'doc.number as residency_no','doc.expiration_date as residency_end_date')->first();
 
@@ -136,24 +142,57 @@ class EssentialsCardsController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+
+     public function get_responsible_data(Request $request)
+     {   
+        $employeeId = $request->get('employeeId');
+        // $responsible_users = contact::where('type', 'customer')
+        //     ->join('users as u','u.assigned_to','=','contacts.id')
+        //     ->where('u.id','=', $employeeId)
+        //     ->first();
+    
+       $all_responsible_users=user::join('contacts','users.assigned_to','=','contacts.id')
+      -> where('contacts.type', 'customer')
+       ->where('users.id','=', 1278)
+       ->select('contacts.supplier_business_name', 'contacts.id')
+       ->first();
+      //  $all_responsible_users = $assigned_to_user->pluck('supplier_business_name', 'id');
+  //   dd( $assigned_to_user->id);
+    
+      
+        $responsible_clients = user::join('contacts','contacts.responsible_user_id','=','users.id')
+          ->where('contacts.id','=',$all_responsible_users->id)
+            ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
+            ->get();
+    
+        return response()->json([
+            'all_responsible_users' => $all_responsible_users,
+            'responsible_client' => $responsible_clients,
+        ]);
+     }
+     
+    public function create(Request $request)
     {
 
         $business_id = request()->session()->get('user.business_id');
-       
+        $employeeId = $request->input('employee_id');
        $all_users = User::where('users.business_id', $business_id)
+     
         ->select('users.id',
             DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")
         ) ->where('users.user_type', 'worker')
         ->get();
 
      $responsible_users = contact::where('type', 'customer')
+ 
    ->join('users as u','u.assigned_to','=','contacts.id')
+   ->where('u.id','=', $employeeId)
     ->select('contacts.id','contacts.supplier_business_name')
     ->get();
  
 
  $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
+ ->where('users.id','=', $employeeId)
  ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
 ->get();
 

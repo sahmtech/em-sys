@@ -100,7 +100,7 @@ class BusinessLocationController extends Controller
                 ->rawColumns([12])
                 ->make(false);
         }
-
+       
         return view('business_location.index');
     }
 
@@ -115,6 +115,7 @@ class BusinessLocationController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
+      
         $business=Business::all()->pluck('name','id');
         //Check if subscribed or not, then check for location quota
         if (! $this->moduleUtil->isSubscribed($business_id)) {
@@ -167,7 +168,7 @@ class BusinessLocationController extends Controller
         try {
             $business_id = $request->session()->get('user.business_id');
 
-            //Check if subscribed or not, then check for location quota
+          
             if (! $this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse();
             } elseif (! $this->moduleUtil->isQuotaAvailable('locations', $business_id)) {
@@ -177,7 +178,7 @@ class BusinessLocationController extends Controller
             $input = $request->only(['name', 'landmark', 'city', 'state', 'country', 'zip_code', 'invoice_scheme_id',
                 'invoice_layout_id', 'mobile', 'alternate_number', 'email', 'website', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'location_id', 'selling_price_group_id', 'default_payment_accounts', 'featured_products', 'sale_invoice_layout_id', 'sale_invoice_scheme_id']);
 
-            $input['business_id'] = $request->business_id;
+            $input['business_id'] = $business_id;
 
             $input['default_payment_accounts'] = ! empty($input['default_payment_accounts']) ? json_encode($input['default_payment_accounts']) : null;
 
@@ -200,7 +201,7 @@ class BusinessLocationController extends Controller
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
 
