@@ -38,7 +38,7 @@ class FollowUpProjectController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $contacts = Contact::where('type', 'customer')->pluck('name', 'id');
-        
+
         if (request()->ajax()) {
 
             $contracts = SalesContract::with([
@@ -93,13 +93,33 @@ class FollowUpProjectController extends Controller
                 })
 
                 ->addColumn('contract_form', function ($contract) {
-                    return $contract->transaction ? $contract->transaction->contract_form : null;
+                    $var = $contract->transaction ? $contract->transaction->contract_form : null;
+
+                    switch ($var) {
+                        case 'monthly_cost':
+                            return __("sales::lang.monthly_cost");
+                        case 'operating_fees':
+                            return __("sales::lang.operating_fees");
+
+                        default:
+                            return   $var;
+                    }
                 })
                 ->addColumn('status', function ($contract) {
                     return $contract->salesOrderOperation ? $contract->salesOrderOperation->Status : null;
                 })
                 ->addColumn('type', function ($contract) {
-                    return $contract->salesOrderOperation ? $contract->salesOrderOperation->operation_order_type : null;
+                    $var = $contract->salesOrderOperation ? $contract->salesOrderOperation->operation_order_type : null;
+
+                    switch ($var) {
+                        case 'External':
+                            return __("sales::lang.external");
+                        case 'Internal':
+                            return __("sales::lang.internal");
+
+                        default:
+                            return $var;
+                    }
                 })
                 ->addColumn(
                     'action',
