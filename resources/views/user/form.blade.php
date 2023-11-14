@@ -70,7 +70,8 @@
 
 <div id="eqamaEndDateInput" class="form-group col-md-3" style="display: none;">
     {!! Form::label('eqama_end_date', __('lang_v1.eqama_end_date') . ':') !!}
-    {!! Form::text('eqama_end_date', null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.eqama_end_date'), 'id' => 'eqama_end_date']) !!}
+    {!! Form::date('eqama_end_date', null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.eqama_end_date'), 'id' => 'eqama_end_date']) !!}
+  
 </div>
 
 <div class="form-group col-md-3">

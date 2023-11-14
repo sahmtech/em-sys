@@ -16,6 +16,7 @@ use App\BusinessLocation;
 use App\Utils\Util;
 use DB;
 use App\User;
+use App\Contact;
 use Modules\Essentials\Entities\WorkCard;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
@@ -66,7 +67,7 @@ class EssentialsCardsController extends Controller
 
 
         $operations = DB::table('essentials_work_cards')
-        ->join('users as u', 'u.id', '=', 'essentials_work_cards.employee_id')
+        ->join('essentials_official_documents as doc', 'doc.id', '=', 'essentials_work_cards.employee_id')
         ->where('u.business_id', $business_id)
         ->where(function ($query) {
             $query->where('u.id_proof_name', 'eqama')
@@ -106,17 +107,19 @@ class EssentialsCardsController extends Controller
                 ->make(true);
         }
 
-
-        return view('essentials::cards.index');
+        $contacts=Contact::where('type','customer')->pluck('supplier_business_name','id');
+        return view('essentials::cards.index')->with(compact('contacts'));
     }
 
 
     public function getResidencyData(Request $request)
     {
+        $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
 
-        $residencyData = user::where('id', $employeeId)
-            ->select('id', 'id_proof_number as residency_no')->first();
+        $residencyData = User::where('business_id', $business_id)
+        ->join('essentials_official_documents as doc','doc.employee_id','=','users.id')
+            ->select('doc.id', 'doc.number as residency_no','doc.expiration_date as residency_end_date')->first();
 
         return response()->json($residencyData);
     }
@@ -129,40 +132,29 @@ class EssentialsCardsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $all_users = User::where('users.business_id', $business_id)
+       
+       $all_users = User::where('users.business_id', $business_id)
         ->select('users.id',
             DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")
-        )
-        ->where('users.id_proof_name', 'eqama')
-        ->whereNotIn('users.id', function ($query) {
-            $query->select('contacts.responsible_user_id')
-                ->from('contacts')
-                // Adjust this condition if the column name in the 'contacts' table is different
-                ->whereNotNull('contacts.responsible_user_id');
-        })
+        ) ->where('users.user_type', 'worker')
         ->get();
-//dd($all_users);    
-        
-    
-  
 
-   $responsible_users = User::where('users.business_id', $business_id)
-    ->select('users.id',
-        DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")
-    )
-    ->whereIn('users.id', function ($query) {
-        $query->select('contacts.responsible_user_id')
-            ->from('contacts');
-    })
+     $responsible_users = contact::where('type', 'customer')
+   ->join('users as u','u.assigned_to','=','contacts.id')
+    ->select('contacts.id','contacts.supplier_business_name')
     ->get();
-
  
+
+ $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
+ ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
+->get();
+
     
         $employees = $all_users->pluck('full_name', 'id');
-        $all_responsible_users=$responsible_users->pluck('full_name', 'id');
+        $all_responsible_users=$responsible_users->pluck('supplier_business_name', 'id');
 
         return view('essentials::cards.create')
-            ->with(compact('employees','all_responsible_users'));
+            ->with(compact('employees','all_responsible_users','responsible_client'));
     }
 
     /**
@@ -186,7 +178,7 @@ class EssentialsCardsController extends Controller
                 'fees',
                 'company_name',
                 'employee_id',
-                'responsible_user_id'
+             
 
             ]);
 
@@ -195,13 +187,35 @@ class EssentialsCardsController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $data['employee_id'] = (int)$request->input('employee_id');
-            $data['responsible_user_id'] = (int)$request->input('responsible_user_id');
+           //emp_number
+         //  $business_id = request()->session()->get('user.business_id');
 
-            $data['residency_end_date'] =  $request->input('Residency_end_date');;
+          // $numericPart = (int)substr($business_id, 3);
+           $lastrecord = WorkCard::orderBy('work_card_no', 'desc')->first();
+
+           if ($lastrecord) {
+             
+               $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
+
+       
+              
+               $nextNumericPart = $lastEmpNumber + 1;
+
+               $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+           } 
+       
+           else
+            {
+             
+               $data['work_card_no'] = 'WC' .'00';
+
+           }
+
+
             $data['fixnumber'] = 700646447;
-          //  dd($data);
+ 
             $workcard = WorkCard::create($data);
-            //   dd($workcard);
+       
 
 
 
@@ -220,8 +234,8 @@ class EssentialsCardsController extends Controller
             ];
         }
 
-         // return $output;
-       return redirect()->route('cards');
+    
+      return redirect()->route('cards');
     }
 
     /**

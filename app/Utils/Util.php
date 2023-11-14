@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
 class Util
 {
@@ -1631,7 +1632,8 @@ class Util
         $input2['type'] ='residence_permit';
         $input2['number'] = $user_details['id_proof_number'];
         $input2['expiration_date'] = $user_details['eqama_end_date'];
-        $input2['employee_id'] = $user->id;;
+        $input2['employee_id'] = $user->id;
+       
         EssentialsOfficialDocument::create($input2);
 
         $role = null;

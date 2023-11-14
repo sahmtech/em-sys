@@ -21,7 +21,8 @@ class WorkCard extends Model
         'fixnumber',
         'responsible_user_id' ,
         'border_end_date',
-        'residency_end_date'
+        'residency_end_date',
+        'work_card_no',
     ];
 
     public function employee()

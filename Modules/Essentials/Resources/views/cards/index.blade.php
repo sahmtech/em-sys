@@ -11,7 +11,25 @@
 
 <!-- Main content -->
 <section class="content">
+@component('components.filters', ['title' => __('report.filters')])
 
+<div class="col-md-3">
+    <div class="form-group">
+        <label for="offer_type_filter">@lang('essentials::lang.project'):</label>
+        {!! Form::select('contact-select', $contacts, null, [
+            'class' => 'form-control',
+            'style' => 'height:36px',
+            'placeholder' => __('lang_v1.all'),
+            'required',
+            'id' => 'contact-select'
+        ]) !!}
+    </div>
+</div>
+     
+
+     
+
+@endcomponent
 
 @component('components.widget', ['class' => 'box-primary'])
 

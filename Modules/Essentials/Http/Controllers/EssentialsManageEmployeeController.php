@@ -440,8 +440,8 @@ class EssentialsManageEmployeeController extends Controller
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }
-    
-            return redirect()->route('employees')->with('status', $output);
+   // return $output;
+           return redirect()->route('employees')->with('status', $output);
         }
 
     /**
