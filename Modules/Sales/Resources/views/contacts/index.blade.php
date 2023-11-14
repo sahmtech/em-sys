@@ -315,17 +315,7 @@
                                                                             </div>
                                                                         </div>
                                                         </div>
-                                                                            <div class="col-md-3">
-                                                                                            <div class="form-group">
-                                                                                            {!! Form::label('mobile_cs', __('sales::lang.mobile_cs') . ':*') !!}
-                                                                                                <div class="input-group">
-                                                                                                <span class="input-group-addon">
-                                                                                                    <i class="fa fa-info"></i>
-                                                                                                </span>
-                                                                                                {!! Form::text('mobile_cs', null, ['class' => 'form-control']); !!}
-                                                                                                </div>
-                                                                                            </div>
-                                                                            </div>
+                                                                          
 
                                                                             <div class="col-md-12">
                                                                                     <div class="form-group">

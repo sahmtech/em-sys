@@ -19,10 +19,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/', [Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->name('followup_landing');
       
         Route::get('/projects',[\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index'])->name('projects');
-        Route::get('/projectShow/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show']);
+        Route::get('/projectShow/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show'])->name('projectView');
     
         Route::get('/workers',[\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
-
+        Route::get('/workers/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'show'])->name('showWorker');
+     
+        Route::get('/requests',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index'])->name('requests');
+    
+    
     });
     
     

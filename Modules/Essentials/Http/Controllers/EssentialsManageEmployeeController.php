@@ -359,7 +359,9 @@ class EssentialsManageEmployeeController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities=EssentialsCountry::nationalityForDropdown();
-        $contacts=Contact::where('type','customer')->pluck('name','id');
+
+        $contacts=Contact::where('type','customer')->pluck('supplier_business_name','id');
+        
         $blood_types = ['A+' => 'A positive (A+).',
         'A-' => 'A negative (A-).',
         'B+' => 'B positive (B+)',
@@ -438,8 +440,8 @@ class EssentialsManageEmployeeController extends Controller
                     'msg' => __('messages.something_went_wrong'),
                 ];
             }
-    
-            return redirect()->route('employees')->with('status', $output);
+   // return $output;
+           return redirect()->route('employees')->with('status', $output);
         }
 
     /**

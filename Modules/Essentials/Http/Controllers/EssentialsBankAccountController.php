@@ -202,15 +202,15 @@ class EssentialsBankAccountController extends Controller
 
         try {
             $oldLocation=EssentialsBankAccounts::whereId($id)->first()->location_id;
-            $input = $request->only(['name', 'phone_number', 'mobile_number','location',
+            $input = $request->only(['name', 'phone_number', 'mobile_number',
             'address','details', 'is_active']);
             
-            if (!($request->has('location')) || $request->input('location') == null) {
-                $input2['location_id'] = $oldLocation;
-            }
-            else{
-                $input2['location_id'] = $request->input('location');
-            }
+            // if (!($request->has('location')) || $request->input('location') == null) {
+            //     $input2['location_id'] = $oldLocation;
+            // }
+            // else{
+            //     $input2['location_id'] = $request->input('location');
+            // }
             $input2['name'] = $input['name'];
             
             $input2['phone_number'] = $input['phone_number'];

@@ -68,6 +68,12 @@
     </select>
 </div>
 
+<div id="eqamaEndDateInput" class="form-group col-md-3" style="display: none;">
+    {!! Form::label('eqama_end_date', __('lang_v1.eqama_end_date') . ':') !!}
+    {!! Form::date('eqama_end_date', null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.eqama_end_date'), 'id' => 'eqama_end_date']) !!}
+  
+</div>
+
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null,
@@ -75,10 +81,9 @@
           'oninput' => 'validateIdProofNumber(this)']) !!}
     <span id="idProofNumberError" class="text-danger"></span>
 </div>
-
 <div class="form-group col-md-6">
     {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
-    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10']) !!}
+    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : '3', ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10', 'oninput' => 'validateBorderNumber()']) !!}
     <div id="border_no_error" class="text-danger"></div>
 </div>
 
@@ -164,24 +169,66 @@
     @show_tooltip(__('lang_v1.tax_payer_id_help'))
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
+<script>
+    $(document).ready(function () {
+        $('#id_proof_name').change(function () {
+            var selectedProof = $(this).val();
+            var eqamaEndDateInput = $('#eqamaEndDateInput');
 
+            if (selectedProof === 'eqama') {
+               
+                eqamaEndDateInput.show();
+            } else {
+               
+                eqamaEndDateInput.hide();
+                $('#eqama_end_date').val('');
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+       
+        $('#userTypeSelect').change(function () {
+           
+            var userType = $(this).val();
+
+           
+            var idProofDropdown = $('#id_proof_name');
+
+           
+            idProofDropdown.val('');
+
+          
+            if (userType === 'worker') {
+              
+                idProofDropdown.find('option[value="eqama"]').show();
+                idProofDropdown.find('option[value="national_id"]').hide();
+            } else {
+               
+                idProofDropdown.find('option').show();
+            }
+        });
+    });
+</script>
 <script>
 
 function validateBorderNumber() {
-    var borderNoInput = document.getElementById('border_no');
-    var borderNo = borderNoInput.value.trim();
+        var borderNoInput = document.getElementById('border_no');
+        var borderNo = borderNoInput.value.trim();
 
-    if (borderNo.length === 0) {
-        document.getElementById('border_no_error').textContent = '';
-        return;
-    }
+        if (borderNo.length === 0) {
+            document.getElementById('border_no_error').textContent = '';
+            return;
+        }
 
-    if (/^[3-4]\d{8}$/.test(borderNo)) {
-        document.getElementById('border_no_error').textContent = '';
-    } else {
-        document.getElementById('border_no_error').textContent = 'رقم الحدود يجب أن يحتوي على 10 أرقام ويبدأ ب 3 أو 4';
+        if (/^3\d{9}$/.test(borderNo) || /^4\d{9}$/.test(borderNo)) {
+            document.getElementById('border_no_error').textContent = '';
+        } else {
+            document.getElementById('border_no_error').textContent = 'رقم الحدود يجب أن يحتوي على 10 أرقام ويبدأ ب 3 أو 4';
+        }
     }
-}
 
 
   
@@ -283,7 +330,7 @@ function updateNationalityOptions(selectElement) {
     else
      {
         validationLength = 10;
-        idProofNumberInput.value = '3';
+        idProofNumberInput.value = '';
         options.forEach(function (option) {
             option.style.display = 'block';
         });
@@ -296,30 +343,9 @@ function updateNationalityOptions(selectElement) {
    
 }
 
-// function validateIdProofNumber(input) {
-//     const idProofName = document.getElementById('id_proof_name').value;
-//     const idProofNumberInput = input;
-//     const idProofNumber = idProofNumberInput.value;
-
-//     const idProofNumberError = document.getElementById('idProofNumberError');
-//     idProofNumberError.innerText = '';
-
-//     if (idProofName === 'eqama') {
-//         if (idProofNumber.length !== 10 || !idProofNumber.startsWith('2')) {
-//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
-//             input.value = idProofNumber.slice(0, 10);
-//         }
-//     } else if (idProofName === 'national_id') {
-//         if (idProofNumber.length !== 10 || !idProofNumber.startsWith('10')) {
-//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
-//             input.value = idProofNumber.slice(0, 10);
-//         }
-//     }
-// }
-
-
 
 </script>
+
 
 
 

@@ -35,6 +35,21 @@
     </div>
 </div>
 
+
+
+<div class="col-md-9">
+    <div class="form-group">
+        {!! Form::label('all_responsible_users', __('essentials::lang.responsible_client') . ':*') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-id-badge"></i>
+            </span>
+            {!! Form::select('responsible_client', $responsible_client->pluck('full_name', 'id'), null,
+                 ['class' => 'form-control','style'=>'height:40px',]) !!}
+        </div>
+    </div>
+</div>
+
 <div class="col-md-9">
     <div class="form-group">
         {!! Form::label('all_responsible_users', __('essentials::lang.select_responsible_users') . ':*') !!}
@@ -45,7 +60,7 @@
             {!! Form::select('all_responsible_users[]', $all_responsible_users, null, [
                 'class' => 'form-control select2',
                 'style' => 'width: 100%;',
-                'placeholder' => __('lang_v1.all'),
+             
                 'id' => 'all_responsible_users', 'required'
             ]) !!}
         </div>
@@ -101,18 +116,7 @@
 
 
 				
-<div class="col-md-9">
-    <div class="form-group">
-        {!! Form::label('project', __('essentials::lang.project') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
-            </span>
-            
-            {!! Form::text('project', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.project')]); !!}
-        </div>
-    </div>
-</div>
+
 
 <div class="col-md-9">
     <div class="form-group">
