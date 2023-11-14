@@ -91,6 +91,11 @@ class EssentialsCardsController extends Controller
             'essentials_work_cards.company_name as company_name',
         );
 
+        if (!empty($request->input('project')))
+        {
+           
+           $operations->where('contacts.id', $request->input('project'));
+       }
         if (request()->ajax()) {
 
 

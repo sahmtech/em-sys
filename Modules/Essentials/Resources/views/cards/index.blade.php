@@ -79,7 +79,10 @@
         serverSide: true,
         ajax: {
                     url: "{{ route('cards') }}",
-                   
+                data: function (d) {
+                d.project = $('#contact-select').val();
+                console.log(d);
+            },
                 },
         
        
@@ -102,7 +105,10 @@
     });
    
  
- 
+$('#contact-select').on('change', function () {
+    customers_table.ajax.reload();
+    console.log('loc selected: ' + $('#contact-select').val());
+});
 
 
     
