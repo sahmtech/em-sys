@@ -75,13 +75,18 @@ use Illuminate\Support\Facades\Route;
 
 include_once 'install_r.php';
 
+Route::get('/temp', function () {
+    exec('composer update', $output);
+    return $output;
+});
+
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('home');
     });
 
     Auth::routes();
-  //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
+    //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
 
 
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
