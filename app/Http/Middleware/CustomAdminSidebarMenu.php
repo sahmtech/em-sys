@@ -270,7 +270,7 @@ class CustomAdminSidebarMenu
             );
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']);
-        
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']);
         });
     }
     public function CUS_salesMenu()

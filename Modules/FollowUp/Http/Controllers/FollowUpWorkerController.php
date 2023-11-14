@@ -11,6 +11,15 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Spatie\Activitylog\Models\Activity;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+
 
 class FollowUpWorkerController extends Controller
 {
@@ -140,8 +149,68 @@ class FollowUpWorkerController extends Controller
      */
     public function show($id)
     {
-        return view('followup::show');
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $user = User::where('business_id', $business_id)
+                    ->with(['contactAccess'])
+                    ->find($id);
+        $dataArray=[];
+        if(!empty($user->bank_details))
+         {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
+     
+        
+        $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
+        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
+       // dd( $Qualification);
+        
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+      
+        if($professionId !== null)   
+       { $profession = EssentialsProfession::find($professionId)->name;}
+       else{$profession ="";}
+        
+        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+        if ( $specializationId !== null)
+        {$specialization = EssentialsSpecialization::find($specializationId)->name;}
+        else{$specialization="";}
+   
+      
+        $user->profession = $profession;
+        $user->specialization = $specialization;
+ 
+        
+        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
+       
+        $users = User::forDropdown($business_id, false);
+
+        $activities = Activity::forSubject($user)
+           ->with(['causer', 'subject'])
+           ->latest()
+           ->get();
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationality_id=$user->nationality_id;
+        $nationality="";
+        if(!empty($nationality_id))
+        {
+            $nationality = EssentialsCountry::select('nationality')->where('id','=',$nationality_id)->first() ;
+        }
+        
+     
+      
+        return view('followup::workers.show')->with(compact('user',
+
+         'view_partials', 'users', 'activities','bank_name',
+        'admissions_to_work','Qualification','Contract','nationalities','nationality'));
+
     }
+
 
     /**
      * Show the form for editing the specified resource.

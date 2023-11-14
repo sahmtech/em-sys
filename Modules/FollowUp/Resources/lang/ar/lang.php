@@ -33,6 +33,16 @@ return [
     'internal'=>'داخلي',
     'project_type'=>'نوع المشروع',
     'workers_details'=>'تفاصيل العمال',
+    'requests'=>'الطلبات',
+    'request_type'=>'نوع الطلب',
+    'request_creation'=>'إنشاء الطلب',
+    'direct_management'=>'الإدارة المباشرة',
+    'general_management'=>'الإدارة العامة',
+    'action'=>'العمليات',
+    'view_worker'=>'عرض العامل',
+    'view_worker_details'=>'عرض العامل'
+
+
 
 
 
