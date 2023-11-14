@@ -86,6 +86,7 @@
 @endsection
 
 @section('javascript')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -119,32 +120,32 @@
             { data: 'duration'},
             { 
                 data: 'contract_form',
-                // render: function(data, type, full, meta) {
-                //     switch (data) {
-                //         case 'monthly_cost':
-                //             return '{{ trans("sales::lang.monthly_cost") }}';
-                //         case 'operating_fees':
-                //             return '{{ trans("sales::lang.operating_fees") }}';
+                render: function(data, type, full, meta) {
+                    switch (data) {
+                        case 'monthly_cost':
+                            return '{{ trans("sales::lang.monthly_cost") }}';
+                        case 'operating_fees':
+                            return '{{ trans("sales::lang.operating_fees") }}';
                       
-                //         default:
-                //             return data;
-                //     }
-                // }
+                        default:
+                            return data;
+                    }
+                }
             },
             { data: 'status' },
             { 
                 data: 'type',
-                // render: function(data, type, full, meta) {
-                //     switch (data) {
-                //         case 'External':
-                //             return '{{ trans("sales::lang.external") }}';
-                //         case 'Internal':
-                //             return '{{ trans("sales::lang.internal") }}';
+                render: function(data, type, full, meta) {
+                    switch (data) {
+                        case 'External':
+                            return '{{ trans("sales::lang.external") }}';
+                        case 'Internal':
+                            return '{{ trans("sales::lang.internal") }}';
                       
-                //         default:
-                //             return data;
-                //     }
-                // }
+                        default:
+                            return data;
+                    }
+                }
             },
             { data: 'action' },
             
