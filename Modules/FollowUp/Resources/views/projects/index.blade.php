@@ -90,7 +90,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-            $('#projects_table').DataTable({
+            var table = $('#projects_table').DataTable({
                 processing: true,
                 serverSide: true,
 
@@ -171,7 +171,8 @@
             });
 
             $('#project_name_filter,#offer_status_filter,#type_filter').on('change', function() {
-                $('#projects_table').DataTable().ajax.reload();
+                table.ajax.reload();
+                //   $('#projects_table').DataTable().ajax.reload();
             });
         });
     </script>
