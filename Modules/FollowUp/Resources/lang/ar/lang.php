@@ -50,6 +50,9 @@ return [
     'residenceRenewal'=>'طلب تجديد إقامة',
     'residenceCard'=>'بطاقة إقامة',
     'workerTransfer'=>'طلبات نقل العمال',
+    'crud_workers'=>'عمال المشاريع',
+    'crud_projects'=> 'المشاريع',
+
 
 
 
