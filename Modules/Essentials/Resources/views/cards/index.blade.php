@@ -44,15 +44,15 @@
             <table class="table table-bordered table-striped ajax_view" id="operation_table">
                 <thead>
                     <tr>
+                    <th>@lang('essentials::lang.card_no')</th>
                     <th>@lang('essentials::lang.employee_name')</th>
                     <th>@lang('essentials::lang.Residency_no')</th>
                     <th>@lang('essentials::lang.Residency_end_date')</th>
-                         <th>@lang('essentials::lang.project')</th>
+                    <th>@lang('essentials::lang.project')</th>
                     <th>@lang('essentials::lang.work_card_duration')</th>
                     <th>@lang('essentials::lang.pay_number')</th>
                     <th>@lang('essentials::lang.fixed_no')</th>
                     <th>@lang('essentials::lang.fees')</th>
-               
                     <th>@lang('essentials::lang.company_name')</th>
                     <th>@lang('messages.action')</th>
                     </tr>
@@ -65,7 +65,7 @@
 
 
 </section>
-<!-- /.content -->
+
 
 @endsection
 
@@ -85,9 +85,10 @@
        
         columns: [
           
-
+            
+            { data: 'card_no', name: 'card_no' },
             { data: 'user', name: 'user' },
-            { data: 'id_proof_number', name: 'id_proof_number' },
+            { data: 'proof_number', name: 'proof_number' },
             { data: 'expiration_date', name: 'expiration_date' },
             { data: 'project', name: 'project' },
             {data: 'workcard_duration' ,name:'workcard_duration'},

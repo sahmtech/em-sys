@@ -960,6 +960,7 @@ return[
 
   'select_responsible_users'=>'العميل(المشروع)',
 'responsible_client'=>'المسؤول عن العميل',
+'card_no'=>'رقم كرت العمل',
 
 'edit_Appointme'=>'تعديل التعيين',
 

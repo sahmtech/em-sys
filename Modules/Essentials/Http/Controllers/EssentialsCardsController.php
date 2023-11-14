@@ -65,28 +65,31 @@ class EssentialsCardsController extends Controller
         }
 
 
+        $assgin_to_client = contact::where('type', 'customer')
+        ->join('users as u','u.assigned_to','=','contacts.id')
+         ->select('contacts.id','contacts.supplier_business_name')
+         ->get();
 
         $operations = DB::table('essentials_work_cards')
-        ->join('essentials_official_documents as doc', 'doc.id', '=', 'essentials_work_cards.employee_id')
+        ->join('users as u','essentials_work_cards.employee_id','=','u.id')
+        ->join('contacts', 'u.assigned_to', '=', 'contacts.id')
+        ->join('essentials_official_documents as doc', 'doc.employee_id', '=', 'u.id')
         ->where('u.business_id', $business_id)
-        ->where(function ($query) {
-            $query->where('u.id_proof_name', 'eqama')
-                  ->orWhereNotNull('u.border_no');
-        })
+      
         ->select(
             'essentials_work_cards.id as id',
+            'essentials_work_cards.work_card_no as card_no',   
             DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-            'u.id_proof_number as id_proof_number as id_proof_number',
-            'essentials_work_cards.residency_end_date as expiration_date',
+            'doc.number as proof_number',
+            'doc.expiration_date as expiration_date',
 
-            'essentials_work_cards.project as project',
+            'contacts.supplier_business_name as project',
             'essentials_work_cards.workcard_duration as workcard_duration',
             'essentials_work_cards.Payment_number as Payment_number',
             'essentials_work_cards.fixnumber as fixnumber',
             'essentials_work_cards.fees as fees',
             'essentials_work_cards.company_name as company_name',
         );
-   
 
         if (request()->ajax()) {
 
