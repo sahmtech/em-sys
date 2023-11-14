@@ -127,7 +127,7 @@ class FollowUpProjectController extends Controller
      
                
         
-        return view('followup::projects.index')->with(compact('contacts'));
+        return view('followup::projects.index2')->with(compact('contacts'));
     }
 
     /**
