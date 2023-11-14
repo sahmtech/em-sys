@@ -9,7 +9,12 @@ class salesContract extends Model
     protected $guarded = ['id'];
 
     public function transaction()
-    {
+    {    
         return $this->belongsTo(Transaction::class, 'offer_price_id');
+    }
+
+    public function salesOrderOperation() {
+      
+        return $this->hasOne(salesOrdersOperation::class, 'sale_contract_id');
     }
 }

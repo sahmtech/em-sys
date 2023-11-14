@@ -21,24 +21,7 @@ class SalesTargetedClientController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    // public function index()
-    // {
-    
-    //    $business_id = request()->session()->get('user.business_id');
-
-
-    //     if (request()->ajax()) {
-    //         $clients = DB::table('sales_services')->select(['id','profession', 'specialization', 'nationality', 'gender'
-    //         ,'number','Salary','monthly_cost']);
-                
-    //         return datatables::of($clients)
-    //         ->removeColumn('id')
-    //         ->make(true);
-        
-        
-    //         }
-    //   return view('sales::price_offers.index');
-    // }
+   
 
     /**
      * Show the form for creating a new resource.

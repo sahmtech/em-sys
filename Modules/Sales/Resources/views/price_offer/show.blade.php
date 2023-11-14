@@ -80,24 +80,7 @@
                   @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
                      <li>
                       {{ __('sales::lang.' . $allwance->salaryType) }}: {{ $allwance->amount }} 
-                      {{-- @if ($allwance->salaryType === 'housing_allowance')
-                      بدل سكن: {{ $allwance->amount }}
                      
-                      @elseif ($allwance->salaryType === 'overtime_hours')
-                          ساعات اضافية: {{ $allwance->amount }}
-                     
-                      @elseif ($allwance->salaryType === 'food_allowance')
-                      بدل طعام: {{ $allwance->amount }}
-                   
-                      @elseif ($allwance->salaryType === 'transportation_allowance')
-                      بدل نقل: {{ $allwance->amount }}
-                      
-                      @elseif ($allwance->salaryType === 'other_allowances')
-                      بدلات أخرى : {{ $allwance->amount }}
-                 
-                      @else
-                          {{ $allwance->salaryType }}: {{ $allwance->amount }}
-                      @endif --}}
                   </li>
                   @endif
               @endforeach
