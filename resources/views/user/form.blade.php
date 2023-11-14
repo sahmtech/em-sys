@@ -165,6 +165,32 @@
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
 
+
+<script>
+    $(document).ready(function () {
+       
+        $('#userTypeSelect').change(function () {
+           
+            var userType = $(this).val();
+
+           
+            var idProofDropdown = $('#id_proof_name');
+
+           
+            idProofDropdown.val('');
+
+          
+            if (userType === 'worker') {
+              
+                idProofDropdown.find('option[value="eqama"]').show();
+                idProofDropdown.find('option[value="national_id"]').hide();
+            } else {
+               
+                idProofDropdown.find('option').show();
+            }
+        });
+    });
+</script>
 <script>
 
 function validateBorderNumber() {
@@ -296,30 +322,9 @@ function updateNationalityOptions(selectElement) {
    
 }
 
-// function validateIdProofNumber(input) {
-//     const idProofName = document.getElementById('id_proof_name').value;
-//     const idProofNumberInput = input;
-//     const idProofNumber = idProofNumberInput.value;
-
-//     const idProofNumberError = document.getElementById('idProofNumberError');
-//     idProofNumberError.innerText = '';
-
-//     if (idProofName === 'eqama') {
-//         if (idProofNumber.length !== 10 || !idProofNumber.startsWith('2')) {
-//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 2 ولاتتجاوز 10 أرقام';
-//             input.value = idProofNumber.slice(0, 10);
-//         }
-//     } else if (idProofName === 'national_id') {
-//         if (idProofNumber.length !== 10 || !idProofNumber.startsWith('10')) {
-//             idProofNumberError.innerText = 'يجب أن تبدأ بالرقم 10 ولاتتجاوز 10 أرقام';
-//             input.value = idProofNumber.slice(0, 10);
-//         }
-//     }
-// }
-
-
 
 </script>
+
 
 
 

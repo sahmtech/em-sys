@@ -168,14 +168,14 @@ class ClientsController extends Controller
 
             $input = $request->only(['type','contact_id','name_en','first_name','last_name', 
             'supplier_business_name','commercial_register_no','mobile'
-             ,'alternate_number','email','assigned_to_users','user_id','selected_user_id',
+             ,'alternate_number','email','user_id','selected_user_id',
              'last_name_cs','first_name_cs','english_name_cs','capacity_cs','nationality_cs',
                 'email_cs','identityNO_cs','mobile_cs','allow_login','username_cs','password_cs',
             'first_name_cf','last_name_cf','english_name_cf','email_cf','mobile_cf','allow_login_cf','username_cf','password_cf']);
 
             $input['allow_login'] = $request->filled('allow_login');
             $input['allow_login_cf'] = $request->filled('allow_login_cf');
-           // dd($input);
+          //  dd($input['user_id']);
             $name_array = [];
 
            
@@ -188,7 +188,7 @@ class ClientsController extends Controller
             }
 
             $input['name'] = trim(implode(' ', $name_array));
-           // $input['nationality_id']=$request->input('nationality_cs');
+         
             $input['english_name']=$request->input('name_en');
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
@@ -196,7 +196,7 @@ class ClientsController extends Controller
       //  dd( $input);
             DB::beginTransaction();
             $output = $this->contactUtil->createNewContact($input);
-            $responseData = $output['data']; // Accessing the 'data' array from the response
+            $responseData = $output['data'];
             $contactId = $responseData->id;
           
 
