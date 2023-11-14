@@ -1423,5 +1423,6 @@ return [
 'Invalid_department'=>'القسم غير موجود للسطر رقم ',
 'Invalid_location'=>'الفرع غير موجود للسطر رقم',
 'nationality'=>'الجنسية ',
+'eqama_end_date'=>'تاريخ انتهاء الاقامة',
 
 ];

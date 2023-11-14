@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
 class Util
 {
@@ -1562,7 +1563,8 @@ class Util
             'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
-            'custom_field_2', 'custom_field_3', 'custom_field_4', 'guardian_name', 'assigned_to','id_proof_name', 'id_proof_number', 'permanent_address', 'current_address', 'bank_details', 'selected_contacts','emp_number',
+            'custom_field_2', 'custom_field_3','eqama_end_date',
+             'custom_field_4', 'guardian_name', 'assigned_to','id_proof_name', 'id_proof_number', 'permanent_address', 'current_address', 'bank_details', 'selected_contacts','emp_number',
         ]);
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
@@ -1625,7 +1627,14 @@ class Util
       
         //Create the user
         $user = User::create($user_details);
-
+        
+        
+        $input2['type'] ='residence_permit';
+        $input2['number'] = $user_details['id_proof_number'];
+        $input2['expiration_date'] = $user_details['eqama_end_date'];
+        $input2['employee_id'] = $user->id;
+       
+        EssentialsOfficialDocument::create($input2);
 
         $role = null;
         if ($request->input('role')) {

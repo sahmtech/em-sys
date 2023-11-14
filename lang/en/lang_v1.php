@@ -1536,4 +1536,5 @@ return [
 'Invalid_specialization'=>'specialization not found for row number ',
 'Invalid_department'=>'department not found for row number ',
 'Invalid_location'=>'location not found for row number ',
+'eqama_end_date'=>'eqama end date'
 ];

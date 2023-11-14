@@ -31,10 +31,7 @@
                 {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':') !!}
                 {!! Form::text('phone_number',  $bank->phone_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
             </div>
-            <div class="form-group col-md-6">
-                {!! Form::label('location', __('essentials::lang.department') . ':*') !!}
-                {!! Form::select('location',$locations, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_location')]) !!}
-            </div>
+         
             <div class="form-group col-md-6">
                 {!! Form::label('mobile_number', __('essentials::lang.mobile_number') . ':') !!}
                 {!! Form::text('mobile_number',  $bank->mobile_number, ['class' => 'form-control', 'placeholder' => __('essentials::lang.mobile_number')]) !!}
@@ -58,7 +55,7 @@
   
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">@lang( 'messages.update' )</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
+      
       </div>
   
       {!! Form::close() !!}

@@ -101,6 +101,11 @@ class SaleOperationOrderController extends Controller
          
         
             return Datatables::of($operations)
+            ->addColumn('Status', function ($row) {
+              
+                return __('sales::lang.' . $row->Status);
+            })
+    
             ->addColumn('show_operation', function ($row) {
               
                 $html = '';
@@ -122,8 +127,13 @@ class SaleOperationOrderController extends Controller
                 ->make(true);
         }
         
+        $status=[
+            'Done'=>__('sales::lang.Done'),
+            'Under_process'=>__('sales::lang.Under_process'),
+            'Not_started'=>__('sales::lang.Not_started'),
 
-        return view('sales::operation_order.index')->with(compact('contracts'));
+        ];
+        return view('sales::operation_order.index')->with(compact('contracts','status'));
       
     }
 
@@ -150,7 +160,7 @@ class SaleOperationOrderController extends Controller
             ->get()
             ->toArray();
 
-        // Add the contracts for this offer price to the $contracts array
+        
         $contracts = array_merge($contracts, $contractIds);
     }
     
@@ -173,8 +183,13 @@ class SaleOperationOrderController extends Controller
         ->where('business_id',$business_id)
         ->pluck('supplier_business_name','id');
 
-    
-        return view('sales::operation_order.create')->with(compact('leads','agencies'));
+        $status=[
+            'Done'=>__('sales::lang.Done'),
+            'Under_process'=>__('sales::lang.Under_process'),
+            'Not_started'=>__('sales::lang.Not_started'),
+
+        ];
+        return view('sales::operation_order.create')->with(compact('leads','agencies','status'));
     }
 
     /**
@@ -193,10 +208,10 @@ class SaleOperationOrderController extends Controller
             DB::transaction(function () use ($request) {
                 $operation_order = [
                     'contact_id','sale_contract_id','operation_order_no','operation_order_type', 
-                    'Interview', 'Location','Delivery', 'Note', 'Status', 'Industry'
+                    'Interview', 'Location','Delivery', 'Note', 'Industry','status',
                 ];
                 $operation_details = $request->only($operation_order);
-               // dd( $operation_details['operation_order_no']);
+              
                 $latestRecord = SalesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
                 
                 if ( $latestRecord )
@@ -211,10 +226,10 @@ class SaleOperationOrderController extends Controller
                 else
                 {$operation_details['operation_order_no'] = 'POP1111';}
               
-                $operation_details['Status']=__('sales::lang.registered');
-             //dd($operation_details);
+                $operation_details['Status']=$request->input('status');
+     
                 $operation = SalesOrdersOperation::create( $operation_details );
-             //  dd( $operation );
+           
             });
            
             $output = [
