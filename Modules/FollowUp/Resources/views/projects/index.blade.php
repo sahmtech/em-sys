@@ -92,7 +92,7 @@
 
             var table = $('#projects_table').DataTable({
                 processing: true,
-                serverSide: false,
+                serverSide: true,
 
                 ajax: {
                     url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']) }}",
