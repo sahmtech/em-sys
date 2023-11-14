@@ -102,9 +102,10 @@ class FollowUpProjectController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '';
                         if ($is_admin) {
-                            $html .= '<a href="#" data-href="'.action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal">
-                            <i class="fas fa-eye" aria-hidden="true"></i>'.__('messages.view').'
+                            $html .= '<a href="'.route('projectView', ['id' => $row->id]).'" class="btn btn-xs btn-primary">
+                                <i class="fas fa-eye" aria-hidden="true"></i>'.__('messages.view').'
                             </a>';
+                            // $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
                           //  &nbsp;
                         //     $html .= '<button class="btn btn-xs btn-danger delete_project_button" data-href="' . route('project.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                        }
