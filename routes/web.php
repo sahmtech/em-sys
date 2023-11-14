@@ -75,13 +75,20 @@ use Illuminate\Support\Facades\Route;
 
 include_once 'install_r.php';
 
+Route::get('/testcomposer', function () {
+    $output = "";
+  //  exec('composer update --working-dir=C:\Users\tcavw\Desktop\Sahmtech\Projects\Erp\Rama\em-sys', $output);
+    exec('composer upgrade --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
+    return $output;
+});
+
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('home');
     });
 
     Auth::routes();
-  //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
+    //  Route::delete('/services/{id}', [App\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'destroy'])->name('service.destroy');
 
 
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
