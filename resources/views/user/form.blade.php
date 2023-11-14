@@ -75,10 +75,9 @@
           'oninput' => 'validateIdProofNumber(this)']) !!}
     <span id="idProofNumberError" class="text-danger"></span>
 </div>
-
 <div class="form-group col-md-6">
     {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
-    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10']) !!}
+    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : '3', ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10', 'oninput' => 'validateBorderNumber()']) !!}
     <div id="border_no_error" class="text-danger"></div>
 </div>
 
@@ -194,20 +193,20 @@
 <script>
 
 function validateBorderNumber() {
-    var borderNoInput = document.getElementById('border_no');
-    var borderNo = borderNoInput.value.trim();
+        var borderNoInput = document.getElementById('border_no');
+        var borderNo = borderNoInput.value.trim();
 
-    if (borderNo.length === 0) {
-        document.getElementById('border_no_error').textContent = '';
-        return;
-    }
+        if (borderNo.length === 0) {
+            document.getElementById('border_no_error').textContent = '';
+            return;
+        }
 
-    if (/^[3-4]\d{8}$/.test(borderNo)) {
-        document.getElementById('border_no_error').textContent = '';
-    } else {
-        document.getElementById('border_no_error').textContent = 'رقم الحدود يجب أن يحتوي على 10 أرقام ويبدأ ب 3 أو 4';
+        if (/^3\d{9}$/.test(borderNo) || /^4\d{9}$/.test(borderNo)) {
+            document.getElementById('border_no_error').textContent = '';
+        } else {
+            document.getElementById('border_no_error').textContent = 'رقم الحدود يجب أن يحتوي على 10 أرقام ويبدأ ب 3 أو 4';
+        }
     }
-}
 
 
   
