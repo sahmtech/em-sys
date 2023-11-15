@@ -1575,7 +1575,11 @@ class Util
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'active';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
         
-        $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
+       // $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
+       if(!empty($user_details['assigned_to']))
+       {
+        $user_details['assigned_to']= $request->input('assigned_to');
+       }
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
         $user_details['nationality_id'] = $request->input('nationality');
@@ -1633,7 +1637,6 @@ class Util
         $input2['number'] = $user_details['id_proof_number'];
         $input2['expiration_date'] = $user_details['eqama_end_date'];
         $input2['employee_id'] = $user->id;
-       
         EssentialsOfficialDocument::create($input2);
       }
 
