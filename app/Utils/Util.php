@@ -1628,13 +1628,14 @@ class Util
         //Create the user
         $user = User::create($user_details);
         
-        
-        $input2['type'] ='residence_permit';
+        if(!empty( $input2['expiration_date']))
+      {  $input2['type'] ='residence_permit';
         $input2['number'] = $user_details['id_proof_number'];
         $input2['expiration_date'] = $user_details['eqama_end_date'];
         $input2['employee_id'] = $user->id;
        
         EssentialsOfficialDocument::create($input2);
+      }
 
         $role = null;
         if ($request->input('role')) {
