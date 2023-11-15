@@ -18,7 +18,7 @@ use DB;
 use App\Transaction;
 use App\Contact;
 use Modules\Sales\Entities\salesContract;
-use Modules\Sales\Entities\SalesOrdersOperation;
+use Modules\Sales\Entities\salesOrdersOperation;
 
 class SaleOperationOrderController extends Controller
 {
@@ -212,7 +212,7 @@ class SaleOperationOrderController extends Controller
                 ];
                 $operation_details = $request->only($operation_order);
               
-                $latestRecord = SalesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
+                $latestRecord = salesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
                 
                 if ( $latestRecord )
                 {
@@ -228,7 +228,7 @@ class SaleOperationOrderController extends Controller
               
                 $operation_details['Status']=$request->input('status');
      
-                $operation = SalesOrdersOperation::create( $operation_details );
+                $operation = salesOrdersOperation::create( $operation_details );
            
             });
            
@@ -246,7 +246,8 @@ class SaleOperationOrderController extends Controller
             ];
         }
         
-        return redirect()->route('sale.orderOperations')->with($output);
+       // return $output;
+       return redirect()->route('sale.orderOperations')->with($output);
     }
 
     /**
@@ -260,7 +261,7 @@ class SaleOperationOrderController extends Controller
     public function show($id)
 {
     try {
-        $operations = SalesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
+        $operations = salesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
             ->where('id', $id)
             ->first();
          
@@ -288,7 +289,7 @@ class SaleOperationOrderController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $operation = SalesOrdersOperation::where('id', $id)->first();
+        $operation = salesOrdersOperation::where('id', $id)->first();
 
         $leads=Contact::where('type','customer')
         ->where('business_id',$business_id)
@@ -330,7 +331,7 @@ class SaleOperationOrderController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $record = SalesOrdersOperation::find($id);
+        $record = salesOrdersOperation::find($id);
         if (!$record) {
           
             return redirect()->route('sale.orderOperations')->with('error', 'Record not found.');
