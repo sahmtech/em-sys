@@ -75,12 +75,11 @@ use Illuminate\Support\Facades\Route;
 
 include_once 'install_r.php';
 
-Route::get('/testcomposer', function () {
-    $output = "";
-  //  exec('composer update --working-dir=C:\Users\tcavw\Desktop\Sahmtech\Projects\Erp\Rama\em-sys', $output);
-    exec('composer update --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
-    return $output;
-});
+// Route::get('/testcomposer', function () {
+//     $output = "";
+//     exec('composer upgrade --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
+//     return $output;
+// });
 
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
