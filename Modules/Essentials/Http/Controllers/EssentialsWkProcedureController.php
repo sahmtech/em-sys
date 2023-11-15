@@ -29,7 +29,21 @@ class EssentialsWkProcedureController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-      
+        $requestsType = [
+            'exitRequest',
+            'returnRequest',
+            'escapeRequest',
+            'advanceSalary',
+            'leavesAndDepartures',
+            'atmCard',
+            'residenceRenewal',
+            'residenceCard',
+            'workerTransfer',
+        ];
+        
+
+        $actualTypes = EssentialsWkProcedure::distinct()->pluck('type')->toArray();
+        $missingTypes = array_diff($requestsType, $actualTypes);
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -68,7 +82,7 @@ class EssentialsWkProcedureController extends Controller
         ->rawColumns(['steps','action'])
         ->make(true);
         }
-         return view('essentials::work_flow.index')->with(compact('departments'));
+         return view('essentials::work_flow.index')->with(compact('departments','missingTypes'));
        
     }
 

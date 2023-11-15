@@ -23,8 +23,6 @@ return new class extends Migration
             $table->boolean('can_reject')->nullable();
             $table->boolean('can_return')->nullable();
             $table->timestamps();
-
-          
             $table->foreign('department_id')->references('id')->on('essentials_departments');
             $table->foreign('next_department_id')->references('id')->on('essentials_departments')->nullable();
         });

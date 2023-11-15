@@ -53,11 +53,11 @@
                 <div class="modal-body">
                     <div>
                         <div id="procedureSteps" class="row">
-                            <div class="form-group col-md-9">
+                           
+                            <div class="form-group col-md-10">
                                 {!! Form::label('type', __('essentials::lang.procedure_type') . ':*') !!}
-                                {!! Form::text('type', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.procedure_type'), 'required']) !!}
+                                {!! Form::select('type', array_combine($missingTypes, array_map(fn($type) => trans("followup::lang.$type"), $missingTypes)), null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.procedure_type'), 'required']) !!}
                             </div>
-                    
                             <div class="workflow-step" class="row">
                                 <div class="form-group col-md-4">
                                     {!! Form::label('department_id', __('essentials::lang.managment') . ':*') !!}
@@ -111,6 +111,7 @@
 @endsection
 
 @section('javascript')
+
 <script>
     $(document).ready(function () {
       
@@ -138,7 +139,41 @@
                    
                 },
                 columns: [
-                    { data: 'type' },
+                   
+                {
+                            data: 'type',
+                            render: function (data, type, row) {
+                                if (data === 'exitRequest') {
+                                    return  '@lang('followup::lang.exitRequest')';
+                                    
+                                } else if (data === 'returnRequest') {
+                                    return  '@lang('followup::lang.returnRequest')';
+                                } 
+                                else if (data === 'escapeRequest') {
+                                    return  '@lang('followup::lang.escapeRequest')';
+                                } 
+                                else if (data === 'advanceSalary') {
+                                    return  '@lang('followup::lang.advanceSalary')';
+                                } 
+                                else if (data === 'leavesAndDepartures') {
+                                    return  '@lang('followup::lang.leavesAndDepartures')';
+                                } 
+                                else if (data === 'atmCard') {
+                                    return  '@lang('followup::lang.atmCard')';
+                                } 
+                                else if (data === 'residenceRenewal') {
+                                    return  '@lang('followup::lang.residenceRenewal')';
+                                } 
+                                else if (data === 'workerTransfer') {
+                                    return  '@lang('followup::lang.workerTransfer')';
+                                } 
+                                else if (data === 'residenceCard') {
+                                    return  '@lang('followup::lang.residenceCard')';
+                                } else{
+                                    return  ' ';
+                                }
+                            }
+                        },
                     { data: 'steps' },
                     { data: 'action' },
 
