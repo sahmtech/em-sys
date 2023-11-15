@@ -151,7 +151,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                 )->order(4);
             }
+            // if (auth()->user()->can('essentials.crud_all_attendance') || true) {
+                $menu->url(
 
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
+                    __('essentials::lang.procedures'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
+                )->order(4);
+            // }
             if (auth()->user()->can('essentials.view_work_cards') || true) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),

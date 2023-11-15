@@ -312,7 +312,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/send-employee-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee'])->name('send-employee-file');
       
 
-   
+        Route::get('/procedures', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index'])->name('procedures');
+        Route::post('/storeProcedure', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'store'])->name('storeProcedure');
+        Route::delete('/procedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'destroy'])->name('procedure.destroy');
        
 
    
