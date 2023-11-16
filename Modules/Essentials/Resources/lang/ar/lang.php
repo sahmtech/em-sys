@@ -963,6 +963,7 @@ return[
 'card_no'=>'رقم كرت العمل',
 
 'edit_Appointme'=>'تعديل التعيين',
+'view_profile_picture'=>'رؤية صورة بروفايل موظف',
 
 
 

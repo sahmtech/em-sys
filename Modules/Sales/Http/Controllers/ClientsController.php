@@ -175,7 +175,7 @@ class ClientsController extends Controller
 
             $input['allow_login'] = $request->filled('allow_login');
             $input['allow_login_cf'] = $request->filled('allow_login_cf');
-          //  dd($input['user_id']);
+           // dd($input['allow_login'] );
             $name_array = [];
 
            
@@ -207,7 +207,7 @@ class ClientsController extends Controller
 
             $this->contactUtil->activityLog($output['data'], 'added');
 
-            DB::commit();
+       
 
             
             $contract_signer_input['crm_contact_id']=$contactId;
@@ -228,17 +228,18 @@ class ClientsController extends Controller
                 if (!empty($input['password_cs'])) {
                     $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
                 } 
-                $contract_signer_input['allow_login']=$input['allow_login'];
+              
             }
             else
             {
                 $contract_signer_input['type']='user'; 
             }
 
+            $contract_signer_input['allow_login']=$input['allow_login'];
             $contract_signer_input['contact_user_type']='contact_signer';
             $contract_signer = User::create($contract_signer_input);
 
-
+        
             $contract_follower_input['crm_contact_id']=$contactId;
             $contract_follower_input['first_name']=$input['first_name_cf'];
             $contract_follower_input['last_name']=$input['last_name_cf'];
@@ -251,20 +252,24 @@ class ClientsController extends Controller
             {
                 $contract_follower_input['type']="customer_user"; 
                 $contract_follower_input['username']=$input['username_cs']; 
+             
                 if (!empty($input['password_cs'])) {
                     $contract_follower_input['password'] = Hash::make($input['password_cs']);
                 } 
-                $contract_follower_input['allow_login']=$input['allow_login_cf'];
+
+              
             }
             else
-            {$contract_follower_input['type']="user"; }
-
+            {
+                $contract_follower_input['type']="user"; 
+            }
+            $contract_follower_input['allow_login']=$input['allow_login_cf'];
 
           
             $contract_follower_input['contact_user_type']='contract_follower';
             $contract_follower = User::create($contract_follower_input);
-
-   
+       
+            DB::commit();
         } 
         
         catch (\Exception $e)
@@ -280,7 +285,7 @@ class ClientsController extends Controller
         $errors = $e->errors();
         return response()->json(['success' => false, 'errors' => $errors], 422);
     }
- // return $output;
+// return $output;
    return redirect()->route('sale.clients');
     }
 

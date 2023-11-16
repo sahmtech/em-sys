@@ -458,6 +458,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_regions'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.view_profile_picture',
+                'label' => __('essentials::lang.view_profile_picture'),
+                'default' => false,
+            ],
 
         ];
     }
