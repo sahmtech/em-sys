@@ -22,7 +22,7 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                            <th>@lang('followup::lang.request_type')</th>
+                   
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.start_date')</th>
                             <th>@lang('followup::lang.end_date')</th>
@@ -90,41 +90,7 @@
         ajax: { url: "{{ route('leavesAndDepartures') }}"},
      
                  columns: [
-               
-                { 
-                    data: 'procedure_type',
-                            render: function (data, type, row) {
-                                if (data === 'exitRequest') {
-                                    return  '@lang('followup::lang.exitRequest')';
-                                    
-                                } else if (data === 'returnRequest') {
-                                    return  '@lang('followup::lang.returnRequest')';
-                                } 
-                                else if (data === 'escapeRequest') {
-                                    return  '@lang('followup::lang.escapeRequest')';
-                                } 
-                                else if (data === 'advanceSalary') {
-                                    return  '@lang('followup::lang.advanceSalary')';
-                                } 
-                                else if (data === 'leavesAndDepartures') {
-                                    return  '@lang('followup::lang.leavesAndDepartures')';
-                                } 
-                                else if (data === 'atmCard') {
-                                    return  '@lang('followup::lang.atmCard')';
-                                } 
-                                else if (data === 'residenceRenewal') {
-                                    return  '@lang('followup::lang.residenceRenewal')';
-                                } 
-                                else if (data === 'workerTransfer') {
-                                    return  '@lang('followup::lang.workerTransfer')';
-                                } 
-                                else if (data === 'residenceCard') {
-                                    return  '@lang('followup::lang.residenceCard')';
-                                } else{
-                                    return  ' ';
-                                }
-                            }
-                    },
+              
                 { data: 'user' },
                  { data: 'start_date' },
                 { data: 'end_date' } ,

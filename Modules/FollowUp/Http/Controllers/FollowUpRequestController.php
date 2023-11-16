@@ -923,26 +923,29 @@ class FollowUpRequestController extends Controller
                   
                     
                     if ($newProcedure) {
-                        
-                        $requestProcess->update([
-                            'procedure_id' => $newProcedure->id,
-                            'status' => 'pending',
-                            'is_returned' => 1,
-                          
-                        ]);
-    
-                      //  return response()->json(['success' => true, 'msg' => 'Request returned successfully']);
-                      $output = [
-                        'success' => true,
-                        'msg' => __('followup::lang.returned_success'),
-                    ];
+                            
+                            $requestProcess->update([
+                                'procedure_id' => $newProcedure->id,
+                                'status' => 'pending',
+                                'is_returned' => 1,
+                            
+                            ]);
+        
+                        //  return response()->json(['success' => true, 'msg' => 'Request returned successfully']);
+                        $output = [
+                            'success' => true,
+                            'msg' => __('followup::lang.returned_successfully'),
+                        ];
+                    }
+                    else {
+                        $output = [
+                            'success' => false,
+                            'msg' => __('followup::lang.there_is_no_department_to_return_for'),
+                        ];
                     }
                 }
             }
-            $output = [
-                'success' => true,
-                'msg' => __('followup::lang.returned_success'),
-            ];
+           
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
     
