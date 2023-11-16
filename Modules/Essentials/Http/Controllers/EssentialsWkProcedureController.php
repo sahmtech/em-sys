@@ -202,6 +202,7 @@ class EssentialsWkProcedureController extends Controller
      */
     public function destroy($id)
     {
+      
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -211,7 +212,7 @@ class EssentialsWkProcedureController extends Controller
 
         try {
             $type=EssentialsWkProcedure::where('id', $id)->first()->type;
-
+            
             EssentialsWkProcedure::where('type', $type)->delete();
 
             $output = [

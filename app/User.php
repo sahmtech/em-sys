@@ -54,6 +54,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Business::class);
     }
+   
 
     public function scopeUser($query)
     {

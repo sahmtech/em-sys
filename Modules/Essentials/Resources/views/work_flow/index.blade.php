@@ -38,9 +38,9 @@
  
     @endcomponent
 
-    <div class="modal fade country_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade Procedures_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
- <!-- Modal for adding a new country -->
+
  <div class="modal fade" id="addProceduresModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -173,7 +173,7 @@
                                     return  ' ';
                                 }
                             }
-                        },
+                    },
                     { data: 'steps' },
                     { data: 'action' },
 
