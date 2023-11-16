@@ -54,6 +54,7 @@ class FollowUpRequestController extends Controller
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
             $requestProcess->status_note = $input['note'] ?? null;
+            $requestProcess->updated_by =auth()->user()->id;
     
             $requestProcess->save();
     
@@ -159,6 +160,11 @@ class FollowUpRequestController extends Controller
                 'installmentsNumber' => $validatedData['installmentsNumber'],
                 'monthlyInstallment' => $validatedData['monthlyInstallment'],
                 'advSalaryAmount'=>$validatedData['amount'],
+                'advSalaryAmount'=>$validatedData['amount'],
+                'updated_by'=>auth()->user()->id
+
+                
+
             ]);
 
             
@@ -928,6 +934,7 @@ class FollowUpRequestController extends Controller
                                 'procedure_id' => $newProcedure->id,
                                 'status' => 'pending',
                                 'is_returned' => 1,
+                                'updated_by'=>auth()->user()->id
                             
                             ]);
         
