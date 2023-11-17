@@ -42,11 +42,11 @@
               </a></li>
             @endif
             <!-- Help Button -->
-            @if(auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
+            {{-- @if(auth()->user()->hasRole('Admin#' . auth()->user()->business_id))
               <li><a id="start_tour" href="#">
                   <i class="fas fa-question-circle" aria-hidden="true"></i> @lang('lang_v1.application_tour')
               </a></li>
-            @endif
+            @endif --}}
           </ul>
         </div>
         {{-- <button id="btnCalculator" title="@lang('lang_v1.calculator')" type="button" class="btn btn-success btn-flat pull-left m-8 btn-sm mt-10 popover-default hidden-xs" data-toggle="popover" data-trigger="click" data-content='@include("layouts.partials.calculator")' data-html="true" data-placement="bottom">
