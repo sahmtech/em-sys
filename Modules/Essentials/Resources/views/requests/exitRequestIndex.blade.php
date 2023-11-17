@@ -83,17 +83,16 @@
                
              
                 { data: 'user' },
-                 { data: 'start_date' },
-              
+                { data: 'start_date' },
                 { data: 'status' } ,
-                 { data: 'status_note' },
+                { data: 'status_note' },
                 { data: 'reason' },
                 {
                     data: 'can_return',
                     
                 
                     render: function (data, type, row) {
-                        if (data == 1 && row.start) {
+                        if (data == 1) {
                             return '<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.id + '">@lang('followup::lang.return_the_request')</button>';
 
                         }
