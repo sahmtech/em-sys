@@ -24,9 +24,10 @@ class FollowUpRequestController extends Controller
      */
     protected $moduleUtil;
     protected $statuses;
-    
-    public function __construct(ModuleUtil $moduleUtil)
-    {
+    protected $statuses2;
+
+     
+    public function __construct(ModuleUtil $moduleUtil){
         $this->moduleUtil = $moduleUtil;
         $this->statuses = [
             'approved' => [
@@ -37,6 +38,17 @@ class FollowUpRequestController extends Controller
                 'name' => __('followup::lang.rejected'),
                 'class' => 'bg-red',
             ],
+            'pending' => [
+                'name' =>__('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+        $this->statuses2 = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+          
             'pending' => [
                 'name' =>__('followup::lang.pending'),
                 'class' => 'bg-yellow',
@@ -269,6 +281,8 @@ class FollowUpRequestController extends Controller
 
        
       if (request()->ajax()) {
+        $requestsProcess = null;
+  
             if ($department) {
                 $department = $department->id;
             
@@ -302,12 +316,9 @@ class FollowUpRequestController extends Controller
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             ->where('department_id', $department)->where('followup_worker_requests.type','exitRequest');
            
-       
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+            
+            return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -321,7 +332,11 @@ class FollowUpRequestController extends Controller
   
         }
    
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.exitRequestIndex')->with(compact('statuses'));
     }
 
@@ -344,6 +359,8 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -378,10 +395,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','returnRequest');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+           
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -395,7 +410,11 @@ class FollowUpRequestController extends Controller
   
      }
        
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.returnRequestIndex')->with(compact('statuses'));
     }
 
@@ -418,6 +437,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -457,10 +477,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','escapeRequest');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+        
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -474,7 +492,11 @@ class FollowUpRequestController extends Controller
   
      }
       
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.escapeRequestIndex')->with(compact('statuses'));
     }
 
@@ -497,6 +519,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -533,10 +556,8 @@ class FollowUpRequestController extends Controller
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             ->where('department_id', $department)->where('followup_worker_requests.type','advanceSalary');
             }
-            else {
-                $requestsProcess=[];
-            }
-            return DataTables::of($requestsProcess)
+          
+                 return DataTables::of($requestsProcess ?? [])
             ->editColumn('status', function ($row) {
 
                 $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -555,7 +576,11 @@ class FollowUpRequestController extends Controller
   
      }
      
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.advanceSalaryIndex')->with(compact('statuses'));
     }
     public function leavesAndDeparturesIndex()
@@ -577,6 +602,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -612,10 +638,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','leavesAndDepartures');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+         
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -630,7 +654,11 @@ class FollowUpRequestController extends Controller
   
      }
       
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.leavesAndDeparturesIndex')->with(compact('statuses'));
     }
 
@@ -653,6 +681,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -687,10 +716,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','atmCard');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+          
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -704,7 +731,11 @@ class FollowUpRequestController extends Controller
   
      }
 
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.atmCardIndex')->with(compact('statuses'));
     }
 
@@ -727,6 +758,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -761,10 +793,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','residenceRenewal');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+        
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -777,7 +807,11 @@ class FollowUpRequestController extends Controller
             ->make(true);
   
      }
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.residenceRenewalIndex')->with(compact('statuses'));
     }
 
@@ -800,6 +834,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -834,10 +869,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','residenceCard');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+      
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -851,7 +884,11 @@ class FollowUpRequestController extends Controller
   
      }
      
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.residenceCardIndex')->with(compact('statuses'));
     }
 
@@ -874,6 +911,7 @@ class FollowUpRequestController extends Controller
 
        
         if (request()->ajax()) {
+            $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
             
@@ -908,10 +946,8 @@ class FollowUpRequestController extends Controller
             ->where('department_id', $department);
             $requestsProcess=$requestsProcess->where('followup_worker_requests.type','workerTransfer');
             }
-            else {
-                $requestsProcess=[];
-            }
-        return DataTables::of($requestsProcess)
+          
+             return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -925,7 +961,11 @@ class FollowUpRequestController extends Controller
   
      }
        
-        $statuses = $this->statuses;
+        if ($department) {
+        $department = $department->id;
+        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
+        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        }
         return view('followup::requests.workerTransferIndex')->with(compact('statuses'));
     }
 
