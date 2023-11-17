@@ -151,26 +151,103 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                 )->order(4);
             }
-            // if (auth()->user()->can('essentials.crud_all_attendance') || true) {
+            if (auth()->user()->can('essentials.crud_all_procedures') || true) {
                 $menu->url(
 
                     action([\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'index']),
                     __('essentials::lang.procedures'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
-                )->order(4);
-            // }
-            // $menu->url(
-
-            //     action([\Modules\Essentials\Http\Controllers\EssentialsRequestsController::class, 'index']),
-            //     __('essentials::lang.requests'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
-            // )->order(4);
+                )->order(5);
+            }
+            
+            if (auth()->user()->can('essentials.crud_all_essentials_requests') || true) {
+               
+                $menu->dropdown(
+                    __('followup::lang.requests'),
+                    function ($sub) use ($enabled_modules) {
+                        if (auth()->user()->can('followup::lang.add_request')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'create']),
+                                __('followup::lang.create_request'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_createRequest']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.exitRequest')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'exitRequestIndex']),
+                                __('followup::lang.exitRequest'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_exitRequest']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.returnRequest')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'returnRequestIndex']),
+                                __('followup::lang.returnRequest'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_returnRequest']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.escapeRequest')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'escapeRequestIndex']),
+                                __('followup::lang.escapeRequest'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_escapeRequest']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.advanceSalary')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'advanceSalaryIndex']),
+                                __('followup::lang.advanceSalary'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_advanceSalary']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.leavesAndDepartures')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'leavesAndDeparturesIndex']),
+                                __('followup::lang.leavesAndDepartures'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_leavesAndDepartures']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.atmCard')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'atmCardIndex']),
+                                __('followup::lang.atmCard'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_atmCard']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.residenceRenewal')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'residenceRenewalIndex']),
+                                __('followup::lang.residenceRenewal'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_residenceRenewal']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.residenceCard')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'residenceCardIndex']),
+                                __('followup::lang.residenceCard'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_residenceCard']
+                            );
+                        }
+                        if (auth()->user()->can('followup::lang.workerTransfer')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'workerTransferIndex']),
+                                __('followup::lang.workerTransfer'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_workerTransfer']
+                            );
+                        }
+                      
+                    },
+                    ['icon' => 'fa fas fa-plus-circle']
+              
+                )->order(6);
+                
+            }
             if (auth()->user()->can('essentials.view_work_cards') || true) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
                     __('essentials::lang.work_cards'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
-                )->order(5);
+                )->order(7);
             }
 
             if (auth()->user()->can('essentials.crud_all_leave') || true) {
@@ -179,7 +256,7 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
                     __('essentials::lang.leave_requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leave'],
-                )->order(5);
+                )->order(8);
             }
 
             if (auth()->user()->can('essentials.view_all_payroll') || true) {
@@ -187,34 +264,34 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index']),
                     __('essentials::lang.payroll'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
-                )->order(6);
+                )->order(9);
             }
             $menu->url(
                 action([\App\Http\Controllers\TaxonomyController::class, 'index']),
                 __('essentials::lang.loan'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
-            )->order(7);
+            )->order(10);
 
             if (auth()->user()->can('essentials.crud_insurance_contracts') || true) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index']),
                     __('essentials::lang.insurance_contracts'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_contracts'],
-                )->order(8);
+                )->order(11);
             }
             if (auth()->user()->can('essentials.crud_insurance_companies') || true) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'index']),
                     __('essentials::lang.insurance_companies'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_companies'],
-                )->order(9);
+                )->order(12);
             }
             if (auth()->user()->can('essentials.crud_system_settings') || true) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
                     __('essentials::lang.system_settings'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                )->order(10);
+                )->order(13);
             }
 
             if (auth()->user()->can('essentials.view_employee_settings') || true) {
@@ -233,7 +310,7 @@ class CustomAdminSidebarMenu
 
 
                     )],
-                )->order(11);
+                )->order(14);
             }
 
             if (auth()->user()->can('essentials.crud_import_employee') || true) {
@@ -241,7 +318,7 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
                     __('essentials::lang.import_employees'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import_employee'],
-                )->order(12);
+                )->order(15);
             }
 
             if (auth()->user()->can('essentials.curd_organizational_structure') || true) {
@@ -250,7 +327,7 @@ class CustomAdminSidebarMenu
                     action([\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'index']),
                     __('essentials::lang.organizational_structure'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
-                )->order(13);
+                )->order(16);
             }
 
             $menu->url(
@@ -258,7 +335,7 @@ class CustomAdminSidebarMenu
                 __('essentials::lang.essentials'),
                 ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'todo', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
             )
-                ->order(14);
+            ->order(17);
         });
     }
     public function followUpMenu()

@@ -458,6 +458,17 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_regions'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.crud_all_procedures',
+                'label' => __('essentials::lang.crud_all_procedures'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_all_essentials_requests',
+                'label' => __('essentials::lang.crud_all_essentials_requests'),
+                'default' => false,
+            ],
+
 
         ];
     }

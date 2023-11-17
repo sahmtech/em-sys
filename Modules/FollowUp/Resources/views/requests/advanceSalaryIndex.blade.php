@@ -84,13 +84,13 @@
      
                  columns: [
                
-              { data: 'user' },
-              { data: 'created_at' },
-              { data: 'advSalaryAmount' },
-              { data: 'monthlyInstallment' },
-              { data: 'installmentsNumber' },
+                 { data: 'user' },
+                { data: 'created_at' },
+                { data: 'advSalaryAmount' },
+                { data: 'monthlyInstallment' },
+                { data: 'installmentsNumber' },
                 { data: 'status' } ,
-                 { data: 'note' },
+                 { data: 'status_note' },
                 { data: 'reason' },
               
                 {
@@ -105,6 +105,7 @@
                         return '';
                     }
                 },
+              
      
 
             ],

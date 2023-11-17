@@ -76,7 +76,7 @@
          processing: true,
          serverSide: true,
 
-        ajax: { url: "{{ route('workerTransfer') }}"},
+        ajax: { url: "{{ route('ess_workerTransfer') }}"},
      
                  columns: [
                
@@ -84,14 +84,14 @@
                 { data: 'user' },
             
                 { data: 'status' } ,
-                { data: 'status_note' },
+                 { data: 'status_note' },
                 { data: 'reason' },
                 {
                     data: 'can_return',
                     
                 
                     render: function (data, type, row) {
-                        if (data == 1) {
+                        if (data == 1 && row.start) {
                             return '<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.id + '">@lang('followup::lang.return_the_request')</button>';
 
                         }
@@ -186,7 +186,7 @@
         var reason = $('#reasonInput').val();
 
         $.ajax({
-            url: "{{ route('returnReq') }}",
+            url: "{{ route('ess_returnReq') }}",
             method: "POST",
             data: { requestId: requestId, reason: reason },
             success: function(result) {

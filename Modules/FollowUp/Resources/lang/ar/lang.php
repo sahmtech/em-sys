@@ -80,7 +80,8 @@ return [
     'return_date'=>'تاريخ العودة',
     'request_date'=>'تاريخ الطلب ',
     'there_is_no_department_to_return_for'=>'لاتوجد إدارة سابقة للإرجاع إليها',
-    'returned_successfully'=>'تم الإرجاع بنجاح'
+    'returned_successfully'=>'تم الإرجاع بنجاح',
+    'returned_by'=>'تم الإرجاع من '
 
 
 

@@ -22,13 +22,16 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                  
+                   
                             <th>@lang('followup::lang.worker_name')</th>
-     
+                            <th>@lang('followup::lang.start_date')</th>
+                            <th>@lang('followup::lang.end_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.reason')</th>
                             <th>@lang('followup::lang.action')</th>
+
+
 
                         </tr>
                     </thead>
@@ -36,31 +39,34 @@
             </div>
  
     @endcomponent
-    <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="returnModalForm">
-                        <div class="form-group">
-                            <label for="reasonInput">@lang('followup::lang.reason')</label>
-                            <input type="text" class="form-control" id="reasonInput" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
-                </div>
+
+<div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="returnModalForm">
+                    <div class="form-group">
+                        <label for="reasonInput">@lang('followup::lang.reason')</label>
+                        <input type="text" class="form-control" id="reasonInput" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
             </div>
         </div>
     </div>
-    @include('followup::requests.change_status_modal')
+</div>
+
+    @include('essentials::requests.change_status_modal')
+    
 </section>
 <!-- /.content -->
 
@@ -71,33 +77,39 @@
 
     $(document).ready(function () {
        
-    
-     var requests_table=$('#requests_table').DataTable({
+        var requests_table;
+
+        function reloadDataTable() {
+            requests_table.ajax.reload();
+        }
+
+         requests_table = $('#requests_table').DataTable({
          processing: true,
          serverSide: true,
 
-        ajax: { url: "{{ route('workerTransfer') }}"},
+        ajax: { url: "{{ route('ess_leavesAndDepartures') }}"},
      
                  columns: [
-               
-             
+              
                 { data: 'user' },
-            
+                 { data: 'start_date' },
+                { data: 'end_date' } ,
                 { data: 'status' } ,
-                { data: 'status_note' },
+                 { data: 'status_note' },
                 { data: 'reason' },
                 {
                     data: 'can_return',
                     
                 
                     render: function (data, type, row) {
-                        if (data == 1) {
+                        if (data == 1 && row.start) {
                             return '<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.id + '">@lang('followup::lang.return_the_request')</button>';
 
                         }
                         return '';
                     }
                 },
+              
                
      
 
@@ -137,8 +149,6 @@
    
             $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
             $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
-            // $('#change_status_modal').find('#reason').val($(this).data('reason'));
-            // $('#change_status_modal').find('#note').val($(this).data('note'));
             $('#change_status_modal').modal('show');
 
 
@@ -171,8 +181,8 @@
   
    
 
-  
-        $('#requests_table').on('click', '.btn-return', function () {
+
+    $('#requests_table').on('click', '.btn-return', function () {
         var requestId = $(this).data('request-id');
         $('#returnModal').modal('show');
         $('#returnModal').data('id', requestId);
@@ -186,7 +196,7 @@
         var reason = $('#reasonInput').val();
 
         $.ajax({
-            url: "{{ route('returnReq') }}",
+            url: "{{ route('ess_returnReq') }}",
             method: "POST",
             data: { requestId: requestId, reason: reason },
             success: function(result) {
@@ -203,7 +213,6 @@
         });
     });
     });
-
 </script>
  
 @endsection

@@ -316,11 +316,27 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeProcedure', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'store'])->name('storeProcedure');
         Route::delete('/procedure/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWkProcedureController::class, 'destroy'])->name('procedure.destroy');
        
+        Route::get('/requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'index'])->name('requests');
+
+        Route::post('/ess_storeRequest', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'store'])->name('ess_storeRequest');
+        Route::get('/ess_createRequest', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'create'])->name('ess_createRequest');
+       
+        Route::get('/ess_exitRequest',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'exitRequestIndex'])->name('ess_exitRequest');
+        Route::get('/ess_returnRequest',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'returnRequestIndex'])->name('ess_returnRequest');
+        Route::get('/ess_escapeRequest',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'escapeRequestIndex'])->name('ess_escapeRequest');
+        Route::get('/ess_advanceSalary',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'advanceSalaryIndex'])->name('ess_advanceSalary');
+        Route::get('/ess_leavesAndDepartures',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'leavesAndDeparturesIndex'])->name('ess_leavesAndDepartures');
+        Route::get('/ess_atmCard',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'atmCardIndex'])->name('ess_atmCard');
+        Route::get('/ess_residenceRenewal',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'residenceRenewalIndex'])->name('ess_residenceRenewal');
+        Route::get('/ess_residenceCard',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'residenceCardIndex'])->name('ess_residenceCard');
+        Route::get('/ess_workerTransfer',[\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'workerTransferIndex'])->name('ess_workerTransfer');
+  
+        Route::post('/ess_change-status', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class,'changeStatus'])->name('ess_changeStatus');
+        Route::post('/ess_returnReq', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class,'returnReq'])->name('ess_returnReq');
 
    
    
-   
-   
+        
    
    
    
