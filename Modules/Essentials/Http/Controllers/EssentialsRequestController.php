@@ -335,9 +335,15 @@ class EssentialsRequestController extends Controller
       }
       if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.exitRequestIndex')->with(compact('statuses'));
     }
 
@@ -410,11 +416,17 @@ class EssentialsRequestController extends Controller
   
      }
        
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.returnRequestIndex')->with(compact('statuses'));
     }
 
@@ -492,11 +504,17 @@ class EssentialsRequestController extends Controller
   
      }
       
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.escapeRequestIndex')->with(compact('statuses'));
     }
 
@@ -577,11 +595,17 @@ class EssentialsRequestController extends Controller
   
      }
      
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.advanceSalaryIndex')->with(compact('statuses'));
     }
     public function leavesAndDeparturesIndex()
@@ -654,12 +678,17 @@ class EssentialsRequestController extends Controller
             ->make(true);
   
      }
-      
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.leavesAndDeparturesIndex')->with(compact('statuses'));
     }
 
@@ -732,11 +761,17 @@ class EssentialsRequestController extends Controller
   
      }
 
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.atmCardIndex')->with(compact('statuses'));
     }
 
@@ -808,11 +843,17 @@ class EssentialsRequestController extends Controller
             ->make(true);
   
      }
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.residenceRenewalIndex')->with(compact('statuses'));
     }
 
@@ -884,12 +925,17 @@ class EssentialsRequestController extends Controller
             ->make(true);
   
      }
-     
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.residenceCardIndex')->with(compact('statuses'));
     }
 
@@ -962,11 +1008,17 @@ class EssentialsRequestController extends Controller
   
      }
        
-             if ($department) {
+     if ($department) {
         $department = $department->id;
-        $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
-        $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        if ($pros) {
+            $can_reject = $pros->can_reject;
+            $can_reject = $can_reject ?? 0;
+            $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        } else {
+            $statuses = $this->statuses;
         }
+    }
         return view('essentials::requests.workerTransferIndex')->with(compact('statuses'));
     }
 
