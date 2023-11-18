@@ -85,6 +85,12 @@ class PermissionsTableSeeder extends Seeder
             ['name' => 'category.delete'],
             ['name' => 'expense.access'],
 
+            ['name' => 'workcard.view'],
+            ['name' => 'workcard.create'],
+            ['name' => 'workcard.update'],
+            ['name' => 'workcard.delete'],
+            ['name' => 'workcard.access'],
+
             ['name' => 'access_all_locations'],
             ['name' => 'dashboard.data'],
         ];

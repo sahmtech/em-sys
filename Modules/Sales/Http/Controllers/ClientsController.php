@@ -217,13 +217,13 @@ class ClientsController extends Controller
             $contract_signer_input['capacity_cs']=$request->input('capacity_cs');
             $contract_signer_input['nationality_id']=$request->input('nationality_cs');
             $contract_signer_input['email']=$request->input('email_cs');
-            $contract_signer_input['identity_number']=$request->input('identityNO_cs');
+            $contract_signer_input['id_proof_number']=$request->input('identityNO_cs');
             $contract_signer_input['contact_number']=$request->input('mobile_cs');
             $contract_signer_input['business_id']=$request->session()->get('user.id');
          
             if($input['allow_login']==true)
             {
-                $contract_signer_input['type']='customer_user'; 
+                $contract_signer_input['user_type']='customer_user'; 
                 $contract_signer_input['username']=$request->input('username_cs'); 
                 if (!empty($input['password_cs'])) {
                     $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
@@ -232,7 +232,9 @@ class ClientsController extends Controller
             }
             else
             {
-                $contract_signer_input['type']='user'; 
+                $contract_signer_input['user_type']='user'; 
+                $contract_signer_input['username'] = null;
+                $contract_signer_input['password']=null;
             }
 
             $contract_signer_input['allow_login']=$input['allow_login'];
@@ -250,18 +252,21 @@ class ClientsController extends Controller
 
             if($input['allow_login_cf']==true)
             {
-                $contract_follower_input['type']="customer_user"; 
-                $contract_follower_input['username']=$input['username_cs']; 
+                $contract_follower_input['user_type']="customer_user"; 
+                $contract_follower_input['username']=$input['username_cf']; 
              
                 if (!empty($input['password_cs'])) {
-                    $contract_follower_input['password'] = Hash::make($input['password_cs']);
+                    $contract_follower_input['password'] = Hash::make($input['password_cf']);
                 } 
 
               
             }
             else
             {
-                $contract_follower_input['type']="user"; 
+                $contract_follower_input['user_type']="user"; 
+                $contract_follower_input['username'] = null;
+                $contract_follower_input['password']=null;
+              
             }
             $contract_follower_input['allow_login']=$input['allow_login_cf'];
 
@@ -335,17 +340,17 @@ class ClientsController extends Controller
            ->latest()
            ->get();
 
-           $contactSigners = DB::table('users')
+           $contactSigners = user::with('country')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
            ->where('users.contact_user_type', 'contact_signer')
            ->select('users.*')
-           ->get();
+           ->first();
 
            $contactFollower = DB::table('users')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
            ->where('users.contact_user_type', 'contract_follower')
            ->select('users.*')
-           ->get();
+           ->first();
        
         return view('sales::contacts.show')
              ->with(compact('contact',
@@ -386,24 +391,26 @@ class ClientsController extends Controller
 
       
            $contact_dropdown = Contact::contactDropdown($business_id, false, false);
-
-       
-           $contactSigners = DB::table('users')
+           $contactSigners =user::with('country')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
            ->where('contacts.id', $id)
            ->where('users.contact_user_type', 'contact_signer')
            ->select('users.*')
-           ->get();
-          //dd( $contactSigners[0]->allow_login);
+           ->first();
+     
            $contactFollower = DB::table('users')
            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
            ->where('users.contact_user_type', 'contract_follower')
            ->where('contacts.id', $id)
            ->select('users.*')
-           ->get();
+           ->first();
+     
+
        
+   
+       $nationalities = EssentialsCountry::nationalityForDropdown();
         return view('sales::contacts.edit')
-             ->with(compact('types','contact','contactSigners','contactFollower', 'contact_dropdown'));
+             ->with(compact('types','contact','contactSigners','contactFollower', 'contact_dropdown','nationalities'));
     }
 
     /**
@@ -424,90 +431,108 @@ class ClientsController extends Controller
                 return $this->moduleUtil->expiredResponse();
             }
 
-            $input = $request->only(['type','contact_id','name_en','first_name','last_name', 'supplier_business_name','commercial_register_no','mobile'
-        ,'alternate_number','email','assigned_to_users',
-            ]);
+            $input = $request->only(['type','contact_id',
+            'supplier_business_name','commercial_register_no','mobile'
+             ,'alternate_number','email','user_id','selected_user_id',
+            
+            'first_name_cf','last_name_cf','english_name_cf','email_cf','mobile_cf','allow_login_cf','username_cf','password_cf']);
 
-      
-            $name_array = [];
+            $input['allow_login'] = $request->filled('allow_login');
+            $input['allow_login_cf'] = $request->filled('allow_login_cf');
 
-           
-            if (! empty($input['first_name'])) {
-                $name_array[] = $input['first_name'];
-            }
-           
-            if (! empty($input['last_name'])) {
-                $name_array[] = $input['last_name'];
-            }
-
-            $input['name'] = trim(implode(' ', $name_array));
-
-            $input['english_name']=$request->input('name_en');
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
 
-        
+       
             DB::beginTransaction();
             $contact = Contact::findOrFail($id);
-       // dd( $input);
-            $contact->update($input);
-         
-            $contactId = $contact->id;
-            DB::commit();
 
-            
-           // $contract_signer_input['crm_contact_id']=$contactId;
-            $contract_signer_input['first_name']=$request->input('first_name_cs');
-            $contract_signer_input['last_name']=$request->input('last_name_cs');
-            $contract_signer_input['english_name']=$request->input('english_name_cs');
-            $contract_signer_input['capacity_cs']=$request->input('capacity_cs');
-            $contract_signer_input['nationality_cs']=$request->input('nationality_cs');
-            $contract_signer_input['email']=$request->input('email_cs');
-            $contract_signer_input['identity_number']=$request->input('identityNO_cs');
-            $contract_signer_input['contact_number']=$request->input('mobile_cs');
-            $contract_signer_input['business_id']=$request->session()->get('user.id');
+      
+            $contact->update($input);
+        
          
-            if($request->input('allow_login')==true)
-            {
-                $contract_signer_input['type']='customer_user'; 
-                $contract_signer_input['username']=$request->input('username_cs'); 
+            $contactSigners = User::with('country')
+            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
+            ->where('contacts.id', $contact->id) 
+            ->where('users.contact_user_type', 'contact_signer')
+            ->select('users.*')
+            ->first();
+        
+        
+      
+            $contract_signer_input = [
+                'crm_contact_id' => $contact->id,
+                'first_name' => $request->input('first_name_cs'),
+                'last_name' => $request->input('last_name_cs'),
+                'english_name' => $request->input('english_name_cs'),
+                'capacity_cs' => $request->input('capacity_cs'),
+                'nationality_id' => $request->input('nationality_cs'),
+                'email' => $request->input('email_cs'),
+                'id_proof_number' => $request->input('identityNO_cs'),
+                'contact_number' => $request->input('mobile_cs'),
+                'business_id' => $request->session()->get('user.id'),
+                'allow_login' => $input['allow_login'],
+                'contact_user_type' => 'contact_signer',
+            ];
+        
+            if ($input['allow_login'] == true) {
+                $contract_signer_input['user_type'] = 'customer_user';
+                $contract_signer_input['username'] = $request->input('username_cs');
+        
                 if (!empty($input['password_cs'])) {
                     $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
-                } 
+                }
+            } else {
+                $contract_signer_input['user_type'] = 'user';
+                $contract_signer_input['username'] = null;
+                $contract_signer_input['password']=null;
             }
-            else
-            {$contract_signer_input['type']='user'; 
+        
+            $contactSigners->update($contract_signer_input);
+
+
+            $contactFollower = user::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
+            ->where('users.contact_user_type', 'contract_follower')
+            ->where('contacts.id',   $contact->id)
+            ->select('users.*')
+            ->first();
+
+            $contract_follower_input = [
+                'crm_contact_id' => $contact->id,
+                'first_name' => $request->input('first_name_cf'),
+                'last_name' => $request->input('last_name_cf'),
+                'english_name' => $request->input('english_name_cf'),
+              
+                'email' => $request->input('email_cf'),
+             
+                'contact_number' => $request->input('mobile_cf'),
+                'business_id' => $request->session()->get('user.id'),
+                'allow_login' => $input['allow_login_cf'],
+                'contact_user_type' => 'contract_follower',
+            ];
+
+            if ($input['allow_login_cf'] == true) {
+                $contract_follower_input['user_type'] = 'customer_user';
+                $contract_follower_input['username'] = $request->input('username_cf');
+        
+                if (!empty($input['password_cf'])) {
+                    $contract_follower_input['password'] = Hash::make($request->input('password_cf'));
+                }
+            } else {
+                $contract_follower_input['user_type'] = 'user';
+                $contract_follower_input['username'] = null;
+                $contract_follower_input['password']=null;
             }
-            $contract_signer_input['contact_user_type']='contact_signer';
+        
+            $contactFollower->update($contract_follower_input);
 
-            $contract_signer_user = User::where('crm_contact_id',$contactId);
-            $contract_signer = $contract_signer_user->update($contract_signer_input);
-
-
-           // $contract_follower_input['crm_contact_id']=$contactId;
-            $contract_follower_input['first_name']=$input['first_name_cf'];
-            $contract_follower_input['last_name']=$input['last_name_cf'];
-            $contract_follower_input['english_name']=$input['english_name_cf'];
-            $contract_follower_input['email']=$input['email_cf'];
-            $contract_follower_input['contact_number']=$input['mobile_cf'];
-            $contract_follower_input['business_id']=$request->session()->get('user.id');
-
-            if($request->input('allow_login_cf')==true)
-            {
-                $contract_follower_input['type']="customer_user"; 
-                $contract_follower_input['username']=$input['username_cs']; 
-                if (!empty($input['password_cs'])) {
-                    $contract_follower_input['password'] = Hash::make($input['password_cs']);
-                } 
-            }
-            else
-            {$contract_follower_input['type']="user"; }
-            $contract_follower_input['contact_user_type']='contract_follower';
-            $contract_follower_user = User::where('crm_contact_id',$contactId);
-            $contract_follower = $contract_follower_user->update($contract_follower_input);
-
+            DB::commit();
+      
+          
+         
+         
             $output = ['success' => true,
-            'msg' => __('lang_v1.added_success'),
+            'msg' => __('lang_v1.updated_success'),
         
         ];
         } 
@@ -521,8 +546,8 @@ class ClientsController extends Controller
                 'msg' => $e->getMessage(),
             ];
         }
-
-        return redirect()->route('sale.clients');
+//return $output;
+       return redirect()->route('sale.clients');
     }
 
     /**

@@ -636,4 +636,7 @@ return [
     'add_doc'=>'add documnet',
     'select_responsible_users'=>'select responsible of clients',
     'view_profile_picture'=>'view profile picture',
+    'expired_contracts'=>'expired contracts',
+'remaining_contracts'=>'remaining contracts',
 ];
+

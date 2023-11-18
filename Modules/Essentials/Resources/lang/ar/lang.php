@@ -846,7 +846,7 @@ return[
     'monthly_cost' => 'التكلفة الشهرية',
     'edit_work' => 'تعديل مباشرة العمل',
     'edit_contract' => 'تعديل العقد',
-    'number_employees_staff' => 'عدد القوى العاملة',
+    'number_employees_staff' => 'إجمالي القوى العاملة',
     'number_employees' => 'عدد الموظفين',
     'number_workers' => 'عدد العمال',
     'number_managers' => 'عدد المدراء',
@@ -970,6 +970,12 @@ return[
 'add_managment'=>'إضافة إدارة',
 'managment'=>'الإدارة',
 'view_profile_picture'=>'رؤية صورة بروفايل موظف',
+'leaves_status'=>'نسب الإجازات',
+'contract_status'=>'نسب العقود',
+'expired_contracts'=>'العقود المنتهية',
+'remaining_contracts'=>'العقود انتهت فترة التجربة',
+
+
 
 
 

@@ -1540,5 +1540,10 @@ return [
     'Invalid_department'=>'department not found for row number ',
     'Invalid_location'=>'location not found for row number ',
     'eqama_end_date'=>'eqama end date',
+    'pending'=>'pending',
+'approved'=>'approved',
+'cancelled'=>'cancelled',
+'validate_mobile'=>'Mobile number should start with 05 and have exactly 10 digits',
+
 
 ];

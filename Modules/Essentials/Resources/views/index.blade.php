@@ -6,6 +6,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
 
+
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
@@ -91,6 +92,19 @@
 
             </div>
             <br>
+
+
+    <div class="row widget-statistic">
+        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing ">
+            <canvas id="leaveStatusChart"></canvas>
+        </div>
+
+        <div class="row widget-statistic">
+        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing ">
+            <canvas id="contractStatusChart"></canvas>
+        </div>
+    </div>
+            
         </div>
 
         <div class="row">
@@ -172,7 +186,105 @@
 @stop
 
 @section('javascript')
-    {!! $chart->script() !!}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{!! $chart->script() !!}
+
+<script>
+    // Function to fetch leave status data from the server
+    function fetchLeaveStatusData() {
+        // You may need to adjust the URL based on your Laravel route
+        $.ajax({
+            url: '{{ route('leaveStatusData') }}', // Replace with your actual route
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                updateLeaveStatusChart(response);
+            },
+            error: function(error) {
+                console.error('Error fetching leave status data:', error);
+            }
+        });
+    }
+
+ 
+    function updateLeaveStatusChart(data) {
+    var leaveStatusCanvas = document.getElementById('leaveStatusChart').getContext('2d');
+
+    var translatedLabels = data.labels.map(function (label) {
+        return label; 
+    });
+
+    var leaveStatusChart = new Chart(leaveStatusCanvas, {
+        type: 'bar',
+        data: {
+            labels: translatedLabels,
+            datasets: [{
+                label: '{{ __("essentials::lang.leaves_status") }}',
+                data: data.values,
+                backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                }
+            },
+        }
+    });
+}
+
+// Rest of your code remains unchanged...
+
+
+  
+    $(document).ready(function() {
+        fetchLeaveStatusData();
+    });
+</script>
+
+
+<script>
+     function fetchContractStatusData() {
+        $.ajax({
+            url: '{{ route('contractStatusData') }}', // Adjust the route name
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                updateContractStatusChart(response);
+            },
+            error: function(error) {
+                console.error('Error fetching contract status data:', error);
+            }
+        });
+    }
+    function updateContractStatusChart(data) {
+        var contractStatusCanvas = document.getElementById('contractStatusChart').getContext('2d');
+
+        var contractStatusChart = new Chart(contractStatusCanvas, {
+            type: 'bar', 
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: '{{ __("essentials::lang.contract_status") }}',
+                    data: data.values,
+                    backgroundColor: ['#FF6384', '#36A2EB'],
+                }]
+            },
+            options: {
+                responsive: true,
+            }
+        });
+    }
+
+    // Document ready function to fetch contract status data on page load
+    $(document).ready(function() {
+        fetchContractStatusData();
+    });
+</script>
+
+
+
     <script type="text/javascript">
         $(document).ready(function() {
             var employees_contracts_table;
