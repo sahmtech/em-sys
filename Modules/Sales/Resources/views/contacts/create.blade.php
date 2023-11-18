@@ -155,17 +155,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-3">
-                                                            <div class="form-group">
-                                                                {!! Form::label('landline', __('contact.landline') . ':') !!}
-                                                                <div class="input-group">
-                                                                    <span class="input-group-addon">
-                                                                        <i class="fa fa-phone"></i>
-                                                                    </span>
-                                                                    {!! Form::text('landline', null, ['class' => 'form-control']); !!}
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                     
                                                         <div class="col-md-3">
                                                             <div class="form-group">
                                                                 {!! Form::label('email', __('business.email') .  ':*') !!}

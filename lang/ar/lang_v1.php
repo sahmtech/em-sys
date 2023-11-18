@@ -1425,5 +1425,10 @@ return [
 'Invalid_location'=>'الفرع غير موجود للسطر رقم',
 'nationality'=>'الجنسية ',
 'eqama_end_date'=>'تاريخ انتهاء الاقامة',
-
+'pending'=>'طلبات معلقة ',
+'approved'=>'طلبات تم اعتمادها',
+'cancelled'=>'العودة من الإجازة',
+'validate_mobile'=>'رقم الموبايل يجب أن يبدأ ب 05 و لايتجاوز العشر أرقام',
+'username_exists_message'=>'اسم المستخدم موجود سابقا',
+'enterusername'=>'أدخل اسم المستخدم',
 ];

@@ -459,6 +459,11 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
+                'value' => 'essentials.view_profile_picture',
+                'label' => __('essentials::lang.view_profile_picture'),
+                'default' => false,
+            ],
+            [
                 'value' => 'essentials.crud_all_procedures',
                 'label' => __('essentials::lang.crud_all_procedures'),
                 'default' => false,

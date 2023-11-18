@@ -304,7 +304,7 @@ class BusinessUtil extends Util
         $ref_count = $this->setAndGetReferenceCount('business_location', $business_id);
         $location_id = $this->generateReferenceNumber('business_location', $ref_count, $business_id);
 
-        //Enable all payment methods by default
+ 
         $payment_types = $this->payment_types();
         $location_payment_types = [];
         foreach ($payment_types as $key => $value) {

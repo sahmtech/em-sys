@@ -397,9 +397,9 @@ class BusinessController extends Controller
         
             }
             $currencies = $this->businessUtil->allCurrencies();
-            $countries = EssentialsCountry::forDropdown2();
-            $cities = EssentialsCity::forDropdown2();
-
+            $countries = EssentialsCountry::forDropdown();
+            $cities = EssentialsCity::forDropdown();
+            
            
 
            
@@ -750,14 +750,28 @@ class BusinessController extends Controller
 
         return $output;
     }
+    public function checkUsername(Request $request)
+{
+    $username = $request->input('username');
+
+  
+    $exists = User::where('username', $username)->exists();
+
+    return response()->json(['exists' => $exists]);
+}
+
     public function store(Request $request){
      
-
+     try{
         $owner_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password', 'language']);
 
         $owner_details['language'] = empty($owner_details['language']) ? config('app.locale') : $owner_details['language'];
 
+
         $user = User::create_user($owner_details);
+
+
+
 
         $business_details = $request->only(['name', 'en_name','start_date', 'currency_id', 'time_zone',
                 'fy_start_month', 'accounting_method', 'tax_label_1', 'tax_number_1',
@@ -790,10 +804,23 @@ class BusinessController extends Controller
         $this->businessUtil->newBusinessDefaultResources($business->id, $user->id);
          $new_location = $this->businessUtil->addLocation($business->id, $business_location);
 
-            //create new permission with the new location
+        
         Permission::create(['name' => 'location.'.$new_location->id]);
+      
+        $output = ['success' => 1,
+        'msg' => __('user.user_added'),
+    ];
 
+     }
+     catch (\Exception $e) {
+        \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
+        error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+        $output = ['success' => 0,
+            'msg' => $e->getMessage(),
+        ];
+    }
+       
         
         return redirect()->route('getBusiness');
 

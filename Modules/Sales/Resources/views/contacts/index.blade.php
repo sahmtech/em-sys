@@ -157,7 +157,7 @@
                                             
                                                     <div class="clearfix"></div>
                                                         
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-4">
     <div class="form-group">
         {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
         <div class="input-group">
@@ -169,7 +169,7 @@
     </div>
 </div>           
                                             
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 {!! Form::label('alternate_number', __('contact.alternate_contact_number') . ':') !!}
                                                                 <div class="input-group">
@@ -181,18 +181,8 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-3">
-                                                            <div class="form-group">
-                                                                {!! Form::label('landline', __('contact.landline') . ':') !!}
-                                                                <div class="input-group">
-                                                                    <span class="input-group-addon">
-                                                                        <i class="fa fa-phone"></i>
-                                                                    </span>
-                                                                    {!! Form::text('landline', null, ['class' => 'form-control', ]); !!}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
+                                                    
+                                                        <div class="col-md-4">
                                                             <div class="form-group">
                                                                 {!! Form::label('email', __('business.email') .  ':*') !!}
                                                                 <div class="input-group">
@@ -269,7 +259,7 @@
                                                                         </div>
                                                         </div>
                                                 
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-4">
     <div class="form-group">
         {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
         <div class="input-group">
@@ -304,7 +294,7 @@
                                                                             </div>
                                                                         </div>
                                                         </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-5">
                                                                         <div class="form-group">
                                                                         {!! Form::label('identityNO_cs', __('sales::lang.identityNO_cs') .  ':*') !!}
                                                                             <div class="input-group">

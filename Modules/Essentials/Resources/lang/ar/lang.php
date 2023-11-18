@@ -844,7 +844,7 @@ return[
     'monthly_cost' => 'التكلفة الشهرية',
     'edit_work' => 'تعديل مباشرة العمل',
     'edit_contract' => 'تعديل العقد',
-    'number_employees_staff' => 'عدد القوى العاملة',
+    'number_employees_staff' => 'إجمالي القوى العاملة',
     'number_employees' => 'عدد الموظفين',
     'number_workers' => 'عدد العمال',
     'number_managers' => 'عدد المدراء',
@@ -967,6 +967,29 @@ return[
     'managment'=>'الإدارة',
     'crud_all_essentials_requests'=>'إضافة/حذف/تعديل طلبات إدارة الموارد البشرية',
     'crud_all_procedures'=>'إضافة/حذف/تعديل إجراءات سير العمل',
+
+   'eqama'=>'إقامة ',
+   'national_id'=>'هوية وطنية',
+
+  'dep_type'=>'نوع الادارة',
+  'select_responsible_users'=>'العميل(المشروع)',
+'responsible_client'=>'المسؤول عن العميل',
+'card_no'=>'رقم كرت العمل',
+'edit_Appointme'=>'تعديل التعيين',
+'add_procedure'=>'إضافة طلب',
+'procedure_type'=>'نوع الطلب',
+'can_reject'=>'له حق الرفض',
+'can_return'=>'له حق الإرجاع',
+'procedures'=>'إجراءات سير العمل',
+'steps'=>'خطوات سير العمل',
+'add_managment'=>'إضافة إدارة',
+'managment'=>'الإدارة',
+'view_profile_picture'=>'رؤية صورة بروفايل موظف',
+'leaves_status'=>'نسب الإجازات',
+'contract_status'=>'نسب العقود',
+'expired_contracts'=>'العقود المنتهية',
+'remaining_contracts'=>'العقود انتهت فترة التجربة',
+
 
 
 

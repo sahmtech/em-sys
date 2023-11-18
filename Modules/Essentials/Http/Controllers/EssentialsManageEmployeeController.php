@@ -45,6 +45,12 @@ class EssentialsManageEmployeeController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $userId = 1270;
+        $user = User::find($userId);
+        if ($user) {
+          
+            $user->givePermissionTo('view_profile_photo');
+        }
     }
 
     public function getAmount($salaryType)
@@ -174,14 +180,19 @@ class EssentialsManageEmployeeController extends Controller
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
      
+        $contract=EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
         $business_id = request()->session()->get('user.business_id');
         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
         ->leftjoin('essentials_employee_appointmets','essentials_employee_appointmets.employee_id','users.id')
+        ->leftjoin('essentials_admission_to_works','essentials_admission_to_works.employee_id','users.id')
+        ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
         ->select(['users.id',
         'users.emp_number',
                 'users.username',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
+                'essentials_admission_to_works.admissions_date as admissions_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
                 'users.email',
                 'users.allow_login',
                 'users.contact_number',
@@ -242,6 +253,9 @@ class EssentialsManageEmployeeController extends Controller
 
                         return $specializationName;
                     })
+
+                    
+                 
                   
 
                    
@@ -459,7 +473,9 @@ class EssentialsManageEmployeeController extends Controller
 
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
+                    ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
                     ->find($id);
+            
         $dataArray=[];
         if(!empty($user->bank_details))
          {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
@@ -487,7 +503,8 @@ class EssentialsManageEmployeeController extends Controller
         $user->specialization = $specialization;
  
         
-        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
+        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials',
+         ['view' => 'manage_user.show', 'user' => $user]);
        
         $users = User::forDropdown($business_id, false);
 
@@ -506,7 +523,8 @@ class EssentialsManageEmployeeController extends Controller
         
      
       
-        return view('essentials::employee_affairs.employee_affairs.show')->with(compact('user',
+        return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
+            'user',
 
          'view_partials', 'users', 'activities','bank_name',
         'admissions_to_work','Qualification','Contract','nationalities','nationality'));

@@ -207,6 +207,8 @@ return [
     'select_status'=>'select status',
     'Not_started'=>'Not started',
     'Under_process'=>'Under process',
+    'username_exists_message'=>'Username already exists. Please choose a different username.',
+     'enterusername'=>'Please enter a username.',
 
 
     

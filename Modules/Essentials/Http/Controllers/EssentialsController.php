@@ -8,7 +8,9 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-
+use Modules\Essentials\Entities\EssentialsLeave;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use DB;
 class EssentialsController extends Controller
 {
     /**
@@ -64,6 +66,84 @@ class EssentialsController extends Controller
             ],
         ];
     }
+
+
+
+
+
+
+
+
+
+    
+    public function getLeaveStatusData()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        
+      
+        $rawLeaveStatusData = EssentialsLeave::where('business_id', $business_id)
+            ->select(DB::raw('status, COUNT(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+    
+      
+        $leaveStatusData = [];
+        foreach ($rawLeaveStatusData as $status => $count) {
+            $translatedLabel = trans('lang_v1.' . $status); 
+            $leaveStatusData[$translatedLabel] = $count;
+        }
+    
+        $data = [
+            'labels' => array_keys($leaveStatusData),
+            'values' => array_values($leaveStatusData),
+        ];
+    
+        return response()->json($data);
+    }
+    
+
+ 
+    public function getContractStatusData()
+    {
+        $business_id = request()->session()->get('user.business_id');
+    
+        $totalContracts = EssentialsEmployeesContract::count();
+    
+        $expiredContractsByEndDate = EssentialsEmployeesContract::
+            whereNotNull('contract_end_date')
+            ->whereDate('contract_end_date', '<', now())
+            ->count();
+    
+        $expiredContractsByProbation = EssentialsEmployeesContract::
+            whereNotNull('probation_period')
+            ->where(function ($query) {
+                $query->whereNull('contract_end_date')
+                    ->orWhere(function ($endDateSubquery) {
+                        $endDateSubquery->whereNotNull('contract_start_date')
+                            ->whereRaw('DATE_ADD(contract_start_date, INTERVAL probation_period MONTH) < NOW()');
+                    });
+            })
+            ->count();
+    
+        $data = [
+            'labels' => [
+                __('essentials::lang.expired_contracts'),
+                __('essentials::lang.remaining_contracts'),
+            ],
+            'values' => [
+                ($totalContracts > 0) ? ($expiredContractsByEndDate / $totalContracts * 100) : 0,
+                ($totalContracts > 0) ? ($expiredContractsByProbation / $totalContracts * 100) : 0,
+            ],
+        ];
+    
+        return response()->json($data);
+    }
+    
+    
+    
+
+
     /**
      * Show the form for creating a new resource.
      *

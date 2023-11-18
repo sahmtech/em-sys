@@ -50,7 +50,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
-            {!! Form::open(['route' =>'storeBusiness']) !!}
+            {!! Form::open(['route' =>'storeBusiness' ,'method'=>'post', 'id' => 'storebussinessid']) !!}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">@lang('essentials::lang.add_business')</h4>
@@ -155,7 +155,7 @@
                         <span class="input-group-addon">
                             <i class="fa fa-globe"></i>
                         </span>
-                        {!! Form::select('country', $countries, '',['class' => 'form-control select2_register','placeholder' => __('business.country'), 'required']); !!}
+                        {!! Form::select('country', $countries, '',['class' => 'form-control select2_register','placeholder' => __('business.country'), ]); !!}
                     </div>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                         <span class="input-group-addon">
                             <i class="fa fa-map-marker"></i>
                         </span>
-                        {!! Form::text('state', null, ['class' => 'form-control','placeholder' => __('business.state'), 'required']); !!}
+                        {!! Form::text('state', null, ['class' => 'form-control','placeholder' => __('business.state'),'required']); !!}
                     </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
                         <span class="input-group-addon">
                             <i class="fa fa-map-marker"></i>
                         </span>
-                        {!! Form::select('city', $cities,'', ['class' => 'form-control select2_register','placeholder' => __('business.city'), 'required']); !!}
+                        {!! Form::select('city', $cities,'', ['class' => 'form-control select2_register','placeholder' => __('business.city'),'required' ]); !!}
                     </div>
                     </div>
                 </div>
@@ -346,8 +346,9 @@
                     <span class="input-group-addon">
                         <i class="fa fa-user"></i>
                     </span>
-                    {!! Form::text('username', null, ['class' => 'form-control','placeholder' => __('business.username'), 'required']); !!}
+                    {!! Form::text('username', null, ['class' => 'form-control', 'id'=>'username', 'placeholder' => __('business.username'), 'required']); !!}
                 </div>
+                <span id="username-error" class="text-danger"></span>
             </div>
             </div>
 
@@ -507,4 +508,42 @@
     });
 
 </script>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#storebussinessid').submit(function (event) {
+            event.preventDefault();
+
+            var username = $('#username').val();
+
+            if (username.trim() !== '') {
+                $.ajax({
+                    url: '{{ route('check-username') }}',
+                    method: 'POST',
+                    data: { username: username },
+                    success: function (response) {
+                        if (response.exists) {
+                         
+                            $('#username-error').text('{{ __('lang_v1.username_exists_message') }}');
+                        } else {
+                           
+                            $('#username-error').text('');
+                            $('#storebussinessid').unbind('submit').submit();
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error checking username:', error);
+                    }
+                });
+            } else {
+            
+                $('#username-error').text('{{ __('lang_v1.enterusername') }}');
+            }
+        });
+    });
+</script>
+
+
 @endsection

@@ -173,12 +173,15 @@
 <script>
     var selectedData = [];
     var professionSelect = $('#professionSelect');
+   
     var specializationSelect = $('#specializationSelect');
-
+    console.log(specializationSelect);
             professionSelect.on('change', function () {
                 var selectedProfession = $(this).val();
-                console.log(selectedProfession);
+              
+             
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
+               
                 $.ajax({
                     url: '{{ route('specializations') }}',
                     type: 'POST',
@@ -194,7 +197,9 @@
                                 text: name
                             }));
                         });
-                    }
+                    },error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+        }
                 });
             });
             $('#can_add_category').change(function() {

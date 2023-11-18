@@ -31,38 +31,35 @@
 		
 		<div class="col-md-4">
 
-			<p><strong>@lang('sales::lang.first_name_cs'):</strong>@if(!empty($contactSigners[0]->first_name)) {{$contactSigners[0]->first_name }}@endif</p>
+			<p><strong>@lang('sales::lang.first_name_cs'):</strong>@if(!empty($contactSigners->first_name)) {{$contactSigners->first_name }}@endif</p>
 			<br>
 			
-			<p><strong>@lang('sales::lang.last_name_cs'):</strong>  @if(!empty($contactSigners[0]->last_name)) {{$contactSigners[0]->last_name }}@endif</p>
+			<p><strong>@lang('sales::lang.last_name_cs'):</strong>  @if(!empty($contactSigners->last_name)) {{$contactSigners->last_name }}@endif</p>
             <br>
-			<p><strong>@lang('sales::lang.nationality_cs'):</strong>  @if(!empty($contactSigners[0]->nationality_cs)) {{$contactSigners[0]->nationality_cs }}@endif</p>
+			<p><strong>@lang('sales::lang.nationality_cs'):</strong>  @if(!empty($contactSigners->country->id)) {{$contactSigners->country->nationality }}@endif</p>
 		</div>
 		
         <div class="col-md-4">
-			<p><strong>@lang('sales::lang.english_name_cs'):</strong>@if(!empty($contactSigners[0]->english_name)) {{$contactSigners[0]->english_name }}@endif</p>
+			<p><strong>@lang('sales::lang.english_name_cs'):</strong>@if(!empty($contactSigners->english_name)) {{$contactSigners->english_name }}@endif</p>
 			<br>
-			<p><strong>@lang('sales::lang.capacity_cs'):</strong>  @if(!empty($contactSigners[0]->capacity_cs)) {{$contactSigners[0]->capacity_cs }}@endif</p>
-			<br>
-			<p><strong>@lang('sales::lang.email_cs'):</strong>  @if(!empty($contactSigners[0]->email)) {{$contactSigners[0]->email }}@endif</p>
-		</div>
-		<br>
-        <div class="col-md-4">
-			
-			<br>
-			<p><strong>@lang('sales::lang.identityNO_cs'):</strong>  @if(!empty($contactSigners[0]->identity_number)) {{$contactSigners[0]->identity_number }}@endif</p>
+		
+			<p><strong>@lang('sales::lang.identityNO_cs'):</strong>  @if(!empty($contactSigners->identity_number)) {{$contactSigners->identity_number }}@endif</p>
 			<br>
 			<p>
 			<strong>@lang('sales::lang.allow_login'):</strong>
-			@if(!empty($contactSigners[0]->allow_login))
+			@if(!empty($contactSigners->allow_login))
 				<span>@lang('sales::lang.allowlogin')</span>
-				@if(!empty($contactSigners[0]->username))
-					<span style="margin-left: 10px;">{{$contactSigners[0]->username}}</span>
-				@endif
+				
 			@else
 				<span>@lang('sales::lang.notallowlogin')</span>
 			@endif
 		</p>
+		
+		</div>
+	
+        <div class="col-md-4">
+			
+		<p><strong>@lang('sales::lang.email_cs'):</strong>  @if(!empty($contactSigners->email)) {{$contactSigners->email }}@endif</p>
 		</div>
 		<br>
 
@@ -74,17 +71,17 @@
         <br>
 		<div class="col-md-4">
 
-			<p><strong>@lang('sales::lang.first_name_cf'):</strong>@if(!empty($contactFollower[0]->first_name)) {{$contactFollower[0]->first_name }}@endif</p>
+			<p><strong>@lang('sales::lang.first_name_cf'):</strong>@if(!empty($contactFollower->first_name)) {{$contactFollower->first_name }}@endif</p>
 			
 			
-			<p><strong>@lang('sales::lang.last_name_cf'):</strong>  @if(!empty($contactFollower[0]->last_name)) {{$contactFollower[0]->last_name }}@endif</p>
+			<p><strong>@lang('sales::lang.last_name_cf'):</strong>  @if(!empty($contactFollower->last_name)) {{$contactFollower->last_name }}@endif</p>
            
 			
 		</div>
 		<div class="col-md-4">
-			<p><strong>@lang('sales::lang.english_name_cf'):</strong>@if(!empty($contactFollower[0]->english_name)) {{$contactSigners[0]->english_name }}@endif</p>
+			<p><strong>@lang('sales::lang.english_name_cf'):</strong>@if(!empty($contactFollower->english_name)) {{$contactSigners->english_name }}@endif</p>
 		
-			<p><strong>@lang('sales::lang.email_cf'):</strong>@if(!empty($contactFollower[0]->email)) {{$contactSigners[0]->email }}@endif</p>
+			<p><strong>@lang('sales::lang.email_cf'):</strong>@if(!empty($contactFollower->email)) {{$contactSigners->email }}@endif</p>
 		
 		
 		</div>
@@ -94,10 +91,10 @@
 			
 			<p>
 			<strong>@lang('sales::lang.allow_login'):</strong>
-			@if(!empty($contactFollower[0]->allow_login))
+			@if(!empty($contactFollower->allow_login))
 				<span>@lang('sales::lang.allowlogin')</span>
-				@if(!empty($contactFollower[0]->username))
-					<span style="margin-left: 10px;">{{$contactFollower[0]->username}}</span>
+				@if(!empty($contactFollower->username))
+					<span style="margin-left: 10px;">{{$contactFollower->username}}</span>
 				@endif
 			@else
 				<span>@lang('sales::lang.notallowlogin')</span>

@@ -26,11 +26,11 @@
                                 $img_src = '/uploads/'.$user->profile_image;
                             }
                         @endphp
-
+                        @if(auth()->user()->can('view_profile_photo'))
                         <img class="profile-user-img img-responsive img-circle" src="{{$img_src}}" alt="User profile picture">
-
+@endif
                         <h3 class="profile-username text-center">
-                            {{$user->user_full_name}}
+                            {{$user->full_name}}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -67,11 +67,6 @@
                         @endcan
 
 
-                       
-                            <button   type="button"  class="btn btn-primary btn-block btn-modal" data-toggle="modal" data-target="#addDocModal">
-                                <i class="glyphicon glyphicon-plus"></i>
-                                @lang("essentials::lang.add_doc")
-                            </button>
                        
                         </div>
                     <!-- /.box-body -->
