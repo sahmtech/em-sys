@@ -13,6 +13,7 @@ use App\Transaction;
 use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
 use DB;
+use Spatie\Permission\Models\Permission;
 use Modules\Essentials\Http\RequestsempRequest;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
@@ -45,12 +46,23 @@ class EssentialsManageEmployeeController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
-        $userId = 1270;
-        $user = User::find($userId);
-        if ($user) {
-          
-            $user->givePermissionTo('view_profile_photo');
-        }
+        $permissionName = 'essentials.view_profile_picture';
+
+        
+            if (!Permission::where('name', $permissionName)->exists()) {
+             
+                $permission = Permission::create(['name' => $permissionName]);
+            } else {
+                
+                $permission = Permission::where('name', $permissionName)->first();
+            }
+            $userId = 1270;
+            $user = User::find($userId);
+            
+            if ($user && $permission) {
+               
+                $user->givePermissionTo($permission);
+            }
     }
 
     public function getAmount($salaryType)
