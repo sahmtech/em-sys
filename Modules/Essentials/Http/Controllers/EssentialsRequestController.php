@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\FollowUp\Http\Controllers;
+namespace Modules\Essentials\Http\Controllers;
 
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
@@ -16,7 +16,7 @@ use Modules\FollowUp\Entities\followupWorkerRequest;
 use Modules\FollowUp\Entities\followupWorkerRequestProcess;
 use Carbon\Carbon;
 
-class FollowUpRequestController extends Controller
+class EssentialsRequestController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,8 +26,9 @@ class FollowUpRequestController extends Controller
     protected $statuses;
     protected $statuses2;
 
-     
-    public function __construct(ModuleUtil $moduleUtil){
+    
+    public function __construct(ModuleUtil $moduleUtil)
+    {
         $this->moduleUtil = $moduleUtil;
         $this->statuses = [
             'approved' => [
@@ -128,7 +129,7 @@ class FollowUpRequestController extends Controller
         $query = User::where('business_id', $business_id)->where('users.user_type','=' ,'worker');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $workers = $all_users->pluck('full_name', 'id');
-        return view('followup::requests.create')->with(compact('workers','leaveTypes'));
+        return view('essentials::requests.create')->with(compact('workers','leaveTypes'));
     }
 
     public function store(Request $request)
@@ -156,7 +157,7 @@ class FollowUpRequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.this_type_has_not_procedure'),
                 ];
-              return redirect()->route('createRequest')->withErrors([$output['msg']]);
+              return redirect()->route('ess_createRequest')->withErrors([$output['msg']]);
             
             }
             $workerRequest = followupWorkerRequest::create([
@@ -195,7 +196,7 @@ class FollowUpRequestController extends Controller
                         'success' => true,
                         'msg' => __('followup::lang.stored_successfully'),
                     ];
-                   return redirect()->route('createRequest')->with('success', $output['msg']);
+                   return redirect()->route('ess_createRequest')->with('success', $output['msg']);
                 } else {
                 
                     $workerRequest->delete();
@@ -203,7 +204,7 @@ class FollowUpRequestController extends Controller
                         'success' => false,
                         'msg' => __('messages.something_went_wrong'),
                     ];
-                    return redirect()->route('createRequest')->withErrors([$output['msg']]);
+                    return redirect()->route('ess_createRequest')->withErrors([$output['msg']]);
                 }
             } else {
             
@@ -211,7 +212,7 @@ class FollowUpRequestController extends Controller
                     'success' => false,
                     'msg' => __('messages.something_went_wrong'),
                 ];
-                return redirect()->route('createRequest')->withErrors([$output['msg']]);
+                return redirect()->route('ess_createRequest')->withErrors([$output['msg']]);
             }
             
     }
@@ -263,7 +264,7 @@ class FollowUpRequestController extends Controller
 
     public function exitRequestIndex()
     {
-        
+       
         $business_id = request()->session()->get('user.business_id');
      
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
@@ -276,16 +277,15 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
-      if (request()->ajax()) {
+     if (request()->ajax()) {
         $requestsProcess = null;
-  
             if ($department) {
                 $department = $department->id;
-            
+                
             $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status','pending')->select([
                 'followup_worker_requests_process.id as id',
                 'followup_worker_requests_process.worker_request_id',
@@ -315,11 +315,13 @@ class FollowUpRequestController extends Controller
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             ->where('department_id', $department)->where('followup_worker_requests.type','exitRequest');
-           
+
             }
-            
-            return DataTables::of($requestsProcess ?? [])
-        ->editColumn('status', function ($row) {
+       
+       
+      
+        return DataTables::of($requestsProcess ?? [])
+        ->editColumn('status', function ($row)  {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
@@ -330,14 +332,13 @@ class FollowUpRequestController extends Controller
         ->rawColumns(['status'])
             ->make(true);
   
-        }
-   
-        if ($department) {
+      }
+      if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.exitRequestIndex')->with(compact('statuses'));
+        return view('essentials::requests.exitRequestIndex')->with(compact('statuses'));
     }
 
     public function returnRequestIndex()
@@ -354,12 +355,11 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
         if (request()->ajax()) {
-            
             $requestsProcess = null;
             if ($department) {
                 $department = $department->id;
@@ -392,11 +392,11 @@ class FollowUpRequestController extends Controller
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','returnRequest');
+            ->where('department_id', $department)->where('followup_worker_requests.type','returnRequest');
+    
             }
-           
-             return DataTables::of($requestsProcess ?? [])
+            
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -410,12 +410,12 @@ class FollowUpRequestController extends Controller
   
      }
        
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.returnRequestIndex')->with(compact('statuses'));
+        return view('essentials::requests.returnRequestIndex')->with(compact('statuses'));
     }
 
     public function escapeRequestIndex()
@@ -432,7 +432,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -461,24 +461,24 @@ class FollowUpRequestController extends Controller
                 'followup_worker_requests.advSalaryAmount',
                 'followup_worker_requests.monthlyInstallment',
                 'followup_worker_requests.installmentsNumber',
+                'essentials_wk_procedures.can_return',
+                'essentials_wk_procedures.start as start',
                 'followup_worker_requests.end_date',
                 'followup_worker_requests.note',
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.id as procedure_id',
                 'essentials_wk_procedures.type as procedure_type',
-                'essentials_wk_procedures.department_id as department_id',      
-                'essentials_wk_procedures.can_return',
-                'essentials_wk_procedures.start as start',
+                'essentials_wk_procedures.department_id as department_id',
     
             ])
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','escapeRequest');
+            ->where('department_id', $department)->where('followup_worker_requests.type','escapeRequest');
+       
             }
-        
-             return DataTables::of($requestsProcess ?? [])
+           
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -492,12 +492,12 @@ class FollowUpRequestController extends Controller
   
      }
       
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.escapeRequestIndex')->with(compact('statuses'));
+        return view('essentials::requests.escapeRequestIndex')->with(compact('statuses'));
     }
 
     public function advanceSalaryIndex()
@@ -514,7 +514,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -540,48 +540,49 @@ class FollowUpRequestController extends Controller
                 'followup_worker_requests.start_date',
                 'followup_worker_requests.end_date',
                 'followup_worker_requests.note',
+                'followup_worker_requests.reason',
                 'followup_worker_requests.advSalaryAmount',
                 'followup_worker_requests.monthlyInstallment',
                 'followup_worker_requests.installmentsNumber',
-                'followup_worker_requests.reason',
-                'essentials_wk_procedures.can_return',
-                'essentials_wk_procedures.start as start',
                 'essentials_wk_procedures.id as procedure_id',
                 'essentials_wk_procedures.type as procedure_type',
                 'essentials_wk_procedures.department_id as department_id',
+                'essentials_wk_procedures.can_return',
+                'essentials_wk_procedures.start as start',
     
             ])
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             ->where('department_id', $department)->where('followup_worker_requests.type','advanceSalary');
+         
             }
-          
-                 return DataTables::of($requestsProcess ?? [])
-            ->editColumn('status', function ($row) {
+            
+        return DataTables::of($requestsProcess ?? [])
+        ->editColumn('status', function ($row) {
 
-                $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
-                .$this->statuses[$row->status]['name'].'</span>';
-                $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-                
-                return $status;
-            })
-            ->editColumn('created_at', function ($row) {
+            $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
+            .$this->statuses[$row->status]['name'].'</span>';
+            $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
+            
+            return $status;
+        })
+        ->editColumn('created_at', function ($row) {
 
                
-                return Carbon::parse($row->created_at);
-            })
+            return Carbon::parse($row->created_at);
+        })
         ->rawColumns(['status'])
             ->make(true);
   
      }
      
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.advanceSalaryIndex')->with(compact('statuses'));
+        return view('essentials::requests.advanceSalaryIndex')->with(compact('statuses'));
     }
     public function leavesAndDeparturesIndex()
     {
@@ -597,7 +598,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -635,11 +636,11 @@ class FollowUpRequestController extends Controller
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','leavesAndDepartures');
-            }
+            ->where('department_id', $department)->where('followup_worker_requests.type','leavesAndDepartures');
          
-             return DataTables::of($requestsProcess ?? [])
+            }
+           
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -654,12 +655,12 @@ class FollowUpRequestController extends Controller
   
      }
       
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.leavesAndDeparturesIndex')->with(compact('statuses'));
+        return view('essentials::requests.leavesAndDeparturesIndex')->with(compact('statuses'));
     }
 
     public function atmCardIndex()
@@ -676,7 +677,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -713,11 +714,11 @@ class FollowUpRequestController extends Controller
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','atmCard');
+            ->where('department_id', $department)->where('followup_worker_requests.type','atmCard');
+
             }
-          
-             return DataTables::of($requestsProcess ?? [])
+           
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -731,12 +732,12 @@ class FollowUpRequestController extends Controller
   
      }
 
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.atmCardIndex')->with(compact('statuses'));
+        return view('essentials::requests.atmCardIndex')->with(compact('statuses'));
     }
 
     public function residenceRenewalIndex()
@@ -753,7 +754,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -790,11 +791,11 @@ class FollowUpRequestController extends Controller
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','residenceRenewal');
+            ->where('department_id', $department)->where('followup_worker_requests.type','residenceRenewal');
+
             }
-        
-             return DataTables::of($requestsProcess ?? [])
+      
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -807,12 +808,12 @@ class FollowUpRequestController extends Controller
             ->make(true);
   
      }
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.residenceRenewalIndex')->with(compact('statuses'));
+        return view('essentials::requests.residenceRenewalIndex')->with(compact('statuses'));
     }
 
     public function residenceCardIndex()
@@ -829,7 +830,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -866,11 +867,11 @@ class FollowUpRequestController extends Controller
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','residenceCard');
+            ->where('department_id', $department)->where('followup_worker_requests.type','residenceCard');
+          
             }
-      
-             return DataTables::of($requestsProcess ?? [])
+         
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -884,12 +885,12 @@ class FollowUpRequestController extends Controller
   
      }
      
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.residenceCardIndex')->with(compact('statuses'));
+        return view('essentials::requests.residenceCardIndex')->with(compact('statuses'));
     }
 
     public function workerTransferIndex()
@@ -906,7 +907,7 @@ class FollowUpRequestController extends Controller
         
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $department = EssentialsDepartment::where('business_id', $business_id)
-        ->where('name', 'LIKE', '%متابعة%')
+        ->where('name', 'LIKE', '%بشرية%')
         ->first();
 
        
@@ -943,11 +944,11 @@ class FollowUpRequestController extends Controller
             ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
             ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-            ->where('department_id', $department);
-            $requestsProcess=$requestsProcess->where('followup_worker_requests.type','workerTransfer');
+            ->where('department_id', $department)->where('followup_worker_requests.type','workerTransfer');
+           
             }
           
-             return DataTables::of($requestsProcess ?? [])
+        return DataTables::of($requestsProcess ?? [])
         ->editColumn('status', function ($row) {
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
@@ -961,12 +962,12 @@ class FollowUpRequestController extends Controller
   
      }
        
-        if ($department) {
+             if ($department) {
         $department = $department->id;
         $can_reject=EssentialsWkProcedure::where('department_id',$department)->first()->can_reject;
         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
         }
-        return view('followup::requests.workerTransferIndex')->with(compact('statuses'));
+        return view('essentials::requests.workerTransferIndex')->with(compact('statuses'));
     }
 
     public function returnReq(Request $request)
@@ -986,7 +987,8 @@ class FollowUpRequestController extends Controller
                     $departmentId = $procedure->department_id;
                   
                     $nameDepartment=EssentialsDepartment::where('id', $departmentId)->first()->name;
-                   $newProcedure = EssentialsWkProcedure::where('next_department_id', $departmentId)
+                 
+                    $newProcedure = EssentialsWkProcedure::where('next_department_id', $departmentId)
                         ->where('type', $procedure->type)
                         ->first();
                   
@@ -999,8 +1001,6 @@ class FollowUpRequestController extends Controller
                                 'is_returned' => 1,
                                 'updated_by'=>auth()->user()->id,
                                 'status_note' => __('followup::lang.returned_by') . " " . $nameDepartment,
-
-
                             
                             ]);
         
@@ -1031,3 +1031,4 @@ class FollowUpRequestController extends Controller
         return $output;
     }
 }
+

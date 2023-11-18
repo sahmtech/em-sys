@@ -22,9 +22,10 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                  
+                   
                             <th>@lang('followup::lang.worker_name')</th>
-     
+                            <th>@lang('followup::lang.exit_date')</th>
+                         
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.reason')</th>
@@ -76,13 +77,13 @@
          processing: true,
          serverSide: true,
 
-        ajax: { url: "{{ route('workerTransfer') }}"},
+        ajax: { url: "{{ route('ess_exitRequest') }}"},
      
                  columns: [
                
              
                 { data: 'user' },
-            
+                { data: 'start_date' },
                 { data: 'status' } ,
                 { data: 'status_note' },
                 { data: 'reason' },
@@ -167,12 +168,12 @@
                     }
                 },
             });
-        });
+    });
   
    
 
-  
-        $('#requests_table').on('click', '.btn-return', function () {
+
+    $('#requests_table').on('click', '.btn-return', function () {
         var requestId = $(this).data('request-id');
         $('#returnModal').modal('show');
         $('#returnModal').data('id', requestId);
@@ -186,7 +187,7 @@
         var reason = $('#reasonInput').val();
 
         $.ajax({
-            url: "{{ route('returnReq') }}",
+            url: "{{ route('ess_returnReq') }}",
             method: "POST",
             data: { requestId: requestId, reason: reason },
             success: function(result) {
@@ -203,6 +204,7 @@
         });
     });
     });
+
 
 </script>
  

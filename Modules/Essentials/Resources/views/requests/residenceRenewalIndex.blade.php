@@ -22,14 +22,13 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                  
+                        
                             <th>@lang('followup::lang.worker_name')</th>
-     
+                            <th>@lang('followup::lang.end_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.reason')</th>
                             <th>@lang('followup::lang.action')</th>
-
                         </tr>
                     </thead>
                 </table>
@@ -76,22 +75,23 @@
          processing: true,
          serverSide: true,
 
-        ajax: { url: "{{ route('workerTransfer') }}"},
+        ajax: { url: "{{ route('ess_residenceRenewal') }}"},
      
                  columns: [
                
-             
+                
                 { data: 'user' },
-            
+              
+                { data: 'end_date' } ,
                 { data: 'status' } ,
-                { data: 'status_note' },
+                 { data: 'status_note' },
                 { data: 'reason' },
                 {
                     data: 'can_return',
                     
                 
                     render: function (data, type, row) {
-                        if (data == 1) {
+                        if (data == 1 && row.start) {
                             return '<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.id + '">@lang('followup::lang.return_the_request')</button>';
 
                         }
@@ -171,7 +171,7 @@
   
    
 
-  
+
         $('#requests_table').on('click', '.btn-return', function () {
         var requestId = $(this).data('request-id');
         $('#returnModal').modal('show');
@@ -186,7 +186,7 @@
         var reason = $('#reasonInput').val();
 
         $.ajax({
-            url: "{{ route('returnReq') }}",
+            url: "{{ route('ess_returnReq') }}",
             method: "POST",
             data: { requestId: requestId, reason: reason },
             success: function(result) {
