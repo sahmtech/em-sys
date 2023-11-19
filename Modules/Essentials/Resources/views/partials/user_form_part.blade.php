@@ -171,17 +171,14 @@
 
 
 <script>
-    var selectedData = [];
-    var professionSelect = $('#professionSelect');
-   
-    var specializationSelect = $('#specializationSelect');
-    console.log(specializationSelect);
-            professionSelect.on('change', function () {
+    $(document).ready(function() {
+        var selectedData = [];
+        var professionSelect = $('#professionSelect');
+        var specializationSelect = $('#specializationSelect');
+        professionSelect.on('change', function () {
                 var selectedProfession = $(this).val();
-              
-             
+                console.log(selectedProfession);
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
-               
                 $.ajax({
                     url: '{{ route('specializations') }}',
                     type: 'POST',
@@ -197,18 +194,18 @@
                                 text: name
                             }));
                         });
-                    },error: function (xhr, status, error) {
-            console.error(xhr.responseText);
-        }
+                    }
                 });
             });
-            $('#can_add_category').change(function() {
+    
+           
+    $('#can_add_category').change(function() {
                 if (this.value === '1') {
                 $('#category_input').show();
             } else {
                 $('#category_input').hide();
             }
-        });
+    });
 
     function addRow() {
         var newRow = $('#salary-table-body tr:first').clone();
@@ -243,10 +240,8 @@
         var inputElement = document.getElementById('selectedData');
         inputElement.value = JSON.stringify(selectedData);
     }
-</script>
+    
 
-
-<script>
     function updateAmount(element) {
         var salaryType = $(element).val();
         console.log(salaryType);
@@ -271,7 +266,7 @@
     $(document).on('change', 'select[name="salary_type[]"]', function() {
         updateAmount(this); // Call the function to update the amount
     });
-
+});
 </script>
 
 
