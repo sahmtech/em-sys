@@ -191,18 +191,22 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
-     
+      
         $contract=EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
         $business_id = request()->session()->get('user.business_id');
+        $nationalities=EssentialsCountry::nationalityForDropdown();
         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
         ->leftjoin('essentials_employee_appointmets','essentials_employee_appointmets.employee_id','users.id')
         ->leftjoin('essentials_admission_to_works','essentials_admission_to_works.employee_id','users.id')
         ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
+        ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
         ->select(['users.id',
         'users.emp_number',
                 'users.username',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as full_name"),
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
+                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+                
                 'essentials_admission_to_works.admissions_date as admissions_date',
                 'essentials_employees_contracts.contract_end_date as contract_end_date',
                 'users.email',
@@ -248,6 +252,7 @@ class EssentialsManageEmployeeController extends Controller
 
                         return $item;
                     })
+                  
               
                     ->addColumn('profession', function ($row) use ($appointments, $professions) {
                         $professionId = $appointments[$row->id] ?? '';
@@ -265,9 +270,8 @@ class EssentialsManageEmployeeController extends Controller
 
                         return $specializationName;
                     })
-
-                    
                  
+
                   
 
                    
