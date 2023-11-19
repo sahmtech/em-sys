@@ -128,7 +128,8 @@
                             <th>@lang('essentials::lang.employee_number' )</th>
                             <th>@lang('essentials::lang.employee_name' )</th>
                             <th>@lang('essentials::lang.Identity_proof_id')</th>
-
+                            <th>@lang('essentials::lang.contry_nationality')</th>
+                            
                             <th>@lang('essentials::lang.admissions_date')</th>
                             <th>@lang('essentials::lang.contract_end_date' )</th>
 
@@ -399,8 +400,9 @@ $(document).on('click', '.btn-modal', function (e) {
                     "columns":[
                         {"data":"emp_number"},
                         {"data":"full_name"},
+                      
                         {"data":"id_proof_number"},
-
+                        {"data":"nationality"},
                         {"data":"admissions_date"},
                         {"data":"contract_end_date"},
 
@@ -428,23 +430,21 @@ $(document).on('click', '.btn-modal', function (e) {
                         {"data":"view"},
                         {"data":"action"}
                     ],
-                      "createdRow": function (row, data, dataIndex) {
-         
+            "createdRow": function (row, data, dataIndex) {
             var contractEndDate = data.contract_end_date;
-
-           
+            console.log(contractEndDate);
             var currentDate = moment().format("YYYY-MM-DD");
 
-           
             if (contractEndDate !== null && contractEndDate !== undefined) {
-                if (moment(contractEndDate).isBefore(currentDate)) {
-                    $('td', row).eq(4).addClass('text-danger'); 
-                } else if (moment(contractEndDate).isSame(currentDate, 'day')) {
-                    $('td', row).eq(4).addClass('text-warning');
+                var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
+
+                if (daysRemaining <= 0) {
+                    $('td', row).eq(5).addClass('text-danger'); // Contract expired, colored red
+                } else if (daysRemaining <= 25) {
+                    $('td', row).eq(5).addClass('text-warning'); // Contract expires within 25 days, colored yellow
                 }
             }
         }
-  
                    
               });
      
