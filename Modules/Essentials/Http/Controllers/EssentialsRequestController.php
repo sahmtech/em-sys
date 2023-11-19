@@ -335,7 +335,7 @@ class EssentialsRequestController extends Controller
       }
       if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','exitRequest')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -418,7 +418,7 @@ class EssentialsRequestController extends Controller
        
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','returnRequest')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -506,7 +506,7 @@ class EssentialsRequestController extends Controller
       
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','escapeRequest')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -597,7 +597,7 @@ class EssentialsRequestController extends Controller
      
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','advanceSalary')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -680,7 +680,7 @@ class EssentialsRequestController extends Controller
      }
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','leavesAndDepartures')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -762,9 +762,11 @@ class EssentialsRequestController extends Controller
      }
 
      if ($department) {
+       
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','atmCard')->first();
         if ($pros) {
+           
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
             $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
@@ -845,7 +847,7 @@ class EssentialsRequestController extends Controller
      }
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','residenceRenewal')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -927,7 +929,7 @@ class EssentialsRequestController extends Controller
      }
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','residenceCard')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
@@ -1010,7 +1012,7 @@ class EssentialsRequestController extends Controller
        
      if ($department) {
         $department = $department->id;
-        $pros = EssentialsWkProcedure::where('department_id', $department)->first();
+        $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','workerTransfer')->first();
         if ($pros) {
             $can_reject = $pros->can_reject;
             $can_reject = $can_reject ?? 0;
