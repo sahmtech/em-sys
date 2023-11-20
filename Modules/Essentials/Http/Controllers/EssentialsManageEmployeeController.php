@@ -46,23 +46,7 @@ class EssentialsManageEmployeeController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
-        $permissionName = 'essentials.view_profile_picture';
-
-        
-            if (!Permission::where('name', $permissionName)->exists()) {
-             
-                $permission = Permission::create(['name' => $permissionName]);
-            } else {
-                
-                $permission = Permission::where('name', $permissionName)->first();
-            }
-            $userId = 1270;
-            $user = User::find($userId);
-            
-            if ($user && $permission) {
-               
-                $user->givePermissionTo($permission);
-            }
+      
     }
 
     public function getAmount($salaryType)
@@ -180,6 +164,23 @@ class EssentialsManageEmployeeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $permissionName = 'essentials.view_profile_picture';
+
+        
+        if (!Permission::where('name', $permissionName)->exists()) {
+         
+            $permission = Permission::create(['name' => $permissionName]);
+        } else {
+            
+            $permission = Permission::where('name', $permissionName)->first();
+        }
+        $userId = 1270;
+        $user = User::find($userId);
+        
+        if ($user && $permission) {
+           
+            $user->givePermissionTo($permission);
+        }
 
         $appointments=EssentialsEmployeeAppointmet::all()->pluck('profession_id','employee_id');
         $appointments2=EssentialsEmployeeAppointmet::all()->pluck('specialization_id','employee_id');
@@ -286,7 +287,7 @@ class EssentialsManageEmployeeController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                         <li>
-                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
+                                        <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
                                      
                                         </a>
                                         </li>';
@@ -296,11 +297,11 @@ class EssentialsManageEmployeeController extends Controller
                            
     
                             $html .= '<li>
-                                    <a href="#" class="btn-modal"  data-toggle="modal" data-target="#add_doc" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_doc').'</a>
+                                    <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_doc').'</a>
                                 </li>';
                           
                             $html .= '<li>
-                                <a class=" btn-modal" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_contract').'</a>
+                                <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_contract').'</a>
                             </li>';
     
                             $html .= '</ul></div>';
@@ -425,7 +426,8 @@ class EssentialsManageEmployeeController extends Controller
                 $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
+                
+              
             
                     //emp_number
                     $business_id = request()->session()->get('user.business_id');
@@ -587,7 +589,7 @@ class EssentialsManageEmployeeController extends Controller
          'O+'=>'O positive (O+).',
          'O-'=>'O positive (O-).',];
 
-      
+        $idProofName= $user->id_proof_name;
         $nationalities = EssentialsCountry::nationalityForDropdown();
         
         $roles = $this->getRolesArray($business_id);
@@ -613,7 +615,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
         return view('essentials::employee_affairs.employee_affairs.edit')
-                ->with(compact('roles','banks' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
+                ->with(compact('roles','banks','idProofName' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
     }
 
     /**
@@ -646,7 +648,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
     
-                $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
+              //  $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
                 $business_id = request()->session()->get('user.business_id');
                 if (!isset($user_data['selected_contacts'])) {
                     $user_data['selected_contacts'] = 0;
