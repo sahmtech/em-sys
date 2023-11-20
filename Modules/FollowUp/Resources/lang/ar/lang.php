@@ -82,7 +82,7 @@ return [
     'there_is_no_department_to_return_for'=>'لاتوجد إدارة سابقة للإرجاع إليها',
     'returned_successfully'=>'تم الإرجاع بنجاح',
     'returned_by'=>'تم الإرجاع من ',
-    'escape_date'=>'تاريخ الهروب'
+    'escape_date'=>'تاريخ الهروب',
 
 
 
