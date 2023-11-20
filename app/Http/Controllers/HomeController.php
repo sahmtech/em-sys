@@ -285,19 +285,20 @@ class HomeController extends Controller
 
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
+            ['id' => 'superAdmin',  'permissions' => $superadminPermissions, 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
+            ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
-            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' => ''],
+            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' => route('international_relations_landing')],
             ['id' => 'settings',  'permissions' => $settingsPermissions, 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
             ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index'])],
-          
-            //    ['id' => 'generalSettings',  'permissions' => $superadminPermissions, 'title' => "generalSettings", 'icon' => 'fas fa-chart-pie ', 'link' => ''],
+
         ];
         $cards = [];
 
@@ -320,6 +321,9 @@ class HomeController extends Controller
                     error_log("cant " . $card['title']);
                 }
             } else {
+                if ($is_admin) {
+                    $cards[] = $card;
+                }
                 //$cards[] = $card;
                 error_log("empty " . $card['title']);
             }
