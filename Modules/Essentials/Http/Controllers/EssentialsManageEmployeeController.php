@@ -589,7 +589,7 @@ class EssentialsManageEmployeeController extends Controller
          'O+'=>'O positive (O+).',
          'O-'=>'O positive (O-).',];
 
-      
+        $idProofName= $user->id_proof_name;
         $nationalities = EssentialsCountry::nationalityForDropdown();
         
         $roles = $this->getRolesArray($business_id);
@@ -615,7 +615,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
         return view('essentials::employee_affairs.employee_affairs.edit')
-                ->with(compact('roles','banks' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
+                ->with(compact('roles','banks','idProofName' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
     }
 
     /**
