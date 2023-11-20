@@ -286,7 +286,7 @@ class EssentialsManageEmployeeController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                         <li>
-                                        <a href="#" class="btn-modal"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
+                                        <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_qualification').'</a>
                                      
                                         </a>
                                         </li>';
@@ -296,11 +296,11 @@ class EssentialsManageEmployeeController extends Controller
                            
     
                             $html .= '<li>
-                                    <a href="#" class="btn-modal"  data-toggle="modal" data-target="#add_doc" data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_doc').'</a>
+                                    <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_doc').'</a>
                                 </li>';
                           
                             $html .= '<li>
-                                <a class=" btn-modal" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_contract').'</a>
+                                <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>'.__('essentials::lang.add_contract').'</a>
                             </li>';
     
                             $html .= '</ul></div>';
@@ -425,7 +425,8 @@ class EssentialsManageEmployeeController extends Controller
                 $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-
+                
+              
             
                     //emp_number
                     $business_id = request()->session()->get('user.business_id');

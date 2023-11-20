@@ -224,52 +224,63 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
 
-                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'store'])]) !!}
+                    {!! Form::open(['route' => 'storeOfficialDoc' , 'enctype' => 'multipart/form-data']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('essentials::lang.add_doc')</h4>
+                        <h4 class="modal-title">@lang('essentials::lang.add_Doc')</h4>
                     </div>
         
                     <div class="modal-body">
     
-                    <div class="row">
-					<div class="col-md-12">
-					
-						<div class="row">
-                            <div class="col-sm-12">
-	                            <div class="col-sm-6">
-	                                <div class="form-group">
-                                   		{!! Form::label('name', __('essentials::lang.document') . ":*") !!}
-
-                                   		{!! Form::file('name', ['required', 'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types')))]) !!}
-                                   		<p class="help-block">
-                        					@includeIf('components.document_help_text')
-                        				</p>
-	                                 </div>
-	                            </div>
-	                            <div class="clearfix"></div>
-	                            <div class="col-sm-6">
-	                                <div class="form-group">
-	                                    {!! Form::label('description', __('essentials::lang.description') . ":")!!}
-	                                    {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '4', 'cols' => '50']) !!}
-	                                 </div>
-	                            </div>
-	                            <div class="clearfix"></div>
-                        		<div class="col-sm-4">
-                                	<button type="submit" class="btn btn-primary btn-sm">
-                                		@lang('essentials::lang.submit')
-                                	</button>
-                                	&nbsp;
-									<button type="button" class="btn btn-danger btn-sm cancel_btn">
-										@lang('essentials::lang.cancel')
-									</button>
-                        		</div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                {!! Form::label('employees2', __('essentials::lang.employee') . ':*') !!}
+                                {!! Form::select('employees2',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                                {!! Form::select('doc_type', [
+                                   
+                                    'national_id'=>__('essentials::lang.national_id'),
+                                    'passport'=>__('essentials::lang.passport'),
+                                    'residence_permit'=>__('essentials::lang.residence_permit'),
+                                    'drivers_license'=>__('essentials::lang.drivers_license'),
+                                    'car_registration'=>__('essentials::lang.car_registration'),
+                                    'international_certificate'=>__('essentials::lang.international_certificate'),
+                                ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_type'), 'required']) !!}
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('doc_number', __('essentials::lang.doc_number') . ':*') !!}
+                                {!! Form::number('doc_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.doc_number'), 'required']) !!}
+                            </div>
+        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('issue_date', __('essentials::lang.issue_date') . ':*') !!}
+                                {!! Form::date('issue_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_date'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('issue_place', __('essentials::lang.issue_place') . ':*') !!}
+                                {!! Form::text('issue_place', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issue_place'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
+                                {!! Form::select('status', [
+                                'valid' => __('essentials::lang.valid'),
+                                'expired' => __('essentials::lang.expired'),
+                              
+                            ], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_status'), 'required']) !!}
+                        </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
+                                {!! Form::date('expiration_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.expiration_date'), 'required']) !!}
+                            </div>
+                        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
                             </div>
                         </div>
-                        <br><hr>
-					
-					</div>
-				</div>
                     </div>
         
                     <div class="modal-footer">
@@ -362,7 +373,7 @@
 @stop
 @section('javascript')
 <script type="text/javascript">
-$(document).on('click', '.btn-modal', function (e) {
+$(document).on('click', '.btn-modal1', function (e) {
     e.preventDefault();
     var userId = $(this).data('row-id');
     var userName = $(this).data('row-name'); 
@@ -372,6 +383,22 @@ $(document).on('click', '.btn-modal', function (e) {
    
     $('#employee').empty(); // Clear previous options
     $('#employee').append('<option value="' + userId + '">' + userName + '</option>'); 
+});
+
+</script>
+
+
+<script type="text/javascript">
+$(document).on('click', '.btn-modal2', function (e) {
+    e.preventDefault();
+    var userId = $(this).data('row-id');
+    var userName = $(this).data('row-name'); 
+
+    $('#add_doc').modal('show');
+
+   
+    $('#employees2').empty(); // Clear previous options
+    $('#employees2').append('<option value="' + userId + '">' + userName + '</option>'); 
 });
 
 </script>
