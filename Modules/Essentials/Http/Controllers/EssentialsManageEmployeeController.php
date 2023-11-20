@@ -168,19 +168,20 @@ class EssentialsManageEmployeeController extends Controller
 
         
         if (!Permission::where('name', $permissionName)->exists()) {
-         
-            $permission = Permission::create(['name' => $permissionName]);
+            $permission = new Permission(['name' => $permissionName]);
+            $permission->save();
+          
         } else {
             
             $permission = Permission::where('name', $permissionName)->first();
         }
-        $userId = 1270;
-        $user = User::find($userId);
+        // $userId = 1270;
+        // $user = User::find($userId);
         
-        if ($user && $permission) {
+        // if ($user && $permission) {
            
-            $user->givePermissionTo($permission);
-        }
+        //     $user->givePermissionTo($permission);
+        // }
 
         $appointments=EssentialsEmployeeAppointmet::all()->pluck('profession_id','employee_id');
         $appointments2=EssentialsEmployeeAppointmet::all()->pluck('specialization_id','employee_id');
