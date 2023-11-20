@@ -673,7 +673,7 @@ class EssentialsManageEmployeeController extends Controller
                 if (!empty($request->input('border_no'))) 
                 { $user_data['border_no'] = $request->input('border_no');}
                 if (!empty($request->input('nationality'))) 
-                     { $user_data['nationality_cs'] = $request->input('nationality');}
+                     { $user_data['nationality_id'] = $request->input('nationality');}
                 if (!empty($request->input('bank_details'))) {
                     $user_data['bank_details'] = json_encode($request->input('bank_details'));
                 }

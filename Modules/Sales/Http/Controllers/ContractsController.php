@@ -69,11 +69,12 @@ class ContractsController extends Controller
             ->addColumn(
                 'action',
                 function ($row) {
-                    $html = '';
+                    $html = ''; 
+                    $html .=  '  <a href="#" data-href="'.action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>'.__('sales::lang.offer_price_view').'</a>';
+                    $html .= '&nbsp;'; 
                     $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file.'\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
                     $html .= '&nbsp;'; 
-                    $html .= '<button class="btn btn-xs btn-warning btn-modal" data-container=".view_modal" data-href="' . route('offer.view', ['id' => $row->tra]) . '"><i class="fa fa-eye"></i> ' . __('sales::lang.offer_price_view') . '</button>';
-                    $html .= '&nbsp;'; 
+                   
                     $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
             
                     return $html;
@@ -253,9 +254,20 @@ class ContractsController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function showOfferPrice($id)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+        $offer_price=salesContract::where('id',$id)->first()->offer_price_id;
+        $query = Transaction::where('business_id', $business_id)
+            ->where('id', $offer_price)->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service'])
+        
+            ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
+            
+            )->get()[0];
+
+        
+        return view('sales::price_offer.show')
+            ->with(compact('query'));
     }
 
     /**
