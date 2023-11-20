@@ -990,8 +990,12 @@ return[
 'contract_status'=>'نسب العقود',
 'expired_contracts'=>'العقود المنتهية',
 'remaining_contracts'=>'العقود انتهت فترة التجربة',
+
+'escape_date'=>'تاريخ الهروب',
+
 'years'=>'سنة',
 'months'=>'شهر',
+
 
 
 

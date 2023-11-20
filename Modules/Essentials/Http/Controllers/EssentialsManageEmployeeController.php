@@ -196,8 +196,10 @@ class EssentialsManageEmployeeController extends Controller
       
         $contract=EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
         $business_id = request()->session()->get('user.business_id');
+
         $nationalities=EssentialsCountry::nationalityForDropdown();
-        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+       // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)->whereIn('user_type', ['employee', 'worker', 'manager'])
         ->leftjoin('essentials_employee_appointmets','essentials_employee_appointmets.employee_id','users.id')
         ->leftjoin('essentials_admission_to_works','essentials_admission_to_works.employee_id','users.id')
         ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
