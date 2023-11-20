@@ -2,14 +2,14 @@
 @section('title', __('followup::lang.requests'))
 
 @section('content')
-<!-- Content Header (Page header) -->
+
 <section class="content-header">
     <h1>
         <span>@lang('followup::lang.requests')</span>
     </h1>
 </section>
 <style>
-    /* Add these styles to your CSS file or within a style tag in your HTML */
+
     .alert {
         animation: fadeOut 5s forwards;
     }
@@ -34,7 +34,7 @@
     @endif
 @endif
 <section class="content">
-    {!! Form::open(['route' => 'storeRequest']) !!}
+    {!! Form::open(['route' => 'storeRequest','enctype' => 'multipart/form-data'] ) !!}
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -52,7 +52,7 @@
             <div class="form-group col-md-6">
                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
                 {!! Form::select('type',[
-                    'exitRequest'=>__('followup::lang.exitRequest'),
+                'exitRequest'=>__('followup::lang.exitRequest'),
                 'returnRequest'=>__('followup::lang.returnRequest'),
                 'escapeRequest'=>__('followup::lang.escapeRequest'),
                 'advanceSalary'=>__('followup::lang.advanceSalary'),
@@ -72,6 +72,7 @@
                 {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
                 {!! Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.start_date'), 'id' => 'startDateField']) !!}
             </div>
+      
          
             <div class="form-group col-md-6" id="end_date" style="display: none;">
                 {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
@@ -82,9 +83,9 @@
                 {!! Form::time('escape_time', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.escape_time'), 'id' => 'escapeTimeField']) !!}
             </div>
 
-            <div class="form-group col-md-6" id="attach" style="display: none;">
-                {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
-                {!! Form::text('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment'), 'id' => 'attachmentField']) !!}
+            <div class="form-group col-md-6" id="escape_date" style="display: none;">
+                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                {!! Form::date('escape_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.escape_date'), 'id' => 'escapeDateField']) !!}
             </div>
             <div class="form-group col-md-6" id="amount" style="display: none;">
                 {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
@@ -106,6 +107,10 @@
             <div class="form-group col-md-6">
                 {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
                 {!! Form::textarea('reason', null, ['class' => 'form-control', 'required', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
+            </div>
+            <div class="form-group col-md-6">
+                {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
+                {!! Form::file('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment')]) !!}
             </div>
         </div>
     </div>
@@ -147,15 +152,14 @@
                 $('#leaveType').hide();
             }
 
-            if (selectedType === 'residenceRenewal') {
-                $('#attach').show();
-            } else {
-                $('#attach').hide();
-            }
+          
             if (selectedType === 'escapeRequest') {
                 $('#escape_time').show();
+                $('#escape_date').show();
+               
             } else {
-                $('#escape_time').hide();
+                $('#escape_time').hide(); 
+                $('#escape_date').hide();
             }
             if (selectedType === 'advanceSalary') {
                 $('#installmentsNumber').show();

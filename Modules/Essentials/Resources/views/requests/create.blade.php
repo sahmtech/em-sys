@@ -2,14 +2,14 @@
 @section('title', __('followup::lang.requests'))
 
 @section('content')
-<!-- Content Header (Page header) -->
+
 <section class="content-header">
     <h1>
         <span>@lang('followup::lang.requests')</span>
     </h1>
 </section>
 <style>
-    /* Add these styles to your CSS file or within a style tag in your HTML */
+
     .alert {
         animation: fadeOut 5s forwards;
     }
@@ -34,7 +34,7 @@
     @endif
 @endif
 <section class="content">
-    {!! Form::open(['route' => 'ess_storeRequest']) !!}
+    {!! Form::open(['route' => 'ess_storeRequest','enctype' => 'multipart/form-data']) !!}
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -81,11 +81,12 @@
                 {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
                 {!! Form::time('escape_time', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.escape_time'), 'id' => 'escapeTimeField']) !!}
             </div>
-
-            <div class="form-group col-md-6" id="attach" style="display: none;">
-                {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
-                {!! Form::text('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment'), 'id' => 'attachmentField']) !!}
+            <div class="form-group col-md-6" id="escape_date" style="display: none;">
+                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                {!! Form::date('escape_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.escape_date'), 'id' => 'escapeDateField']) !!}
             </div>
+
+         
             <div class="form-group col-md-6" id="amount" style="display: none;">
                 {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
                 {!! Form::number('amount', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.advSalaryAmount'), 'id' => 'advSalaryAmountField']) !!}
@@ -106,6 +107,10 @@
             <div class="form-group col-md-6">
                 {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
                 {!! Form::textarea('reason', null, ['class' => 'form-control', 'required', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
+            </div>
+            <div class="form-group col-md-6">
+                {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
+                {!! Form::file('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment')]) !!}
             </div>
         </div>
     </div>
@@ -146,16 +151,13 @@
             } else {
                 $('#leaveType').hide();
             }
-
-            if (selectedType === 'residenceRenewal') {
-                $('#attach').show();
-            } else {
-                $('#attach').hide();
-            }
             if (selectedType === 'escapeRequest') {
                 $('#escape_time').show();
+                $('#escape_date').show();
+               
             } else {
-                $('#escape_time').hide();
+                $('#escape_time').hide(); 
+                $('#escape_date').hide();
             }
             if (selectedType === 'advanceSalary') {
                 $('#installmentsNumber').show();
