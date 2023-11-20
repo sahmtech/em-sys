@@ -61,6 +61,7 @@
             <hr>
             <h4>@lang('essentials::lang.contract_details'):</h4>
         </div>
+
         <div class="form-group col-md-3">
             {!! Form::label('contract_number', __( 'essentials::lang.contract_number') . ':') !!}
             {!! Form::text('contract_number',  !empty($contract->contract_number) ? $contract->contract_number : null , ['class' => 'form-control','style'=>'height:40px',  'placeholder' => __( 'essentials::lang.contract_number') ]); !!}
@@ -68,21 +69,32 @@
         <div class="col-md-3">
             <div class="form-group">
             {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':') !!}
-            {!! Form::select('contract_type', $contract_types, !empty($contract->contract_type_id) ? $contract->contract_type_id : null, ['class' => 'form-control select2', 'style'=>'height:40px','placeholder' => __('messages.please_select')]); !!}
+            {!! Form::select('contract_type', $contract_types, !empty($contract->contract_type_id) ? $contract->contract_type_id : null, ['class' => 'form-control select', 'style'=>'height:40px','placeholder' => __('messages.please_select')]); !!}
             </div>
         </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('contract_start_date', __( 'essentials::lang.contract_start_date') . ':') !!}
-            {!! Form::date('contract_start_date',  !empty($contract->contract_start_date) ? $contract->contract_start_date : null  , ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'essentials::lang.contract_start_date') ]); !!}
+<div class="form-group col-md-3">
+    {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
+    {!! Form::date('contract_start_date', !empty($contract->contract_start_date) ? $contract->contract_start_date : null, ['class' => 'form-control', 'style' => 'height:40px', 'id' => 'contract_start_date', 'placeholder' => __('essentials::lang.contract_start_date')]); !!}
+</div>
+
+<div class="form-group col-md-3">
+    {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
+    <div class="form-group">
+        <div class="multi-input">
+            <div class="input-group">
+                {!! Form::number('contract_duration', !empty($contract->contract_duration) ? $contract->contract_duration : null, ['class' => 'form-control width-40 pull-left', 'style' => 'height:40px', 'id' => 'contract_duration', 'placeholder' => __('essentials::lang.contract_duration')]); !!}
+                {!! Form::select('contract_duration_unit', ['years' => __('essentials::lang.years'), 'months' => __('essentials::lang.months')], null, ['class' => 'form-control width-60 pull-left', 'style' => 'height:40px', 'id' => 'contract_duration_unit']); !!}
+            </div>
         </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('contract_end_date', __( 'essentials::lang.contract_end_date') . ':') !!}
-            {!! Form::date('contract_end_date', !empty($contract->contract_end_date) ? $contract->contract_end_date : null   , ['class' => 'form-control', 'style'=>'height:40px', 'placeholder' => __( 'essentials::lang.contract_end_date') ]); !!}
-        </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('contract_duration', __( 'essentials::lang.contract_duration') . ':') !!}
-            {!! Form::text('contract_duration', !empty($contract->contract_duration) ? $contract->contract_duration : null   , ['class' => 'form-control','style'=>'height:40px',  'placeholder' => __( 'essentials::lang.contract_duration') ]); !!}
-        </div>   
+    </div>
+</div>
+
+<div class="form-group col-md-3">
+    {!! Form::label('contract_end_date', __('essentials::lang.contract_end_date') . ':') !!}
+    {!! Form::date('contract_end_date', !empty($contract->contract_end_date) ? $contract->contract_end_date : null, ['class' => 'form-control', 'style' => 'height:40px', 'id' => 'contract_end_date', 'placeholder' => __('essentials::lang.contract_end_date')]); !!}
+</div>
+
+
         <div class="form-group col-md-3">
             {!! Form::label('probation_period', __( 'essentials::lang.probation_period') . ':') !!}
             {!! Form::text('probation_period', !empty($contract->probation_period) ? $contract->probation_period : null   , ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'essentials::lang.probation_period') ]); !!}
@@ -103,6 +115,7 @@
 </div>
         
 @endcomponent
+
 @component('components.widget', ['title' => __('essentials::lang.payroll')])
 <div class="row">
     <div class="col-md-4">
@@ -169,6 +182,40 @@
         </div>
     </div>
 
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function () {
+            updateContractEndDate();
+        });
+
+        function updateContractEndDate() {
+            var startDate = $('#contract_start_date').val();
+            var duration = $('#contract_duration').val();
+            var unit = $('#contract_duration_unit').val();
+
+            if (startDate && duration && unit) {
+                var newEndDate = calculateEndDate(startDate, duration, unit);
+                $('#contract_end_date').val(newEndDate);
+            }
+        }
+
+        function calculateEndDate(startDate, duration, unit) {
+            var startDateObj = new Date(startDate);
+            var endDateObj = new Date(startDateObj);
+
+            if (unit === 'years') {
+                endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
+            } else if (unit === 'months') {
+                endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
+            }
+
+            return endDateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+    });
+</script>
 
 <script>
     $(document).ready(function() {
@@ -271,4 +318,5 @@
 
 
 <input type="hidden" id="selectedData" name="selectedData" value="">
+
 @endcomponent

@@ -791,12 +791,15 @@ class DataController extends Controller
             if (request()->input('contract_number') != null ||request()->input('contract_type') != null
             ||request()->input('contract_start_date') != null ||request()->input('contract_end_date') != null)
                 {
+                    
+                    $contractDuration =  request()->input('contract_duration') . ' ' . __('essentials::lang.' . request()->input('contract_duration_unit'));
                     $contract = new EssentialsEmployeesContract();
+
                     $contract->employee_id = $user->id;
                     $contract->contract_number = request()->input('contract_number');
                     $contract->contract_start_date = request()->input('contract_start_date');
                     $contract->contract_end_date = request()->input('contract_end_date');
-                    $contract->contract_duration = request()->input('contract_duration');
+                    $contract->contract_duration = $contractDuration;
                     $contract->probation_period = request()->input('probation_period');
                     $contract->is_renewable = request()->input('is_renewable');
                     $contract->contract_type_id = request()->input('contract_type');
