@@ -46,23 +46,7 @@ class EssentialsManageEmployeeController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
-        $permissionName = 'essentials.view_profile_picture';
-
-        
-            if (!Permission::where('name', $permissionName)->exists()) {
-             
-                $permission = Permission::create(['name' => $permissionName]);
-            } else {
-                
-                $permission = Permission::where('name', $permissionName)->first();
-            }
-            $userId = 1270;
-            $user = User::find($userId);
-            
-            if ($user && $permission) {
-               
-                $user->givePermissionTo($permission);
-            }
+      
     }
 
     public function getAmount($salaryType)
@@ -180,6 +164,23 @@ class EssentialsManageEmployeeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $permissionName = 'essentials.view_profile_picture';
+
+        
+        if (!Permission::where('name', $permissionName)->exists()) {
+         
+            $permission = Permission::create(['name' => $permissionName]);
+        } else {
+            
+            $permission = Permission::where('name', $permissionName)->first();
+        }
+        $userId = 1270;
+        $user = User::find($userId);
+        
+        if ($user && $permission) {
+           
+            $user->givePermissionTo($permission);
+        }
 
         $appointments=EssentialsEmployeeAppointmet::all()->pluck('profession_id','employee_id');
         $appointments2=EssentialsEmployeeAppointmet::all()->pluck('specialization_id','employee_id');
@@ -647,7 +648,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
     
-                $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
+              //  $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
                 $business_id = request()->session()->get('user.business_id');
                 if (!isset($user_data['selected_contacts'])) {
                     $user_data['selected_contacts'] = 0;
