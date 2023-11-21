@@ -116,7 +116,19 @@
 </div>
 
 
+<div class="col-md-9">
+    <div class="form-group">
+        {!! Form::label('company_name', __('essentials::lang.company_name') . ':') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-id-badge"></i>
+            </span>
+            {!! Form::select('company_id', $business, null, ['class' => 'form-control', 'style'=>'height:36px',
+                 'placeholder' => __('essentials::lang.select_company')]); !!}
+        </div>
 
+    </div>
+</div>
 				
 
 
@@ -157,17 +169,7 @@
     </div>
 </div>
 
-<div class="col-md-9">
-    <div class="form-group">
-        {!! Form::label('company_name', __('essentials::lang.company_name') . ':') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
-            </span>
-            {!! Form::text('company_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.company_name')]); !!}
-        </div>
-    </div>
-</div>
+
 
 
 

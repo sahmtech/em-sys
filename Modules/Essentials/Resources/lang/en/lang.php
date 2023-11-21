@@ -638,5 +638,7 @@ return [
     'view_profile_picture'=>'view profile picture',
     'expired_contracts'=>'expired contracts',
 'remaining_contracts'=>'remaining contracts',
+'management'=>'management',
+'select_company'=>' select company ',
 ];
 

@@ -14,6 +14,7 @@ use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\BusinessLocation;
 use App\Utils\Util;
+use App\Business;
 use DB;
 use App\User;
 use App\Contact;
@@ -147,6 +148,21 @@ class EssentialsCardsController extends Controller
      {
          $employeeId = $request->get('employeeId');
      
+     
+         $userType = User::where('id', $employeeId)->value('user_type');
+     
+         if ($userType !== 'worker') {
+           
+             return response()->json([
+                 'all_responsible_users' => [
+                     'id' => null,
+                     'name' => trans('essentials::lang.management'),
+                 ],
+                 'responsible_client' => [],
+             ]);
+         }
+     
+         // If user type is worker
          $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
              ->where('contacts.type', 'customer')
              ->where('users.id', '=', $employeeId)
@@ -170,6 +186,7 @@ class EssentialsCardsController extends Controller
              'responsible_client' => $responsible_clients,
          ]);
      }
+     
      
      
     public function create(Request $request)
@@ -202,8 +219,10 @@ class EssentialsCardsController extends Controller
         $employees = $all_users->pluck('full_name', 'id');
         $all_responsible_users=$responsible_users->pluck('supplier_business_name', 'id');
 
+
+        $business=Business::where('id', $business_id)->pluck('name','id');
         return view('essentials::cards.create')
-            ->with(compact('employees','all_responsible_users','responsible_client'));
+            ->with(compact('employees','all_responsible_users','responsible_client','business'));
     }
 
     /**

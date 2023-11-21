@@ -995,6 +995,8 @@ return[
 
 'years'=>'سنة',
 'months'=>'شهر',
+'management'=>'إدارة',
+'select_company'=>'اختر شركة ',
 
 
 
