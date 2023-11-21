@@ -20,6 +20,7 @@ use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
@@ -165,6 +166,7 @@ class EssentialsManageEmployeeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+
         $permissionName = 'essentials.view_profile_picture';
 
 
@@ -177,6 +179,7 @@ class EssentialsManageEmployeeController extends Controller
         }
         // $userId = 1270;
         // $user = User::find($userId);
+
 
         // if ($user && $permission) {
 
@@ -466,9 +469,22 @@ class EssentialsManageEmployeeController extends Controller
           'AB-'=>'AB negative (AB-).',
           'O+'=>'O positive (O+).',
           'O-'=>'O positive (O-).',];
-        return view('followup::workers.create')
-                ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
-                 'locations','banks', 'contract_types','form_partials'));
+// <<<<<<< Rahaf
+
+          if (!empty($user->id_proof_name))
+         {$idProofName= $user->id_proof_name;}
+         else{$idProofName=null;}
+
+         $resident_doc=null;
+         $user = null;
+        return view('essentials::employee_affairs.employee_affairs.create')
+                ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
+                 'locations','banks', 'contract_types','form_partials','idProofName','resident_doc','user'));
+// =======
+//         return view('followup::workers.create')
+//                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
+//                  'locations','banks', 'contract_types','form_partials'));
+// >>>>>>> Development
     }
 
     /**
@@ -516,7 +532,7 @@ class EssentialsManageEmployeeController extends Controller
             } else {
 
                 $request['emp_number'] =  $business_id . '000';
-//             }
+            }
 // <<<<<<< Rama
    
            return redirect()->route('employees')->with('status', $output);
@@ -614,6 +630,24 @@ class EssentialsManageEmployeeController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::where('business_id', $business_id)
+// <<<<<<< Rahaf
+//                     ->with(['contactAccess'])
+//                     ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+//                     ->find($id);
+        
+       
+//         $dataArray=[];
+//         if(!empty($user->bank_details))
+//          {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
+     
+        
+//         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
+//         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+//         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
+//         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
+//       //  dd(  $Contract );
+        
+// =======
             ->with(['contactAccess'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
             ->find($id);
@@ -630,6 +664,7 @@ class EssentialsManageEmployeeController extends Controller
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
         // dd( $Qualification);
 
+// >>>>>>> Development
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
         if ($professionId !== null) {
@@ -699,33 +734,74 @@ class EssentialsManageEmployeeController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
-            ->findOrFail($id);
-        $appointments = EssentialsEmployeeAppointmet::select([
-
+// <<<<<<< Rahaf
+                    ->with(['contactAccess'])
+                    ->findOrFail($id);
+                  //  dd($user);
+        $appointments=EssentialsEmployeeAppointmet::select([
+          
             'profession_id',
             'specialization_id'
         ])->where('employee_id', $id)
-            ->first();
-        if ($appointments !== null) {
-            $user->profession_id = $appointments['profession_id'];
-            $user->specialization_id = $appointments['specialization_id'];
-        } else {
-            $user->profession_id = null;
-            $user->specialization_id = null;
-        }
-        $blood_types = [
-            'A+' => 'A positive (A+).',
-            'A-' => 'A negative (A-).',
-            'B+' => 'B positive (B+)',
-            'B-' => 'B negative (B-).',
-            'AB+' => 'AB positive (AB+).',
-            'AB-' => 'AB negative (AB-).',
-            'O+' => 'O positive (O+).',
-            'O-' => 'O positive (O-).',
-        ];
+        ->first();
 
-        $idProofName = $user->id_proof_name;
+        $resident_doc=EssentialsOfficialDocument::select(['expiration_date','number'])->where('employee_id', $id)
+        ->first();
+
+
+
+
+    if($appointments !== null)
+       {
+         $user->profession_id =$appointments['profession_id'];
+        $user->specialization_id =$appointments['specialization_id'];
+       }
+       else
+       {
+        $user->profession_id =null;
+        $user->specialization_id =null;
+       }
+       $blood_types = ['A+' => 'A positive (A+).',
+       'A-' => 'A negative (A-).',
+       'B+' => 'B positive (B+)',
+       'B-' => 'B negative (B-).',
+         'AB+'=>'AB positive (AB+).',
+         'AB-'=>'AB negative (AB-).',
+         'O+'=>'O positive (O+).',
+         'O-'=>'O positive (O-).',];
+
+        if (!empty($user->id_proof_name))
+         {$idProofName= $user->id_proof_name;}
+         else{$idProofName=null;}
+// =======
+//             ->with(['contactAccess'])
+//             ->findOrFail($id);
+//         $appointments = EssentialsEmployeeAppointmet::select([
+
+//             'profession_id',
+//             'specialization_id'
+//         ])->where('employee_id', $id)
+//             ->first();
+//         if ($appointments !== null) {
+//             $user->profession_id = $appointments['profession_id'];
+//             $user->specialization_id = $appointments['specialization_id'];
+//         } else {
+//             $user->profession_id = null;
+//             $user->specialization_id = null;
+//         }
+//         $blood_types = [
+//             'A+' => 'A positive (A+).',
+//             'A-' => 'A negative (A-).',
+//             'B+' => 'B positive (B+)',
+//             'B-' => 'B negative (B-).',
+//             'AB+' => 'AB positive (AB+).',
+//             'AB-' => 'AB negative (AB-).',
+//             'O+' => 'O positive (O+).',
+//             'O-' => 'O positive (O-).',
+//         ];
+
+//         $idProofName = $user->id_proof_name;
+// >>>>>>> Development
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $roles = $this->getRolesArray($business_id);
@@ -751,7 +827,12 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
         return view('essentials::employee_affairs.employee_affairs.edit')
-            ->with(compact('roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
+
+                ->with(compact('roles','banks','idProofName' ,'user','blood_types', 'contact_access',
+                 'is_checked_checkbox', 'locations', 'permitted_locations',
+                  'form_partials','appointments' ,'username_ext','contract_types',
+                  'nationalities','specializations','professions','resident_doc'));
+
     }
 
     /**
@@ -796,6 +877,21 @@ class EssentialsManageEmployeeController extends Controller
             } else {
                 $user_data['allow_login'] = 1;
             }
+
+            try {
+                $user_data = $request->only([
+                    'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status','border_no','bank_details',
+                    'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1','location_id',
+                    'social_media_2', 'permanent_address', 'current_address','profession','specialization',
+
+                    'guardian_name', 'custom_field_1', 'custom_field_2','nationality','contract_type','contract_start_date','contract_end_date',
+                    'contract_duration','probation_period','contract_duration_unit',
+                    'is_renewable','contract_file','essentials_salary','essentials_pay_period',
+                    'salary_type','amount','can_add_category',
+                    'travel_ticket_categorie','health_insurance','selectedData',
+                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
+                    'max_sales_discount_percent', 'family_number', 'alt_number',
+
 
             if (!empty($request->input('password'))) {
                 $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
