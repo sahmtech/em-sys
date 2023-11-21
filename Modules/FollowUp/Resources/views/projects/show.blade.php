@@ -14,7 +14,19 @@
 
       @component('components.widget', ['class' => 'box-primary'])
 
-      
+      @can('user.create')
+            @slot('tool')
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="box-tools">
+                            <a class="btn btn-block btn-primary" 
+                            href="{{ route('createWorker', ['id' => $contactId]) }}">
+                            <i class="fa fa-plus"></i> @lang('messages.add')</a>
+                        </div> 
+                    </div>
+                </div>
+            @endslot
+        @endcan
           <div class="row">
           
          

@@ -126,7 +126,7 @@ class EssentialsRequestController extends Controller
                      abort(403, 'Unauthorized action.');
             }
         $leaveTypes=EssentialsLeaveType::all()->pluck('leave_type','id');
-        $query = User::where('business_id', $business_id)->where('users.user_type','=' ,'worker');
+        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $workers = $all_users->pluck('full_name', 'id');
         return view('essentials::requests.create')->with(compact('workers','leaveTypes'));

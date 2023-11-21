@@ -429,6 +429,47 @@ class EssentialsManageEmployeeController extends Controller
                 'form_partials'
             ));
     }
+    public function createWorker($id)
+    {
+        
+        if (! auth()->user()->can('user.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $business_id = request()->session()->get('user.business_id');
+
+        //Check if subscribed or not, then check for users quota
+        if (! $this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse();
+        } 
+        elseif (! $this->moduleUtil->isQuotaAvailable('users', $business_id)) {
+            return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
+        }
+
+        $roles = $this->getRolesArray($business_id);
+        $username_ext = $this->moduleUtil->getUsernameExtension();
+        $locations = BusinessLocation::where('business_id', $business_id)
+                                    ->Active()
+                                    ->get();
+        $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $banks = EssentialsBankAccounts::all()->pluck('name','id');
+        //Get user form part from modules
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities=EssentialsCountry::nationalityForDropdown();
+
+        $contact = Contact::find($id);
+
+        $blood_types = ['A+' => 'A positive (A+).',
+        'A-' => 'A negative (A-).',
+        'B+' => 'B positive (B+)',
+        'B-' => 'B negative (B-).',
+          'AB+'=>'AB positive (AB+).',
+          'AB-'=>'AB negative (AB-).',
+          'O+'=>'O positive (O+).',
+          'O-'=>'O positive (O-).',];
+        return view('followup::workers.create')
+                ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
+                 'locations','banks', 'contract_types','form_partials'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -438,6 +479,7 @@ class EssentialsManageEmployeeController extends Controller
     public function store(Request $request)
     {
 
+
         if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -445,6 +487,7 @@ class EssentialsManageEmployeeController extends Controller
         try {
             if (!empty($request->input('dob'))) {
                 $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+
             }
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
@@ -473,35 +516,95 @@ class EssentialsManageEmployeeController extends Controller
             } else {
 
                 $request['emp_number'] =  $business_id . '000';
-            }
-
-
-            $user = $this->moduleUtil->createUser($request);
-
-            event(new UserCreatedOrModified($user, 'added'));
-
-            $output = [
-                'success' => 1,
-                'msg' => __('user.user_added'),
-            ];
-        } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            $output = [
-                'success' => 0,
-                'msg' => $e->getMessage(),
-            ];
-        }
-        //return $output;
-        return redirect()->route('employees')->with('status', $output);
+//             }
+// <<<<<<< Rama
+   
+           return redirect()->route('employees')->with('status', $output);
     }
+    public function storeWorker(Request $request)
+    {
+          
+            if (! auth()->user()->can('user.create')) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            try {
+                if (! empty($request->input('dob'))) {
+                    $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+                }
+    
+                $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+    
+                $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+                
+                $business_id = request()->session()->get('user.business_id');
+// =======
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
+
+//             $user = $this->moduleUtil->createUser($request);
+
+//             event(new UserCreatedOrModified($user, 'added'));
+
+//             $output = [
+//                 'success' => 1,
+//                 'msg' => __('user.user_added'),
+//             ];
+//         } catch (\Exception $e) {
+//             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+//             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+//             $output = [
+//                 'success' => 0,
+//                 'msg' => $e->getMessage(),
+//             ];
+//         }
+//         //return $output;
+//         return redirect()->route('employees')->with('status', $output);
+//     }
+// >>>>>>> Development
+
+                $numericPart = (int)substr($business_id, 3);
+                $lastEmployee = User::where('business_id', $business_id)
+                        ->orderBy('emp_number', 'desc')
+                        ->first();
+
+                if ($lastEmployee) {
+                      
+                        $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+
+                        $nextNumericPart = $lastEmpNumber + 1;
+
+                        $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+                    } 
+                
+                else
+                    {
+                      
+                        $request['emp_number'] =  $business_id .'000';
+
+                    }
+
+                 
+                $user = $this->moduleUtil->createUser($request);
+    
+                event(new UserCreatedOrModified($user, 'added'));
+    
+                $output = ['success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            } 
+            catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+                error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                $output = ['success' => 0,
+                    'msg' => $e->getMessage(),
+                ];
+            }
+   
+           return redirect()->route('projects')->with('status',$output);
+    }
+ 
     public function show($id)
     {
         if (!auth()->user()->can('user.view')) {
