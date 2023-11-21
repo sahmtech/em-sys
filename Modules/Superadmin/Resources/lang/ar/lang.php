@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'superadmin' => 'من المشرفين المميزين',
+    //'superadmin' => 'من المشرفين المميزين',
+    'superadmin' => 'الإدارة العامة',
     'dashboard' => 'لوحة القيادة',
     'all_business' => 'جميع الشركات',
     'manage_business' => 'إدارة جميع الشركات المسجلة',
