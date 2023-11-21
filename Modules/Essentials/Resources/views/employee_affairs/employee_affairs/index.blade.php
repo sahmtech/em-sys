@@ -73,52 +73,45 @@
 @endcomponent
     @component('components.widget', ['class' => 'box-primary'])
 
-        @can('user.create')
-            @slot('tool')
-
-              
-
+    <div class="row">
+        <div class="col-sm-3">
+            @can('user.create')
+                @slot('tool')
+                    <div class="box-tools">
+                        <a class="btn btn-block btn-primary" href="{{ route('createEmployee') }}">
+                            <i class="fa fa-plus"></i> @lang('messages.add')
+                        </a>
+                    </div>
+                @endslot
+            @endcan
+        </div>
     
-
-
-<div class="row">
-<div class="col-sm-3">
-<div class="box-tools">
-                    <a class="btn btn-block btn-primary" 
-                    href="{{ route('createEmployee') }}" >
-                    <i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
-                 </div> 
-</div>
-@if(count($business_locations) > 0)
-	<div class="col-sm-3">
-		<div class="form-group">
-			<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-map-marker"></i>
-				</span>
-					{!! Form::select('select_location_id', $business_locations, null,
-                         ['class' => 'form-control input-sm',
-					'id' => 'select_location_id', 
-                    'style'=>'height:36px; width:100%',
-                    'placeholder' => __('lang_v1.all'),
-					'required', 'autofocus'], $bl_attributes); !!}
-						
-					<span class="input-group-addon">
-							@show_tooltip(__('tooltip.sale_location'))
-						</span> 
-			</div>
-		</div>
-	</div>
-    @endif
-</div>
-
-
-            @endslot
-
-
-
-        @endcan
-
+        @if(count($business_locations) > 0)
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="fa fa-map-marker"></i>
+                        </span>
+                        {!! Form::select('select_location_id', $business_locations, null, [
+                            'class' => 'form-control input-sm',
+                            'id' => 'select_location_id',
+                            'style' => 'height:36px; width:100%',
+                            'placeholder' => __('lang_v1.all'),
+                            'required',
+                            'autofocus'
+                        ], $bl_attributes); !!}
+    
+                        <span class="input-group-addon">
+                            @show_tooltip(__('tooltip.sale_location'))
+                        </span>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+    
+    
         @can('user.view')
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="employees">
