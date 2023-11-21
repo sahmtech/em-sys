@@ -58,6 +58,8 @@
 
 
 
+
+
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
     <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control" onchange="updateNationalityOptions(this)">
@@ -67,22 +69,25 @@
     </select>
 </div>
 
-<div id="eqamaEndDateInput" class="form-group col-md-3" style="display: none;">
-    {!! Form::label('eqama_end_date', __('lang_v1.eqama_end_date') . ':') !!}
-    {!! Form::date('eqama_end_date', null, ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('lang_v1.eqama_end_date'), 'id' => 'eqama_end_date']) !!}
-  
+<div id="eqamaEndDateInput" class="form-group col-md-3" 
+     style="{{ !is_null($resident_doc) && !is_null($resident_doc->expiration_date) ? '' : 'display: none;' }}">
+    {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
+    {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '',
+         ['class' => 'form-control', 'style' => 'height:40px', 
+         'placeholder' => __('lang_v1.eqama_end_date'), 'id' => 'eqama_end_date']) !!}
 </div>
 
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
     {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null,
-         ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('lang_v1.id_proof_number'),
+         ['class' => 'form-control','style'=>'height:40px',  'placeholder' => __('lang_v1.id_proof_number'),
           'oninput' => 'validateIdProofNumber(this)']) !!}
     <span id="idProofNumberError" class="text-danger"></span>
 </div>
-<div class="form-group col-md-6">
+
+<div class="form-group col-md-6" id="border_no_container" style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
     {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
-    {!! Form::text('border_no', !empty($user->border_no) ? $user->border_no : '3', ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10', 'oninput' => 'validateBorderNumber()']) !!}
+    {!! Form::text('border_no', optional($user)->border_no ?? '3', ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('essentials::lang.border_number'), 'id' => 'border_no', 'maxlength' => '10', 'oninput' => 'validateBorderNumber()']) !!}
     <div id="border_no_error" class="text-danger"></div>
 </div>
 
@@ -168,6 +173,28 @@
     @show_tooltip(__('lang_v1.tax_payer_id_help'))
     {!! Form::text('bank_details[tax_payer_id]', !empty($bank_details['tax_payer_id']) ? $bank_details['tax_payer_id'] : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'tax_payer_id', 'placeholder' => __( 'lang_v1.tax_payer_id') ]); !!}
 </div> --}}
+
+<script>
+    $(document).ready(function () {
+        // Initial check when the page loads
+        toggleBorderNoVisibility();
+
+        // Event listener for the dropdown change
+        $('#id_proof_name').on('change', function () {
+            toggleBorderNoVisibility();
+        });
+
+        // Function to toggle visibility based on the selected option
+        function toggleBorderNoVisibility() {
+            var idProofName = $('#id_proof_name').val();
+            if (idProofName === 'eqama') {
+                $('#border_no_container').show();
+            } else {
+                $('#border_no_container').hide();
+            }
+        }
+    });
+</script>
 <script>
     $(document).ready(function () {
         $('#id_proof_name').change(function () {
@@ -180,7 +207,7 @@
             } else {
                
                 eqamaEndDateInput.hide();
-                $('#eqama_end_date').val('');
+                $('#expiration_date').val('');
             }
         });
     });
@@ -233,6 +260,8 @@ function validateBorderNumber() {
   
     document.getElementById('border_no').addEventListener('input', validateBorderNumber);
 </script>
+
+
 
 
 <script>

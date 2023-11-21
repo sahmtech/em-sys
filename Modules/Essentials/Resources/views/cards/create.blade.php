@@ -123,8 +123,9 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('company_id', $business, null, ['class' => 'form-control', 'style'=>'height:36px',
-                 'placeholder' => __('essentials::lang.select_company')]); !!}
+            {!! Form::select('company_id', $business, $employee->business->name ?? null,
+                 ['class' => 'form-control', 'style'=>'height:36px',
+                ]); !!}
         </div>
 
     </div>

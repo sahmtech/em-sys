@@ -1431,4 +1431,5 @@ return [
 'validate_mobile'=>'رقم الموبايل يجب أن يبدأ ب 05 و لايتجاوز العشر أرقام',
 'username_exists_message'=>'اسم المستخدم موجود سابقا',
 'enterusername'=>'أدخل اسم المستخدم',
+'under process'=>'قيد الدراسة',
 ];

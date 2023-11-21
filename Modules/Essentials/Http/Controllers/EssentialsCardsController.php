@@ -221,8 +221,10 @@ class EssentialsCardsController extends Controller
 
 
         $business=Business::where('id', $business_id)->pluck('name','id');
+        $employee=user::with('business') ->where('id','=', $employeeId)
+        ->first();
         return view('essentials::cards.create')
-            ->with(compact('employees','all_responsible_users','responsible_client','business'));
+            ->with(compact('employees','all_responsible_users','responsible_client','business','employee'));
     }
 
     /**
