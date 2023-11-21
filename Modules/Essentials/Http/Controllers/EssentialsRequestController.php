@@ -126,7 +126,7 @@ class EssentialsRequestController extends Controller
                      abort(403, 'Unauthorized action.');
             }
         $leaveTypes=EssentialsLeaveType::all()->pluck('leave_type','id');
-        $query = User::where('business_id', $business_id)->where('users.user_type','=' ,'worker');
+        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $workers = $all_users->pluck('full_name', 'id');
         return view('essentials::requests.create')->with(compact('workers','leaveTypes'));
@@ -140,17 +140,30 @@ class EssentialsRequestController extends Controller
                 'type' => 'required|in:exitRequest,returnRequest,escapeRequest,advanceSalary,leavesAndDepartures,atmCard,residenceRenewal,residenceCard,workerTransfer',
                 'start_date' => 'nullable|date',
                 'end_date' => 'nullable|date',
+                'escape_date'=>'nullable|date',
                 'attachment' => 'nullable|string',
                 'note' => 'nullable|string',
                 'reason' => 'nullable|string',
                 'leaveType' => 'sometimes',
                 'escape_time' => 'sometimes', 
-                'attachment' => 'sometimes',
+                'attachment' => 'sometimes|file',
                 'amount' => 'sometimes', 
                 'installmentsNumber' => 'sometimes', 
                 'monthlyInstallment' => 'sometimes',
             
             ]);
+            $attachmentPath = null;
+           
+           
+            if (isset($validatedData['attachment']) && !empty($validatedData['attachment'])) {
+                $attachmentPath = $validatedData['attachment']->store('/requests_attachments');
+            }
+
+            if (is_null($validatedData['start_date']) && !empty($validatedData['escape_date'])) {
+                $startDate = $validatedData['escape_date'];
+            } else {
+                $startDate = $validatedData['start_date'];
+            }
             $procedure=EssentialsWkProcedure::where('type',$validatedData['type'])->get();
             if($procedure->count() == 0){
                 $output = [
@@ -164,11 +177,11 @@ class EssentialsRequestController extends Controller
                 'request_no' => $this->generateRequestNo($validatedData['type']),
                 'worker_id' => $validatedData['worker_id'],
                 'type' => $validatedData['type'],
-                'start_date' => $validatedData['start_date'],
+                'start_date' => $startDate,
                 'end_date' => $validatedData['end_date'],
                 'reason' => $validatedData['reason'],
                 'note' => $validatedData['note'],
-                'attachment' => $validatedData['attachment'],
+                'attachment' => $attachmentPath,
                 'essentials_leave_type_id' => $validatedData['leaveType'],
                 'escape_time' => $validatedData['escape_time'],
                 'installmentsNumber' => $validatedData['installmentsNumber'],

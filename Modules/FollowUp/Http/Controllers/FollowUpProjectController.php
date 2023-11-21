@@ -163,7 +163,7 @@ class FollowUpProjectController extends Controller
     ->get();
     
 
-    return view('followup::projects.show', compact('users'));
+    return view('followup::projects.show', compact('users','contactId'));
 
     
 }

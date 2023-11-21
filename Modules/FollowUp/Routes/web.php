@@ -23,7 +23,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
     
         Route::get('/workers',[\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
         Route::get('/workers/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'show'])->name('showWorker');
-     
+        Route::get('/createWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'createWorker'])->name('createWorker');
+        Route::post('/storeWorker', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'storeWorker'])->name('storeWorker');
+
    //     Route::get('/followUpRequests',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index'])->name('followUpRequests');
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');
         Route::get('/createRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'create'])->name('createRequest');

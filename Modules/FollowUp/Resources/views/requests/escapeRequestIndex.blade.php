@@ -25,7 +25,7 @@
                          
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.escape_time')</th>
-                          
+                            <th>@lang('followup::lang.escape_date')</th>                          
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.reason')</th>
@@ -81,11 +81,11 @@
      
                  columns: [
                
-              { data: 'user' },
-                 { data: 'escape_time' },
-            
+                { data: 'user' },
+                { data: 'escape_time' },
+                { data: 'start_date' },            
                 { data: 'status' } ,
-                 { data: 'status_note' },
+                { data: 'status_note' },
                 { data: 'reason' },
               
                 {
