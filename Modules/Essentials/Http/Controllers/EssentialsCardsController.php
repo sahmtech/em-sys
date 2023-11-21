@@ -14,6 +14,7 @@ use App\Utils\NotificationUtil;
 use App\Utils\TransactionUtil;
 use App\BusinessLocation;
 use App\Utils\Util;
+use App\Business;
 use DB;
 use App\User;
 use App\Contact;
@@ -219,7 +220,7 @@ class EssentialsCardsController extends Controller
         $all_responsible_users=$responsible_users->pluck('supplier_business_name', 'id');
 
 
-        $business=Businnes::where('users.business_id', $business_id)->pluck('name','id');
+        $business=Business::where('id', $business_id)->pluck('name','id');
         return view('essentials::cards.create')
             ->with(compact('employees','all_responsible_users','responsible_client','business'));
     }
