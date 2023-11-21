@@ -976,6 +976,7 @@ return[
 'responsible_client'=>'المسؤول عن العميل',
 'card_no'=>'رقم كرت العمل',
 'edit_Appointme'=>'تعديل التعيين',
+
 'add_procedure'=>'إضافة طلب',
 'procedure_type'=>'نوع الطلب',
 'can_reject'=>'له حق الرفض',
@@ -989,7 +990,12 @@ return[
 'contract_status'=>'نسب العقود',
 'expired_contracts'=>'العقود المنتهية',
 'remaining_contracts'=>'العقود انتهت فترة التجربة',
+
 'escape_date'=>'تاريخ الهروب',
+
+'years'=>'سنة',
+'months'=>'شهر',
+
 
 
 

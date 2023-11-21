@@ -8,6 +8,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
 
 class UserController extends Controller
 {
@@ -60,8 +61,8 @@ class UserController extends Controller
           'O-'=>'O positive (O-).',];
 
         $nationalities=EssentialsCountry::nationalityForDropdown();
-
-        return view('user.profile', compact('user', 'languages','blood_types','nationalities'));
+        $banks = EssentialsBankAccounts::all()->pluck('name','id');
+        return view('user.profile', compact('user','banks', 'languages','blood_types','nationalities'));
     }
 
     /**
