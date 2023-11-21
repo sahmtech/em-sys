@@ -77,9 +77,7 @@ class EssentialsEmployeeContractController extends Controller
 
                 return $item;
             })
-            ->editColumn('contract_duration', function ($row) {
-                return $row->contract_duration . ' ' . trans('essentials::lang.' . $row->contract_per_period);
-            })
+        
             ->addColumn(
                 'action',
                  function ($row) {
