@@ -519,7 +519,65 @@ class EssentialsManageEmployeeController extends Controller
    
            return redirect()->route('employees')->with('status', $output);
     }
+    public function storeWorker(Request $request)
+    {
+          
+            if (! auth()->user()->can('user.create')) {
+                abort(403, 'Unauthorized action.');
+            }
+    
+            try {
+                if (! empty($request->input('dob'))) {
+                    $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+                }
+    
+                $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+    
+                $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+                
+                $business_id = request()->session()->get('user.business_id');
 
+                $numericPart = (int)substr($business_id, 3);
+                $lastEmployee = User::where('business_id', $business_id)
+                        ->orderBy('emp_number', 'desc')
+                        ->first();
+
+                if ($lastEmployee) {
+                      
+                        $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
+
+                        $nextNumericPart = $lastEmpNumber + 1;
+
+                        $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+                    } 
+                
+                else
+                    {
+                      
+                        $request['emp_number'] =  $business_id .'000';
+
+                    }
+
+                 
+                $user = $this->moduleUtil->createUser($request);
+    
+                event(new UserCreatedOrModified($user, 'added'));
+    
+                $output = ['success' => 1,
+                    'msg' => __('user.user_added'),
+                ];
+            } 
+            catch (\Exception $e) {
+                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+                error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                $output = ['success' => 0,
+                    'msg' => $e->getMessage(),
+                ];
+            }
+   
+           return redirect()->route('projects')->with('status',$output);
+    }
  
     public function show($id)
     {

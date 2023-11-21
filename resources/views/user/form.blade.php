@@ -62,8 +62,8 @@
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
     <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control" onchange="updateNationalityOptions(this)">
         <option value="">@lang('user.select_proof_name')</option>
-        <option value="national_id" {{ $idProofName == 'national_id' ? 'selected' : '' }}>@lang('user.national_id')</option>
-    <option value="eqama" {{ $idProofName == 'eqama' ? 'selected' : '' }}>@lang('user.eqama')</option>
+        <option value="national_id" {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>@lang('user.national_id')</option>
+        <option value="eqama" {{ !empty($user->id_proof_name) && $user->id_proof_name == 'eqama' ? 'selected' : '' }}>@lang('user.eqama')</option>
     </select>
 </div>
 
