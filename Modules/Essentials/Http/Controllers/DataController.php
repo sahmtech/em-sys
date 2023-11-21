@@ -904,15 +904,7 @@ class DataController extends Controller
         }
         if ($data['event'] == 'user_updated')
         {
-            if (request()->input('border_no') == 3) {
-            
-                $user_details['border_no'] = null;
-            }
-    
-            if (request()->input('contact_number') == 05) {
-                
-                $user_details['contact_number'] = null;
-            }
+           
 
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
@@ -923,6 +915,15 @@ class DataController extends Controller
             $user->location_id = request()->input('location_id');
             if (request()->input('health_insurance') != null){
                 $user->has_insurance= request()->input('health_insurance');
+            }
+            if (request()->input('border_no') == 3) {
+            
+                $user->border_no = null;
+            }
+    
+            if (request()->input('contact_number') == 05) {
+                
+                $user->contact_number = null;
             }
 
             $user->update();

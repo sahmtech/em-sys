@@ -21,6 +21,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsCountry;
@@ -404,10 +405,20 @@ class EssentialsManageEmployeeController extends Controller
           'AB-'=>'AB negative (AB-).',
           'O+'=>'O positive (O+).',
           'O-'=>'O positive (O-).',];
+     
+          if (!empty($user->id_proof_name))
+         {$idProofName= $user->id_proof_name;}
+         else{$idProofName=null;}
+
+         $resident_doc=null;
+         $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
-                 'locations','banks', 'contract_types','form_partials'));
+                 'locations','banks', 'contract_types','form_partials','idProofName','resident_doc','user'));
     }
+
+
+
     public function createWorker($id)
     {
         
@@ -712,8 +723,11 @@ class EssentialsManageEmployeeController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
+
+        $resident_doc=EssentialsOfficialDocument::select(['expiration_date','number'])->where('employee_id', $id)
+        ->first();
         return view('essentials::employee_affairs.employee_affairs.edit')
-                ->with(compact('roles','banks','idProofName' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
+                ->with(compact('resident_doc','roles','banks','idProofName' ,'user','blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials','appointments' ,'username_ext','contract_types','nationalities','specializations','professions'));
     }
 
     /**
