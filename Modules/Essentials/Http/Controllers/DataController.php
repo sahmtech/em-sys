@@ -904,6 +904,16 @@ class DataController extends Controller
         }
         if ($data['event'] == 'user_updated')
         {
+            if (request()->input('border_no') == 3) {
+            
+                $user_details['border_no'] = null;
+            }
+    
+            if (request()->input('contact_number') == 05) {
+                
+                $user_details['contact_number'] = null;
+            }
+
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
