@@ -992,6 +992,7 @@ return[
 'remaining_contracts'=>'العقود انتهت فترة التجربة',
 'years'=>'سنة',
 'months'=>'شهر',
+'management'=>'إدارة'
 
 
 
