@@ -406,7 +406,9 @@ class EssentialsManageEmployeeController extends Controller
           'O+'=>'O positive (O+).',
           'O-'=>'O positive (O-).',];
      
-   
+       
+       
+
          $resident_doc=null;
          $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
@@ -453,10 +455,8 @@ class EssentialsManageEmployeeController extends Controller
           'AB-'=>'AB negative (AB-).',
           'O+'=>'O positive (O+).',
           'O-'=>'O positive (O-).',];
-     
-
-         $resident_doc=null;
-         $user = null;
+          $resident_doc=null;
+          $user = null;
         return view('followup::workers.create')
                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
                  'locations','banks', 'contract_types','form_partials','resident_doc','user'));
