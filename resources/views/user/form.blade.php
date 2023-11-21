@@ -58,7 +58,6 @@
 
 
 
-
 <div class="form-group col-md-3">
     {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
     <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control" onchange="updateNationalityOptions(this)">

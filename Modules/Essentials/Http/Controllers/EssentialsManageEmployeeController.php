@@ -400,6 +400,47 @@ class EssentialsManageEmployeeController extends Controller
                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
                  'locations','banks', 'contract_types','form_partials'));
     }
+    public function createWorker($id)
+    {
+        
+        if (! auth()->user()->can('user.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $business_id = request()->session()->get('user.business_id');
+
+        //Check if subscribed or not, then check for users quota
+        if (! $this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse();
+        } 
+        elseif (! $this->moduleUtil->isQuotaAvailable('users', $business_id)) {
+            return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
+        }
+
+        $roles = $this->getRolesArray($business_id);
+        $username_ext = $this->moduleUtil->getUsernameExtension();
+        $locations = BusinessLocation::where('business_id', $business_id)
+                                    ->Active()
+                                    ->get();
+        $contract_types = EssentialsContractType::all()->pluck('type','id');
+        $banks = EssentialsBankAccounts::all()->pluck('name','id');
+        //Get user form part from modules
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities=EssentialsCountry::nationalityForDropdown();
+
+        $contact = Contact::find($id);
+
+        $blood_types = ['A+' => 'A positive (A+).',
+        'A-' => 'A negative (A-).',
+        'B+' => 'B positive (B+)',
+        'B-' => 'B negative (B-).',
+          'AB+'=>'AB positive (AB+).',
+          'AB-'=>'AB negative (AB-).',
+          'O+'=>'O positive (O+).',
+          'O-'=>'O positive (O-).',];
+        return view('followup::workers.create')
+                ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
+                 'locations','banks', 'contract_types','form_partials'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -408,7 +449,7 @@ class EssentialsManageEmployeeController extends Controller
      */
     public function store(Request $request)
     {
-           
+          
             if (! auth()->user()->can('user.create')) {
                 abort(403, 'Unauthorized action.');
             }
@@ -466,15 +507,11 @@ class EssentialsManageEmployeeController extends Controller
                     'msg' => $e->getMessage(),
                 ];
             }
-    //return $output;
+   
            return redirect()->route('employees')->with('status', $output);
-        }
+    }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
+ 
     public function show($id)
     {
         if (! auth()->user()->can('user.view')) {

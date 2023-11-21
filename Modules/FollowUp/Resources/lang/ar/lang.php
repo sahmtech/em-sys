@@ -83,7 +83,7 @@ return [
     'returned_successfully'=>'تم الإرجاع بنجاح',
     'returned_by'=>'تم الإرجاع من ',
     'escape_date'=>'تاريخ الهروب',
-
+    'add_new_worker'=>'إضافة عامل جديد',
 
 
 
