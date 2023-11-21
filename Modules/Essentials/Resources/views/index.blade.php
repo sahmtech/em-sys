@@ -190,11 +190,11 @@
 {!! $chart->script() !!}
 
 <script>
-    // Function to fetch leave status data from the server
+   
     function fetchLeaveStatusData() {
-        // You may need to adjust the URL based on your Laravel route
+      
         $.ajax({
-            url: '{{ route('leaveStatusData') }}', // Replace with your actual route
+            url: '{{ route('leaveStatusData') }}', 
             method: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -247,7 +247,7 @@
 <script>
      function fetchContractStatusData() {
         $.ajax({
-            url: '{{ route('contractStatusData') }}', // Adjust the route name
+            url: '{{ route('contractStatusData') }}',
             method: 'GET',
             dataType: 'json',
             success: function(response) {

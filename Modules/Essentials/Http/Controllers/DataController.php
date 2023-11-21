@@ -21,6 +21,7 @@ use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\Reminder;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Entities\EssentialsEntitlementType;
@@ -732,7 +733,7 @@ class DataController extends Controller
             else {
                 $contract=null;
             }
-          
+           
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
@@ -742,6 +743,7 @@ class DataController extends Controller
             $professions = EssentialsProfession::all()->pluck('name', 'id');
             return view('essentials::partials.user_form_part', compact('contract','nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
+
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
             $user_department = EssentialsDepartment::find($user->essentials_department_id);
@@ -753,6 +755,7 @@ class DataController extends Controller
                 'essentials_employees_contracts.contract_start_date',
                 'essentials_employees_contracts.contract_end_date',
                 'essentials_employees_contracts.contract_duration',
+                'essentials_employees_contracts.contract_per_period',
                 'essentials_employees_contracts.probation_period',
                 'essentials_employees_contracts.status',
                 'essentials_employees_contracts.is_renewable',
@@ -788,18 +791,36 @@ class DataController extends Controller
 
 
 
+        
+
+
+
             if (request()->input('contract_number') != null ||request()->input('contract_type') != null
             ||request()->input('contract_start_date') != null ||request()->input('contract_end_date') != null)
                 {
                     
-                    $contractDuration =  request()->input('contract_duration') . ' ' . __('essentials::lang.' . request()->input('contract_duration_unit'));
+                    $contractDuration =  request()->input('contract_duration') ;
+                    $contract_per_period=request()->input('contract_duration_unit');
                     $contract = new EssentialsEmployeesContract();
-
                     $contract->employee_id = $user->id;
-                    $contract->contract_number = request()->input('contract_number');
+                    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+
+        
+                    if ($latestRecord) {
+                        $latestRefNo = $latestRecord->contract_number;
+                        $numericPart = (int)substr($latestRefNo, 3); 
+                        $numericPart++;
+                        $contract->contract_number = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                    } else {
+        
+                        $contract->contract_number = 'EC0001';
+                    }
+                 
+                  //  $contract->contract_number = request()->input('contract_number');
                     $contract->contract_start_date = request()->input('contract_start_date');
                     $contract->contract_end_date = request()->input('contract_end_date');
                     $contract->contract_duration = $contractDuration;
+                    $contract->contract_per_period = $contract_per_period;
                     $contract->probation_period = request()->input('probation_period');
                     $contract->is_renewable = request()->input('is_renewable');
                     $contract->contract_type_id = request()->input('contract_type');
@@ -881,7 +902,8 @@ class DataController extends Controller
             //     }
             // }
         }
-        if ($data['event'] == 'user_updated'){
+        if ($data['event'] == 'user_updated')
+        {
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
@@ -894,17 +916,56 @@ class DataController extends Controller
             }
 
             $user->update();
+
+
+
+            //update  resicency information
+        if(!empty(request()->input('expiration_date')))
+        { 
+          $id=$data['model_instance']['id'];
+          $doc = EssentialsOfficialDocument::where('employee_id', $id)->first();
+         
+          if($doc)
+          {
+            $doc->type= 'residence_permit';
+            $doc->status= 'vaild';
+            $doc->employee_id= $user->id;
+            $doc->number= request()->input('id_proof_number');
+            $doc->expiration_date= request()->input('expiration_date');
+            $doc->update();
+          
+          }
+          else
+          {
+            $doc = new EssentialsOfficialDocument();
+            $doc->type= 'residence_permit';
+            $doc->status= 'vaild';
+            $doc->employee_id= $user->id;
+            $doc->number= request()->input('id_proof_number');
+            $doc->expiration_date= request()->input('expiration_date');
+            $doc->save();
+          }
+         
+       
+         
+        }
+
+
             $id=$data['model_instance']['id'];
             if (request()->input('contract_number') != null ||request()->input('contract_type') != null
             ||request()->input('contract_start_date') != null ||request()->input('contract_end_date') != null)
             {
+                $contractDuration =  request()->input('contract_duration') ;
+                $contract_per_period=request()->input('contract_duration_unit');
                 $contract = EssentialsEmployeesContract::where('employee_id', $id)->first();
 
-                if ($contract) {
+                if ($contract)
+                 {
                         $contract->contract_number = request()->input('contract_number');
                         $contract->contract_start_date = request()->input('contract_start_date');
                         $contract->contract_end_date = request()->input('contract_end_date');
-                        $contract->contract_duration = request()->input('contract_duration');
+                        $contract->contract_duration = $contractDuration;
+                        $contract->contract_per_period = $contract_per_period;
                         $contract->probation_period = request()->input('probation_period');
                         $contract->is_renewable = request()->input('is_renewable');
                         $contract->contract_type_id = request()->input('contract_type');
@@ -919,12 +980,16 @@ class DataController extends Controller
                     }
                 else
                 { 
+                    $contractDuration =  request()->input('contract_duration') ;
+                    $contract_per_period=request()->input('contract_duration_unit');
+                    
                         $contract = new EssentialsEmployeesContract();
                         $contract->employee_id = $user->id;
                         $contract->contract_number = request()->input('contract_number');
                         $contract->contract_start_date = request()->input('contract_start_date');
                         $contract->contract_end_date = request()->input('contract_end_date');
-                        $contract->contract_duration = request()->input('contract_duration');
+                        $contract->contract_duration = $contractDuration;
+                        $contract->contract_per_period = $contract_per_period;
                         $contract->probation_period = request()->input('probation_period');
                         $contract->is_renewable = request()->input('is_renewable');
                         $contract->contract_type_id = request()->input('contract_type');
@@ -996,6 +1061,8 @@ class DataController extends Controller
             }
         }
         }
+
+
 
 
         }

@@ -1559,13 +1559,29 @@ class Util
     {
       
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email','mid_name','profile_picture','profession','specialization',
-            'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
-            'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
+            'surname', 'first_name', 'last_name', 'email','mid_name',
+            'profile_picture','profession','specialization',
+            'user_type', 'crm_contact_id', 'allow_login',
+             'username', 'password',
+            'cmmsn_percent', 'max_sales_discount_percent', 'dob',
+             'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
             'custom_field_2', 'custom_field_3','eqama_end_date',
-             'custom_field_4', 'guardian_name', 'assigned_to','id_proof_name', 'id_proof_number', 'permanent_address', 'current_address', 'bank_details', 'selected_contacts','emp_number',
+             'custom_field_4', 'guardian_name', 'assigned_to',
+             'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no','expiration_date',
+              'current_address', 'bank_details', 'selected_contacts','emp_number',
         ]);
+
+        if ($request->input('border_no') == 3) {
+            
+            $user_details['border_no'] = null;
+        }
+
+        if ($request->input('contact_number') == 05) {
+            
+            $user_details['contact_number'] = null;
+        }
+
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
             $profile = $image->store('/profile_images');
@@ -1575,6 +1591,7 @@ class Util
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'active';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
         
+     
        // $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
        if(!empty($user_details['assigned_to']))
        {
@@ -1632,11 +1649,14 @@ class Util
         //Create the user
         $user = User::create($user_details);
         
-        if(!empty( $input2['expiration_date']))
-      {  $input2['type'] ='residence_permit';
-        $input2['number'] = $user_details['id_proof_number'];
-        $input2['expiration_date'] = $user_details['eqama_end_date'];
+    if(!empty( $user_details['expiration_date']))
+      { 
+        $input2['type'] ='residence_permit';
+        $input2['status'] ='vaild';
         $input2['employee_id'] = $user->id;
+        $input2['number'] = $user_details['id_proof_number'];
+        $input2['expiration_date'] = $user_details['expiration_date'];
+        
         EssentialsOfficialDocument::create($input2);
       }
 

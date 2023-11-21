@@ -36,18 +36,7 @@
     </div>
 </div>
 
-<div class="col-md-9">
-    <div class="form-group">
-        {!! Form::label('responsible_client', __('essentials::lang.responsible_client') . ':*') !!}
-        <div class="input-group">
-            <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
-            </span>
-            {!! Form::select('responsible_client', $responsible_client->pluck('full_name', 'id'), null,
-                 ['class' => 'form-control','style'=>'height:40px', 'id' => 'responsible_client']) !!}
-        </div>
-    </div>
-</div>
+
 
 <div class="col-md-9">
     <div class="form-group">
@@ -62,6 +51,19 @@
                 'id' => 'responsible_users',
                 'required',
             ]) !!}
+        </div>
+    </div>
+</div>
+
+<div class="col-md-9">
+    <div class="form-group">
+        {!! Form::label('responsible_client', __('essentials::lang.responsible_client') . ':*') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-id-badge"></i>
+            </span>
+            {!! Form::select('responsible_client', $responsible_client->pluck('full_name', 'id'), null,
+                 ['class' => 'form-control','style'=>'height:40px', 'id' => 'responsible_client']) !!}
         </div>
     </div>
 </div>

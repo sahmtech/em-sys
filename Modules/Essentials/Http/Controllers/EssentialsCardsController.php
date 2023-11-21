@@ -177,11 +177,12 @@ class EssentialsCardsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
-       $all_users = User::where('users.business_id', $business_id)
-     
-        ->select('users.id',
-            DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")
-        ) ->where('users.user_type', 'worker')
+        $all_users = User::where('users.business_id', $business_id)
+        ->where(function ($query) {
+            $query->whereNotNull('users.border_no')
+                ->orWhere('users.id_proof_name', 'eqama');
+        })
+        ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name"))
         ->get();
 
      $responsible_users = contact::where('type', 'customer')

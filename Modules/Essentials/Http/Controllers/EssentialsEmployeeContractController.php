@@ -46,6 +46,7 @@ class EssentialsEmployeeContractController extends Controller
                     'essentials_employees_contracts.contract_start_date',
                     'essentials_employees_contracts.contract_end_date',
                     'essentials_employees_contracts.contract_duration',
+                    'essentials_employees_contracts.contract_per_period',
                     'essentials_employees_contracts.probation_period',
                     'essentials_employees_contracts.contract_type_id',
                     'essentials_employees_contracts.is_renewable',
@@ -75,6 +76,9 @@ class EssentialsEmployeeContractController extends Controller
                 $item = $contract_types[$row->contract_type_id]??'';
 
                 return $item;
+            })
+            ->editColumn('contract_duration', function ($row) {
+                return $row->contract_duration . ' ' . trans('essentials::lang.' . $row->contract_per_period);
             })
             ->addColumn(
                 'action',
@@ -119,7 +123,17 @@ class EssentialsEmployeeContractController extends Controller
         }
  
         try {
-            $input = $request->only(['employee','contract_type' ,'contract_start_date', 'contract_end_date', 'contract_duration', 'probation_period','status','is_renewable','file']);
+            $input = $request->only([
+                'employee',
+                'contract_type' ,
+                'contract_start_date',
+                'contract_end_date',
+                 'contract_duration',
+                 'contract_duration_unit',
+                  'probation_period',
+                  'status',
+                  'is_renewable',
+                  'file']);
          
             $input2['employee_id'] = $input['employee'];
         
@@ -134,10 +148,10 @@ class EssentialsEmployeeContractController extends Controller
           $end_date = Carbon::parse($input['contract_end_date']);
           
           
-          $contract_duration = $start_date->diffInDays($end_date);
+         // $contract_duration = $start_date->diffInDays($end_date);
        
-          $input2['contract_duration'] = $contract_duration;
-          
+          $input2['contract_duration'] = $input['contract_duration'];
+          $input2['contract_per_period'] = $input['contract_duration_unit'];
           
 
             $input2['probation_period'] = $input['probation_period'];
