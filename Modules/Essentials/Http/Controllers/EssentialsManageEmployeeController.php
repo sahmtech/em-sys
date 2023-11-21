@@ -200,15 +200,16 @@ class EssentialsManageEmployeeController extends Controller
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
         $business_id = request()->session()->get('user.business_id');
 
-        $nationalities=EssentialsCountry::nationalityForDropdown();
-       // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)->whereIn('user_type', ['employee', 'worker', 'manager'])
-        ->leftjoin('essentials_employee_appointmets','essentials_employee_appointmets.employee_id','users.id')
-        ->leftjoin('essentials_admission_to_works','essentials_admission_to_works.employee_id','users.id')
-        ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
-        ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
-        ->select(['users.id',
-        'users.emp_number',
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)->whereIn('user_type', ['employee', 'worker', 'manager'])
+            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
+            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            ->select([
+                'users.id',
+                'users.emp_number',
 
                 'users.username',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
@@ -434,57 +435,72 @@ class EssentialsManageEmployeeController extends Controller
     }
     public function createWorker($id)
     {
-        
-        if (! auth()->user()->can('user.create')) {
+
+        if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not, then check for users quota
-        if (! $this->moduleUtil->isSubscribed($business_id)) {
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
-        } 
-        elseif (! $this->moduleUtil->isQuotaAvailable('users', $business_id)) {
+        } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
             return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
         }
 
         $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
         $locations = BusinessLocation::where('business_id', $business_id)
-                                    ->Active()
-                                    ->get();
-        $contract_types = EssentialsContractType::all()->pluck('type','id');
-        $banks = EssentialsBankAccounts::all()->pluck('name','id');
+            ->Active()
+            ->get();
+        $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
-        $nationalities=EssentialsCountry::nationalityForDropdown();
+        $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $contact = Contact::find($id);
 
-        $blood_types = ['A+' => 'A positive (A+).',
-        'A-' => 'A negative (A-).',
-        'B+' => 'B positive (B+)',
-        'B-' => 'B negative (B-).',
-          'AB+'=>'AB positive (AB+).',
-          'AB-'=>'AB negative (AB-).',
-          'O+'=>'O positive (O+).',
-          'O-'=>'O positive (O-).',];
-// <<<<<<< Rahaf
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
+        // <<<<<<< Rahaf
 
-          if (!empty($user->id_proof_name))
-         {$idProofName= $user->id_proof_name;}
-         else{$idProofName=null;}
+        if (!empty($user->id_proof_name)) {
+            $idProofName = $user->id_proof_name;
+        } else {
+            $idProofName = null;
+        }
 
-         $resident_doc=null;
-         $user = null;
+        $resident_doc = null;
+        $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
-                ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
-                 'locations','banks', 'contract_types','form_partials','idProofName','resident_doc','user'));
-// =======
-//         return view('followup::workers.create')
-//                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
-//                  'locations','banks', 'contract_types','form_partials'));
-// >>>>>>> Development
+            ->with(compact(
+                'roles',
+                'nationalities',
+                'username_ext',
+                'blood_types',
+                'contacts',
+                'locations',
+                'banks',
+                'contract_types',
+                'form_partials',
+                'idProofName',
+                'resident_doc',
+                'user'
+            ));
+        // =======
+        //         return view('followup::workers.create')
+        //                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contact',
+        //                  'locations','banks', 'contract_types','form_partials'));
+        // >>>>>>> Development
     }
 
     /**
@@ -503,7 +519,6 @@ class EssentialsManageEmployeeController extends Controller
         try {
             if (!empty($request->input('dob'))) {
                 $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
-
             }
 
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
@@ -535,84 +550,82 @@ class EssentialsManageEmployeeController extends Controller
             }
 
             $user = $this->moduleUtil->createUser($request);
-    
+
             event(new UserCreatedOrModified($user, 'added'));
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('user.user_added'),
             ];
-        } 
-        catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-            $output = ['success' => 0,
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
                 'msg' => $e->getMessage(),
             ];
         }
 
-       return redirect()->route('employees')->with('status', $output);
-}
-public function storeWorker(Request $request)
-{
-      
-        if (! auth()->user()->can('user.create')) {
+        return redirect()->route('employees')->with('status', $output);
+    }
+    public function storeWorker(Request $request)
+    {
+
+        if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
-            if (! empty($request->input('dob'))) {
+            if (!empty($request->input('dob'))) {
                 $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
             }
 
-            $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+            $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
 
-            $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
-            
+            $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+
             $business_id = request()->session()->get('user.business_id');
 
             $numericPart = (int)substr($business_id, 3);
             $lastEmployee = User::where('business_id', $business_id)
-                    ->orderBy('emp_number', 'desc')
-                    ->first();
+                ->orderBy('emp_number', 'desc')
+                ->first();
 
             if ($lastEmployee) {
-                  
-                    $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
 
-                    $nextNumericPart = $lastEmpNumber + 1;
+                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
 
-                    $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-                } 
-            
-            else
-                {
-                  
-                    $request['emp_number'] =  $business_id .'000';
+                $nextNumericPart = $lastEmpNumber + 1;
 
-                }
+                $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+            } else {
 
-             
+                $request['emp_number'] =  $business_id . '000';
+            }
+
+
             $user = $this->moduleUtil->createUser($request);
 
             event(new UserCreatedOrModified($user, 'added'));
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('user.user_added'),
             ];
-        } 
-        catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            error_log('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-            $output = ['success' => 0,
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
                 'msg' => $e->getMessage(),
             ];
         }
 
-       return redirect()->route('projects')->with('status',$output);
-}
- 
+        return redirect()->route('projects')->with('status', $output);
+    }
+
     public function show($id)
     {
         if (!auth()->user()->can('user.view')) {
@@ -622,24 +635,24 @@ public function storeWorker(Request $request)
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::where('business_id', $business_id)
-// <<<<<<< Rahaf
-//                     ->with(['contactAccess'])
-//                     ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
-//                     ->find($id);
-        
-       
-//         $dataArray=[];
-//         if(!empty($user->bank_details))
-//          {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
-     
-        
-//         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
-//         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
-//         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
-//         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
-//       //  dd(  $Contract );
-        
-// =======
+            // <<<<<<< Rahaf
+            //                     ->with(['contactAccess'])
+            //                     ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+            //                     ->find($id);
+
+
+            //         $dataArray=[];
+            //         if(!empty($user->bank_details))
+            //          {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
+
+
+            //         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
+            //         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+            //         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
+            //         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
+            //       //  dd(  $Contract );
+
+            // =======
             ->with(['contactAccess'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
             ->find($id);
@@ -656,7 +669,7 @@ public function storeWorker(Request $request)
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
         // dd( $Qualification);
 
-// >>>>>>> Development
+        // >>>>>>> Development
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
         if ($professionId !== null) {
@@ -726,74 +739,75 @@ public function storeWorker(Request $request)
 
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('business_id', $business_id)
-// <<<<<<< Rahaf
-                    ->with(['contactAccess'])
-                    ->findOrFail($id);
-                  //  dd($user);
-        $appointments=EssentialsEmployeeAppointmet::select([
-          
+            // <<<<<<< Rahaf
+            ->with(['contactAccess'])
+            ->findOrFail($id);
+        //  dd($user);
+        $appointments = EssentialsEmployeeAppointmet::select([
+
             'profession_id',
             'specialization_id'
         ])->where('employee_id', $id)
-        ->first();
+            ->first();
 
-        $resident_doc=EssentialsOfficialDocument::select(['expiration_date','number'])->where('employee_id', $id)
-        ->first();
-
-
+        $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
+            ->first();
 
 
-    if($appointments !== null)
-       {
-         $user->profession_id =$appointments['profession_id'];
-        $user->specialization_id =$appointments['specialization_id'];
-       }
-       else
-       {
-        $user->profession_id =null;
-        $user->specialization_id =null;
-       }
-       $blood_types = ['A+' => 'A positive (A+).',
-       'A-' => 'A negative (A-).',
-       'B+' => 'B positive (B+)',
-       'B-' => 'B negative (B-).',
-         'AB+'=>'AB positive (AB+).',
-         'AB-'=>'AB negative (AB-).',
-         'O+'=>'O positive (O+).',
-         'O-'=>'O positive (O-).',];
 
-        if (!empty($user->id_proof_name))
-         {$idProofName= $user->id_proof_name;}
-         else{$idProofName=null;}
-// =======
-//             ->with(['contactAccess'])
-//             ->findOrFail($id);
-//         $appointments = EssentialsEmployeeAppointmet::select([
 
-//             'profession_id',
-//             'specialization_id'
-//         ])->where('employee_id', $id)
-//             ->first();
-//         if ($appointments !== null) {
-//             $user->profession_id = $appointments['profession_id'];
-//             $user->specialization_id = $appointments['specialization_id'];
-//         } else {
-//             $user->profession_id = null;
-//             $user->specialization_id = null;
-//         }
-//         $blood_types = [
-//             'A+' => 'A positive (A+).',
-//             'A-' => 'A negative (A-).',
-//             'B+' => 'B positive (B+)',
-//             'B-' => 'B negative (B-).',
-//             'AB+' => 'AB positive (AB+).',
-//             'AB-' => 'AB negative (AB-).',
-//             'O+' => 'O positive (O+).',
-//             'O-' => 'O positive (O-).',
-//         ];
+        if ($appointments !== null) {
+            $user->profession_id = $appointments['profession_id'];
+            $user->specialization_id = $appointments['specialization_id'];
+        } else {
+            $user->profession_id = null;
+            $user->specialization_id = null;
+        }
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
 
-//         $idProofName = $user->id_proof_name;
-// >>>>>>> Development
+        if (!empty($user->id_proof_name)) {
+            $idProofName = $user->id_proof_name;
+        } else {
+            $idProofName = null;
+        }
+        // =======
+        //             ->with(['contactAccess'])
+        //             ->findOrFail($id);
+        //         $appointments = EssentialsEmployeeAppointmet::select([
+
+        //             'profession_id',
+        //             'specialization_id'
+        //         ])->where('employee_id', $id)
+        //             ->first();
+        //         if ($appointments !== null) {
+        //             $user->profession_id = $appointments['profession_id'];
+        //             $user->specialization_id = $appointments['specialization_id'];
+        //         } else {
+        //             $user->profession_id = null;
+        //             $user->specialization_id = null;
+        //         }
+        //         $blood_types = [
+        //             'A+' => 'A positive (A+).',
+        //             'A-' => 'A negative (A-).',
+        //             'B+' => 'B positive (B+)',
+        //             'B-' => 'B negative (B-).',
+        //             'AB+' => 'AB positive (AB+).',
+        //             'AB-' => 'AB negative (AB-).',
+        //             'O+' => 'O positive (O+).',
+        //             'O-' => 'O positive (O-).',
+        //         ];
+
+        //         $idProofName = $user->id_proof_name;
+        // >>>>>>> Development
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $roles = $this->getRolesArray($business_id);
@@ -820,11 +834,25 @@ public function storeWorker(Request $request)
 
         return view('essentials::employee_affairs.employee_affairs.edit')
 
-                ->with(compact('roles','banks','idProofName' ,'user','blood_types', 'contact_access',
-                 'is_checked_checkbox', 'locations', 'permitted_locations',
-                  'form_partials','appointments' ,'username_ext','contract_types',
-                  'nationalities','specializations','professions','resident_doc'));
-
+            ->with(compact(
+                'roles',
+                'banks',
+                'idProofName',
+                'user',
+                'blood_types',
+                'contact_access',
+                'is_checked_checkbox',
+                'locations',
+                'permitted_locations',
+                'form_partials',
+                'appointments',
+                'username_ext',
+                'contract_types',
+                'nationalities',
+                'specializations',
+                'professions',
+                'resident_doc'
+            ));
     }
 
     /**
@@ -839,6 +867,37 @@ public function storeWorker(Request $request)
         if (!auth()->user()->can('user.update')) {
             abort(403, 'Unauthorized action.');
         }
+        // try {
+        //     $user_data = $request->only([
+        //         'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
+        //         'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1', 'location_id',
+        //         'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
+
+        //         'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
+        //         'contract_duration', 'probation_period',
+        //         'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
+        //         'salary_type', 'amount', 'can_add_category',
+        //         'travel_ticket_categorie', 'health_insurance', 'selectedData',
+        //         'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
+        //         'max_sales_discount_percent', 'family_number', 'alt_number',
+
+        //     ]);
+
+
+
+        //  $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
+        $business_id = request()->session()->get('user.business_id');
+        if (!isset($user_data['selected_contacts'])) {
+            $user_data['selected_contacts'] = 0;
+        }
+        if (empty($request->input('allow_login'))) {
+            $user_data['username'] = null;
+            $user_data['password'] = null;
+            $user_data['allow_login'] = 0;
+        } else {
+            $user_data['allow_login'] = 1;
+        }
+
         try {
             $user_data = $request->only([
                 'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status', 'border_no', 'bank_details',
@@ -846,18 +905,14 @@ public function storeWorker(Request $request)
                 'social_media_2', 'permanent_address', 'current_address', 'profession', 'specialization',
 
                 'guardian_name', 'custom_field_1', 'custom_field_2', 'nationality', 'contract_type', 'contract_start_date', 'contract_end_date',
-                'contract_duration', 'probation_period',
+                'contract_duration', 'probation_period', 'contract_duration_unit',
                 'is_renewable', 'contract_file', 'essentials_salary', 'essentials_pay_period',
                 'salary_type', 'amount', 'can_add_category',
                 'travel_ticket_categorie', 'health_insurance', 'selectedData',
                 'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
                 'max_sales_discount_percent', 'family_number', 'alt_number',
-
             ]);
 
-
-
-            //  $user_data['status'] = !empty($request->input('is_active')) ? 'active' : 'inactive';
             $business_id = request()->session()->get('user.business_id');
             if (!isset($user_data['selected_contacts'])) {
                 $user_data['selected_contacts'] = 0;
@@ -869,33 +924,6 @@ public function storeWorker(Request $request)
             } else {
                 $user_data['allow_login'] = 1;
             }
-
-            try {
-                $user_data = $request->only([
-                    'surname', 'first_name', 'last_name', 'email', 'selected_contacts', 'marital_status','border_no','bank_details',
-                    'blood_group', 'contact_number', 'fb_link', 'twitter_link', 'social_media_1','location_id',
-                    'social_media_2', 'permanent_address', 'current_address','profession','specialization',
-
-                    'guardian_name', 'custom_field_1', 'custom_field_2','nationality','contract_type','contract_start_date','contract_end_date',
-                    'contract_duration','probation_period','contract_duration_unit',
-                    'is_renewable','contract_file','essentials_salary','essentials_pay_period',
-                    'salary_type','amount','can_add_category',
-                    'travel_ticket_categorie','health_insurance','selectedData',
-                    'custom_field_3', 'custom_field_4', 'id_proof_name', 'id_proof_number', 'cmmsn_percent', 'gender', 'essentials_department_id',
-                    'max_sales_discount_percent', 'family_number', 'alt_number',
-                ]);
-
-                $business_id = request()->session()->get('user.business_id');
-                if (!isset($user_data['selected_contacts'])) {
-                    $user_data['selected_contacts'] = 0;
-                }
-                if (empty($request->input('allow_login'))) {
-                    $user_data['username'] = null;
-                    $user_data['password'] = null;
-                    $user_data['allow_login'] = 0;
-                } else {
-                    $user_data['allow_login'] = 1;
-                }
 
             if (!empty($request->input('password'))) {
                 $user_data['password'] = $user_data['allow_login'] == 1 ? Hash::make($request->input('password')) : null;
