@@ -39,7 +39,7 @@ class CustomAdminSidebarMenu
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
             $this->houseMovementsMenu();
-        } elseif (Str::startsWith($currentPath, 'international')) {
+        } elseif (Str::startsWith($currentPath, ['international','ir'])) {
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, 'accounting')) {
             $this->accountingMenu();
