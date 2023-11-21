@@ -406,13 +406,16 @@ class EssentialsManageEmployeeController extends Controller
           'O+'=>'O positive (O+).',
           'O-'=>'O positive (O-).',];
      
-        
+          if (!empty($user->id_proof_name))
+          {$idProofName= $user->id_proof_name;}
+          else
+          {$idProofName=null;}
 
          $resident_doc=null;
          $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
-                 'locations','banks', 'contract_types','form_partials','idProofName','resident_doc'));
+                 'locations','banks', 'contract_types','form_partials','idProofName','resident_doc','user'));
     }
 
 
