@@ -411,7 +411,7 @@ class EssentialsManageEmployeeController extends Controller
          $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
                 ->with(compact('roles','nationalities' ,'username_ext','blood_types','contacts',
-                 'locations','banks', 'contract_types','form_partials','idProofName','resident_doc','user'));
+                 'locations','banks', 'contract_types','form_partials','resident_doc','user'));
     }
 
 
