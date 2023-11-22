@@ -62,7 +62,11 @@ class UserController extends Controller
 
         $nationalities=EssentialsCountry::nationalityForDropdown();
         $banks = EssentialsBankAccounts::all()->pluck('name','id');
-        return view('user.profile', compact('user','banks', 'languages','blood_types','nationalities'));
+        
+
+        $resident_doc=null;
+   
+        return view('user.profile', compact('user','resident_doc','banks', 'languages','blood_types','nationalities'));
     }
 
     /**

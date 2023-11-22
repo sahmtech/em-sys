@@ -209,6 +209,7 @@ return [
     'Under_process'=>'Under process',
     'username_exists_message'=>'Username already exists. Please choose a different username.',
      'enterusername'=>'Please enter a username.',
+     'contract_itmes'=>'Contract Items'
 
 
     
