@@ -363,7 +363,6 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            //  $menu->url(action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
             $menu->url(
                 action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']),
                 __('followup::lang.followUp'),
@@ -381,7 +380,7 @@ class CustomAdminSidebarMenu
             );
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
-            //  $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'index']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'requests']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
             $menu->dropdown(
                 __('followup::lang.requests'),
                 function ($sub) use ($enabled_modules) {

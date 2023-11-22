@@ -14,7 +14,7 @@
         <tr>
           
            
-            <td> {{ $line->service->gender }}</td>
+            <td> {{ __('sales::lang.' .  $line->service->gender ) }}</td>
             <td> {{ $line->service->service_price }}</td>
             <td> {{ $line->service->monthly_cost_for_one }}</td>
          

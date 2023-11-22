@@ -7,28 +7,23 @@
 </div>
 <div class="modal-body">
 
-        <div class="row">
-            <div class="col-xs-12">
-                <p class="pull-right"><b>@lang('messages.date'):</b> </p>
-            </div>
-        </div>
 
         <div class="row">
             <div class="col-sm-3 col-sm-4">
             <b>{{ __('sales::lang.operation_order_number') }} :</b></b> {{ $operations->operation_order_no }}<br>
-            <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $operations->contact_name }}<br>
-            <b>{{ __('sales::lang.contact_email') }} :</b></b> {{ $operations->email }}<br>
+            <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $operations->contact->supplier_business_name }}<br>
+            <b>{{ __('sales::lang.contact_email') }} :</b></b> {{ $operations->contact->email }}<br>
             </div>
 
-            <div class="col-sm-2 col-sm-4">
-            <b>{{ __('sales::lang.operation_order_type') }} :</b></b> {{ $operations->operation_order_type }}<br>
+            <div class="col-sm-2 col-sm-4"><td>
+            <b>{{ __('sales::lang.operation_order_type') }} :</b></b> {{ __('sales::lang.' . $operations->operation_order_type ) }}<br>
             <b>{{ __('sales::lang.Status') }} :</b> {{ __('sales::lang.' . $operations->Status) }}<br>
             <b>{{ __('sales::lang.Location') }} :</b></b> {{ $operations->Location }}<br>
             </div>
 
             <div class="col-md-2 col-md-4">
             <b>{{ __('sales::lang.Delivery') }} :</b></b> {{ $operations->Delivery }}<br>
-            <b>{{ __('sales::lang.Interview') }} :</b></b> {{ $operations->Interview }}<br>
+            <b>{{ __('sales::lang.Interview') }} :</b></b>  {{ __('sales::lang.' . $operations->Interview ) }}<br>
             <b>{{ __('sales::lang.Industry') }} :</b></b> {{ $operations->Industry }}<br>
             </div>
         </div>
