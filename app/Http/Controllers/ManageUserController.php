@@ -104,7 +104,7 @@ class ManageUserController extends Controller
                         if(auth()->user()->can('user.update')){
                             $html.='  <a href="'.URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]).'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__("messages.edit").'</a>
                             &nbsp;';
-                            if(!Str::contains($row->user_type,'user')){
+                            if($row->allow_login == 0){
                                 $html.=' <a href="'. route('makeUser',[$row->id]).'" class="btn btn-xs btn-primary">'.__("messages.create_user").'
                                 </a>
                                 &nbsp;';
