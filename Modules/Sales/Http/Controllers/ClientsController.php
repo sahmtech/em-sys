@@ -232,7 +232,7 @@ class ClientsController extends Controller
             }
             else
             {
-                $contract_signer_input['user_type']='user'; 
+                $contract_signer_input['user_type']='customer_user'; 
                 $contract_signer_input['username'] = null;
                 $contract_signer_input['password']=null;
             }
@@ -263,7 +263,7 @@ class ClientsController extends Controller
             }
             else
             {
-                $contract_follower_input['user_type']="user"; 
+                $contract_follower_input['user_type']="customer_user"; 
                 $contract_follower_input['username'] = null;
                 $contract_follower_input['password']=null;
               
@@ -483,7 +483,7 @@ class ClientsController extends Controller
                     $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
                 }
             } else {
-                $contract_signer_input['user_type'] = 'user';
+                $contract_signer_input['user_type'] = 'customer_user';
                 $contract_signer_input['username'] = null;
                 $contract_signer_input['password']=null;
             }
@@ -519,7 +519,7 @@ class ClientsController extends Controller
                     $contract_follower_input['password'] = Hash::make($request->input('password_cf'));
                 }
             } else {
-                $contract_follower_input['user_type'] = 'user';
+                $contract_follower_input['user_type'] = 'customer_user';
                 $contract_follower_input['username'] = null;
                 $contract_follower_input['password']=null;
             }
