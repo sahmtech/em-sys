@@ -140,8 +140,7 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            
-            {!! Form::text('workcard_duration', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.work_card_duration')]); !!}
+            {!! Form::select('workcard_duration', array_combine($durationOptions, $durationOptions), null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.work_card_duration')]); !!}
         </div>
     </div>
 </div>
