@@ -997,6 +997,10 @@ return[
 'months'=>'شهر',
 'management'=>'إدارة',
 'select_company'=>'اختر شركة ',
+'3_months'=>' 3 أشهر',
+'6_months'=>' 6 أشهر',
+'9_months'=>' 9 أشهر',
+'12_months'=>' 12 أشهر',
 
 
 

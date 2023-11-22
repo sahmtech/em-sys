@@ -71,7 +71,7 @@
 
 @section('javascript')
 <script type="text/javascript">
-    // Countries table
+   
     $(document).ready(function () {
     var customers_table = $('#operation_table').DataTable({
        
