@@ -58,83 +58,80 @@ class SaleOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-    
+
         $contracts = DB::table('sales_orders_operations')
-        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-        ->select('sales_contracts.number_of_contract as contract_number')
-        ->get();
-
-
-      
-
- 
-      $operations = DB::table('sales_orders_operations')
-      ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
-      ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-      ->select(
-          'sales_orders_operations.id as id',
-          'sales_orders_operations.operation_order_no as operation_order_no',
-          'contacts.name as contact_name',
-          'sales_contracts.number_of_contract as contract_number',
-          'sales_orders_operations.operation_order_type as operation_order_type',
-          'sales_orders_operations.Status as Status'
-      );
+            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+            ->select('sales_contracts.number_of_contract as contract_number')
+            ->get();
 
 
 
-    if (request()->input('number_of_contract')) {
-       
-        $operations->where('sales_contracts.number_of_contract', request()->input('number_of_contract'));
-    }
 
-    if (request()->input('Status') && request()->input('Status') !== 'all') {
-        $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
-     
-    }
+
+        $operations = DB::table('sales_orders_operations')
+            ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
+            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+            ->select(
+                'sales_orders_operations.id as id',
+                'sales_orders_operations.operation_order_no as operation_order_no',
+                'contacts.name as contact_name',
+                'sales_contracts.number_of_contract as contract_number',
+                'sales_orders_operations.operation_order_type as operation_order_type',
+                'sales_orders_operations.Status as Status'
+            );
+
+
+
+        if (request()->input('number_of_contract')) {
+
+            $operations->where('sales_contracts.number_of_contract', request()->input('number_of_contract'));
+        }
+
+        if (request()->input('Status') && request()->input('Status') !== 'all') {
+            $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
+        }
 
 
         if (request()->ajax()) {
-         
-        
-            return Datatables::of($operations)
-            ->addColumn('Status', function ($row) {
-              
-                return __('sales::lang.' . $row->Status);
-            })
-    
-            ->addColumn('show_operation', function ($row) {
-              
-                $html = '';
-                $html = '<a href="#" data-href="'.action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('messages.view').'</a>';
-                return $html;
-            })
-        
-            ->addColumn('action', function ($row) {
-                $html = '';
-                $html .= '<button class="btn btn-xs btn-success btn-modal" data-container=".view_modal" data-href="' . route('sale.operation.edit', ['id' => $row->id]) . '"><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
-                
 
-                     return $html;
-           
+
+            return Datatables::of($operations)
+                ->addColumn('Status', function ($row) {
+
+                    return __('sales::lang.' . $row->Status);
                 })
 
-                ->rawColumns(['show_operation', 'action']) 
+                ->addColumn('show_operation', function ($row) {
+
+                    $html = '';
+                    $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+                    return $html;
+                })
+
+                ->addColumn('action', function ($row) {
+                    $html = '';
+                    $html .= '<button class="btn btn-xs btn-success btn-modal" data-container=".view_modal" data-href="' . route('sale.operation.edit', ['id' => $row->id]) . '"><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
+
+
+                    return $html;
+                })
+
+                ->rawColumns(['show_operation', 'action'])
                 ->removeColumn('id')
                 ->make(true);
         }
-        
-        $status=[
-            'Done'=>__('sales::lang.Done'),
-            'Under_process'=>__('sales::lang.Under_process'),
-            'Not_started'=>__('sales::lang.Not_started'),
+
+        $status = [
+            'Done' => __('sales::lang.Done'),
+            'Under_process' => __('sales::lang.Under_process'),
+            'Not_started' => __('sales::lang.Not_started'),
 
         ];
-        return view('sales::operation_order.index')->with(compact('contracts','status'));
-      
+        return view('sales::operation_order.index')->with(compact('contracts', 'status'));
     }
 
     /**
@@ -142,54 +139,54 @@ class SaleOperationOrderController extends Controller
      * @return Renderable
      */
 
-    
-     public function getContracts(Request $request)
-{
-    $customerId = $request->input('customer_id');
-    $business_id = $request->session()->get('user.business_id');
-   
-    $offer_prices = Transaction::where('contact_id', $customerId)
-        ->where('business_id', $business_id)
-        ->pluck('id');
-    
-    $contracts = [];
-    foreach ($offer_prices as $key) {
-        $contractIds = salesContract::where('offer_price_id', $key)
-            ->where('status', 'valid')
-            ->select('number_of_contract', 'id')
-            ->get()
-            ->toArray();
 
-        
-        $contracts = array_merge($contracts, $contractIds);
+    public function getContracts(Request $request)
+    {
+        $customerId = $request->input('customer_id');
+        $business_id = $request->session()->get('user.business_id');
+
+        $offer_prices = Transaction::where('contact_id', $customerId)
+            ->where('business_id', $business_id)
+            ->pluck('id');
+
+        $contracts = [];
+        foreach ($offer_prices as $key) {
+            $contractIds = salesContract::where('offer_price_id', $key)
+                ->where('status', 'valid')
+                ->select('number_of_contract', 'id')
+                ->get()
+                ->toArray();
+
+
+            $contracts = array_merge($contracts, $contractIds);
+        }
+
+        return response()->json($contracts);
     }
-    
-    return response()->json($contracts);
-}
 
 
 
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-     
 
-        $leads=Contact::where('type','customer')
-        
-        ->where('business_id',$business_id)
-        ->pluck('supplier_business_name','id');
 
-        $agencies=Contact::where('type','agency')
-        ->where('business_id',$business_id)
-        ->pluck('supplier_business_name','id');
+        $leads = Contact::where('type', 'customer')
 
-        $status=[
-            'Done'=>__('sales::lang.Done'),
-            'Under_process'=>__('sales::lang.Under_process'),
-            'Not_started'=>__('sales::lang.Not_started'),
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
+
+        $agencies = Contact::where('type', 'agency')
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
+
+        $status = [
+            'Done' => __('sales::lang.Done'),
+            'Under_process' => __('sales::lang.Under_process'),
+            'Not_started' => __('sales::lang.Not_started'),
 
         ];
-        return view('sales::operation_order.create')->with(compact('leads','agencies','status'));
+        return view('sales::operation_order.create')->with(compact('leads', 'agencies', 'status'));
     }
 
     /**
@@ -202,36 +199,32 @@ class SaleOperationOrderController extends Controller
     {
         try {
             $business_id = $request->session()->get('user.business_id');
-           
-        
-           
+
+
+
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                    'contact_id','sale_contract_id','operation_order_no','operation_order_type', 
-                    'Interview', 'Location','Delivery', 'Note', 'Industry','status',
+                    'contact_id', 'sale_contract_id', 'operation_order_no', 'operation_order_type',
+                    'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
                 ];
                 $operation_details = $request->only($operation_order);
-              
-                $latestRecord = salesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
-                
-                if ( $latestRecord )
-                {
-                      $latestRefNo = $latestRecord->operation_order_no;
-                        $numericPart = (int)substr($latestRefNo, 5); 
-                        $numericPart++;
-                        $operation_details['operation_order_no'] = 'POP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                    
 
+                $latestRecord = salesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
+
+                if ($latestRecord) {
+                    $latestRefNo = $latestRecord->operation_order_no;
+                    $numericPart = (int)substr($latestRefNo, 5);
+                    $numericPart++;
+                    $operation_details['operation_order_no'] = 'POP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                } else {
+                    $operation_details['operation_order_no'] = 'POP1111';
                 }
-                else
-                {$operation_details['operation_order_no'] = 'POP1111';}
-              
-                $operation_details['Status']=$request->input('status');
-     
-                $operation = salesOrdersOperation::create( $operation_details );
-           
+
+                $operation_details['Status'] = $request->input('status');
+
+                $operation = salesOrdersOperation::create($operation_details);
             });
-           
+
             $output = [
                 'success' => 1,
                 'msg' => __('sales::lang.operationOrder_added_success'),
@@ -239,15 +232,15 @@ class SaleOperationOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-        
+
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),
             ];
         }
-        
-       // return $output;
-       return redirect()->route('sale.orderOperations')->with($output);
+
+        // return $output;
+        return redirect()->route('sale.orderOperations')->with($output);
     }
 
     /**
@@ -255,31 +248,32 @@ class SaleOperationOrderController extends Controller
      * @param int $id
      * @return Renderable
      */
-   
+
 
 
     public function show($id)
-{
-    try {
-        $operations = salesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
-            ->where('id', $id)
-            ->first();
-         
-        $sell_lines = $operations->salesContract->transaction->sell_lines;
-         
-       
-        return view('sales::operation_order.show')
-            ->with(compact('operations', 'sell_lines'));
-    }  catch (\Exception $e) {
-                DB::rollBack();
-                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            
-                $output = [
-                    'success' => 0,
-                    'msg' => $e->getMessage(),
-                ];
-            }
-}
+    {
+        try {
+            $operations = salesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
+                ->where('id', $id)
+                ->first();
+           
+
+            $sell_lines = $operations->salesContract->transaction->sell_lines;
+
+
+            return view('sales::operation_order.show')
+                ->with(compact('operations', 'sell_lines'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      * @param int $id
@@ -291,17 +285,17 @@ class SaleOperationOrderController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $operation = salesOrdersOperation::where('id', $id)->first();
 
-        $leads=Contact::where('type','customer')
-        ->where('business_id',$business_id)
-        ->pluck('supplier_business_name','id');
+        $leads = Contact::where('type', 'customer')
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
 
 
-        $agencies=Contact::where('type','agency')
-        ->where('business_id',$business_id)
-        ->pluck('supplier_business_name','id');
+        $agencies = Contact::where('type', 'agency')
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
 
-    
-        return view('sales::operation_order.edit')->with(compact('leads','agencies','operation'));
+
+        return view('sales::operation_order.edit')->with(compact('leads', 'agencies', 'operation'));
     }
 
     /**
@@ -324,16 +318,16 @@ class SaleOperationOrderController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-      //  dd(  $business_id);
+        //  dd(  $business_id);
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         $record = salesOrdersOperation::find($id);
         if (!$record) {
-          
+
             return redirect()->route('sale.orderOperations')->with('error', 'Record not found.');
         }
         try {
@@ -343,18 +337,17 @@ class SaleOperationOrderController extends Controller
                 'success' => 1,
                 'msg' => __('sales::lang.operationOrder_deleted_success'),
             ];
-    
-           // return redirect()->route('sale.orderOperations')->with($output);
+
+            // return redirect()->route('sale.orderOperations')->with($output);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
         }
-        catch (\Exception $e) {
-                DB::rollBack();
-                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            
-                $output = [
-                    'success' => 0,
-                    'msg' => $e->getMessage(),
-                ];
-            }
-            return $output;
+        return $output;
     }
 }

@@ -84,6 +84,7 @@ return [
     'returned_by'=>'تم الإرجاع من ',
     'escape_date'=>'تاريخ الهروب',
     'add_new_worker'=>'إضافة عامل جديد',
+    'operation_orders'=>'أوامر التشغيل'
 
 
 
