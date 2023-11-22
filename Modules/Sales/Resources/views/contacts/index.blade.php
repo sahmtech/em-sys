@@ -303,7 +303,8 @@
                                                                                     <div class="form-group">
                                                                                         <div class="input-group">
                                                                                             <label>
-                                                                                                {!! Form::checkbox('allow_login', 1, false, ['id' => 'allow_login_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
+                                                                                                {!! Form::checkbox('allow_login', 1, false, 
+                                                                                                    ['id' => 'allow_login_checkbox']); !!} <strong>@lang('sales::lang.allow_login')</strong>
                                                                                             </label>
                                                                                         </div>
                                                                                     </div>
@@ -496,6 +497,60 @@
 @endsection
 
 @section('javascript')
+
+
+
+<script>
+    $(document).ready(function() {
+       
+        $('#allow_login_checkbox').change(function() {
+            
+            if ($(this).prop('checked')) {
+                $('#username_cs').prop('required', true);
+                $('#password_cs').prop('required', true);
+                $('#confirm_password_cs').prop('required', true);
+
+             
+                $('#username_cs_wrapper').show();
+                $('#password_cs_wrapper').show();
+                $('#confirm_password_cs_wrapper').show();
+            }
+             else {
+               
+                $('#username_cs').prop('required', false);
+                $('#password_cs').prop('required', false);
+                $('#confirm_password_cs').prop('required', false);
+
+                $('#username_cs_wrapper').hide();
+                $('#password_cs_wrapper').hide();
+                $('#confirm_password_cs_wrapper').hide();
+            }
+        });
+
+
+
+        
+         $('#allow_login_cf_checkbox').change(function() {
+            if ($(this).prop('checked')) {
+                $('#username_cf').prop('required', true);
+                $('#password_cf').prop('required', true);
+                $('#confirm_password_cf').prop('required', true);
+
+                $('#username_cf_wrapper').show();
+                $('#password_cf_wrapper').show();
+                $('#confirm_password_cf_wrapper').show();
+            } else {
+                $('#username_cf').prop('required', false);
+                $('#password_cf').prop('required', false);
+                $('#confirm_password_cf').prop('required', false);
+
+                $('#username_cf_wrapper').hide();
+                $('#password_cf_wrapper').hide();
+                $('#confirm_password_cf_wrapper').hide();
+            }
+        });
+    });
+</script>
 
 <script>
     $(document).ready(function() {

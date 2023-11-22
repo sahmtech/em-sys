@@ -15,7 +15,7 @@
             <p><strong>@lang( 'sales::lang.contact_mobile'):</strong> @if(!empty($contact->mobile)){{$contact->mobile}} @endif</p>
             <p><strong>@lang( 'sales::lang.alternate_number'):</strong> @if(!empty($contact->alternate_number)){{$contact->alternate_number}} @endif</p>
             <p><strong>@lang( 'sales::lang.contact_email'):</strong> @if(!empty($contact->email)){{$contact->email}} @endif</p>
-            <p><strong>@lang( 'sales::lang.contact_city'):</strong> @if(!empty($contact->city)){{$contact->city}} @endif</p>
+           
 
 		</div>
 		

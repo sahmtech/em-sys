@@ -175,7 +175,7 @@ class ClientsController extends Controller
 
             $input['allow_login'] = $request->filled('allow_login');
             $input['allow_login_cf'] = $request->filled('allow_login_cf');
-           // dd($input['allow_login'] );
+         
             $name_array = [];
 
            
@@ -239,6 +239,7 @@ class ClientsController extends Controller
 
             $contract_signer_input['allow_login']=$input['allow_login'];
             $contract_signer_input['contact_user_type']='contact_signer';
+        
             $contract_signer = User::create($contract_signer_input);
 
         
@@ -255,7 +256,7 @@ class ClientsController extends Controller
                 $contract_follower_input['user_type']="customer_user"; 
                 $contract_follower_input['username']=$input['username_cf']; 
              
-                if (!empty($input['password_cs'])) {
+                if (!empty($input['password_cf'])) {
                     $contract_follower_input['password'] = Hash::make($input['password_cf']);
                 } 
 
@@ -272,6 +273,7 @@ class ClientsController extends Controller
 
           
             $contract_follower_input['contact_user_type']='contract_follower';
+         
             $contract_follower = User::create($contract_follower_input);
        
             DB::commit();
@@ -405,7 +407,7 @@ class ClientsController extends Controller
            ->select('users.*')
            ->first();
      
-
+//dd( $contactFollower);
        
    
        $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -511,6 +513,7 @@ class ClientsController extends Controller
                 'contact_user_type' => 'contract_follower',
             ];
 
+           
             if ($input['allow_login_cf'] == true) {
                 $contract_follower_input['user_type'] = 'customer_user';
                 $contract_follower_input['username'] = $request->input('username_cf');
@@ -524,8 +527,9 @@ class ClientsController extends Controller
                 $contract_follower_input['password']=null;
             }
         
+         
             $contactFollower->update($contract_follower_input);
-
+          //  dd( $contactFollower);
             DB::commit();
       
           

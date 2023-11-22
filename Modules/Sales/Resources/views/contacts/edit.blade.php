@@ -101,6 +101,17 @@
                             </div>      
                           
                 </div>
+                <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                {!! Form::label('email', __('business.email') .  ':*') !!}
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">
+                                                                        <i class="fa fa-envelope"></i>
+                                                                    </span>
+                                                                    {!! Form::email('email',  $contact->email ??'', ['class' => 'form-control']); !!}
+                                                                </div>
+                                                            </div>
+                                                        </div>
                 <div class="clearfix"></div>
                
       <h4 class="modal-title">@lang( 'sales::lang.Contract_signer_details' )</h4>
@@ -258,9 +269,9 @@
             </span>
             <input type="hidden" id="password_cs_id" value="{{ !empty($contactSigners->password) ? $contactSigners->password : '' }}">
             @if(isset($contactSigners) && !empty($contactSigners->password))
-                {!! Form::text('password_cs', "", ['id' => 'password_cs', 'class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
+                {!! Form::password('password_cs', ['id' => 'password_cs','style' => 'height:40px;', 'class' => 'form-control password', 'placeholder' => __('sales::lang.password_cs')]); !!}
             @else
-                {!! Form::text('password_cs', "", ['id' => 'password_cs', 'class' => 'form-control', 'placeholder' => __('sales::lang.password_cs')]); !!}
+                {!! Form::password('password_cs', ['id' => 'password_cs','style' => 'height:40px;', 'class' => 'form-control password', 'placeholder' => __('sales::lang.password_cs')]); !!}
             @endif
         </div>
     </div>
@@ -362,10 +373,10 @@
                                                                             <span class="input-group-addon">
                                                                                 <i class="fa fa-info"></i>
                                                                             </span>
-                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners->first_name) ? $contactSigners->first_name : '' }}">
+                                                                            <input type="hidden" id="hidden_id" value="{{ !empty($contactSigners->contact_number) ? $contactSigners->contact_number : '' }}">
 
-                                                                            @if(isset($contactFollower)&& !empty( $contactFollower->mobile)  )
-                                                                                {!! Form::text('mobile_cf', $contactFollower->mobile ?? "", ['class' => 'form-control','id'=>'mobile_cf', 'placeholder' => __('sales::lang.mobile_cf')]); !!}
+                                                                            @if(isset($contactFollower)&& !empty( $contactFollower->contact_number)  )
+                                                                                {!! Form::text('mobile_cf', $contactFollower->contact_number ?? "", ['class' => 'form-control','id'=>'mobile_cf', 'placeholder' => __('sales::lang.mobile_cf')]); !!}
                                                                             @else
                                                                                 {!! Form::text('mobile_cf', "", ['class' => 'form-control','id'=>'mobile_cf', 'placeholder' => __('sales::lang.mobile_cf')]); !!}
                                                                             @endif
@@ -420,11 +431,15 @@
                                                                             </span>
                                                                             <input type="hidden" id="password_cf" value="{{ !empty($contactFollower->password) ? $contactFollower->password : '' }}">
 
-                                                                            @if(isset($contactSigners) && !empty( $contactFollower->password) )
-                                                                            {!! Form::text('password_cf',"", ['class' => 'form-control','id' => 'password_cf', 'placeholder' => __('sales::lang.password_cf'), 'value' => $contactFollower->password ?? ""]); !!}
+                                                                            @if(isset($contactFollower) && !empty( $contactFollower->password) )
+                                                                            {!! Form::password('password_cf', ['class' => 'form-control', 'id' => 'password_cf', 'style' => 'height:40px;', 'placeholder' => __('sales::lang.password_cf')]) !!}
+
+
 
                                                                             @else
-                                                                                {!! Form::text('password_cf', "", ['class' => 'form-control','id' => 'password_cf',  'placeholder' => __('sales::lang.password_cf')]); !!}
+                                                                            {!! Form::password('password_cf', ['class' => 'form-control', 'id' => 'password_cf', 'style' => 'height:40px;', 'placeholder' => __('sales::lang.password_cf')]) !!}
+
+
                                                                             @endif
                                                                             </div>
                                                                         </div>
