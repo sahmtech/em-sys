@@ -86,7 +86,7 @@ class ClientsController extends Controller
                 'mobile',
                 'email',
                 'city'
-            ])->where('business_id',$business_id);
+            ])->where('business_id',$business_id)->whereIn('type',['customer','lead']);
             //dd($contacts);
             return Datatables::of($contacts)
                 // ->addColumn('nameAr', function ($row) {

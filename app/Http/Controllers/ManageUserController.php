@@ -104,7 +104,7 @@ class ManageUserController extends Controller
                         if(auth()->user()->can('user.update')){
                             $html.='  <a href="'.URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]).'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__("messages.edit").'</a>
                             &nbsp;';
-                            if(!Str::contains($row->user_type,'user')){
+                            if($row->allow_login == 0){
                                 $html.=' <a href="'. route('makeUser',[$row->id]).'" class="btn btn-xs btn-primary">'.__("messages.create_user").'
                                 </a>
                                 &nbsp;';
@@ -132,50 +132,50 @@ class ManageUserController extends Controller
         return view('manage_user.index');
     }
 
-    public function employeesIndex()
-    {
-        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
-        }
+    // public function employeesIndex()
+    // {
+    //     if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
+    //         abort(403, 'Unauthorized action.');
+    //     }
 
-        if (request()->ajax()) {
-            $business_id = request()->session()->get('user.business_id');
-            $user_id = request()->session()->get('user.id');
+    //     if (request()->ajax()) {
+    //         $business_id = request()->session()->get('user.business_id');
+    //         $user_id = request()->session()->get('user.id');
 
-            $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )->where('user_type', 'NOT LIKE', '%user%')
-                // ->user()
-                ->where('is_cmmsn_agnt', 0)
-                ->select([
-                    'id', 'username',
-                    DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
-                ]);
+    //         $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )->where('user_type', 'NOT LIKE', '%user%')
+    //             // ->user()
+    //             ->where('is_cmmsn_agnt', 0)
+    //             ->select([
+    //                 'id', 'username',
+    //                 DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
+    //             ]);
 
-            return Datatables::of($users)
-                ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-                ->addColumn(
-                    'role',
-                    function ($row) {
-                        $role_name = $this->moduleUtil->getUserRoleName($row->id);
+    //         return Datatables::of($users)
+    //             ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
+    //             ->addColumn(
+    //                 'role',
+    //                 function ($row) {
+    //                     $role_name = $this->moduleUtil->getUserRoleName($row->id);
 
-                        return $role_name;
-                    }
-                )
-                ->addColumn(
-                    'action',
-                    '@can("user.update")
-                        <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
-                        &nbsp;
-                    @endcan'
-                )
-                ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
-                })
-                ->removeColumn('id')
-                ->rawColumns(['action', 'username'])
-                ->make(true);
-        }
-        return view('manage_user.employeesIndex');
-    }
+    //                     return $role_name;
+    //                 }
+    //             )
+    //             ->addColumn(
+    //                 'action',
+    //                 '@can("user.update")
+    //                     <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
+    //                     &nbsp;
+    //                 @endcan'
+    //             )
+    //             ->filterColumn('full_name', function ($query, $keyword) {
+    //                 $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+    //             })
+    //             ->removeColumn('id')
+    //             ->rawColumns(['action', 'username'])
+    //             ->make(true);
+    //     }
+    //     return view('manage_user.employeesIndex');
+    // }
 
 
 
@@ -438,9 +438,9 @@ class ManageUserController extends Controller
 
             $user = User::where('business_id', $business_id)
                 ->findOrFail($id);
-            if (!Str::contains($user->user_type, 'user')) {
-                $user_data['user_type'] = ($user->user_type) . "user";
-            }
+            // if (!Str::contains($user->user_type, 'user')) {
+            //     $user_data['user_type'] = ($user->user_type) . "user";
+            // }
 
             $user->update($user_data);
             $role_id = $request->input('role');
