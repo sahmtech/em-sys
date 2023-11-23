@@ -107,8 +107,9 @@
                             {!! Form::text('issuing_location', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issuing_location'), 'required']) !!}
                         </div>
                         <div class="form-group col-md-6">
-                            {!! Form::label('details', __('essentials::lang.contry_details') . ':') !!}
-                            {!! Form::textarea('details', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contry_details'), 'rows' => 2]) !!}
+                            {!! Form::label('details', __('essentials::lang.contry_details') . ':*') !!}
+                            {!! Form::textarea('details', null, ['class' => 'form-control','required',
+                                 'placeholder' => __('essentials::lang.contry_details'), 'rows' => 2]) !!}
                         </div>
                         <div class="form-group col-md-6">
                             {!! Form::label('file', __('essentials::lang.file') . ':') !!}
