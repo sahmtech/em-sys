@@ -12,6 +12,9 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
 
 use App\BusinessLocation;
 use App\User;
@@ -261,9 +264,8 @@ class EssentialsDepartmentsController extends Controller
             $input2['level'] = $input['level'];
             if($request->parent_level != Null)
             {
-            
             $input2['parent_department_id'] = $request->parent_level;
-        }
+            }
             else{
                 $input2['parent_department_id'] ='0';
             }
@@ -273,11 +275,32 @@ class EssentialsDepartmentsController extends Controller
         
      
             EssentialsDepartment::create($input2);
- 
+            $count = Role::where('name', $input['name'].'#'.$business_id)
+            ->where('business_id', $business_id)
+            ->count();
+            if ($count == 0) {
+                
+                $is_service_staff = 0;
+                if ($request->input('is_service_staff') == 1) {
+                    $is_service_staff = 1;
+                }
+            $role = Role::create([
+                'name' => $input['name'].'#'.$business_id,
+                'business_id' => $business_id,
+                'is_service_staff' => $is_service_staff,
+            ]);
+            $permission=Permission::where('name','dashboard.data')->first()->id;
+            $role->syncPermissions($permission);
+            } else {
+                        $output = ['success' => 0,
+                            'msg' => __('user.role_already_exists'),
+                        ];
+            }
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = ['success' => false,
