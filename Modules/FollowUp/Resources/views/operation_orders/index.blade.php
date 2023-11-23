@@ -67,7 +67,7 @@
                             <th>@lang('sales::lang.operation_order_type')</th>
                             <th>@lang('sales::lang.Status')</th>
                             <th>@lang('sales::lang.show_operation')</th>
-                            <th>@lang('messages.action')</th>
+                            {{-- <th>@lang('messages.action')</th> --}}
                         </tr>
                     </thead>
                 </table>
@@ -244,7 +244,179 @@
                 </div>
             </div>
         </div>
+        {{-- @foreach($row as $row)
+        <button class="btn btn-primary" data-toggle="modal" data-target="#editModal" data-id="{{ $row->id }}">Edit</button>
+        @endforeach --}}
+            {{-- <div class="modal fade" id="edit_order" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
 
+                        {!! Form::open(['route' => ['updateOrder', $id], 'method' => 'put', 'id' => 'edit-order-form']) !!}
+
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">@lang('essentials::lang.edit_order')</h4>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                
+                                        {!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::select('contact_id', $leads, null, [
+                                                'class' => 'form-control',
+                                                'style' => 'height:36px',
+                                                'placeholder' => __('sales::lang.select_customer'),
+                                                'required',
+                                                'id' => 'customer-select',
+                                            ]) !!}
+                                        </div>
+                                
+                                </div>
+
+                            
+
+
+                                <div class="form-group col-md-6">
+                                    
+                                        {!! Form::label('contract_id', __('sales::lang.contract') . ':*') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::select('sale_contract_id', [], null, [
+                                                'class' => 'form-control',
+                                                'style' => 'height:36px',
+                                                'placeholder' => __('sales::lang.select_contacts'),
+                                                'required',
+                                                'id' => 'contact-select',
+                                            ]) !!}
+                                        </div>
+                                
+                                </div>
+                                <div class="form-group col-md-6">
+                                
+                                        {!! Form::label('status', __('sales::lang.Status') . ':*') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::select('status', $status, null, [
+                                                'class' => 'form-control',
+                                                'style' => 'height:36px',
+                                                'placeholder' => __('sales::lang.select_status'),
+                                                'required',
+                                                'id' => 'status-select',
+                                            ]) !!}
+                                        </div>
+                                
+                                </div>
+
+
+                                <div class="form-group col-md-6">
+                                    
+                                        {!! Form::label('Industry', __('sales::lang.Industry') . ':') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::text('Industry', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Industry')]) !!}
+                                        </div>
+                            
+                                </div>
+
+
+
+                                <div class="form-group col-md-6">
+                                    
+                                        {!! Form::label('operation_order_type', __('sales::lang.operation_order_type') . ':*') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+
+                                            {!! Form::select(
+                                                'operation_order_type',
+                                                ['Internal' => __('sales::lang.Internal'), 'External' => __('sales::lang.external')],
+                                                null,
+                                                ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.operation_order_type')],
+                                            ) !!}
+                                        </div>
+                                
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                
+                                        {!! Form::label('Interview', __('sales::lang.Interview') . ':*') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+
+                                            {!! Form::select(
+                                                'Interview',
+                                                ['Client ' => __('sales::lang.Client'), 'Company' => __('sales::lang.Company')],
+                                                null,
+                                                ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('sales::lang.Interview')],
+                                            ) !!}
+                                        </div>
+                                
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    
+                                        {!! Form::label('Location', __('sales::lang.Location') . ':') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::text('Location', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Location')]) !!}
+                                        </div>
+                                
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    
+                                        {!! Form::label('Delivery', __('sales::lang.Delivery') . ':') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::text('Delivery', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Delivery')]) !!}
+                                        </div>
+                                
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                
+                                        {!! Form::label('Note', __('sales::lang.Note') . ':') !!}
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-id-badge"></i>
+                                            </span>
+                                            {!! Form::text('Note', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Note')]) !!}
+                                        </div>
+                                
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div> --}}
 
     </section>
     <!-- /.content -->
@@ -307,12 +479,12 @@
                         data: 'show_operation',
                         name: 'show_operation'
                     },
-                    {
+                 /*   {
                         data: 'action',
                         name: 'action',
                         orderable: false,
                         searchable: false
-                    },
+                    },*/
 
                 ]
             });
@@ -384,6 +556,36 @@
                     });
                 }
             });
+
+          
+            $('.btn-modal').on('click', function (e) {
+                e.preventDefault();
+
+                var rowId = $(this).data('row-id');
+                $('#edit_order form').attr('action', '/updateOrder/' + rowId);
+
+               
+                $('#edit_order').modal('show');
+   
+            });
+
+            function updateModalContent(rowId) {
+        
+                $.ajax({
+                    url: '/getUpdatedData/' + rowId, 
+                    type: 'GET',
+                    success: function (data) {
+                       
+                        $('#edit_order .modal-content').html(data);
+                    },
+                    error: function (xhr, status, error) {
+                       
+                        console.error(xhr.responseText);
+                    }
+            });
+    }
+
+
         });
     </script>
 
