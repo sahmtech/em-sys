@@ -8,10 +8,7 @@
         <h1>
             @lang('essentials::lang.manage_employees')
         </h1>
-        <!-- <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol> -->
+
     </section>
 
     <!-- Main content -->
@@ -469,167 +466,174 @@
 
     <script type="text/javascript">
         $(document).on('click', '.btn-modal2', function(e) {
-            e.preventDefault();
-            var userId = $(this).data('row-id');
-            var userName = $(this).data('row-name');
+                    e.preventDefault();
+                    var userId = $(this).data('row-id');
+                    var userName = $(this).data('row-name');
 
-            $('#add_doc').modal('show');
-
-
-            $('#employees2').empty(); // Clear previous options
-            $('#employees2').append('<option value="' + userId + '">' + userName + '</option>');
-        });
-    </script>
-    <script type="text/javascript">
-        //Roles table
-        $(document).ready(function() {
-            var users_table = $('#employees').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('employees') }}",
-                    data: function(d) {
-                        d.specialization = $('#specializations-select').val();
-                        d.profession = $('#professions-select').val();
-                        d.status = $('#status_filter').val();
-                        d.location = $('#select_location_id').val();
-
-                        console.log(d);
-                    },
-                },
+                    //Roles table
+                    $(document).ready(function() {
+                                var users_table = $('#employees').DataTable({
+                                        processing: true,
+                                        serverSide: true,
+                                        ajax: {
+                                            url: "{{ route('employees') }}",
+                                            data: function(d) {
+                                                d.specialization = $('#specializations-select').val();
+                                                d.profession = $('#professions-select').val();
+                                                d.status = $('#status_filter').val();
+                                                d.location = $('#select_location_id').val();
 
 
-                "columns": [{
-                        "data": "emp_number"
-                    },
-                    {
-                        "data": "full_name"
-                    },
+                                            },
+                                        },
+                                    },
 
-                    {
-                        "data": "id_proof_number"
-                    },
-                    {
-                        "data": "nationality"
-                    },
-                    {
-                        "data": "admissions_date"
-                    },
-                    {
-                        "data": "contract_end_date"
-                    },
 
-                    {
-                        "data": "essentials_department_id"
-                    },
-                    {
-                        "data": "profession",
-                        name: 'profession'
-                    },
-                    {
-                        "data": "specialization",
-                        name: 'specialization'
-                    },
-                    {
-                        "data": "contact_number"
-                    },
-                    {
-                        "data": "email"
-                    },
-                    {
-                        data: 'status',
-                        render: function(data, type, row) {
-                            if (data === 'active') {
-                                return '@lang('essentials::lang.active')';
-                            } else if (data === 'vecation') {
-                                return '@lang('essentials::lang.vecation')';
-                            } else if (data === 'inactive') {
-                                return '@lang('essentials::lang.inactive')';
-                            } else if (data === 'terminated') {
-                                return '@lang('essentials::lang.terminated')';
-                            } else {
-                                return ' ';
-                            }
-                        }
-                    },
-                    {
-                        "data": "view"
-                    },
-                    {
-                        "data": "action"
-                    }
-                ],
-                "createdRow": function(row, data, dataIndex) {
-                    var contractEndDate = data.contract_end_date;
-                    console.log(contractEndDate);
-                    var currentDate = moment().format("YYYY-MM-DD");
+                                    "columns": [{
+                                            "data": "emp_number"
+                                        },
+                                        {
+                                            "data": "full_name"
+                                        },
 
-                    if (contractEndDate !== null && contractEndDate !== undefined) {
-                        var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
+                                        {
+                                            "data": "id_proof_number"
+                                        },
+                                        {
+                                            "data": "nationality"
+                                        },
+                                        {
+                                            "data": "admissions_date"
+                                        },
+                                        {
+                                            "data": "contract_end_date"
+                                        },
 
-                        if (daysRemaining <= 0) {
-                            $('td', row).eq(5).addClass('text-danger'); // Contract expired, colored red
-                        } else if (daysRemaining <= 25) {
-                            $('td', row).eq(5).addClass(
-                            'text-warning'); // Contract expires within 25 days, colored yellow
-                        }
-                    }
-                }
+                                        {
+                                            "data": "essentials_department_id"
+                                        },
+                                        {
+                                            "data": "profession",
+                                            name: 'profession'
+                                        },
+                                        {
+                                            "data": "specialization",
+                                            name: 'specialization'
+                                        },
+                                        {
+                                            "data": "contact_number"
+                                        },
+                                        {
+                                            "data": "email"
+                                        },
+                                        {
+                                            data: 'status',
+                                            render: function(data, type, row) {
+                                                if (data === 'active') {
+                                                    return '@lang('essentials::lang.active')';
+                                                } else if (data === 'vecation') {
+                                                    return '@lang('essentials::lang.vecation')';
+                                                } else if (data === 'inactive') {
+                                                    return '@lang('essentials::lang.inactive')';
+                                                } else if (data === 'terminated') {
+                                                    return '@lang('essentials::lang.terminated')';
+                                                } else {
+                                                    return ' ';
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "data": "view"
+                                        },
+                                        {
+                                            "data": "action"
+                                        }
+                                    ],
+                                    "createdRow": function(row, data, dataIndex) {
+                                        var contractEndDate = data.contract_end_date;
+                                        console.log(contractEndDate);
+                                        var currentDate = moment().format("YYYY-MM-DD");
 
-            });
+                                        if (contractEndDate !== null && contractEndDate !== undefined) {
+                                            var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
+
+                                            if (daysRemaining <= 0) {
+                                                $('td', row).eq(5).addClass(
+                                                'text-danger'); // Contract expired, colored red
+                                            } else if (daysRemaining <= 25) {
+                                                $('td', row).eq(5).addClass(
+                                                    'text-warning'); // Contract expires within 25 days, colored yellow
+                                            }
+                                        }
+                                    }
 
 
 
+                                    $(
+                                        '#specializations-select, #professions-select, #status-select, #select_location_id')
+                                    .change(function() {
+                                        console.log('Specialization selected: ' + $(this).val());
 
-            $('#specializations-select, #professions-select, #status-select, #select_location_id').change(
-        function() {
-                console.log('Specialization selected: ' + $(this).val());
-                console.log('Profession selected: ' + $('#professions-select').val());
-                console.log('Status selected: ' + $('#status_filter').val());
-                console.log('loc selected: ' + $('#select_location_id').val());
-                users_table.ajax.reload();
+                                        users_table.ajax.reload();
 
-            });
+                                    });
 
 
 
 
 
 
+                                    $(
+                                        '#specializations-select, #professions-select, #status-select, #select_location_id')
+                                    .change(
+                                        function() {
+                                            console.log('Specialization selected: ' + $(this).val());
+                                            console.log('Profession selected: ' + $('#professions-select').val());
+                                            console.log('Status selected: ' + $('#status_filter').val());
+                                            console.log('loc selected: ' + $('#select_location_id').val());
+                                            users_table.ajax.reload();
 
-            $(document).on('click', 'button.delete_user_button', function() {
-                swal({
-                    title: LANG.sure,
-                    text: LANG.confirm_delete_user,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        var href = $(this).data('href');
-                        var data = $(this).serialize();
-                        $.ajax({
-                            method: "DELETE",
-                            url: href,
-                            dataType: "json",
-                            data: data,
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    users_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            }
-                        });
-                    }
-                });
-            });
+                                        });
 
 
 
 
-        });
+
+
+
+                                    $(document).on('click', 'button.delete_user_button', function() {
+                                        swal({
+                                            title: LANG.sure,
+                                            text: LANG.confirm_delete_user,
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                        }).then((willDelete) => {
+                                            if (willDelete) {
+                                                var href = $(this).data('href');
+                                                var data = $(this).serialize();
+                                                $.ajax({
+                                                    method: "DELETE",
+                                                    url: href,
+                                                    dataType: "json",
+                                                    data: data,
+                                                    success: function(result) {
+                                                        if (result.success == true) {
+                                                            toastr.success(result.msg);
+                                                            users_table.ajax.reload();
+                                                        } else {
+                                                            toastr.error(result.msg);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    });
+
+
+
+
+                                });
     </script>
 
 
