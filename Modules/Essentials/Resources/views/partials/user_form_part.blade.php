@@ -289,6 +289,32 @@
     });
 </script>
 
+
+<script>
+    $(document).ready(function () {
+        $('#contract_start_date, #contract_end_date').change(function () {
+            var startDate = $('#contract_start_date').val();
+            var endDate = $('#contract_end_date').val();
+
+            if (startDate && endDate) {
+                var start = new Date(startDate);
+                var end = new Date(endDate);
+
+                var monthsDiff = (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth();
+
+                if (monthsDiff < 12) {
+                    $('#contract_duration').val(monthsDiff);
+                    $('#contract_duration_unit').val('months');
+                } else {
+                    var yearsDiff = Math.floor(monthsDiff / 12);
+                    $('#contract_duration').val(yearsDiff);
+                    $('#contract_duration_unit').val('years');
+                }
+            }
+        });
+    });
+</script>
+
 <script>
     $(document).ready(function() {
         var selectedData = [];
