@@ -117,7 +117,7 @@ class CustomAdminSidebarMenu
                         //         ['icon' => 'fa fas fa-handshake', 'active' => request()->segment(1) == 'sales-commission-agents']
                         //     );
                         // }
-                    },
+                    },  
                     ['icon' => 'fas fa-user-tie ']
                 )->order(10);
             }
