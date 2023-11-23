@@ -207,9 +207,10 @@ class EssentialsManageEmployeeController extends Controller
         ->leftjoin('essentials_admission_to_works','essentials_admission_to_works.employee_id','users.id')
         ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
         ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
-        ->select(['users.id',
+        ->select([
+        'users.id',
         'users.emp_number',
-                'users.username',
+        'users.username',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
                 DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
@@ -222,10 +223,13 @@ class EssentialsManageEmployeeController extends Controller
                 'users.essentials_department_id',
                 'users.status',
                 'essentials_employee_appointmets.profession_id as profession_id',
+              
                 'essentials_employee_appointmets.specialization_id as specialization_id'
                     ])->orderby('id','desc');
 
        
+
+
                     if (!empty($request->input('specialization'))) {
                       
                            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
@@ -233,11 +237,6 @@ class EssentialsManageEmployeeController extends Controller
                    }
                  
                  
-                       if (!empty($request->input('profession')))
-                        {
-                           
-                           $users->where('essentials_employee_appointmets.profession_id', $request->input('profession'));
-                       }
                        if (!empty($request->input('status-select'))) {
                            $users->where('users.status', $request->input('status'));
                        }
@@ -250,7 +249,7 @@ class EssentialsManageEmployeeController extends Controller
                                    
         if (request()->ajax()) 
         {
-           
+         
 
             return Datatables::of($users)
                
@@ -325,7 +324,25 @@ class EssentialsManageEmployeeController extends Controller
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-              
+
+                ->filterColumn('nationality', function ($query, $keyword) {
+                    $query->whereRaw("COALESCE(essentials_countries.nationality, '')  like ?", ["%{$keyword}%"]);
+                })
+
+                ->filterColumn('admissions_date', function ($query, $keyword) {
+                    $query->whereRaw("admissions_date  like ?", ["%{$keyword}%"]);
+                })
+
+                ->filterColumn('contract_end_date', function ($query, $keyword) {
+                    $query->whereRaw("contract_end_date  like ?", ["%{$keyword}%"]);
+                })
+
+            
+                ->filterColumn('profession', function ($query, $keyword) {
+                    $query->whereHas('appointment.profession', function ($subQuery) use ($keyword) {
+                        $subQuery->where('name', 'like', '%' . $keyword . '%');
+                    });
+                })
                 ->removecolumn('id')
                 ->rawColumns(['action','profession','specialization','view'])
                 ->make(true);

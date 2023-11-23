@@ -8,10 +8,7 @@
     <h1>
         @lang( 'essentials::lang.manage_employees' )
     </h1>
-    <!-- <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-        <li class="active">Here</li>
-    </ol> -->
+  
 </section>
 
 <!-- Main content -->
@@ -412,7 +409,7 @@ $(document).on('click', '.btn-modal2', function (e) {
                 d.status = $('#status_filter').val();
                 d.location = $('#select_location_id').val(); 
            
-                console.log(d);
+               
             },
                     },
                             
@@ -473,13 +470,12 @@ $(document).on('click', '.btn-modal2', function (e) {
   
     $('#specializations-select, #professions-select, #status-select, #select_location_id').change(function () {
         console.log('Specialization selected: ' + $(this).val());
-                    console.log('Profession selected: ' + $('#professions-select').val());
-                    console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_location_id').val());
+                  
                     users_table.ajax.reload();
         
     });
-     
+
+   
 
               
            
