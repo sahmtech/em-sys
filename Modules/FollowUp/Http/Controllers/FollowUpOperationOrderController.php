@@ -89,14 +89,11 @@ class FollowUpOperationOrderController extends Controller
                     $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     return $html;
                 })
-
-                ->addColumn('action', function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-success btn-modal" data-container=".view_modal" data-href="' . route('sale.operation.edit', ['id' => $row->id]) . '"><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
-
-
-                    return $html;
-                })
+                // ->addColumn('action', function ($row) {
+                //     $html = '';
+                //     $html .= '<a href="#" class="btn-modal" data-toggle="modal" data-target="#edit_order" data-row-id="' . $row->id . '"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.edit_order') . '</a>';
+                //     return $html;
+                // })
 
                 ->rawColumns(['show_operation', 'action'])
                 ->removeColumn('id')
@@ -139,10 +136,10 @@ class FollowUpOperationOrderController extends Controller
      public function store(Request $request)
      {
         
-       
-         try {
-             $business_id = $request->session()->get('user.business_id');
+        $business_id = $request->session()->get('user.business_id');
  
+         try {
+            
              DB::transaction(function () use ($request) {
                  $operation_order = [
                      'contact_id', 'sale_contract_id', 'operation_order_type',
@@ -213,9 +210,49 @@ class FollowUpOperationOrderController extends Controller
      * @param int $id
      * @return Renderable
      */
+
+     public function getUpdatedData($id)
+     {
+         
+         $updatedData = SalesOrdersOperation::find($id);
+         $html = view('followup::operation_orders.index', compact('updatedData'))->render();
+ 
+         return response()->json(['html' => $html]);
+     }
+     
     public function update(Request $request, $id)
     {
-        //
+        return $request;
+        try {
+            
+            DB::transaction(function () use ($request) {
+                $operation_order = [
+                    'contact_id', 'sale_contract_id', 'operation_order_type',
+                    'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
+                ];
+                $operation_details = $request->only($operation_order);
+
+                $operation_details['Status'] = $request->input('status');
+
+               // $operation = salesOrdersOperation::where('id',$id)->update($operation_details);
+            });
+
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+        // return $output;
+        return redirect()->route('operation_orders')->with($output);
     }
 
     /**
