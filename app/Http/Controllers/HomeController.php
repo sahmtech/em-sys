@@ -251,6 +251,11 @@ class HomeController extends Controller
         $FollowUpController = new $FollowUpControllerClass();
         $FollowUpPermissions = $FollowUpController->user_permissions();
 
+        // //connector
+        // $ConnectorControllerClass = \Modules\Connector\Http\Controllers\DataController::class;
+        // $ConnectorController = new $ConnectorControllerClass();
+        // $ConnectorPermissions = $ConnectorController->user_permissions();
+
         $userManagementPermissions = [
             ['value' => 'user.view'],
             ['value' => 'user.create'],
@@ -297,7 +302,7 @@ class HomeController extends Controller
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
-          
+            ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fa fas fa-network-wired', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
             ['id' => 'settings',  'permissions' => $settingsPermissions, 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
            
 

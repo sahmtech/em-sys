@@ -27,7 +27,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
@@ -39,7 +39,7 @@ class CustomAdminSidebarMenu
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
             $this->houseMovementsMenu();
-        } elseif (Str::startsWith($currentPath, ['international','ir'])) {
+        } elseif (Str::startsWith($currentPath, ['international', 'ir'])) {
             $this->getIRMenu();
         } elseif (Str::startsWith($currentPath, 'accounting')) {
             $this->accountingMenu();
@@ -66,7 +66,9 @@ class CustomAdminSidebarMenu
 
         ) {
             $this->productsMenu();
-        } elseif ($is_admin) {
+        }  elseif (Str::startsWith($currentPath, 'connector')) {
+            $this->connectorMenu();
+        }elseif ($is_admin) {
             $this->settingsMenu();
         } else {
         }
@@ -83,6 +85,42 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
     }
+
+    public function connectorMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(
+                action([\Modules\Connector\Http\Controllers\ClientController::class, 'index']),
+               __('connector::lang.clients'),
+                ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(1) == 'connector' && request()->segment(2) == 'api']
+            );
+            $menu->header("");
+            $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->dropdown(
+                __('connector::lang.connector'),
+                function ($sub) {
+                    if (auth()->user()->can('superadmin')) {
+                        $sub->url(
+                            action([\Modules\Connector\Http\Controllers\ClientController::class, 'index']),
+                           __('connector::lang.clients'),
+                            ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(1) == 'connector' && request()->segment(2) == 'api']
+                        );
+                    }
+                    $sub->url(
+                        url('\docs'),
+                       __('connector::lang.documentation'),
+                        ['icon' => 'fa fas fa-book', 'active' => request()->segment(1) == 'docs']
+                    );
+                },
+                ['icon' => 'fas fa-plug', 'style' => 'background-color: #2dce89 !important;']
+            );
+        });
+    }
     public function userManagementMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
@@ -90,7 +128,14 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
+            $menu->url(
+                action([\App\Http\Controllers\ManageUserController::class, 'index']),
+                __('user.users'),
+                ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
+            );
+            $menu->header("");
+            $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
                 $menu->dropdown(
@@ -117,9 +162,9 @@ class CustomAdminSidebarMenu
                         //         ['icon' => 'fa fas fa-handshake', 'active' => request()->segment(1) == 'sales-commission-agents']
                         //     );
                         // }
-                    },  
+                    },
                     ['icon' => 'fas fa-user-tie ']
-                )->order(10);
+                );
             }
         });
     }
