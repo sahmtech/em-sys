@@ -234,10 +234,11 @@ class EssentialsCardsController extends Controller
     ->get();
  
 
- $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
- ->where('users.id','=', $employeeId)
- ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
-->get();
+            
+        $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
+        ->where('users.id','=', $employeeId)
+        ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
+        ->get();
 
     
         $employees = $all_users->pluck('full_name', 'id');
