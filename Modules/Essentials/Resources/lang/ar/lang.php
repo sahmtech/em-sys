@@ -950,7 +950,7 @@ return[
     'edit_department'=>'تعديل معلومات الإدارة',
     'manager'=>'المدير',
     'delegate'=>'المفوّض',
-    'eqama'=>'إقامة ',
+    'eqama'=>'إقامة',
     'national_id'=>'هوية وطنية',
     'dep_type'=>'نوع الادارة',
     'select_responsible_users'=>'العميل(المشروع)',
@@ -968,7 +968,7 @@ return[
     'crud_all_essentials_requests'=>'إضافة/حذف/تعديل طلبات إدارة الموارد البشرية',
     'crud_all_procedures'=>'إضافة/حذف/تعديل إجراءات سير العمل',
 
-   'eqama'=>'إقامة ',
+  
    'national_id'=>'هوية وطنية',
 
   'dep_type'=>'نوع الادارة',
@@ -1001,13 +1001,19 @@ return[
 '6_months'=>' 6 أشهر',
 '9_months'=>' 9 أشهر',
 '12_months'=>' 12 أشهر',
-
-
-
-
-
-
-
+'Iban'=>'شهادة الآيبان',
+'first_name_required' => 'الاسم الأول مطلوب في السطر رقم ',
+'user_type_required' => 'نوع الموظف مطلوب في السطر رقم ',
+'business_not_found' => '  رقم المنسأة غير موجود في السطر رقم ',
+'business_required' => '  رقم المنسأة مطلوب في السطر رقم ',
+'business_required' => '  رقم المنسأة مطلوب في السطر رقم ',
+'location_not_found'=>'  رقم الفرع غير موجود في السطر رقم ',
+'dep_not_found'=>'  رقم القسم غير موجود في السطر رقم ',
+'special_not_found'=>'  رقم التخصص غير موجود في السطر رقم ',
+'prof_not_found'=>'  رقم المهنة  غير موجود في السطر رقم ',
+'nationality_not_found'=>'  رقم الجنسية  غير موجود في السطر رقم ',
+'user_with_same_id_proof_number_exists'=>' لا يمكن إضافة الموظف رقم  اثبات الهوية  المدخل موجود سابقا  ',
+'duplicate_id_proof_number'=>'رقم اثبات الهوية مكرر ضمن الملف'
 
 
 

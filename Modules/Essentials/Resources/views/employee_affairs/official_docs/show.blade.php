@@ -48,10 +48,15 @@
         </div>
         </div> <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">@lang('essentials::lang.close')</button>
+        @if(!empty($doc->file_path))
         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href = '/uploads/{{ $doc->file_path }}'">
             @lang('essentials::lang.view_doc')
         </button>
-
+        @else
+        <button type="button" class="btn btn-primary" data-dismiss="modal" >
+            @lang('sales::lang.no_doc_file_to_show')
+        </button>
+        @endif
       </div>
       </div>
      

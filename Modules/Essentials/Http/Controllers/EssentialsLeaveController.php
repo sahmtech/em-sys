@@ -168,7 +168,7 @@ class EssentialsLeaveController extends Controller
         
         $users = [];
         if ($can_crud_all_leave || auth()->user()->can('essentials.approve_leave')) {
-            $query = User::where('business_id', $business_id);
+            $query = User::where('business_id', $business_id) ->whereIn('user_type', ['employee', 'worker', 'manager']);
             $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
             $users = $all_users->pluck('full_name', 'id');
         }
@@ -210,7 +210,7 @@ class EssentialsLeaveController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $leave_types = EssentialsLeaveType::forDropdown($business_id);
-
+       // dd($leave_types);
         $settings = request()->session()->get('business.essentials_settings');
         $settings = ! empty($settings) ? json_decode($settings, true) : [];
 
@@ -219,7 +219,7 @@ class EssentialsLeaveController extends Controller
         $employees = [];
         $alt_employee=[];
         if (auth()->user()->can('essentials.crud_all_leave')) {
-            $query = User::where('business_id', $business_id);
+            $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);
             $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
             $employees = $all_users->pluck('full_name', 'id');
             $alt_employees = $all_users->pluck('full_name', 'id');

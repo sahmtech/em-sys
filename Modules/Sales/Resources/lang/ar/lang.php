@@ -64,6 +64,7 @@ return [
     'nationality_cs'=>'جنسية موقع العقد',
     'allow_login'=>'السماح بتسجيل الدخول',
     'username_cs'=>'اسم المستخدم',
+  
     'password_cs'=>'كلمة المرور',
     'confirm_password_cs'=>'تاكيد كلمة المرور',
     'add_Contract_follower'=>'إضافة متابع العقد',
@@ -205,6 +206,9 @@ return [
     'Not_started'=>'لم تبدأ ',
     'Under_process'=>'تتم معالجتها',
 
+    'External'=>'خارجي',
+    'no_file_to_show'=>'لايوجد ملف العقد ',
+    'no_doc_file_to_show'=>'لايوجد ملف الوثيقة'
 
 
 ];

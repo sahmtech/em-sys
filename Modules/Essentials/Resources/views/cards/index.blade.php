@@ -48,12 +48,15 @@
                     <th>@lang('essentials::lang.employee_name')</th>
                     <th>@lang('essentials::lang.Residency_no')</th>
                     <th>@lang('essentials::lang.Residency_end_date')</th>
+                    <th>@lang('essentials::lang.company_name')</th>
+                    <th>@lang('essentials::lang.responsible_client')</th>
+                 
                     <th>@lang('essentials::lang.project')</th>
                     <th>@lang('essentials::lang.work_card_duration')</th>
                     <th>@lang('essentials::lang.pay_number')</th>
                     <th>@lang('essentials::lang.fixed_no')</th>
                     <th>@lang('essentials::lang.fees')</th>
-                    <th>@lang('essentials::lang.company_name')</th>
+                 
                     <th>@lang('messages.action')</th>
                     </tr>
                 </thead>
@@ -72,6 +75,10 @@
 @section('javascript')
 <script type="text/javascript">
    
+   var translations = {
+        months: @json(__('essentials::lang.months'))
+      
+    };
     $(document).ready(function () {
     var customers_table = $('#operation_table').DataTable({
        
@@ -93,12 +100,21 @@
             { data: 'user', name: 'user' },
             { data: 'proof_number', name: 'proof_number' },
             { data: 'expiration_date', name: 'expiration_date' },
+            {data: 'company_name' ,name:'company_name'},
+            {data: 'responsible_client' ,name:'responsible_client'},
+           
             { data: 'project', name: 'project' },
-            {data: 'workcard_duration' ,name:'workcard_duration'},
+            {
+                    data: 'workcard_duration',
+                    name: 'workcard_duration',
+                    render: function (data, type, row) {
+                        return data !== null ? data + ' ' + translations.months : '';
+                    },
+                },
             {data: 'Payment_number' ,name:'Payment_number'},
             {data: 'fixnumber' ,name:'fixnumber'},
             {data: 'fees' ,name:'fees'},
-            {data: 'company_name' ,name:'company_name'},
+          
             { data: 'action', name: 'action', orderable: false, searchable: false },
            
         ]

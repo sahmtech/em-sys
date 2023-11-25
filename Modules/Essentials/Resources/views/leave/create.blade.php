@@ -67,7 +67,7 @@
     		@endcan
 			{!! Form::hidden('alt_employee_id', null, ['id' => 'alt_employee_id']) !!}
 
-			<div class="form-group col-md-12">
+			<div class="form-group col-md-12"  id="travel_destination_group" style="display: none;">
                <label for="travel_destination">@lang('essentials::lang.travel_destination'):</label>
                <select class="form-control select2" name="travel_destination" required id="travel_destination" style="width: 100%;">
                    <option value="all">@lang('lang_v1.all')</option>
@@ -170,7 +170,23 @@ console.log( $('#employee_id').val(selectedEmployeeId));
 
 
 </script>
-
+<script>
+    $(document).ready(function () {
+       
+        $('#essentials_leave_type_id').on('change', function () {
+            var selectedLeaveType = $(this).val();
+            console.log(selectedLeaveType);
+            
+            if (selectedLeaveType === '2') {
+               
+                $('#travel_destination_group').show();
+            } else {
+             
+                $('#travel_destination_group').hide();
+            }
+        });
+    });
+</script>
 
 <script>
 $(document).ready(function () {

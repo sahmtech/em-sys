@@ -81,15 +81,7 @@
                                                         </div>
                                                     </div>
                                         
-                                                    <div class="col-md-3 mt-15">
-                                                    
-                                                    <label class="radio-inline">
-                                                        <input type="radio" name="business"  checked="checked" id="business" value="business">
-                                                        @lang('business.business')
-                                                    </label>
-
                                                  
-                                                    </div>
                                                     <div class="clearfix"></div>
 
                                                     <div class="col-md-4 customer">

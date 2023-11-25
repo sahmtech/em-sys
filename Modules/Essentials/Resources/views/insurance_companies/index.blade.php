@@ -20,7 +20,8 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('user_id_filter', __('essentials::lang.employee') . ':') !!}
-                            {!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                            {!! Form::select('user_id_filter',
+                                 $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                         </div>
                     </div>
                     @endif
@@ -106,39 +107,66 @@
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     {!! Form::label('business_name', __('essentials::lang.business_name') . ':*') !!}
-                                    {!! Form::select('business_name', $businesses, null, ['class' => 'form-control select2', 'placeholder' => __('essentials::lang.business_name'), 'required']) !!}
+                                    {!! Form::select('business_name',
+                                         $businesses, null,
+                                          ['class' => 'form-control select',
+                                          'style'=>'height:40px',
+                                         'placeholder' => __('essentials::lang.business_name'), 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
-                                    {!! Form::text('insurance_company', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.insurance_company'), 'required']) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('city', __('essentials::lang.city') . ':*') !!}
-                                    {!! Form::select('city', $cities, null, ['class' => 'form-control select2',  'required']) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('state', __('essentials::lang.state') . ':*') !!}
-                                    {!! Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.state'), 'required']) !!}
+                                    {!! Form::text('insurance_company', null,
+                                         ['class' => 'form-control',
+                                         'style'=>'height:40px',
+                                          'placeholder' => __('essentials::lang.insurance_company'), 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('country', __('essentials::lang.country') . ':*') !!}
-                                    {!! Form::select('country', $countries, null, ['class' => 'form-control select2','required']) !!}
+                                    {!! Form::select('country', 
+                                        $countries, null, ['class' => 'form-control select',
+                                        'style'=>'height:40px',
+                                        'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
+                                    {!! Form::label('city', __('essentials::lang.city') . ':*') !!}
+                                    {!! Form::select('city',
+                                         $cities, null,
+                                          ['class' => 'form-control select',
+                                          'style'=>'height:40px', 
+                                           'required']) !!}
+                                </div>
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('state', __('essentials::lang.state') . ':*') !!}
+                                    {!! Form::select('state',
+                                         $states, null,
+                                          ['class' => 'form-control select',
+                                          'style'=>'height:40px', 
+                                           'required']) !!}
+                                </div>
+                              
+                                <div class="form-group col-md-6">
                                     {!! Form::label('address', __('essentials::lang.address') . ':*') !!}
-                                    {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.address'), 'required']) !!}
+                                    {!! Form::text('address', null,
+                                         ['class' => 'form-control',
+                                         'style'=>'height:40px',
+                                         'placeholder' => __('essentials::lang.address'), 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('tax_number', __('essentials::lang.tax_number') . ':*') !!}
-                                    {!! Form::number('tax_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.tax_number'), 'required']) !!}
+                                    {!! Form::number('tax_number', null,
+                                        
+                                        ['class' => 'form-control',
+                                        'style'=>'height:40px',
+                                         'placeholder' => __('essentials::lang.tax_number'), 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('phone_number', __('essentials::lang.phone_number') . ':*') !!}
-                                    {!! Form::number('phone_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
+                                    {!! Form::number('phone_number', 
+                                        null, ['class' => 'form-control',  'style'=>'height:40px', 'placeholder' => __('essentials::lang.phone_number'), 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('mobile_number', __('essentials::lang.mobile_number') . ':*') !!}
-                                    {!! Form::number('mobile_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.mobile_number'), 'required']) !!}
+                                    {!! Form::number('mobile_number', null, ['class' => 'form-control',   'style'=>'height:40px','placeholder' => __('essentials::lang.mobile_number'), 'required']) !!}
                                 </div>
                             </div>
                         </div>

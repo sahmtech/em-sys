@@ -251,6 +251,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.select_employee'),
                                     'required',
+                                    'style'=>'height:40px',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -264,9 +265,12 @@
                                         'drivers_license' => __('essentials::lang.drivers_license'),
                                         'car_registration' => __('essentials::lang.car_registration'),
                                         'international_certificate' => __('essentials::lang.international_certificate'),
+                                        'Iban' => __('essentials::lang.Iban'),
                                     ],
                                     null,
-                                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_type'), 'required'],
+                                    ['class' => 'form-control',
+                                    'style'=>'height:40px', 
+                                    'placeholder' => __('essentials::lang.select_type'), 'required'],
                                 ) !!}
                             </div>
 
@@ -276,6 +280,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.doc_number'),
                                     'required',
+                                    'style'=>'height:40px',
                                 ]) !!}
                             </div>
 
@@ -285,6 +290,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.issue_date'),
                                     'required',
+                                    'style'=>'height:40px',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -293,6 +299,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.issue_place'),
                                     'required',
+                                    'style'=>'height:40px',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -304,7 +311,9 @@
                                         'expired' => __('essentials::lang.expired'),
                                     ],
                                     null,
-                                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_status'), 'required'],
+                                    ['class' => 'form-control',
+                                    'style'=>'height:40px',
+                                     'placeholder' => __('essentials::lang.select_status'), 'required'],
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -313,6 +322,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.expiration_date'),
                                     'required',
+                                    'style'=>'height:40px',
                                 ]) !!}
                             </div>
 
@@ -322,6 +332,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.file'),
                                     'required',
+                                    'style'=>'height:40px',
                                 ]) !!}
                             </div>
                         </div>

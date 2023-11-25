@@ -80,6 +80,10 @@
     {!! Form::hidden('Residency_id', null, ['id' => 'Residency_id']) !!}
 </div>
 
+<div class="form-group">
+    {!! Form::hidden('border_id', null, ['id' => 'border_id']) !!}
+</div>
+
 <div class="col-md-9">
     <div class="form-group">
         {!! Form::label('Residency_no', __('essentials::lang.Residency_no') . ':*') !!}
@@ -91,7 +95,7 @@
                 'class' => 'form-control',
                 'style' => 'height:36px',
                 'placeholder' => __('essentials::lang.Residency_no'),
-                'required',
+            
                 'style' => 'width: 100%;',
                 'data-residency-url' => route('getResidencyData') 
             ]) !!}
@@ -99,7 +103,27 @@
     </div>
 </div>
 
-<div class="col-md-9">
+<div class="col-md-9 border_no">
+    <div class="form-group">
+        {!! Form::label('border_no', __('essentials::lang.border_number') . ':*') !!}
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="fa fa-id-badge"></i>
+            </span>
+            {!! Form::text('border_no', null, [
+                'class' => 'form-control',
+                'style' => 'height:36px',
+                'placeholder' => __('essentials::lang.border_number'),
+             
+               
+                'style' => 'width: 100%;',
+                'data-residency-url' => route('getResidencyData') 
+            ]) !!}
+        </div>
+    </div>
+</div>
+
+<div class="col-md-9" id ="Residency_end_date_id">
     <div class="form-group">
         {!! Form::label('Residency_end_date', __('essentials::lang.Residency_end_date') . ':') !!}
         <div class="input-group">
@@ -140,7 +164,10 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('workcard_duration', array_combine($durationOptions, $durationOptions), null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.work_card_duration')]); !!}
+            {!! Form::select('workcard_duration',
+                 array_combine($durationOptions, $durationOptions), null, ['class' => 'form-control',
+                 'style'=>'height:40px',
+                  'placeholder' => __('essentials::lang.work_card_duration')]); !!}
         </div>
     </div>
 </div>
@@ -225,12 +252,14 @@ success: function (data) {
 
 
 <script type="text/javascript">
-   $(document).ready(function () {
+$(document).ready(function () {
     $('#employees').on('change', function () {
         var employeeId = $(this).val();
         var $residencyNoField = $('#Residency_no');
+        var $borderNoField = $('#border_no');
         var $residencyEndDateField = $('#Residency_end_date');
         var $residencyidField = $('#Residency_id');
+
         if (employeeId) {
             $.ajax({
                 url: $residencyNoField.data('residency-url'),
@@ -239,28 +268,57 @@ success: function (data) {
                 success: function (data) {
                     if (data) {
                         $residencyNoField.val(data.residency_no);
+                        $borderNoField.val(data.border_no);
                         $residencyEndDateField.val(data.residency_end_date);
                         $residencyidField.val(data.id);
+                        console.log(data.residency_end_date);
+                        // Check if each field is null and hide the corresponding element
+                        if (data.border_no === null || data.border_no === undefined) {
+                                $('.border_no').hide();
+                            } else {
+                                $('.border_no').show();
+                            }
+
+                            if (data.residency_end_date === null || typeof data.residency_end_date === 'undefined') {
+                                $('#Residency_end_date').closest('.form-group').hide();
+                            } else {
+                                $('#Residency_end_date').closest('.form-group').show();
+                            }
+
+                            if (data.residency_no === null || typeof data.residency_no === 'undefined') {
+                                $('#Residency_no').closest('.form-group').hide();
+                            } else {
+                                $('#Residency_no').closest('.form-group').show();
+                            }
                     } else {
+                        // Reset values and show all form groups
                         $residencyNoField.val('');
+                        $borderNoField.val('');
                         $residencyEndDateField.val('');
                         $residencyidField.val('');
+                        $('.form-group').show();
                     }
                 },
                 error: function () {
+                    // Reset values and show all form groups
                     $residencyNoField.val('');
+                    $borderNoField.val('');
+                    $borderNoField.val('');
                     $residencyEndDateField.val('');
                     $residencyidField.val('');
+                    $('.form-group').show();
                 }
             });
         } else {
+            // Reset values and show all form groups
             $residencyNoField.val('');
+            $borderNoField.val('');
             $residencyEndDateField.val('');
             $residencyidField.val('');
+            $('.form-group').show();
         }
     });
 });
- 
 
 
 

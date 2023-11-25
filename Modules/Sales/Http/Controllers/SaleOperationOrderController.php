@@ -80,9 +80,13 @@ class SaleOperationOrderController extends Controller
                 'sales_orders_operations.operation_order_no as operation_order_no',
                 'contacts.name as contact_name',
                 'sales_contracts.number_of_contract as contract_number',
-                'sales_orders_operations.operation_order_type as operation_order_type',
+                DB::raw("CASE 
+                WHEN sales_orders_operations.operation_order_type = 'external' THEN '" . __('sales::lang.external') . "'
+                WHEN sales_orders_operations.operation_order_type = 'internal' THEN '" . __('sales::lang.Internal') . "'
+                ELSE sales_orders_operations.operation_order_type 
+                END AS operation_order_type"),
                 'sales_orders_operations.Status as Status'
-            );
+            )->orderby('id','desc');
 
 
 
@@ -163,7 +167,36 @@ class SaleOperationOrderController extends Controller
 
         return response()->json($contracts);
     }
-
+    // public function getContracts(Request $request)
+    // {
+    //     $customerId = $request->input('customer_id');
+    //     $business_id = $request->session()->get('user.business_id');
+    
+      
+    //     $offerPrices = Transaction::where('contact_id', $customerId)
+    //         ->where('business_id', $business_id)
+    //         ->pluck('id');
+    
+   
+    //     $contracts = salesContract::whereIn('offer_price_id', $offerPrices)
+    //         ->where('status', 'valid')
+    //         ->select('number_of_contract', 'id')
+    //         ->get()
+    //         ->toArray();
+    
+        
+    //     $contractsInOperations = DB::table('sales_orders_operations')
+    //         ->where('sales_orders_operations.contact_id', $customerId)
+    //         ->pluck('sales_orders_operations.sale_contract_id');
+    
+      
+    //     $filteredContracts = array_filter($contracts, function ($contract) use ($contractsInOperations) {
+    //         return !in_array($contract['id'], $contractsInOperations->toArray());
+    //     });
+    
+    //     return response()->json($filteredContracts);
+    // }
+    
 
 
     public function create()

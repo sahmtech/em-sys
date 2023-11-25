@@ -71,15 +71,23 @@ class EssentialsCardsController extends Controller
        
 
         $assgin_to_client = contact::where('type', 'customer')
-        ->join('users as u','u.assigned_to','=','contacts.id')
          ->select('contacts.id','contacts.supplier_business_name')
          ->get();
        
-        
+        $business_name=Business::where('id', $business_id)->select('name','id')->first();
+        $professionId = 65;
+
+        $responsible_client = User::where('business_id', $business_id)
+            ->whereHas('appointment', function ($query) use ($professionId) {
+                $query->where('profession_id', $professionId);
+            })
+            ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+            ->first();
+       // dd($responsible_client);
         $operations = DB::table('essentials_work_cards')
-        ->join('users as u','essentials_work_cards.employee_id','=','u.id')
-        ->join('contacts', 'u.assigned_to', '=', 'contacts.id')
-        ->join('essentials_official_documents as doc', 'doc.employee_id', '=', 'u.id')
+        ->leftjoin('users as u','essentials_work_cards.employee_id','=','u.id')
+        ->leftjoin('contacts', 'u.assigned_to', '=', 'contacts.id')
+        ->leftjoin('essentials_official_documents as doc', 'doc.employee_id', '=', 'u.id')
         ->where('u.business_id', $business_id)
       
         ->select(
@@ -88,38 +96,36 @@ class EssentialsCardsController extends Controller
             DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
             'doc.number as proof_number',
             'doc.expiration_date as expiration_date',
-
             'contacts.supplier_business_name as project',
+            DB::raw("'" . $responsible_client->name . "' as responsible_client"),
             'essentials_work_cards.workcard_duration as workcard_duration',
             'essentials_work_cards.Payment_number as Payment_number',
             'essentials_work_cards.fixnumber as fixnumber',
             'essentials_work_cards.fees as fees',
-            'essentials_work_cards.company_name as company_name',
-        );
+           
+            DB::raw("'" . $business_name->name . "' as company_name")
+        )  ->orderBy('id', 'desc');
 
         if (!empty($request->input('project')))
         {
            
            $operations->where('contacts.id', $request->input('project'));
        }
-        if (request()->ajax()) {
-
-
-            return Datatables::of($operations)
-            
-
-                ->addColumn('action', function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-success btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
-
-
-                    return $html;
-                })
-
-                ->rawColumns(['action'])
-                ->removeColumn('id')
-                ->make(true);
-        }
+       if (request()->ajax()) {
+        return Datatables::of($operations->get()->map(function ($item) {
+          
+            $item->project = $item->project ?? __('essentials::lang.management');
+            return $item;
+        }))
+            ->addColumn('action', function ($row) {
+                $html = '';
+                $html .= '<button class="btn btn-xs btn-success btn-modal"  data-href=""><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
+                return $html;
+            })
+            ->rawColumns(['action'])
+            ->removeColumn('id')
+            ->make(true);
+    }
 
         $contacts=Contact::where('type','customer')->pluck('supplier_business_name','id');
         return view('essentials::cards.index')->with(compact('contacts'));
@@ -134,7 +140,10 @@ class EssentialsCardsController extends Controller
         $residencyData = User::where('business_id', $business_id)
         ->where('users.id','=', $employeeId)
         ->join('essentials_official_documents as doc','doc.employee_id','=','users.id')
-            ->select('doc.id', 'doc.number as residency_no','doc.expiration_date as residency_end_date')->first();
+            ->select('doc.id',
+             'users.border_no as border_no',
+             'doc.number as residency_no',
+             'doc.expiration_date as residency_end_date')->first();
 
         return response()->json($residencyData);
     }
@@ -151,14 +160,17 @@ class EssentialsCardsController extends Controller
      
          $userType = User::where('id', $employeeId)->value('user_type');
      
-         if ($userType !== 'worker') {
+         if ($userType !== 'worker' ) {
            
+             $responsible_client = User::where('id',1301)
+             ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+             ->get();
              return response()->json([
                  'all_responsible_users' => [
                      'id' => null,
                      'name' => trans('essentials::lang.management'),
                  ],
-                 'responsible_client' => [],
+                 'responsible_client' => $responsible_client,
              ]);
          }
      
@@ -178,6 +190,18 @@ class EssentialsCardsController extends Controller
              ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
              ->get();
      
+             if ($responsible_clients->isEmpty()) {
+                $professionId = 65;
+                $business_id = request()->session()->get('user.business_id');
+                $responsible_client = User::where('business_id', $business_id)
+                    ->whereHas('appointment', function ($query) use ($professionId) {
+                        $query->where('profession_id', $professionId);
+                    })
+                    ->select('id',
+                     DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                    ->first();
+            }
+           
          return response()->json([
              'all_responsible_users' => [
                  'id' => $all_responsible_users->id,
@@ -210,10 +234,11 @@ class EssentialsCardsController extends Controller
     ->get();
  
 
- $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
- ->where('users.id','=', $employeeId)
- ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
-->get();
+            
+        $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
+        ->where('users.id','=', $employeeId)
+        ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
+        ->get();
 
     
         $employees = $all_users->pluck('full_name', 'id');
@@ -285,13 +310,13 @@ class EssentialsCardsController extends Controller
               
                $nextNumericPart = $lastEmpNumber + 1;
 
-               $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+               $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
            } 
        
            else
             {
              
-               $data['work_card_no'] = 'WC' .'00';
+               $data['work_card_no'] = 'WC' .'000';
 
            }
 
@@ -318,8 +343,8 @@ class EssentialsCardsController extends Controller
             ];
         }
 
-    
-      return redirect()->route('cards');
+   // return $output;
+     return redirect()->route('cards');
     }
 
     /**

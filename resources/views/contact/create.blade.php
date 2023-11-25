@@ -51,7 +51,9 @@
                         <span class="input-group-addon">
                             <i class="fa fa-id-badge"></i>
                         </span>
-                        {!! Form::text('contact_id', null, ['class' => 'form-control','placeholder' => __('lang_v1.contact_id')]); !!}
+                        {!! Form::text('contact_id', null,
+                             ['class' => 'form-control','style'=>'height:40px',
+                             'placeholder' => __('lang_v1.contact_id')]); !!}
                     </div>
                     <p class="help-block">
                         @lang('lang_v1.leave_empty_to_autogenerate')
@@ -67,7 +69,8 @@
                         <span class="input-group-addon">
                             <i class="fa fa-briefcase"></i>
                         </span>
-                        {!! Form::text('supplier_business_name', null, ['class' => 'form-control', 'placeholder' => __('business.business_name')]); !!}
+                        {!! Form::text('supplier_business_name', null,
+                             ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('business.business_name')]); !!}
                     </div>
                 </div>
             </div>
@@ -77,7 +80,7 @@
             <div class="col-md-3 individual" style="display: none;">
                 <div class="form-group">
                     {!! Form::label('prefix', __( 'business.prefix' ) . ':') !!}
-                    {!! Form::text('prefix', null, ['class' => 'form-control', 'placeholder' => __( 'business.prefix_placeholder' ) ]); !!}
+                    {!! Form::text('prefix', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'business.prefix_placeholder' ) ]); !!}
                 </div>
             </div>
             <div class="col-md-3 individual" style="display: none;">

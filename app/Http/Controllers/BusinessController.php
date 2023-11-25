@@ -21,6 +21,7 @@ use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\Essentials\Entities\EssentialsRegion;
 class BusinessController extends Controller
 {
     /*
@@ -413,8 +414,8 @@ class BusinessController extends Controller
             $package_id = request()->package;
 
             $system_settings = System::getProperties(['superadmin_enable_register_tc', 'superadmin_register_tc'], true);
-    
-      return view('essentials::bussines_manage.index', compact( 'countries','cities','currencies', 'timezone_list','months','accounting_methods','system_settings','package_id'));
+            $states=EssentialsRegion::forDropdown();
+      return view('essentials::bussines_manage.index', compact( 'states','countries','cities','currencies', 'timezone_list','months','accounting_methods','system_settings','package_id'));
 
     }
 

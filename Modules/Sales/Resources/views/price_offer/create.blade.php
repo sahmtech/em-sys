@@ -61,7 +61,10 @@
 					<div class="form-group">
 						<div class="form-group col-md-10">
 							{!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
-							{!! Form::select('contact_id',$leads, null, ['class' => 'form-control', 'placeholder' => __('sales::lang.select_customer'), 'required']) !!}
+							{!! Form::select('contact_id',$leads, null,
+								 ['class' => 'form-control',
+								 'style'=>'height:40px',
+								  'placeholder' => __('sales::lang.select_customer'), 'required']) !!}
 						</div>
 					</div>
 				</div>
@@ -72,7 +75,7 @@
 					 	 ['monthly_cost' => __('sales::lang.monthly_cost'), 
 					 	'operating_fees' => __('sales::lang.operating_fees')],
 						null,
-						['class' => 'form-control', 'required',
+						['class' => 'form-control', 'required', 'style'=>'height:40px',
 						'placeholder' => __('sales::lang.contract_form')]); !!}
 				   </div>
 				</div>
@@ -85,14 +88,14 @@
 						 'cancelled' => __('sales::lang.cancelled'),
 						 'under_study' => __('sales::lang.under_study'),
 
-						],  null, ['class' => 'form-control', 'required',
+						],  null, ['class' => 'form-control', 'required', 'style'=>'height:40px',
 						'placeholder' => __('sale.status')]); !!}
 					</div>
 				</div>
 				<div class="col-md-4">
 					<div class="form-group">
 					  {!! Form::label('down_payment', __('sales::lang.down_payment') . ':*') !!}
-					  {!! Form::Number('down_payment',  null, ['class' => 'form-control', 'required',
+					  {!! Form::Number('down_payment',  null, ['class' => 'form-control', 'required', 'style'=>'height:40px',
 						'placeholder' => __('sales::lang.down_payment')]); !!}
 				   </div>
 				</div>
@@ -105,7 +108,8 @@
 							<span class="input-group-addon">
 								<i class="fa fa-calendar"></i>
 							</span>
-							{!! Form::text('transaction_date', $default_datetime, ['class' => 'form-control', 'readonly', 'required']); !!}
+							{!! Form::text('transaction_date',
+								 $default_datetime, ['class' => 'form-control', 'style'=>'height:40px', 'readonly', 'required']); !!}
 						</div>
 					</div>
 				</div>
@@ -118,7 +122,7 @@
 					<div class="form-group">
 					{!! Form::label('commission_agent', __('lang_v1.commission_agent') . ':') !!}
 					{!! Form::select('commission_agent', 
-								$commission_agent, null, ['class' => 'form-control select2', 'id' => 'commission_agent', 'required' => $is_commission_agent_required]); !!}
+								$commission_agent, null, ['class' => 'form-control select2', 'style'=>'height:40px', 'id' => 'commission_agent', 'required' => $is_commission_agent_required]); !!}
 					</div>
 				</div>
 				@endif
@@ -130,7 +134,7 @@
 					<div class="col-sm-3">
 						<div class="form-group">
 							{!! Form::label('sales_order_ids', __('lang_v1.sales_order').':') !!}
-							{!! Form::select('sales_order_ids[]', [], null, ['class' => 'form-control select2', 'multiple', 'id' => 'sales_order_ids']); !!}
+							{!! Form::select('sales_order_ids[]', [], null, ['class' => 'form-control select2', 'style'=>'height:40px', 'multiple', 'id' => 'sales_order_ids']); !!}
 						</div>
 					</div>
 					<div class="clearfix"></div>
@@ -386,7 +390,9 @@
 </div>
 
 <!-- quick product modal -->
-<div class="modal fade quick_add_client_modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle"></div>
+<div class="modal fade quick_add_client_modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle">
+	
+</div>
 
 @include('sale_pos.partials.configure_search_modal')
 

@@ -52,12 +52,16 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required','id' => 'employeeSelect']) !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control',
+                                    'style'=>'height:40px',
+                                     'placeholder' => __('essentials::lang.select_employee'), 'required','id' => 'employeeSelect']) !!}
                             </div>
                             
                             <div class="form-group col-md-6">
                                 {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
-                                {!! Form::select('insurance_class', $insurance_classes, null, ['class' => 'form-control','placeholder' => __('essentials::lang.insurance_class'),  'required','id' => 'classSelect']) !!}
+                                {!! Form::select('insurance_class', $insurance_classes, null, ['class' => 'form-control',
+                                    'style'=>'height:40px',
+                                    'placeholder' => __('essentials::lang.insurance_class'),  'required','id' => 'classSelect']) !!}
                             </div>
                             
                             

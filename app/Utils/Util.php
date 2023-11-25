@@ -1582,6 +1582,7 @@ class Util
             $user_details['contact_number'] = null;
         }
 
+       
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
             $profile = $image->store('/profile_images');
@@ -1623,11 +1624,18 @@ class Util
         }
 
         $user_details['selected_contacts'] = isset($user_details['selected_contacts']) ? $user_details['selected_contacts'] : 0;
-        if ($request->hasFile('bank_details.Iban_file')) {
+      
+        if ($request->hasFile('bank_details.Iban_file'))
+        {
             $file = $request->file('bank_details.Iban_file');
             $path = $file->store('/employee_bank_ibans');
             $user_details['bank_details']['Iban_file'] = $path;
+
+          
         }
+
+
+
         $user_details['bank_details'] = !empty($user_details['bank_details']) ? json_encode($user_details['bank_details']) : null;
 
         $user_details['password'] = $user_details['allow_login'] ? Hash::make($user_details['password']) : null;
@@ -1656,8 +1664,26 @@ class Util
         $input2['employee_id'] = $user->id;
         $input2['number'] = $user_details['id_proof_number'];
         $input2['expiration_date'] = $user_details['expiration_date'];
-        
         EssentialsOfficialDocument::create($input2);
+      }
+      
+      //store IBAN file into official documents 
+      $bankDetails = json_decode($user_details['bank_details'], true);
+      if($request->hasFile('bank_details.Iban_file') && !empty($bankDetails) && array_key_exists('bank_code', $bankDetails))
+      {
+       
+        $bankCode = $bankDetails['bank_code'];
+        $input['type'] ='Iban';
+        $input['status'] ='vaild';
+        $input['employee_id'] = $user->id;
+        $input['number'] =  $bankCode;
+        $file = request()->file('bank_details.Iban_file');
+        $filePath = $file->store('/officialDocuments');
+        $input['file_path'] = $filePath;
+        
+     
+        $Iban_doc= EssentialsOfficialDocument::create($input);
+     
       }
 
         $role = null;

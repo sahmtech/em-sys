@@ -478,7 +478,7 @@ class OfferPriceController extends Controller
             ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
             
             )->get()[0];
-
+   
         
         return view('sales::price_offer.show')
             ->with(compact('query'));
