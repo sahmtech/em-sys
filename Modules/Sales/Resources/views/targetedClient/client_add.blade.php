@@ -11,7 +11,7 @@
           <div class="col-md-4">
             <div class="form-group">
               {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-              {!! Form::select('profession',$professions,null, ['class' => 'form-control', 'required',
+              {!! Form::select('profession',$professions,null, ['class' => 'form-control','style'=>'height:40px', 'required',
                  'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
                  
             </div>
@@ -20,7 +20,7 @@
           <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required',
+                {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control', 'required','style'=>'height:40px',
                     'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
               </div>
           </div>
@@ -28,14 +28,15 @@
             <div class="form-group">
                 {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
             
-                  {!! Form::select('nationality',$nationalities ,null, ['class' => 'form-control', 'required',
+                  {!! Form::select('nationality',$nationalities ,null, ['class' => 'form-control', 'required','style'=>'height:40px',
                   'placeholder' => __('sales::lang.nationality')]); !!}
               </div>
           </div>
           <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('gender', __('sales::lang.gender') . ':*') !!}
-                  {!! Form::select('gender',  ['male' => __('sales::lang.male'), 'female' => __('sales::lang.female')],null, ['class' => 'form-control', 'required',
+                  {!! Form::select('gender',  ['male' => __('sales::lang.male'), 'female' => __('sales::lang.female')],null,
+                     ['class' => 'form-control', 'required','style'=>'height:40px',
                   'placeholder' => __('sales::lang.gender')]); !!}
                   
               </div>
@@ -46,9 +47,9 @@
                     <div class="multi-input">
                         {!! Form::label('essentials_salary', __('essentials::lang.salary') . ':') !!}
                         <br/>
-                        {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, ['class' => 'form-control width-40 pull-left', 'placeholder' => __('essentials::lang.salary'), 'id' => 'essentials_salary']); !!}
+                        {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, ['class' => 'form-control width-40 pull-left','style'=>'height:40px', 'placeholder' => __('essentials::lang.salary'), 'id' => 'essentials_salary']); !!}
 
-                        {!! Form::select('essentials_pay_period', ['month' => __('essentials::lang.per'). ' '.__('lang_v1.month'), 'week' => __('essentials::lang.per'). ' '.__('essentials::lang.week'), 'day' => __('essentials::lang.per'). ' '.__('lang_v1.day')], !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null, ['class' => 'form-control width-60 pull-left']); !!}
+                        {!! Form::select('essentials_pay_period', ['month' => __('essentials::lang.per'). ' '.__('lang_v1.month'), 'week' => __('essentials::lang.per'). ' '.__('essentials::lang.week'), 'day' => __('essentials::lang.per'). ' '.__('lang_v1.day')], !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null, ['class' => 'form-control width-60 pull-left','style'=>'height:40px',]); !!}
                     </div>
                 </div>
             </div>
@@ -75,10 +76,10 @@
                                 'overtime_hours' => __('sales::lang.overtime_hours'),
                                 'other_allowances' => __('sales::lang.other_allowances')
                                 ],
-                                null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
+                                null, ['class' => 'form-control width-60 pull-left','style'=>'height:40px', 'placeholder' => __('essentials::lang.extra_salary_type')]); !!}
                             </td>
                             <td>
-                            {!! Form::select('type[]', ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.type'), 'id' => 'typeDropdown']); !!}
+                            {!! Form::select('type[]', ['cash' => __('sales::lang.cash'), 'insured_by_the_other' => __('sales::lang.insured_by_the_other')], null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.type'), 'id' => 'typeDropdown','style'=>'height:40px',]); !!}
                         </td>
                         <td>
                             {!! Form::text('amount[]', null, ['class' => 'form-control width-60 pull-left', 'placeholder' => __('essentials::lang.amount'), 'id' => 'amountInput']); !!}

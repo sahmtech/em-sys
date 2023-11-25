@@ -77,12 +77,14 @@
           @if (!empty($sell_line->additional_allwances))
           <ul>
               @foreach(json_decode($sell_line->additional_allwances) as $allwance)
-                  @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
+                  @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount') && !empty($allwance->salaryType))
                      <li>
                       {{ __('sales::lang.' . $allwance->salaryType) }}: {{ $allwance->amount }} 
                      
                   </li>
+                
                   @endif
+
               @endforeach
           </ul>
       

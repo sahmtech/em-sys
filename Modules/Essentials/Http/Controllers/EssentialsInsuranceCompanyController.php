@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\Essentials\Entities\EssentialsRegion;
 
 
 class EssentialsInsuranceCompanyController extends Controller
@@ -98,13 +99,14 @@ class EssentialsInsuranceCompanyController extends Controller
 
         $countries = EssentialsCountry::forDropdown();
         $cities = EssentialsCity::forDropdown();
+        $states=EssentialsRegion::forDropdown();
         $businesses = null;
         if (!(auth()->user()->can('superadmin'))) {
             $businesses = Business::forDropdown($business_id);
         } else {
             $businesses = Business::forDropdown();
         }
-        return view('essentials::insurance_companies.index')->with(compact('countries', 'cities', 'businesses'));
+        return view('essentials::insurance_companies.index')->with(compact('countries', 'cities', 'businesses','states'));
     }
 
     /**

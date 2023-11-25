@@ -47,7 +47,7 @@
     </div>
     <!-- Modal for adding a new country -->
  <div class="modal fade" id="addBusinessModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
             {!! Form::open(['route' =>'storeBusiness' ,'method'=>'post', 'id' => 'storebussinessid']) !!}
@@ -155,21 +155,19 @@
                         <span class="input-group-addon">
                             <i class="fa fa-globe"></i>
                         </span>
-                        {!! Form::select('country', $countries, '',['class' => 'form-control select2_register','placeholder' => __('business.country'), ]); !!}
+                        {!! Form::select('country', $countries, '',['class' => 'form-control select2_register',  'style'=>'height:40px', 'placeholder' => __('business.country'), ]); !!}
                     </div>
                     </div>
                 </div>
                 
-                <div class="col-md-6">
-                    <div class="form-group">
-                    {!! Form::label('state',__('business.state') . ':*') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-map-marker"></i>
-                        </span>
-                        {!! Form::text('state', null, ['class' => 'form-control','placeholder' => __('business.state'),'required']); !!}
-                    </div>
-                    </div>
+                <div class="form-group col-md-6">
+                                    {!! Form::label('state', __('essentials::lang.state') . ':*') !!}
+                                    {!! Form::select('state',
+                                         $states, null,
+                                          ['class' => 'form-control select',
+                                          'placeholder' => __('essentials::lang.state'),
+                                          'style'=>'height:40px', 
+                                           'required']) !!}
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-md-6">
@@ -179,7 +177,11 @@
                         <span class="input-group-addon">
                             <i class="fa fa-map-marker"></i>
                         </span>
-                        {!! Form::select('city', $cities,'', ['class' => 'form-control select2_register','placeholder' => __('business.city'),'required' ]); !!}
+                        {!! Form::select('city', $cities,'',
+                             ['class' => 'form-control select2_register',
+                             'style'=>'height:40px', 
+                             'placeholder' => __('business.city'),
+                             'required' ]); !!}
                     </div>
                     </div>
                 </div>

@@ -640,5 +640,6 @@ return [
 'remaining_contracts'=>'remaining contracts',
 'management'=>'management',
 'select_company'=>' select company ',
+'Iban'=>'Iban file',
 ];
 

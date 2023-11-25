@@ -50,6 +50,11 @@ class User extends Authenticatable
     /**
      * Get the business that owns the user.
      */
+
+     public function appointment()
+     {
+         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+     }
     public function business()
     {
         return $this->belongsTo(\App\Business::class);
@@ -335,10 +340,7 @@ class User extends Authenticatable
         return $this->belongsTo(EssentialsCountry::class, 'nationality_id');
     }
 
-    public function appointment()
-    {
-        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
-    }
+  
 
     public function contract()
     {

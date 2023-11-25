@@ -102,7 +102,7 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <button type="submit" class="submit btn btn-primary btn-big">@lang('messages.update')</button>
-                <button type="button" class="btn btn-default btn-big" data-dismiss="modal">@lang( 'messages.close' )</button>
+              
             </div>
         </div>
       

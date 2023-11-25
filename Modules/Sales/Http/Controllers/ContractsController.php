@@ -72,9 +72,13 @@ class ContractsController extends Controller
                     $html = ''; 
                     $html .=  '  <a href="#" data-href="'.action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>'.__('sales::lang.offer_price_view').'</a>';
                     $html .= '&nbsp;'; 
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file.'\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
-                    $html .= '&nbsp;'; 
-                   
+                    // Check if $row->file is not empty before rendering the button
+                    if (!empty($row->file)) {
+                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file.'\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
+                    } else {
+                        $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                    }
+                     $html .= '&nbsp;'; 
                     $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
             
                     return $html;

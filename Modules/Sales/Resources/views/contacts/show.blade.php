@@ -10,9 +10,7 @@
             <div class="col-md-4">
                 <h3>@lang( 'sales::lang.contact_view' )</h3>
             </div>
-            <div class="col-md-4 col-xs-12 mt-15 pull-right">
-            {!! Form::select('contact_id', $contact_dropdown, $contact->id , ['class' => 'form-control select2', 'id' => 'contact_id']); !!}
-        </div>
+           
         </div>
         <br>
         <div class="row">

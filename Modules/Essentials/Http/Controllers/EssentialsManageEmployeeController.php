@@ -202,7 +202,8 @@ class EssentialsManageEmployeeController extends Controller
 
         $nationalities=EssentialsCountry::nationalityForDropdown();
        // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)->whereIn('user_type', ['employee', 'worker', 'manager'])
+         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+        ->whereIn('user_type', ['employee', 'worker', 'manager'])
         ->leftjoin('essentials_employee_appointmets','essentials_employee_appointmets.employee_id','users.id')
         ->leftjoin('essentials_admission_to_works','essentials_admission_to_works.employee_id','users.id')
         ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
@@ -349,7 +350,7 @@ class EssentialsManageEmployeeController extends Controller
 
         }
         
-        $query = User::where('business_id', $business_id);
+        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);;
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $countries = EssentialsCountry::forDropdown();
@@ -415,7 +416,7 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities=EssentialsCountry::nationalityForDropdown();
 
         $contacts=Contact::where('type','customer')->pluck('supplier_business_name','id');
-        
+      //  dd($contacts);
         $blood_types = ['A+' => 'A positive (A+).',
         'A-' => 'A negative (A-).',
         'B+' => 'B positive (B+)',
@@ -498,6 +499,7 @@ class EssentialsManageEmployeeController extends Controller
                     $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
                 }
     
+              
                 $request['cmmsn_percent'] = ! empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
     
                 $request['max_sales_discount_percent'] = ! is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
@@ -531,6 +533,13 @@ class EssentialsManageEmployeeController extends Controller
                     }
 
                  
+                    $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+
+                    if ($existingprofnumber) {
+                        $errorMessage = trans('essentials::lang.user_with_same_id_proof_number_exists');
+                        throw new \Exception($errorMessage);
+                    }
+
                 $user = $this->moduleUtil->createUser($request);
     
                 event(new UserCreatedOrModified($user, 'added'));
@@ -546,10 +555,13 @@ class EssentialsManageEmployeeController extends Controller
                 $output = ['success' => 0,
                     'msg' => $e->getMessage(),
                 ];
+                
             }
    
            return redirect()->route('employees')->with('status', $output);
     }
+
+    
     public function storeWorker(Request $request)
     {
           
@@ -622,7 +634,7 @@ class EssentialsManageEmployeeController extends Controller
                     ->with(['contactAccess'])
                     ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
                     ->find($id);
-            
+       // dd( $user);
         $dataArray=[];
         if(!empty($user->bank_details))
          {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 

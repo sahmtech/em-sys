@@ -40,20 +40,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-9">
-                        <div class="form-group">
-                            {!! Form::label('operation_order_number', __('sales::lang.operation_order_number') . ':*') !!}
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="fa fa-id-badge"></i>
-                                </span>
-                                {!! Form::text('operation_order_no', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('sales::lang.example_operation_order_number'),
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
+               
 
 
                     <div class="col-md-9">

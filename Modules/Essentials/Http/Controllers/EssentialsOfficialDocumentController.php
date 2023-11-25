@@ -119,14 +119,22 @@ class EssentialsOfficialDocumentController extends Controller
         }
 
         try {
-            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status', 'expiration_date', 'file']);
+            $input = $request->only(
+                ['employees2',
+                 'doc_type',
+                'doc_number',
+                 'issue_date',
+                 'issue_place',
+                  'status',
+                 'expiration_date',
+                 'file']);
 
-
+           
             $input2['type'] = $input['doc_type'];
             $input2['number'] = $input['doc_number'];
             $input2['issue_date'] = $input['issue_date'];
             $input2['expiration_date'] = $input['expiration_date'];
-            $input2['employee_id'] = $input['employee'];
+            $input2['employee_id'] =  $request->input('employees2');
             $input2['status'] = $input['status'];
             $input2['issue_place'] = $input['issue_place'];
             if (request()->hasFile('file')) {
@@ -136,7 +144,7 @@ class EssentialsOfficialDocumentController extends Controller
                 $input2['file_path'] = $filePath;
             }
 
-
+          
             EssentialsOfficialDocument::create($input2);
 
 
@@ -149,7 +157,7 @@ class EssentialsOfficialDocumentController extends Controller
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
 
@@ -157,7 +165,7 @@ class EssentialsOfficialDocumentController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-
+        // return $output;
         return redirect()->route('official_documents')->with(compact('users'));
     }
 
