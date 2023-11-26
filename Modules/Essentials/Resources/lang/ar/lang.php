@@ -1006,14 +1006,14 @@ return[
 'user_type_required' => 'نوع الموظف مطلوب في السطر رقم ',
 'business_not_found' => '  رقم المنسأة غير موجود في السطر رقم ',
 'business_required' => '  رقم المنسأة مطلوب في السطر رقم ',
-'business_required' => '  رقم المنسأة مطلوب في السطر رقم ',
 'location_not_found'=>'  رقم الفرع غير موجود في السطر رقم ',
 'dep_not_found'=>'  رقم القسم غير موجود في السطر رقم ',
 'special_not_found'=>'  رقم التخصص غير موجود في السطر رقم ',
 'prof_not_found'=>'  رقم المهنة  غير موجود في السطر رقم ',
 'nationality_not_found'=>'  رقم الجنسية  غير موجود في السطر رقم ',
 'user_with_same_id_proof_number_exists'=>' لا يمكن إضافة الموظف رقم  اثبات الهوية  المدخل موجود سابقا  ',
-'duplicate_id_proof_number'=>'رقم اثبات الهوية مكرر ضمن الملف'
+'duplicate_id_proof_number'=>'رقم اثبات الهوية مكرر ضمن الملف',
+'employees_reports_view'=>'عرض تقرير الموظفين',
 
 
 

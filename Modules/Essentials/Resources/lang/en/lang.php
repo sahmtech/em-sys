@@ -641,5 +641,17 @@ return [
 'management'=>'management',
 'select_company'=>' select company ',
 'Iban'=>'Iban file',
+'first_name_required' => 'first name required into row',
+'user_type_required' =>  'user type required into row',
+'business_not_found' =>  ' business not found into row',
+'business_required' => ' business ID required into row ',
+'location_not_found'=>' location ID not found into row ',
+'dep_not_found'=>'departement ID not found into row ',
+'special_not_found'=>'sepecialization ID not found into row ',
+'prof_not_found'=>'profession ID not found into row ',
+'nationality_not_found'=>'nationality ID not found into row ',
+'user_with_same_id_proof_number_exists'=>'user with same  proof number exists',
+'duplicate_id_proof_number'=>'duplicate  proof number',
+'employees_reports_view'=>'employees reports view',
 ];
 
