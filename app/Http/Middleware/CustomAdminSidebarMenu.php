@@ -224,6 +224,26 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 )->order(5);
             }
+            //employee reports 
+            if (auth()->user()->can('essentials.employees_reports_view') || true) {
+                $menu->dropdown(
+                    __('essentials::lang.reports'),
+                    function ($sub) use ($enabled_modules) {
+                        if (auth()->user()->can('')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index']),
+                                __('essentials::lang.employees_information_report'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'emp_info_report']
+                            );
+                        }
+                       
+                    
+                    },
+                    ['icon' => 'fa fas fa-plus-circle']
+
+                )->order(5);
+            } 
+
 
             if (auth()->user()->can('essentials.crud_all_essentials_requests') || true) {
 

@@ -124,6 +124,13 @@ class EssentialsEmployeeAppointmentController extends Controller
             ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('status', function ($query, $keyword) {
+                    $query->whereRaw("status  like ?", ["%{$keyword}%"]);
+                })
+
                 ->removeColumn('id')
                 ->rawColumns(['action', 'status'])
                 ->make(true);

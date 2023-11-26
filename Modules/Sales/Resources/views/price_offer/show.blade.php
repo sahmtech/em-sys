@@ -93,7 +93,11 @@
   
            
         </td>
-        <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td>
+        @if(!empty($sell_line['service']['gender']))
+         <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td>
+        @else
+        <td> </td>
+        @endif
         <td>{{ $sell_line['service']['service_price']}}</td>
         <td>{{  $sell_line['service']['monthly_cost_for_one'] }}</td>
         <td>{{  $sell_line['service']['profession']['name']  }}</td>

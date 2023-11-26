@@ -1667,24 +1667,28 @@ class Util
         EssentialsOfficialDocument::create($input2);
       }
       
-      //store IBAN file into official documents 
       $bankDetails = json_decode($user_details['bank_details'], true);
-      if($request->hasFile('bank_details.Iban_file') && !empty($bankDetails) && array_key_exists('bank_code', $bankDetails))
-      {
+
+      if ($request->hasFile('bank_details.Iban_file') && !empty($bankDetails) && array_key_exists('bank_code', $bankDetails)) {
+          $bankCode = $bankDetails['bank_code'];
+          $input['type'] = 'Iban';
+          $input['status'] = 'valid';
+          $input['employee_id'] = $user->id;
+          $input['number'] = $bankCode;
+      
+          $file = request()->file('bank_details.Iban_file');
+      
        
-        $bankCode = $bankDetails['bank_code'];
-        $input['type'] ='Iban';
-        $input['status'] ='vaild';
-        $input['employee_id'] = $user->id;
-        $input['number'] =  $bankCode;
-        $file = request()->file('bank_details.Iban_file');
-        $filePath = $file->store('/officialDocuments');
-        $input['file_path'] = $filePath;
-        
-     
-        $Iban_doc= EssentialsOfficialDocument::create($input);
-     
+          if ($file->isValid() && $file->getMimeType() && in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
+              $input['file_path'] = $file->store('/officialDocuments');
+      
+              $Iban_doc = EssentialsOfficialDocument::create($input);
+          } else {
+           
+              return response()->json(['error' => 'Invalid file format. Please upload an image.']);
+          }
       }
+      
 
         $role = null;
         if ($request->input('role')) {

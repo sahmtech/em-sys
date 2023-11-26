@@ -11,7 +11,7 @@
 </section>
 
 
-<!-- Main content -->
+
 <section class="content">
 @component('components.filters', ['title' => __('report.filters')])
 

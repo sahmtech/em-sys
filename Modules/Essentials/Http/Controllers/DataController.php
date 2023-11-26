@@ -475,6 +475,18 @@ class DataController extends Controller
                 'default' => false,
             ],
 
+            [
+                'value' => 'essentials.employees_reports_view',
+                'label' => __('essentials::lang.employees_reports_view'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'essentials.employees_information_report',
+                'label' => __('essentials::lang.employees_information_report'),
+                'default' => false,
+            ],
+
 
         ];
     }
