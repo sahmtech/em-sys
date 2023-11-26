@@ -33,9 +33,11 @@ return [
 'agency_name'=>'اسم مكتب التفويض',
 'target_quantity'=>'العدد المطلوب',
 'currecnt_quantity'=>'العدد الحالي',
-
-  
-
+'company_requests'=>'طلبات الشركة',
+'proposed_labor'=>'العمالة المقترحة',
+'add_new_proposed_labor'=>'إضافة عامل مقترح',
+'worker_number'=>'رقم العامل',
+'worker_name'=>'اسم العامل',
 
 ];
 

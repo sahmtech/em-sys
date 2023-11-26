@@ -45,10 +45,9 @@
                         <th>@lang('sales::lang.operation_order_number')</th>
                         <th>@lang('sales::lang.customer_name')</th>
                         <th>@lang('sales::lang.contract_number')</th>
-                        <th>@lang('sales::lang.operation_order_type')</th>
-                        <th>@lang('internationalrelations::lang.Delegation')</th>
+                        <th>@lang('sales::lang.orderQuantity')</th>
                         <th>@lang('sales::lang.Status')</th>
-                     
+                        <th>@lang('internationalrelations::lang.Delegation')</th>
                       
                     </tr>
                 </thead>
@@ -89,10 +88,14 @@
             { data: 'operation_order_no', name: 'operation_order_no' },
             { data: 'contact_name', name: 'contact_name' },
             { data: 'contract_number', name: 'contract_number' },
-            { data: 'operation_order_type', name: 'operation_order_type' },
-            {data: 'Delegation' ,name:'Delegation'},
+            {
+                        data: 'orderQuantity',
+                        name: 'orderQuantity'
+                    },
+
+          
             { data: 'Status', name: 'Status' },
-         
+           {data: 'Delegation' ,name:'Delegation'},
          
            
         ]

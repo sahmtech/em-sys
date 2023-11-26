@@ -204,6 +204,9 @@ return [
     'select_status'=>'اختر الحالة',
     'Not_started'=>'لم تبدأ ',
     'Under_process'=>'تتم معالجتها',
+    'orderQuantity'=>'كمية أمر التشغيل',
+    'External'=>'خارجي',
+    'Internal'=>'داخلي',
 
 
 

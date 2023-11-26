@@ -63,7 +63,7 @@ class FollowUpProjectController extends Controller
             }
             return Datatables::of($contracts)
                 ->addColumn('contact_name', function ($contract) {
-                    return $contract->transaction->contact->name;
+                    return $contract->transaction->contact->supplier_business_name;
                 })
                 ->addColumn('active_worker_count', function ($contract) {
                     return $contract->transaction->contact->user->where('user_type', 'worker')->where('status','active')->count();
@@ -124,7 +124,7 @@ class FollowUpProjectController extends Controller
      
                
         
-        return view('followup::projects.index2')->with(compact('contacts'));
+        return view('followup::projects.index')->with(compact('contacts'));
     }
 
     /**

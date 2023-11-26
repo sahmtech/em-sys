@@ -990,9 +990,7 @@ return[
 'contract_status'=>'نسب العقود',
 'expired_contracts'=>'العقود المنتهية',
 'remaining_contracts'=>'العقود انتهت فترة التجربة',
-
 'escape_date'=>'تاريخ الهروب',
-
 'years'=>'سنة',
 'months'=>'شهر',
 'management'=>'إدارة',
@@ -1001,7 +999,8 @@ return[
 '6_months'=>' 6 أشهر',
 '9_months'=>' 9 أشهر',
 '12_months'=>' 12 أشهر',
-
+'worker_number'=>'رقم العامل',
+'worker_name'=>'اسم العامل'
 
 
 

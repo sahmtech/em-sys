@@ -17,6 +17,7 @@ use App\Utils\Util;
 use DB;
 use App\Transaction;
 use App\Contact;
+use App\TransactionSellLine;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesOrdersOperation;
 
@@ -78,13 +79,13 @@ class SaleOperationOrderController extends Controller
             ->select(
                 'sales_orders_operations.id as id',
                 'sales_orders_operations.operation_order_no as operation_order_no',
-                'contacts.name as contact_name',
+                'sales_orders_operations.orderQuantity as orderQuantity',
+                'contacts.supplier_business_name as contact_name',
                 'sales_contracts.number_of_contract as contract_number',
                 'sales_orders_operations.operation_order_type as operation_order_type',
                 'sales_orders_operations.Status as Status'
             );
-
-
+   
 
         if (request()->input('number_of_contract')) {
 
@@ -111,14 +112,11 @@ class SaleOperationOrderController extends Controller
                     $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     return $html;
                 })
-
-                ->addColumn('action', function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-success btn-modal" data-container=".view_modal" data-href="' . route('sale.operation.edit', ['id' => $row->id]) . '"><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
-
-
-                    return $html;
-                })
+                // ->addColumn('action', function ($row) {
+                //     $html = '';
+                //     $html .= '<a href="#" class="btn-modal" data-toggle="modal" data-target="#edit_order" data-row-id="' . $row->id . '"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.edit_order') . '</a>';
+                //     return $html;
+                // })
 
                 ->rawColumns(['show_operation', 'action'])
                 ->removeColumn('id')
@@ -131,7 +129,16 @@ class SaleOperationOrderController extends Controller
             'Not_started' => __('sales::lang.Not_started'),
 
         ];
-        return view('sales::operation_order.index')->with(compact('contracts', 'status'));
+        $leads = Contact::where('type', 'customer')
+
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
+
+        $agencies = Contact::where('type', 'agency')
+            ->where('business_id', $business_id)
+            ->pluck('supplier_business_name', 'id');
+
+        return view('sales::operation_order.index')->with(compact('contracts','leads','agencies', 'status'));
     }
 
     /**
@@ -152,19 +159,40 @@ class SaleOperationOrderController extends Controller
         $contracts = [];
         foreach ($offer_prices as $key) {
             $contractIds = salesContract::where('offer_price_id', $key)
-                ->where('status', 'valid')
-                ->select('number_of_contract', 'id')
-                ->get()
-                ->toArray();
+            ->where('status', 'valid')
+            ->select('number_of_contract', 'id')
+            ->get()
+            ->toArray();
 
-
+        $totalQuantity = 0;
+        foreach ($contractIds as $contract) {
+            $contractQuantity = TransactionSellLine::where('transaction_id', $contract['id'])->sum('quantity');
+        error_log($contractQuantity);
+            $salesOrdersQuantity = SalesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
+            $totalQuantity += ($contractQuantity - $salesOrdersQuantity);
+            error_log($totalQuantity);
+        }
+        if ($totalQuantity > 0) {
             $contracts = array_merge($contracts, $contractIds);
+        }
+          
         }
 
         return response()->json($contracts);
     }
 
+    public function getContractDetails(Request $request){
 
+        $business_id = request()->session()->get('user.business_id');
+        $offer_price = salesContract::where('id', $request->contract_id)->first()->offer_price_id;
+        
+        $query = TransactionSellLine::where('transaction_id', $offer_price)
+            ->get();
+        $sumOfSalesOrdersQuantities = SalesOrdersOperation::where('sale_contract_id', $request->contract_id)->sum('orderQuantity');
+        $maxQuantity = $query->sum('quantity') - $sumOfSalesOrdersQuantities;
+        return $maxQuantity;
+
+    }
 
     public function create()
     {
@@ -204,7 +232,7 @@ class SaleOperationOrderController extends Controller
 
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                    'contact_id', 'sale_contract_id', 'operation_order_no', 'operation_order_type',
+                    'contact_id', 'sale_contract_id', 'operation_order_type','quantity',
                     'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
                 ];
                 $operation_details = $request->only($operation_order);
@@ -213,7 +241,7 @@ class SaleOperationOrderController extends Controller
 
                 if ($latestRecord) {
                     $latestRefNo = $latestRecord->operation_order_no;
-                    $numericPart = (int)substr($latestRefNo, 5);
+                    $numericPart = (int)substr($latestRefNo, 3);
                     $numericPart++;
                     $operation_details['operation_order_no'] = 'POP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
                 } else {
@@ -221,6 +249,7 @@ class SaleOperationOrderController extends Controller
                 }
 
                 $operation_details['Status'] = $request->input('status');
+                $operation_details['orderQuantity'] = $request->input('quantity');
 
                 $operation = salesOrdersOperation::create($operation_details);
             });

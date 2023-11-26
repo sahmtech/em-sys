@@ -36,7 +36,11 @@ class FollowUpOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_crud_operation_orders= auth()->user()->can('followup.crud_operation_orders');
+        if (! $can_crud_operation_orders) {
             abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -45,10 +49,6 @@ class FollowUpOperationOrderController extends Controller
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
             ->select('sales_contracts.number_of_contract as contract_number')
             ->get();
-
-
-
-
 
         $operations = DB::table('sales_orders_operations')
             ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
@@ -135,14 +135,14 @@ class FollowUpOperationOrderController extends Controller
    
      public function store(Request $request)
      {
-        
+   
         $business_id = $request->session()->get('user.business_id');
  
          try {
             
              DB::transaction(function () use ($request) {
                  $operation_order = [
-                     'contact_id', 'sale_contract_id', 'operation_order_type',
+                     'contact_id', 'sale_contract_id', 'operation_order_type','quantity',
                      'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
                  ];
                  $operation_details = $request->only($operation_order);
@@ -160,8 +160,10 @@ class FollowUpOperationOrderController extends Controller
                   
                      $operation_details['operation_order_no'] = 'POP1111';
                  }
- 
+                 
                  $operation_details['Status'] = $request->input('status');
+                 $operation_details['orderQuantity'] = $request->input('quantity');
+
  
                  $operation = salesOrdersOperation::create($operation_details);
              });
@@ -211,15 +213,7 @@ class FollowUpOperationOrderController extends Controller
      * @return Renderable
      */
 
-     public function getUpdatedData($id)
-     {
-         
-         $updatedData = SalesOrdersOperation::find($id);
-         $html = view('followup::operation_orders.index', compact('updatedData'))->render();
- 
-         return response()->json(['html' => $html]);
-     }
-     
+
     public function update(Request $request, $id)
     {
         return $request;
