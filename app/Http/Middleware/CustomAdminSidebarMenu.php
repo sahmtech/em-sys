@@ -186,9 +186,9 @@ class CustomAdminSidebarMenu
                     function ($sub) use ($enabled_modules) {
                         if (auth()->user()->can('')) {
                             $sub->url(
-                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'create']),
+                                action([\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index']),
                                 __('essentials::lang.employees_information_report'),
-                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_createRequest']
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'emp_info_report']
                             );
                         }
                        

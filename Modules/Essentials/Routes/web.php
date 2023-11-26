@@ -340,8 +340,9 @@ Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\Essentia
         Route::post('/ess_change-status', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class,'changeStatus'])->name('ess_changeStatus');
         Route::post('/ess_returnReq', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class,'returnReq'])->name('ess_returnReq');
 
-   
-   
+       //reports
+
+       Route::get('/employess-info-report',[\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index'])->name('employess-info-report');
         
    
    
