@@ -654,5 +654,6 @@ return [
 'duplicate_id_proof_number'=>'duplicate  proof number',
 'employees_reports_view'=>'employees reports view',
 'employees_information_report'=>'employees information report',
+'total_of_employees'=>'total of employees',
 ];
 

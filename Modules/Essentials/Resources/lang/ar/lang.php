@@ -1015,6 +1015,11 @@ return[
 'duplicate_id_proof_number'=>'رقم اثبات الهوية مكرر ضمن الملف',
 'employees_reports_view'=>'عرض تقرير الموظفين',
 'employees_information_report'=>'تقرير بيانات الموظفين',
+'total_of_employees'=>'إجمالي عدد الموظفين',
+'type_of_employees'=>'النوع',
+'total_of_nationality'=>'إجمالي الجنسيات',
+'type_of_identity_proof'=>'نوع اثبات الهوية ',
+'age_distribution'=>'الفئات العمرية ',
 
 
 

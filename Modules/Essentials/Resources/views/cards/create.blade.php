@@ -45,7 +45,7 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('all_responsible_users[]', $all_responsible_users, null, [
+            {!! Form::select('all_responsible_users[]', [], null, [
                 'class' => 'form-control select2',
                 'style' => 'width: 100%;',
                 'id' => 'responsible_users',
@@ -62,11 +62,12 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::select('responsible_client', $responsible_client->pluck('full_name', 'id'), null,
+            {!! Form::select('responsible_client', [], null,
                  ['class' => 'form-control','style'=>'height:40px', 'id' => 'responsible_client']) !!}
         </div>
     </div>
 </div>
+
 
 <div class="form-group">
     {!! Form::hidden('employee_id', null, ['id' => 'employee_id']) !!}
@@ -220,35 +221,37 @@
 @endsection
 @section('javascript')
 <script>
-  function getResponsibleData(employeeId) {
+function getResponsibleData(employeeId) {
     $.ajax({
         url: "{{ route('get_responsible_data') }}",
         type: 'GET',
         data: { employeeId: employeeId },
-success: function (data) {
-    console.log(data); // Log the received data to the console for debugging
+        success: function (data) {
+            console.log(data);
 
-    $('#responsible_client').empty();
-    $.each(data.responsible_client, function (index, item) {
-        $('#responsible_client').append($('<option>', {
-            value: item.id,
-            text: item.name
-        }));
-    });
+            // Populate the #responsible_users dropdown
+            $('#responsible_users').empty();
+            $('#responsible_users').append($('<option>', {
+                value: data.all_responsible_users.id,
+                text: data.all_responsible_users.name
+            }));
 
-    // Clear and populate #all_responsible_users dropdown
-    $('#responsible_users').empty();
-    $('#responsible_users').append($('<option>', {
-        value: data.all_responsible_users.id,
-        text: data.all_responsible_users.name
-    }));
-},
+            // Populate the #responsible_client dropdown
+            $('#responsible_client').empty();
+            $.each(data.responsible_client, function (index, item) {
+                $('#responsible_client').append($('<option>', {
+                    value: item.id,
+                    text: item.name
+                }));
+            });
+        },
         error: function (xhr, status, error) {
             console.error(error);
         }
     });
 }
 </script>
+
 
 
 <script type="text/javascript">

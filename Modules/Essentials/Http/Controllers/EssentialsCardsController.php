@@ -83,7 +83,7 @@ class EssentialsCardsController extends Controller
             })
             ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
             ->first();
-       // dd($responsible_client);
+       //dd($responsible_client);
         $operations = DB::table('essentials_work_cards')
         ->leftjoin('users as u','essentials_work_cards.employee_id','=','u.id')
         ->leftjoin('contacts', 'u.assigned_to', '=', 'contacts.id')
@@ -161,16 +161,23 @@ class EssentialsCardsController extends Controller
          $userType = User::where('id', $employeeId)->value('user_type');
      
          if ($userType !== 'worker' ) {
-           
-             $responsible_client = User::where('id',1301)
-             ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-             ->get();
+            $business_id = request()->session()->get('user.business_id');
+            
+            $professionId = 65;
+    
+            $responsible_client = User::where('business_id', $business_id)
+                ->whereHas('appointment', function ($query) use ($professionId) {
+                    $query->where('profession_id', $professionId);
+                })
+                ->select('id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                ->first();
+
              return response()->json([
                  'all_responsible_users' => [
                      'id' => null,
                      'name' => trans('essentials::lang.management'),
                  ],
-                 'responsible_client' => $responsible_client,
+                 'responsible_client' => [$responsible_client],
              ]);
          }
      
