@@ -64,26 +64,10 @@ class EssentialsCardsController extends Controller
         if ((!$is_admin) && (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')))) {
             abort(403, 'Unauthorized action.');
         }
-
-        $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
-        ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
-       ->get();
-       
-
-        $assgin_to_client = contact::where('type', 'customer')
-         ->select('contacts.id','contacts.supplier_business_name')
-         ->get();
-       
         $business_name=Business::where('id', $business_id)->select('name','id')->first();
-        $professionId = 65;
-
-        $responsible_client = User::where('business_id', $business_id)
-            ->whereHas('appointment', function ($query) use ($professionId) {
-                $query->where('profession_id', $professionId);
-            })
-            ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-            ->first();
-       //dd($responsible_client);
+        $business_name = $business_name ? $business_name->name : null;
+      
+        $responsible_client = null;
         $operations = DB::table('essentials_work_cards')
         ->leftjoin('users as u','essentials_work_cards.employee_id','=','u.id')
         ->leftjoin('contacts', 'u.assigned_to', '=', 'contacts.id')
@@ -97,13 +81,13 @@ class EssentialsCardsController extends Controller
             'doc.number as proof_number',
             'doc.expiration_date as expiration_date',
             'contacts.supplier_business_name as project',
-            DB::raw("'" . $responsible_client->name . "' as responsible_client"),
+            DB::raw("COALESCE('" . optional($responsible_client)->name . "', '') as responsible_client"),
             'essentials_work_cards.workcard_duration as workcard_duration',
             'essentials_work_cards.Payment_number as Payment_number',
             'essentials_work_cards.fixnumber as fixnumber',
             'essentials_work_cards.fees as fees',
            
-            DB::raw("'" . $business_name->name . "' as company_name")
+            DB::raw("'" . $business_name . "' as company_name")
         )  ->orderBy('id', 'desc');
 
         if (!empty($request->input('project')))
@@ -113,21 +97,33 @@ class EssentialsCardsController extends Controller
        }
        if (request()->ajax()) {
         return Datatables::of($operations->get()->map(function ($item) {
-          
             $item->project = $item->project ?? __('essentials::lang.management');
+          
+         // Get responsible client for the project
+         $responsible_client = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
+         ->where('contacts.supplier_business_name', '=', $item->project)
+         ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+         ->get();
+
+         $item->responsible_client = $responsible_client->isEmpty()
+           ? ''
+         : $responsible_client->pluck('name')->implode(', ');
+
             return $item;
         }))
-            ->addColumn('action', function ($row) {
-                $html = '';
-                $html .= '<button class="btn btn-xs btn-success btn-modal"  data-href=""><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
-                return $html;
-            })
-            ->rawColumns(['action'])
-            ->removeColumn('id')
-            ->make(true);
+        ->addColumn('action', function ($row) {
+            $html = '';
+            $html .= '<button class="btn btn-xs btn-success btn-modal"  data-href=""><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
+            return $html;
+        })
+        ->rawColumns(['action'])
+        ->removeColumn('id')
+        ->make(true);
     }
-
-        $contacts=Contact::where('type','customer')->pluck('supplier_business_name','id');
+    
+    
+        $contacts=Contact::where('type','customer')
+        ->pluck('supplier_business_name','id');
         return view('essentials::cards.index')->with(compact('contacts'));
     }
 
@@ -136,15 +132,15 @@ class EssentialsCardsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
-
+       
         $residencyData = User::where('business_id', $business_id)
         ->where('users.id','=', $employeeId)
         ->join('essentials_official_documents as doc','doc.employee_id','=','users.id')
             ->select('doc.id',
              'users.border_no as border_no',
-             'doc.number as residency_no',
+             'users.id_proof_number as residency_no',
              'doc.expiration_date as residency_end_date')->first();
-
+        //dd( $residencyData);
         return response()->json($residencyData);
     }
 
@@ -162,9 +158,7 @@ class EssentialsCardsController extends Controller
      
          if ($userType !== 'worker' ) {
             $business_id = request()->session()->get('user.business_id');
-            
             $professionId = 65;
-    
             $responsible_client = User::where('business_id', $business_id)
                 ->whereHas('appointment', function ($query) use ($professionId) {
                     $query->where('profession_id', $professionId);
@@ -179,35 +173,38 @@ class EssentialsCardsController extends Controller
                  ],
                  'responsible_client' => [$responsible_client],
              ]);
+         }else
+         {
+                // If user type is worker
+                $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
+                ->where('contacts.type', 'customer')
+                ->where('users.id', '=', $employeeId)
+                ->select('contacts.supplier_business_name', 'contacts.id')
+                ->first();
+
+                if (!$all_responsible_users) {
+                return response()->json(['error' => 'No responsible users found for the given employee ID']);
+                }
+
+                $responsible_clients = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
+                ->where('contacts.id', '=', $all_responsible_users->id)
+                ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                ->get();
          }
      
-         // If user type is worker
-         $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
-             ->where('contacts.type', 'customer')
-             ->where('users.id', '=', $employeeId)
-             ->select('contacts.supplier_business_name', 'contacts.id')
-             ->first();
+        
      
-         if (!$all_responsible_users) {
-             return response()->json(['error' => 'No responsible users found for the given employee ID']);
-         }
-     
-         $responsible_clients = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
-             ->where('contacts.id', '=', $all_responsible_users->id)
-             ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-             ->get();
-     
-             if ($responsible_clients->isEmpty()) {
-                $professionId = 65;
-                $business_id = request()->session()->get('user.business_id');
-                $responsible_client = User::where('business_id', $business_id)
-                    ->whereHas('appointment', function ($query) use ($professionId) {
-                        $query->where('profession_id', $professionId);
-                    })
-                    ->select('id',
-                     DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-                    ->first();
-            }
+            //  if ($responsible_clients->isEmpty()) {
+            //     $professionId = 65;
+            //     $business_id = request()->session()->get('user.business_id');
+            //     $responsible_client = User::where('business_id', $business_id)
+            //         ->whereHas('appointment', function ($query) use ($professionId) {
+            //             $query->where('profession_id', $professionId);
+            //         })
+            //         ->select('id',
+            //          DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+            //         ->first();
+            // }
            
          return response()->json([
              'all_responsible_users' => [
@@ -232,9 +229,9 @@ class EssentialsCardsController extends Controller
         })
         ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name"))
         ->get();
+    //dd($all_users);
 
      $responsible_users = contact::where('type', 'customer')
- 
    ->join('users as u','u.assigned_to','=','contacts.id')
    ->where('u.id','=', $employeeId)
     ->select('contacts.id','contacts.supplier_business_name')

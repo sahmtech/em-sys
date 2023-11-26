@@ -30,7 +30,7 @@
                 'placeholder' => __('lang_v1.all'),
                 'id' => 'employees',
                 'required',
-                'onchange' => 'getResponsibleData(this.value)',
+                'onchange' => 'getData(this.value)',
             ]) !!}
         </div>
     </div>
@@ -96,9 +96,8 @@
                 'class' => 'form-control',
                 'style' => 'height:36px',
                 'placeholder' => __('essentials::lang.Residency_no'),
-            
                 'style' => 'width: 100%;',
-                'data-residency-url' => route('getResidencyData') 
+                'id' => 'Residency_no',
             ]) !!}
         </div>
     </div>
@@ -115,16 +114,14 @@
                 'class' => 'form-control',
                 'style' => 'height:36px',
                 'placeholder' => __('essentials::lang.border_number'),
-             
-               
                 'style' => 'width: 100%;',
-                'data-residency-url' => route('getResidencyData') 
+                'id' => 'border_no',
             ]) !!}
         </div>
     </div>
 </div>
 
-<div class="col-md-9" id ="Residency_end_date_id">
+<div class="col-md-9" id="Residency_end_date_id">
     <div class="form-group">
         {!! Form::label('Residency_end_date', __('essentials::lang.Residency_end_date') . ':') !!}
         <div class="input-group">
@@ -134,7 +131,8 @@
             {!! Form::date('Residency_end_date', null, [
                 'class' => 'form-control',
                 'style' => 'width: 100%;',
-                'placeholder' => __('essentials::lang.Residency_end_date')
+                'placeholder' => __('essentials::lang.Residency_end_date'),
+                'id' => 'Residency_end_date',
             ]) !!}
         </div>
     </div>
@@ -220,6 +218,16 @@
 
 @endsection
 @section('javascript')
+
+<script>
+    function getData(employeeId) {
+        getResponsibleData(employeeId);
+        getResidencyData(employeeId);
+    }
+</script>
+
+
+
 <script>
 function getResponsibleData(employeeId) {
     $.ajax({
@@ -252,80 +260,26 @@ function getResponsibleData(employeeId) {
 }
 </script>
 
-
-
-<script type="text/javascript">
-$(document).ready(function () {
-    $('#employees').on('change', function () {
-        var employeeId = $(this).val();
-        var $residencyNoField = $('#Residency_no');
-        var $borderNoField = $('#border_no');
-        var $residencyEndDateField = $('#Residency_end_date');
-        var $residencyidField = $('#Residency_id');
-
-        if (employeeId) {
-            $.ajax({
-                url: $residencyNoField.data('residency-url'),
-                method: 'GET',
-                data: { employee_id: employeeId },
-                success: function (data) {
-                    if (data) {
-                        $residencyNoField.val(data.residency_no);
-                        $borderNoField.val(data.border_no);
-                        $residencyEndDateField.val(data.residency_end_date);
-                        $residencyidField.val(data.id);
-                        console.log(data.residency_end_date);
-                        // Check if each field is null and hide the corresponding element
-                        if (data.border_no === null || data.border_no === undefined) {
-                                $('.border_no').hide();
-                            } else {
-                                $('.border_no').show();
-                            }
-
-                            if (data.residency_end_date === null || typeof data.residency_end_date === 'undefined') {
-                                $('#Residency_end_date').closest('.form-group').hide();
-                            } else {
-                                $('#Residency_end_date').closest('.form-group').show();
-                            }
-
-                            if (data.residency_no === null || typeof data.residency_no === 'undefined') {
-                                $('#Residency_no').closest('.form-group').hide();
-                            } else {
-                                $('#Residency_no').closest('.form-group').show();
-                            }
-                    } else {
-                        // Reset values and show all form groups
-                        $residencyNoField.val('');
-                        $borderNoField.val('');
-                        $residencyEndDateField.val('');
-                        $residencyidField.val('');
-                        $('.form-group').show();
-                    }
-                },
-                error: function () {
-                    // Reset values and show all form groups
-                    $residencyNoField.val('');
-                    $borderNoField.val('');
-                    $borderNoField.val('');
-                    $residencyEndDateField.val('');
-                    $residencyidField.val('');
-                    $('.form-group').show();
-                }
-            });
-        } else {
-            // Reset values and show all form groups
-            $residencyNoField.val('');
-            $borderNoField.val('');
-            $residencyEndDateField.val('');
-            $residencyidField.val('');
-            $('.form-group').show();
-        }
-    });
-});
-
-
-
+<script>
+    function getResidencyData(employeeId) {
+    
+        $.ajax({
+            url: '{{ route("getResidencyData") }}',
+            type: 'GET',
+            data: { employee_id: employeeId },
+            success: function(response) {
+               
+                $('#Residency_no').val(response.residency_no);
+                $('#border_no').val(response.border_no);
+                $('#Residency_end_date').val(response.residency_end_date);
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
 </script>
+
 
 <script  type="text/javascript">
 $(document).ready(function () {
