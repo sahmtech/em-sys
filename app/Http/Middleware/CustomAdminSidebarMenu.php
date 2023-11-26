@@ -179,6 +179,16 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 )->order(5);
             }
+            //employee reports 
+            if (auth()->user()->can('essentials.crud_all_attendance') || true) {
+                $menu->url(
+
+                    action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
+                    __('essentials::lang.attendance'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
+                )->order(4);
+            } 
+
 
             if (auth()->user()->can('essentials.crud_all_essentials_requests') || true) {
 
