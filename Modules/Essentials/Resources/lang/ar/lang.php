@@ -1014,6 +1014,7 @@ return[
 'user_with_same_id_proof_number_exists'=>' لا يمكن إضافة الموظف رقم  اثبات الهوية  المدخل موجود سابقا  ',
 'duplicate_id_proof_number'=>'رقم اثبات الهوية مكرر ضمن الملف',
 'employees_reports_view'=>'عرض تقرير الموظفين',
+'employees_information_report'=>'تقرير بيانات الموظفين',
 
 
 

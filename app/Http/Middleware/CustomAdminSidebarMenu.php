@@ -180,13 +180,23 @@ class CustomAdminSidebarMenu
                 )->order(5);
             }
             //employee reports 
-            if (auth()->user()->can('essentials.crud_all_attendance') || true) {
-                $menu->url(
+            if (auth()->user()->can('essentials.employees_reports_view') || true) {
+                $menu->dropdown(
+                    __('essentials::lang.reports'),
+                    function ($sub) use ($enabled_modules) {
+                        if (auth()->user()->can('')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'create']),
+                                __('essentials::lang.employees_information_report'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_createRequest']
+                            );
+                        }
+                       
+                    
+                    },
+                    ['icon' => 'fa fas fa-plus-circle']
 
-                    action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index']),
-                    __('essentials::lang.attendance'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
-                )->order(4);
+                )->order(5);
             } 
 
 

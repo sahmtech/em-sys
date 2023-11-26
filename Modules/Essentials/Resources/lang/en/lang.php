@@ -653,5 +653,6 @@ return [
 'user_with_same_id_proof_number_exists'=>'user with same  proof number exists',
 'duplicate_id_proof_number'=>'duplicate  proof number',
 'employees_reports_view'=>'employees reports view',
+'employees_information_report'=>'employees information report',
 ];
 
