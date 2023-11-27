@@ -6,27 +6,37 @@ use Illuminate\Database\Eloquent\Model;
 
 class EssentialsRegion extends Model
 {
-   
+
     protected $guarded = ['id'];
 
     public static function forDropdown()
     {
         $regions = EssentialsRegion::all();
 
-        $res=collect();
-        foreach ($regions as $region){
-            $res->put($region->id,(json_decode($region->name,true))['ar'],(json_decode($region->name,true))['en'],);
+        $res = collect();
+        foreach ($regions as $region) {
+            $res->put($region->id, (json_decode($region->name, true))['ar'], (json_decode($region->name, true))['en'],);
         }
         return $res;
     }
- 
+
     public static function forDropdown2()
     {
         $regions = EssentialsRegion::all();
 
-        $res=collect();
-        foreach ($regions as $region){
-            $res->put((json_decode($region->name,true))['ar'],(json_decode($region->name,true))['en'],);
+        $res = collect();
+        foreach ($regions as $region) {
+            $res->put((json_decode($region->name, true))['ar'], (json_decode($region->name, true))['en'],);
+        }
+        return $res;
+    }
+    public static function forDropdown3()
+    {
+        $regions = EssentialsRegion::all();
+
+        $res = collect();
+        foreach ($regions as $region) {
+            $res->put($region->id, ['id' => $region->id, 'city_id' => $region->city_id, 'ar' => (json_decode($region->name, true))['ar'], 'en' => (json_decode($region->name, true))['en']]);
         }
         return $res;
     }

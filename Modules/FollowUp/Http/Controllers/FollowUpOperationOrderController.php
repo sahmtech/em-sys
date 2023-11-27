@@ -36,7 +36,11 @@ class FollowUpOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_crud_operation_orders= auth()->user()->can('followup.crud_operation_orders');
+        if (! $can_crud_operation_orders) {
             abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -45,10 +49,6 @@ class FollowUpOperationOrderController extends Controller
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
             ->select('sales_contracts.number_of_contract as contract_number')
             ->get();
-
-
-
-
 
         $operations = DB::table('sales_orders_operations')
             ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
@@ -89,14 +89,11 @@ class FollowUpOperationOrderController extends Controller
                     $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     return $html;
                 })
-
-                ->addColumn('action', function ($row) {
-                    $html = '';
-                    $html .= '<button class="btn btn-xs btn-success btn-modal" data-container=".view_modal" data-href="' . route('sale.operation.edit', ['id' => $row->id]) . '"><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
-
-
-                    return $html;
-                })
+                // ->addColumn('action', function ($row) {
+                //     $html = '';
+                //     $html .= '<a href="#" class="btn-modal" data-toggle="modal" data-target="#edit_order" data-row-id="' . $row->id . '"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.edit_order') . '</a>';
+                //     return $html;
+                // })
 
                 ->rawColumns(['show_operation', 'action'])
                 ->removeColumn('id')
@@ -138,14 +135,14 @@ class FollowUpOperationOrderController extends Controller
    
      public function store(Request $request)
      {
-        
-       
-         try {
-             $business_id = $request->session()->get('user.business_id');
+   
+        $business_id = $request->session()->get('user.business_id');
  
+         try {
+            
              DB::transaction(function () use ($request) {
                  $operation_order = [
-                     'contact_id', 'sale_contract_id', 'operation_order_type',
+                     'contact_id', 'sale_contract_id', 'operation_order_type','quantity',
                      'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
                  ];
                  $operation_details = $request->only($operation_order);
@@ -163,8 +160,10 @@ class FollowUpOperationOrderController extends Controller
                   
                      $operation_details['operation_order_no'] = 'POP1111';
                  }
- 
+                 
                  $operation_details['Status'] = $request->input('status');
+                 $operation_details['orderQuantity'] = $request->input('quantity');
+
  
                  $operation = salesOrdersOperation::create($operation_details);
              });
@@ -213,9 +212,41 @@ class FollowUpOperationOrderController extends Controller
      * @param int $id
      * @return Renderable
      */
+
+
     public function update(Request $request, $id)
     {
-        //
+        return $request;
+        try {
+            
+            DB::transaction(function () use ($request) {
+                $operation_order = [
+                    'contact_id', 'sale_contract_id', 'operation_order_type',
+                    'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
+                ];
+                $operation_details = $request->only($operation_order);
+
+                $operation_details['Status'] = $request->input('status');
+
+               // $operation = salesOrdersOperation::where('id',$id)->update($operation_details);
+            });
+
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+        // return $output;
+        return redirect()->route('operation_orders')->with($output);
     }
 
     /**

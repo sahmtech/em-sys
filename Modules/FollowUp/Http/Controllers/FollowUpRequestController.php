@@ -332,14 +332,15 @@ class FollowUpRequestController extends Controller
             }
             
             return DataTables::of($requestsProcess ?? [])
-        ->editColumn('status', function ($row) {
+            ->editColumn('status', function ($row) {
 
-            $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
-            .$this->statuses[$row->status]['name'].'</span>';
-            $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
-            return $status;
-        })
+                $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
+                .$this->statuses[$row->status]['name'].'</span>';
+                if (auth()->user()->can('crudExitRequests')) {
+                $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
+                }
+                return $status;
+            })
         ->rawColumns(['status'])
             ->make(true);
   
@@ -420,8 +421,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudReturnRequest')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
         ->rawColumns(['status'])
@@ -508,8 +510,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudEscapeRequest')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
         ->rawColumns(['status'])
@@ -593,8 +596,9 @@ class FollowUpRequestController extends Controller
 
                 $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
                 .$this->statuses[$row->status]['name'].'</span>';
+                if (auth()->user()->can('crudAdvanceSalary')) {
                 $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-                
+                }
                 return $status;
             })
             ->editColumn('created_at', function ($row) {
@@ -681,8 +685,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudLeavesAndDepartures')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
        
@@ -765,8 +770,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudAtmCard')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
         ->rawColumns(['status'])
@@ -848,8 +854,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudResidenceRenewal')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
         ->rawColumns(['status'])
@@ -930,8 +937,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudResidenceCard')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
         ->rawColumns(['status'])
@@ -1013,8 +1021,9 @@ class FollowUpRequestController extends Controller
 
             $status = '<span class="label '.$this->statuses[$row->status]['class'].'">'
             .$this->statuses[$row->status]['name'].'</span>';
+            if (auth()->user()->can('crudWorkerTransfer')) {
             $status = '<a href="#" class="change_status" data-request-id="'.$row->id.'" data-orig-value="'.$row->status.'" data-status-name="'.$this->statuses[$row->status]['name'].'"> '.$status.'</a>';
-            
+            }
             return $status;
         })
         ->rawColumns(['status'])
@@ -1038,6 +1047,11 @@ class FollowUpRequestController extends Controller
 
     public function returnReq(Request $request)
     {
+        $can_return_request= auth()->user()->can('followup.return_request');
+        if (! $can_return_request) {
+            abort(403, 'Unauthorized action.');
+        }
+     
         try {
             
             $requestId = $request->input('requestId');
