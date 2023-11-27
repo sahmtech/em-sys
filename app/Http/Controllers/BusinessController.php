@@ -22,6 +22,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsRegion;
+use Modules\Superadmin\Entities\Subscription;
+use Spatie\Permission\Models\Role;
 
 class BusinessController extends Controller
 {
@@ -419,7 +421,7 @@ class BusinessController extends Controller
         $package_id = request()->package;
 
         $system_settings = System::getProperties(['superadmin_enable_register_tc', 'superadmin_register_tc'], true);
-        
+
 
         return view('essentials::bussines_manage.index', compact('states', 'countries', 'cities', 'currencies', 'timezone_list', 'months', 'accounting_methods', 'system_settings', 'package_id'));
     }
@@ -779,8 +781,8 @@ class BusinessController extends Controller
             $owner_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password', 'language']);
 
             $owner_details['language'] = empty($owner_details['language']) ? config('app.locale') : $owner_details['language'];
-
-
+            $owner_details['user_type'] = 'admin';
+            $owner_details['allow_login'] = 1;
             $user = User::create_user($owner_details);
 
 
@@ -813,11 +815,39 @@ class BusinessController extends Controller
             $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
 
             $business = $this->businessUtil->createNewBusiness($business_details);
+            $subscription = Subscription::select('*')->first();
+            $attributes = $subscription->toArray();
+            $attributes['business_id'] = $business->id;
+            $attributes['id'] = null;
+  
+            $sub = Subscription::create($attributes);
 
             //Update user with business id
             $user->business_id = $business->id;
             $user->save();
+            $count = Role::where('name', 'Admin#' . $user->business_id)
+                ->where('business_id', $user->business_id)
+                ->count();
+            if ($count == 0) {
+                $role = new Role(['name' => 'Admin#' . $user->business_id, 'business_id' => $user->business_id]);
+                $role->save();
+                // $role = Role::findByName($role->name);
+                $allPermissions = Permission::pluck('id');
+                $role->syncPermissions($allPermissions);
+                $user->assignRole($role->name);
+            } else {
+                $role = Role::where('name', 'Admin#' . $user->business_id)
+                    ->where('business_id', $user->business_id)
+                    ->first();
+                $allPermissions = Permission::pluck('id');
+                $role->syncPermissions($allPermissions);
+                $user->assignRole($role->name);
+            }
 
+
+
+
+            $user->assignRole($role->name);
             $this->businessUtil->newBusinessDefaultResources($business->id, $user->id);
             $new_location = $this->businessUtil->addLocation($business->id, $business_location);
 
@@ -831,7 +861,7 @@ class BusinessController extends Controller
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+          //  error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),

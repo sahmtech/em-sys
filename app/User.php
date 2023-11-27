@@ -51,20 +51,20 @@ class User extends Authenticatable
      * Get the business that owns the user.
      */
 
-     public function appointment()
-     {
-         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
-     }
+    public function appointment()
+    {
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+    }
     public function business()
     {
         return $this->belongsTo(\App\Business::class);
     }
-   
-  
+
+
 
     public function scopeUser($query)
     {
-        return $query->where('users.user_type','LIKE', '%user%' );
+        return $query->where('users.user_type', 'LIKE', '%user%');
     }
 
     /**
@@ -96,10 +96,12 @@ class User extends Authenticatable
             'surname' => $details['surname'],
             'first_name' => $details['first_name'],
             'last_name' => $details['last_name'],
+            'user_type' => $details['user_type'],
+            'allow_login' => 1,
             'username' => $details['username'],
             'email' => $details['email'],
             'password' => Hash::make($details['password']),
-            'language' => ! empty($details['language']) ? $details['language'] : 'en',
+            'language' => !empty($details['language']) ? $details['language'] : 'en',
         ]);
 
         return $user;
@@ -119,7 +121,7 @@ class User extends Authenticatable
         if ($user->can('access_all_locations')) {
             return 'all';
         } else {
-            $business_id = ! is_null($business_id) ? $business_id : null;
+            $business_id = !is_null($business_id) ? $business_id : null;
             if (empty($business_id) && auth()->check()) {
                 $business_id = auth()->user()->business_id;
             }
@@ -131,7 +133,7 @@ class User extends Authenticatable
             $all_locations = BusinessLocation::where('business_id', $business_id)->get();
             $permissions = $user->permissions->pluck('name')->all();
             foreach ($all_locations as $location) {
-                if (in_array('location.'.$location->id, $permissions)) {
+                if (in_array('location.' . $location->id, $permissions)) {
                     $permitted_locations[] = $location->id;
                 }
             }
@@ -162,11 +164,11 @@ class User extends Authenticatable
     {
         $user = auth()->user();
         $permitted_locations = $user->permitted_locations();
-        $is_admin = $user->hasAnyPermission('Admin#'.$user->business_id);
-        if ($permitted_locations != 'all' && ! $user->can('superadmin') && ! $is_admin) {
+        $is_admin = $user->hasAnyPermission('Admin#' . $user->business_id);
+        if ($permitted_locations != 'all' && !$user->can('superadmin') && !$is_admin) {
             $permissions = ['access_all_locations'];
             foreach ($permitted_locations as $location_id) {
-                $permissions[] = 'location.'.$location_id;
+                $permissions[] = 'location.' . $location_id;
             }
 
             return $query->whereHas('permissions', function ($q) use ($permissions) {
@@ -188,9 +190,9 @@ class User extends Authenticatable
     public static function forDropdown($business_id, $prepend_none = true, $include_commission_agents = false, $prepend_all = false, $check_location_permission = false)
     {
         $query = User::where('business_id', $business_id)
-                    ->user();
+            ->user();
 
-        if (! $include_commission_agents) {
+        if (!$include_commission_agents) {
             $query->where('is_cmmsn_agnt', 0);
         }
 
@@ -199,7 +201,7 @@ class User extends Authenticatable
         }
 
         $all_users =
-         $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         //Prepend none
@@ -225,8 +227,8 @@ class User extends Authenticatable
     public static function saleCommissionAgentsDropdown($business_id, $prepend_none = true)
     {
         $all_cmmsn_agnts = User::where('business_id', $business_id)
-                        ->where('is_cmmsn_agnt', 1)
-                        ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"));
+            ->where('is_cmmsn_agnt', 1)
+            ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"));
 
         $users = $all_cmmsn_agnts->pluck('full_name', 'id');
 
@@ -249,7 +251,7 @@ class User extends Authenticatable
     public static function allUsersDropdown($business_id, $prepend_none = true, $prepend_all = false)
     {
         $all_users = User::where('business_id', $business_id)
-                        ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"));
+            ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"));
 
         $users = $all_users->pluck('full_name', 'id');
 
@@ -291,7 +293,7 @@ class User extends Authenticatable
     public function getRoleNameAttribute()
     {
         $role_name_array = $this->getRoleNames();
-        $role_name = ! empty($role_name_array[0]) ? explode('#', $role_name_array[0])[0] : '';
+        $role_name = !empty($role_name_array[0]) ? explode('#', $role_name_array[0])[0] : '';
 
         return $role_name;
     }
@@ -330,7 +332,7 @@ class User extends Authenticatable
         if (isset($this->media->display_url)) {
             $img_src = $this->media->display_url;
         } else {
-            $img_src = 'https://ui-avatars.com/api/?name='.$this->first_name;
+            $img_src = 'https://ui-avatars.com/api/?name=' . $this->first_name;
         }
 
         return $img_src;
@@ -340,7 +342,7 @@ class User extends Authenticatable
         return $this->belongsTo(EssentialsCountry::class, 'nationality_id');
     }
 
-  
+
 
     public function contract()
     {
@@ -349,12 +351,12 @@ class User extends Authenticatable
 
     public function workCard()
     {
-      
+
         return $this->hasOne(WorkCard::class, 'employee_id');
     }
     public function OfficialDocument()
     {
-      
+
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id');
     }
     public function allowancesAndDeductions()
