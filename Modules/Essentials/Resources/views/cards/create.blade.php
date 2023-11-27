@@ -227,7 +227,6 @@
 </script>
 
 
-
 <script>
 function getResponsibleData(employeeId) {
     $.ajax({
@@ -237,14 +236,14 @@ function getResponsibleData(employeeId) {
         success: function (data) {
             console.log(data);
 
-            // Populate the #responsible_users dropdown
+          
             $('#responsible_users').empty();
             $('#responsible_users').append($('<option>', {
                 value: data.all_responsible_users.id,
                 text: data.all_responsible_users.name
             }));
 
-            // Populate the #responsible_client dropdown
+        
             $('#responsible_client').empty();
             $.each(data.responsible_client, function (index, item) {
                 $('#responsible_client').append($('<option>', {
@@ -259,6 +258,7 @@ function getResponsibleData(employeeId) {
     });
 }
 </script>
+
 
 <script>
     function getResidencyData(employeeId) {

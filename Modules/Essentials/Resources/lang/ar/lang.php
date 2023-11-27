@@ -1014,12 +1014,22 @@ return[
 'employees_reports_view'=>'عرض تقرير الموظفين',
 'employees_information_report'=>'تقرير بيانات الموظفين',
 'total_of_employees'=>'إجمالي عدد الموظفين',
-'type_of_employees'=>'النوع',
+'type_of_employees'=>'إجمالي عدد الموظفين حسب النوع',
 'total_of_nationality'=>'إجمالي الجنسيات',
 'type_of_identity_proof'=>'نوع اثبات الهوية ',
+
+'age_distribution'=>'عدد الموظفين حسب الفئات العمرية ',
+'gender_distribution'=>'عدد الموظفين حسب الجنس',
+'ageGroup1'=>'الفئة العمرية الأولى',
+'ageGroup2'=>'الفئة العمرية الثانية ',
+'ageGroup3'=>'الفئة العمرية الثالثة',
+'managers'=>'المدراء',
+'workers'=>'العمال',
+
 'age_distribution'=>'الفئات العمرية ',
 'worker_number'=>'رقم العامل',
 'worker_name'=>'اسم العامل',
+
 
 
 
