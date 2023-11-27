@@ -152,67 +152,51 @@ class EssentialsCardsController extends Controller
      public function get_responsible_data(Request $request)
      {
          $employeeId = $request->get('employeeId');
-     
-     
+         $business_id = request()->session()->get('user.business_id');
+         
          $userType = User::where('id', $employeeId)->value('user_type');
      
-         if ($userType !== 'worker' ) {
-            $business_id = request()->session()->get('user.business_id');
-            $professionId = 56;
-            $responsible_client = User::where('business_id', $business_id)
-                ->whereHas('appointment', function ($query) use ($professionId) {
-                    $query->where('profession_id', $professionId);
-                })
-                ->select('id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-                ->first();
-
+         if ($userType !== 'worker') {
+             $professionId = 56;
+             $responsible_clients = User::where('business_id', $business_id)
+                 ->whereHas('appointment', function ($query) use ($professionId) {
+                     $query->where('profession_id', $professionId);
+                 })
+                 ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                 ->get();
+     
              return response()->json([
                  'all_responsible_users' => [
                      'id' => null,
                      'name' => trans('essentials::lang.management'),
                  ],
-                 'responsible_client' => [$responsible_client],
+                 'responsible_client' => $responsible_clients,
              ]);
-         }else
-         {
-                // If user type is worker
-                $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
-                ->where('contacts.type', 'customer')
-                ->where('users.id', '=', $employeeId)
-                ->select('contacts.supplier_business_name', 'contacts.id')
-                ->first();
-
-                if (!$all_responsible_users) {
-                return response()->json(['error' => 'No responsible users found for the given employee ID']);
-                }
-
-                $responsible_clients = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
-                ->where('contacts.id', '=', $all_responsible_users->id)
-                ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-                ->get();
+         } else {
+             // If user type is worker
+             $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
+                 ->where('contacts.type', 'customer')
+                 ->where('users.id', '=', $employeeId)
+                 ->select('contacts.supplier_business_name', 'contacts.id')
+                 ->first();
+     
+             if (!$all_responsible_users) {
+                 return response()->json(['error' => 'No responsible users found for the given employee ID']);
+             }
+     
+             $responsible_clients = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
+                 ->where('contacts.id', '=', $all_responsible_users->id)
+                 ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                 ->get();
+     
+             return response()->json([
+                 'all_responsible_users' => [
+                     'id' => $all_responsible_users->id,
+                     'name' => $all_responsible_users->supplier_business_name,
+                 ],
+                 'responsible_client' => $responsible_clients,
+             ]);
          }
-     
-        
-     
-            //  if ($responsible_clients->isEmpty()) {
-            //     $professionId = 56;
-            //     $business_id = request()->session()->get('user.business_id');
-            //     $responsible_client = User::where('business_id', $business_id)
-            //         ->whereHas('appointment', function ($query) use ($professionId) {
-            //             $query->where('profession_id', $professionId);
-            //         })
-            //         ->select('id',
-            //          DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-            //         ->first();
-            // }
-           
-         return response()->json([
-             'all_responsible_users' => [
-                 'id' => $all_responsible_users->id,
-                 'name' => $all_responsible_users->supplier_business_name,
-             ],
-             'responsible_client' => $responsible_clients,
-         ]);
      }
      
      
