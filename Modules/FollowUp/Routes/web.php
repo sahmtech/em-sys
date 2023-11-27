@@ -28,7 +28,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/operation_orders',[\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index'])->name('operation_orders');
         Route::post('/storeOperation', [\Modules\Followup\Http\Controllers\FollowUpOperationOrderController::class, 'store'])->name('storeOperation');
-       
+        Route::PUT('/updateOrder/{id}', [\Modules\Followup\Http\Controllers\FollowUpOperationOrderControlle::class, 'update'])->name('updateOrder');
+        Route::get('/getUpdatedData/{id}', [\Modules\Followup\Http\Controllers\FollowUpOperationOrderControlle::class, 'getUpdatedData'])->name('getUpdatedData');
+
+        
         
 
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');

@@ -1,6 +1,6 @@
 <?php
 return [
-    'followup_module' => 'FollowUp Module',
+    'followup_module' =>'إدارة المتابعة',
     'followUp'=>'إدارة المتابعة',
     'projects'=>'المشاريع',
     'name'=>'الاسم الكامل',
@@ -86,6 +86,7 @@ return [
     'escape_date'=>'تاريخ الهروب',
     'add_new_worker'=>'إضافة عامل جديد',
     'operation_orders'=>'أوامر التشغيل',
+
     'reports'=>[
         'title'=>'التقارير',
         'projectWorkers'=>'عمال المشاريع',
@@ -93,6 +94,29 @@ return [
         'projects'=>'المشاريع',
         'projectsReports'=>'تقرير المشاريع',
     ],
+
+
+    'create_order'=>'إنشاء طلب',
+    'viewExitRequests'=>'عرض طلبات الخروج النهائي',
+    'crudExitRequests'=>'قبول/رفض طلبات الخروج النهائي',
+    'viewReturnRequest'=>'عرض طلبات الخروج والعودة',
+    'crudReturnRequest'=>'قبول/رفض طلبات الخروج والعودة',
+    'viewEscapeRequest'=>'عرض تبليغات الهروب',
+    'crudEscapeRequest'=>'قبول/رفض تبليغات الهروب',
+    'viewAdvanceSalary'=>'عرض طلبات السلف',
+    'crudAdvanceSalary'=>'قبول/رفض طلبات السلف',
+    'viewLeavesAndDepartures'=>'عرض طلبات الاجازات والمغادرات',
+    'crudLeavesAndDepartures'=>'قبول/رفض طلبات الإجازات والمغادرات',
+    'viewAtmCard'=>'عرض طلبات بطافات الصراف الآلي',
+    'crudAtmCard'=>'قبول/رفض طلبات بطاقات الصراف الآلي',
+    'viewResidenceRenewal'=>'عرض طلبات تجديد الإقامة',
+    'crudResidenceRenewal'=>'قبول /رفض طلبات تجديد الإقامة',
+    'viewResidenceCard'=>'عرض طلبات الإقامة',
+    'crudResidenceCard'=>'قبول/رفض طلبات الإقامة',
+    'viewWorkerTransfer'=>'عرض طلبات نقل العمالة',
+    'crudWorkerTransfer'=>'قبول/ رفض طلبات نقل العمالة',
+    'return_request'=>'إرجاع الطلب',
+    'crud_operation_orders'=>'عرض أوامر التشغيل',    
 
 
 
