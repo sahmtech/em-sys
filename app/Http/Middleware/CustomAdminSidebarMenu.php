@@ -340,6 +340,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'contracts-finish-reasons'],
                 )->order(7);
             }
+            if (auth()->user()->can('essentials.curd_wishes') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'index']),
+                    __('essentials::lang.wishes'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'wishes'],
+                )->order(7);
+            }
 
             if (auth()->user()->can('essentials.crud_all_leave') || true) {
 

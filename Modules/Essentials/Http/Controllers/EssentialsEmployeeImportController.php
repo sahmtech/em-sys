@@ -244,6 +244,10 @@ class EssentialsEmployeeImportController extends Controller
                                         $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
                                     
                                         $emp_array['assigned_to'] = $value[20];
+                                        if($value[20] == null)
+                                        {
+                                            $emp_array['assigned_to'] == null;
+                                        }
 
                                         $emp_array['business_id'] = $value[21];
 
@@ -493,7 +497,7 @@ class EssentialsEmployeeImportController extends Controller
                         'contract_end_date' => null,
                                                
                                             ]; 
-
+                // dd($emp_array);
                 // Iterate over the formated data and add the default keys
                $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data); 
       

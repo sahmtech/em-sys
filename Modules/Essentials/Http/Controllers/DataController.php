@@ -487,8 +487,8 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
-                'value' => 'essentials.curd_contracts_end_reasons',
-                'label' => __('essentials::lang.curd_contracts_end_reasons'),
+                'value' => 'essentials.curd_wishes',
+                'label' => __('essentials::lang.curd_wishes'),
                 'default' => false,
             ],
 

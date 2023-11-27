@@ -2,12 +2,13 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
-use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentailsReasonWish;
-class EssentialsContractsFinishReasonsController extends Controller
+
+class EssentialsWishesController extends Controller
 {
     protected $moduleUtil;
     /**
@@ -19,7 +20,6 @@ class EssentialsContractsFinishReasonsController extends Controller
         $this->moduleUtil = $moduleUtil;
     }
 
-
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -27,25 +27,15 @@ class EssentialsContractsFinishReasonsController extends Controller
         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
-    
-        $reasons = EssentailsReasonWish::where('type','reason')->select(
+        $reasons = EssentailsReasonWish::where('type','wish')->select(
             'id',
-            'main_reson_id',
-            'employee_type as employee_type',
-            'reason as reason',
-            'reason_type as reason_type',
-            'sub_reason as sub_reason',
           
-            
+            'employee_type as employee_type',
+            'reason as reason', 
         );
         if ($request->has('employee_type_filter') && $request->input('employee_type_filter') != 'all') {
             $reasons->where('employee_type', $request->input('employee_type_filter'));
         }
-
-        if ($request->has('reason_type_filter') && $request->input('reason_type_filter') != 'all') {
-            $reasons->where('reason_type', $request->input('reason_type_filter'));
-        }
-    
         if (request()->ajax()) {
 
            
@@ -55,38 +45,21 @@ class EssentialsContractsFinishReasonsController extends Controller
             ->addColumn('employee_type', function ($row) {
                 return trans('essentials::lang.' . $row->employee_type);
             })
-            ->addColumn('reason_type', function ($row) {
-                return trans('essentials::lang.' . $row->reason_type);
-            })
-
-            ->addColumn('reason', function ($row) {
-                if ($row->reason_type == 'sub_main') {
-                  
-                    $mainReason = EssentailsReasonWish::find($row->main_reson_id);
-                    return $mainReason ? $mainReason->reason : '';
-                } elseif ($row->reason_type == 'main') {
-               
-                    return $row->reason;
-                }
-            
-                return '';
-            })
+          
+         
                 ->addColumn('action', function ($row) {
                     $html = '<button class="btn btn-xs btn-danger delete_city_button" data-href=""><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     return $html;
                 })
                 ->rawColumns(['action'])
-                ->removeColumn('main_reson_id')
+            
               
                 ->make(true);
         }
     
-        $main_reasons = EssentailsReasonWish::forDropdown();
-    
-        return view('essentials::reasons_wishes.index_contract_finish_reasons')
-            ->with(compact('main_reasons'));
+        return view('essentials::reasons_wishes.index_wishes');
+       
     }
-    
 
     /**
      * Show the form for creating a new resource.
@@ -94,6 +67,7 @@ class EssentialsContractsFinishReasonsController extends Controller
      */
     public function create()
     {
+
         return view('essentials::create');
     }
 
@@ -113,23 +87,19 @@ class EssentialsContractsFinishReasonsController extends Controller
         try {
             $input = $request->only(
                 ['employee_type',
-                 'reason',
-                'main_reason_select',
-                'sub_reason',
-                'reason_type'
+                 'wish',
+               
                  ]);
 
             $input['employee_type'] =$input['employee_type'];
             
-            $input['type'] ='reason';
-            $input['reason_type'] = $input['reason_type'];
+            $input['type'] ='wish';
+         
+            
+            $input['reason'] = $input['wish'];
            
-            $input['sub_reason'] = $input['sub_reason'];
             
-            $input['reason'] = $input['reason'];
-            $input['main_reson_id'] = $input['main_reason_select'];
-            
-           // dd( $input);
+        
             EssentailsReasonWish::create($input);
  
             $output = ['success' => true,
@@ -141,12 +111,12 @@ class EssentialsContractsFinishReasonsController extends Controller
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
 
-        $main_reasons= EssentailsReasonWish::forDropdown();
-        return redirect()->route('contracts_finish_reasons')->with(compact('main_reasons'));
+       // return $output;
+        return redirect()->route('wishes');
     }
 
     /**

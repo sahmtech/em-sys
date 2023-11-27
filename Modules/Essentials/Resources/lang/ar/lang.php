@@ -1029,11 +1029,25 @@ return[
 'contracts_end_reasons'=>'أسباب إنهاء العقود',
 'create_contracts_finish_reason'=>'إضافة سبب إنهاء',
 'worker'=>'عامل',
-
+'manger'=>'مدير',
+'employee'=>'موظف',
 'age_distribution'=>'الفئات العمرية ',
 'worker_number'=>'رقم العامل',
 'worker_name'=>'اسم العامل',
-
+'reason'=>'السبب',
+'reason_type'=>'نوع السبب',
+'main_reason'=>'أساسي',
+'sub_reason'=>' ثانوي',
+'reason'=>'السبب',
+'main_reason_select'=>'اختر السبب الرئيسي',
+'main_reason2'=>'السبب الرئيسي',
+'sub_reason2'=>'السبب الثانوي',
+'main'=>'رئيسي ',
+'sub_main'=>'ثانوي',
+'wishes'=>'الرغبات',
+'curd_wishes'=>'حذف \ إضافة\ تعديل الرغبات',
+'wish'=>'الرغبة',
+'add_wish'=>'إضافة رغبة'
 
 
 
