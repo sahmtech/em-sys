@@ -208,6 +208,7 @@ return [
     'orderQuantity'=>'كمية أمر التشغيل',
     'External'=>'خارجي',
     'Internal'=>'داخلي',
+    ''=>'',
 
     'External'=>'خارجي',
     'no_file_to_show'=>'لايوجد ملف العقد ',
