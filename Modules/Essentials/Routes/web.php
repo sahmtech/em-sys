@@ -344,9 +344,13 @@ Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\Essentia
 
        Route::get('/employess-info-report',[\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index'])->name('employess-info-report');
         
-   
-   
-   
+      //contracts finish reasons
+      Route::get('/contracts-finish-reasons', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'index'])->name('contracts_finish_reasons');
+      Route::get('/contracts-finish-reasons/create', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'create'])->name('create-contracts-finish-reasons');
+      Route::post('/contracts-finish-reasons/store', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'store'])->name('store_finish_reasons');
+      
+      Route::get('/wishes', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'index'])->name('wishes');
+      Route::post('/wish/store', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'store'])->name('store_wish');
    
     });
 });

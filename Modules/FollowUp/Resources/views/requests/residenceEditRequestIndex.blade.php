@@ -6,7 +6,7 @@
 
 <section class="content-header">
     <h1>
-        <span>@lang('followup::lang.residenceRenewal')</span>
+        <span>@lang('followup::lang.residenceEditRequest')</span>
     </h1>
 </section>
 
@@ -22,13 +22,15 @@
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                        
+                   
                             <th>@lang('followup::lang.worker_name')</th>
-                            <th>@lang('followup::lang.end_date')</th>
+                            <th>@lang('followup::lang.request_number')</th>
+                            <th>@lang('followup::lang.type')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.reason')</th>
                             <th>@lang('followup::lang.action')</th>
+
                         </tr>
                     </thead>
                 </table>
@@ -75,16 +77,30 @@
          processing: true,
          serverSide: true,
 
-        ajax: { url: "{{ route('residenceRenewal') }}"},
+        ajax: { url: "{{ route('residenceEditRequest') }}"},
      
                  columns: [
                
-                
+             
                 { data: 'user' },
-              
-                { data: 'end_date' } ,
+                { data: 'request_no' },
+            
+                {
+                        data: 'resEditType',
+                        render: function(data, type, full, meta) {
+                            switch (data) {
+                                case 'name':
+                                    return '{{ trans('followup::lang.name') }}';
+                                case 'religion':
+                                    return '{{ trans('followup::lang.religion') }}';
+
+                                default:
+                                    return data;
+                            }
+                        }
+                    },
                 { data: 'status' } ,
-                 { data: 'status_note' },
+                { data: 'status_note' },
                 { data: 'reason' },
                 {
                     data: 'can_return',
@@ -167,12 +183,12 @@
                     }
                 },
             });
-        });
+    });
   
    
 
 
-        $('#requests_table').on('click', '.btn-return', function () {
+    $('#requests_table').on('click', '.btn-return', function () {
         var requestId = $(this).data('request-id');
         $('#returnModal').modal('show');
         $('#returnModal').data('id', requestId);
@@ -203,6 +219,7 @@
         });
     });
     });
+
 
 </script>
  

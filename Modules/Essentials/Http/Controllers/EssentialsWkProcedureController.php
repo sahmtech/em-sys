@@ -39,6 +39,13 @@ class EssentialsWkProcedureController extends Controller
             'residenceRenewal',
             'residenceCard',
             'workerTransfer',
+            'workInjuriesRequest',
+            'residenceEditRequest',
+            'baladyCardRequest',
+            'insuranceUpgradeRequest',
+            'mofaRequest',
+            'chamberRequest',
+            
         ];
         
 

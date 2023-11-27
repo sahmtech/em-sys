@@ -2,11 +2,11 @@
 @section('title', __('followup::lang.requests'))
 
 @section('content')
-
+@include('followup::layouts.nav_requests')
 
 <section class="content-header">
     <h1>
-        <span>@lang('followup::lang.requests')</span>
+        <span>@lang('followup::lang.residenceCard')</span>
     </h1>
 </section>
 
