@@ -62,7 +62,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('sale/operation/edit/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'edit'] )->name('sale.operation.edit');
         Route::get('show_operation/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'] )->name('sale.show_operation');
         Route::delete('destroy/show_operation/{id}',[\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'destroy'] )->name('sale.delete.order_operation');
- 
+        Route::post('/get-contract-details', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class,'getContractDetails'])->name('get-contract-details');
+
         Route::get('/contract_itmes', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'index'])->name('contract_itmes');
         Route::get('/createItme', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'create'])->name('createItem');
         Route::post('/storeItem', [\Modules\Sales\Http\Controllers\ContractItemController::class, 'store'])->name('storeItem');

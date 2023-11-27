@@ -1432,4 +1432,8 @@ return [
 'username_exists_message'=>'اسم المستخدم موجود سابقا',
 'enterusername'=>'أدخل اسم المستخدم',
 'under process'=>'قيد الدراسة',
+'order_not_found'=>'أمر التشغيل غير موجود',
+'Sum_of_target_quantity_is_greater_than_order_quantity'=>'الكمية المدخلة أكبر من العدد المسموح به',
+'saved_successfully'=>'تم الحفظ بنجاح',
+'age'=>'العمر'
 ];

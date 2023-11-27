@@ -14,6 +14,8 @@ use App\Utils\Util;
 use App\Contact;
 use Modules\InternationalRelations\Entities\IrDelegation;
 use DB;
+use Modules\InternationalRelations\Entities\Ir_delegation;
+use Modules\Sales\Entities\salesOrdersOperation;
 
 class OrderRequestController extends Controller
 {
@@ -52,25 +54,6 @@ class OrderRequestController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-    //     $transactionID=DB::table('sales_orders_operations')
-    //     ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-    //    ->join('transactions', 'sales_contracts.offer_price_id', '=', 'transactions.id')
-    //     ->where('sales_orders_operations.id','=',1)
-    //     ->first();
-     
-    //     $products = DB::table('transaction_sell_lines')
-    //     ->join('sales_services', 'transaction_sell_lines.service_id', '=', 'sales_services.id')
-    //     ->leftJoin('essentials_countries', 'sales_services.nationality_id', '=', 'essentials_countries.id')
-    //     ->leftJoin('essentials_professions', 'sales_services.profession_id', '=', 'essentials_professions.id')
-    //     ->leftJoin('essentials_specializations', 'sales_services.specialization_id', '=', 'essentials_specializations.id')
-     
-    //     ->where('transaction_id', '=', $transactionID->id)
-    //     ->select('sales_services.*', 'essentials_countries.nationality as nationality_name','transaction_sell_lines.quantity',
-    //      'essentials_professions.name as profession_name', 'essentials_specializations.name as specialization_name'
-    //     )
-    //     ->get();
-  
-   //   dd($agencies);     
         $operations = DB::table('sales_orders_operations')
         ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
         ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
@@ -78,7 +61,8 @@ class OrderRequestController extends Controller
         ->select(
             'sales_orders_operations.id as id',
             'sales_orders_operations.operation_order_no as operation_order_no',
-            'contacts.name as contact_name',
+            'sales_orders_operations.orderQuantity as orderQuantity',
+            'contacts.supplier_business_name as contact_name',
             'sales_contracts.number_of_contract as contract_number',
             'sales_orders_operations.operation_order_type as operation_order_type',
             'sales_orders_operations.Status as Status'
@@ -102,6 +86,10 @@ class OrderRequestController extends Controller
          
         
         return Datatables::of($operations)
+        ->addColumn('Status', function ($row) {
+
+            return __('sales::lang.' . $row->Status);
+        })
         ->addColumn('Delegation', function ($row) {
           
             $html = '';
@@ -115,9 +103,15 @@ class OrderRequestController extends Controller
             ->removeColumn('id')
             ->make(true);
     }
+    $status = [
+        'Done' => __('sales::lang.Done'),
+        'Under_process' => __('sales::lang.Under_process'),
+        'Not_started' => __('sales::lang.Not_started'),
+
+    ];
 
         return view('internationalrelations::orderRequest.index')
-        ->with(compact('contracts'));
+        ->with(compact('contracts','status'));
     }
 
     
@@ -142,7 +136,7 @@ class OrderRequestController extends Controller
         ->get();
         $agencies=Contact::where('type','=','recruitment')->get();
 
-        return view('internationalrelations::orderRequest.Delegation')->with(compact('products','agencies'));
+        return view('internationalrelations::orderRequest.Delegation')->with(compact('products','agencies','id'));
     }
     /**
      * Show the form for creating a new resource.
@@ -159,26 +153,45 @@ class OrderRequestController extends Controller
      * @return Renderable
      */
 
-     public function saveRequest(Request $request) {
+  
+    
+    public function saveRequest(Request $request)
+    {
         $data = $request->input('data');
-       
-        foreach ($data as $item) {
-            $product_id = $item['product_id'];
-            $agency_id = $item['agency_id'];
-            $target_quantity = $item['target_quantity'];
-    
-            DB::table('ir_delegations')->insert([
-                'transaction_sell_line_id' => $product_id,
-                'agency_id' => $agency_id,
-                'targeted_quantity' => $target_quantity,
-            ]);
-        }
-    
-        // Return a response if needed
-        return response()->json(['message' => 'Data saved successfully']);
-    }
-    
+        $order_id = isset($data[0]['order_id']) ? $data[0]['order_id'] : null;
+      
+        $order = salesOrdersOperation::find($order_id);
 
+        if (!$order) {
+            return response()->json(['success' => false,  'message' => __('lang_v1.order_not_found')]);
+        }
+
+      
+        $sumTargetQuantity = 0;
+        foreach ($request->input('data2') as $item) {
+         
+            $sumTargetQuantity += $item['target_quantity'];  
+          
+        }
+
+       
+        if ($sumTargetQuantity > $order->orderQuantity) {
+            return response()->json(['success' => false, 'message' => __('lang_v1.Sum_of_target_quantity_is_greater_than_order_quantity') ]);
+        }
+
+
+        foreach ($request->input('data2') as $item) {
+            DB::table('ir_delegations')->insert([
+                            'transaction_sell_line_id' => $item['product_id'],
+                            'agency_id' => $item['agency_id'],
+                            'targeted_quantity' => $item['target_quantity']
+                        ]);
+            
+          
+        }
+
+        return response()->json(['success' => true, 'message' =>  __('lang_v1.saved_successfully')]);
+    }
     public function store(Request $request)
     {
       

@@ -990,9 +990,7 @@ return[
 'contract_status'=>'نسب العقود',
 'expired_contracts'=>'العقود المنتهية',
 'remaining_contracts'=>'العقود انتهت فترة التجربة',
-
 'escape_date'=>'تاريخ الهروب',
-
 'years'=>'سنة',
 'months'=>'شهر',
 'management'=>'إدارة',
@@ -1020,6 +1018,14 @@ return[
 'total_of_nationality'=>'إجمالي الجنسيات',
 'type_of_identity_proof'=>'نوع اثبات الهوية ',
 'age_distribution'=>'الفئات العمرية ',
+'worker_number'=>'رقم العامل',
+'worker_name'=>'اسم العامل',
+
+
+
+
+
+
 
 
 
