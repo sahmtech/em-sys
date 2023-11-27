@@ -177,6 +177,134 @@ class DataController extends Controller
                 'default' => false,
       
             ],
+            [
+                'value' => 'followup.crud_operation_orders',
+                'label' => __('followup::lang.crud_operation_orders'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.create_order',
+                'label' => __('followup::lang.create_order'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.return_request',
+                'label' => __('followup::lang.return_request'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewExitRequests',
+                'label' => __('followup::lang.viewExitRequests'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudExitRequests',
+                'label' => __('followup::lang.crudExitRequests'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewReturnRequest',
+                'label' => __('followup::lang.viewReturnRequest'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudReturnRequest',
+                'label' => __('followup::lang.crudReturnRequest'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewEscapeRequest',
+                'label' => __('followup::lang.viewEscapeRequest'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudEscapeRequest',
+                'label' => __('followup::lang.crudEscapeRequest'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewAdvanceSalary',
+                'label' => __('followup::lang.viewAdvanceSalary'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudAdvanceSalary',
+                'label' => __('followup::lang.crudAdvanceSalary'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewLeavesAndDepartures',
+                'label' => __('followup::lang.viewLeavesAndDepartures'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudLeavesAndDepartures',
+                'label' => __('followup::lang.crudLeavesAndDepartures'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewAtmCard',
+                'label' => __('followup::lang.viewAtmCard'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudAtmCard',
+                'label' => __('followup::lang.crudAtmCard'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewResidenceRenewal',
+                'label' => __('followup::lang.viewResidenceRenewal'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudResidenceRenewal',
+                'label' => __('followup::lang.crudResidenceRenewal'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewResidenceCard',
+                'label' => __('followup::lang.viewResidenceCard'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudResidenceCard',
+                'label' => __('followup::lang.crudResidenceCard'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.viewWorkerTransfer',
+                'label' => __('followup::lang.viewWorkerTransfer'),
+                'default' => false,
+      
+            ],
+            [
+                'value' => 'followup.crudWorkerTransfer',
+                'label' => __('followup::lang.crudWorkerTransfer'),
+                'default' => false,
+      
+            ],
+            
+            
            
            
    

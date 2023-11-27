@@ -4,58 +4,56 @@
 @section('content')
 
 
-    <section class="content-header">
-        <h1>
-            <span>@lang('followup::lang.projects')</span>
-        </h1>
-    </section>
+<section class="content-header">
+    <h1>
+        <span>@lang('followup::lang.projects')</span>
+    </h1>
+</section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts, null, [
-                                'class' => 'form-control',
-                                'style' => 'width:100%',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
-
-                        </div>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+              
+                <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                        {!! Form::select('project_name_filter',$contacts, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="offer_status_filter">@lang('followup::lang.project_status'):</label>
-                            <select class="form-control select2" name="offer_status_filter" required id="offer_status_filter"
-                                style="width: 100%;">
-                                <option value="all">@lang('lang_v1.all')</option>
-                                <option value="not_started">@lang('followup::lang.not_started')</option>
-                                <option value="under_process">@lang('followup::lang.under_process')</option>
-                                <option value="done">@lang('followup::lang.done')</option>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="offer_status_filter">@lang('followup::lang.project_status'):</label>
+                        <select class="form-control select2" name="offer_status_filter" required id="offer_status_filter" style="width: 100%;">
+                            <option value="all">@lang('lang_v1.all')</option>
+                            <option value="not_started">@lang('followup::lang.not_started')</option>
+                            <option value="under_process">@lang('followup::lang.under_process')</option>
+                            <option value="done">@lang('followup::lang.done')</option>
 
-                            </select>
-                        </div>
+                        </select>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="type_filter">@lang('followup::lang.project_type'):</label>
-                            <select class="form-control select2" name="type_filter" required id="type_filter"
-                                style="width: 100%;">
-                                <option value="all">@lang('lang_v1.all')</option>
-                                <option value="External">@lang('followup::lang.external')</option>
-                                <option value="Internal">@lang('followup::lang.internal')</option>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="type_filter">@lang('followup::lang.project_type'):</label>
+                        <select class="form-control select2" name="type_filter" required id="type_filter" style="width: 100%;">
+                            <option value="all">@lang('lang_v1.all')</option>
+                            <option value="External">@lang('followup::lang.external')</option>
+                            <option value="Internal">@lang('followup::lang.internal')</option>
+                         
 
-
-                            </select>
-                        </div>
+                        </select>
                     </div>
-                @endcomponent
-            </div>
+                </div>
+              
+            @endcomponent
         </div>
-        @component('components.widget', ['class' => 'box-primary'])
+    </div>
+    @component('components.widget', ['class' => 'box-primary'])
+
+      
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="projects_table">
                     <thead>
@@ -77,25 +75,27 @@
                     </thead>
                 </table>
             </div>
-        @endcomponent
+ 
+    @endcomponent
 
 
 
-    </section>
-    <!-- /.content -->
+</section>
+<!-- /.content -->
 
 @endsection
 
 @section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script type="text/javascript">
 
-            var table = $('#projects_table').DataTable({
-                processing: true,
-                serverSide: true,
+    $(document).ready(function () {
+       
+    $('#projects_table').DataTable({
+        processing: true,
+        serverSide: true,
 
-                ajax: {
-                    url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']) }}",
+        ajax: {
+                    url: "{{ route('projects') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -106,74 +106,72 @@
                         if ($('#type_filter').val()) {
                             d.type = $('#type_filter').val();
                         }
-
+                        
                     }
                 },
-                columns: [{
-                        data: 'contact_name'
-                    },
-                    {
-                        data: 'number_of_contract'
-                    },
-                    {
-                        data: 'start_date'
-                    },
-                    {
-                        data: 'end_date'
-                    },
-                    {
-                        data: 'active_worker_count'
-                    },
-                    {
-                        data: 'worker_count'
-                    },
-                    {
-                        data: 'duration'
-                    },
-                    {
-                        data: 'contract_form',
+        columns: [
+            { data: 'contact_name' },
+            { data: 'number_of_contract'},
+            { data: 'start_date'},
+            { data: 'end_date'},
+            { data: 'active_worker_count'},
+            { data: 'worker_count'},
+            { data: 'duration'},
+            { 
+                data: 'contract_form',
+                render: function(data, type, full, meta) {
+                    switch (data) {
+                        case 'monthly_cost':
+                            return '{{ trans("sales::lang.monthly_cost") }}';
+                        case 'operating_fees':
+                            return '{{ trans("sales::lang.operating_fees") }}';
+                      
+                        default:
+                            return data;
+                    }
+                }
+            },
+        
+            {
+                        data: 'status',
                         render: function(data, type, full, meta) {
                             switch (data) {
-                                case 'monthly_cost':
-                                    return '{{ trans('sales::lang.monthly_cost') }}';
-                                case 'operating_fees':
-                                    return '{{ trans('sales::lang.operating_fees') }}';
+                                case 'Done':
+                                    return '{{ trans('sales::lang.Done') }}';
+                                case 'Under_process':
+                                    return '{{ trans('sales::lang.Under_process') }}';
+                              
 
                                 default:
                                     return data;
                             }
                         }
                     },
-                    {
-                        data: 'status'
-                    },
-                    {
-                        data: 'type',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-                                case 'External':
-                                    return '{{ trans('sales::lang.external') }}';
-                                case 'Internal':
-                                    return '{{ trans('sales::lang.internal') }}';
+            { 
+                data: 'type',
+                render: function(data, type, full, meta) {
+                    switch (data) {
+                        case 'External':
+                            return '{{ trans("sales::lang.external") }}';
+                        case 'Internal':
+                            return '{{ trans("sales::lang.internal") }}';
+                      
+                        default:
+                            return data;
+                    }
+                }
+            },
+            { data: 'action' },
+            
 
-                                default:
-                                    return data;
-                            }
-                        }
-                    },
-                    {
-                        data: 'action'
-                    },
+        ]
 
+    });
 
-                ]
+    $('#project_name_filter,#offer_status_filter,#type_filter').on('change', function() {
+    $('#projects_table').DataTable().ajax.reload();
+    });
+    });
 
-            });
-
-            $('#project_name_filter,#offer_status_filter,#type_filter').on('change', function() {
-                table.ajax.reload();
-                //   $('#projects_table').DataTable().ajax.reload();
-            });
-        });
-    </script>
+</script>
 @endsection

@@ -73,12 +73,12 @@
             {!! Form::select('contract_type', $contract_types, !empty($contract->contract_type_id) ? $contract->contract_type_id : null, ['class' => 'form-control select', 'style'=>'height:40px','placeholder' => __('messages.please_select')]); !!}
             </div>
         </div>
-<div class="form-group col-md-3">
-    {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
-    {!! Form::date('contract_start_date', !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
-         ['class' => 'form-control', 'style' => 'height:40px', 'id' => 'contract_start_date',
-          'placeholder' => __('essentials::lang.contract_start_date')]); !!}
-</div>
+        <div class="form-group col-md-3">
+            {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
+            {!! Form::date('contract_start_date', !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
+                ['class' => 'form-control', 'style' => 'height:40px', 'id' => 'contract_start_date',
+                'placeholder' => __('essentials::lang.contract_start_date')]); !!}
+        </div>
 
 <div class="form-group col-md-3">
     {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
@@ -341,7 +341,7 @@
                         });
                     }
                 });
-            });
+        });
     
            
     $('#can_add_category').change(function() {
