@@ -303,7 +303,14 @@ class DataController extends Controller
                 'default' => false,
       
             ],
+            [
+                'value' => 'followup.curd_contracts_wishes',
+                'label' => __('followup::lang.curd_contracts_wishes'),
+                'default' => false,
+      
+            ],
             
+      
             
            
            

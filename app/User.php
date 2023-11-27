@@ -15,6 +15,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
+use App\Contact;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -354,11 +355,18 @@ class User extends Authenticatable
 
         return $this->hasOne(WorkCard::class, 'employee_id');
     }
+    public function userContact()
+    {
+
+        return $this->belongsTo(Contact::class, 'assigned_to');
+    }
+
     public function OfficialDocument()
     {
 
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id');
     }
+
     public function allowancesAndDeductions()
     {
         return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');

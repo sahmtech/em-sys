@@ -461,6 +461,12 @@ class CustomAdminSidebarMenu
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
+
+            if (auth()->user()->can('followup::lang.curd_contracts_wishes')) {
+                $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index']),
+                __('followup::lang.contrascts_wishes'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'contracts_wishes']);
+            }
             $menu->dropdown(
                 __('followup::lang.requests'),
                 function ($sub) use ($enabled_modules) {
