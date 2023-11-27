@@ -3,10 +3,10 @@
 
 @section('content')
 
-
+@include('followup::layouts.nav_requests')
 <section class="content-header">
     <h1>
-        <span>@lang('followup::lang.requests')</span>
+        <span>@lang('followup::lang.workerTransfer')</span>
     </h1>
 </section>
 

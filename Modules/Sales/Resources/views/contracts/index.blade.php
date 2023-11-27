@@ -83,37 +83,35 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
-                                {!! Form::select('offer_price',$offer_prices, null, ['class' => 'form-control','style'=>'height:40px',
-                                    'id'=>'offer_price', 'placeholder' => __('sales::lang.select_offer_price'), 'required']) !!}
+                                {!! Form::select('offer_price',$offer_prices, null, ['class' => 'form-control','id'=>'offer_price', 'placeholder' => __('sales::lang.select_offer_price'), 'required']) !!}
                             </div>
                         
                             <div class="form-group col-md-6">
                                 {!! Form::label('contract_signer', __('sales::lang.contract_signer') . ':*') !!}
-                                {!! Form::text('contract_signer', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('sales::lang.contract_signer'), 'required']) !!}
+                                {!! Form::text('contract_signer', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.contract_signer'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('contract_follower', __('sales::lang.contract_follower') . ':*') !!}
-                                {!! Form::text('contract_follower', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('sales::lang.contract_follower'), 'required']) !!}
+                                {!! Form::text('contract_follower', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.contract_follower'), 'required']) !!}
                             </div>
                             
                             <div class="form-group col-md-6">
                                 {!! Form::label('start_date', __('essentials::lang.contract_start_date') . ':*') !!}
-                                {!! Form::date('start_date', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.contract_start_date'), 'required']) !!}
+                                {!! Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contract_start_date'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('end_date', __('essentials::lang.contract_end_date') . ':*') !!}
-                                {!! Form::date('end_date', null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.contract_end_date'), 'required']) !!}
+                                {!! Form::date('end_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.contract_end_date'), 'required']) !!}
                             </div>
                              <div class="form-group col-md-6">
                                 {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-                                {!! Form::select('status', ['valid' => __('sales::lang.valid'), 'finished' => __('sales::lang.finished')] ,null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.status'), 'required']) !!}
+                                {!! Form::select('status', ['valid' => __('sales::lang.valid'), 'finished' => __('sales::lang.finished')] ,null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.status'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-8">
                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                 {!! Form::select('contract_items[]', $items, null, [
-                                    'class' => 'form-control select2', 
-                                  
-                                    'multiple' => 'multiple',
+                                    'class' => 'form-control select2', // Add the 'select2' class for styling
+                                    'multiple' => 'multiple', // Enable multiselect
                                     'placeholder' => __('sales::lang.select_contract_items'),
                                     'required'
                                 ]) !!}
@@ -122,15 +120,15 @@
                           
                             <div class="form-group col-md-6">
                                 {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':*') !!}
-                                {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control','style'=>'height:40px',]) !!}
+                                {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], null, ['class' => 'form-control']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
-                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required','style'=>'height:40px',]) !!}
+                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-12">
                                 {!! Form::label('notes', __('sales::lang.notes') . ':') !!}
-                                {!! Form::textarea('notes', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.notes'), 'rows' => 2,'style'=>'height:40px',]) !!}
+                                {!! Form::textarea('notes', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.notes'), 'rows' => 2]) !!}
                             </div>
                            
                             
@@ -267,4 +265,3 @@
     </script>
   
 @endsection
-

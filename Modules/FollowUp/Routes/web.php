@@ -36,6 +36,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');
         Route::get('/createRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'create'])->name('createRequest');
+        Route::get('/allRequests',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests'])->name('allRequests');
        
         Route::get('/exitRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'exitRequestIndex'])->name('exitRequest');
         Route::get('/returnRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'returnRequestIndex'])->name('returnRequest');
@@ -46,9 +47,18 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/residenceRenewal',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceRenewalIndex'])->name('residenceRenewal');
         Route::get('/residenceCard',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceCardIndex'])->name('residenceCard');
         Route::get('/workerTransfer',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workerTransferIndex'])->name('workerTransfer');
-  
+        
+        Route::get('/chamberRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'chamberRequestIndex'])->name('chamberRequest');
+        Route::get('/mofaRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'mofaRequestIndex'])->name('mofaRequest');
+        Route::get('/insuranceUpgradeRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'insuranceUpgradeRequestIndex'])->name('insuranceUpgradeRequest');
+        Route::get('/baladyCardRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'baladyCardRequestIndex'])->name('baladyCardRequest');
+        Route::get('/residenceEditRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceEditRequestIndex'])->name('residenceEditRequest');
+        Route::get('/workInjuriesRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workInjuriesRequestIndex'])->name('workInjuriesRequest');
+
+
         Route::post('/change-status', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'changeStatus'])->name('changeStatus');
         Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'returnReq'])->name('returnReq');
+
 
 
         Route::get('/contracts_wishes',[\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index'])->name('contracts_wishes');
@@ -57,6 +67,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
    
          Route::get('/change_wish', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish'])->name('change-wish');
  
+
+        Route::get('/reports/project-workers',[\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers'])->name('projectWorkers');
+        Route::get('/reports/projects',[\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects'])->name('projects');
+
+        
+
     });
     
     

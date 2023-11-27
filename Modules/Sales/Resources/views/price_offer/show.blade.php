@@ -108,74 +108,9 @@
 
         </div>
 
-        <div class="row">
-            <div class="col-sm-12 col-xs-12">
-                <h4>{{ __('sale.products') }}:</h4>
-            </div>
-
-            <div class="col-sm-12 col-xs-12">
-                <div class="table-responsive">
-                    <table
-                        class="table @if (!empty($for_ledger)) table-slim mb-0 bg-light-gray @else bg-gray @endif"
-                        @if (!empty($for_pdf)) style="width: 100%;" @endif>
-                        <tr @if (empty($for_ledger)) class="bg-green" @endif>
-
-
-                            <th>{{ __('sales::lang.quantity') }}</th>
-                            <th>{{ __('sales::lang.additional_allwances') }}</th>
-                            <th>{{ __('sales::lang.gender') }}</th>
-                            <th>{{ __('sales::lang.service_price') }}</th>
-                            <th>{{ __('sales::lang.monthly_cost_for_one') }}</th>
-                            <th>{{ __('sales::lang.profession_name') }}</th>
-                            <th>{{ __('sales::lang.specialization_name') }}</th>
-
-                        </tr>
-                        @foreach ($query->sell_lines as $sell_line)
-                            <tr>
-                                <td>{{ $sell_line->quantity }}</td>
-                                {{-- <td>{{ $sell_line->additional_allwances }}</td> --}}
-                                <td>
-                                    @if (!empty($sell_line->additional_allwances))
-                                        <ul>
-                                            @foreach (json_decode($sell_line->additional_allwances) as $allwance)
-                                                @if (is_object($allwance) &&
-                                                        property_exists($allwance, 'salaryType') &&
-                                                        property_exists($allwance, 'amount') &&
-                                                        !empty($allwance->salaryType))
-                                                    <li>
-                                                        {{ __('sales::lang.' . $allwance->salaryType) }}:
-                                                        {{ $allwance->amount }}
-
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    @endif
-
-
-
-                                </td>
-                                @if (!empty($sell_line['service']['gender']))
-                                    <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td>
-                                @else
-                                    <td> </td>
-                                @endif
-                                <td>{{ $sell_line['service']['service_price'] }}</td>
-                                <td>{{ $sell_line['service']['monthly_cost_for_one'] }}</td>
-                                <td>{{ $sell_line['service']['profession']['name'] }}</td>
-                                <td>{{ $sell_line['service']['specialization']['name'] }}</td>
-                            </tr>
-                        @endforeach
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var element = $('div.modal-xl');
-            __currency_convert_recursively(element);
-        });
-    </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var element = $('div.modal-xl');
+                __currency_convert_recursively(element);
+            });
+        </script>

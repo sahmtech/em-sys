@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
@@ -370,5 +371,9 @@ class User extends Authenticatable
     public function allowancesAndDeductions()
     {
         return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');
+    }
+
+    public function essentials_admission_to_works(){
+        return $this->hasOne(EssentialsAdmissionToWork::class,'employee_id');
     }
 }

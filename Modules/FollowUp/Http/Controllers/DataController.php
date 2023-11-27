@@ -303,6 +303,7 @@ class DataController extends Controller
                 'default' => false,
       
             ],
+
             [
                 'value' => 'followup.curd_contracts_wishes',
                 'label' => __('followup::lang.curd_contracts_wishes'),
@@ -311,6 +312,63 @@ class DataController extends Controller
             ],
             
       
+
+            [ 
+
+
+                'value' => 'followup.viewWorkInjuriesRequest',
+                'label' => __('followup::lang.viewWorkInjuriesRequest'),
+                'default' => false,
+    
+            ],
+            [ 
+
+
+                'value' => 'followup.viewResidenceEditRequest',
+                'label' => __('followup::lang.viewResidenceEditRequest'),
+                'default' => false,
+    
+            ],
+            [ 
+
+
+                'value' => 'followup.viewBaladyCardRequest',
+                'label' => __('followup::lang.viewBaladyCardRequest'),
+                'default' => false,
+    
+            ],
+            [ 
+
+
+                'value' => 'followup.viewRecruitmentRequest',
+                'label' => __('followup::lang.viewRecruitmentRequest'),
+                'default' => false,
+    
+            ],
+            [ 
+
+                'value' => 'followup.viewInsuranceUpgradeRequest',
+                'label' => __('followup::lang.viewInsuranceUpgradeRequest'),
+                'default' => false,
+    
+            ],
+            [ 
+
+
+                'value' => 'followup.viewMofaRequest',
+                'label' => __('followup::lang.viewMofaRequest'),
+                'default' => false,
+    
+            ],
+            [ 
+
+
+                'value' => 'followup.viewChamberRequest',
+                'label' => __('followup::lang.viewChamberRequest'),
+                'default' => false,
+    
+            ],
+
             
            
            
