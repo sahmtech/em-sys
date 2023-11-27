@@ -61,6 +61,13 @@
                 'residenceRenewal'=>__('followup::lang.residenceRenewal'),
                 'residenceCard'=>__('followup::lang.residenceCard'),
                 'workerTransfer'=>__('followup::lang.workerTransfer'),
+                'workInjuriesRequest'=>__('followup::lang.workInjuriesRequest'),
+                'residenceEditRequest'=>__('followup::lang.residenceEditRequest'),
+                'baladyCardRequest'=>__('followup::lang.baladyCardRequest'),
+                'insuranceUpgradeRequest'=>__('followup::lang.insuranceUpgradeRequest'),
+                'mofaRequest'=>__('followup::lang.mofaRequest'),
+                'chamberRequest'=>__('followup::lang.chamberRequest'),
+                
                 ], null, ['class' => 'form-control', 'required', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
             </div>
             <div class="form-group col-md-6" id="leaveType" style="display: none;">
