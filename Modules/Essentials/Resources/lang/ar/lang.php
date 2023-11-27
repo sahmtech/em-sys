@@ -1026,6 +1026,10 @@ return[
 'ageGroup3'=>'الفئة العمرية الثالثة',
 'managers'=>'المدراء',
 'workers'=>'العمال',
+'curd_contracts_end_reasons'=>'إضافة / حذف / تعديل أسباب إنهاء العقود',
+'contracts_end_reasons'=>'أسباب إنهاء العقود',
+'create_contracts_finish_reason'=>'إضافة سبب إنهاء',
+'worker'=>'عامل',
 
 
 

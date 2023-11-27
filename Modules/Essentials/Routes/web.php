@@ -344,8 +344,10 @@ Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\Essentia
 
        Route::get('/employess-info-report',[\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index'])->name('employess-info-report');
         
-   
-   
+      //contracts finish reasons
+      Route::get('/contracts-finish-reasons', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'index'])->name('contracts-finish-reasons');
+      Route::get('/contracts-finish-reasons/create', [\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'create'])->name('create-contracts-finish-reasons');
+
    
    
     });

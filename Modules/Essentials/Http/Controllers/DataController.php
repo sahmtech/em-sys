@@ -486,6 +486,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.employees_information_report'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.curd_contracts_end_reasons',
+                'label' => __('essentials::lang.curd_contracts_end_reasons'),
+                'default' => false,
+            ],
 
 
         ];
