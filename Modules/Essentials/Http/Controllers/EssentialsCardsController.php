@@ -158,7 +158,7 @@ class EssentialsCardsController extends Controller
      
          if ($userType !== 'worker' ) {
             $business_id = request()->session()->get('user.business_id');
-            $professionId = 65;
+            $professionId = 56;
             $responsible_client = User::where('business_id', $business_id)
                 ->whereHas('appointment', function ($query) use ($professionId) {
                     $query->where('profession_id', $professionId);
@@ -195,7 +195,7 @@ class EssentialsCardsController extends Controller
         
      
             //  if ($responsible_clients->isEmpty()) {
-            //     $professionId = 65;
+            //     $professionId = 56;
             //     $business_id = request()->session()->get('user.business_id');
             //     $responsible_client = User::where('business_id', $business_id)
             //         ->whereHas('appointment', function ($query) use ($professionId) {

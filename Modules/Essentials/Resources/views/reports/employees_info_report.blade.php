@@ -53,11 +53,11 @@
                 <thead>
                     <tr>
                    
-                        <th>@lang('essentials::lang.total_of_employees')</th>
+                       
                         <th>@lang('essentials::lang.type_of_employees')</th>
-                        <th>@lang('essentials::lang.total_of_nationality')</th>
-                        <th>@lang('essentials::lang.type_of_identity_proof')</th>
+                        <th>@lang('essentials::lang.gender_distribution')</th>
                         <th>@lang('essentials::lang.age_distribution')</th>
+                       
                      
                     </tr>
                 </thead>
@@ -66,5 +66,81 @@
 
     @endcomponent
 </section>
+
+@endsection
+
+@section('javascript')
+<script type="text/javascript">
+    var translations = {
+        employees: '@lang("essentials::lang.employees")',
+        managers: '@lang("essentials::lang.managers")',
+        workers: '@lang("essentials::lang.workers")',
+        group1: '@lang("essentials::lang.ageGroup1")',
+        group2: '@lang("essentials::lang.ageGroup2")',
+        group3: '@lang("essentials::lang.ageGroup3")',
+        female: '@lang("essentials::lang.female")',
+        male: '@lang("essentials::lang.male")',
+    };
+
+    var employee_info_report_table;
+
+    $(document).ready(function () {
+        employee_info_report_table = $('#employee_info_report_table').DataTable({
+            processing: true,
+            serverSide: true,
+            paging: false, // Disable pagination
+            searching: false, // Disable search bar
+            info: false, // Disable info display
+            lengthChange: false, // Disable length change dropdown
+            ajax: {
+                url: "{{ route('employess-info-report') }}",
+            },
+            columns: [
+                {
+                    data: 'typeOfEmployees',
+                    render: function (data) {
+                        return `
+                            <div>${translations.employees}: ${data.employees}</div>
+                            <div>${translations.managers}: ${data.managers}</div>
+                            <div>${translations.workers}: ${data.workers}</div>
+                        `;
+                    }
+                },
+                {
+                    data: 'genderDistribution',
+                    render: function (data) {
+                        var femaleCount = 0;
+                        var maleCount = 0;
+
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].gender === 'female') {
+                                femaleCount = data[i].count;
+                            } else if (data[i].gender === 'male') {
+                                maleCount = data[i].count;
+                            }
+                        }
+
+                        return `
+                            <div>${translations.female}: ${femaleCount}</div>
+                            <div>${translations.male}: ${maleCount}</div>
+                        `;
+                    }
+                },
+                {
+                    data: 'ageDistribution',
+                    render: function (data) {
+                        return `
+                            <div>${translations.group1}: ${data.group1}</div>
+                            <div>${translations.group2}: ${data.group2}</div>
+                            <div>${translations.group3}: ${data.group3}</div>
+                        `;
+                    }
+                },
+            ]
+        });
+    });
+</script>
+
+
 
 @endsection
