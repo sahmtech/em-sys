@@ -91,7 +91,7 @@ class FollowUpWorkerController extends Controller
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
            
-                ->rawColumns(['nationality','residence_permit_expiration','residence_permit','contract_end_date']) 
+                ->rawColumns(['nationality','residence_permit_expiration','residence_permit','admissions_date','contract_end_date']) 
                 ->make(true);
         }
         return view('followup::workers.index')->with(compact('contacts','nationalities'));
