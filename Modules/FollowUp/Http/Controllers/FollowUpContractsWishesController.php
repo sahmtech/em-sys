@@ -44,7 +44,7 @@ class FollowUpContractsWishesController extends Controller
          $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
      
          $workers = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
-             ->join('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
+             ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
              ->where('users.user_type', 'worker')
              ->select(
                  'users.id',
@@ -59,7 +59,7 @@ class FollowUpContractsWishesController extends Controller
                  'essentials_employees_contracts.wish_id as wish',
              );
              
-     
+      
          if (request()->ajax()) {
              return DataTables::of($workers)
                  ->addColumn('name', function ($row) {
