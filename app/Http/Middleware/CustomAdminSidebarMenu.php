@@ -333,6 +333,21 @@ class CustomAdminSidebarMenu
                 )->order(7);
             }
 
+            if (auth()->user()->can('essentials.curd_contracts_end_reasons') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsContractsFinishReasonsController::class, 'index']),
+                    __('essentials::lang.contracts_end_reasons'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'contracts-finish-reasons'],
+                )->order(7);
+            }
+            if (auth()->user()->can('essentials.curd_wishes') || true) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'index']),
+                    __('essentials::lang.wishes'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'wishes'],
+                )->order(7);
+            }
+
             if (auth()->user()->can('essentials.crud_all_leave') || true) {
 
                 $menu->url(
@@ -512,7 +527,7 @@ class CustomAdminSidebarMenu
                             ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'residenceCard']
                         );
                     }
-                    if (auth()->user()->can('followup::lang.viewWorkerTransfer')) {
+                    if (auth()->user()->can('followup::lang.workerTransfer')) {
                         $sub->url(
                             action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workerTransferIndex']),
                             __('followup::lang.workerTransfer'),
