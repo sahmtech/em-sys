@@ -66,9 +66,9 @@ class CustomAdminSidebarMenu
 
         ) {
             $this->productsMenu();
-        }  elseif (Str::startsWith($currentPath, 'connector')) {
+        } elseif (Str::startsWith($currentPath, 'connector')) {
             $this->connectorMenu();
-        }elseif ($is_admin) {
+        } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
         }
@@ -95,7 +95,7 @@ class CustomAdminSidebarMenu
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(
                 action([\Modules\Connector\Http\Controllers\ClientController::class, 'index']),
-               __('connector::lang.clients'),
+                __('connector::lang.clients'),
                 ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(1) == 'connector' && request()->segment(2) == 'api']
             );
             $menu->header("");
@@ -107,13 +107,13 @@ class CustomAdminSidebarMenu
                     if (auth()->user()->can('superadmin')) {
                         $sub->url(
                             action([\Modules\Connector\Http\Controllers\ClientController::class, 'index']),
-                           __('connector::lang.clients'),
+                            __('connector::lang.clients'),
                             ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(1) == 'connector' && request()->segment(2) == 'api']
                         );
                     }
                     $sub->url(
                         url('\docs'),
-                       __('connector::lang.documentation'),
+                        __('connector::lang.documentation'),
                         ['icon' => 'fa fas fa-book', 'active' => request()->segment(1) == 'docs']
                     );
                 },
@@ -236,13 +236,11 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'emp_info_report']
                             );
                         }
-                       
-                    
                     },
                     ['icon' => 'fa fas fa-plus-circle']
 
                 )->order(5);
-            } 
+            }
 
 
             if (auth()->user()->can('essentials.crud_all_essentials_requests') || true) {
@@ -299,6 +297,7 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_atmCard']
                             );
                         }
+
                         if (auth()->user()->can('followup::lang.residenceRenewal')) {
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'residenceRenewalIndex']),
@@ -461,6 +460,27 @@ class CustomAdminSidebarMenu
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
+            $menu->dropdown(
+                __('followup::lang.reports.title'),
+                function ($sub) use ($enabled_modules) {
+                    if (auth()->user()->can('followup::lang.reports.projects')) {
+                        $sub->url(
+                            action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
+                            __('followup::lang.reports.projects'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                        );
+                    }
+
+                    if (auth()->user()->can('followup::lang.reports.projectWorkers')) {
+                        $sub->url(
+                            action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
+                            __('followup::lang.reports.projectWorkers'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-meteor']
+            );
             $menu->dropdown(
                 __('followup::lang.requests'),
                 function ($sub) use ($enabled_modules) {

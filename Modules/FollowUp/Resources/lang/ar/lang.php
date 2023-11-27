@@ -8,6 +8,7 @@ return [
     'nationality'=>'الجنسية',
     'eqama'=>'رقم الاقامة',
     'eqama_end_date'=>'تاريخ انتهاء الاقامة',
+    'admissions_date'=>'تاريخ المباشرة بالعمل',
     'work_card'=>'كرت العمل',
     'insurance'=>'التأمين',
     'has_insurance'=>'مؤمن',
@@ -85,6 +86,16 @@ return [
     'escape_date'=>'تاريخ الهروب',
     'add_new_worker'=>'إضافة عامل جديد',
     'operation_orders'=>'أوامر التشغيل',
+
+    'reports'=>[
+        'title'=>'التقارير',
+        'projectWorkers'=>'عمال المشاريع',
+        'projectWorkersReports'=>'تقرير عمال المشاريع',
+        'projects'=>'المشاريع',
+        'projectsReports'=>'تقرير المشاريع',
+    ],
+
+
     'create_order'=>'إنشاء طلب',
     'viewExitRequests'=>'عرض طلبات الخروج النهائي',
     'crudExitRequests'=>'قبول/رفض طلبات الخروج النهائي',
@@ -106,6 +117,7 @@ return [
     'crudWorkerTransfer'=>'قبول/ رفض طلبات نقل العمالة',
     'return_request'=>'إرجاع الطلب',
     'crud_operation_orders'=>'عرض أوامر التشغيل',    
+
 
 
 

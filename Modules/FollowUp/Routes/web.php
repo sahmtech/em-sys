@@ -50,6 +50,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/change-status', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'changeStatus'])->name('changeStatus');
         Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'returnReq'])->name('returnReq');
 
+
+        Route::get('/reports/project-workers',[\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers'])->name('projectWorkers');
+        Route::get('/reports/projects',[\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects'])->name('projects');
+
         
     });
     
