@@ -429,7 +429,7 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(
-                action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']),
+                action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
                 __('followup::lang.followUp'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']
             );
