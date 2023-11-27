@@ -207,6 +207,7 @@ return [
     'orderQuantity'=>'كمية أمر التشغيل',
     'External'=>'خارجي',
     'Internal'=>'داخلي',
+    ''=>'',
 
 
 
