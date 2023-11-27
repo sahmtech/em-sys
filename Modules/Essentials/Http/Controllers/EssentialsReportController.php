@@ -14,14 +14,12 @@ class EssentialsReportController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-       
-
-      
-        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
+    
         $business_id = request()->session()->get('user.business_id');
         $business_locations = BusinessLocation::forDropdown($business_id, false, true);
         $bl_attributes = $business_locations['attributes'];
@@ -31,38 +29,58 @@ class EssentialsReportController extends Controller
             $default_location = BusinessLocation::findOrFail($id);
             break;
         }
-
-
-
-        $employees = User::where('user_type', 'employee')->count();
-        $managers = User::where('user_type', 'manager')->count();
-        $workers = User::where('user_type', 'worker')->count();
-
-        $ageDistribution = User::select(DB::raw('FLOOR(DATEDIFF(NOW(), dob) / 365.25) as age'), DB::raw('count(*) as count'))
-        ->groupBy('age')
-        ->get();
-       
-        $data = 
-        [
-            'totalEmployees' => $employees,
-            'typeOfEmployees' => [
-                'employees' => $employees,
-                'managers' => $managers,
-                'workers' => $workers,
-              
-            ],
-           
-            'ageDistribution' => $ageDistribution,
-        ];
     
-       
-       
+        if ($request->ajax()) {
+            $employees = User::where('user_type', 'employee')->count();
+            $managers = User::where('user_type', 'manager')->count();
+            $workers = User::where('user_type', 'worker')->count();
+    
+            $ageDistribution = User::select(DB::raw('FLOOR(DATEDIFF(NOW(), dob) / 365.25) as age'), DB::raw('count(*) as count'))
+                ->groupBy('age')
+                ->get();
+    
+            $genderDistribution = User::select('gender', DB::raw('count(*) as count'))
+                ->where('user_type', 'employee')
+                ->groupBy('gender')
+                ->get();
+    
+            $processedAgeDistribution = [
+                'group1' => 0,
+                'group2' => 0,
+                'group3' => 0,
+            ];
+    
+            foreach ($ageDistribution as $item) {
+                if ($item->age <= 25) {
+                    $processedAgeDistribution['group1'] += $item->count;
+                } elseif ($item->age <= 40) {
+                    $processedAgeDistribution['group2'] += $item->count;
+                } else {
+                    $processedAgeDistribution['group3'] += $item->count;
+                }
+            }
+    
+            $data = [
+                [
+                    'totalEmployees' => $employees,
+                    'typeOfEmployees' => [
+                        'employees' => $employees,
+                        'managers' => $managers,
+                        'workers' => $workers,
+                    ],
+                    'genderDistribution' => $genderDistribution,
+                    'ageDistribution' => $processedAgeDistribution,
+                ],
+            ];
+    
+            return response()->json(['data' => $data]);
+        }
+    
         return view('essentials::reports.employees_info_report')
-        ->with(compact('business_locations',
-                        'bl_attributes',
-                        'business_locations' ));
+            ->with(compact('business_locations', 'bl_attributes', 'business_locations'));
     }
-
+    
+    
     /**
      * Show the form for creating a new resource.
      * @return Renderable
