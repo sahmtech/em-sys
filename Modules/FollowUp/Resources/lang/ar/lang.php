@@ -125,7 +125,17 @@ return [
     'viewWorkerTransfer'=>'عرض طلبات نقل العمالة',
     'crudWorkerTransfer'=>'قبول/ رفض طلبات نقل العمالة',
     'return_request'=>'إرجاع الطلب',
-    'crud_operation_orders'=>'عرض أوامر التشغيل',
+
+    'crud_operation_orders'=>'عرض أوامر التشغيل',    
+    'curd_contracts_wishes'=>'إضافة \حذف\تعديل العقود والرغبات',
+    'contrascts_wishes'=>'الرغبات والعقود',
+    'renew_contract'=>'تجديد العقد',
+    'not_renew_contract'=>'عدم تجديد العقد',
+    'worker_number'=>'رقم العامل',
+    'worker_name'=>'اسم العامل ',
+    'residency'=>'الاقامة',
+    'wish'=>'الرغبة',
+    'change_wish'=>'تغير الرغبة',
     'viewWorkInjuriesRequest'=>'عرض طلبات إصابة العمل',
     'viewResidenceEditRequest'=>'عرض طلبات تعديل بيانات الإقامة',
     'viewBaladyCardRequest'=>'عرض طلبات كرت بلدية',
@@ -138,10 +148,11 @@ return [
     'select_class'=>'اختر فئة',
     'religion'=>'الدين',
     'renew'=>'تجديد',
-    'issuance'=>'إصدار'
+    'issuance'=>'إصدار',
 
 
 
+    
 
 
 

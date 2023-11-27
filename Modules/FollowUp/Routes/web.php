@@ -60,10 +60,19 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'returnReq'])->name('returnReq');
 
 
+
+        Route::get('/contracts_wishes',[\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index'])->name('contracts_wishes');
+        Route::post('/change_wish',[\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish'])->name('change_wish');
+
+   
+         Route::get('/change_wish', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish'])->name('change-wish');
+ 
+
         Route::get('/reports/project-workers',[\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers'])->name('projectWorkers');
         Route::get('/reports/projects',[\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects'])->name('projects');
 
         
+
     });
     
     
