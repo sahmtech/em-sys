@@ -491,6 +491,11 @@ class ClientsController extends Controller
             }
              if ($contactSigners != null)
             {$contactSigners->update($contract_signer_input);}
+            else{
+                if($request->input('first_name_cs') != null)
+                {$contract_signer = User::create($contract_signer_input);}
+            }
+       
 
 
             $contactFollower = user::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
@@ -529,6 +534,10 @@ class ClientsController extends Controller
         
          if($contactFollower != null)
            { $contactFollower->update($contract_follower_input);}
+           else{ 
+            if($request->input('first_name_cf') != null)
+            {$contract_follower = User::create($contract_follower_input);}
+           }
           //  dd( $contactFollower);
             DB::commit();
       
@@ -551,7 +560,7 @@ class ClientsController extends Controller
             ];
         }
 //return $output;
-       return redirect()->route('sale.clients');
+      return redirect()->route('sale.clients');
     }
 
     /**
