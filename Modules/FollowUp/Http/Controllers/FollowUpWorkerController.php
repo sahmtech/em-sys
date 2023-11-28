@@ -49,7 +49,12 @@ class FollowUpWorkerController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $contacts=Contact::where('type','customer')->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
+        
         $users = User::where('user_type', 'worker')
+        ->join('essentials_user_allowance_and_deductions','essentials_user_allowance_and_deductions.user_id','users.id')
+        ->join('essentials_allowances_and_deductions as allawocnce','allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')
+        ->where('allawocnce.type', 'allowance')
+
         ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
         ->with(['country', 'contract', 'OfficialDocument','allowancesAndDeductions']);
     
@@ -79,7 +84,7 @@ class FollowUpWorkerController extends Controller
          
 
 
-           $users->select('users.*','users.nationality_id','essentials_salary',
+           $users->select('users.*','users.nationality_id','essentials_salary', 
            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
            'contacts.name as contact_name');
             return Datatables::of($users)

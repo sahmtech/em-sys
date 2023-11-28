@@ -166,7 +166,33 @@
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
-
+        
+        $(document).on('click', 'button.delete_country_button', function () {
+            swal({
+                title: LANG.sure,
+                text: LANG.confirm_delete_country,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).data('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                                finish_reasons_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        });
       
         $('#employee_type_filter, #reason_type_filter').on('change', function () {
             finish_reasons_table.ajax.reload();
@@ -196,31 +222,6 @@
     });
 
 
-    $(document).on('click', 'button.delete_country_button', function () {
-            swal({
-                title: LANG.sure,
-                text: LANG.confirm_delete_country,
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((willDelete) => {
-                if (willDelete) {
-                    var href = $(this).data('href');
-                    $.ajax({
-                        method: "DELETE",
-                        url: href,
-                        dataType: "json",
-                        success: function (result) {
-                            if (result.success == true) {
-                                toastr.success(result.msg);
-                                finish_reasons_table.ajax.reload();
-                            } else {
-                                toastr.error(result.msg);
-                            }
-                        }
-                    });
-                }
-            });
-        });
+  
 </script>
 @endsection

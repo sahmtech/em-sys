@@ -140,11 +140,7 @@
             wish_table.ajax.reload();
         });
 
-      
-    });
-
-
-    $(document).on('click', 'button.delete_country_button', function () {
+        $(document).on('click', 'button.delete_country_button', function () {
             swal({
                 title: LANG.sure,
                 text: LANG.confirm_delete_country,
@@ -170,6 +166,10 @@
                 }
             });
         });
+    });
+
+
+ 
 </script>
 
 @endsection
