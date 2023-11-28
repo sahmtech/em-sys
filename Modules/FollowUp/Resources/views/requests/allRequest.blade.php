@@ -78,158 +78,91 @@
                         <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
                     </div>
 
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                                {!! Form::select('worker_id', $workers, null, [
-                                    'class' => 'form-control',
-                                    'required',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_worker'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
-                                {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        // 'cancleContractRequest'=>__('followup::lang.cancleContractRequest'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="leaveType" style="display: none;">
-                                {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
-                                {!! Form::select('leaveType', $leaveTypes, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_leaveType'),
-                                    'id' => 'leaveType',
-                                ]) !!}
-                            </div>
 
-                            <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
-                                {!! Form::date('start_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.start_date'),
-                                    'id' => 'startDateField',
-                                ]) !!}
-                            </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
+                            {!! Form::select('worker_id', $workers, null, ['class' => 'form-control', 'required','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.select_worker')]) !!}
+                        </div>
+                        <div class="form-group col-md-6">
+                            {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
+                            {!! Form::select('type',[
+                            'exitRequest'=>__('followup::lang.exitRequest'),
+                            'returnRequest'=>__('followup::lang.returnRequest'),
+                            'escapeRequest'=>__('followup::lang.escapeRequest'),
+                            'advanceSalary'=>__('followup::lang.advanceSalary'),
+                            'leavesAndDepartures'=>__('followup::lang.leavesAndDepartures'),
+                            'atmCard'=>__('followup::lang.atmCard'),
+                            'residenceRenewal'=>__('followup::lang.residenceRenewal'),
+                            'residenceCard'=>__('followup::lang.residenceCard'),
+                            'workerTransfer'=>__('followup::lang.workerTransfer'),
+                            'workInjuriesRequest'=>__('followup::lang.workInjuriesRequest'),
+                            'residenceEditRequest'=>__('followup::lang.residenceEditRequest'),
+                            'baladyCardRequest'=>__('followup::lang.baladyCardRequest'),
+                            'insuranceUpgradeRequest'=>__('followup::lang.insuranceUpgradeRequest'),
+                            'mofaRequest'=>__('followup::lang.mofaRequest'),
+                            'chamberRequest'=>__('followup::lang.chamberRequest'),
+                            'cancleContractRequest'=>__('followup::lang.cancleContractRequest'),
+                            
+                            ], null, ['class' => 'form-control', 'required', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="leaveType" style="display: none;">
+                            {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
+                            {!! Form::select('leaveType',$leaveTypes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_leaveType'), 'id' => 'leaveType']) !!}
+                        </div>
+            
+                        <div class="form-group col-md-6" id="start_date" style="display: none;">
+                            {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
+                            {!! Form::date('start_date', null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.start_date'), 'id' => 'startDateField']) !!}
+                        </div>
+                  
+                     
+                        <div class="form-group col-md-6" id="end_date" style="display: none;">
+                            {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
+                            {!! Form::date('end_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('essentials::lang.end_date'), 'id' => 'endDateField']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="escape_time" style="display: none;">
+                            {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
+                            {!! Form::time('escape_time', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.escape_time'), 'id' => 'escapeTimeField']) !!}
+                        </div>
+            
+                        <div class="form-group col-md-6" id="escape_date" style="display: none;">
+                            {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                            {!! Form::date('escape_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('essentials::lang.escape_date'), 'id' => 'escapeDateField']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="workInjuriesDate" style="display: none;">
+                            {!! Form::label('workInjuriesDate', __('followup::lang.workInjuriesDate') . ':*') !!}
+                            {!! Form::date('workInjuriesDate', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.workInjuriesDate'), 'id' => 'workInjuriesDateField']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="resEditType" style="display: none;">
+                            {!! Form::label('resEditType', __('followup::lang.request_type') . ':*') !!}
+                            {!! Form::select('resEditType',[
+                            'name'=>__('followup::lang.name'),
+                            'religion'=>__('followup::lang.religion'),
+                            ], null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="baladyType" style="display: none;">
+                            {!! Form::label('baladyType', __('followup::lang.request_type') . ':*') !!}
+                            {!! Form::select('baladyType',[
+                            'renew'=>__('followup::lang.renew'),
+                            'issuance'=>__('followup::lang.issuance'),
+                            ], null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="ins_class" style="display: none;">
+                            {!! Form::label('ins_class', __('followup::lang.insurance_class') . ':*') !!}
+                            {!! Form::select('ins_class',$classes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_class')]) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="main_reason" style="display: none;">
 
-
-                            <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
-                                {!! Form::date('end_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.end_date'),
-                                    'id' => 'endDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="escape_time" style="display: none;">
-                                {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
-                                {!! Form::time('escape_time', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.escape_time'),
-                                    'id' => 'escapeTimeField',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
-                                {!! Form::date('escape_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.escape_date'),
-                                    'id' => 'escapeDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="workInjuriesDate" style="display: none;">
-                                {!! Form::label('workInjuriesDate', __('followup::lang.workInjuriesDate') . ':*') !!}
-                                {!! Form::date('workInjuriesDate', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.workInjuriesDate'),
-                                    'id' => 'workInjuriesDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="resEditType" style="display: none;">
-                                {!! Form::label('resEditType', __('followup::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'resEditType',
-                                    [
-                                        'name' => __('followup::lang.name'),
-                                        'religion' => __('followup::lang.religion'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="baladyType" style="display: none;">
-                                {!! Form::label('baladyType', __('followup::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'baladyType',
-                                    [
-                                        'renew' => __('followup::lang.renew'),
-                                        'issuance' => __('followup::lang.issuance'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="ins_class" style="display: none;">
-                                {!! Form::label('ins_class', __('followup::lang.insurance_class') . ':*') !!}
-                                {!! Form::select('ins_class', $classes, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_class'),
-                                ]) !!}
-                            </div>
-                            {{-- <div class="form-group col-md-6" id="main_reason" style="display: none;">
                             {!! Form::label('main_reason', __('followup::lang.main_reason') . ':*') !!}
                             {!! Form::select('main_reason', $main_reasons, null, ['class' => 'form-control', 'style' => 'height: 40px', 'placeholder' => __('followup::lang.select_reason'),'id' => 'mainReasonSelect']) !!}
                         </div>
                         <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
                             {!! Form::label('sub_reason', __('followup::lang.sub_reason') . ':*') !!}
-                            {!! Form::select('sub_reason', [], null, ['class' => 'form-control', 'required',
+                            {!! Form::select('sub_reason', [], null, ['class' => 'form-control', 'style' => 'height: 40px',
                                 'placeholder' => __('followup::lang.select_sub_reason'), 'id' => 'subReasonSelect']); !!}
-                        </div> --}}
+                        </div>
 
                             <div class="form-group col-md-6" id="amount" style="display: none;">
                                 {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
@@ -355,6 +288,34 @@
                     },
 
 
+            ],
+          
+            
+
+     });
+ 
+     });
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        var mainReasonSelect = $('#mainReasonSelect');
+        var subReasonContainer = $('#sub_reason_container');
+        var subReasonSelect = $('#subReasonSelect');
+
+        handleTypeChange();
+        $('#requestType').change(handleTypeChange);
+
+        function handleTypeChange() {
+            var selectedType = $('#requestType').val();
+            
+            console.log(selectedType);
+            if (selectedType === 'exitRequest' || selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
+                $('#start_date').show();
+            } else {
+                $('#start_date').hide();
+            }
 
 
                 ],
@@ -453,8 +414,49 @@
                 // }
             }
 
+            if (selectedType === 'cancleContractRequest') {
+                $('#main_reason').show();
+              
+
+            } else {
+                $('#main_reason').hide();
+              
+            }
+        }
+   
+        mainReasonSelect.on('change', function () {
+        var selectedMainReason = $(this).val();
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: '{{ route('getSubReasons') }}',
+            type: 'POST',
+            data: {
+                _token: csrfToken,
+                main_reason: selectedMainReason
+            },
+            success: function (data) {
+                subReasonSelect.empty();
+               
+                if (data.sub_reasons.length > 0) {
+                    subReasonContainer.show();
+
+                    $.each(data.sub_reasons, function (index, subReason) {
+                        subReasonSelect.append($('<option>', {
+                            value: subReason.id,
+                            text: subReason.name
+                        }));
+                    });
+                } else {
+                    subReasonContainer.hide();
+                }
+            }
         });
-    </script>
+        
+    });
+});
+</script>
+
 
 
 @endsection

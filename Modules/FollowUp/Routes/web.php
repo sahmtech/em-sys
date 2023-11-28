@@ -55,7 +55,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/baladyCardRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'baladyCardRequestIndex'])->name('baladyCardRequest');
         Route::get('/residenceEditRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceEditRequestIndex'])->name('residenceEditRequest');
         Route::get('/workInjuriesRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workInjuriesRequestIndex'])->name('workInjuriesRequest');
-
+        Route::post('/get-sub-reasons', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'getSubReasons'])->name('getSubReasons');
 
         Route::post('/change-status', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'changeStatus'])->name('changeStatus');
         Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'returnReq'])->name('returnReq');

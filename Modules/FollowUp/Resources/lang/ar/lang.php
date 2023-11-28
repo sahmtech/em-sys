@@ -150,7 +150,10 @@ return [
     'religion'=>'الدين',
     'renew'=>'تجديد',
     'issuance'=>'إصدار',
-
+    'cancleContractRequest'=>'طلب إنهاء العلاقة التعاقدية',
+    'main_reason'=>'السبب الرئيسي',
+    'sub_reason'=>'السبب الثانوي',
+    'select_reason'=>'اختار سبب',
     'new_request' => 'طلب جديد',
     'on_going_request' => 'طلب تحت الإجراء',
     'finished_request' => 'طلب منتهي',

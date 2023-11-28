@@ -187,7 +187,11 @@
                                 } 
                                 else if (data === 'chamberRequest') {
                                     return  '@lang('followup::lang.chamberRequest')';
-                                } else{
+                                }
+                                else if (data === 'cancleContractRequest') {
+                                    return  '@lang('followup::lang.cancleContractRequest')';
+                                }
+                                 else{
                                     return data;
                                 }
                             }
