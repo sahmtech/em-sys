@@ -65,7 +65,7 @@
         {!! Form::open(['route' => 'store_wish', 'enctype' => 'multipart/form-data']) !!}
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">@lang('essentials::lang.create_contracts_finish_reason')</h4>
+                <h4 class="modal-title">@lang('essentials::lang.add_wish')</h4>
             </div>
 
             <div class="modal-body">

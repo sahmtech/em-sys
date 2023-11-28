@@ -59,16 +59,31 @@ class FollowUpContractsWishesController extends Controller
                  'essentials_employees_contracts.wish_id as wish',
              );
              
-      
+             if (!empty(request()->input('wish_status_filter')) ) {
+                $workers->where('essentials_employees_contracts.wish_id', request()->input('wish_status_filter'));
+             
+             }
+
+             if (!empty(request()->input('project_name_filter')) ) {
+                $workers->where('contacts.id', request()->input('project_name'));
+             }
+
          if (request()->ajax()) {
+         
              return DataTables::of($workers)
                  ->addColumn('name', function ($row) {
                      return $row->first_name . ' ' . $row->mid_name . ' ' . $row->last_name;
                  })
+                 ->editColumn('wish', function ($row) {
+                  
+                    $wishReason = EssentailsReasonWish::where('id', $row->wish)->value('reason');
+                    
+                    return $wishReason;
+                })
                 
                  ->editColumn('action', function ($row) {
                     $button = '<a href="#" class="btn btn-xs btn-success change-status-btn" data-toggle="modal"
-                                   data-target="#change_status_modal" data-employee-id="'.$row->id.'"  data-wish="'.$row->wish.'">
+                                   data-target="#change_status_modal" data-employee-id="'.$row->id.'"  data-orig-value="'.$row->wish.'">
                                    ' . __('followup::lang.change_wish') . '
                                </a>';
                     return $button;
@@ -81,7 +96,9 @@ class FollowUpContractsWishesController extends Controller
                  ->make(true);
          }
 
-         $wishes=EssentailsReasonWish::where('type','wish')->pluck('reason', 'id');
+         $wishes=EssentailsReasonWish::where('type','wish')
+         ->where('employee_type','worker')
+         ->pluck('reason', 'id');
       
          return view('followup::contracts_wishes.index', compact('contacts', 'wishes'));
      }
@@ -90,37 +107,32 @@ class FollowUpContractsWishesController extends Controller
      public function changeWish(Request $request)
      {
          try {
-             // Use $request->input('employee_id') to get the value of the 'employee_id' field
-             $employeeId = $request->input('employee_id');
-             $wish = $request->input('wish');
+           
+            $employeeId = $request->input('employee_id');
+            $wish = $request->input('wish');
+           
+            $emp_wish = EssentialsEmployeesContract::where('employee_id',$employeeId)->first();
+            $emp_wish->wish_id = $wish;
+         
+            $emp_wish->save();
      
-             // Assuming you have a model for EssentialsEmployeesContract
-             $empContract = EssentialsEmployeesContract::find($employeeId);
-     
-             if ($empContract) {
-                 $empContract->update(['wish_id' => $wish]);
-     
-                 $output = [
-                     'success' => true,
-                     'msg' => 'Wish updated successfully',
-                 ];
-             } else {
-                 $output = [
-                     'success' => false,
-                     'msg' => 'Contract not found for the specified employee ID',
-                 ];
-             }
+           
+            $output = ['success' => true,
+            'msg' => __('lang_v1.updated_success'),
+        ];
+             
          } catch (\Exception $e) {
              \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-     
-             $output = [
-                 'success' => false,
-                 'msg' => $e->getMessage(),
-             ];
+             
+             
+             $output = ['success' => false,
+             'msg' => __('messages.something_went_wrong'),
+         ];
          }
      
          return response()->json($output);
      }
+     
      
     
     /**
