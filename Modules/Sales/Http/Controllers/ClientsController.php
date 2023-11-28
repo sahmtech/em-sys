@@ -489,8 +489,8 @@ class ClientsController extends Controller
                 $contract_signer_input['username'] = null;
                 $contract_signer_input['password']=null;
             }
-        
-            $contactSigners->update($contract_signer_input);
+             if ($contactSigners != null)
+            {$contactSigners->update($contract_signer_input);}
 
 
             $contactFollower = user::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
@@ -527,8 +527,8 @@ class ClientsController extends Controller
                 $contract_follower_input['password']=null;
             }
         
-         
-            $contactFollower->update($contract_follower_input);
+         if($contactFollower != null)
+           { $contactFollower->update($contract_follower_input);}
           //  dd( $contactFollower);
             DB::commit();
       
