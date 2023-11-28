@@ -49,12 +49,10 @@ class FollowUpWorkerController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $contacts=Contact::where('type','customer')->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
-        $users = User::with(['country', 'contract', 'OfficialDocument'])
-        ->join('essentials_user_allowance_and_deductions','essentials_user_allowance_and_deductions.user_id','users.id')
-        ->where('users.user_type', 'worker')
-        ->join('contacts', 'contacts.id', '=', 'users.assigned_to');
-       
-   
+        $users = User::where('user_type', 'worker')
+        ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
+        ->with(['country', 'contract', 'OfficialDocument','allowancesAndDeductions']);
+    
         if (request()->ajax()) {
            
        
@@ -82,7 +80,6 @@ class FollowUpWorkerController extends Controller
 
 
            $users->select('users.*','users.nationality_id','essentials_salary',
-           'essentials_user_allowance_and_deductions.allowance_deduction_id  as allowancesAndDeductions ',
            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
            'contacts.name as contact_name');
             return Datatables::of($users)
@@ -103,7 +100,9 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-               
+                ->addColumn('allowancesAndDeductions', function ($user) {
+                    return optional($user->allowancesAndDeductions)->allowance_deduction_id  ?? ' ';
+                })
            
                 ->rawColumns(['nationality','residence_permit_expiration','residence_permit','admissions_date','contract_end_date']) 
                 ->make(true);
