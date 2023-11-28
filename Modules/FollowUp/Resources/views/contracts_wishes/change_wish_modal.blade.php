@@ -3,7 +3,7 @@
 	<div class="modal-dialog" role="document">
 	  <div class="modal-content">
 
-      {!! Form::open(['url' => action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish']), 'method' => 'post', 'id' => 'change_status_form' ]) !!}
+      {!! Form::open(['url' => action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish']), 'method' => 'post', 'id' => 'change_status_form'  ,'enctype' => 'multipart/form-data']) !!}
      
 
 	    <div class="modal-header">
@@ -27,9 +27,20 @@
                               'placeholder' => __('lang_v1.all')]); !!}
                 
             </div>
+
         </div>
        
-
+  <div class="clearfix"></div>
+                    <div class="form-group col-md-3">
+                                {!! Form::label('file', __('essentials::lang.wish_file') . ':*') !!}
+                                {!! Form::file('file', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('essentials::lang.wish_file'),
+                                  
+                                    'style'=>'height:40px',
+                                ]) !!}
+                    </div>
+              
            
           
        
