@@ -128,7 +128,15 @@
                             {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
                             {!! Form::time('escape_time', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.escape_time'), 'id' => 'escapeTimeField']) !!}
                         </div>
-            
+                        <div class="form-group col-md-6" id="exit_date" style="display: none;">
+                            {!! Form::label('exit_date', __('followup::lang.exit_date') . ':*') !!}
+                            {!! Form::date('exit_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.exit_date'), 'id' => 'exit_dateField']) !!}
+                        </div>
+                        
+                        <div class="form-group col-md-6" id="return_date" style="display: none;">
+                            {!! Form::label('return_date', __('followup::lang.return_date') . ':*') !!}
+                            {!! Form::date('return_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.return_date'), 'id' => 'return_dateField']) !!}
+                        </div>
                         <div class="form-group col-md-6" id="escape_date" style="display: none;">
                             {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
                             {!! Form::date('escape_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('essentials::lang.escape_date'), 'id' => 'escapeDateField']) !!}
@@ -182,12 +190,12 @@
                             {!! Form::textarea('note', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.note'), 'rows' => 3]) !!}
                         </div>
             
-                        <div class="form-group col-md-6">
-                            {!! Form::label('reason', __('followup::lang.reason') . ':*') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'required', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
+                        <div class="form-group col-md-6" id="reason" style="display: block;">
+                            {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
+                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
                         </div>
                         <div class="form-group col-md-6">
-                            {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
+                            {!! Form::label('attachment', __('followup::lang.attachment') . ':') !!}
                             {!! Form::file('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment')]) !!}
                         </div>
                     </div>
@@ -330,16 +338,26 @@
             var selectedType = $('#requestType').val();
             
             console.log(selectedType);
-            if (selectedType === 'exitRequest' || selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
+            if (selectedType === 'exitRequest' || selectedType === 'leavesAndDepartures') {
                 $('#start_date').show();
+             
             } else {
                 $('#start_date').hide();
             }
 
-            if (selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
+            if (selectedType === 'leavesAndDepartures') {
                 $('#end_date').show();
             } else {
                 $('#end_date').hide();
+            }
+            if (selectedType === 'returnRequest') {
+                $('#exit_date').show();
+                $('#return_date').show();
+
+            } else {
+                $('#exit_date').hide();
+                $('#return_date').hide();
+
             }
             if (selectedType === 'leavesAndDepartures') {
                 $('#leaveType').show();
@@ -397,7 +415,7 @@
             }
             if (selectedType === 'cancleContractRequest') {
                 $('#main_reason').show();
-              
+                $('#reason').hide();
 
             } else {
                 $('#main_reason').hide();
