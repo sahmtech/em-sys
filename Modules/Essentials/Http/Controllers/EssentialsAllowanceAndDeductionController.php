@@ -100,7 +100,9 @@ class EssentialsAllowanceAndDeductionController extends Controller
        // $allowances=EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('name','id');
        if (request()->ajax()) {
             $userAllowances = EssentialsUserAllowancesAndDeduction::
-                 join('essentials_allowances_and_deductions as allawocnce', 'allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')->where('allawocnce.type', 'allowance')
+                 join('essentials_allowances_and_deductions as allawocnce',
+                  'allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')
+                  ->where('allawocnce.type', 'allowance')
                 ->join('users as u', 'u.id', '=', 'essentials_user_allowance_and_deductions.user_id')->where('u.business_id', $business_id)
                 ->select([
                     'essentials_user_allowance_and_deductions.id',

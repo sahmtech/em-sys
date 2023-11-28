@@ -110,13 +110,24 @@ class FollowUpContractsWishesController extends Controller
            
             $employeeId = $request->input('employee_id');
             $wish = $request->input('wish');
-           
+            $wishFile = $request->file('file');
+          
             $emp_wish = EssentialsEmployeesContract::where('employee_id',$employeeId)->first();
             $emp_wish->wish_id = $wish;
          
+            if (!empty($wishFile)){
+                if (request()->hasFile('file')) {
+                    $file = request()->file('file');
+                    $filePath = $file->store('/employeeContracts');
+                  
+                    
+                   $emp_wish->wish_file = $filePath;
+                }
+            }
+            
+
             $emp_wish->save();
-     
-           
+
             $output = ['success' => true,
             'msg' => __('lang_v1.updated_success'),
         ];

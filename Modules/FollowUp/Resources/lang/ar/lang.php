@@ -136,6 +136,8 @@ return [
     'worker_name'=>'اسم العامل ',
     'residency'=>'الاقامة',
     'wish'=>'الرغبة',
+    'essentials_salary'=>'الراتب الأساسي',
+    'allowancesAndDeductions'=>'البدلات',
     'change_wish'=>'تغير الرغبة',
     'viewWorkInjuriesRequest'=>'عرض طلبات إصابة العمل',
     'viewResidenceEditRequest'=>'عرض طلبات تعديل بيانات الإقامة',

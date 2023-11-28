@@ -35,6 +35,7 @@
                 
                     </div>
                 </div>
+
               
                 
               
@@ -121,30 +122,30 @@
              }); 
         
     
-
-$(document).on('submit', 'form#change_status_form', function(e) {
+$(document).on('submit', 'form#change_status_form', function (e) {
     e.preventDefault();
-    var data = $(this).serialize();
+
+    var formData = new FormData(this);
+
     var ladda = Ladda.create(document.querySelector('.update-offer-status'));
     ladda.start();
-     console.log(data);
+
     $.ajax({
         method: $(this).attr('method'),
         url: $(this).attr('action'),
         dataType: 'json',
-        data: data,
-        success: function(result) {
+        data: formData,
+        processData: false,
+        contentType: false,  // Set content type to false to prevent jQuery from adding a content type header
+        success: function (result) {
             ladda.stop();
-          
+
             if (result.success == true) {
-                console.log(data);
                 $('div#change_status_modal').modal('hide');
                 toastr.success(result.msg);
                 contractWishTable.ajax.reload();
-             
             } else {
                 toastr.error(result.msg);
-              
             }
         },
     });

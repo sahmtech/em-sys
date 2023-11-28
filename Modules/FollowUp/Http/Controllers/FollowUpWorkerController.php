@@ -49,11 +49,15 @@ class FollowUpWorkerController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $contacts=Contact::where('type','customer')->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
+        $users = User::with(['country', 'contract', 'OfficialDocument'])
+        ->join('essentials_user_allowance_and_deductions','essentials_user_allowance_and_deductions.user_id','users.id')
+        ->where('users.user_type', 'worker')
+        ->join('contacts', 'contacts.id', '=', 'users.assigned_to');
+       
+   
         if (request()->ajax()) {
-           $users = User::where('user_type', 'worker')
-            ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
-            ->with(['country', 'contract', 'OfficialDocument'])
-            ;
+           
+       
         
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
                 $users->where('contacts.id', request()->input('project_name'));
@@ -72,7 +76,13 @@ class FollowUpWorkerController extends Controller
                $users=$users->where('nationality_id', request()->nationality);
                 error_log(request()->nationality);
             }
-           $users->select('users.*','users.nationality_id',
+
+
+         
+
+
+           $users->select('users.*','users.nationality_id','essentials_salary',
+           'essentials_user_allowance_and_deductions.allowance_deduction_id  as allowancesAndDeductions ',
            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
            'contacts.name as contact_name');
             return Datatables::of($users)
@@ -81,6 +91,9 @@ class FollowUpWorkerController extends Controller
                     return optional($user->country)->nationality ?? ' ';
                   
                 })
+              
+              
+
                 ->addColumn('residence_permit_expiration', function ($user) {
                     return $this->getDocumentExpirationDate($user, 'residence_permit');
                 })
@@ -90,6 +103,7 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
+               
            
                 ->rawColumns(['nationality','residence_permit_expiration','residence_permit','admissions_date','contract_end_date']) 
                 ->make(true);
