@@ -2,54 +2,52 @@
 @section('title', __('followup::lang.allRequests'))
 
 @section('content')
-@include('followup::layouts.nav_requests')
+    @include('followup::layouts.nav_requests')
 
-<section class="content-header">
-    <h1>
-        <span>@lang('followup::lang.allRequests')</span>
-    </h1>
-</section>
-<style>
-
-    .alert {
-        animation: fadeOut 5s forwards;
-        max-width: 300px;
-          margin: 0 auto; 
-    }
-
-    @keyframes fadeOut {
-        to {
-            opacity: 0;
-            visibility: hidden;
+    <section class="content-header">
+        <h1>
+            <span>@lang('followup::lang.allRequests')</span>
+        </h1>
+    </section>
+    <style>
+        .alert {
+            animation: fadeOut 5s forwards;
+            max-width: 300px;
+            margin: 0 auto;
         }
-    }
-</style>
-<!-- Main content -->
-@if($errors->any())
-    <div class="alert alert-danger">
-        {{ $errors->first() }}
-    </div>
-@else
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+    </style>
+    <!-- Main content -->
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
         </div>
+    @else
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
     @endif
-@endif
-<section class="content">
-    
-  
-    @component('components.widget', ['class' => 'box-primary'])
+    <section class="content">
 
-    @slot('tool')
-    <div class="box-tools">
 
-        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-            data-target="#addRequestModal">
-            <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
-        </button>
-    </div>
-@endslot
+        @component('components.widget', ['class' => 'box-primary'])
+            @slot('tool')
+                <div class="box-tools">
+
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                        data-target="#addRequestModal">
+                        <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
+                    </button>
+                </div>
+            @endslot
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
@@ -62,24 +60,24 @@
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                             <th>@lang('followup::lang.reason')</th>
-                     
+
 
                         </tr>
                     </thead>
                 </table>
             </div>
- 
-    @endcomponent
-    <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                {!! Form::open(['route' => 'storeRequest','enctype' => 'multipart/form-data'] ) !!}
+        @endcomponent
+        <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {!! Form::open(['route' => 'storeRequest', 'enctype' => 'multipart/form-data']) !!}
 
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
-                </div>
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
+                    </div>
+
 
                 <div class="modal-body">
                     <div class="row">
@@ -156,6 +154,7 @@
                             {!! Form::select('ins_class',$classes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_class')]) !!}
                         </div>
                         <div class="form-group col-md-6" id="main_reason" style="display: none;">
+
                             {!! Form::label('main_reason', __('followup::lang.main_reason') . ':*') !!}
                             {!! Form::select('main_reason', $main_reasons, null, ['class' => 'form-control', 'style' => 'height: 40px', 'placeholder' => __('followup::lang.select_reason'),'id' => 'mainReasonSelect']) !!}
                         </div>
@@ -165,69 +164,105 @@
                                 'placeholder' => __('followup::lang.select_sub_reason'), 'id' => 'subReasonSelect']); !!}
                         </div>
 
-                        <div class="form-group col-md-6" id="amount" style="display: none;">
-                            {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
-                            {!! Form::number('amount', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.advSalaryAmount'), 'id' => 'advSalaryAmountField']) !!}
-                        </div>
-                        <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
-                            {!! Form::label('installmentsNumber', __('followup::lang.installmentsNumber') . ':*') !!}
-                            {!! Form::number('installmentsNumber', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.installmentsNumber'), 'id' => 'installmentsNumberField']) !!}
-                        </div>
-                        <div class="form-group col-md-6" id="monthlyInstallment" style="display: none;">
-                            {!! Form::label('monthlyInstallment', __('followup::lang.monthlyInstallment') . ':*') !!}
-                            {!! Form::number('monthlyInstallment', null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.monthlyInstallment'), 'id' => 'monthlyInstallmentField']) !!}
-                        </div>
-                        <div class="form-group col-md-6">
-                            {!! Form::label('note', __('followup::lang.note') . ':') !!}
-                            {!! Form::textarea('note', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.note'), 'rows' => 3]) !!}
-                        </div>
-            
-                        <div class="form-group col-md-6">
-                            {!! Form::label('reason', __('followup::lang.reason') . ':*') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'required', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
-                        </div>
-                        <div class="form-group col-md-6">
-                            {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
-                            {!! Form::file('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment')]) !!}
+                            <div class="form-group col-md-6" id="amount" style="display: none;">
+                                {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
+                                {!! Form::number('amount', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('followup::lang.advSalaryAmount'),
+                                    'id' => 'advSalaryAmountField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
+                                {!! Form::label('installmentsNumber', __('followup::lang.installmentsNumber') . ':*') !!}
+                                {!! Form::number('installmentsNumber', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('followup::lang.installmentsNumber'),
+                                    'id' => 'installmentsNumberField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6" id="monthlyInstallment" style="display: none;">
+                                {!! Form::label('monthlyInstallment', __('followup::lang.monthlyInstallment') . ':*') !!}
+                                {!! Form::number('monthlyInstallment', null, [
+                                    'class' => 'form-control',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('followup::lang.monthlyInstallment'),
+                                    'id' => 'monthlyInstallmentField',
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('note', __('followup::lang.note') . ':') !!}
+                                {!! Form::textarea('note', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('followup::lang.note'),
+                                    'rows' => 3,
+                                ]) !!}
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('reason', __('followup::lang.reason') . ':*') !!}
+                                {!! Form::textarea('reason', null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'placeholder' => __('followup::lang.reason'),
+                                    'rows' => 3,
+                                ]) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
+                                {!! Form::file('attachment', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('followup::lang.attachment'),
+                                ]) !!}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                    {!! Form::close() !!}
                 </div>
-                {!! Form::close() !!}
             </div>
         </div>
-    </div>
 
- 
-</section>
-<!-- /.content -->
+
+    </section>
+    <!-- /.content -->
 
 @endsection
 
 @section('javascript')
-<script type="text/javascript">
+    <script type="text/javascript">
+        $(document).ready(function() {
 
-    $(document).ready(function () {
-       
-    
-     var requests_table=$('#requests_table').DataTable({
-         processing: true,
-         serverSide: true,
 
-        ajax: { url: "{{ route('allRequests') }}"},
-     
-                 columns: [
-                    
-                { data: 'request_no' },
-                
-                { data: 'user' },{ data: 'type' },
-                { data: 'created_at' },
-              
-                {
+            var requests_table = $('#requests_table').DataTable({
+                processing: true,
+                serverSide: true,
+
+                ajax: {
+                    url: "{{ route('allRequests') }}"
+                },
+
+                columns: [
+
+                    {
+                        data: 'request_no'
+                    },
+
+                    {
+                        data: 'user'
+                    }, {
+                        data: 'type'
+                    },
+                    {
+                        data: 'created_at'
+                    },
+
+                    {
                         data: 'status',
                         render: function(data, type, full, meta) {
                             switch (data) {
@@ -237,19 +272,21 @@
                                     return '{{ trans('followup::lang.approved') }}';
                                 case 'under process':
                                     return '{{ trans('followup::lang.under process') }}';
-                              
-                                    case 'rejected':
+
+                                case 'rejected':
                                     return '{{ trans('followup::lang.rejected') }}';
                                 default:
                                     return data;
                             }
                         }
                     },
-                { data: 'note' },
-                { data: 'reason' },
-             
-               
-     
+                    {
+                        data: 'note'
+                    },
+                    {
+                        data: 'reason'
+                    },
+
 
             ],
           
@@ -280,65 +317,103 @@
                 $('#start_date').hide();
             }
 
-            if (selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
-                $('#end_date').show();
-            } else {
-                $('#end_date').hide();
-            }
-            if (selectedType === 'leavesAndDepartures') {
-                $('#leaveType').show();
-            } else {
-                $('#leaveType').hide();
-            }
-            if (selectedType === 'workInjuriesRequest') {
-                $('#workInjuriesDate').show();
-            } else {
-                $('#workInjuriesDate').hide();
-            }
+
+                ],
 
 
-            if (selectedType === 'escapeRequest') {
-                $('#escape_time').show();
-                $('#escape_date').show();
-               
-            } else {
-                $('#escape_time').hide(); 
-                $('#escape_date').hide();
-            }
-            if (selectedType === 'advanceSalary') {
-                $('#installmentsNumber').show();
-                $('#monthlyInstallment').show();
-                $('#amount').show();
 
-            } else {
-                $('#installmentsNumber').hide();
-                $('#monthlyInstallment').hide();
-                $('#amount').hide();
-            }
-            if (selectedType === 'residenceEditRequest') {
-                $('#resEditType').show();
-              
+            });
 
-            } else {
-                $('#resEditType').hide();
-              
-            }
-            if (selectedType === 'baladyCardRequest') {
-                $('#baladyType').show();
-              
+     
 
-            } else {
-                $('#baladyType').hide();
-              
-            }
-            if (selectedType === 'insuranceUpgradeRequest') {
-                $('#ins_class').show();
-              
 
-            } else {
-                $('#ins_class').hide();
-              
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+
+            handleTypeChange();
+            $('#requestType').change(handleTypeChange);
+
+            function handleTypeChange() {
+                var selectedType = $('#requestType').val();
+                console.log(selectedType);
+                if (selectedType === 'exitRequest' || selectedType === 'returnRequest' || selectedType ===
+                    'leavesAndDepartures') {
+                    $('#start_date').show();
+                } else {
+                    $('#start_date').hide();
+                }
+
+                if (selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
+                    $('#end_date').show();
+                } else {
+                    $('#end_date').hide();
+                }
+                if (selectedType === 'leavesAndDepartures') {
+                    $('#leaveType').show();
+                } else {
+                    $('#leaveType').hide();
+                }
+                if (selectedType === 'workInjuriesRequest') {
+                    $('#workInjuriesDate').show();
+                } else {
+                    $('#workInjuriesDate').hide();
+                }
+
+
+                if (selectedType === 'escapeRequest') {
+                    $('#escape_time').show();
+                    $('#escape_date').show();
+
+                } else {
+                    $('#escape_time').hide();
+                    $('#escape_date').hide();
+                }
+                if (selectedType === 'advanceSalary') {
+                    $('#installmentsNumber').show();
+                    $('#monthlyInstallment').show();
+                    $('#amount').show();
+
+                } else {
+                    $('#installmentsNumber').hide();
+                    $('#monthlyInstallment').hide();
+                    $('#amount').hide();
+                }
+                if (selectedType === 'residenceEditRequest') {
+                    $('#resEditType').show();
+
+
+                } else {
+                    $('#resEditType').hide();
+
+                }
+                if (selectedType === 'baladyCardRequest') {
+                    $('#baladyType').show();
+
+
+                } else {
+                    $('#baladyType').hide();
+
+                }
+                if (selectedType === 'insuranceUpgradeRequest') {
+                    $('#ins_class').show();
+
+
+                } else {
+                    $('#ins_class').hide();
+
+                }
+                // if (selectedType === 'cancleContractRequest') {
+                //     $('#main_reason').show();
+
+
+                // } else {
+                //     $('#main_reason').hide();
+
+                // }
             }
+
             if (selectedType === 'cancleContractRequest') {
                 $('#main_reason').show();
               
@@ -381,6 +456,7 @@
     });
 });
 </script>
+
 
 
 @endsection
