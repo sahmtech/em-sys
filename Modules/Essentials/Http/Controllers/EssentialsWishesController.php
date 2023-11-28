@@ -48,7 +48,9 @@ class EssentialsWishesController extends Controller
           
          
                 ->addColumn('action', function ($row) {
-                    $html = '<button class="btn btn-xs btn-danger delete_city_button" data-href=""><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    $html = '';
+                    
+                    $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('wish.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     return $html;
                 })
                 ->rawColumns(['action'])
@@ -88,7 +90,7 @@ class EssentialsWishesController extends Controller
             $input = $request->only(
                 ['employee_type',
                  'wish',
-               
+                  'file'
                  ]);
 
             $input['employee_type'] =$input['employee_type'];
@@ -98,10 +100,10 @@ class EssentialsWishesController extends Controller
             
             $input['reason'] = $input['wish'];
            
-            
-        
+
             EssentailsReasonWish::create($input);
  
+           
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
@@ -157,6 +159,30 @@ class EssentialsWishesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            EssentailsReasonWish::where('id', $id)
+                        ->delete();
+
+            $output = ['success' => true,
+                'msg' => __('lang_v1.deleted_success'),
+            ];
+       
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+       
+       return $output;
+
     }
 }

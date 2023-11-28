@@ -463,7 +463,27 @@ class CustomAdminSidebarMenu
 
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'allRequests']);
            
-           
+            $menu->dropdown(
+                __('followup::lang.reports.title'),
+                function ($sub) use ($enabled_modules) {
+                    if (auth()->user()->can('followup::lang.reports.projects')) {
+                        $sub->url(
+                            action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
+                            __('followup::lang.reports.projects'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                        );
+                    }
+
+                    if (auth()->user()->can('followup::lang.reports.projectWorkers')) {
+                        $sub->url(
+                            action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
+                            __('followup::lang.reports.projectWorkers'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-meteor']
+            );
             
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index'])
             , __('followup::lang.contrascts_wishes'),
