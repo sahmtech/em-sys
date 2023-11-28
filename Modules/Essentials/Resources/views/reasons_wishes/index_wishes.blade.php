@@ -70,15 +70,13 @@
 
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-md-6">
-                    <label for="employee_type_filter">@lang('essentials::lang.employee_type'):</label>
-                        <select class="form-control select2" name="employee_type" required id="employee_type_filter" style="width: 100%;">
-                            <option value="all">@lang('lang_v1.all')</option>
-                            <option value="employee">@lang('essentials::lang.employee')</option>
-                            <option value="manager">@lang('essentials::lang.manager')</option>
-                            <option value="worker">@lang('essentials::lang.worker')</option>
-                        </select>
-                    </div>
+         
+              
+                <div class="form-group col-md-6">
+                    {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
+                    {!! Form::select('employee_type', ['all' => __('lang_v1.all'), 'employee' => __('essentials::lang.employee'), 'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2', 'required' => 'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
+                </div>
+            
                        
                    
 
