@@ -13,12 +13,17 @@ class followupWorkerRequest extends Model
     protected $table = 'followup_worker_requests';
     protected $guarded = ['id'];
     public function user()
-        {
-            return $this->belongsTo(User::class, 'worker_id');
-        }
-    
+    {
+        return $this->belongsTo(User::class, 'worker_id');
+    }
+
     public function procedure()
-        {
-            return $this->belongsTo(EssentialsWkProcedure::class, 'type', 'type');
-        }
+    {
+        return $this->belongsTo(EssentialsWkProcedure::class, 'type', 'type');
+    }
+
+    public function followupWorkerRequestProcess()
+    {
+        return $this->has(followupWorkerRequestProcess::class, 'worker_request_id');
+    }
 }
