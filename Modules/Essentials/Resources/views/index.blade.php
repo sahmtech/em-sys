@@ -93,37 +93,23 @@
             </div>
             <br>
 
+            {{-- 
+            <div class="row widget-statistic">
+        
 
-    <div class="row widget-statistic">
-        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing ">
-            <canvas id="leaveStatusChart"></canvas>
-        </div>
+            </div> --}}
 
-        <div class="row widget-statistic">
-        <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing ">
-            <canvas id="contractStatusChart"></canvas>
-        </div>
-    </div>
-            
-        </div>
-
-        <div class="row">
-            <div class="col-md-5 custom_table">
-                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.residence_permits')])
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="official_documents_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('essentials::lang.employee')</th>
-                                    <th>@lang('essentials::lang.doc_number')</th>
-                                    <th>@lang('essentials::lang.expired_date')</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                @endcomponent
-            </div>
             <div class="row">
+
+
+
+                <div class="col-md-6 custom_table">
+                    <canvas id="leaveStatusChart"></canvas>
+                    <canvas id="contractStatusChart"></canvas>
+                </div>
+
+
+
                 <div class="col-md-5 custom_table">
                     @component('components.widget', [
                         'class' => 'box-primary',
@@ -132,47 +118,67 @@
                         {!! $chart->container() !!}
                     @endcomponent
                 </div>
+
+
+
             </div>
+            <div class="row">
+                <div class="col-md-11 custom_table">
+                    @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.contracts')])
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="employees_contracts_table">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('essentials::lang.employee')</th>
+                                        <th>@lang('essentials::lang.contract_number')</th>
+                                        <th>@lang('essentials::lang.contract_end_date')</th>
+                                        <th>@lang('essentials::lang.status')</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    @endcomponent
+                </div>
+             
 
-
-        </div>
-        <div class="row">
-            <div class="col-md-5 custom_table">
-                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.contracts')])
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="employees_contracts_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('essentials::lang.employee')</th>
-                                    <th>@lang('essentials::lang.contract_number')</th>
-                                    <th>@lang('essentials::lang.contract_end_date')</th>
-                                    <th>@lang('essentials::lang.status')</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                @endcomponent
             </div>
-            <div class="col-md-5 custom_table">
-                @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.leaves')])
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="leave_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('purchase.ref_no')</th>
+            <div class="row">
+                <div class="col-md-6 custom_table">
+                    @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.residence_permits')])
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="official_documents_table">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('essentials::lang.employee')</th>
+                                        <th>@lang('essentials::lang.doc_number')</th>
+                                        <th>@lang('essentials::lang.expired_date')</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    @endcomponent
 
-                                    <th>@lang('essentials::lang.employee')</th>
-                                    <th>@lang('lang_v1.date')</th>
+                </div>
+                <div class="col-md-5 custom_table">
+                    @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.leaves')])
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="leave_table">
+                                <thead>
+                                    <tr>
+                                        <th>@lang('purchase.ref_no')</th>
 
-                                    <th>@lang('sale.status')</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                @endcomponent
+                                        <th>@lang('essentials::lang.employee')</th>
+                                        <th>@lang('lang_v1.date')</th>
+
+                                        <th>@lang('sale.status')</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    @endcomponent
+                </div>
             </div>
-
-        </div>
+           
     </section>
 
     <!-- Main content -->
@@ -186,102 +192,102 @@
 @stop
 
 @section('javascript')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{!! $chart->script() !!}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {!! $chart->script() !!}
 
-<script>
-   
-    function fetchLeaveStatusData() {
-      
-        $.ajax({
-            url: '{{ route('leaveStatusData') }}', 
-            method: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                updateLeaveStatusChart(response);
-            },
-            error: function(error) {
-                console.error('Error fetching leave status data:', error);
-            }
-        });
-    }
+    <script>
+        function fetchLeaveStatusData() {
 
- 
-    function updateLeaveStatusChart(data) {
-    var leaveStatusCanvas = document.getElementById('leaveStatusChart').getContext('2d');
-
-    var translatedLabels = data.labels.map(function (label) {
-        return label; 
-    });
-
-    var leaveStatusChart = new Chart(leaveStatusCanvas, {
-        type: 'bar',
-        data: {
-            labels: translatedLabels,
-            datasets: [{
-                label: '{{ __("essentials::lang.leaves_status") }}',
-                data: data.values,
-                backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
+            $.ajax({
+                url: '{{ route('leaveStatusData') }}',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    updateLeaveStatusChart(response);
+                },
+                error: function(error) {
+                    console.error('Error fetching leave status data:', error);
                 }
-            },
+            });
         }
-    });
-}
-
-// Rest of your code remains unchanged...
 
 
-  
-    $(document).ready(function() {
-        fetchLeaveStatusData();
-    });
-</script>
+        function updateLeaveStatusChart(data) {
+            var leaveStatusCanvas = document.getElementById('leaveStatusChart').getContext('2d');
+
+            var translatedLabels = data.labels.map(function(label) {
+                return label;
+            });
+
+            var leaveStatusChart = new Chart(leaveStatusCanvas, {
+                type: 'bar',
+                data: {
+                    labels: translatedLabels,
+                    datasets: [{
+                        label: '{{ __('essentials::lang.leaves_status') }}',
+                        data: data.values,
+                        backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    },
+                }
+            });
+        }
+
+        // Rest of your code remains unchanged...
 
 
-<script>
-     function fetchContractStatusData() {
-        $.ajax({
-            url: '{{ route('contractStatusData') }}',
-            method: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                updateContractStatusChart(response);
-            },
-            error: function(error) {
-                console.error('Error fetching contract status data:', error);
-            }
+
+        $(document).ready(function() {
+            fetchLeaveStatusData();
         });
-    }
-    function updateContractStatusChart(data) {
-        var contractStatusCanvas = document.getElementById('contractStatusChart').getContext('2d');
+    </script>
 
-        var contractStatusChart = new Chart(contractStatusCanvas, {
-            type: 'bar', 
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: '{{ __("essentials::lang.contract_status") }}',
-                    data: data.values,
-                    backgroundColor: ['#FF6384', '#36A2EB'],
-                }]
-            },
-            options: {
-                responsive: true,
-            }
+
+    <script>
+        function fetchContractStatusData() {
+            $.ajax({
+                url: '{{ route('contractStatusData') }}',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    updateContractStatusChart(response);
+                },
+                error: function(error) {
+                    console.error('Error fetching contract status data:', error);
+                }
+            });
+        }
+
+        function updateContractStatusChart(data) {
+            var contractStatusCanvas = document.getElementById('contractStatusChart').getContext('2d');
+
+            var contractStatusChart = new Chart(contractStatusCanvas, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: '{{ __('essentials::lang.contract_status') }}',
+                        data: data.values,
+                        backgroundColor: ['#FF6384', '#36A2EB'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                }
+            });
+        }
+
+        // Document ready function to fetch contract status data on page load
+        $(document).ready(function() {
+            fetchContractStatusData();
         });
-    }
-
-    // Document ready function to fetch contract status data on page load
-    $(document).ready(function() {
-        fetchContractStatusData();
-    });
-</script>
+    </script>
 
 
 

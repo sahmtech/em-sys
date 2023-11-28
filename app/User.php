@@ -364,13 +364,17 @@ class User extends Authenticatable
 
     public function OfficialDocument()
     {
-
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id');
     }
 
     public function allowancesAndDeductions()
     {
         return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(Contact::class, 'assigned_to');
     }
 
     public function essentials_admission_to_works(){
