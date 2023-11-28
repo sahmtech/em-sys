@@ -46,14 +46,15 @@ class FollowUpController extends Controller
     }
     public function withinTwoMonthExpiryContracts()
     {
-        $business_id = request()->session()->get('user.business_id');
-
+        // $business_id = request()->session()->get('user.business_id');
+        $business_id = 1;
         $business = Business::where('id', $business_id)->first();
         $contracts = User::where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
             $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
                 ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
+        })->whereHas('OfficialDocument', function ($query) {
+            $query->where('type', 'residence_permit');
         });
-
 
 
         return DataTables::of($contracts)
