@@ -131,6 +131,18 @@ class FollowUpRequestController extends Controller
         return view('followup::requests.create')->with(compact('workers', 'leaveTypes'));
     }
 
+    // public function getSubReasons(Request $request)
+    // {
+    //     error_log ('getSubReasons1111111111111111111111');
+    //     $mainReason = $request->input('main_reason');
+        
+    //     $subReasons = DB::table('essentails_reason_wishes')->where('main_reson_id', $mainReason)
+    //         ->pluck('sub_reason')
+    //         ->toArray();
+
+    //     return response()->json(['sub_reasons' => $subReasons]);
+    // }
+
     public function store(Request $request)
     {
 
@@ -139,7 +151,7 @@ class FollowUpRequestController extends Controller
    
 
         if (isset($request->attachment) && !empty($request->attachment)) {
-            $attachmentPath = $$request->attachment->store('/requests_attachments');
+            $attachmentPath = $request->attachment->store('/requests_attachments');
         }
 
         if (is_null($request->start_date) && !empty($request->escape_date)) {
@@ -158,34 +170,24 @@ class FollowUpRequestController extends Controller
         }
    
         $workerRequest = new followupWorkerRequest;
-error_log('111111111111111111');
+
         $workerRequest->request_no = $this->generateRequestNo($request->type);
-        error_log('2222222222222222');
         $workerRequest->worker_id = $request->worker_id;
-        error_log('3333333333333');
         $workerRequest->type = $request->type;
-        error_log('44444444444444');
         $workerRequest->start_date = $startDate;
-        error_log('5555555555555555');
         $workerRequest->end_date = $request->end_date;
-        error_log('666666666666666');
         $workerRequest->reason = $request->reason;
         $workerRequest->note = $request->note;
         $workerRequest->attachment = $attachmentPath;
-        error_log('7777777777777777');
         $workerRequest->essentials_leave_type_id = $request->leaveType;
         $workerRequest->escape_time = $request->escape_time;
         $workerRequest->installmentsNumber = $request->installmentsNumber;
         $workerRequest->monthlyInstallment = $request->monthlyInstallment;
         $workerRequest->advSalaryAmount = $request->amount;
-        error_log('88888888888888888888');
         $workerRequest->updated_by = auth()->user()->id;
-        error_log('99999999999999');
         $workerRequest->insurance_classes_id = $request->ins_class;
-        error_log('100000000000000000');
         $workerRequest->baladyCardType = $request->baladyType;
-        error_log('111111111111111111');
-        $workerRequest->resCardEditType = $request->resEditType;error_log('111111111111111111');
+        $workerRequest->resCardEditType = $request->resEditType;
         $workerRequest->workInjuriesDate = $request->workInjuriesDate;
         
         $workerRequest->save();
@@ -295,7 +297,7 @@ error_log('111111111111111111');
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
         $classes= EssentialsInsuranceClass::all()->pluck('name','id');
-        
+        $main_reasons=DB::table('essentails_reason_wishes')->where('reason_type','main')->where('employee_type','worker')->pluck('reason','id');
         if (request()->ajax()) {
 
             $requestsProcess = null;
@@ -335,7 +337,7 @@ error_log('111111111111111111');
         $workers = $all_users->pluck('full_name', 'id');
 
 
-        return view('followup::requests.allRequest')->with(compact('workers','classes', 'leaveTypes'));
+        return view('followup::requests.allRequest')->with(compact('workers','main_reasons','classes', 'leaveTypes'));
     }
 
 
@@ -1272,6 +1274,7 @@ error_log('111111111111111111');
             ->first();
 
         $classes= EssentialsInsuranceClass::all()->pluck('name','id');
+      
         if (request()->ajax()) {
             $requestsProcess = null;
             if ($department) {
