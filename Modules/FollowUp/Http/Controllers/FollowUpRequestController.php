@@ -2,6 +2,7 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\Business;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -146,9 +147,9 @@ class FollowUpRequestController extends Controller
     public function store(Request $request)
     {
 
-    
+
         $attachmentPath = null;
-   
+
 
         if (isset($request->attachment) && !empty($request->attachment)) {
             $attachmentPath = $request->attachment->store('/requests_attachments');
@@ -159,7 +160,7 @@ class FollowUpRequestController extends Controller
         } else {
             $startDate = $request->start_date;
         }
-       
+
         $procedure = EssentialsWkProcedure::where('type', $request->type)->get();
         if ($procedure->count() == 0) {
             $output = [
@@ -168,7 +169,7 @@ class FollowUpRequestController extends Controller
             ];
             return redirect()->route('allRequests')->withErrors([$output['msg']]);
         }
-   
+
         $workerRequest = new followupWorkerRequest;
 
         $workerRequest->request_no = $this->generateRequestNo($request->type);
@@ -187,9 +188,11 @@ class FollowUpRequestController extends Controller
         $workerRequest->updated_by = auth()->user()->id;
         $workerRequest->insurance_classes_id = $request->ins_class;
         $workerRequest->baladyCardType = $request->baladyType;
+
         $workerRequest->resCardEditType = $request->resEditType;
+
         $workerRequest->workInjuriesDate = $request->workInjuriesDate;
-        
+
         $workerRequest->save();
 
         if ($workerRequest) {
@@ -267,12 +270,12 @@ class FollowUpRequestController extends Controller
             'atmCard' => 'atm',
             'residenceCard' => 'res',
             'workerTransfer' => 'wT',
-            'workInjuriesRequest'=>'wIng',
-            'residenceEditRequest'=>'resEd',
-            'baladyCardRequest'=>'bal',
-            'insuranceUpgradeRequest'=>'insUp',
-            'mofaRequest'=>'mofa',
-            'chamberRequest'=>'ch'
+            'workInjuriesRequest' => 'wIng',
+            'residenceEditRequest' => 'resEd',
+            'baladyCardRequest' => 'bal',
+            'insuranceUpgradeRequest' => 'insUp',
+            'mofaRequest' => 'mofa',
+            'chamberRequest' => 'ch'
 
         ];
 
@@ -296,8 +299,10 @@ class FollowUpRequestController extends Controller
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
+
         $classes= EssentialsInsuranceClass::all()->pluck('name','id');
         $main_reasons=DB::table('essentails_reason_wishes')->where('reason_type','main')->where('employee_type','worker')->pluck('reason','id');
+
         if (request()->ajax()) {
 
             $requestsProcess = null;
@@ -338,8 +343,75 @@ class FollowUpRequestController extends Controller
 
 
         return view('followup::requests.allRequest')->with(compact('workers','main_reasons','classes', 'leaveTypes'));
+
     }
 
+    public function filteredRequests()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $filter = request()->query('filter');
+
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $crud_requests = auth()->user()->can('followup.crud_requests');
+        if (!$crud_requests) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $department = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%متابعة%')
+            ->first();
+        $requestsProcess = null;
+
+        if ($department) {
+            $department = $department->id;
+
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests.status',
+                'followup_worker_requests.note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id'
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker')
+                ->where('department_id', $department);
+        }
+        $pageName = __('followup::lang.allRequests');
+        if ($filter == 'finished') {
+            $pageName = __('followup::lang.finished_requests');
+            $requestsProcess =   $requestsProcess->where('status', 'rejected')->orWhere('status', 'approved');
+        } else if ($filter == 'under_process') {
+            $pageName = __('followup::lang.under_process_requests');
+            $requestsProcess =   $requestsProcess->where('status', 'under_process');
+        } else if ($filter == 'new') {
+            $pageName = __('followup::lang.new_requests');
+            $business = Business::where('id', $business_id)->first();
+            $requestsProcess =   $requestsProcess->whereDate('created_at', Carbon::now($business->time_zone)->toDateString());
+        }
+        if (request()->ajax()) {
+
+
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+
+                    return Carbon::parse($row->created_at);
+                })
+
+                ->make(true);
+        }
+
+        return view('followup::requests.custom_filtered_requests')->with(compact('pageName'));
+    }
 
     public function exitRequestIndex()
     {
@@ -1259,7 +1331,7 @@ class FollowUpRequestController extends Controller
 
         return view('followup::requests.mofaRequestIndex')->with(compact('statuses'));
     }
-    
+
     public function insuranceUpgradeRequestIndex()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -1273,8 +1345,10 @@ class FollowUpRequestController extends Controller
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
 
+
         $classes= EssentialsInsuranceClass::all()->pluck('name','id');
       
+
         if (request()->ajax()) {
             $requestsProcess = null;
             if ($department) {
@@ -1324,9 +1398,9 @@ class FollowUpRequestController extends Controller
                     }
                     return $status;
                 })
-                ->editColumn('insurance_class',function($row)use($classes){
-                    $item = $classes[$row->insurance_class]??'';
-    
+                ->editColumn('insurance_class', function ($row) use ($classes) {
+                    $item = $classes[$row->insurance_class] ?? '';
+
                     return $item;
                 })
                 ->rawColumns(['status'])
