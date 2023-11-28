@@ -25,9 +25,11 @@
                    
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.request_number')</th>
+                            <th>@lang('followup::lang.visa_number')</th>
+
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.reason')</th>
+                            
                             <th>@lang('followup::lang.action')</th>
 
                         </tr>
@@ -83,10 +85,12 @@
              
                 { data: 'user' },
                  { data: 'request_no' },
+                 { data: 'visa_number' },
+
               
                 { data: 'status' } ,
                  { data: 'status_note' },
-                { data: 'reason' },
+              
                 {
                     data: 'can_return',
                     

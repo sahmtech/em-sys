@@ -228,6 +228,8 @@ class FollowUpRequestController extends Controller
         $workerRequest->workInjuriesDate = $request->workInjuriesDate;
         $workerRequest->contract_main_reason_id = $request->main_reason;
         $workerRequest->contract_sub_reason_id = $request->sub_reason;
+        $workerRequest->visa_number = $request->visa_number;
+
 
 
         
@@ -1186,6 +1188,8 @@ class FollowUpRequestController extends Controller
                     'essentials_wk_procedures.department_id as department_id',
                     'essentials_wk_procedures.can_return',
                     'essentials_wk_procedures.start as start',
+                    'followup_worker_requests.visa_number',
+
 
                 ])
                     ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
@@ -1265,6 +1269,9 @@ class FollowUpRequestController extends Controller
                     'essentials_wk_procedures.department_id as department_id',
                     'essentials_wk_procedures.can_return',
                     'essentials_wk_procedures.start as start',
+                    'followup_worker_requests.visa_number',
+
+                    
 
                 ])
                     ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
