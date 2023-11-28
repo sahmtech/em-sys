@@ -27,7 +27,7 @@
     /* box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5); */
 }
 
-.custom_card{
+.custom_card {
     background-color: #245b80;
     border-radius: 10px;
     transition: transform 0.3s;
@@ -43,7 +43,7 @@
 
 }
 
-.custom_table{
+.custom_table {
 
     border-radius: 10px;
     transition: transform 0.3s;
@@ -55,17 +55,68 @@
     text-align: center;
     /* box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3); */
 }
+
 .card i {
-    color: black; /* Set the icon color to black */
-    font-size: 300%; /* Adjust the icon size as desired */
+    color: black;
+    /* Set the icon color to black */
+    font-size: 300%;
+    /* Adjust the icon size as desired */
 }
 
 .card h3 {
-   
-    font-size: 125%; /* Adjust the icon size as desired */
+
+    font-size: 125%;
+    /* Adjust the icon size as desired */
 }
+
 .card:hover {
     transform: scale(1.05);
 }
+
+
+.parent-div {
+    height: 100%; /* Set this to the height of the parent div in your other project */
+  }
+
+
+.mother_section {
+    display: flex;
+    height: 100%;
+}
+
+.section-a,
+.sections-bc,
+.section-b,
+.section-c {
+    height: 100%;
+}
+
+.section-a {
+    width: 25%;
+    background-color: #f0f0f0;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.sections-bc {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.section-b,
+.section-c {
+    flex: 1;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.section-b {
+    background-color: #e0e0e0;
+}
+
+/* .section-c {
+    background-color: #d0d0d0;
+} */
 
 

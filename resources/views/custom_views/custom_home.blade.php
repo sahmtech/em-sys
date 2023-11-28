@@ -4,7 +4,7 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header content-header-custom">
+    <section class="content-header content-header-custom parent-div">
         <div class="card-grid">
             @foreach ($cards as $card)
                 <div class="card">
@@ -18,12 +18,15 @@
 
                 </div>
             @endforeach
-        </div>
+        </div> 
+
+
+      
     </section>
     <!-- Main content -->
-    <section class="content content-custom no-print">
+    {{-- <section class="content content-custom no-print">
 
-    </section>
+    </section> --}}
     <!-- /.content -->
 
 @stop
