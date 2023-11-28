@@ -62,31 +62,27 @@ class FollowUpWorkerController extends Controller
            
        
         
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                $users->where('contacts.id', request()->input('project_name'));
-            }
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
+            // if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+            //     $users->where('contacts.id', request()->input('project_name'));
+            // }
+            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            //     $start = request()->start_date;
+            //     $end = request()->end_date;
             
-                $users->whereHas('contract', function ($query) use ($start, $end) {
-                    $query->whereDate('contract_end_date', '>=', $start)
-                        ->whereDate('contract_end_date', '<=', $end);
-                });
-            }
-            if (!empty(request()->nationality) && request()->nationality !== 'all') {
+            //     $users->whereHas('contract', function ($query) use ($start, $end) {
+            //         $query->whereDate('contract_end_date', '>=', $start)
+            //             ->whereDate('contract_end_date', '<=', $end);
+            //     });
+            // }
+            // if (!empty(request()->nationality) && request()->nationality !== 'all') {
                
-               $users=$users->where('nationality_id', request()->nationality);
-                error_log(request()->nationality);
-            }
-
-
-         
-
+            //    $users=$users->where('nationality_id', request()->nationality);
+            //     error_log(request()->nationality);
+            // }
 
            $users->select('users.*','users.nationality_id','essentials_salary', 
            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-           'contacts.name as contact_name');
+           'contacts.supplier_business_name as contact_name');
             return Datatables::of($users)
                
                 ->addColumn('nationality', function ($user) {
@@ -94,8 +90,6 @@ class FollowUpWorkerController extends Controller
                   
                 })
               
-              
-
                 ->addColumn('residence_permit_expiration', function ($user) {
                     return $this->getDocumentExpirationDate($user, 'residence_permit');
                 })

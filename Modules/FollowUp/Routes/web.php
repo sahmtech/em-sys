@@ -18,7 +18,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/dashboard', [Modules\FollowUp\Http\Controllers\DashboardController::class, 'index'])->name('followup.dashboard');
         Route::get('/', [Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->name('followup_landing');
 
-        Route::get('/projects', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index'])->name('projects');
+        Route::get('/projects2', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index'])->name('projects2');
         Route::get('/projectShow/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show'])->name('projectView');
 
         Route::get('/workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
@@ -57,15 +57,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/residenceEditRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceEditRequestIndex'])->name('residenceEditRequest');
         Route::get('/workInjuriesRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workInjuriesRequestIndex'])->name('workInjuriesRequest');
         Route::get('/cancleContractRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'cancleContractRequestIndex'])->name('cancleContractRequest');
+        Route::get('/recruitmentRequests',[\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index'])->name('recruitmentRequests');
+        Route::post('/storeRecruitmentRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'store'])->name('storeRecruitmentRequest');
 
         
         Route::post('/get-sub-reasons', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'getSubReasons'])->name('getSubReasons');
         Route::post('/change-status', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'changeStatus'])->name('changeStatus');
         Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class,'returnReq'])->name('returnReq');
-
-
-        Route::post('/change-status', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'changeStatus'])->name('changeStatus');
-        Route::post('/returnReq', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'returnReq'])->name('returnReq');
 
 
 

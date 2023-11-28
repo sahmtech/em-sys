@@ -104,7 +104,7 @@ class OfferPriceController extends Controller
                     'transactions.ref_no',
                     'transactions.final_total',
                     'transactions.is_direct_sale',
-                    'contacts.name',
+                    'contacts.supplier_business_name',
                     'contacts.mobile',
                     'transactions.status as status',
                     
@@ -171,11 +171,11 @@ class OfferPriceController extends Controller
                 ->removeColumn('id')
                
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
-                ->addColumn('conatct_name', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br>@endif {{$name}}')
-                ->filterColumn('conatct_name', function ($query, $keyword) {
+              //  ->addColumn('supplier_business_name', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br>@endif {{$name}}')
+                ->filterColumn('supplier_business_name', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
-                        $q->where('contacts.name', 'like', "%{$keyword}%")
-                        ->orWhere('contacts.supplier_business_name', 'like', "%{$keyword}%");
+                        $q->where('contacts.supplier_business_name', 'like', "%{$keyword}%")
+                        ;
                     });
                 })
                 ->filterColumn('added_by', function ($query, $keyword) {

@@ -20,7 +20,7 @@
                     <div class="col-sm-3">
                         <div class="box-tools">
                             <a class="btn btn-block btn-primary" 
-                            href="{{ route('createWorker', ['id' => $contactId]) }}">
+                            href="{{ route('createWorker', ['id' => $id]) }}">
                             <i class="fa fa-plus"></i> @lang('messages.add')</a>
                         </div> 
                     </div>

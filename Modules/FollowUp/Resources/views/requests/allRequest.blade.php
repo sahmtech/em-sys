@@ -61,7 +61,7 @@
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.reason')</th>
+                       
                      
 
                         </tr>
@@ -177,6 +177,10 @@
                             {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
                             {!! Form::number('amount', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.advSalaryAmount'), 'id' => 'advSalaryAmountField']) !!}
                         </div>
+                        <div class="form-group col-md-6" id="visa_number" style="display: none;">
+                            {!! Form::label('visa_number', __('followup::lang.visa_number') . ':*') !!}
+                            {!! Form::number('visa_number', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.visa_number'), 'id' => 'visa_numberField']) !!}
+                        </div>
                         <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
                             {!! Form::label('installmentsNumber', __('followup::lang.installmentsNumber') . ':*') !!}
                             {!! Form::number('installmentsNumber', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.installmentsNumber'), 'id' => 'installmentsNumberField']) !!}
@@ -190,10 +194,10 @@
                             {!! Form::textarea('note', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.note'), 'rows' => 3]) !!}
                         </div>
             
-                        <div class="form-group col-md-6" id="reason" style="display: block;">
+                        {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
                             {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
                             {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
-                        </div>
+                        </div> --}}
                         <div class="form-group col-md-6">
                             {!! Form::label('attachment', __('followup::lang.attachment') . ':') !!}
                             {!! Form::file('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment')]) !!}
@@ -310,8 +314,7 @@
                         }
                     },
                 { data: 'note' },
-                { data: 'reason' },
-             
+              
                
      
 
@@ -415,10 +418,18 @@
             }
             if (selectedType === 'cancleContractRequest') {
                 $('#main_reason').show();
-                $('#reason').hide();
+            
 
             } else {
                 $('#main_reason').hide();
+              
+            }
+            if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest' ) {
+                $('#visa_number').show();
+            
+
+            } else {
+                $('#visa_number').hide();
               
             }
         }

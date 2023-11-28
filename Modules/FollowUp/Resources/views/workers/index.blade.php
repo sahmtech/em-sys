@@ -12,7 +12,7 @@
 
 
     <section class="content">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                   
@@ -38,7 +38,7 @@
                     </div>
                 @endcomponent
             </div>
-        </div>
+        </div> --}}
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="workers_table">
