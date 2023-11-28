@@ -269,6 +269,7 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_returnRequest']
                             );
                         }
+                      
                         if (auth()->user()->can('followup::lang.escapeRequest')) {
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'escapeRequestIndex']),
@@ -276,6 +277,8 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_escapeRequest']
                             );
                         }
+                     
+                        
                         if (auth()->user()->can('followup::lang.advanceSalary')) {
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'advanceSalaryIndex']),
@@ -460,8 +463,10 @@ class CustomAdminSidebarMenu
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
-
-            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'allRequests']);
+           
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index'])
+            , __('followup::lang.contrascts_wishes'),
+             ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'contrascts_wishes']);
             // $menu->dropdown(
             //     __('followup::lang.requests'),
             //     function ($sub) use ($enabled_modules) {
@@ -620,6 +625,10 @@ class CustomAdminSidebarMenu
 
             )->order(4);
 
+
+        
+
+          
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
