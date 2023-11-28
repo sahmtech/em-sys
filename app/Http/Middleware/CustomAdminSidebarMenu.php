@@ -276,6 +276,14 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_escapeRequest']
                             );
                         }
+                        if (auth()->user()->can('followup::lang.curd_wishes')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'escapeRequestIndex']),
+                                __('followup::lang.contrascts_wishes'),
+                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'ess_escapeRequest']
+                            );
+                        }
+                        
                         if (auth()->user()->can('followup::lang.advanceSalary')) {
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'advanceSalaryIndex']),
