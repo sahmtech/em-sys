@@ -4,7 +4,7 @@
 	  <div class="modal-content">
 
       {!! Form::open(['url' => action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'changeWish']), 'method' => 'post', 'id' => 'change_status_form' ]) !!}
-      <input type="hidden" name="employee_id" id="employee_id" value="">
+     
 
 	    <div class="modal-header">
 	      	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -12,14 +12,27 @@
 	    </div>
 
         <div class="modal-body">
+        <div class="col-md-8">
         <div class="form-group">
-            <label for="modal-wish">@lang('followup::lang.wish')</label>
-            <select class="form-control" id="modal-wish" name="wish" style="height:40px">
-                @foreach($wishes as $wishId => $wishReason)
-                    <option value="{{ $wishId }}">{{ $wishReason }}</option>
-                @endforeach
-            </select>
+        <input type="hidden" name="employee_id" id="employee_id">
+
+       
+     
+                        {!! Form::label('offer_status_filter', __('followup::lang.wish') . ':') !!}
+                        {!! Form::select('wish',
+                            $wishes, null,
+                             ['class' => 'form-control',
+                              'id'=>'status_dropdown',
+                              'style' => ' height:40px;width:100%',
+                              'placeholder' => __('lang_v1.all')]); !!}
+                
+            </div>
         </div>
+       
+
+           
+          
+       
         
         </div>
 

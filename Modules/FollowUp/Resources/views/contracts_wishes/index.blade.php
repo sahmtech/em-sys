@@ -25,16 +25,17 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="offer_status_filter">@lang('essentials::lang.wish'):</label>
-                        <select class="form-control select2" name="offer_status_filter" required id="offer_status_filter" style="width: 100%;">
-                            <option value="all">@lang('lang_v1.all')</option>
-                            <option value="renrew_contract">@lang('followup::lang.renew_contract')</option>
-                            <option value="not_renew_contract">@lang('followup::lang.not_renew_contract')</option>
-                          
-
-                        </select>
+                        {!! Form::label('wish_status_filter', __('followup::lang.wish') . ':') !!}
+                        {!! Form::select('wish_status_filter',
+                            $wishes, null,
+                             ['class' => 'form-control',
+                              'id'=>'wish_status_filter',
+                              'style' => ' height:40px;width:100%',
+                              'placeholder' => __('lang_v1.all')]); !!}
+                
                     </div>
                 </div>
+              
                 
               
             @endcomponent
@@ -78,7 +79,19 @@
             var contractWishTable = $('#contract_wish_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route("contracts_wishes") }}',
+                ajax: {
+                        "url": '{{ route("contracts_wishes") }}',
+                        "data": function ( d ) {
+                            
+
+                            d.project_name = $('#project_name_filter').val();
+                            d.wish_status_filter = $('#wish_status_filter').val();
+                            console.log($('#project_name_filter').val());
+                            console.log($('#wish_status_filter').val());
+                        }
+                    },
+                
+              
                 columns: [
                     { data: 'emp_number', name: 'emp_number' },
                     { data: 'name', name: 'name' },
@@ -91,25 +104,30 @@
                 ]
             });
 
+
+            $(document).on('change', '#wish_status_filter',  function() {
+                contractWishTable.ajax.reload();
+                });
+            $(document).on('change', '#project_name_filter',  function() {
+                contractWishTable.ajax.reload();
+                });
+
             $(document).on('click', 'a.change-status-btn', function(e) {
             e.preventDefault();
-            $('#change_status_modal').find('select#modal-wish').val($(this).data('wish')).change();
+            $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
             $('#change_status_modal').find('#employee_id').val($(this).data('employee-id'));
             $('#change_status_modal').modal('show');
-
-
-            
-        });         
+            console.log($(this).data('employee-id'));     
+             }); 
+        
+    
 
 $(document).on('submit', 'form#change_status_form', function(e) {
     e.preventDefault();
-    var data = $(this).serializeArray();
+    var data = $(this).serialize();
     var ladda = Ladda.create(document.querySelector('.update-offer-status'));
     ladda.start();
-
-  
-
-
+     console.log(data);
     $.ajax({
         method: $(this).attr('method'),
         url: $(this).attr('action'),
@@ -117,13 +135,16 @@ $(document).on('submit', 'form#change_status_form', function(e) {
         data: data,
         success: function(result) {
             ladda.stop();
-            console.log(data);
+          
             if (result.success == true) {
+                console.log(data);
                 $('div#change_status_modal').modal('hide');
                 toastr.success(result.msg);
                 contractWishTable.ajax.reload();
+             
             } else {
                 toastr.error(result.msg);
+              
             }
         },
     });
