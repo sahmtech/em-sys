@@ -389,6 +389,10 @@ class Contact extends Authenticatable
         return $this->belongsToMany(\App\User::class, 'user_contact_access');
     }
     public function user() {
-        return $this->hasMany(User::class, 'assigned_to');
+        return $this->hasMany(\App\User::class, 'assigned_to');
+    }
+    public function transactions()
+    {
+        return $this->hasOne(Transaction::class, 'contact_id');
     }
 }

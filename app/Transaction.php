@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Entities\salesContract;
 
 class Transaction extends Model
 {
@@ -48,6 +49,7 @@ class Transaction extends Model
 
     public function contact()
     {
+       
         return $this->belongsTo(\App\Contact::class, 'contact_id');
     }
   
@@ -415,5 +417,10 @@ class Transaction extends Model
     public function hms_booking_extras()
     {
         return $this->hasMany(\Modules\Hms\Entities\HmsBookingExtra::class);
+    }
+
+    public function salesContract()
+    {
+        return $this->belongsTo(salesContract::class, 'offer_price_id');
     }
 }
