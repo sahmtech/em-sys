@@ -149,7 +149,9 @@ return [
     'end_date' => 'تاريخ الانتهاء',
     'expiry_within_two_months_contracts' => 'عقود تنتهي خلال شهرين',
     'within_two_month_expiry_residency' => 'إقامات تنتهي خلال شهرين',
-
+    'new_requests' => 'الطلبات الجديدة',
+    'under_process_requests' => 'الطلبات التي تحت الإجراء',
+    'finished_requests' => 'الطلبات المنتهية',
 
 
 

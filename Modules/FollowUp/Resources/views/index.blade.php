@@ -9,85 +9,90 @@
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
+                <a href="{{ route('filteredRequests', ['filter' => 'new']) }}">
+                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
 
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('followup::lang.new_request') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $new_requests }}</h4>
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('followup::lang.new_request') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $new_requests }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
+                </a>
+                <a href="{{ route('filteredRequests', ['filter' => 'under_process']) }}">
+                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
 
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('followup::lang.on_going_request') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $on_going_requests }}</h4>
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('followup::lang.on_going_request') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $on_going_requests }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
+                </a>
+                <a href="{{ route('filteredRequests', ['filter' => 'finished']) }}">
+                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
 
-                </div>
-
-
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('followup::lang.finished_request') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $finished_requests }}</h4>
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('followup::lang.finished_request') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $finished_requests }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
+                </a>
+                <a href="{{ action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']) }}">
+                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
 
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('followup::lang.total_requests') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $total_requests }}</h4>
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('followup::lang.total_requests') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $total_requests }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
-
-                </div>
+                </a>
 
 
             </div>
@@ -164,7 +169,7 @@
             $('#within_two_month_expiry_contracts_table').DataTable({
                 processing: true,
                 serverSide: true,
-
+                pageLength: 10,
                 ajax: {
                     url: "{{ route('withinTwoMonthExpiryContracts') }}",
                 },
@@ -210,7 +215,7 @@
             $('#within_two_month_expiry_residency_table').DataTable({
                 processing: true,
                 serverSide: true,
-
+                pageLength: 10,
                 ajax: {
                     url: "{{ route('withinTwoMonthExpiryResidency') }}",
                 },
