@@ -167,11 +167,9 @@ return [
     'new_requests' => 'الطلبات الجديدة',
     'under_process_requests' => 'الطلبات التي تحت الإجراء',
     'finished_requests' => 'الطلبات المنتهية',
-
-
-    
-
-
+    'no_wishes_found'=>'لا توجد رغبات مضافة',
+    'no_contract_found'=>' لا يوجد عقد مضاف  ',
+    'contract_expired'=>'لا يمكن إضافة الطلب لأن الوقت المتبقي لنهاية العقد أكثر من شهر',
 
 
 
