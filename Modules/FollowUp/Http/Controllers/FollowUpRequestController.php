@@ -1203,7 +1203,7 @@ class FollowUpRequestController extends Controller
         }
         if ($department) {
             $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'chamberRequest')->first();
             if ($pros) {
                 $can_reject = $pros->can_reject;
                 $can_reject = $can_reject ?? 0;
@@ -1282,7 +1282,7 @@ class FollowUpRequestController extends Controller
         }
         if ($department) {
             $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'mofaRequest')->first();
             if ($pros) {
                 $can_reject = $pros->can_reject;
                 $can_reject = $can_reject ?? 0;
@@ -1369,7 +1369,7 @@ class FollowUpRequestController extends Controller
         }
         if ($department) {
             $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'insuranceUpgradeRequest')->first();
             if ($pros) {
                 $can_reject = $pros->can_reject;
                 $can_reject = $can_reject ?? 0;
@@ -1452,7 +1452,7 @@ class FollowUpRequestController extends Controller
         }
         if ($department) {
             $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'baladyCardRequest')->first();
             if ($pros) {
                 $can_reject = $pros->can_reject;
                 $can_reject = $can_reject ?? 0;
@@ -1537,7 +1537,7 @@ class FollowUpRequestController extends Controller
         }
         if ($department) {
             $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'residenceEditRequest')->first();
             if ($pros) {
                 $can_reject = $pros->can_reject;
                 $can_reject = $can_reject ?? 0;
@@ -1623,7 +1623,7 @@ class FollowUpRequestController extends Controller
         }
         if ($department) {
             $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workInjuriesRequest')->first();
             if ($pros) {
                 $can_reject = $pros->can_reject;
                 $can_reject = $can_reject ?? 0;
@@ -1635,7 +1635,105 @@ class FollowUpRequestController extends Controller
 
         return view('followup::requests.workInjuriesRequestIndex')->with(compact('statuses'));
     }
+    public function cancleContractRequestIndex()
+    {
+        $business_id = request()->session()->get('user.business_id');
 
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $department = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%متابعة%')
+            ->first();
+
+        $reasons=DB::table('essentails_reason_wishes')->pluck('reason','id');
+        if (request()->ajax()) {
+            $requestsProcess = null;
+            if ($department) {
+                $department = $department->id;
+
+                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
+                    'followup_worker_requests_process.id as id',
+                    'followup_worker_requests_process.worker_request_id',
+                    'followup_worker_requests_process.procedure_id',
+                    'followup_worker_requests_process.status',
+                    'followup_worker_requests_process.reason',
+                    'followup_worker_requests_process.status_note',
+                    'followup_worker_requests_process.created_at',
+                    'followup_worker_requests_process.updated_at',
+                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                    'followup_worker_requests.id as request_id',
+                    'followup_worker_requests.request_no',
+                    'followup_worker_requests.worker_id',
+                    'followup_worker_requests.type',
+                    'followup_worker_requests.start_date',
+                    'followup_worker_requests.end_date',
+                    'followup_worker_requests.note',
+                    'followup_worker_requests.reason',
+                    'essentials_wk_procedures.id as procedure_id',
+                    'essentials_wk_procedures.type as procedure_type',
+                    'essentials_wk_procedures.department_id as department_id',
+                    'essentials_wk_procedures.can_return',
+                    'essentials_wk_procedures.start as start',
+                    'followup_worker_requests.insurance_classes_id as insurance_class',
+                    'followup_worker_requests.baladyCardType as cardType',
+                    'followup_worker_requests.resCardEditType as resEditType',
+                    'followup_worker_requests.workInjuriesDate as workInjuriesDate',
+                    'followup_worker_requests.contract_main_reason_id as main_reason',
+                    'followup_worker_requests.contract_sub_reason_id as sub_reason',
+
+
+
+
+
+
+                ])
+                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
+                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                    ->where('department_id', $department);
+                $requestsProcess = $requestsProcess->where('followup_worker_requests.type', 'cancleContractRequest');
+            }
+
+            return DataTables::of($requestsProcess ?? [])
+                ->editColumn('status', function ($row) {
+
+                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                        . $this->statuses[$row->status]['name'] . '</span>';
+                    if (auth()->user()->can('crudMofaRequest')) {
+                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                    }
+                    return $status;
+                })
+                ->editColumn('main_reason',function($row)use($reasons){
+                    $item = $reasons[$row->main_reason]??'';
+    
+                    return $item;
+                })
+                ->editColumn('sub_reason',function($row)use($reasons){
+                    $item = $reasons[$row->sub_reason]??'';
+    
+                    return $item;
+                })
+                ->rawColumns(['status'])
+                ->make(true);
+        }
+        if ($department) {
+            $department = $department->id;
+            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'cancleContractRequest')->first();
+            if ($pros) {
+                $can_reject = $pros->can_reject;
+                $can_reject = $can_reject ?? 0;
+                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+            } else {
+                $statuses = $this->statuses;
+            }
+        }
+
+        return view('followup::requests.cancleContractRequestIndex')->with(compact('statuses'));
+    }
     public function returnReq(Request $request)
     {
         $can_return_request = auth()->user()->can('followup.return_request');
