@@ -47,6 +47,8 @@
                             <th>@lang('followup::lang.name')</th>
                             <th>@lang('followup::lang.eqama')</th>
                             <th>@lang('followup::lang.project_name')</th>
+                            <th>@lang('followup::lang.essentials_salary')</th>
+                            <th>@lang('followup::lang.allowancesAndDeductions')</th>
                             <th>@lang('followup::lang.nationality')</th>
                             <th>@lang('followup::lang.eqama_end_date')</th>
                             <th>@lang('followup::lang.contract_end_date')</th>
@@ -94,6 +96,9 @@
                     { data: 'user' },
                     { data: 'residence_permit' },
                     { data: 'contact_name' },
+                    { data: 'essentials_salary' },
+                    { data: 'allowancesAndDeductions' },
+                    
                     { data: 'nationality' },
                     { data: 'residence_permit_expiration' },
                     { data: 'contract_end_date' },

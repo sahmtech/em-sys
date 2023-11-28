@@ -82,7 +82,7 @@
                     <div class="form-group col-md-6">
                     <label for="employee_type_filter">@lang('essentials::lang.employee_type'):</label>
                         <select class="form-control select2" name="employee_type" required id="employee_type_filter" style="width: 100%;">
-                            <option value="all">@lang('lang_v1.all')</option>
+                          
                             <option value="employee">@lang('essentials::lang.employee')</option>
                             <option value="manager">@lang('essentials::lang.manager')</option>
                             <option value="worker">@lang('essentials::lang.worker')</option>
@@ -194,5 +194,33 @@
             }
         });
     });
+
+
+    $(document).on('click', 'button.delete_country_button', function () {
+            swal({
+                title: LANG.sure,
+                text: LANG.confirm_delete_country,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).data('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                                finish_reasons_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        });
 </script>
 @endsection

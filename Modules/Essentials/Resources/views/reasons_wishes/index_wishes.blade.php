@@ -74,7 +74,9 @@
               
                 <div class="form-group col-md-6">
                     {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
-                    {!! Form::select('employee_type', ['all' => __('lang_v1.all'), 'employee' => __('essentials::lang.employee'), 'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2', 'required' => 'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
+                    {!! Form::select('employee_type', [
+                         'employee' => __('essentials::lang.employee'),
+                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
                 </div>
             
                        
@@ -85,11 +87,13 @@
                     <div class="form-group col-md-6" id="main_reason_box">
                         {!! Form::label('wish', __('essentials::lang.wish') . ':') !!}
                         <div class="form-group">
-                            {!! Form::text('wish', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.wish')]) !!}
+                            {!! Form::text('wish', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.wish')]) !!}
                         </div>
                     </div>
 
 
+                   
                    
                 </div>
                    
@@ -138,6 +142,34 @@
 
       
     });
+
+
+    $(document).on('click', 'button.delete_country_button', function () {
+            swal({
+                title: LANG.sure,
+                text: LANG.confirm_delete_country,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    var href = $(this).data('href');
+                    $.ajax({
+                        method: "DELETE",
+                        url: href,
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.success == true) {
+                                toastr.success(result.msg);
+                                wish_table.ajax.reload();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        });
 </script>
 
 @endsection
