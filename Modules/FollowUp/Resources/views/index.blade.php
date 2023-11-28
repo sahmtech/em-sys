@@ -149,6 +149,32 @@
 
         </div>
 
+        <div class="row">
+            <div class="col-md-12 custom_table">
+                @component('components.widget', [
+                    'class' => 'box-solid',
+                    'title' => __('followup::lang.within_two_month_expiry_word_cards'),
+                ])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="within_two_month_expiry_work_cards_table">
+                            <thead>
+                                <tr>
+                                    <th>@lang('followup::lang.worker_name')</th>
+                                    <th>@lang('followup::lang.residency')</th>
+                                     <th>@lang('followup::lang.work_card')</th>
+                                    <th>@lang('followup::lang.project')</th>
+                                    <th>@lang('followup::lang.end_date')</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
+            </div>
+
+
+        </div>
+
     </section>
 
     <!-- Main content -->
@@ -203,15 +229,6 @@
                 ]
 
             });
-
-
-
-
-        });
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-
             $('#within_two_month_expiry_residency_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -249,11 +266,52 @@
                 ]
 
             });
+            $('#within_two_month_expiry_work_cards_table').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('withinTwoMonthExpiryWorkCard') }}",
+                },
+                columns: [{
+                        data: 'worker_name'
+                    },
+                    {
+                        data: 'residency'
+                    },
+                    {
+                        data: 'work_card_no'
+                    },
+                    {
+                        data: 'project'
+                    },
+                    {
+                        data: 'end_date'
+                    },
 
+                    // {
+                    //     data: 'contract_form',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
+                    //             case 'monthly_cost':
+                    //                 return '{{ trans('sales::lang.monthly_cost') }}';
+                    //             case 'operating_fees':
+                    //                 return '{{ trans('sales::lang.operating_fees') }}';
+
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
+                ]
+
+            });
 
 
 
         });
-    </script>
 
+     
+
+    </script>
 @endsection

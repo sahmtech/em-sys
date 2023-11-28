@@ -17,6 +17,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
+use Modules\Essentials\Entities\EssentialsWorkCard;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -377,7 +378,12 @@ class User extends Authenticatable
         return $this->belongsTo(Contact::class, 'assigned_to');
     }
 
-    public function essentials_admission_to_works(){
-        return $this->hasOne(EssentialsAdmissionToWork::class,'employee_id');
+    public function essentials_admission_to_works()
+    {
+        return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id');
+    }
+    public function essentialsworkCard()
+    {
+        return $this->hasOne(EssentialsWorkCard::class, 'employee_id');
     }
 }
