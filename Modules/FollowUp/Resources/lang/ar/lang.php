@@ -177,6 +177,11 @@ return [
     'no_contract_found'=>' لا يوجد عقد مضاف  ',
     'contract_expired'=>'لا يمكن إضافة الطلب لأن الوقت المتبقي لنهاية العقد أكثر من شهر',
     'visa_number'=>'رقم التأشيرة',
+    'recruitmentRequests'=>'طلبات التوظيف الداخلي',
+    'attachment_view'=>'عرض المرفقات',
+    'no_attachment_to_show'=>'لا يوجد مرفقات للعرض',
+    'attachments'=>'المرفقات'
+
 
 
 

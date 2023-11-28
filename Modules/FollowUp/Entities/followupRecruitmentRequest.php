@@ -1,0 +1,15 @@
+<?php
+
+namespace Modules\FollowUp\Entities;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+
+class followupRecruitmentRequest extends Model
+{
+    use HasFactory;
+    
+    protected $guarded = ['id'];
+  
+}
