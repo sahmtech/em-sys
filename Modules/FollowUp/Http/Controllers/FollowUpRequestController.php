@@ -16,6 +16,7 @@ use Modules\FollowUp\Entities\followupWorkerRequest;
 use Modules\FollowUp\Entities\followupWorkerRequestProcess;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Carbon\Carbon;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
 
 class FollowUpRequestController extends Controller
 {
@@ -158,7 +159,37 @@ class FollowUpRequestController extends Controller
         } else {
             $startDate = $request->start_date;
         }
-       
+        if ($request->type == 'cancleContractRequest' && !empty($request->main_reason)) {
+            
+            $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->first();
+    
+            if (!$contract) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.no_contract_found'),
+                ];
+                return redirect()->route('allRequests')->withErrors([$output['msg']]);
+            }
+  
+            if (is_null($contract->wish_id )) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.no_wishes_found'),
+                ];
+                return redirect()->route('allRequests')->withErrors([$output['msg']]);
+            }
+    
+            $contractEndDate = Carbon::parse($contract->contract_end_date);
+            $todayDate = Carbon::now();
+    
+            if ($todayDate->diffInMonths($contractEndDate) > 1) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.contract_expired'),
+                ];
+                return redirect()->route('allRequests')->withErrors([$output['msg']]);
+            }
+        }
         $procedure = EssentialsWkProcedure::where('type', $request->type)->get();
         if ($procedure->count() == 0) {
             $output = [
