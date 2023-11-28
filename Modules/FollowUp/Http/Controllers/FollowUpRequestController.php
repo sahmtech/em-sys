@@ -156,8 +156,15 @@ class FollowUpRequestController extends Controller
 
         if (is_null($request->start_date) && !empty($request->escape_date)) {
             $startDate = $request->escape_date;
+        } elseif (is_null($request->start_date) && !empty($request->exit_date)) {
+            $startDate = $request->exit_date;
+        }else {
+            $startDate = $request->startDate;
+        }
+        if (is_null($request->end_date) && !empty($request->return_date)) {
+            $end_date = $request->return_date;
         } else {
-            $startDate = $request->start_date;
+            $end_date = $request->end_date;
         }
         if ($request->type == 'cancleContractRequest' && !empty($request->main_reason)) {
             
@@ -205,7 +212,7 @@ class FollowUpRequestController extends Controller
         $workerRequest->worker_id = $request->worker_id;
         $workerRequest->type = $request->type;
         $workerRequest->start_date = $startDate;
-        $workerRequest->end_date = $request->end_date;
+        $workerRequest->end_date = $end_date;
         $workerRequest->reason = $request->reason;
         $workerRequest->note = $request->note;
         $workerRequest->attachment = $attachmentPath;
