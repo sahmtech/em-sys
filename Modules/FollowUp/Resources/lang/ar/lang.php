@@ -138,7 +138,11 @@ return [
     'select_class'=>'اختر فئة',
     'religion'=>'الدين',
     'renew'=>'تجديد',
-    'issuance'=>'إصدار'
+    'issuance'=>'إصدار',
+    'cancleContractRequest'=>'طلب إنهاء العلاقة التعاقدية',
+    'main_reason'=>'السبب الرئيسي',
+    'sub_reason'=>'السبب الثانوي',
+    'select_reason'=>'اختار سبب'
 
 
 

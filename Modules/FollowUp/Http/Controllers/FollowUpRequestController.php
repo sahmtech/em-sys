@@ -131,22 +131,21 @@ class FollowUpRequestController extends Controller
         return view('followup::requests.create')->with(compact('workers', 'leaveTypes'));
     }
 
-    // public function getSubReasons(Request $request)
-    // {
-    //     error_log ('getSubReasons1111111111111111111111');
-    //     $mainReason = $request->input('main_reason');
+    public function getSubReasons(Request $request)
+    {
+       
+        $mainReason = $request->input('main_reason');
         
-    //     $subReasons = DB::table('essentails_reason_wishes')->where('main_reson_id', $mainReason)
-    //         ->pluck('sub_reason')
-    //         ->toArray();
-
-    //     return response()->json(['sub_reasons' => $subReasons]);
-    // }
+        $subReasons = DB::table('essentails_reason_wishes')->where('main_reson_id', $mainReason)
+             ->select('id', 'sub_reason as name')
+             ->get();
+        return response()->json(['sub_reasons' => $subReasons]);
+    }
 
     public function store(Request $request)
     {
 
-    
+        
         $attachmentPath = null;
    
 
@@ -189,6 +188,10 @@ class FollowUpRequestController extends Controller
         $workerRequest->baladyCardType = $request->baladyType;
         $workerRequest->resCardEditType = $request->resEditType;
         $workerRequest->workInjuriesDate = $request->workInjuriesDate;
+        $workerRequest->contract_main_reason_id = $request->main_reason;
+        $workerRequest->contract_sub_reason_id = $request->sub_reason;
+
+
         
         $workerRequest->save();
 
@@ -272,7 +275,8 @@ class FollowUpRequestController extends Controller
             'baladyCardRequest'=>'bal',
             'insuranceUpgradeRequest'=>'insUp',
             'mofaRequest'=>'mofa',
-            'chamberRequest'=>'ch'
+            'chamberRequest'=>'ch',
+            'cancleContractRequest'=>'con'
 
         ];
 

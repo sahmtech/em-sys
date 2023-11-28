@@ -105,7 +105,7 @@
                             'insuranceUpgradeRequest'=>__('followup::lang.insuranceUpgradeRequest'),
                             'mofaRequest'=>__('followup::lang.mofaRequest'),
                             'chamberRequest'=>__('followup::lang.chamberRequest'),
-                            // 'cancleContractRequest'=>__('followup::lang.cancleContractRequest'),
+                            'cancleContractRequest'=>__('followup::lang.cancleContractRequest'),
                             
                             ], null, ['class' => 'form-control', 'required', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
                         </div>
@@ -155,15 +155,15 @@
                             {!! Form::label('ins_class', __('followup::lang.insurance_class') . ':*') !!}
                             {!! Form::select('ins_class',$classes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_class')]) !!}
                         </div>
-                        {{-- <div class="form-group col-md-6" id="main_reason" style="display: none;">
+                        <div class="form-group col-md-6" id="main_reason" style="display: none;">
                             {!! Form::label('main_reason', __('followup::lang.main_reason') . ':*') !!}
                             {!! Form::select('main_reason', $main_reasons, null, ['class' => 'form-control', 'style' => 'height: 40px', 'placeholder' => __('followup::lang.select_reason'),'id' => 'mainReasonSelect']) !!}
                         </div>
                         <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
                             {!! Form::label('sub_reason', __('followup::lang.sub_reason') . ':*') !!}
-                            {!! Form::select('sub_reason', [], null, ['class' => 'form-control', 'required',
+                            {!! Form::select('sub_reason', [], null, ['class' => 'form-control', 'style' => 'height: 40px',
                                 'placeholder' => __('followup::lang.select_sub_reason'), 'id' => 'subReasonSelect']); !!}
-                        </div> --}}
+                        </div>
 
                         <div class="form-group col-md-6" id="amount" style="display: none;">
                             {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
@@ -257,71 +257,22 @@
 
      });
  
-    //  $('#reasonSelect').change(function () {
-    
-    //         var selectedMainReason = $(this).val();
-           
-
-    //         axios.post('/getSubReasons', { main_reason: selectedMainReason })
-    //             .then(function (response) {
-    //                 const subReasons = response.data.sub_reasons;
-    //                 const subReasonContainer = $('#sub_reason_container');
-    //                 const subReasonSelect = $('#sub_reason');
-
-    //                 if (subReasons.length > 0) {
-    //                     subReasonContainer.show();
-    //                     subReasonSelect.empty();
-
-    //                     subReasons.forEach(function (subReason) {
-    //                         subReasonSelect.append('<option value="' + subReason + '">' + subReason + '</option>');
-    //                     });
-    //                 } else {
-    //                     subReasonContainer.hide();
-    //                 }
-    //             })
-    //             .catch(function (error) {
-    //                 console.error('Error fetching sub-reasons:', error);
-    //             });
-    //     });
-    //     professionSelect.on('change', function () {
-    //             var selectedProfession = $(this).val();
-    //             console.log(selectedProfession);
-    //             var csrfToken = $('meta[name="csrf-token"]').attr('content');
-    //             $.ajax({
-    //                 url: '{{ route('getSubReasons') }}',
-    //                 type: 'POST',
-    //                 data: {
-    //                     _token: csrfToken,
-    //                     main_reason: selectedMainReason
-    //                 },
-    //                 success: function (data) {
-    //                     specializationSelect.empty();
-    //                     $.each(data, function (id, name) {
-    //                         specializationSelect.append($('<option>', {
-    //                             value: id,
-    //                             text: name
-    //                         }));
-    //                     });
-    //                 }
-    //             });
-    //     });
-  
-    
-    
-    
-    
-        });
+     });
 
 
 </script>
 <script>
     $(document).ready(function () {
-        
+        var mainReasonSelect = $('#mainReasonSelect');
+        var subReasonContainer = $('#sub_reason_container');
+        var subReasonSelect = $('#subReasonSelect');
+
         handleTypeChange();
         $('#requestType').change(handleTypeChange);
 
         function handleTypeChange() {
             var selectedType = $('#requestType').val();
+            
             console.log(selectedType);
             if (selectedType === 'exitRequest' || selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
                 $('#start_date').show();
@@ -388,18 +339,47 @@
                 $('#ins_class').hide();
               
             }
-            // if (selectedType === 'cancleContractRequest') {
-            //     $('#main_reason').show();
+            if (selectedType === 'cancleContractRequest') {
+                $('#main_reason').show();
               
 
-            // } else {
-            //     $('#main_reason').hide();
+            } else {
+                $('#main_reason').hide();
               
-            // }
+            }
         }
+   
+        mainReasonSelect.on('change', function () {
+        var selectedMainReason = $(this).val();
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: '{{ route('getSubReasons') }}',
+            type: 'POST',
+            data: {
+                _token: csrfToken,
+                main_reason: selectedMainReason
+            },
+            success: function (data) {
+                subReasonSelect.empty();
+               
+                if (data.sub_reasons.length > 0) {
+                    subReasonContainer.show();
+
+                    $.each(data.sub_reasons, function (index, subReason) {
+                        subReasonSelect.append($('<option>', {
+                            value: subReason.id,
+                            text: subReason.name
+                        }));
+                    });
+                } else {
+                    subReasonContainer.hide();
+                }
+            }
+        });
         
     });
-  
+});
 </script>
 
 
