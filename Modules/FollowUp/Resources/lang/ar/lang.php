@@ -8,6 +8,7 @@ return [
     'nationality'=>'الجنسية',
     'eqama'=>'رقم الاقامة',
     'eqama_end_date'=>'تاريخ انتهاء الاقامة',
+    'admissions_date'=>'تاريخ المباشرة بالعمل',
     'work_card'=>'كرت العمل',
     'insurance'=>'التأمين',
     'has_insurance'=>'مؤمن',
@@ -27,6 +28,7 @@ return [
     'basic_salary'=>'الراتب الأساسي',
     'not_started'=>'لم يتم البدء',
     'under_process'=>'قيد العمل',
+    'under process'=>'قيد المراجعة',
     'done'=>'تمت',
     'project_status'=>'حالة المشروع',
     'external'=>'خارجي',
@@ -50,6 +52,14 @@ return [
     'residenceRenewal'=>'طلب تجديد إقامة',
     'residenceCard'=>'بطاقة إقامة',
     'workerTransfer'=>'طلبات نقل العمال',
+    'workInjuriesRequest'=>' طلبات إصابة العمل',
+    'residenceEditRequest'=>' طلبات تعديل بيانات الإقامة',
+    'baladyCardRequest'=>' طلبات كرت بلدية',
+    'insuranceUpgradeRequest'=>' طلبات ترقية التأمين',
+    'mofaRequest'=>' طلبات تصديق غرفة وزارة الخارجية',
+    'chamberRequest'=>' طلبات تصديق غرفة تجارية',
+    'allRequests'=>'جميع الطلبات',
+    'request_number'=>'رقم الطلب',
     'crud_workers'=>'عمال المشاريع',
     'crud_projects'=> 'المشاريع',
     'worker_name'=>'اسم العامل',
@@ -85,6 +95,16 @@ return [
     'escape_date'=>'تاريخ الهروب',
     'add_new_worker'=>'إضافة عامل جديد',
     'operation_orders'=>'أوامر التشغيل',
+
+    'reports'=>[
+        'title'=>'التقارير',
+        'projectWorkers'=>'عمال المشاريع',
+        'projectWorkersReports'=>'تقرير عمال المشاريع',
+        'projects'=>'المشاريع',
+        'projectsReports'=>'تقرير المشاريع',
+    ],
+
+
     'create_order'=>'إنشاء طلب',
     'viewExitRequests'=>'عرض طلبات الخروج النهائي',
     'crudExitRequests'=>'قبول/رفض طلبات الخروج النهائي',
@@ -105,6 +125,7 @@ return [
     'viewWorkerTransfer'=>'عرض طلبات نقل العمالة',
     'crudWorkerTransfer'=>'قبول/ رفض طلبات نقل العمالة',
     'return_request'=>'إرجاع الطلب',
+
     'crud_operation_orders'=>'عرض أوامر التشغيل',    
     'curd_contracts_wishes'=>'إضافة \حذف\تعديل العقود والرغبات',
     'contrascts_wishes'=>'الرغبات والعقود',
@@ -114,7 +135,22 @@ return [
     'worker_name'=>'اسم العامل ',
     'residency'=>'الاقامة',
     'wish'=>'الرغبة',
-    'change_wish'=>'تغير الرغبة'
+    'change_wish'=>'تغير الرغبة',
+    'viewWorkInjuriesRequest'=>'عرض طلبات إصابة العمل',
+    'viewResidenceEditRequest'=>'عرض طلبات تعديل بيانات الإقامة',
+    'viewBaladyCardRequest'=>'عرض طلبات كرت بلدية',
+    'viewInsuranceUpgradeRequest'=>'عرض طلبات ترقية التأمين',
+    'viewMofaRequest'=>'عرض طلبات تصديق غرفة وزارة الخارجية',
+    'viewChamberRequest'=>'عرض طلبات تصديق غرفة تجارية',
+    'insurance_class'=>'فئة التأمين',
+    'type'=>'النوع',
+    'workInjuriesDate'=>'تاريخ الإصابة',
+    'select_class'=>'اختر فئة',
+    'religion'=>'الدين',
+    'renew'=>'تجديد',
+    'issuance'=>'إصدار',
+
+
 
     
 

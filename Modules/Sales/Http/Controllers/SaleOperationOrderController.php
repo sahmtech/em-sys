@@ -88,7 +88,7 @@ class SaleOperationOrderController extends Controller
                 ELSE sales_orders_operations.operation_order_type 
                 END AS operation_order_type"),
                 'sales_orders_operations.Status as Status'
-            )->orderby('id','desc');
+            )->orderby('id', 'desc');
 
 
 
@@ -143,7 +143,7 @@ class SaleOperationOrderController extends Controller
             ->where('business_id', $business_id)
             ->pluck('supplier_business_name', 'id');
 
-        return view('sales::operation_order.index')->with(compact('contracts','leads','agencies', 'status'));
+        return view('sales::operation_order.index')->with(compact('contracts', 'leads', 'agencies', 'status'));
     }
 
     /**
@@ -164,70 +164,39 @@ class SaleOperationOrderController extends Controller
         $contracts = [];
         foreach ($offer_prices as $key) {
             $contractIds = salesContract::where('offer_price_id', $key)
-            ->where('status', 'valid')
-            ->select('number_of_contract', 'id')
-            ->get()
-            ->toArray();
+                ->where('status', 'valid')
+                ->select('number_of_contract', 'id')
+                ->get()
+                ->toArray();
 
-        $totalQuantity = 0;
-        foreach ($contractIds as $contract) {
-            $contractQuantity = TransactionSellLine::where('transaction_id', $contract['id'])->sum('quantity');
-        error_log($contractQuantity);
-            $salesOrdersQuantity = SalesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
-            $totalQuantity += ($contractQuantity - $salesOrdersQuantity);
-            error_log($totalQuantity);
-        }
-        if ($totalQuantity > 0) {
-            $contracts = array_merge($contracts, $contractIds);
-        }
-          
+            $totalQuantity = 0;
+            foreach ($contractIds as $contract) {
+                $contractQuantity = TransactionSellLine::where('transaction_id', $contract['id'])->sum('quantity');
+                error_log($contractQuantity);
+                $salesOrdersQuantity = SalesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
+                $totalQuantity += ($contractQuantity - $salesOrdersQuantity);
+                error_log($totalQuantity);
+            }
+            if ($totalQuantity > 0) {
+                $contracts = array_merge($contracts, $contractIds);
+            }
         }
 
         return response()->json($contracts);
     }
-    // public function getContracts(Request $request)
-    // {
-    //     $customerId = $request->input('customer_id');
-    //     $business_id = $request->session()->get('user.business_id');
-    
-      
-    //     $offerPrices = Transaction::where('contact_id', $customerId)
-    //         ->where('business_id', $business_id)
-    //         ->pluck('id');
-    
-   
-    //     $contracts = salesContract::whereIn('offer_price_id', $offerPrices)
-    //         ->where('status', 'valid')
-    //         ->select('number_of_contract', 'id')
-    //         ->get()
-    //         ->toArray();
-    
-        
-    //     $contractsInOperations = DB::table('sales_orders_operations')
-    //         ->where('sales_orders_operations.contact_id', $customerId)
-    //         ->pluck('sales_orders_operations.sale_contract_id');
-    
-      
-    //     $filteredContracts = array_filter($contracts, function ($contract) use ($contractsInOperations) {
-    //         return !in_array($contract['id'], $contractsInOperations->toArray());
-    //     });
-    
-    //     return response()->json($filteredContracts);
-    // }
-    
-
-    public function getContractDetails(Request $request){
+    public function getContractDetails(Request $request)
+    {
 
         $business_id = request()->session()->get('user.business_id');
         $offer_price = salesContract::where('id', $request->contract_id)->first()->offer_price_id;
-        
+
         $query = TransactionSellLine::where('transaction_id', $offer_price)
             ->get();
         $sumOfSalesOrdersQuantities = SalesOrdersOperation::where('sale_contract_id', $request->contract_id)->sum('orderQuantity');
         $maxQuantity = $query->sum('quantity') - $sumOfSalesOrdersQuantities;
         return $maxQuantity;
-
     }
+
 
     public function create()
     {
@@ -267,7 +236,7 @@ class SaleOperationOrderController extends Controller
 
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                    'contact_id', 'sale_contract_id', 'operation_order_type','quantity',
+                    'contact_id', 'sale_contract_id', 'operation_order_type', 'quantity',
                     'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
                 ];
                 $operation_details = $request->only($operation_order);
@@ -321,7 +290,7 @@ class SaleOperationOrderController extends Controller
             $operations = salesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
                 ->where('id', $id)
                 ->first();
-           
+
 
             $sell_lines = $operations->salesContract->transaction->sell_lines;
 

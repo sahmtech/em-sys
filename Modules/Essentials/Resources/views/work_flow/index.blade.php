@@ -169,8 +169,26 @@
                                 } 
                                 else if (data === 'residenceCard') {
                                     return  '@lang('followup::lang.residenceCard')';
+                                } 
+                                else if (data === 'workInjuriesRequest') {
+                                    return  '@lang('followup::lang.workInjuriesRequest')';
+                                } 
+                                    else if (data === 'residenceEditRequest') {
+                                    return  '@lang('followup::lang.residenceEditRequest')';
+                                } 
+                                else if (data === 'baladyCardRequest') {
+                                    return  '@lang('followup::lang.baladyCardRequest')';
+                                } 
+                                else if (data === 'mofaRequest') {
+                                    return  '@lang('followup::lang.mofaRequest')';
+                                } 
+                                else if (data === 'insuranceUpgradeRequest') {
+                                    return  '@lang('followup::lang.insuranceUpgradeRequest')';
+                                } 
+                                else if (data === 'chamberRequest') {
+                                    return  '@lang('followup::lang.chamberRequest')';
                                 } else{
-                                    return  ' ';
+                                    return data;
                                 }
                             }
                     },
