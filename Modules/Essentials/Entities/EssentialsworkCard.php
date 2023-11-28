@@ -16,4 +16,6 @@ class EssentialsWorkCard extends Model
     {
         return $this->belongsTo(User::class, 'employee_id');
     }
+
+    
 }
