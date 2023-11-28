@@ -155,8 +155,69 @@ class FollowUpController extends Controller
             ->make(true);
     }
 
+    public function withinTwoMonthExpiryWorkCard()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $business = Business::where('id', $business_id)->first();
+        $contracts = User::where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
+            $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
+                ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
+        })->whereHas('essentialsworkCard', function ($qu) {
+        });
 
 
+
+        return DataTables::of($contracts)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->first_name . ' ' . $row->last_name;
+                }
+            )
+            ->addColumn(
+                'residency',
+                function ($row) {
+                    return $row->OfficialDocument->number;
+                }
+            )
+            ->addColumn(
+                'work_card_no',
+                function ($row) {
+                    return $row->essentialsworkCard->work_card_no;
+                }
+            )
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->assignedTo->supplier_business_name;
+                }
+            )
+            ->addColumn(
+                'end_date',
+                function ($row) {
+                    return $row->contract->contract_end_date;
+                }
+            )
+
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                //     return $html;
+                // }
+            )
+
+
+            ->removeColumn('id')
+            ->rawColumns(['worker_name', 'residency', 'work_card_no', 'end_date', 'project', 'action'])
+            ->make(true);
+    }
     /**
      * Show the form for creating a new resource.
      * @return Renderable
