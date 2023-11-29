@@ -1,0 +1,251 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Contact;
+use App\ContactLocation;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
+use App\Utils\ModuleUtil;
+use Illuminate\Http\Response;
+use Modules\Sales\Entities\salesContractItem;
+
+class ContactLocationController extends Controller
+{
+    protected $moduleUtil;
+
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
+    public function index()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $contact_locations = ContactLocation::with(['contact']);
+        // return $contact_locations->get();
+        if (request()->ajax()) {
+
+
+            return Datatables::of($contact_locations)
+                ->addColumn(
+                    'contact_name',
+                    function ($row) {
+                        return $row->contact->supplier_business_name;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_name',
+                    function ($row) {
+                        return  $row->name;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_city',
+                    function ($row) {
+                        return  $row->city;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_name_in_charge',
+                    function ($row) {
+                        return   $row->name_in_charge;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_phone_in_charge',
+                    function ($row) {
+                        return  $row->phone_in_charge;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_email_in_charge',
+                    function ($row) {
+                        return $row->email_in_charge;
+                    }
+                )
+
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin) {
+                        $html = '';
+                        if ($is_admin) {
+                            //     $html .= '<a href="' . route('item.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                            //  &nbsp;';
+                            $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroyContactLocations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+                        return $html;
+                    }
+                )
+                ->filterColumn('name_of_item', function ($query, $keyword) {
+                    $query->contact->where('supplier_business_name', 'like', "%{$keyword}%");
+                })
+
+                ->rawColumns(['contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'action'])
+                ->make(true);
+        }
+        $contacts = Contact::pluck('supplier_business_name', 'id',);
+        return view('sales::contact_locations.index')->with(compact('contacts'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Renderable
+     */
+    public function store(Request $request)
+    {
+
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            error_log($request->contact_name);
+
+            $contactLocation['contact_id'] = $request->contact_name;
+            $contactLocation['name'] = $request->contact_location_name;
+            $contactLocation['city'] = $request->contact_location_city;
+            $contactLocation['name_in_charge'] = $request->contact_location_name_in_charge;
+            $contactLocation['phone_in_charge'] = $request->contact_location_phone_in_charge;
+            $contactLocation['email_in_charge'] = $request->contact_location_email_in_charge;
+            ContactLocation::create($contactLocation);
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->route('sale.contactLocations')->withErrors([$output['msg']]);
+        }
+
+        return redirect()->route('sale.contactLocations')->with('success', $output['msg']);
+    }
+    // /**
+    //  * Show the specified resource.
+    //  * @param int $id
+    //  * @return Renderable
+    //  */
+    // public function show($id)
+    // {
+    //     return view('sales::show');
+    // }
+
+    // /**
+    //  * Show the form for editing the specified resource.
+    //  * @param int $id
+    //  * @return Renderable
+    //  */
+    // public function edit($id)
+    // {
+    //     $business_id = request()->session()->get('user.business_id');
+    //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+    //     if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && !$is_admin) {
+    //         abort(403, 'Unauthorized action.');
+    //     }
+
+    //     $item = salesContractItem::findOrFail($id);
+
+
+    //     return view('sales::contract_items.edit')->with(compact('item'));
+    // }
+
+    // /**
+    //  * Update the specified resource in storage.
+    //  * @param Request $request
+    //  * @param int $id
+    //  * @return Renderable
+    //  */
+    // public function update(Request $request, $id)
+    // {
+
+    //     $business_id = $request->session()->get('user.business_id');
+    //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+    //     if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && !$is_admin) {
+    //         abort(403, 'Unauthorized action.');
+    //     }
+
+    //     try {
+    //         $input = $request->only(['number_of_item', 'name_of_item', 'details']);
+
+
+    //         $input['number_of_item'] = $input['number_of_item'];
+
+    //         $input['name_of_item'] = $input['name_of_item'];
+
+    //         $input['details'] = $input['details'];
+
+
+
+    //         salesContractItem::where('id', $id)->update($input);
+    //         $output = [
+    //             'success' => true,
+    //             'msg' => __('lang_v1.updated_success'),
+    //         ];
+    //     } catch (\Exception $e) {
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+    //         $output = [
+    //             'success' => false,
+    //             'msg' => __('messages.something_went_wrong'),
+    //         ];
+    //     }
+
+
+    //     return redirect()->route('contract_itmes');
+    // }
+
+    public function destroy($id)
+    {
+        error_log("Asdas");
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            ContactLocation::where('id', $id)
+                ->delete();
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.deleted_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+}
