@@ -1052,7 +1052,9 @@ return[
 'nationlity'=>'الجنسية',
 'quantity'=>'العدد',
 'notes'=>'ملاحظات',
-'required_date'=>'التاريخ المطلوب'
+'required_date'=>'التاريخ المطلوب',
+'contact_not_found'=>'رقم العميل غير موجود في السطر رقم ',
+'contact_location_not_found'=>'رقم المشروع غير موجود في السطر رقم'
 
 
 

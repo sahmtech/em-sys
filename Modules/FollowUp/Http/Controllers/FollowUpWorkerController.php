@@ -49,9 +49,8 @@ class FollowUpWorkerController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
         $contacts=Contact::where('type','customer')->pluck('name','id');
         $nationalities=EssentialsCountry::nationalityForDropdown();
-        
+    
         $users = User::where('user_type', 'worker')
-       
         ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
         ->with(['country', 'contract', 'OfficialDocument']);
     
