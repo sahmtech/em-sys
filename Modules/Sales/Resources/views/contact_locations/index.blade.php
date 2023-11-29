@@ -82,7 +82,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('contact_location_city', __('sales::lang.contact_location_city')) !!}
-                                    {!! Form::text('contact_location_city', null, [
+                                    {!! Form::select('contact_location_city', $cities, null, [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'placeholder' => __('sales::lang.contact_location_city'),
@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('contact_location_name_in_charge', __('sales::lang.contact_location_name_in_charge')) !!}
-                                    {!! Form::text('contact_location_name_in_charge', null, [
+                                    {!! Form::select('contact_location_name_in_charge', $name_in_charge_choices, null, [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'placeholder' => __('sales::lang.contact_location_name_in_charge'),
