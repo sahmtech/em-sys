@@ -28,7 +28,7 @@ class FollowUpWorkerController extends Controller
      * @return Renderable
      */
     protected $moduleUtil;
-   
+
 
     public function __construct(ModuleUtil $moduleUtil)
     {
@@ -37,61 +37,64 @@ class FollowUpWorkerController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-     
+
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_workers= auth()->user()->can('followup.crud_workers');
-        if (! $can_crud_workers) {
+        $can_crud_workers = auth()->user()->can('followup.crud_workers');
+        if (!$can_crud_workers) {
             abort(403, 'Unauthorized action.');
         }
-        
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
-        $contacts=Contact::where('type','customer')->pluck('name','id');
-        $nationalities=EssentialsCountry::nationalityForDropdown();
-        
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+
         $users = User::where('user_type', 'worker')
-       
-        ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
-        ->with(['country', 'contract', 'OfficialDocument']);
-    
+
+            ->leftjoin('contacts', 'contacts.id', '=', 'users.assigned_to')
+            ->with(['country', 'contract', 'OfficialDocument']);
+
         if (request()->ajax()) {
-           
-       
-        
+
+
+
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
                 $users->where('contacts.id', request()->input('project_name'));
             }
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end = request()->end_date;
-            
+
                 $users->whereHas('contract', function ($query) use ($start, $end) {
                     $query->whereDate('contract_end_date', '>=', $start)
                         ->whereDate('contract_end_date', '<=', $end);
                 });
             }
             if (!empty(request()->nationality) && request()->nationality !== 'all') {
-               
-               $users=$users->where('nationality_id', request()->nationality);
+
+                $users = $users->where('nationality_id', request()->nationality);
                 error_log(request()->nationality);
             }
 
 
-         
 
 
-           $users->select('users.*','users.nationality_id','essentials_salary', 
-           DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-           'contacts.name as contact_name');
+
+            $users->select(
+                'users.*',
+                'users.nationality_id',
+                'essentials_salary',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'contacts.name as contact_name'
+            );
             return Datatables::of($users)
-               
+
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
-                  
                 })
-              
-              
+
+
 
                 ->addColumn('residence_permit_expiration', function ($user) {
                     return $this->getDocumentExpirationDate($user, 'residence_permit');
@@ -102,12 +105,12 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-             
-           
-                ->rawColumns(['nationality','residence_permit_expiration','residence_permit','admissions_date','contract_end_date']) 
+
+
+                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')->with(compact('contacts','nationalities'));
+        return view('followup::workers.index')->with(compact('contacts', 'nationalities'));
     }
 
 
@@ -115,26 +118,26 @@ class FollowUpWorkerController extends Controller
 
     private function getDocumentExpirationDate($user, $documentType)
     {
-            foreach ($user->OfficialDocument as $off) {
-                if ($off->type == $documentType) {
-                    return $off->expiration_date;
-                }
+        foreach ($user->OfficialDocument as $off) {
+            if ($off->type == $documentType) {
+                return $off->expiration_date;
             }
-        
-            return ' ';
+        }
+
+        return ' ';
     }
-    
+
     private function getDocumentnumber($user, $documentType)
     {
-            foreach ($user->OfficialDocument as $off) {
-                if ($off->type == $documentType) {
-                    return $off->number;
-                }
+        foreach ($user->OfficialDocument as $off) {
+            if ($off->type == $documentType) {
+                return $off->number;
             }
-        
-            return ' ';
+        }
+
+        return ' ';
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -162,66 +165,78 @@ class FollowUpWorkerController extends Controller
      */
     public function show($id)
     {
-        if (! auth()->user()->can('user.view')) {
+        if (!auth()->user()->can('user.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
         $user = User::where('business_id', $business_id)
-                    ->with(['contactAccess'])
-                    ->find($id);
-        $dataArray=[];
-        if(!empty($user->bank_details))
-         {$dataArray = json_decode($user->bank_details, true)['bank_name'];} 
-     
-        
+            ->with(['contactAccess'])
+            ->find($id);
+        $dataArray = [];
+        if (!empty($user->bank_details)) {
+            $dataArray = json_decode($user->bank_details, true)['bank_name'];
+        }
+
+
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
-        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();          
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();  
-       // dd( $Qualification);
-        
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        // dd( $Qualification);
+
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
-      
-        if($professionId !== null)   
-       { $profession = EssentialsProfession::find($professionId)->name;}
-       else{$profession ="";}
-        
+
+        if ($professionId !== null) {
+            $profession = EssentialsProfession::find($professionId)->name;
+        } else {
+            $profession = "";
+        }
+
         $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-        if ( $specializationId !== null)
-        {$specialization = EssentialsSpecialization::find($specializationId)->name;}
-        else{$specialization="";}
-   
-      
+        if ($specializationId !== null) {
+            $specialization = EssentialsSpecialization::find($specializationId)->name;
+        } else {
+            $specialization = "";
+        }
+
+
         $user->profession = $profession;
         $user->specialization = $specialization;
- 
-        
+
+
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
-       
+
         $users = User::forDropdown($business_id, false);
 
         $activities = Activity::forSubject($user)
-           ->with(['causer', 'subject'])
-           ->latest()
-           ->get();
+            ->with(['causer', 'subject'])
+            ->latest()
+            ->get();
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $nationality_id=$user->nationality_id;
-        $nationality="";
-        if(!empty($nationality_id))
-        {
-            $nationality = EssentialsCountry::select('nationality')->where('id','=',$nationality_id)->first() ;
+        $nationality_id = $user->nationality_id;
+        $nationality = "";
+        if (!empty($nationality_id)) {
+            $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
-        
-     
-      
-        return view('followup::workers.show')->with(compact('user',
 
-         'view_partials', 'users', 'activities','bank_name',
-        'admissions_to_work','Qualification','Contract','nationalities','nationality'));
 
+
+        return view('followup::workers.show')->with(compact(
+            'user',
+
+            'view_partials',
+            'users',
+            'activities',
+            'bank_name',
+            'admissions_to_work',
+            'Qualification',
+            'Contract',
+            'nationalities',
+            'nationality'
+        ));
     }
 
 
