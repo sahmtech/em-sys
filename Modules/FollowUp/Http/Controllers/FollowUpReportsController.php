@@ -37,7 +37,7 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $contacts = Contact::where('type', 'customer')->pluck('name', 'id');
+        $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
        
         if (request()->ajax()) {
@@ -68,7 +68,7 @@ class FollowUpReportsController extends Controller
                 'users.*',
                 'users.nationality_id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'contacts.name as contact_name'
+                'contacts.supplier_business_name as contact_name'
             );
 
             return Datatables::of($users)
@@ -136,7 +136,7 @@ class FollowUpReportsController extends Controller
             }
             return Datatables::of($contracts)
                 ->addColumn('contact_name', function ($contract) {
-                    return $contract->transaction->contact->name;
+                    return $contract->transaction->contact->supplier_business_name;
                 })
                 ->addColumn('active_worker_count', function ($contract) {
                     return $contract->transaction->contact->user->where('user_type', 'worker')->where('status','active')->count();
