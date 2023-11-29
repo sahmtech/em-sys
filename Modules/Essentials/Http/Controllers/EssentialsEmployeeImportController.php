@@ -11,6 +11,8 @@ use App\User;
 use App\Category;
 use App\Business;
 use DateTime;
+use App\Contact;
+use App\ContactLocation;
 use App\BusinessLocation;
 use Modules\Essentials\Entities\essentialsAllowanceType;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
@@ -244,12 +246,52 @@ class EssentialsEmployeeImportController extends Controller
                                         $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
                                     
                                         $emp_array['assigned_to'] = $value[20];
-                                        if($value[20] == null)
-                                        {
-                                            $emp_array['assigned_to'] == null;
+                                        
+                                        if ($emp_array['assigned_to'] !== null) {
+                                        
+                                            $business = Contact::find($emp_array['assigned_to']);
+                                            if (!$business) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = __('essentials::lang.contact_not_found', ['row_no' => $row_no]);
+                                                break;
+                                            }
                                         }
+                                        else
+                                        {
+                                            $emp_array['assigned_to']=null;
+                                        } 
 
-                                        $emp_array['business_id'] = $value[21];
+
+
+                                        $emp_array['contact_location_id'] = $value[21];
+                                        
+                                        if ($emp_array['contact_location_id'] !== null) {
+                                        
+                                            if( $emp_array['assigned_to'] == null)
+                                            {
+                                                $is_valid = false;
+                                                $error_msg = __('essentials::lang.contact_not_found').$row_no;
+                                                break;
+                                            }
+
+                                            $business = ContactLocation::find($emp_array['contact_location_id']);
+                                            if (!$business) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = __('essentials::lang.contact_location_not_found').$row_no;
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $emp_array['contact_location_id']=null;
+                                        } 
+
+
+
+                                        //---------------------------------------------------
+                                        $emp_array['business_id'] = $value[22];
 
                                         if ($emp_array['business_id'] !== null) {
                                         
@@ -257,7 +299,7 @@ class EssentialsEmployeeImportController extends Controller
                                             if (!$business) {
                                             
                                                 $is_valid = false;
-                                                $error_msg = __('essentials::lang.business_not_found', ['row_no' => $row_no]);
+                                                $error_msg = __('essentials::lang.business_not_found').$row_no;
                                                 break;
                                             }
                                         }
@@ -270,7 +312,7 @@ class EssentialsEmployeeImportController extends Controller
 
 
                                         
-                                        $emp_array['location_id'] = $value[22];
+                                        $emp_array['location_id'] = $value[23];
 
                                         if ($emp_array['location_id'] !== null) {
                                         
@@ -290,7 +332,7 @@ class EssentialsEmployeeImportController extends Controller
 
 
 
-                                        $emp_array['essentials_department_id'] = $value[23];
+                                        $emp_array['essentials_department_id'] = $value[24];
                                         if ($emp_array['essentials_department_id'] !== null) {
                                     
                                             $dep = EssentialsDepartment::find($emp_array['essentials_department_id']);
@@ -309,18 +351,18 @@ class EssentialsEmployeeImportController extends Controller
 
 
 
-                                        $emp_array['addmission_date']=$value[24];
-                                        if (!empty($value[24])) {
-                                            if (is_numeric($value[24])) {
+                                        $emp_array['addmission_date']=$value[25];
+                                        if (!empty($value[25])) {
+                                            if (is_numeric($value[25])) {
                                             
-                                                $excelDateValue = (float)$value[24];
+                                                $excelDateValue = (float)$value[25];
                                                 $unixTimestamp = ($excelDateValue - 25569) * 86400; 
                                                 $date = date('Y-m-d', $unixTimestamp);
                                                 $emp_array['addmission_date'] = $date;
                                             
                                             } else {
                                             
-                                                $date = DateTime::createFromFormat('d/m/Y', $value[24]);
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[25]);
                                                 if ($date) {
                                                     $dob = $date->format('Y-m-d');
                                                     $emp_array['addmission_date'] = $dob;
@@ -330,7 +372,7 @@ class EssentialsEmployeeImportController extends Controller
 
 
 
-                                        $emp_array['specialization_id']=$value[25];
+                                        $emp_array['specialization_id']=$value[26];
                                       
                                         if ($emp_array['specialization_id'] !== null) {
                                         
@@ -349,7 +391,7 @@ class EssentialsEmployeeImportController extends Controller
 
 
 
-                                        $emp_array['profession_id']=$value[26];
+                                        $emp_array['profession_id']=$value[27];
 
                                         if ($emp_array['profession_id'] !== null) {
                                         
@@ -367,8 +409,8 @@ class EssentialsEmployeeImportController extends Controller
                                         
 
 
-                                        $emp_array['border_no']=$value[27];
-                                        $emp_array['nationality_id']=$value[28];
+                                        $emp_array['border_no']=$value[28];
+                                        $emp_array['nationality_id']=$value[29];
 
                                         if ($emp_array['nationality_id'] !== null) {
                                         
@@ -386,16 +428,16 @@ class EssentialsEmployeeImportController extends Controller
 
 
                                         
-                                        if (!empty($value[29])) {
-                                            $emp_array['contract_number'] = $value[29];
+                                        if (!empty($value[30])) {
+                                            $emp_array['contract_number'] = $value[30];
                                         } 
                                         else{$emp_array['contract_number'] = null;}
                                     
                                     
-                                        if (!empty($value[30])) {
-                                            if (is_numeric($value[30])) {
+                                        if (!empty($value[31])) {
+                                            if (is_numeric($value[31])) {
                                             
-                                                $excelDateValue = (float)$value[30];
+                                                $excelDateValue = (float)$value[31];
                                                 $unixTimestamp = ($excelDateValue - 25569) * 86400; 
                                                 $date = date('Y-m-d', $unixTimestamp);
                                                 
@@ -404,7 +446,7 @@ class EssentialsEmployeeImportController extends Controller
                                             } else
                                              {
                                             
-                                                $date = DateTime::createFromFormat('d/m/Y', $value[30]);
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[31]);
                                                 if ($date) {
                                                     $dob = $date->format('Y-m-d');
                                                     $emp_array['contract_start_date'] = $dob;
@@ -415,17 +457,17 @@ class EssentialsEmployeeImportController extends Controller
                                     }
                                     else{ $emp_array['contract_start_date'] = null;}
                     
-                                    if (!empty($value[31])) {
-                                        if (is_numeric($value[31])) {
+                                    if (!empty($value[32])) {
+                                        if (is_numeric($value[32])) {
                                         
-                                            $excelDateValue = (float)$value[31];
+                                            $excelDateValue = (float)$value[32];
                                             $unixTimestamp = ($excelDateValue - 25569) * 86400; 
                                             $date = date('Y-m-d', $unixTimestamp);
                                             $emp_array['contract_end_date'] = $date;
                                         
                                         } else {
                                             
-                                            $date = DateTime::createFromFormat('d/m/Y', $value[31]);
+                                            $date = DateTime::createFromFormat('d/m/Y', $value[32]);
                                             if ($date) {
                                                 $dob = $date->format('Y-m-d');
                                                 $emp_array['contract_end_date'] = $dob;
@@ -437,19 +479,19 @@ class EssentialsEmployeeImportController extends Controller
 
                                     
                                     
-                                if (!empty($value[32])) {
-                                    $emp_array['contract_duration'] = $value[32];
+                                if (!empty($value[33])) {
+                                    $emp_array['contract_duration'] = $value[33];
                                 } 
                                 else{$emp_array['contract_duration'] = null;}
 
-                                if (!empty($value[33])) {
-                                    $emp_array['probation_period'] = $value[33];
+                                if (!empty($value[34])) {
+                                    $emp_array['probation_period'] = $value[34];
                                 } 
                                 else{  $emp_array['probation_period'] = null;}
                                     
                                 
-                                if (!empty($value[34])) {
-                                    $emp_array['is_renewable'] = $value[34];
+                                if (!empty($value[35])) {
+                                    $emp_array['is_renewable'] = $value[35];
                                 } 
                                 else{   $emp_array['is_renewable'] = null;}
                                     
@@ -457,9 +499,9 @@ class EssentialsEmployeeImportController extends Controller
                                     
                                     
 
-                                        $emp_array['essentials_salary'] = $value[35];
+                                        $emp_array['essentials_salary'] = $value[36];
                                 
-                                        $allowancename=$value[36];
+                                        $allowancename=$value[37];
                                         $allowancetype = essentialsAllowanceType::where('name', $allowancename)->first();
                                         if ($allowancetype) {
                                             
@@ -468,11 +510,11 @@ class EssentialsEmployeeImportController extends Controller
                                         }
                                         else{ $emp_array['allowance_deduction_id']=null;}
                                     
-                                        $emp_array['amount']=$value[37];
+                                        $emp_array['amount']=$value[38];
 
 
 
-                                        $travelcategoryname=$value[38];
+                                        $travelcategoryname=$value[39];
                                         $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
                                         if ($traveltype) {
                                             
