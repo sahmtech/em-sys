@@ -331,9 +331,11 @@ class EssentialsEmployeeImportController extends Controller
 
 
                                         $emp_array['specialization_id']=$value[25];
+                                      
                                         if ($emp_array['specialization_id'] !== null) {
                                         
                                             $specialization = EssentialsSpecialization::find($emp_array['specialization_id']);
+                                          
                                             if (!$specialization) {
                                             
                                                 $is_valid = false;
