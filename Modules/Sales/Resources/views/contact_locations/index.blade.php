@@ -31,6 +31,7 @@
                         <table class="table table-bordered table-striped" id="contact_locations_table">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>@lang('sales::lang.contact_name')</th>
                                     <th>@lang('sales::lang.contact_location_name')</th>
                                     <th>@lang('sales::lang.contact_location_city')</th>
@@ -152,8 +153,9 @@
 
                 },
 
-                columns: [
-
+                columns: [{
+                        data: 'contact_id'
+                    },
                     {
                         data: 'contact_name'
                     },
