@@ -86,7 +86,7 @@ class FollowUpWorkerController extends Controller
                 'users.nationality_id',
                 'essentials_salary',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'contacts.name as contact_name'
+                'contacts.supplier_business_name as contact_name'
             );
             return Datatables::of($users)
 

@@ -154,7 +154,7 @@
                 },
 
                 columns: [{
-                        data: 'contact_id'
+                        data: 'id'
                     },
                     {
                         data: 'contact_name'

@@ -41,12 +41,12 @@ class ContactLocationController extends Controller
 
 
             return Datatables::of($contact_locations)
-                ->addColumn(
-                    'contact_id',
-                    function ($row) {
-                        return $row->contact->id;
-                    }
-                )
+            ->addColumn(
+                'id',
+                function ($row) {
+                    return $row->id;
+                }
+            )
                 ->addColumn(
                     'contact_name',
                     function ($row) {
@@ -103,7 +103,7 @@ class ContactLocationController extends Controller
                     $query->contact->where('supplier_business_name', 'like', "%{$keyword}%");
                 })
 
-                ->rawColumns(['contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'contact_id', 'action'])
+                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'contact_id', 'action'])
                 ->make(true);
         }
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
