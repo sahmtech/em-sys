@@ -108,7 +108,7 @@ class ContactLocationController extends Controller
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();
         $contacts = Contact::pluck('supplier_business_name', 'id',);
-        return view('sales::contact_locations.index')->with(compact('contacts', 'name_in_charge_choices'));
+        return view('sales::contact_locations.index')->with(compact('contacts', 'name_in_charge_choices', 'cities'));
     }
 
     /**
