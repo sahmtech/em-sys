@@ -51,10 +51,7 @@ class FollowUpWorkerController extends Controller
         $nationalities=EssentialsCountry::nationalityForDropdown();
         
         $users = User::where('user_type', 'worker')
-        ->join('essentials_user_allowance_and_deductions','essentials_user_allowance_and_deductions.user_id','users.id')
-        ->join('essentials_allowances_and_deductions as allawocnce','allawocnce.id', '=', 'essentials_user_allowance_and_deductions.allowance_deduction_id')
-        ->where('allawocnce.type', 'allowance')
-
+       
         ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
         ->with(['country', 'contract', 'OfficialDocument','allowancesAndDeductions']);
     
@@ -62,27 +59,31 @@ class FollowUpWorkerController extends Controller
            
        
         
-            // if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-            //     $users->where('contacts.id', request()->input('project_name'));
-            // }
-            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            //     $start = request()->start_date;
-            //     $end = request()->end_date;
+            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+                $users->where('contacts.id', request()->input('project_name'));
+            }
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end = request()->end_date;
             
-            //     $users->whereHas('contract', function ($query) use ($start, $end) {
-            //         $query->whereDate('contract_end_date', '>=', $start)
-            //             ->whereDate('contract_end_date', '<=', $end);
-            //     });
-            // }
-            // if (!empty(request()->nationality) && request()->nationality !== 'all') {
+                $users->whereHas('contract', function ($query) use ($start, $end) {
+                    $query->whereDate('contract_end_date', '>=', $start)
+                        ->whereDate('contract_end_date', '<=', $end);
+                });
+            }
+            if (!empty(request()->nationality) && request()->nationality !== 'all') {
                
-            //    $users=$users->where('nationality_id', request()->nationality);
-            //     error_log(request()->nationality);
-            // }
+               $users=$users->where('nationality_id', request()->nationality);
+                error_log(request()->nationality);
+            }
+
+
+         
+
 
            $users->select('users.*','users.nationality_id','essentials_salary', 
            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-           'contacts.supplier_business_name as contact_name');
+           'contacts.name as contact_name');
             return Datatables::of($users)
                
                 ->addColumn('nationality', function ($user) {
@@ -90,6 +91,8 @@ class FollowUpWorkerController extends Controller
                   
                 })
               
+              
+
                 ->addColumn('residence_permit_expiration', function ($user) {
                     return $this->getDocumentExpirationDate($user, 'residence_permit');
                 })
@@ -99,9 +102,7 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-                ->addColumn('allowancesAndDeductions', function ($user) {
-                    return optional($user->allowancesAndDeductions)->allowance_deduction_id  ?? ' ';
-                })
+             
            
                 ->rawColumns(['nationality','residence_permit_expiration','residence_permit','admissions_date','contract_end_date']) 
                 ->make(true);
