@@ -53,7 +53,7 @@ class FollowUpWorkerController extends Controller
         $users = User::where('user_type', 'worker')
        
         ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
-        ->with(['country', 'contract', 'OfficialDocument','allowancesAndDeductions']);
+        ->with(['country', 'contract', 'OfficialDocument']);
     
         if (request()->ajax()) {
            
