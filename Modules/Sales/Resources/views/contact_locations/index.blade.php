@@ -110,7 +110,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('contact_location_email_in_charge', __('sales::lang.contact_location_email_in_charge')) !!}
-                                    {!! Form::text('contact_location_email_in_charge', null, [
+                                    {!! Form::email('contact_location_email_in_charge', null, [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'placeholder' => __('sales::lang.contact_location_email_in_charge'),
