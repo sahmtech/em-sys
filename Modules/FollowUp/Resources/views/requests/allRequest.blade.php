@@ -61,7 +61,7 @@
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.reason')</th>
+                       
                      
 
                         </tr>
@@ -78,7 +78,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">@lang('sales::lang.create_sale_operation')</h4>
+                    <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
                 </div>
 
                 <div class="modal-body">
@@ -105,6 +105,7 @@
                             'insuranceUpgradeRequest'=>__('followup::lang.insuranceUpgradeRequest'),
                             'mofaRequest'=>__('followup::lang.mofaRequest'),
                             'chamberRequest'=>__('followup::lang.chamberRequest'),
+                            'cancleContractRequest'=>__('followup::lang.cancleContractRequest'),
                             
                             ], null, ['class' => 'form-control', 'required', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
                         </div>
@@ -127,7 +128,15 @@
                             {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
                             {!! Form::time('escape_time', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.escape_time'), 'id' => 'escapeTimeField']) !!}
                         </div>
-            
+                        <div class="form-group col-md-6" id="exit_date" style="display: none;">
+                            {!! Form::label('exit_date', __('followup::lang.exit_date') . ':*') !!}
+                            {!! Form::date('exit_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.exit_date'), 'id' => 'exit_dateField']) !!}
+                        </div>
+                        
+                        <div class="form-group col-md-6" id="return_date" style="display: none;">
+                            {!! Form::label('return_date', __('followup::lang.return_date') . ':*') !!}
+                            {!! Form::date('return_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.return_date'), 'id' => 'return_dateField']) !!}
+                        </div>
                         <div class="form-group col-md-6" id="escape_date" style="display: none;">
                             {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
                             {!! Form::date('escape_date', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('essentials::lang.escape_date'), 'id' => 'escapeDateField']) !!}
@@ -154,9 +163,23 @@
                             {!! Form::label('ins_class', __('followup::lang.insurance_class') . ':*') !!}
                             {!! Form::select('ins_class',$classes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_class')]) !!}
                         </div>
+                        <div class="form-group col-md-6" id="main_reason" style="display: none;">
+                            {!! Form::label('main_reason', __('followup::lang.main_reason') . ':*') !!}
+                            {!! Form::select('main_reason', $main_reasons, null, ['class' => 'form-control', 'style' => 'height: 40px', 'placeholder' => __('followup::lang.select_reason'),'id' => 'mainReasonSelect']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
+                            {!! Form::label('sub_reason', __('followup::lang.sub_reason') . ':*') !!}
+                            {!! Form::select('sub_reason', [], null, ['class' => 'form-control', 'style' => 'height: 40px',
+                                'placeholder' => __('followup::lang.select_sub_reason'), 'id' => 'subReasonSelect']); !!}
+                        </div>
+
                         <div class="form-group col-md-6" id="amount" style="display: none;">
                             {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
                             {!! Form::number('amount', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.advSalaryAmount'), 'id' => 'advSalaryAmountField']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="visa_number" style="display: none;">
+                            {!! Form::label('visa_number', __('followup::lang.visa_number') . ':*') !!}
+                            {!! Form::number('visa_number', null, ['class' => 'form-control','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.visa_number'), 'id' => 'visa_numberField']) !!}
                         </div>
                         <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
                             {!! Form::label('installmentsNumber', __('followup::lang.installmentsNumber') . ':*') !!}
@@ -171,12 +194,12 @@
                             {!! Form::textarea('note', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.note'), 'rows' => 3]) !!}
                         </div>
             
+                        {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
+                            {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
+                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
+                        </div> --}}
                         <div class="form-group col-md-6">
-                            {!! Form::label('reason', __('followup::lang.reason') . ':*') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'required', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
-                        </div>
-                        <div class="form-group col-md-6">
-                            {!! Form::label('attachment', __('followup::lang.attachment') . ':*') !!}
+                            {!! Form::label('attachment', __('followup::lang.attachment') . ':') !!}
                             {!! Form::file('attachment', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.attachment')]) !!}
                         </div>
                     </div>
@@ -213,7 +236,63 @@
                     
                 { data: 'request_no' },
                 
-                { data: 'user' },{ data: 'type' },
+                { data: 'user' },
+                {
+                            data: 'type',
+                            render: function (data, type, row) {
+                                if (data === 'exitRequest') {
+                                    return  '@lang('followup::lang.exitRequest')';
+                                    
+                                } else if (data === 'returnRequest') {
+                                    return  '@lang('followup::lang.returnRequest')';
+                                } 
+                                else if (data === 'escapeRequest') {
+                                    return  '@lang('followup::lang.escapeRequest')';
+                                } 
+                                else if (data === 'advanceSalary') {
+                                    return  '@lang('followup::lang.advanceSalary')';
+                                } 
+                                else if (data === 'leavesAndDepartures') {
+                                    return  '@lang('followup::lang.leavesAndDepartures')';
+                                } 
+                                else if (data === 'atmCard') {
+                                    return  '@lang('followup::lang.atmCard')';
+                                } 
+                                else if (data === 'residenceRenewal') {
+                                    return  '@lang('followup::lang.residenceRenewal')';
+                                } 
+                                else if (data === 'workerTransfer') {
+                                    return  '@lang('followup::lang.workerTransfer')';
+                                } 
+                                else if (data === 'residenceCard') {
+                                    return  '@lang('followup::lang.residenceCard')';
+                                } 
+                                else if (data === 'workInjuriesRequest') {
+                                    return  '@lang('followup::lang.workInjuriesRequest')';
+                                } 
+                                    else if (data === 'residenceEditRequest') {
+                                    return  '@lang('followup::lang.residenceEditRequest')';
+                                } 
+                                else if (data === 'baladyCardRequest') {
+                                    return  '@lang('followup::lang.baladyCardRequest')';
+                                } 
+                                else if (data === 'mofaRequest') {
+                                    return  '@lang('followup::lang.mofaRequest')';
+                                } 
+                                else if (data === 'insuranceUpgradeRequest') {
+                                    return  '@lang('followup::lang.insuranceUpgradeRequest')';
+                                } 
+                                else if (data === 'chamberRequest') {
+                                    return  '@lang('followup::lang.chamberRequest')';
+                                }
+                                else if (data === 'cancleContractRequest') {
+                                    return  '@lang('followup::lang.cancleContractRequest')';
+                                }
+                                 else{
+                                    return data;
+                                }
+                            }
+                    },
                 { data: 'created_at' },
               
                 {
@@ -235,8 +314,7 @@
                         }
                     },
                 { data: 'note' },
-                { data: 'reason' },
-             
+              
                
      
 
@@ -246,30 +324,43 @@
 
      });
  
-  
-    });
+     });
 
 
 </script>
 <script>
     $(document).ready(function () {
-        
+        var mainReasonSelect = $('#mainReasonSelect');
+        var subReasonContainer = $('#sub_reason_container');
+        var subReasonSelect = $('#subReasonSelect');
+
         handleTypeChange();
         $('#requestType').change(handleTypeChange);
 
         function handleTypeChange() {
             var selectedType = $('#requestType').val();
+            
             console.log(selectedType);
-            if (selectedType === 'exitRequest' || selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
+            if (selectedType === 'exitRequest' || selectedType === 'leavesAndDepartures') {
                 $('#start_date').show();
+             
             } else {
                 $('#start_date').hide();
             }
 
-            if (selectedType === 'returnRequest' || selectedType === 'leavesAndDepartures') {
+            if (selectedType === 'leavesAndDepartures') {
                 $('#end_date').show();
             } else {
                 $('#end_date').hide();
+            }
+            if (selectedType === 'returnRequest') {
+                $('#exit_date').show();
+                $('#return_date').show();
+
+            } else {
+                $('#exit_date').hide();
+                $('#return_date').hide();
+
             }
             if (selectedType === 'leavesAndDepartures') {
                 $('#leaveType').show();
@@ -325,9 +416,56 @@
                 $('#ins_class').hide();
               
             }
+            if (selectedType === 'cancleContractRequest') {
+                $('#main_reason').show();
+            
+
+            } else {
+                $('#main_reason').hide();
+              
+            }
+            if (selectedType === 'chamberRequest' || selectedType === 'mofaRequest' ) {
+                $('#visa_number').show();
+            
+
+            } else {
+                $('#visa_number').hide();
+              
+            }
         }
+   
+        mainReasonSelect.on('change', function () {
+        var selectedMainReason = $(this).val();
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: '{{ route('getSubReasons') }}',
+            type: 'POST',
+            data: {
+                _token: csrfToken,
+                main_reason: selectedMainReason
+            },
+            success: function (data) {
+                subReasonSelect.empty();
+               
+                if (data.sub_reasons.length > 0) {
+                    subReasonContainer.show();
+
+                    $.each(data.sub_reasons, function (index, subReason) {
+                        subReasonSelect.append($('<option>', {
+                            value: subReason.id,
+                            text: subReason.name
+                        }));
+                    });
+                } else {
+                    subReasonContainer.hide();
+                }
+            }
+        });
         
     });
-  
+});
 </script>
+
+
 @endsection

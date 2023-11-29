@@ -29,7 +29,7 @@
                             <th>@lang('followup::lang.escape_date')</th>                          
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.reason')</th>
+                        
                             <th>@lang('followup::lang.action')</th>
 
                         </tr>
@@ -87,7 +87,7 @@
                 { data: 'start_date' },            
                 { data: 'status' } ,
                 { data: 'status_note' },
-                { data: 'reason' },
+         
               
                 {
                     data: 'can_return',

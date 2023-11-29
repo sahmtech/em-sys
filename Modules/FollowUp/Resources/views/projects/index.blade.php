@@ -12,7 +12,7 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
               
@@ -50,7 +50,7 @@
               
             @endcomponent
         </div>
-    </div>
+    </div> --}}
     @component('components.widget', ['class' => 'box-primary'])
 
       
@@ -95,7 +95,7 @@
         serverSide: true,
 
         ajax: {
-                    url: "{{ route('projects') }}",
+                    url: "{{ route('projects2') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();

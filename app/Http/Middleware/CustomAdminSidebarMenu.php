@@ -443,7 +443,7 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(
-                action([\Modules\FollowUp\Http\Controllers\DashboardController::class, 'index']),
+                action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
                 __('followup::lang.followUp'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']
             );
@@ -457,18 +457,42 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
-            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects2']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
 
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'allRequests']);
-           
-           
-            
-            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index'])
-            , __('followup::lang.contrascts_wishes'),
-             ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'contrascts_wishes']);
-             
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index']), __('followup::lang.recruitmentRequests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'recruitmentRequests']);
+
+
+            $menu->dropdown(
+                __('followup::lang.reports.title'),
+                function ($sub) use ($enabled_modules) {
+                    if (auth()->user()->can('followup::lang.reports.projects')) {
+                        $sub->url(
+                            action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
+                            __('followup::lang.reports.projects'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                        );
+                    }
+
+                    if (auth()->user()->can('followup::lang.reports.projectWorkers')) {
+                        $sub->url(
+                            action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
+                            __('followup::lang.reports.projectWorkers'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                        );
+                    }
+                },
+                ['icon' => 'fa fas fa-meteor']
+            );
+
+            $menu->url(
+                action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index']),
+                __('followup::lang.contrascts_wishes'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'contrascts_wishes']
+            );
+
             // $menu->dropdown(
             //     __('followup::lang.requests'),
             //     function ($sub) use ($enabled_modules) {
@@ -586,11 +610,11 @@ class CustomAdminSidebarMenu
             //         }
 
 
-        //         },
-        //         ['icon' => 'fa fas fa-meteor']
+            //         },
+            //         ['icon' => 'fa fas fa-meteor']
 
-        //     );
-         });
+            //     );
+        });
     }
     public function CUS_salesMenu()
     {
@@ -599,40 +623,45 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(1);
+
             $menu->url(
                 route('sales_landing'),
                 __('sales::lang.sales'),
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
-            )->order(0);
+            );
             $menu->header("");
             $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
                 __('sales::lang.customers'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
-            )->order(2);
-
+            );
+            $menu->url(
+               route('sale.contactLocations'),
+                __('sales::lang.contact_locations'),
+                ['icon' => 'fa fas fa-plus-circle'],
+            );
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
                 __('sales::lang.add_offer_price'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-            )->order(3);
+            );
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                 __('sales::lang.offer_price'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
 
-            )->order(4);
+            );
 
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
                 __('sales::lang.contracts'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
-            )->order(5);
+            );
 
 
 
@@ -640,18 +669,18 @@ class CustomAdminSidebarMenu
                 action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
                 __('sales::lang.contract_itmes'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
-            )->order(6);
+            );
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
                 __('sales::lang.contract_appendics'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
-            )->order(7);
+            );
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
                 __('sales::lang.sale_operation_orders'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
-            )->order(8);
+            );
         });
     }
     public function houseMovementsMenu()
@@ -859,7 +888,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
                 )->order(4);
             }
-           
         });
     }
 

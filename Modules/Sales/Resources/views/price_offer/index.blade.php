@@ -86,7 +86,7 @@ $(document).ready( function(){
            
             { data: 'location_id'},
             { data: 'ref_no'},
-            { data: 'name'},
+            { data: 'supplier_business_name'},
             { data: 'mobile'}, 
             { data: 'transaction_date'},
             { data: 'final_total'},

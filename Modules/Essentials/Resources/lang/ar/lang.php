@@ -1049,6 +1049,10 @@ return[
 'wish'=>'الرغبة',
 'add_wish'=>'إضافة رغبة',
 'wish_file'=>'مرفق الرغبة',
+'nationlity'=>'الجنسية',
+'quantity'=>'العدد',
+'notes'=>'ملاحظات',
+'required_date'=>'التاريخ المطلوب'
 
 
 

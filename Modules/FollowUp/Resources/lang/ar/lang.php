@@ -106,6 +106,7 @@ return [
 
 
 
+
     'create_order'=>'إنشاء طلب',
     'viewExitRequests'=>'عرض طلبات الخروج النهائي',
     'crudExitRequests'=>'قبول/رفض طلبات الخروج النهائي',
@@ -152,6 +153,10 @@ return [
     'religion'=>'الدين',
     'renew'=>'تجديد',
     'issuance'=>'إصدار',
+    'cancleContractRequest'=>'طلب إنهاء العلاقة التعاقدية',
+    'main_reason'=>'السبب الرئيسي',
+    'sub_reason'=>'السبب الثانوي',
+    'select_reason'=>'اختار سبب',
 
     'new_request' => 'طلب جديد',
     'on_going_request' => 'طلب تحت الإجراء',
@@ -161,14 +166,21 @@ return [
     'residency' => 'الإقامة',
     'project' => 'المشروع',
     'end_date' => 'تاريخ الانتهاء',
+    'work_card' => 'كرت العمل',
     'expiry_within_two_months_contracts' => 'عقود تنتهي خلال شهرين',
     'within_two_month_expiry_residency' => 'إقامات تنتهي خلال شهرين',
+    'within_two_month_expiry_word_cards' => 'كروت عمل تنتهي خلال شهرين',
     'new_requests' => 'الطلبات الجديدة',
     'under_process_requests' => 'الطلبات التي تحت الإجراء',
     'finished_requests' => 'الطلبات المنتهية',
-
-
-    
+    'no_wishes_found'=>'لا توجد رغبات مضافة',
+    'no_contract_found'=>' لا يوجد عقد مضاف  ',
+    'contract_expired'=>'لا يمكن إضافة الطلب لأن الوقت المتبقي لنهاية العقد أكثر من شهر',
+    'visa_number'=>'رقم التأشيرة',
+    'recruitmentRequests'=>'طلبات التوظيف الداخلي',
+    'attachment_view'=>'عرض المرفقات',
+    'no_attachment_to_show'=>'لا يوجد مرفقات للعرض',
+    'attachments'=>'المرفقات'
 
 
 

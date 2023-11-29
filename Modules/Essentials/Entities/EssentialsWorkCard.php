@@ -2,10 +2,11 @@
 
 namespace Modules\Essentials\Entities;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class EssentialsworkCard extends Model
+class EssentialsWorkCard extends Model
 {
     use HasFactory;
 
@@ -13,6 +14,8 @@ class EssentialsworkCard extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\User::class, 'user_id');
+        return $this->belongsTo(User::class, 'employee_id');
     }
+
+    
 }

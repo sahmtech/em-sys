@@ -6,7 +6,7 @@
 
 <section class="content-header">
     <h1>
-        <span>@lang('followup::lang.insuranceUpgradeRequest')</span>
+        <span>@lang('followup::lang.cancleContractRequest')</span>
     </h1>
 </section>
 
@@ -25,7 +25,8 @@
                    
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.insurance_class')</th>
+                            <th>@lang('followup::lang.main_reason')</th>
+                            <th>@lang('followup::lang.sub_reason')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
                         
@@ -77,17 +78,18 @@
          processing: true,
          serverSide: true,
 
-        ajax: { url: "{{ route('insuranceUpgradeRequest') }}"},
+        ajax: { url: "{{ route('cancleContractRequest') }}"},
      
                  columns: [
                
              
                 { data: 'user' },
                 { data: 'request_no' },
-                { data: 'insurance_class'},
+                { data: 'main_reason'},
+                { data: 'sub_reason'},
                 { data: 'status' } ,
                 { data: 'status_note' },
-              
+          
                 {
                     data: 'can_return',
                     
