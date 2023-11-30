@@ -359,7 +359,6 @@ class User extends Authenticatable
     }
     public function userContact()
     {
-
         return $this->belongsTo(Contact::class, 'assigned_to');
     }
 
@@ -378,7 +377,7 @@ class User extends Authenticatable
         return $this->belongsToMany(EssentialsUserAllowancesAndDeduction::class, 'user_id');
     }
 
-    public function contactLocations()
+    public function assignedTo()
     {
         return $this->belongsTo(ContactLocation::class, 'assigned_to');
     }
