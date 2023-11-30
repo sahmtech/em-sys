@@ -49,8 +49,14 @@ class EssentialsWishesController extends Controller
          
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    $html .= '<button class="btn btn-xs btn-primary edit_button" data-toggle="modal" data-target="#editModal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-    
+                    $html .= '<button class="btn btn-xs btn-primary edit_button" 
+                    data-toggle="modal" 
+                    data-target="#editModal" 
+                    data-id="' . $row->id . '" 
+                    data-employee-type="' . $row->employee_type . '"
+                    data-wish="' . $row->wish . '">
+                    <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+         
                     $html .= '&nbsp;';
     
                     $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('wish.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';

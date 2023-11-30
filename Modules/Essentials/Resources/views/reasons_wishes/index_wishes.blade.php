@@ -226,34 +226,40 @@
     $(document).ready(function () {
         $('.edit_button').click(function () {
             var itemId = $(this).data('id');
+            var employeeType = $(this).data('employee-type'); // Add this line to get the stored employee_type
+            var wish = $(this).data('wish'); // Add this line to get the stored wish
+
             $('#editItemId').val(itemId);
+            $('#employee_type_filter').val(employeeType).trigger('change'); // Populate and trigger the change event for the select dropdown
+            $('#wish').val(wish);
+
             $('#editModal').modal('show');
         });
 
-      
+        // Add an event listener to the "Save changes" button in the modal
         $('#saveChangesButton').click(function () {
             var itemId = $('#editItemId').val();
             var employeeType = $('#employee_type_filter').val();
             var wish = $('#wish').val();
 
-         
+            // Make an Ajax request to the update wish route
             $.ajax({
                 url: '/wishes/' + itemId + '/update',
-                method: 'POST', 
+                method: 'POST', // Change this to the appropriate HTTP method (POST or PUT)
                 data: {
-                    _token: '{{ csrf_token() }}',
+                    _token: '{{ csrf_token() }}', // Add the CSRF token for security
                     employee_type: employeeType,
                     wish: wish
-                 
+                    // Add other fields as needed
                 },
                 success: function (data) {
-                  
+                    // Handle success response, if needed
                     console.log(data);
-                   
+                    // Close the modal after a successful update
                     $('#editModal').modal('hide');
                 },
                 error: function (xhr, status, error) {
-                  
+                    // Handle error response, if needed
                     console.error(error);
                 }
             });
