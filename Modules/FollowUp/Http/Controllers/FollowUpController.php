@@ -79,7 +79,7 @@ class FollowUpController extends Controller
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->assignedTo->name;
+                    return $row->assignedTo?->name ?? null;
                 }
             )
             ->addColumn(
