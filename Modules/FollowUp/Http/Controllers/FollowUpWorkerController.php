@@ -52,7 +52,7 @@ class FollowUpWorkerController extends Controller
 
         $users = User::where('user_type', 'worker')
 
-            ->leftjoin('contacts', 'contacts.id', '=', 'users.assigned_to')
+            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
         if (request()->ajax()) {
@@ -83,7 +83,7 @@ class FollowUpWorkerController extends Controller
                 'users.nationality_id',
                 'users.essentials_salary',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'contacts.supplier_business_name as contact_name'
+                'contact_locations.name as contact_name'
             );
             return Datatables::of($users)
 
