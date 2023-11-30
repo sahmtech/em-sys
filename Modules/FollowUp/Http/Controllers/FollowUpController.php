@@ -73,7 +73,13 @@ class FollowUpController extends Controller
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->assignedTo->supplier_business_name;
+                    return $row->assignedTo->name;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->assignedTo?->contact->supplier_business_name ?? null;
                 }
             )
             ->addColumn(
@@ -128,7 +134,13 @@ class FollowUpController extends Controller
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->employee->assignedTo->supplier_business_name;
+                    return $row->employee->assignedTo?->contact->supplier_business_name??null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->employee->assignedTo?->supplier_business_name??null;
                 }
             )
             ->addColumn(
@@ -191,7 +203,13 @@ class FollowUpController extends Controller
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->assignedTo->supplier_business_name;
+                    return $row->assignedTo->name;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->assignedTo->contact->supplier_business_name;
                 }
             )
             ->addColumn(

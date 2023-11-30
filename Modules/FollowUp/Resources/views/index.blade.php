@@ -112,6 +112,7 @@
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.residency')</th>
                                     <th>@lang('followup::lang.project')</th>
+                                    <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
                                     <th></th>
                                 </tr>
@@ -137,6 +138,7 @@
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.residency')</th>
                                     <th>@lang('followup::lang.project')</th>
+                                    <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
                                     <th></th>
                                 </tr>
@@ -161,8 +163,9 @@
                                 <tr>
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.residency')</th>
-                                     <th>@lang('followup::lang.work_card')</th>
+                                    <th>@lang('followup::lang.work_card')</th>
                                     <th>@lang('followup::lang.project')</th>
+                                    <th>@lang('followup::lang.customer_name')</th>
                                     <th>@lang('followup::lang.end_date')</th>
                                     <th></th>
                                 </tr>
@@ -209,6 +212,9 @@
                         data: 'project'
                     },
                     {
+                        data: 'customer_name'
+                    },
+                    {
                         data: 'end_date'
                     },
 
@@ -244,6 +250,9 @@
                     },
                     {
                         data: 'project'
+                    },
+                    {
+                        data: 'customer_name'
                     },
                     {
                         data: 'end_date'
@@ -286,6 +295,9 @@
                         data: 'project'
                     },
                     {
+                        data: 'customer_name'
+                    },
+                    {
                         data: 'end_date'
                     },
 
@@ -310,8 +322,5 @@
 
 
         });
-
-     
-
     </script>
 @endsection
