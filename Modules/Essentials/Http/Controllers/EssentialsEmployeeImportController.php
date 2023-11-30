@@ -253,7 +253,7 @@ class EssentialsEmployeeImportController extends Controller
                                         
                                         if ($emp_array['assigned_to'] !== null) {
                                         
-                                            $business = Contact::find($emp_array['assigned_to']);
+                                            $business = ContactLocation::find($emp_array['assigned_to']);
                                             if (!$business) {
                                             
                                                 $is_valid = false;
@@ -268,30 +268,7 @@ class EssentialsEmployeeImportController extends Controller
 
 
 
-                                        $emp_array['contact_location_id'] = $value[24];
-                                        
-                                        if ($emp_array['contact_location_id'] !== null) {
-                                        
-                                            if( $emp_array['assigned_to'] == null)
-                                            {
-                                                $is_valid = false;
-                                                $error_msg = __('essentials::lang.contact_not_found').$row_no;
-                                                break;
-                                            }
-
-                                            $business = ContactLocation::find($emp_array['contact_location_id']);
-                                            if (!$business) {
-                                            
-                                                $is_valid = false;
-                                                $error_msg = __('essentials::lang.contact_location_not_found') .$row_no;
-                                                break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            $emp_array['contact_location_id']=null;
-                                        } 
-
+                                      
 
 
                                         //---------------------------------------------------
