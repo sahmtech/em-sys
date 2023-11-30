@@ -195,9 +195,9 @@ class ContactLocationController extends Controller
         }
 
         $contactLocation = ContactLocation::findOrFail($id);
-
+        $cities = EssentialsCity::forDropdown();
         $contacts = Contact::pluck('supplier_business_name', 'id',);
-        return view('sales::contact_locations.edit')->with(compact('contacts','contactLocation'));
+        return view('sales::contact_locations.edit')->with(compact('cities','contacts','contactLocation'));
     }
 
     /**
