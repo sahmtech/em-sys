@@ -82,7 +82,7 @@ class FollowUpWorkerController extends Controller
                 'users.id_proof_number',
                 'users.nationality_id',
                 'users.essentials_salary',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
                 'contact_locations.name as contact_name'
             );
             return Datatables::of($users)
@@ -107,7 +107,9 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query;
+                })
 
                 ->rawColumns(['nationality', 'residence_permit_expiration','contract_end_date'])
                 ->make(true);
