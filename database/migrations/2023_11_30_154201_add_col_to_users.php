@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->bigInteger('contact_location_id')->unsigned()->nullable()->after('assigned_to');
-            $table->foreign('contact_location_id')->references('id')->on('contact_locations')->onDelete('cascade');
+            $table->unsignedBigInteger('assigned_to')->nullable()->after('contact_user_type');
+            $table->foreign('assigned_to')->references('id')->on('contact_locations')->onDelete('cascade');
         });
-    }   
+    }
 
     /**
      * Reverse the migrations.
