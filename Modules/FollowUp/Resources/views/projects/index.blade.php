@@ -16,13 +16,17 @@
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
               
-                <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                        {!! Form::select('project_name_filter',$contacts2, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
-                
-                    </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                    {!! Form::select('project_name_filter', $contacts2, null, [
+                        'class' => 'form-control',
+                        'style' => 'width:100%;padding:2px;',
+                        'placeholder' => __('lang_v1.all'),
+                    ]) !!}
+
                 </div>
+            </div>
                 {{-- <div class="col-md-3">
                     <div class="form-group">
                         <label for="offer_status_filter">@lang('followup::lang.project_status'):</label>

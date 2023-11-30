@@ -3,6 +3,7 @@
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\Contact;
+use App\ContactLocation;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -48,6 +49,7 @@ class FollowUpWorkerController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $users = User::where('user_type', 'worker')
@@ -57,26 +59,25 @@ class FollowUpWorkerController extends Controller
 
         if (request()->ajax()) {
 
+            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+                error_log(request()->input('project_name'));
+                $users->where('assigned_to', request()->input('project_name'));
+           
+            }
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
+                $start = request()->start_date;
+                $end = request()->end_date;
 
+                $users->whereHas('contract', function ($query) use ($start, $end) {
+                    $query->whereDate('contract_end_date', '>=', $start)
+                        ->whereDate('contract_end_date', '<=', $end);
+                });
+            }
+            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
-            // if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-            //     $users->where('contacts.id', request()->input('project_name'));
-            // }
-            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
-            //     $start = request()->start_date;
-            //     $end = request()->end_date;
-
-            //     $users->whereHas('contract', function ($query) use ($start, $end) {
-            //         $query->whereDate('contract_end_date', '>=', $start)
-            //             ->whereDate('contract_end_date', '<=', $end);
-            //     });
-            // }
-            // if (!empty(request()->nationality) && request()->nationality !== 'all') {
-
-            //     $users = $users->where('nationality_id', request()->nationality);
-            //     error_log(request()->nationality);
-            // }
-
+                $users = $users->where('users.nationality_id', request()->nationality);
+                
+            }
             $users->select(
                 'users.*',
                 'users.id_proof_number',
@@ -114,7 +115,7 @@ class FollowUpWorkerController extends Controller
                 ->rawColumns(['nationality', 'residence_permit_expiration','contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')->with(compact('contacts', 'nationalities'));
+        return view('followup::workers.index')->with(compact('contacts', 'nationalities','ContactsLocation'));
     }
 
 

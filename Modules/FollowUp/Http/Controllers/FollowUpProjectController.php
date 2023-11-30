@@ -3,6 +3,7 @@
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\Contact;
+use App\ContactLocation;
 use App\Transaction;
 use App\User;
 
@@ -48,11 +49,12 @@ class FollowUpProjectController extends Controller
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-              error_log (request()->input('project_name'));
-                $contacts->where('contacts.id', request()->input('project_name'));
+               
+                $contacts->where('id', request()->input('project_name'));
+              
             }
            
-           
+         
             return Datatables::of($contacts)
                 ->addColumn('contact_name', function ($contact) {
                     return $contact->supplier_business_name ?? null;
@@ -136,8 +138,8 @@ class FollowUpProjectController extends Controller
         }
 
 
-        $contacts2 = Contact::whereIn('type', ['customer', 'lead'])->   pluck('supplier_business_name');
-
+       
+        $contacts2 = Contact::all()->pluck('supplier_business_name', 'id');
         return view('followup::projects.index')->with(compact('contacts2'));
     }
 
