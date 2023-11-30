@@ -233,10 +233,51 @@ class EssentialsEmployeeImportController extends Controller
                                         $emp_array['id_proof_name'] = $value[14];
                                         
                                         $emp_array['id_proof_number'] = $value[15];
-                                        $emp_array['proof_end_date'] = $value[16];
-                                        $emp_array['passport_numbrer'] = $value[17];
-                                        $emp_array['passport_end_date'] = $value[18];
                                         
+                                       
+
+                                        if (!empty($value[16])) {
+                                            if (is_numeric($value[16])) {
+                                            
+                                                $excelDateValue = (float)$value[16];
+                                                $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                                                $date = date('Y-m-d', $unixTimestamp);
+                                                $emp_array['proof_end_date'] = $date;
+                                            
+                                            } else {
+                                            
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[16]);
+                                                if ($date) {
+                                                    $dob = $date->format('Y-m-d');
+                                                    $emp_array['proof_end_date'] = $dob;
+                                                }
+                                        }
+                                    }
+                                    else{ $emp_array['proof_end_date'] = null;}
+
+
+                                        $emp_array['passport_numbrer'] = $value[17];
+                                       
+                                        
+                                        if (!empty($value[18])) {
+                                            if (is_numeric($value[18])) {
+                                            
+                                                $excelDateValue = (float)$value[18];
+                                                $unixTimestamp = ($excelDateValue - 25569) * 86400; 
+                                                $date = date('Y-m-d', $unixTimestamp);
+                                                $emp_array['passport_end_date'] = $date;
+                                            
+                                            } else {
+                                            
+                                                $date = DateTime::createFromFormat('d/m/Y', $value[18]);
+                                                if ($date) {
+                                                    $dob = $date->format('Y-m-d');
+                                                    $emp_array['passport_end_date'] = $dob;
+                                                }
+                                        }
+                                    }
+                                    else{ $emp_array['passport_end_date'] = null;}
+
                                        
                                     
                                     $emp_array['bank_details'] = [
