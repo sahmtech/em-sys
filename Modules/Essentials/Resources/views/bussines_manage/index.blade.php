@@ -28,6 +28,7 @@
                     <table class="table table-bordered table-striped" id="business_table">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>@lang('essentials::lang.ar_name')</th>
                                 <th>@lang('essentials::lang.en_name')</th>
                                 <th>@lang('essentials::lang.start_date')</th>
@@ -184,7 +185,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 {!! Form::label('city', __('business.city') . ':*') !!}
@@ -202,7 +203,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 {!! Form::label('state', __('essentials::lang.state') . ':*') !!}
@@ -215,7 +216,7 @@
                                 ]) !!}
                             </div>
                         </div>
-                        
+
                         <div class="clearfix"></div>
 
                         <div class="col-md-6">
@@ -505,6 +506,9 @@
                 serverSide: true,
                 ajax: '{{ route('getBusiness') }}',
                 columns: [{
+                        data: 'id'
+                    },
+                    {
                         data: 'name'
                     },
                     {
@@ -601,66 +605,67 @@
 
         });
     </script>
-<script>
-    $(document).ready(function () {
-        // Copy the original data to use as a reference
-        var originalCountries = {!! json_encode($countries) !!};
-        var originalCities = {!! json_encode($cities) !!};
-        var originalStates = {!! json_encode($states) !!};
-        updateDropdown('#country', originalCountries);
-        // Country selection change
-        $('#country').change(function () {
-            var countryId = $(this).val();
+    <script>
+        $(document).ready(function() {
+            // Copy the original data to use as a reference
+            var originalCountries = {!! json_encode($countries) !!};
+            var originalCities = {!! json_encode($cities) !!};
+            var originalStates = {!! json_encode($states) !!};
+            updateDropdown('#country', originalCountries);
+            // Country selection change
+            $('#country').change(function() {
+                var countryId = $(this).val();
 
-            // Filter cities based on the selected country
-            var filteredCities = filterByCountry(originalCities, countryId);
+                // Filter cities based on the selected country
+                var filteredCities = filterByCountry(originalCities, countryId);
 
-            // Update the cities dropdown with the filtered data
-            updateDropdown('#city', filteredCities);
+                // Update the cities dropdown with the filtered data
+                updateDropdown('#city', filteredCities);
 
-            // Reset states dropdown
-            updateDropdown('#state', {});
-        });
-
-        // City selection change
-        $('#city').change(function () {
-            var cityId = $(this).val();
-
-            // Filter states based on the selected city
-            var filteredStates = filterByCity(originalStates, cityId);
-
-            // Update the states dropdown with the filtered data
-            updateDropdown('#state', filteredStates);
-        });
-
-        // Helper function to filter cities by country
-        function filterByCountry(cities, countryId) {
-            return Object.fromEntries(
-                Object.entries(cities)
-                    .filter(([id, city]) => city.country_id == countryId)
-            );
-        }
-
-        // Helper function to filter states by city
-        function filterByCity(states, cityId) {
-            return Object.fromEntries(
-                Object.entries(states)
-                    .filter(([id, state]) => state.city_id == cityId)
-            );
-        }
-
-        // Helper function to update a dropdown with new data
-        function updateDropdown(dropdownId, newData) {
-            var dropdown = $(dropdownId);
-            dropdown.empty();
-            dropdown.append($('<option>').val('').text('Select'));
-
-            $.each(newData, function (id, text) {
-                dropdown.append($('<option>').val(id).text(text['ar'])); // Change 'text' to 'text['ar']'
+                // Reset states dropdown
+                updateDropdown('#state', {});
             });
-        }
-    });
-</script>
+
+            // City selection change
+            $('#city').change(function() {
+                var cityId = $(this).val();
+
+                // Filter states based on the selected city
+                var filteredStates = filterByCity(originalStates, cityId);
+
+                // Update the states dropdown with the filtered data
+                updateDropdown('#state', filteredStates);
+            });
+
+            // Helper function to filter cities by country
+            function filterByCountry(cities, countryId) {
+                return Object.fromEntries(
+                    Object.entries(cities)
+                    .filter(([id, city]) => city.country_id == countryId)
+                );
+            }
+
+            // Helper function to filter states by city
+            function filterByCity(states, cityId) {
+                return Object.fromEntries(
+                    Object.entries(states)
+                    .filter(([id, state]) => state.city_id == cityId)
+                );
+            }
+
+            // Helper function to update a dropdown with new data
+            function updateDropdown(dropdownId, newData) {
+                var dropdown = $(dropdownId);
+                dropdown.empty();
+                dropdown.append($('<option>').val('').text('Select'));
+
+                $.each(newData, function(id, text) {
+                    dropdown.append($('<option>').val(id).text(text[
+                    'ar'])); // Change 'text' to 'text['ar']'
+                });
+            }
+        });
+    </script>
 
 
     <script>
