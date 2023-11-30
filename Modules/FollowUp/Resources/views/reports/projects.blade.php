@@ -16,8 +16,8 @@
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $contacts, null, [
+                            {!! Form::label('customer_name_filter', __('sales::lang.customer_name') . ':') !!}
+                            {!! Form::select('customer_name_filter', $contactLocation_fillter, null, [
                                 'class' => 'form-control',
                                 'style' => 'width:100%;padding:2px;',
                                 'placeholder' => __('lang_v1.all'),
@@ -27,8 +27,20 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="offer_status_filter">@lang('followup::lang.project_status'):</label>
-                            <select class="form-control select2" name="offer_status_filter" required id="offer_status_filter"
+                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                            {!! Form::select('project_name_filter', $contacts_fillter, null, [
+                                'class' => 'form-control',
+                                'style' => 'width:100%;padding:2px;',
+                                'placeholder' => __('lang_v1.all'),
+                            ]) !!}
+
+                        </div>
+                    </div>
+
+                    {{-- <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="customer_name_filter">@lang('followup::lang.customer_name'):</label>
+                            <select class="form-control select2" name="customer_name_filter" required id="customer_name_filter"
                                 style="width: 100%;padding:2px;">
                                 <option value="all">@lang('lang_v1.all')</option>
                                 <option value="not_started">@lang('followup::lang.not_started')</option>
@@ -37,8 +49,8 @@
 
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-3">
+                    </div> --}}
+                    {{-- <div class="col-md-3">
                         <div class="form-group">
                             <label for="type_filter">@lang('followup::lang.project_type'):</label>
                             <select class="form-control select2" name="type_filter" required id="type_filter"
@@ -50,7 +62,7 @@
 
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
                 @endcomponent
             </div>
         </div>
@@ -59,7 +71,9 @@
                 <table class="table table-bordered table-striped" id="projects_table">
                     <thead>
                         <tr>
+                            <th>@lang('sales::lang.customer_name')</th>
                             <th>@lang('sales::lang.project_name')</th>
+
                             <th>@lang('sales::lang.contract_number')</th>
                             <th>@lang('sales::lang.start_date')</th>
                             <th>@lang('sales::lang.end_date')</th>
@@ -92,17 +106,20 @@
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
                         }
-                        if ($('#offer_status_filter').val()) {
-                            d.offer_status = $('#offer_status_filter').val();
+                        if ($('#customer_name_filter').val()) {
+                            d.customer_name = $('#customer_name_filter').val();
                         }
-                        if ($('#type_filter').val()) {
-                            d.type = $('#type_filter').val();
-                        }
+                        // if ($('#type_filter').val()) {
+                        //     d.type = $('#type_filter').val();
+                        // }
 
                     }
                 },
                 columns: [{
                         data: 'contact_name'
+                    },
+                    {
+                        data: 'project'
                     },
                     {
                         data: 'number_of_contract'
@@ -123,7 +140,7 @@
 
             });
 
-            $('#project_name_filter,#offer_status_filter,#type_filter').on('change', function() {
+            $('#project_name_filter,#customer_name_filter,#type_filter').on('change', function() {
                 table.ajax.reload();
                 //   $('#projects_table').DataTable().ajax.reload();
             });
