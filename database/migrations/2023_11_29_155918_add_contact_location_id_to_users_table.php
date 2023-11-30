@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('contact_location_id')->unsigned()->nullable()->after('assigned_to');
             $table->foreign('contact_location_id')->references('id')->on('contact_locations')->onDelete('cascade');
         });
-    }
+    }   
 
     /**
      * Reverse the migrations.
