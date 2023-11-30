@@ -77,6 +77,12 @@ class FollowUpController extends Controller
                 }
             )
             ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->assignedTo->supplier_business_name;
+                }
+            )
+            ->addColumn(
                 'end_date',
                 function ($row) {
                     return $row->contract->contract_end_date;
@@ -129,6 +135,12 @@ class FollowUpController extends Controller
                 'project',
                 function ($row) {
                     return $row->employee->assignedTo->supplier_business_name;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->assignedTo->supplier_business_name;
                 }
             )
             ->addColumn(
@@ -190,6 +202,12 @@ class FollowUpController extends Controller
             )
             ->addColumn(
                 'project',
+                function ($row) {
+                    return $row->assignedTo->supplier_business_name;
+                }
+            )
+            ->addColumn(
+                'customer_name',
                 function ($row) {
                     return $row->assignedTo->supplier_business_name;
                 }
