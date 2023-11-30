@@ -1660,7 +1660,7 @@ class Util
     if(!empty( $user_details['expiration_date']))
       { 
         $input2['type'] ='residence_permit';
-        $input2['status'] ='vaild';
+        $input2['status'] ='valid';
         $input2['employee_id'] = $user->id;
         $input2['number'] = $user_details['id_proof_number'];
         $input2['expiration_date'] = $user_details['expiration_date'];

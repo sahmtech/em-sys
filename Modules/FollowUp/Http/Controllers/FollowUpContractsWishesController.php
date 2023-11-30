@@ -9,6 +9,7 @@ use App\Utils\ModuleUtil;
 use App\Contact;
 use App\Transaction;
 use App\User;
+use App\ContactLocation;
 use DataTables;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentailsReasonWish;
@@ -41,7 +42,7 @@ class FollowUpContractsWishesController extends Controller
          }
      
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-         $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+        
      
          $workers = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
              ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
@@ -99,8 +100,8 @@ class FollowUpContractsWishesController extends Controller
          $wishes=EssentailsReasonWish::where('type','wish')
          ->where('employee_type','worker')
          ->pluck('reason', 'id');
-      
-         return view('followup::contracts_wishes.index', compact('contacts', 'wishes'));
+         $projects= ContactLocation::pluck('name','id');
+         return view('followup::contracts_wishes.index', compact('projects', 'wishes'));
      }
      
 

@@ -108,6 +108,56 @@
     </div>
 </div>
 
+    <!-- Edit Modal -->
+ <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <input type="hidden" id="editItemId" value="">
+    <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@lang('essentials::lang.update_wish')</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+         
+              
+                <div class="form-group col-md-6">
+                    {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
+                    {!! Form::select('employee_type', [
+                         'employee' => __('essentials::lang.employee'),
+                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
+                </div>
+            
+                       
+                   
+
+                    <div class="clearfix"></div>
+
+                    <div class="form-group col-md-6" id="main_reason_box">
+                        {!! Form::label('wish', __('essentials::lang.wish') . ':') !!}
+                        <div class="form-group">
+                            {!! Form::text('wish', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.wish')]) !!}
+                        </div>
+                    </div>
+
+
+                   
+                   
+                </div>
+                   
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+          
+        </div>
+    </div>
+</div>
 
 </section>
 @endsection
@@ -171,5 +221,45 @@
 
  
 </script>
+
+<script>
+    $(document).ready(function () {
+        $('.edit_button').click(function () {
+            var itemId = $(this).data('id');
+            $('#editItemId').val(itemId);
+            $('#editModal').modal('show');
+        });
+
+      
+        $('#saveChangesButton').click(function () {
+            var itemId = $('#editItemId').val();
+            var employeeType = $('#employee_type_filter').val();
+            var wish = $('#wish').val();
+
+         
+            $.ajax({
+                url: '/wishes/' + itemId + '/update',
+                method: 'POST', 
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    employee_type: employeeType,
+                    wish: wish
+                 
+                },
+                success: function (data) {
+                  
+                    console.log(data);
+                   
+                    $('#editModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                  
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>
+
 
 @endsection

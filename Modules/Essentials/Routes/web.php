@@ -352,8 +352,9 @@ Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\Essentia
       
       Route::get('/wishes', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'index'])->name('wishes');
       Route::post('/wish/store', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'store'])->name('store_wish');
-
+      Route::get('/wishes/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'edit'])->name('wishes.edit');
+      Route::get('/wishes/{id}/update', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'update'])->name('update_wish');
       Route::delete('/wish/delete/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'destroy'])->name('wish.destroy');
-   
+      
     });
 });
