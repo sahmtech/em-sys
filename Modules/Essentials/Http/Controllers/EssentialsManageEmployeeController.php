@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use App\BusinessLocation;
 use App\User;
+use App\ContactLocation;
 use App\Category;
 use App\Transaction;
 use App\Contact;
@@ -332,7 +333,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities=EssentialsCountry::nationalityForDropdown();
 
-        $contacts=Contact::where('type','customer')->pluck('supplier_business_name','id');
+        $contacts=ContactLocation::pluck('name','id');
       //  dd($contacts);
         $blood_types = ['A+' => 'A positive (A+).',
         'A-' => 'A negative (A-).',

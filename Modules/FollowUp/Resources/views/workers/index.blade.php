@@ -93,7 +93,7 @@
                     }
                 },
                 columns: [
-                    { data: 'user' },
+                    { data: 'worker' },
                     { data: 'id_proof_number' },
                     { data: 'contact_name' },
                     { data: 'essentials_salary' },
