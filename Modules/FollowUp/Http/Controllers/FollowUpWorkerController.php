@@ -52,41 +52,38 @@ class FollowUpWorkerController extends Controller
 
         $users = User::where('user_type', 'worker')
 
-            ->leftjoin('contacts', 'contacts.id', '=', 'users.assigned_to')
+            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
         if (request()->ajax()) {
 
 
 
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                $users->where('contacts.id', request()->input('project_name'));
-            }
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
+            // if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+            //     $users->where('contacts.id', request()->input('project_name'));
+            // }
+            // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            //     $start = request()->start_date;
+            //     $end = request()->end_date;
 
-                $users->whereHas('contract', function ($query) use ($start, $end) {
-                    $query->whereDate('contract_end_date', '>=', $start)
-                        ->whereDate('contract_end_date', '<=', $end);
-                });
-            }
-            if (!empty(request()->nationality) && request()->nationality !== 'all') {
+            //     $users->whereHas('contract', function ($query) use ($start, $end) {
+            //         $query->whereDate('contract_end_date', '>=', $start)
+            //             ->whereDate('contract_end_date', '<=', $end);
+            //     });
+            // }
+            // if (!empty(request()->nationality) && request()->nationality !== 'all') {
 
-                $users = $users->where('nationality_id', request()->nationality);
-                error_log(request()->nationality);
-            }
-
-
-
-
+            //     $users = $users->where('nationality_id', request()->nationality);
+            //     error_log(request()->nationality);
+            // }
 
             $users->select(
                 'users.*',
+                'users.id_proof_number',
                 'users.nationality_id',
-                'essentials_salary',
+                'users.essentials_salary',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'contacts.supplier_business_name as contact_name'
+                'contact_locations.name as contact_name'
             );
             return Datatables::of($users)
 
@@ -94,20 +91,25 @@ class FollowUpWorkerController extends Controller
                     return optional($user->country)->nationality ?? ' ';
                 })
 
-
-
                 ->addColumn('residence_permit_expiration', function ($user) {
-                    return $this->getDocumentExpirationDate($user, 'residence_permit');
+                    $residencePermitDocument = $user->OfficialDocument
+                    ->where('type', 'residence_permit')
+                    ->first();
+                    if ($residencePermitDocument) {
+                     
+                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    } else {
+                      
+                        return ' ';
+                    }
                 })
-                ->addColumn('residence_permit', function ($user) {
-                    return $this->getDocumentnumber($user, 'residence_permit');
-                })
+                
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
 
 
-                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['nationality', 'residence_permit_expiration','contract_end_date'])
                 ->make(true);
         }
         return view('followup::workers.index')->with(compact('contacts', 'nationalities'));

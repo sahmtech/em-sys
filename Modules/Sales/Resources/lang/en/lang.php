@@ -105,6 +105,7 @@ return [
     'id' => 'ID',
     'edit_item' => 'Edit Item',
     'contract_number' => 'Contract Number',
+   
     'notes' => 'Notes',
     'add_contract_appendix' => 'Add Contract Appendix',
     'contract_appendics' => 'Contract Appendices',

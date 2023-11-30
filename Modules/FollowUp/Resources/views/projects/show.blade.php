@@ -65,12 +65,17 @@
                       </td>
                       <td>{{optional($user->workCard)->id ?? ' '}}</td>
                       <td>
-                          @if ($user->has_insurance)
-                          {{ __('followup::lang.has_insurance') }}
-                          @else
-                          {{ __('followup::lang.not_have_insurance') }}
-                          @endif
-                      </td>
+                        @if ($user->has_insurance === null)
+                         
+                            {{ ' ' }}
+                        @elseif ($user->has_insurance == 0)
+                            
+                            {{ __('followup::lang.not_have_insurance') }}
+                        @elseif ($user->has_insurance == 1)
+                           
+                            {{ __('followup::lang.has_insurance') }}
+                        @endif
+                    </td>
                       <td>{{optional($user->contract)->contract_end_date ?? ' '}}</td>
                       <td>
                           @foreach ( $user->OfficialDocument as $off)
