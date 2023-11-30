@@ -111,18 +111,25 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $contacts_fillter = ContactLocation::all()->pluck('name', 'id');
-        $contactLocation_fillter = Contact::all()->pluck('supplier_business_name', 'id');
+        // $contacts_fillter = ContactLocation::all()->pluck('name', 'id');
+        $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
 
 
-        $contactsLocation = ContactLocation::with(['contact']);
-        $contacts = ContactLocation::with(['contact'])->with(
-            [
-                'user', 'transactions', 'transactions.salesContract',
+        // $contactsLocation = ContactLocation::with(['contact']);
+        // $contacts = ContactLocation::with(['contact'])->with(
+        //     [
+        //         'user', 'transactions', 'transactions.salesContract',
+        //         'transactions.salesContract.salesOrderOperation'
+
+        //     ]
+        // );
+        $contacts = Contact::whereIn('type', ['customer', 'lead'])
+
+            ->with([
+                'transactions', 'transactions.salesContract', 'contactLocation', 'contactLocation.assignedTo',
                 'transactions.salesContract.salesOrderOperation'
 
-            ]
-        );
+            ]);
 
         // $contactLocations = ContactLocation::join('contacts', 'contact_locations.id', '=', 'contacts.contact_id')
         //     ->with(
@@ -138,66 +145,68 @@ class FollowUpReportsController extends Controller
                 'transaction.contact.user',
                 'salesOrderOperation',
             ]);
-            if (!empty(request()->input('customer_name')) && request()->input('customer_name') !== 'all') {
+            // if (!empty(request()->input('customer_name')) && request()->input('customer_name') !== 'all') {
                 // $contactLocations = ContactLocation::where(request()->input('customer_name'))->get();
 
-                $contactsLocation = ContactLocation::where('contact_id', request()->input('customer_name'))->with(['contact']);
-                if ($contactsLocation) {
+                // $contactsLocation = ContactLocation::where('contact_id', request()->input('customer_name'))->with(['contact']);
+                // if ($contactsLocation) {
 
-                    $contacts = ContactLocation::with(['contact'])->with(
-                        [
-                            'user', 'transactions', 'transactions.salesContract',
-                            'transactions.salesContract.salesOrderOperation'
+                //     $contacts = ContactLocation::with(['contact'])->with(
+                //         [
+                //             'user', 'transactions', 'transactions.salesContract',
+                //             'transactions.salesContract.salesOrderOperation'
 
-                        ]
-                    );
-                }
+                //         ]
+                //     );
+                // }
 
                 // $contracts->whereHas('transaction', function ($query) use ($contactId) {
                 //     $query->where('id', $contactId);
                 // });
-            }
+            // }
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                    $contactsLocation = ContactLocation::where('id', request()->input('project_name'));
-                   
-               
+               $contacts->where('id',request()->input('project_name'));
+                // $contactsLocation = ContactLocation::where('id', request()->input('project_name'));
             }
             // if (!empty(request()->input('type')) && request()->input('type') !== 'all') {
             //     $contracts->whereHas('salesOrderOperation', function ($query) {
             //         $query->where('operation_order_type', request()->input('type'));
             //     });
             // }
-            return Datatables::of($contactsLocation, $contacts)
-                ->addColumn('contact_name', function ($contactLocation) {
-                    return $contactLocation->contact->supplier_business_name ?? null;
+            return Datatables::of($contacts)
+                ->addColumn('contact_name', function ($contact) {
+                    return $contact->supplier_business_name ?? null;
                 })
-                ->addColumn('project', function ($contactLocation) {
-                    return $contactLocation->name ?? null;
+                ->addColumn('project', function ($contact) {
+                    return $contact->name ?? null;
                 })
-                ->addColumn('number_of_contract', function ($contactLocation) {
-                    return $contactLocation->contact->transactions?->salesContract?->number_of_contract ?? null;
+                ->addColumn('number_of_contract', function ($contact) {
+                    return $contact->transactions?->salesContract?->number_of_contract ?? null;
                 })
-                ->addColumn('start_date', function ($contactLocation) {
-                    return $contactLocation->contact->transactions?->salesContract?->start_date ?? null;
+                ->addColumn('start_date', function ($contact) {
+                    return $contact->transactions?->salesContract?->start_date ?? null;
                 })
-                ->addColumn('end_date', function ($contactLocation) {
-                    return $contactLocation->contact->transactions?->salesContract?->end_date ?? null;
+                ->addColumn('end_date', function ($contact) {
+                    return $contact->transactions?->salesContract?->end_date ?? null;
                 })
-                ->addColumn('active_worker_count', function ($contactLocation) {
-                    return
-                        optional($contactLocation->contact->user)
-                        ->where('user_type', 'worker')
-                        ->where('status', 'active')
-                        ->count() ?? 0;
+                ->addColumn('active_worker_count', function ($contact) {
+                    return optional($contact->contactLocation)->sum(function ($location) {
+                        return $location->assignedTo
+                            ->where('user_type', 'worker')
+                            ->where('status', 'active')
+                            ->count();
+                    }) ?? 0;
                 })
-                ->addColumn('worker_count', function ($contactLocation) {
-                    return
-                        optional($contactLocation->contact->user)
-                        ->where('user_type', 'worker')
-                        ->count() ?? 0;
-                })->addColumn('duration', function ($contactLocation) {
-                    $startDate = $contactLocation->contact->transactions?->salesContract?->start_date ?? null;
-                    $endDate = $contactLocation->contact->transactions?->salesContract?->end_date ?? null;
+                ->addColumn('worker_count', function ($contact) {
+                    return optional($contact->contactLocation)->sum(function ($location) {
+                        return $location->assignedTo
+                            ->where('user_type', 'worker')
+
+                            ->count();
+                    }) ?? 0;
+                })->addColumn('duration', function ($contact) {
+                    $startDate = $contact->transactions?->salesContract?->start_date ?? null;
+                    $endDate = $contact->transactions?->salesContract?->end_date ?? null;
 
                     if ($startDate && $endDate) {
                         $startDate = \Carbon\Carbon::parse($startDate);
@@ -221,7 +230,7 @@ class FollowUpReportsController extends Controller
 
 
                 ->rawColumns([
-                    'contact_name', 'project', 'number_of_contract', 'start_date', 'end_date', 'duration',
+                    'contact_name', 'number_of_contract', 'start_date', 'end_date', 'duration',
                     'active_worker_count', 'worker_count'
 
                 ])
@@ -310,9 +319,9 @@ class FollowUpReportsController extends Controller
         }
 
 
-
-
-        return view('followup::reports.projects')->with(compact('contacts_fillter', 'contactLocation_fillter'));
+        // $contacts_fillter = [];
+        // $contactLocation_fillter = [];
+        return view('followup::reports.projects')->with(compact('contacts_fillter'));
     }
 
     private function getDocumentExpirationDate($user, $documentType)

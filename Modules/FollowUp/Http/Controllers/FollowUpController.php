@@ -52,11 +52,12 @@ class FollowUpController extends Controller
         $contracts = User::where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
             $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
                 ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
-        })->whereHas('OfficialDocument', function ($query) {
-            $query->where('type', 'residence_permit');
-        });
+        })
+            ->whereHas('OfficialDocument', function ($query) {
+                $query->where('type', 'residence_permit');
+            });
 
-
+       
         return DataTables::of($contracts)
             ->addColumn(
                 'worker_name',
@@ -67,13 +68,18 @@ class FollowUpController extends Controller
             ->addColumn(
                 'residency',
                 function ($row) {
-                    return $row->OfficialDocument->number;
+                    foreach ($row->OfficialDocument as $item) {
+                        if ($item->type == 'residence_permit') {
+                            return $item->number;
+                        }
+                    }
+                    return null;
                 }
             )
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->assignedTo->name;
+                    return $row->assignedTo?->name ?? null;
                 }
             )
             ->addColumn(
@@ -134,13 +140,13 @@ class FollowUpController extends Controller
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->employee->assignedTo?->contact->supplier_business_name??null;
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
                 }
             )
             ->addColumn(
                 'customer_name',
                 function ($row) {
-                    return $row->employee->assignedTo?->supplier_business_name??null;
+                    return $row->employee->assignedTo?->supplier_business_name ?? null;
                 }
             )
             ->addColumn(

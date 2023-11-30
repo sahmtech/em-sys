@@ -22,7 +22,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">@lang('essentials::lang.add_city')</h4>
+                <h4 class="modal-title">@lang('sales::lang.contact_locations_edit')</h4>
             </div>
             <div class="modal-body">
 
@@ -30,7 +30,7 @@
 
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_name', __('sales::lang.contact_name') . ':*') !!}
-                        {!! Form::select('contact_name', $contacts, {{ $contactLocation->contact_id }}, [
+                        {!! Form::select('contact_name', $contacts, $contactLocation->contact_id , [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'required',
@@ -40,7 +40,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_location_name', __('sales::lang.contact_location_name') . ':*') !!}
-                        {!! Form::text('contact_location_name', {{ $contactLocation->name }}, [
+                        {!! Form::text('contact_location_name', $contactLocation->name , [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'required',
@@ -50,7 +50,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_location_city', __('sales::lang.contact_location_city')) !!}
-                        {!! Form::select('contact_location_city', {{ $contactLocation->city }}, null, [
+                        {!! Form::select('contact_location_city',$cities,  $contactLocation->city, [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'placeholder' => __('sales::lang.contact_location_city'),
@@ -59,7 +59,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_location_name_in_charge', __('sales::lang.contact_location_name_in_charge')) !!}
-                        {!! Form::select('contact_location_name_in_charge', {{ $contactLocation->name_in_charge }}, null, [
+                        {!! Form::select('contact_location_name_in_charge', $contacts, $contactLocation->name_in_charge , [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'placeholder' => __('sales::lang.contact_location_name_in_charge'),
@@ -68,7 +68,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_location_phone_in_charge', __('sales::lang.contact_location_phone_in_charge')) !!}
-                        {!! Form::text('contact_location_phone_in_charge', {{ $contactLocation->phone_in_charge }}, [
+                        {!! Form::text('contact_location_phone_in_charge',  $contactLocation->phone_in_charge , [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'placeholder' => __('sales::lang.contact_location_phone_in_charge'),
@@ -77,7 +77,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_location_email_in_charge', __('sales::lang.contact_location_email_in_charge')) !!}
-                        {!! Form::email('contact_location_email_in_charge', {{ $contactLocation->email_in_charge }}, [
+                        {!! Form::email('contact_location_email_in_charge',  $contactLocation->email_in_charge , [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'placeholder' => __('sales::lang.contact_location_email_in_charge'),
