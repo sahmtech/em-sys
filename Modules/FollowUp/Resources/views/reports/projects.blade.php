@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('customer_name_filter', __('sales::lang.customer_name') . ':') !!}
                             {!! Form::select('customer_name_filter', $contactLocation_fillter, null, [
@@ -24,7 +24,7 @@
                             ]) !!}
 
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
@@ -71,7 +71,7 @@
                 <table class="table table-bordered table-striped" id="projects_table">
                     <thead>
                         <tr>
-                            <th>@lang('sales::lang.customer_name')</th>
+                            {{-- <th>@lang('sales::lang.customer_name')</th> --}}
                             <th>@lang('sales::lang.project_name')</th>
 
                             <th>@lang('sales::lang.contract_number')</th>
@@ -118,9 +118,9 @@
                 columns: [{
                         data: 'contact_name'
                     },
-                    {
-                        data: 'project'
-                    },
+                    // {
+                    //     data: 'project'
+                    // },
                     {
                         data: 'number_of_contract'
                     },
