@@ -12,18 +12,18 @@
 
 <!-- Main content -->
 <section class="content">
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
               
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                        {!! Form::select('project_name_filter',$contacts, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        {!! Form::select('project_name_filter',$contacts2, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 
                     </div>
                 </div>
-                <div class="col-md-3">
+                {{-- <div class="col-md-3">
                     <div class="form-group">
                         <label for="offer_status_filter">@lang('followup::lang.project_status'):</label>
                         <select class="form-control select2" name="offer_status_filter" required id="offer_status_filter" style="width: 100%;">
@@ -46,11 +46,11 @@
 
                         </select>
                     </div>
-                </div>
+                </div> --}}
               
             @endcomponent
         </div>
-    </div> --}}
+    </div>
     @component('components.widget', ['class' => 'box-primary'])
 
       
@@ -100,12 +100,7 @@
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
                         }
-                        if ($('#offer_status_filter').val()) {
-                            d.offer_status = $('#offer_status_filter').val();
-                        }
-                        if ($('#type_filter').val()) {
-                            d.type = $('#type_filter').val();
-                        }
+                      
                         
                     }
                 },
@@ -168,9 +163,9 @@
 
     });
 
-    $('#project_name_filter,#offer_status_filter,#type_filter').on('change', function() {
-    $('#projects_table').DataTable().ajax.reload();
-    });
+    $('#project_name_filter').on('change', function() {
+        $('#projects_table').DataTable().ajax.reload();
+        });
     });
 
 </script>
