@@ -38,18 +38,26 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('supplier_business_name', 'id');
+        $contacts = ContactLocation::all()->pluck('name', 'id');
+        //  Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
+
+        $users = User::where('user_type', 'worker')
+
+            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->with(['country', 'contract', 'OfficialDocument']);
+
         if (request()->ajax()) {
-            $users = User::where('user_type', 'worker')
-                ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
-                // ->join('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', '=', 'users.id')
-                ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-                ->with(['country', 'contract', 'essentials_admission_to_works', 'OfficialDocument']);
+            // $users = User::where('user_type', 'worker')
+            //     ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
+            //     // ->join('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', '=', 'users.id')
+            //     ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+            //     ->with(['country', 'contract', 'essentials_admission_to_works', 'OfficialDocument']);
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                $users->where('contacts.id', request()->input('project_name'));
+                $users->where('assigned_to', request()->input('project_name'));
+                // where('contacts.id', request()->input('project_name'));
             }
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
@@ -65,21 +73,38 @@ class FollowUpReportsController extends Controller
                 $users = $users->where('nationality_id', request()->nationality);
                 error_log(request()->nationality);
             }
+            // $users->select(
+            //     'users.*',
+            //     'users.nationality_id',
+            //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            //     'contacts.supplier_business_name as contact_name'
+            // );
             $users->select(
                 'users.*',
+                'users.id_proof_number',
                 'users.nationality_id',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'contacts.supplier_business_name as contact_name'
+                'users.essentials_salary',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                'contact_locations.name as contact_name'
             );
-
             return Datatables::of($users)
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
                 ->addColumn('residence_permit_expiration', function ($user) {
-                    return $this->getDocumentExpirationDate($user, 'residence_permit');
+                    $residencePermitDocument = $user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
+                    if ($residencePermitDocument) {
+
+                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
                 })
+
                 ->addColumn('residence_permit', function ($user) {
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
@@ -146,26 +171,26 @@ class FollowUpReportsController extends Controller
                 'salesOrderOperation',
             ]);
             // if (!empty(request()->input('customer_name')) && request()->input('customer_name') !== 'all') {
-                // $contactLocations = ContactLocation::where(request()->input('customer_name'))->get();
+            // $contactLocations = ContactLocation::where(request()->input('customer_name'))->get();
 
-                // $contactsLocation = ContactLocation::where('contact_id', request()->input('customer_name'))->with(['contact']);
-                // if ($contactsLocation) {
+            // $contactsLocation = ContactLocation::where('contact_id', request()->input('customer_name'))->with(['contact']);
+            // if ($contactsLocation) {
 
-                //     $contacts = ContactLocation::with(['contact'])->with(
-                //         [
-                //             'user', 'transactions', 'transactions.salesContract',
-                //             'transactions.salesContract.salesOrderOperation'
+            //     $contacts = ContactLocation::with(['contact'])->with(
+            //         [
+            //             'user', 'transactions', 'transactions.salesContract',
+            //             'transactions.salesContract.salesOrderOperation'
 
-                //         ]
-                //     );
-                // }
+            //         ]
+            //     );
+            // }
 
-                // $contracts->whereHas('transaction', function ($query) use ($contactId) {
-                //     $query->where('id', $contactId);
-                // });
+            // $contracts->whereHas('transaction', function ($query) use ($contactId) {
+            //     $query->where('id', $contactId);
+            // });
             // }
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-               $contacts->where('id',request()->input('project_name'));
+                $contacts->where('id', request()->input('project_name'));
                 // $contactsLocation = ContactLocation::where('id', request()->input('project_name'));
             }
             // if (!empty(request()->input('type')) && request()->input('type') !== 'all') {
