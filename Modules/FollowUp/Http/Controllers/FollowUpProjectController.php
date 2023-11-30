@@ -41,7 +41,7 @@ class FollowUpProjectController extends Controller
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
-                'user', 'transactions', 'transactions.salesContract',
+                 'transactions', 'transactions.salesContract','contactLocation','contactLocation.assignedTo',
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
@@ -62,15 +62,20 @@ class FollowUpProjectController extends Controller
                     return $contact->transactions?->salesContract?->end_date ?? null;
                 })
                 ->addColumn('active_worker_count', function ($contact) {
-                    return optional($contact->user)
-                        ->where('user_type', 'worker')
-                        ->where('status', 'active')
-                        ->count() ?? 0;
+                    return optional($contact->contactLocation)->sum(function ($location) {
+                        return $location->assignedTo
+                            ->where('user_type', 'worker')
+                            ->where('status', 'active')
+                            ->count();
+                    }) ?? 0;
                 })
                 ->addColumn('worker_count', function ($contact) {
-                    return optional($contact->user)
-                        ->where('user_type', 'worker')
-                        ->count() ?? 0;
+                    return optional($contact->contactLocation)->sum(function ($location) {
+                        return $location->assignedTo
+                            ->where('user_type', 'worker')
+
+                            ->count();
+                    }) ?? 0;
                 })
                 ->addColumn('duration', function ($contact) {
                     $startDate = $contact->transactions?->salesContract?->start_date ?? null;
@@ -117,7 +122,8 @@ class FollowUpProjectController extends Controller
 
                 ->rawColumns([
                     'contact_name','number_of_contract','start_date','end_date',
-                    'active_worker_count', 'worker_count', 'duration', 'contract_form',
+                    // 'active_worker_count', 'worker_count',
+                     'duration', 'contract_form',
                     'status', 'type', 'action'
                 ])
 

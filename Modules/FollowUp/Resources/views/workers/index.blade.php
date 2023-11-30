@@ -94,7 +94,7 @@
                 },
                 columns: [
                     { data: 'user' },
-                    { data: 'residence_permit' },
+                    { data: 'id_proof_number' },
                     { data: 'contact_name' },
                     { data: 'essentials_salary' },
                 
