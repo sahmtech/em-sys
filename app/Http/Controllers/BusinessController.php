@@ -400,7 +400,7 @@ class BusinessController extends Controller
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
-                ->removeColumn('id')
+               // ->removeColumn('id')
                 ->rawColumns(['action', 'missing_license_types'])
                 ->make(true);
         }
