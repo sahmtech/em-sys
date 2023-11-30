@@ -9,6 +9,7 @@ use App\Utils\ModuleUtil;
 use App\Contact;
 use App\Transaction;
 use App\User;
+use App\ContactLocation;
 use DataTables;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentailsReasonWish;
@@ -41,23 +42,26 @@ class FollowUpContractsWishesController extends Controller
          }
      
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-         $contacts = Contact::where('type', 'customer')->pluck('supplier_business_name', 'id');
+        
      
-         $workers = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
+         $workers = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
+             ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
              ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
              ->where('users.user_type', 'worker')
              ->select(
                  'users.id',
                  'users.emp_number as emp_number',
-                 'users.first_name',
-                 'users.mid_name',
-                 'users.last_name',
+                 'users.first_name as first_name',
+                 'users.mid_name as mid_name ',
+                 'users.last_name as last_name',
                  'users.id_proof_number as residency',
-                 'contacts.supplier_business_name as project_name',
-                 'essentials_employees_contracts.contract_start_date as contract_start_date',
-                 'essentials_employees_contracts.contract_end_date as contract_end_date',
-                 'essentials_employees_contracts.wish_id as wish',
+                 'contact_locations.name as project_name',
+                 
+                'essentials_employees_contracts.contract_start_date as contract_start_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'essentials_employees_contracts.wish_id as wish',
              );
+           
              
              if (!empty(request()->input('wish_status_filter')) ) {
                 $workers->where('essentials_employees_contracts.wish_id', request()->input('wish_status_filter'));
@@ -65,7 +69,7 @@ class FollowUpContractsWishesController extends Controller
              }
 
              if (!empty(request()->input('project_name_filter')) ) {
-                $workers->where('contacts.id', request()->input('project_name'));
+                $workers->where('contact_locations.id', request()->input('project_name_filter'));
              }
 
          if (request()->ajax()) {
@@ -89,9 +93,16 @@ class FollowUpContractsWishesController extends Controller
                     return $button;
                 })
                 
-                 ->filterColumn('name', function ($query, $keyword) {
-                     $query->where('name', 'like', "%{$keyword}%");
-                 })
+               
+                ->filterColumn('project_name', function ($query, $keyword) {
+                    $query->whereHas('contactLocations', function ($subQuery) use ($keyword) {
+                        $subQuery->where('name', 'like', "%{$keyword}%");
+                    });
+                })
+
+                ->filterColumn('residency', function ($query, $keyword) {
+                    $query->whereRaw("residency  like ?", ["%{$keyword}%"]);
+                })
                  ->rawColumns(['action'])
                  ->make(true);
          }
@@ -99,8 +110,8 @@ class FollowUpContractsWishesController extends Controller
          $wishes=EssentailsReasonWish::where('type','wish')
          ->where('employee_type','worker')
          ->pluck('reason', 'id');
-      
-         return view('followup::contracts_wishes.index', compact('contacts', 'wishes'));
+         $projects= ContactLocation::pluck('name','id');
+         return view('followup::contracts_wishes.index', compact('projects', 'wishes'));
      }
      
 

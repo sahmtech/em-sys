@@ -49,7 +49,16 @@ class EssentialsWishesController extends Controller
          
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    
+                    $html .= '<button class="btn btn-xs btn-primary edit_button" 
+                    data-toggle="modal" 
+                    data-target="#editModal" 
+                    data-id="' . $row->id . '" 
+                    data-employee-type="' . $row->employee_type . '"
+                    data-wish="' . $row->reason . '">
+                    <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+         
+                    $html .= '&nbsp;';
+    
                     $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('wish.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     return $html;
                 })
@@ -147,10 +156,51 @@ class EssentialsWishesController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
-    {
-        //
+  // In EssentialsWishesController
+public function update(Request $request, $id)
+{
+    $business_id = $request->session()->get('user.business_id');
+    $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+    if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        abort(403, 'Unauthorized action.');
     }
+
+ 
+    $employeeType = $request->input('employee_type');
+    $wish = $request->input('wish');
+
+    try {
+      //  $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
+   
+      //  $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
+        
+        $input2['employee_type'] = $employeeType;
+       
+        $input2['reason'] = $wish;
+        
+      
+        
+        EssentailsReasonWish::where('id', $id)
+        ->where('type','wish')
+        ->update($input2);
+
+        $output = ['success' => true,
+            'msg' => __('lang_v1.updated_success'),
+        ];
+    } catch (\Exception $e) {
+        \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+        $output = ['success' => false,
+            'msg' => __('messages.something_went_wrong'),
+        ];
+    }
+
+
+    return redirect()->route('wishes');
+   
+}
+
 
     /**
      * Remove the specified resource from storage.

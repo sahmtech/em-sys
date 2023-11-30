@@ -19,7 +19,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                        {!! Form::select('project_name_filter',$contacts, null, ['class' => 'form-control', 'style' => ' height:40px;width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        {!! Form::select('project_name_filter',$projects, null, ['class' => 'form-control', 'style' => ' height:40px;width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 
                     </div>
                 </div>
@@ -67,6 +67,8 @@
  
     @endcomponent
 
+
+
     @include('followup::contracts_wishes.change_wish_modal')
 
 </section>
@@ -75,17 +77,19 @@
 @endsection
 
 @section('javascript')
+
     <script type="text/javascript">
         $(document).ready(function () {
             var contractWishTable = $('#contract_wish_table').DataTable({
                 processing: true,
                 serverSide: true,
+                searching: false,
                 ajax: {
                         "url": '{{ route("contracts_wishes") }}',
                         "data": function ( d ) {
                             
 
-                            d.project_name = $('#project_name_filter').val();
+                            d.project_name_filter = $('#project_name_filter').val();
                             d.wish_status_filter = $('#wish_status_filter').val();
                             console.log($('#project_name_filter').val());
                             console.log($('#wish_status_filter').val());
