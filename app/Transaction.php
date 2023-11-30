@@ -421,6 +421,6 @@ class Transaction extends Model
 
     public function salesContract()
     {
-        return $this->belongsTo(salesContract::class, 'offer_price_id');
+        return $this->hasOne(salesContract::class, 'offer_price_id');
     }
 }

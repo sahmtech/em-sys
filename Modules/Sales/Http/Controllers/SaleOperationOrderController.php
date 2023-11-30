@@ -154,6 +154,7 @@ class SaleOperationOrderController extends Controller
 
     public function getContracts(Request $request)
     {
+       
         $customerId = $request->input('customer_id');
         $business_id = $request->session()->get('user.business_id');
 
@@ -173,7 +174,7 @@ class SaleOperationOrderController extends Controller
             foreach ($contractIds as $contract) {
                 $contractQuantity = TransactionSellLine::where('transaction_id', $contract['id'])->sum('quantity');
                 error_log($contractQuantity);
-                $salesOrdersQuantity = SalesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
+                $salesOrdersQuantity = salesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
                 $totalQuantity += ($contractQuantity - $salesOrdersQuantity);
                 error_log($totalQuantity);
             }

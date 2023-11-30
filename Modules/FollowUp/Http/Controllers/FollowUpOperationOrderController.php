@@ -106,7 +106,7 @@ class FollowUpOperationOrderController extends Controller
             'Not_started' => __('sales::lang.Not_started'),
 
         ];
-        $leads = Contact::where('type', 'customer')
+        $leads = Contact::whereIn('type', ['customer','lead'])
 
             ->where('business_id', $business_id)
             ->pluck('supplier_business_name', 'id');

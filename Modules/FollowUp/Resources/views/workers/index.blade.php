@@ -125,7 +125,7 @@
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();
             });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter').on('change', function() {
+            $('#project_name_filter, #doc_filter_date_range, #nationality_filter').on('change', function() {
                 workers_table.ajax.reload();
             });
         });

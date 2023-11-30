@@ -56,12 +56,21 @@ class FollowUpWorkerController extends Controller
 
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-
+            $users->select(
+                'users.*',
+                'users.id_proof_number',
+                'users.nationality_id',
+                'users.essentials_salary',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+                'contact_locations.name as contact_name'
+            );
         if (request()->ajax()) {
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
                 error_log(request()->input('project_name'));
-                $users->where('assigned_to', request()->input('project_name'));
+               
+                $users = $users->where('users.assigned_to', request()->input('project_name'));
+                error_log($users->count());
            
             }
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
@@ -78,14 +87,7 @@ class FollowUpWorkerController extends Controller
                 $users = $users->where('users.nationality_id', request()->nationality);
                 
             }
-            $users->select(
-                'users.*',
-                'users.id_proof_number',
-                'users.nationality_id',
-                'users.essentials_salary',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'contact_locations.name as contact_name'
-            );
+            
             return Datatables::of($users)
 
                 ->addColumn('nationality', function ($user) {
@@ -108,9 +110,9 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-                ->filterColumn('worker', function ($query, $keyword) {
-                    $query;
-                })
+                // ->filterColumn('worker', function ($query, $keyword) {
+                //     $query;
+                // })
 
                 ->rawColumns(['nationality', 'residence_permit_expiration','contract_end_date'])
                 ->make(true);
