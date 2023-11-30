@@ -117,9 +117,9 @@ class ContactLocationController extends Controller
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-
+        $cities = EssentialsCity::forDropdown();
         $contacts = Contact::pluck('supplier_business_name', 'id',);
-        return view('sales::contact_locations.index')->with(compact('contacts', 'name_in_charge_choices', 'cities'));
+        return view('sales::contact_locations.index')->with(compact('cities','contacts', 'name_in_charge_choices', 'cities'));
     }
 
     /**
@@ -196,8 +196,8 @@ class ContactLocationController extends Controller
 
         $contactLocation = ContactLocation::findOrFail($id);
 
-
-        return view('sales::contact_locations.edit')->with(compact('contactLocation'));
+        $contacts = Contact::pluck('supplier_business_name', 'id',);
+        return view('sales::contact_locations.edit')->with(compact('contacts','contactLocation'));
     }
 
     /**
