@@ -162,10 +162,11 @@ class FollowUpProjectController extends Controller
      */
     public function show($id)
     {
-
-
-        $users = User::select()
-            ->where('assigned_to', $id)
+        $contact = Contact::findOrFail($id);
+        $locationIds = $contact->contactLocation->pluck('id');
+        $users = User::whereIn('assigned_to', $locationIds)
+        
+            
             ->with(['country', 'appointment.profession', 'allowancesAndDeductions', 'appointment.location', 'contract', 'OfficialDocument', 'workCard'])
             ->get();
 

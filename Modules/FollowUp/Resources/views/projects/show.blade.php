@@ -99,8 +99,10 @@
                           @else
                           @endif
                       </td>
-                      <td>
+                      <td>  
+                         @if ($user->essentials_salary)
                           {{ __('followup::lang.basic_salary') }}: {{ $user->essentials_salary }}
+                          @endif
                           <br>
                           @if ($user->allowancesAndDeductions->isNotEmpty())
                           {{ __('followup::lang.allowances') }}:

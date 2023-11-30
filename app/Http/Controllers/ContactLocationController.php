@@ -41,12 +41,12 @@ class ContactLocationController extends Controller
 
 
             return Datatables::of($contact_locations)
-            ->addColumn(
-                'id',
-                function ($row) {
-                    return $row->id;
-                }
-            )
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
                 ->addColumn(
                     'contact_name',
                     function ($row) {
@@ -91,17 +91,25 @@ class ContactLocationController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '';
                         if ($is_admin) {
-                            //     $html .= '<a href="' . route('item.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
-                            //  &nbsp;';
+                            $html .= '<a href="' . route('sale.editContactLocations', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                             &nbsp;';
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroyContactLocations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
                         return $html;
                     }
                 )
-                ->filterColumn('name_of_item', function ($query, $keyword) {
-                    $query->contact->where('supplier_business_name', 'like', "%{$keyword}%");
+                ->filterColumn('contact_name', function ($query, $keyword) {
+
+                    $query->whereHas('contact', function ($qu) use ($keyword) {
+                        $qu->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
                 })
+                ->filterColumn('contact_location_name', function ($query, $keyword) {
+
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+
 
                 ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'contact_id', 'action'])
                 ->make(true);
@@ -109,9 +117,9 @@ class ContactLocationController extends Controller
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-
+        $cities = EssentialsCity::forDropdown();
         $contacts = Contact::pluck('supplier_business_name', 'id',);
-        return view('sales::contact_locations.index')->with(compact('contacts', 'name_in_charge_choices', 'cities'));
+        return view('sales::contact_locations.index')->with(compact('cities','contacts', 'name_in_charge_choices', 'cities'));
     }
 
     /**
@@ -168,71 +176,71 @@ class ContactLocationController extends Controller
     //     return view('sales::show');
     // }
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  * @param int $id
-    //  * @return Renderable
-    //  */
-    // public function edit($id)
-    // {
-    //     $business_id = request()->session()->get('user.business_id');
-    //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
-    //     if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && !$is_admin) {
-    //         abort(403, 'Unauthorized action.');
-    //     }
-
-    //     $item = salesContractItem::findOrFail($id);
+    /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function edit($id)
+    {
 
 
-    //     return view('sales::contract_items.edit')->with(compact('item'));
-    // }
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  * @param Request $request
-    //  * @param int $id
-    //  * @return Renderable
-    //  */
-    // public function update(Request $request, $id)
-    // {
+        if (!($is_admin
+            || auth()->user()->can('superadmin')
+            || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
 
-    //     $business_id = $request->session()->get('user.business_id');
-    //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $contactLocation = ContactLocation::findOrFail($id);
 
-    //     if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && !$is_admin) {
-    //         abort(403, 'Unauthorized action.');
-    //     }
+        $contacts = Contact::pluck('supplier_business_name', 'id',);
+        return view('sales::contact_locations.edit')->with(compact('contacts','contactLocation'));
+    }
 
-    //     try {
-    //         $input = $request->only(['number_of_item', 'name_of_item', 'details']);
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Renderable
+     */
+    public function update(Request $request, $id)
+    {
+
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $contactLocation['contact_id'] = $request->contact_name;
+            $contactLocation['name'] = $request->contact_location_name;
+            $contactLocation['city'] = $request->contact_location_city;
+            $contactLocation['name_in_charge'] = $request->contact_location_name_in_charge;
+            $contactLocation['phone_in_charge'] = $request->contact_location_phone_in_charge;
+            $contactLocation['email_in_charge'] = $request->contact_location_email_in_charge;
+            ContactLocation::where('id', $id)->update($contactLocation);
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->route('sale.contactLocations')->withErrors([$output['msg']]);
+        }
 
 
-    //         $input['number_of_item'] = $input['number_of_item'];
-
-    //         $input['name_of_item'] = $input['name_of_item'];
-
-    //         $input['details'] = $input['details'];
-
-
-
-    //         salesContractItem::where('id', $id)->update($input);
-    //         $output = [
-    //             'success' => true,
-    //             'msg' => __('lang_v1.updated_success'),
-    //         ];
-    //     } catch (\Exception $e) {
-    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-    //         $output = [
-    //             'success' => false,
-    //             'msg' => __('messages.something_went_wrong'),
-    //         ];
-    //     }
-
-
-    //     return redirect()->route('contract_itmes');
-    // }
+        return redirect()->route('sale.contactLocations')->with('success', $output['msg']);
+    }
 
     public function destroy($id)
     {
