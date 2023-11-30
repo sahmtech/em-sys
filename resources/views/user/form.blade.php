@@ -392,6 +392,10 @@ function validateIdProofNumber(input) {
 
     idProofNumberError.innerText = '';
 
+    if (prefix === null) {
+        input.value =  idProofNumber;
+        return;
+    }
     if (idProofNumber.startsWith(prefix)) {
         if (idProofName === 'eqama' && idProofNumber.length !== 10) {
             idProofNumberError.innerText = 'يجب أن تكون مكونة من 10 أرقام';
@@ -400,7 +404,8 @@ function validateIdProofNumber(input) {
             idProofNumberError.innerText = 'يجب أن تكون مكونة من 10 أرقام';
             input.value = idProofNumber.slice(0, 10);
         }
-    } else {
+    }
+     else {
         input.value = prefix + idProofNumber;
     }
 }
