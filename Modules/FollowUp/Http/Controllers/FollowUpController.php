@@ -146,7 +146,7 @@ class FollowUpController extends Controller
             ->addColumn(
                 'customer_name',
                 function ($row) {
-                    return $row->employee->assignedTo?->supplier_business_name ?? null;
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
                 }
             )
             ->addColumn(
