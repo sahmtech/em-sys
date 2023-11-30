@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contact;
 use App\ContactLocation;
+use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
+use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Sales\Entities\salesContractItem;
 
 class ContactLocationController extends Controller
@@ -34,10 +36,17 @@ class ContactLocationController extends Controller
         }
         $contact_locations = ContactLocation::with(['contact']);
         // return $contact_locations->get();
+        $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
 
 
             return Datatables::of($contact_locations)
+            ->addColumn(
+                'id',
+                function ($row) {
+                    return $row->id;
+                }
+            )
                 ->addColumn(
                     'contact_name',
                     function ($row) {
@@ -52,8 +61,10 @@ class ContactLocationController extends Controller
                 )
                 ->addColumn(
                     'contact_location_city',
-                    function ($row) {
-                        return  $row->city;
+                    function ($row) use ($cities) {
+                        if ($row->city) {
+                            return  $cities[$row->city];
+                        } else return null;
                     }
                 )
                 ->addColumn(
@@ -92,11 +103,15 @@ class ContactLocationController extends Controller
                     $query->contact->where('supplier_business_name', 'like', "%{$keyword}%");
                 })
 
-                ->rawColumns(['contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'action'])
+                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'contact_id', 'action'])
                 ->make(true);
         }
+        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+
         $contacts = Contact::pluck('supplier_business_name', 'id',);
-        return view('sales::contact_locations.index')->with(compact('contacts'));
+        return view('sales::contact_locations.index')->with(compact('contacts', 'name_in_charge_choices', 'cities'));
     }
 
     /**

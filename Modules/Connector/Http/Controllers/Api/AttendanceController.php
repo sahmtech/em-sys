@@ -54,7 +54,7 @@ class AttendanceController extends ApiController
      */
     public function getAttendance($user_id)
     {
-        if (! $this->moduleUtil->isModuleInstalled('Essentials')) {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -62,9 +62,9 @@ class AttendanceController extends ApiController
         $business_id = $user->business_id;
 
         $attendance = \Modules\Essentials\Entities\EssentialsAttendance::where('business_id', $business_id)
-                                    ->where('user_id', $user_id)
-                                    ->orderBy('clock_in_time', 'desc')
-                                    ->first();
+            ->where('user_id', $user_id)
+            ->orderBy('clock_in_time', 'desc')
+            ->first();
 
         return new CommonResource($attendance);
     }
@@ -89,7 +89,7 @@ class AttendanceController extends ApiController
      */
     public function clockin(Request $request)
     {
-        if (! $this->moduleUtil->isModuleInstalled('Essentials')) {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -98,7 +98,7 @@ class AttendanceController extends ApiController
             $business_id = $user->business_id;
             $business = Business::findOrFail($business_id);
             $settings = $business->essentials_settings;
-            $settings = ! empty($settings) ? json_decode($settings, true) : [];
+            $settings = !empty($settings) ? json_decode($settings, true) : [];
             $essentialsUtil = new \Modules\Essentials\Utils\EssentialsUtil;
 
             $data = [
@@ -109,7 +109,7 @@ class AttendanceController extends ApiController
                 'ip_address' => $request->input('ip_address'),
             ];
 
-            if (! empty($settings['is_location_required'])) {
+            if (!empty($settings['is_location_required'])) {
                 $long = $request->input('longitude');
                 $lat = $request->input('latitude');
 
@@ -119,7 +119,7 @@ class AttendanceController extends ApiController
 
                 $response = $essentialsUtil->getLocationFromCoordinates($lat, $long);
 
-                if (! empty($response)) {
+                if (!empty($response)) {
                     $data['clock_in_location'] = $response;
                 }
             }
@@ -132,7 +132,7 @@ class AttendanceController extends ApiController
                 return $this->otherExceptions($output['msg']);
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
         }
@@ -157,7 +157,7 @@ class AttendanceController extends ApiController
      */
     public function clockout(Request $request)
     {
-        if (! $this->moduleUtil->isModuleInstalled('Essentials')) {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -166,7 +166,7 @@ class AttendanceController extends ApiController
             $business_id = $user->business_id;
             $business = Business::findOrFail($business_id);
             $settings = $business->essentials_settings;
-            $settings = ! empty($settings) ? json_decode($settings, true) : [];
+            $settings = !empty($settings) ? json_decode($settings, true) : [];
 
             $data = [
                 'business_id' => $business_id,
@@ -177,7 +177,7 @@ class AttendanceController extends ApiController
 
             $essentialsUtil = new \Modules\Essentials\Utils\EssentialsUtil;
 
-            if (! empty($settings['is_location_required'])) {
+            if (!empty($settings['is_location_required'])) {
                 $long = $request->input('longitude');
                 $lat = $request->input('latitude');
 
@@ -187,7 +187,7 @@ class AttendanceController extends ApiController
 
                 $response = $essentialsUtil->getLocationFromCoordinates($lat, $long);
 
-                if (! empty($response)) {
+                if (!empty($response)) {
                     $data['clock_out_location'] = $response;
                 }
             }
@@ -200,7 +200,7 @@ class AttendanceController extends ApiController
                 return $this->otherExceptions($output['msg']);
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
         }
@@ -231,7 +231,7 @@ class AttendanceController extends ApiController
      */
     public function getHolidays()
     {
-        if (! $this->moduleUtil->isModuleInstalled('Essentials')) {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -248,15 +248,15 @@ class AttendanceController extends ApiController
             });
         }
 
-        if (! empty(request()->input('location_id'))) {
+        if (!empty(request()->input('location_id'))) {
             $query->where('location_id', request()->input('location_id'));
         }
 
-        if (! empty(request()->start_date) && ! empty(request()->end_date)) {
+        if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start = request()->start_date;
             $end = request()->end_date;
             $query->whereDate('start_date', '>=', $start)
-                        ->whereDate('start_date', '<=', $end);
+                ->whereDate('start_date', '<=', $end);
         }
         $holidays = $query->get();
 

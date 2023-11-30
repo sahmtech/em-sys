@@ -19,4 +19,8 @@ class ContactLocation extends Model
     {
         return $this->belongsTo(Contact::class, 'contact_id');
     }
+    public function assignedTo()
+    {
+        return $this->hasMany(User::class, 'assigned_to');
+    }
 }
