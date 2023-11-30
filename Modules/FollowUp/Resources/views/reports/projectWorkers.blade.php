@@ -134,7 +134,7 @@
                 },
                 
                 columns: [{
-                        data: 'user'
+                        data: 'worker'
                     },
                     {
                         data: 'residence_permit'
