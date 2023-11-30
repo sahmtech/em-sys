@@ -88,7 +88,7 @@
                         "data": function ( d ) {
                             
 
-                            d.project_name = $('#project_name_filter').val();
+                            d.project_name_filter = $('#project_name_filter').val();
                             d.wish_status_filter = $('#wish_status_filter').val();
                             console.log($('#project_name_filter').val());
                             console.log($('#wish_status_filter').val());

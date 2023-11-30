@@ -44,7 +44,8 @@ class FollowUpContractsWishesController extends Controller
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         
      
-         $workers = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
+         $workers = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
+             ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
              ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
              ->where('users.user_type', 'worker')
              ->select(
@@ -54,11 +55,13 @@ class FollowUpContractsWishesController extends Controller
                  'users.mid_name',
                  'users.last_name',
                  'users.id_proof_number as residency',
-                 'contacts.supplier_business_name as project_name',
-                 'essentials_employees_contracts.contract_start_date as contract_start_date',
-                 'essentials_employees_contracts.contract_end_date as contract_end_date',
-                 'essentials_employees_contracts.wish_id as wish',
+                 'contact_locations.name as project_name',
+                 
+                'essentials_employees_contracts.contract_start_date as contract_start_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'essentials_employees_contracts.wish_id as wish',
              );
+           
              
              if (!empty(request()->input('wish_status_filter')) ) {
                 $workers->where('essentials_employees_contracts.wish_id', request()->input('wish_status_filter'));
@@ -66,7 +69,7 @@ class FollowUpContractsWishesController extends Controller
              }
 
              if (!empty(request()->input('project_name_filter')) ) {
-                $workers->where('contacts.id', request()->input('project_name'));
+                $workers->where('contact_locations.id', request()->input('project_name_filter'));
              }
 
          if (request()->ajax()) {

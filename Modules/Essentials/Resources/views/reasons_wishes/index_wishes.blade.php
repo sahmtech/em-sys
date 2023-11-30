@@ -226,17 +226,18 @@
     $(document).ready(function () {
         $('.edit_button').click(function () {
             var itemId = $(this).data('id');
-            var employeeType = $(this).data('employee-type'); // Add this line to get the stored employee_type
-            var wish = $(this).data('wish'); // Add this line to get the stored wish
+            var employeeType = $(this).data('employee-type'); 
+            var wish = $(this).data('wish');
 
             $('#editItemId').val(itemId);
             $('#employee_type_filter').val(employeeType).trigger('change'); // Populate and trigger the change event for the select dropdown
             $('#wish').val(wish);
-
+            console.log( wish);
+            condol.log( employeeType);
             $('#editModal').modal('show');
         });
 
-        // Add an event listener to the "Save changes" button in the modal
+       
         $('#saveChangesButton').click(function () {
             var itemId = $('#editItemId').val();
             var employeeType = $('#employee_type_filter').val();

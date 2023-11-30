@@ -54,7 +54,7 @@ class EssentialsWishesController extends Controller
                     data-target="#editModal" 
                     data-id="' . $row->id . '" 
                     data-employee-type="' . $row->employee_type . '"
-                    data-wish="' . $row->wish . '">
+                    data-wish="' . $row->reason . '">
                     <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
          
                     $html .= '&nbsp;';
