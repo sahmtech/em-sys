@@ -108,10 +108,12 @@
     </div>
 </div>
 
+<input type="hidden" id="employee_type_id" value="">
+<input type="hidden" id="wishid" value="">
     <!-- Edit Modal -->
  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-    <input type="hidden" id="editItemId" value="">
+  
     <div class="modal-content">
 
             <div class="modal-header">
@@ -124,10 +126,10 @@
          
               
                 <div class="form-group col-md-6">
-                    {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
-                    {!! Form::select('employee_type', [
+                    {!! Form::label('employee_type_filter2', __('essentials::lang.employee_type') . ':*') !!}
+                    {!! Form::select('employee_type2', [
                          'employee' => __('essentials::lang.employee'),
-                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
+                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter2', 'style' => 'width: 100%;']) !!}
                 </div>
             
                        
@@ -138,7 +140,7 @@
                     <div class="form-group col-md-6" id="main_reason_box">
                         {!! Form::label('wish', __('essentials::lang.wish') . ':') !!}
                         <div class="form-group">
-                            {!! Form::text('wish', null, ['class' => 'form-control',
+                            {!! Form::text('wish2', null, ['class' => 'form-control','id'=>'wish2',
                                  'placeholder' => __('essentials::lang.wish')]) !!}
                         </div>
                     </div>
@@ -151,7 +153,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                <button type="submit"  id ="saveChangesButton" class="btn btn-primary">@lang('messages.save')</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
             </div>
           
@@ -224,28 +226,27 @@
 
 <script>
     $(document).ready(function () {
-        $('.edit_button').click(function () {
+
+        $(document).on('click', 'button.edit_button', function() {
             var itemId = $(this).data('id');
-            var employeeType = $(this).data('employee-type'); 
+            var employeeType = $(this).data('employee-type');
             var wish = $(this).data('wish');
 
-            $('#editItemId').val(itemId);
-            $('#employee_type_filter').val(employeeType).trigger('change'); // Populate and trigger the change event for the select dropdown
-            $('#wish').val(wish);
-            console.log( wish);
-            condol.log( employeeType);
+            $('#employee_type_filter2').val(employeeType).trigger('change');
+            $('#wish2').val(wish);
+            $('#employee_type_id').val(itemId);
+
             $('#editModal').modal('show');
         });
 
-       
         $('#saveChangesButton').click(function () {
-            var itemId = $('#editItemId').val();
-            var employeeType = $('#employee_type_filter').val();
-            var wish = $('#wish').val();
+            var itemId = $('#employee_type_id').val();
+            var employeeType = $('#employee_type_filter2').val();
+            var wish = $('#wish2').val();
 
             // Make an Ajax request to the update wish route
             $.ajax({
-                url: '/wishes/' + itemId + '/update',
+                url: 'hrm/wishes/' + itemId + '/update',
                 method: 'POST', // Change this to the appropriate HTTP method (POST or PUT)
                 data: {
                     _token: '{{ csrf_token() }}', // Add the CSRF token for security
@@ -267,6 +268,7 @@
         });
     });
 </script>
+
 
 
 @endsection

@@ -83,6 +83,7 @@
             var contractWishTable = $('#contract_wish_table').DataTable({
                 processing: true,
                 serverSide: true,
+                searching: false,
                 ajax: {
                         "url": '{{ route("contracts_wishes") }}',
                         "data": function ( d ) {

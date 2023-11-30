@@ -378,7 +378,7 @@ class User extends Authenticatable
         return $this->belongsToMany(EssentialsUserAllowancesAndDeduction::class, 'user_id');
     }
 
-    public function assignedTo()
+    public function contactLocations()
     {
         return $this->belongsTo(ContactLocation::class, 'assigned_to');
     }

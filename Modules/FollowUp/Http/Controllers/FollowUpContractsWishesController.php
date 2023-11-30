@@ -51,9 +51,9 @@ class FollowUpContractsWishesController extends Controller
              ->select(
                  'users.id',
                  'users.emp_number as emp_number',
-                 'users.first_name',
-                 'users.mid_name',
-                 'users.last_name',
+                 'users.first_name as first_name',
+                 'users.mid_name as mid_name ',
+                 'users.last_name as last_name',
                  'users.id_proof_number as residency',
                  'contact_locations.name as project_name',
                  
@@ -93,9 +93,16 @@ class FollowUpContractsWishesController extends Controller
                     return $button;
                 })
                 
-                 ->filterColumn('name', function ($query, $keyword) {
-                     $query->where('name', 'like', "%{$keyword}%");
-                 })
+               
+                ->filterColumn('project_name', function ($query, $keyword) {
+                    $query->whereHas('contactLocations', function ($subQuery) use ($keyword) {
+                        $subQuery->where('name', 'like', "%{$keyword}%");
+                    });
+                })
+
+                ->filterColumn('residency', function ($query, $keyword) {
+                    $query->whereRaw("residency  like ?", ["%{$keyword}%"]);
+                })
                  ->rawColumns(['action'])
                  ->make(true);
          }
