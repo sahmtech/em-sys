@@ -246,7 +246,7 @@
 
             // Make an Ajax request to the update wish route
             $.ajax({
-                url: 'hrm/wishes/' + itemId + '/update',
+                url: '{{ route("update_wish", ["id" => ":id"]) }}'.replace(':id', itemId),
                 method: 'POST', // Change this to the appropriate HTTP method (POST or PUT)
                 data: {
                     _token: '{{ csrf_token() }}', // Add the CSRF token for security
