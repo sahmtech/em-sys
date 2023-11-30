@@ -51,31 +51,27 @@ class FollowUpWorkerController extends Controller
         $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-            $users->select(
-                'users.*',
-                'users.id_proof_number',
-                'users.nationality_id',
-                'users.essentials_salary',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'contact_locations.name as contact_name'
-            );
+        $users->select(
+            'users.*',
+            'users.id_proof_number',
+            'users.nationality_id',
+            'users.essentials_salary',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            'contact_locations.name as contact_name'
+        );
         if (request()->ajax()) {
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                error_log(request()->input('project_name'));
-               
+
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
-                error_log($users->count());
-           
             }
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
+            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                $start = request()->filter_start_date;
+                $end = request()->filter_end_date;
 
                 $users->whereHas('contract', function ($query) use ($start, $end) {
                     $query->whereDate('contract_end_date', '>=', $start)
@@ -85,39 +81,44 @@ class FollowUpWorkerController extends Controller
             if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
                 $users = $users->where('users.nationality_id', request()->nationality);
-                
             }
-            
+
             return Datatables::of($users)
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
+                ->addColumn('worker', function ($user) {
+                    return $user->first_name . ' ' . $user->last_name;
+                })
+                ->addColumn('contact_name', function ($user) {
+                    return $user->assignedTo->name;
+                })
 
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
-                    ->where('type', 'residence_permit')
-                    ->first();
+                        ->where('type', 'residence_permit')
+                        ->first();
                     if ($residencePermitDocument) {
-                     
+
                         return optional($residencePermitDocument)->expiration_date ?? ' ';
                     } else {
-                      
+
                         return ' ';
                     }
                 })
-                
+
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-                // ->filterColumn('worker', function ($query, $keyword) {
-                //     $query;
-                // })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->where('first_name', 'LIKE', "%{$keyword}%")->orWhere('last_name', 'LIKE', "%{$keyword}%");
+                })
 
-                ->rawColumns(['nationality', 'residence_permit_expiration','contract_end_date'])
+                ->rawColumns(['nationality', 'worker', 'residence_permit_expiration', 'contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')->with(compact('contacts', 'nationalities','ContactsLocation'));
+        return view('followup::workers.index')->with(compact('contacts', 'nationalities', 'ContactsLocation'));
     }
 
 
