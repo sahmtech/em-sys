@@ -380,7 +380,7 @@ class User extends Authenticatable
 
     public function assignedTo()
     {
-        return $this->belongsTo(Contact::class, 'assigned_to');
+        return $this->belongsTo(ContactLocation::class, 'assigned_to');
     }
 
     public function essentials_admission_to_works()
