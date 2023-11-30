@@ -219,4 +219,5 @@ return [
     'contact_location_phone_in_charge' => 'هاتف',
     'contact_location_email_in_charge' => 'بريد الكتروني',
     'create_contact_location' => 'إضافة مشروع لعميل',
+    'contact_locations_edit'=>'تعديل المشروع',
 ];
