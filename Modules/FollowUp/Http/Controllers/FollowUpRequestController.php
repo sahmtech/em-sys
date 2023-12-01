@@ -145,8 +145,7 @@ class FollowUpRequestController extends Controller
 
     public function store(Request $request)
     {
-
-        
+       
         $attachmentPath = null;
    
 
@@ -205,66 +204,74 @@ class FollowUpRequestController extends Controller
             ];
             return redirect()->route('allRequests')->withErrors([$output['msg']]);
         }
-   
-        $workerRequest = new followupWorkerRequest;
+        $success = 1; 
+        foreach ($request->worker_id as $workerId) {
+        if ($workerId !== null) {
+            $workerRequest = new followupWorkerRequest;
 
-        $workerRequest->request_no = $this->generateRequestNo($request->type);
-        $workerRequest->worker_id = $request->worker_id;
-        $workerRequest->type = $request->type;
-        $workerRequest->start_date = $startDate;
-        $workerRequest->end_date = $end_date;
-        $workerRequest->reason = $request->reason;
-        $workerRequest->note = $request->note;
-        $workerRequest->attachment = $attachmentPath;
-        $workerRequest->essentials_leave_type_id = $request->leaveType;
-        $workerRequest->escape_time = $request->escape_time;
-        $workerRequest->installmentsNumber = $request->installmentsNumber;
-        $workerRequest->monthlyInstallment = $request->monthlyInstallment;
-        $workerRequest->advSalaryAmount = $request->amount;
-        $workerRequest->updated_by = auth()->user()->id;
-        $workerRequest->insurance_classes_id = $request->ins_class;
-        $workerRequest->baladyCardType = $request->baladyType;
-        $workerRequest->resCardEditType = $request->resEditType;
-        $workerRequest->workInjuriesDate = $request->workInjuriesDate;
-        $workerRequest->contract_main_reason_id = $request->main_reason;
-        $workerRequest->contract_sub_reason_id = $request->sub_reason;
-        $workerRequest->visa_number = $request->visa_number;
-        $workerRequest->atmCardType = $request->atmType;
-
-
-
-
+            $workerRequest->request_no = $this->generateRequestNo($request->type);
+            $workerRequest->worker_id = $workerId;
+            $workerRequest->type = $request->type;
+            $workerRequest->start_date = $startDate;
+            $workerRequest->end_date = $end_date;
+            $workerRequest->reason = $request->reason;
+            $workerRequest->note = $request->note;
+            $workerRequest->attachment = $attachmentPath;
+            $workerRequest->essentials_leave_type_id = $request->leaveType;
+            $workerRequest->escape_time = $request->escape_time;
+            $workerRequest->installmentsNumber = $request->installmentsNumber;
+            $workerRequest->monthlyInstallment = $request->monthlyInstallment;
+            $workerRequest->advSalaryAmount = $request->amount;
+            $workerRequest->updated_by = auth()->user()->id;
+            $workerRequest->insurance_classes_id = $request->ins_class;
+            $workerRequest->baladyCardType = $request->baladyType;
+            $workerRequest->resCardEditType = $request->resEditType;
+            $workerRequest->workInjuriesDate = $request->workInjuriesDate;
+            $workerRequest->contract_main_reason_id = $request->main_reason;
+            $workerRequest->contract_sub_reason_id = $request->sub_reason;
+            $workerRequest->visa_number = $request->visa_number;
+            $workerRequest->atmCardType = $request->atmType; 
+            $workerRequest->save();
         
-        $workerRequest->save();
 
-        if ($workerRequest) {
-            $process = followupWorkerRequestProcess::create([
-                'worker_request_id' => $workerRequest->id,
-                'procedure_id' => $this->getProcedureIdForType($request->type),
-                'status' => 'pending',
-                'reason' => null,
-                'status_note' => null,
-            ]);
 
-            if ($process) {
-                $output = [
+            if ($workerRequest) {
+                $process = followupWorkerRequestProcess::create([
+                    'worker_request_id' => $workerRequest->id,
+                    'procedure_id' => $this->getProcedureIdForType($request->type),
+                    'status' => 'pending',
+                    'reason' => null,
+                    'status_note' => null,
+                ]);
 
-                    'success' => 1,
-                    'msg' => __('sales::lang.operationOrder_added_success'),
+                if (!$process) {
+                  
+                    $workerRequest->delete();
+                    // $output = [
+                    //     'success' => 0,
+                    //     'msg' => __('messages.something_went_wrong'),
+                    // ];
+                  // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                  $success = 0;
+                }
+            
+                } else {
 
-                ];
-                return redirect()->route('allRequests')->with('success', $output['msg']);
-            } else {
-
-                $workerRequest->delete();
-                $output = [
-                    'success' => 0,
-                    'msg' => __('messages.something_went_wrong'),
-                ];
-                return redirect()->route('allRequests')->withErrors([$output['msg']]);
-            }
+                    $success = 0;
+                    // $output = [
+                    //     'success' => 0,
+                    //     'msg' => __('messages.something_went_wrong'),
+                    // ];
+                    // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                }
+        }}
+        if ($success) {
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+            return redirect()->route('allRequests')->with('success', $output['msg']);
         } else {
-
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
