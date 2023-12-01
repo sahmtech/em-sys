@@ -181,7 +181,10 @@ return [
     'recruitmentRequests' => 'طلبات التوظيف الداخلي',
     'attachment_view' => 'عرض المرفقات',
     'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
-    'attachments' => 'المرفقات'
+    'attachments' => 'المرفقات',
+    'release'=>'إصدار جديد',
+    're_issuing'=>'إعادة إصدار',
+    'update_info'=>'تحديث بيانات',
 
 
 

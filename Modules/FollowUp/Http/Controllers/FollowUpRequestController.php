@@ -229,6 +229,8 @@ class FollowUpRequestController extends Controller
         $workerRequest->contract_main_reason_id = $request->main_reason;
         $workerRequest->contract_sub_reason_id = $request->sub_reason;
         $workerRequest->visa_number = $request->visa_number;
+        $workerRequest->atmCardType = $request->atmType;
+
 
 
 
@@ -377,7 +379,9 @@ class FollowUpRequestController extends Controller
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+      //  $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+      
         $workers = $all_users->pluck('full_name', 'id');
 
 
@@ -861,6 +865,8 @@ class FollowUpRequestController extends Controller
                     'essentials_wk_procedures.department_id as department_id',
                     'essentials_wk_procedures.can_return',
                     'essentials_wk_procedures.start as start',
+                    'followup_worker_requests.atmCardType',
+
 
                 ])
                     ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
