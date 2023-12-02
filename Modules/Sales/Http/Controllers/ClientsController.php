@@ -61,9 +61,9 @@ class ClientsController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-     
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+        if (! ($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
         $query = User::where('business_id', $business_id);
@@ -74,7 +74,7 @@ class ClientsController extends Controller
         if (! $can_crud_customers) {
             abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       
        
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
