@@ -84,7 +84,7 @@ class AttendanceController extends ApiController
         $month = request()->month;
 
         $attendanceList = EssentialsAttendance::where([['user_id', '=', $user->id], ['business_id', '=', $business_id]])->with('shift')->get();
-        $essentials_settings = json_decode($business->essentials_settings,true);
+        $essentials_settings = json_decode($business->essentials_settings, true);
         $grace_before_checkin = $essentials_settings['grace_before_checkin'];
         $grace_after_checkin = $essentials_settings['grace_after_checkout'];
         $grace_before_checkout = $essentials_settings['grace_before_checkout'];
@@ -93,23 +93,36 @@ class AttendanceController extends ApiController
         $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
 
         $days = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
         for ($day = $firstDayOfMonth; $day->lte($lastDayOfMonth); $day->addDay()) {
+            $clock_in_time = null;
+            $clock_out_time = null;
             if ($day->isFuture()) {
                 $status = 0;
             } else {
                 $status = 3;
+
                 foreach ($attendanceList as $attendance) {
                     $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
                     if ($day->toDateString() == $attendanceDate) {
                         $start_time = Carbon::parse($attendance->shift->start_time);
                         $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                        $clock_out_time = Carbon::parse($attendance->clock_out_time);
                         $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
                         $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
 
                         if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
                             $status = 1;
+                            $attended += 1;
                         } elseif ($clock_in_time->gt($checkin_end_range)) {
-                            $status = 2; // Clock in after the grace period
+                            $status = 2;
+                            $late += 1;
+                        } else {
+                            $absent += 1;
                         }
                         break;
                     }
@@ -120,9 +133,17 @@ class AttendanceController extends ApiController
                 'number' => $day->day,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
             ];
         }
-        return new CommonResource($days);
+        $res = [
+            'attended' => $attended,
+            'late' => $late,
+            'absent' => $absent,
+            'days' => $days,
+        ];
+        return new CommonResource($res);
     }
 
 
