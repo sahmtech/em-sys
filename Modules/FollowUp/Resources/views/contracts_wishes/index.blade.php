@@ -94,25 +94,72 @@
                     'placeholder' => __('essentials::lang.select_employee'),
                     'required',
                     'style' => 'height:40px',
+                    'onchange' => 'loadWishFile(this.value)',
                 ]) !!}
             </div>
 
             
                        
                    
+            <!-- <div class="form-group col-md-6">
+                    {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
+                    {!! Form::select('employee_type', [
+                         'employee' => __('essentials::lang.employee'),
+                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
+                </div>
+             -->
+                       
+                   
 
                     <div class="clearfix"></div>
 
                     <div class="form-group col-md-6" id="main_reason_box">
-                        {!! Form::label('wish', __('essentials::lang.wish') . ':') !!}
+                   
                         <div class="form-group">
-                            {!! Form::text('wish', null, ['class' => 'form-control',
-                                 'placeholder' => __('essentials::lang.wish')]) !!}
+                           
+                        {!! Form::label('offer_status_filter', __('followup::lang.wish') . ':') !!}
+                        {!! Form::select('wish',
+                            $wishes, null,
+                             ['class' => 'form-control',
+                              'id'=>'status_dropdown',
+                              'style' => ' height:40px;width:100%',
+                              'placeholder' => __('lang_v1.all')]); !!}
                         </div>
                     </div>
 
+                  
+                    
+                    <div class="clearfix"></div>
+                
+                    
 
-                   
+
+<!-- Display the button if wish file exists -->
+<button type="button" id="viewWishFileButton" class="btn btn-primary" style="display: none;">
+    @lang('essentials::lang.view_wish_file')
+</button>
+
+<!-- Display the message if no wish file exists -->
+<div id="noWishFileMessage" style="display: none;">
+
+   
+    <div class="clearfix"></div>
+    <div class="form-group col-md-6">
+    <button type="button"  class="btn btn-primary">
+    @lang('essentials::lang.no_wish_file_to_show')
+</button>
+<div class="clearfix"></div>
+
+                                {!! Form::label('file', __('essentials::lang.wish_file_select') . ':*') !!}
+                                {!! Form::file('file', null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => __('essentials::lang.wish_file'),
+                                  
+                                    'style'=>'height:40px',
+                                ]) !!}
+                    </div>
+</div>
+
                    
                 </div>
                    
@@ -135,6 +182,38 @@
 @endsection
 
 @section('javascript')
+
+<script>
+    function loadWishFile(employeeId) {
+        console.log(employeeId);
+        // Make an AJAX request to get the wish file for the selected employee
+        $.ajax({
+            
+            url: '{{ route("getWishFile", ["employeeId" => ":employeeId"]) }}'.replace(':employeeId', employeeId),
+            type: 'GET',
+            success: function(response) {
+                // Update the UI with wish file information
+                if (response.success) {
+                    console.log(response.wish_file);
+                    // Display the "View Wish File" button
+                    $('#viewWishFileButton').attr('onclick', 'window.location.href = "/uploads/' + response.wish_file + '"');
+                    $('#viewWishFileButton').show();
+                    $('#noWishFileMessage').hide();
+                } else {
+                    // Display the "No Wish File to Show" message
+                    $('#viewWishFileButton').hide();
+                    $('#noWishFileMessage').show();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Display an error message
+                console.error('AJAX Request Failed: ', textStatus, errorThrown);
+                alert('Failed to fetch wish file. Please try again later.');
+            }
+        });
+    }
+</script>
+
 
     <script type="text/javascript">
         $(document).ready(function () {
