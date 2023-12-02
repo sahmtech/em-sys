@@ -340,7 +340,7 @@ class EssentialsEmployeeImportController extends Controller
 
                                         if ($emp_array['location_id'] !== null) {
                                         
-                                            $location = Business::find($emp_array['location_id']);
+                                            $location = BusinessLocation::find($emp_array['location_id']);
                                             
                                             if (!$location) {
                                             
