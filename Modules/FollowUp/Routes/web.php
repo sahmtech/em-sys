@@ -73,6 +73,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::post('/addWishcontact', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'add_wish'])->name('addWishcontact');
+        Route::get('/get-wish-file/{employeeId}',  [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'getWishFile'])->name('getWishFile');
 
 
         Route::get('/reports/project-workers', [\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers'])->name('projectWorkers');

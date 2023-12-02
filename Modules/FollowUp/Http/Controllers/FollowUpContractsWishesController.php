@@ -44,24 +44,24 @@ class FollowUpContractsWishesController extends Controller
      
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         
-     
          $workers = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
-             ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
-             ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
-             ->where('users.user_type', 'worker')
-             ->select(
-                 'users.id',
-                 'users.emp_number as emp_number',
-                 'users.first_name as first_name',
-                 'users.mid_name as mid_name ',
-                 'users.last_name as last_name',
-                 'users.id_proof_number as residency',
-                 'contact_locations.name as project_name',
-                 
-                'essentials_employees_contracts.contract_start_date as contract_start_date',
-                'essentials_employees_contracts.contract_end_date as contract_end_date',
-                'essentials_employees_contracts.wish_id as wish',
-             );
+         ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
+         ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+         ->where('users.user_type', 'worker')
+         ->whereNotNull('essentials_employees_contracts.wish_id') // Add this line
+         ->select(
+             'users.id',
+             'users.emp_number as emp_number',
+             'users.first_name as first_name',
+             'users.mid_name as mid_name ',
+             'users.last_name as last_name',
+             'users.id_proof_number as residency',
+             'contact_locations.name as project_name',
+             'essentials_employees_contracts.contract_start_date as contract_start_date',
+             'essentials_employees_contracts.contract_end_date as contract_end_date',
+             'essentials_employees_contracts.wish_id as wish',
+             'essentials_employees_contracts.wish_id as wish_file',
+         );
            
              
              if (!empty(request()->input('wish_status_filter')) ) {
@@ -123,15 +123,44 @@ class FollowUpContractsWishesController extends Controller
              ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
              ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
              ->where('users.user_type', 'worker')
-             ->select(  DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as fullname"),'users.id')->get();
-         return view('followup::contracts_wishes.index', compact('projects', 'wishes','employees'));
+             ->select(  DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as fullname"),'users.id',)->get();
+        
+             return view('followup::contracts_wishes.index', compact('projects', 'wishes','employees'));
      }
      
+     public function getWishFile($employeeId) {
+        try {
+        
+            
+            $emp_wish = EssentialsEmployeesContract::where('employee_id', $employeeId)->first();
+           
+            if (!empty($emp_wish)) {
+                $wishFile = $emp_wish->wish_file;
+            } else {
+                $wishFile = "";
+            }
+    
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = [
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ];
+        }
+    
+        return response()->json(['success' => true, 'wish_file' => $wishFile]);
+    }
+    
 
      public function add_wish(Request $request)
      {
         $selectedEmployeeId = $request->input('employees');
-      
+        $employee_type= $request->input('employee_type');
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -139,37 +168,29 @@ class FollowUpContractsWishesController extends Controller
             abort(403, 'Unauthorized action.');
         }
         try {
-            $input = $request->only(
-                ['employee_type',
-                 'wish',
-                  'file'
-                 ]);
-
-            $input['employee_type'] ='worker';
-            
-            $input['type'] ='wish';
-         
-            
-            $input['reason'] = $input['wish'];
-           
-
-            $wish=EssentailsReasonWish::create($input);
- 
-           
-            $employeecontact=EssentialsEmployeesContract::where('employee_id', $selectedEmployeeId)->first();
+            $employeeId = $request->input('employee_id');
+            $wish = $request->input('wish');
+            $wishFile = $request->file('file');
           
-            if ($employeecontact) {
-                $employeecontact->update(['wish_id' => $wish->id]);
-                $output = [
-                    'success' => true,
-                    'msg' => __('lang_v1.added_success'),
-                ];
-            } else {
-                $output = [
-                    'success' => false,
-                    'msg' => __('Employee contact not found.'),
-                ];
+            $emp_wish = EssentialsEmployeesContract::where('employee_id',   $selectedEmployeeId)->first();
+            $emp_wish->wish_id = $wish;
+         
+            if (!empty($wishFile)){
+                if (request()->hasFile('file')) {
+                    $file = request()->file('file');
+                    $filePath = $file->store('/employeeContracts');
+                  
+                    
+                   $emp_wish->wish_file = $filePath;
+                }
             }
+            
+
+            $emp_wish->save();
+
+            $output = ['success' => true,
+            'msg' => __('lang_v1.updated_success'),
+        ];
 
 
         } catch (\Exception $e) {
