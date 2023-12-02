@@ -4,10 +4,12 @@ namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Modules\Connector\Transformers\CommonResource;
+use Modules\Essentials\Entities\EssentialsAttendance;
 
 /**
  * @group Attendance management
@@ -68,6 +70,62 @@ class AttendanceController extends ApiController
 
         return new CommonResource($attendance);
     }
+
+    public function getAttendanceByDate()
+    {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $user = Auth::user();
+        $business_id = $user->business_id;
+        $business = Business::where('id', $business_id)->first();
+        $year = request()->year;
+        $month = request()->month;
+
+        $attendanceList = EssentialsAttendance::where([['user_id', '=', $user->id], ['business_id', '=', $business_id]])->with('shift')->get();
+        $essentials_settings = json_decode($business->essentials_settings);
+        $grace_before_checkin = $essentials_settings['grace_before_checkin'];
+        $grace_after_checkin = $essentials_settings['grace_after_checkout'];
+        $grace_before_checkout = $essentials_settings['grace_before_checkout'];
+        $grace_after_checkout = $essentials_settings['grace_after_checkout'];
+        $firstDayOfMonth = Carbon::createFromDate($year, $month, 1);
+        $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
+
+        $days = [];
+        for ($day = $firstDayOfMonth; $day->lte($lastDayOfMonth); $day->addDay()) {
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 3;
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    if ($day->toDateString() == $attendanceDate) {
+                        $start_time = Carbon::parse($attendance->shift->start_time);
+                        $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                        $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
+                        $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
+
+                        if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
+                            $status = 1;
+                        } elseif ($clock_in_time->gt($checkin_end_range)) {
+                            $status = 2; // Clock in after the grace period
+                        }
+                        break;
+                    }
+                }
+            }
+
+            $days[] = [
+                'number' => $day->day,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status,
+            ];
+        }
+        return new CommonResource($days);
+    }
+
+
 
     /**
      * Clock In
