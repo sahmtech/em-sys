@@ -129,29 +129,29 @@ class FollowUpContractsWishesController extends Controller
      }
      
      public function getWishFile($employeeId) {
-      
         try {
-            return redirect()->route('contracts_wishes');
-            $emp_wish = EssentialsEmployeesContract::where('employee_id',$employeeId)->first();
-       
-          if(!empty( $emp_wish))
-            {$wishFile =   $emp_wish->wish_file;} 
-            else
-            {$wishFile="";}
-
-            $output = ['success' => true,
-            'msg' => __('lang_v1.updated_success'),
-        ];
-        }
-        catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
-            $output = ['success' => false,
+        
+            
+            $emp_wish = EssentialsEmployeesContract::where('employee_id', $employeeId)->first();
+           
+            if (!empty($emp_wish)) {
+                $wishFile = $emp_wish->wish_file;
+            } else {
+                $wishFile = "";
+            }
+    
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = [
+                'success' => false,
                 'msg' => $e->getMessage(),
             ];
         }
-
-       
     
         return response()->json(['success' => true, 'wish_file' => $wishFile]);
     }

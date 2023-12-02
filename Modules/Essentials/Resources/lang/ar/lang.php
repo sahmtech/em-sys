@@ -1059,7 +1059,8 @@ return[
 'housing_allowance_id_not_found'=>'رقم بدل السكن غير موجود',
 'trans_allowance_id_not_found'=>'رقم بدل المواصلات غير موجود',
 'other_allowance_id_not_found'=>'رقم البدل أخرى غير موجود',
-'no_wish_file_to_show'=>'لايوجد مرفق للرغبة '
+'no_wish_file_to_show'=>'لايوجد مرفق للرغبة ',
+'view_wish_file'=>'عرض ملف المرفق للرغبة',
 
 
 
