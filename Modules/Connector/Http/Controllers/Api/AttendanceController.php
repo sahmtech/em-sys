@@ -84,7 +84,7 @@ class AttendanceController extends ApiController
         $month = request()->month;
 
         $attendanceList = EssentialsAttendance::where([['user_id', '=', $user->id], ['business_id', '=', $business_id]])->with('shift')->get();
-        $essentials_settings = json_decode($business->essentials_settings);
+        $essentials_settings = json_decode($business->essentials_settings,true);
         $grace_before_checkin = $essentials_settings['grace_before_checkin'];
         $grace_after_checkin = $essentials_settings['grace_after_checkout'];
         $grace_before_checkout = $essentials_settings['grace_before_checkout'];
