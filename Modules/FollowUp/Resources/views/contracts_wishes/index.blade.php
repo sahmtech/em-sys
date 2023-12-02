@@ -43,7 +43,15 @@
         </div>
     </div>
     @component('components.widget', ['class' => 'box-primary'])
-
+    @slot('tool')
+            <div class="box-tools">
+                
+                <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#add_wish_contact">
+                    <i class="fa fa-plus"></i>  @lang('essentials::lang.add_wish')
+                </button>
+            </div>
+            @endslot
+      
       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="contract_wish_table">
@@ -67,7 +75,57 @@
  
     @endcomponent
 
+    <div class="modal fade" id="add_wish_contact" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        {!! Form::open(['route' => 'addWishcontact', 'enctype' => 'multipart/form-data']) !!}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@lang('essentials::lang.add_wish')</h4>
+            </div>
 
+            <div class="modal-body">
+                <div class="row">
+         
+                <div class="form-group col-md-6">
+                {!! Form::label('employees', __('essentials::lang.employee') . ':*') !!}
+                {!! Form::select('employees', $employees->pluck('fullname', 'id'), null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.select_employee'),
+                    'required',
+                    'style' => 'height:40px',
+                ]) !!}
+            </div>
+
+            
+                       
+                   
+
+                    <div class="clearfix"></div>
+
+                    <div class="form-group col-md-6" id="main_reason_box">
+                        {!! Form::label('wish', __('essentials::lang.wish') . ':') !!}
+                        <div class="form-group">
+                            {!! Form::text('wish', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.wish')]) !!}
+                        </div>
+                    </div>
+
+
+                   
+                   
+                </div>
+                   
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
 
     @include('followup::contracts_wishes.change_wish_modal')
 

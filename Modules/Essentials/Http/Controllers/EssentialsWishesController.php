@@ -171,15 +171,11 @@ public function update(Request $request, $id)
     $wish = $request->input('wish');
 
     try {
-      //  $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
-   
-      //  $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
-        
+     
         $input2['employee_type'] = $employeeType;
        
         $input2['reason'] = $wish;
         
-      
         
         EssentailsReasonWish::where('id', $id)
         ->where('type','wish')
