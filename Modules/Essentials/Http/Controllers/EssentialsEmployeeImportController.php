@@ -169,7 +169,7 @@ class EssentialsEmployeeImportController extends Controller
                                             $emp_array['last_name'] = $value[2];
                                         } else {
                                             $is_valid = false;
-                                            $error_msg = __('essentials::lang.first_name_required', ['row_no' => $row_no]);
+                                            $error_msg = __('essentials::lang.first_name_required') .$row_no;
                                             break;
                                         }
                                     
@@ -180,7 +180,7 @@ class EssentialsEmployeeImportController extends Controller
                                         else
                                         {
                                              $is_valid = false;
-                                            $error_msg = __('essentials::lang.user_type_required',  $row_no);
+                                            $error_msg = __('essentials::lang.user_type_required' ).$row_no;
                                             break;
                                         }
                                     
@@ -318,7 +318,8 @@ class EssentialsEmployeeImportController extends Controller
 
                                         if ($emp_array['business_id'] !== null) {
                                         
-                                            $business = BusinessLocation::find($emp_array['business_id']);
+                                            $business = Business::find($emp_array['business_id']);
+                                          
                                             if (!$business) {
                                             
                                                 $is_valid = false;
@@ -339,7 +340,8 @@ class EssentialsEmployeeImportController extends Controller
 
                                         if ($emp_array['location_id'] !== null) {
                                         
-                                            $location = Business::find($emp_array['location_id']);
+                                            $location = BusinessLocation::find($emp_array['location_id']);
+                                            
                                             if (!$location) {
                                             
                                                 $is_valid = false;

@@ -106,12 +106,12 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->join('users as u', 'u.id', '=', 'essentials_user_allowance_and_deductions.user_id')
                 ->where('u.business_id', $business_id)
                 ->select([
-                    'essentials_user_allowance_and_deductions.id',
+                    'essentials_user_allowance_and_deductions.id as id ',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'allawocnce.description',
                     'essentials_user_allowance_and_deductions.amount',
 
-                ]);
+                ])->orderby('id','desc');
 
 
             return Datatables::of($userAllowances)
@@ -133,7 +133,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-                ->removeColumn('id')
+             
                 ->rawColumns(['action'])
                 ->make(true);
         }
