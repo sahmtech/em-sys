@@ -117,15 +117,18 @@ class AttendanceController extends ApiController
 
                         if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
                             $status = 1;
-                            $attended += 1;
                         } elseif ($clock_in_time->gt($checkin_end_range)) {
                             $status = 2;
-                            $late += 1;
-                        } else {
-                            $absent += 1;
                         }
                         break;
                     }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2) {
+                    $late += 1;
+                } elseif ($status == 3) {
+                    $absent += 1;
                 }
             }
 
