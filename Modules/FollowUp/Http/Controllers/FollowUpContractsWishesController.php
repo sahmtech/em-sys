@@ -11,6 +11,7 @@ use App\Transaction;
 use App\User;
 use App\ContactLocation;
 use DataTables;
+use DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentailsReasonWish;
 class FollowUpContractsWishesController extends Controller
@@ -86,11 +87,17 @@ class FollowUpContractsWishesController extends Controller
                 })
                 
                  ->editColumn('action', function ($row) {
-                    $button = '<a href="#" class="btn btn-xs btn-success change-status-btn" data-toggle="modal"
-                                   data-target="#change_status_modal" data-employee-id="'.$row->id.'"  data-orig-value="'.$row->wish.'">
-                                   ' . __('followup::lang.change_wish') . '
-                               </a>';
+                    if(! empty($row->wish))
+                    {
+                        $button = '<a href="#" class="btn btn-xs btn-success change-status-btn" data-toggle="modal"
+                        data-target="#change_status_modal" data-employee-id="'.$row->id.'"  data-orig-value="'.$row->wish.'">
+                        ' . __('followup::lang.change_wish') . '
+                    </a>';
+       
                     return $button;
+                    }
+                 
+                   
                 })
                 
                
@@ -111,10 +118,70 @@ class FollowUpContractsWishesController extends Controller
          ->where('employee_type','worker')
          ->pluck('reason', 'id');
          $projects= ContactLocation::pluck('name','id');
-         return view('followup::contracts_wishes.index', compact('projects', 'wishes'));
+     
+       $employees=User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
+             ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
+             ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
+             ->where('users.user_type', 'worker')
+             ->select(  DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as fullname"),'users.id')->get();
+         return view('followup::contracts_wishes.index', compact('projects', 'wishes','employees'));
      }
      
 
+     public function add_wish(Request $request)
+     {
+        $selectedEmployeeId = $request->input('employees');
+      
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+        try {
+            $input = $request->only(
+                ['employee_type',
+                 'wish',
+                  'file'
+                 ]);
+
+            $input['employee_type'] ='worker';
+            
+            $input['type'] ='wish';
+         
+            
+            $input['reason'] = $input['wish'];
+           
+
+            $wish=EssentailsReasonWish::create($input);
+ 
+           
+            $employeecontact=EssentialsEmployeesContract::where('employee_id', $selectedEmployeeId)->first();
+          
+            if ($employeecontact) {
+                $employeecontact->update(['wish_id' => $wish->id]);
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.added_success'),
+                ];
+            } else {
+                $output = [
+                    'success' => false,
+                    'msg' => __('Employee contact not found.'),
+                ];
+            }
+
+
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = ['success' => false,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+        return redirect()->route('contracts_wishes');
+     }
      public function changeWish(Request $request)
      {
          try {

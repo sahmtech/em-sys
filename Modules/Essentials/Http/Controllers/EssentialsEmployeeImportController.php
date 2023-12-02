@@ -27,6 +27,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
@@ -519,61 +520,59 @@ class EssentialsEmployeeImportController extends Controller
                                     
                                 $emp_array['essentials_salary'] = $value[39];
                                     
-                                $emp_array['transportation_allowance'] = $value[41];    
                                
-                                //$emp_array['housing_allowance'] = $value[40]; 
-                              
-                                // $emp_array['housing_allowance'] = [
-                                //     'salaryType' => 2,
-                                //     'amount' => $value[40],
-                                   
-                                // ];
-                                                            
-                                // $emp_array['housing_allowance'] = json_encode($emp_array['housing_allowance']);
-
-
-                                // //$emp_array['transportation_allowance'] = $value[41]; 
-                              
-                                // $emp_array['transportation_allowance'] = [
-                                //     'salaryType' => 3,
-                                //     'amount' => $value[41],
-                                   
-                                // ];                            
-                                // $emp_array['transportation_allowance'] = json_encode($emp_array['transportation_allowance']);
-
-
-
-
-                                // //$emp_array['other'] = $value[42];    
-                                
-                              
-                                // $emp_array['other'] = [
-                                //     'salaryType' => 5,
-                                //     'amount' => $value[42],
-                                   
-                                // ];                            
-                                // $emp_array['other'] = json_encode($emp_array['other']);
-                                
+                                if ($value[40] !== null) {
+                                        
+                                    $housing_allowance_id = EssentialsAllowanceAndDeduction::find($value[40]);
+                                  
+                                    if (!$housing_allowance_id) {
+                                    
+                                        $is_valid = false;
+                                        $error_msg = __('essentials::lang.housing_allowance_id_not_found') .$row_no;
+                                        break;
+                                    }
+                                } 
                                
-                                
-                            
-                                // $emp_array['bank_details'] = json_encode($emp_array['bank_details']);
+                                if ($value[42] !== null) {
+                                        
+                                    $trans_allowance_id = EssentialsAllowanceAndDeduction::find($value[42]);
+                                  
+                                    if (!$trans_allowance_id) {
+                                    
+                                        $is_valid = false;
+                                        $error_msg = __('essentials::lang.trans_allowance_id_not_found') .$row_no;
+                                        break;
+                                    }
+                                } 
+                                if ($value[44] !== null) {
+                                        
+                                    $other_allowance_id = EssentialsAllowanceAndDeduction::find($value[44]);
+                                  
+                                    if (!$other_allowance_id) {
+                                    
+                                        $is_valid = false;
+                                        $error_msg = __('essentials::lang.other_allowance_id_not_found') .$row_no;
+                                        break;
+                                    }
+                                } 
+                               
+
                                 
                                 $emp_array['allowance_data'] = [
-                                    'housing_allowance' => json_encode(['salaryType' => 2, 'amount' => $value[40]]),
-                                    'transportation_allowance' => json_encode(['salaryType' => 3, 'amount' => $value[41]]),
-                                    'other' => json_encode(['salaryType' => 6, 'amount' => $value[42]]),
+                                    'housing_allowance' => json_encode(['salaryType' => $value[40], 'amount' => $value[41]]),
+                                    'transportation_allowance' => json_encode(['salaryType' => $value[42], 'amount' => $value[43]]),
+                                    'other' => json_encode(['salaryType' => $value[44], 'amount' => $value[45]]),
                                   
                                 ];
                                         
                                 
-                                $emp_array['total_salary'] = $value[43]; 
+                                $emp_array['total_salary'] = $value[46]; 
                                     
                                        
                               
 
 
-                                        $travelcategoryname=$value[44];
+                                        $travelcategoryname=$value[47];
                                         $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
                                         if ($traveltype) {
                                             
@@ -584,7 +583,7 @@ class EssentialsEmployeeImportController extends Controller
 
                                         
 
-                                        $emp_array['has_insurance'] = $value[45]; 
+                                        $emp_array['has_insurance'] = $value[48]; 
                                       
                                     $formated_data[] = $emp_array;
                                          
@@ -600,13 +599,12 @@ class EssentialsEmployeeImportController extends Controller
                         'contract_end_date' => null,
                                                
                                             ]; 
-                // dd($emp_array);
-                // Iterate over the formated data and add the default keys
+             
                $formated_data = array_map(fn($emp_data) => array_merge($defaultContractData, $emp_data), $formated_data); 
       
                 if (! empty($formated_data)) 
                 {
-                    // Assuming $jsonData is an array of JSON-encoded data
+                 
 
 
                     foreach ($formated_data as $emp_data) {
