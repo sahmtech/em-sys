@@ -608,7 +608,7 @@
                 var selectedType = $('#requestType').val();
 
                 console.log(selectedType);
-                if (selectedType === 'exitRequest' || selectedType === 'leavesAndDepartures') {
+                if (selectedType === 'leavesAndDepartures') {
                     $('#start_date').show();
 
                 } else {
