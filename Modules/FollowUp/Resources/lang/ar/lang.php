@@ -185,6 +185,18 @@ return [
     'release'=>'إصدار جديد',
     're_issuing'=>'إعادة إصدار',
     'update_info'=>'تحديث بيانات',
+    'eqama_number'=>'رقم الإقامة',
+    'view_request'=>'عرض الطلب',
+    'created_by'=>'أُنشئ من قبل',
+    'updated_by'=>'تم الإجراء من قبل',
+    'created_at'=>'تاريخ التقديم',
+    'department_name'=>'اسم الإدارة',
+    'not_exist'=>'لا يوجد',
+    'worker_details'=>'تفاصيل العامل',
+    'activites'=>'النشاطات',
+    'passport_number'=>'رقم الجواز',
+    
+
 
 
 
