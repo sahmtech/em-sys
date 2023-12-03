@@ -177,6 +177,7 @@ class FollowUpRequestController extends Controller
                 ];
                 return redirect()->route('allRequests')->withErrors([$output['msg']]);
             }
+
   
             if (is_null($contract->wish_id )) {
                 $output = [
@@ -205,9 +206,14 @@ class FollowUpRequestController extends Controller
             ];
             return redirect()->route('allRequests')->withErrors([$output['msg']]);
         }
-        $success = 1; 
+        $success = 1;
+     
         foreach ($request->worker_id as $workerId) {
         if ($workerId !== null) {
+            if ( $request->type == "exitRequest"){
+                $startDate=DB::table('essentials_employees_contracts')->where('employee_id',$workerId)->first()->contract_end_date;
+            }
+            
             $workerRequest = new followupWorkerRequest;
 
             $workerRequest->request_no = $this->generateRequestNo($request->type);
@@ -410,17 +416,7 @@ class FollowUpRequestController extends Controller
         return view('followup::requests.allRequest')->with(compact('workers','main_reasons','classes', 'leaveTypes'));
     }
 
-    // public function viewRequest($id){
-    
-    //  $request = FollowupWorkerRequest::with(['user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'])
-    //  ->find($id);
- 
-    //     if (!$request) {
-    //         return response()->json(['error' => 'Request not found'], 404);
-    //     }
-    //     error_log(print_r($request));
-    //     return $request;
-    // }
+
     public function viewRequest($id)
     {
         $request = followupWorkerRequest::with(['user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'])
