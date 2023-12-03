@@ -136,9 +136,7 @@ class FollowUpContractsWishesController extends Controller
            
             if (!empty($emp_wish)) {
                 $wishFile = $emp_wish->wish_file;
-            } else {
-                $wishFile = "";
-            }
+            } 
     
             $output = [
                 'success' => true,
