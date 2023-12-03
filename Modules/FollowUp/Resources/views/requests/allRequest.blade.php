@@ -85,7 +85,8 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                            {!! Form::select('worker_id[]', $workers, null, ['class' => 'form-control select2 ',
+                            {!! Form::select('worker_id[]', $workers, null,
+                                 ['class' => 'form-control select2 ','id'=>'worker',
                              'multiple','required', 'style' => 'height: 60px; width: 250px;' 
                               ]) !!}
                         </div>
@@ -488,6 +489,51 @@
         
     });
 });
+</script>
+<script>
+$(document).ready(function () {
+    $('#worker').select2({
+        ajax: {
+            url: '{{ route('search_proofname') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results,
+                };
+            },
+            cache: true,
+        },
+        minimumInputLength: 1,
+        templateResult: formatResult,
+        templateSelection: formatSelection,
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+    });
+
+    function formatResult(result) {
+        if (result.loading) return result.text;
+
+        var markup = "<div class='select2-result-repository clearfix'>" +
+            "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
+            "<div class='select2-result-repository__description'>" + result.id_proof_number + "</div>" +
+            "</div>";
+
+        return markup;
+    }
+
+    function formatSelection(result) {
+        return result.full_name || result.text;
+    }
+});
+
+
 </script>
 
 

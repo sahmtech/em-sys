@@ -157,6 +157,7 @@
     $(document).on('click', '.edit-item', function () {
         var itemId = $(this).data('id');
         var sourceValue = $(this).data('orig-value');
+        console.log(sourceValue);
         $('#editModal').find('[name="source2"]').val(sourceValue);
         $('#editModal').find('[name="source_id"]').val(itemId);
         $('#editModal').modal('show');

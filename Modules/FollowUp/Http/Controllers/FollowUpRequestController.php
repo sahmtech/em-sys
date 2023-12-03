@@ -397,6 +397,32 @@ class FollowUpRequestController extends Controller
         return view('followup::requests.allRequest')->with(compact('workers','main_reasons','classes', 'leaveTypes'));
     }
 
+    public function search(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $query = User::where('business_id', $business_id)
+            ->where('user_type', 'worker')
+            ->where(function ($query) use ($request) {
+                $query->where('first_name', 'LIKE', '%' . $request->q . '%')
+                    ->orWhere('last_name', 'LIKE', '%' . $request->q . '%')
+                    ->orWhere('id_proof_number', 'LIKE', '%' . $request->q . '%');
+            });
+    
+        $results = $query->select('id',  DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'full_name' => $user->full_name, 
+                  
+                ];
+            });
+    
+        return response()->json(['results' => $results]);
+    }
+    
+    
 
     public function exitRequestIndex()
     {
