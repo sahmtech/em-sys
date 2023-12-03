@@ -18,7 +18,7 @@
                 <div class="form-group">
                     <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
                     {!! Form::select('contract-select', $contracts->pluck('contract_number', 'contract_number'), null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control select2',
                         'style' => 'height:36px',
                         'placeholder' => __('lang_v1.all'),
                         'required',

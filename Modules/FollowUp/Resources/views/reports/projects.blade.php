@@ -18,7 +18,7 @@
                         <div class="form-group">
                             {!! Form::label('customer_name_filter', __('sales::lang.customer_name') . ':') !!}
                             {!! Form::select('customer_name_filter', $contactLocation_fillter, null, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
                                 'style' => 'width:100%;padding:2px;',
                                 'placeholder' => __('lang_v1.all'),
                             ]) !!}
@@ -29,7 +29,7 @@
                         <div class="form-group">
                             {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
                             {!! Form::select('project_name_filter', $contacts_fillter, null, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
                                 'style' => 'width:100%;padding:2px;',
                                 'placeholder' => __('lang_v1.all'),
                             ]) !!}

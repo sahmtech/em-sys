@@ -19,7 +19,9 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                        {!! Form::select('project_name_filter',$projects, null, ['class' => 'form-control', 'style' => ' height:40px;width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        {!! Form::select('project_name_filter',
+                            $projects, null,
+                             [   'class' => 'form-control select2', 'style' => ' height:40px;width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 
                     </div>
                 </div>
@@ -28,7 +30,7 @@
                         {!! Form::label('wish_status_filter', __('followup::lang.wish') . ':') !!}
                         {!! Form::select('wish_status_filter',
                             $wishes, null,
-                             ['class' => 'form-control',
+                             [   'class' => 'form-control select2',
                               'id'=>'wish_status_filter',
                               'style' => ' height:40px;width:100%',
                               'placeholder' => __('lang_v1.all')]); !!}
