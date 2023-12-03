@@ -19,7 +19,9 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                        {!! Form::select('project_name_filter',$projects, null, ['class' => 'form-control', 'style' => ' height:40px;width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        {!! Form::select('project_name_filter',
+                            $projects, null,
+                             [   'class' => 'form-control select2', 'style' => ' height:40px;width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 
                     </div>
                 </div>
@@ -28,7 +30,7 @@
                         {!! Form::label('wish_status_filter', __('followup::lang.wish') . ':') !!}
                         {!! Form::select('wish_status_filter',
                             $wishes, null,
-                             ['class' => 'form-control',
+                             [   'class' => 'form-control select2',
                               'id'=>'wish_status_filter',
                               'style' => ' height:40px;width:100%',
                               'placeholder' => __('lang_v1.all')]); !!}
@@ -43,7 +45,15 @@
         </div>
     </div>
     @component('components.widget', ['class' => 'box-primary'])
-
+    @slot('tool')
+            <div class="box-tools">
+                
+                <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#add_wish_contact">
+                    <i class="fa fa-plus"></i>  @lang('essentials::lang.add_wish')
+                </button>
+            </div>
+            @endslot
+      
       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="contract_wish_table">
@@ -67,7 +77,102 @@
  
     @endcomponent
 
+    <div class="modal fade" id="add_wish_contact" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        {!! Form::open(['route' => 'addWishcontact', 'enctype' => 'multipart/form-data']) !!}
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@lang('essentials::lang.add_wish')</h4>
+            </div>
 
+            <div class="modal-body">
+                <div class="row">
+         
+                <div class="form-group col-md-6">
+                {!! Form::label('employees', __('essentials::lang.employee') . ':*') !!}
+                {!! Form::select('employees', $employees->pluck('fullname', 'id'), null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.select_employee'),
+                    'required',
+                    'style' => 'height:40px',
+                    'onchange' => 'loadWishFile(this.value)',
+                ]) !!}
+            </div>
+
+            
+                       
+                   
+            <!-- <div class="form-group col-md-6">
+                    {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
+                    {!! Form::select('employee_type', [
+                         'employee' => __('essentials::lang.employee'),
+                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
+                </div>
+             -->
+                       
+                   
+
+                    <div class="clearfix"></div>
+
+                    <div class="form-group col-md-6" id="main_reason_box">
+                   
+                        <div class="form-group">
+                           
+                        {!! Form::label('offer_status_filter', __('followup::lang.wish') . ':') !!}
+                        {!! Form::select('wish',
+                            $wishes, null,
+                             ['class' => 'form-control',
+                              'id'=>'status_dropdown',
+                              'style' => ' height:40px;width:100%',
+                              'placeholder' => __('lang_v1.all')]); !!}
+                        </div>
+                    </div>
+
+                  
+                    
+                    <div class="clearfix"></div>
+                
+                    
+
+
+                                   
+                                    <button type="button" id="viewWishFileButton" class="btn btn-primary" style="display: none;">
+                                        @lang('essentials::lang.view_wish_file')
+                                    </button>
+
+                                   
+                                    <div id="noWishFileMessage" style="display: none;">
+                                        <div class="form-group col-md-6">
+                                            <button type="button"  class="btn btn-primary">
+                                            @lang('essentials::lang.no_wish_file_to_show')
+                                            </button>
+                                                <div class="clearfix"></div>
+                        </br>
+
+                                                                    {!! Form::label('file', __('essentials::lang.wish_file_select') . ':*') !!}
+                                                                    {!! Form::file('file', null, [
+                                                                        'class' => 'form-control',
+                                                                        'placeholder' => __('essentials::lang.wish_file'),
+                                                                    
+                                                                        'style'=>'height:40px',
+                                                                    ]) !!}
+                                        </div>
+                                    </div>
+
+                   
+                </div>
+                   
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
 
     @include('followup::contracts_wishes.change_wish_modal')
 
@@ -77,6 +182,83 @@
 @endsection
 
 @section('javascript')
+<script  type="text/javascript">
+    $(document).ready(function() {
+        
+        $('#change_status_modal').on('shown.bs.modal', function() {
+           
+            WishFile($('#employee_id').val());
+        });
+     
+        function WishFile(employeeId) {
+            
+            console.log('loadWishFile called with employeeId:', employeeId);
+            $.ajax({
+                url: '{{ route("getWishFile", ["employeeId" => ":employeeId"]) }}'.replace(':employeeId', employeeId),
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        if (response.wish_file) {
+                            $('#viewWishFile').attr('onclick', 'window.location.href = "/uploads/' + response.wish_file + '"');
+                            $('#viewWishFile').show();
+                            $('#noWishFile').hide();
+                        } else {
+                            $('#viewWishFile').hide();
+                            $('#noWishFile').show();
+                        }
+                    } else {
+                        $('#viewWishFile').hide();
+                        $('#noWishFile').show();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('AJAX Request Failed: ', textStatus, errorThrown);
+                }
+            });
+        }
+
+ 
+        $('#employee_id').change(function() {
+            WishFile($(this).val());
+        });
+    });
+</script>
+
+<script>
+    function loadWishFile(employeeId) {
+        console.log(employeeId);
+      
+        $.ajax({
+            url: '{{ route("getWishFile", ["employeeId" => ":employeeId"]) }}'.replace(':employeeId', employeeId),
+            type: 'GET',
+            success: function(response) {
+              
+                if (response.success) {
+                    if (response.wish_file) {
+                     
+                        $('#viewWishFileButton').attr('onclick', 'window.location.href = "/uploads/' + response.wish_file + '"');
+                        $('#viewWishFileButton').show();
+                        $('#noWishFileMessage').hide();
+                    } else {
+                       
+                        $('#viewWishFileButton').hide();
+                        $('#noWishFileMessage').show();
+                    }
+                } else {
+                
+                    $('#viewWishFileButton').hide();
+                    $('#noWishFileMessage').show();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+       
+                console.error('AJAX Request Failed: ', textStatus, errorThrown);
+               
+            }
+        });
+    }
+</script>
+
 
     <script type="text/javascript">
         $(document).ready(function () {

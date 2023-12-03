@@ -88,3 +88,9 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
     Route::post('field-force/create', [Modules\Connector\Http\Controllers\Api\FieldForce\FieldForceController::class, 'store']);
     Route::post('field-force/update-visit-status/{id}', [Modules\Connector\Http\Controllers\Api\FieldForce\FieldForceController::class, 'updateStatus']);
 });
+
+
+Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(function () {
+
+    Route::get('getAttendanceByDate', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'getAttendanceByDate']);
+});

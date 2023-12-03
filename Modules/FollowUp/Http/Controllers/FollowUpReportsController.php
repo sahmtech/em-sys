@@ -38,7 +38,8 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $contacts = ContactLocation::all()->pluck('name', 'id');
+        // $contacts = ContactLocation::all()->pluck('name', 'id');
+        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         //  Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
@@ -47,21 +48,23 @@ class FollowUpReportsController extends Controller
 
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-
+        $users->select(
+            'users.*',
+            'users.id_proof_number',
+            'users.nationality_id',
+            'users.essentials_salary',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            'contact_locations.name as contact_name'
+        );
         if (request()->ajax()) {
-            // $users = User::where('user_type', 'worker')
-            //     ->join('contacts', 'contacts.id', '=', 'users.assigned_to')
-            //     // ->join('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', '=', 'users.id')
-            //     ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            //     ->with(['country', 'contract', 'essentials_admission_to_works', 'OfficialDocument']);
-
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                $users->where('assigned_to', request()->input('project_name'));
-                // where('contacts.id', request()->input('project_name'));
+
+                $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
+           
+            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                $start = request()->filter_start_date;
+                $end = request()->filter_end_date;
 
                 $users->whereHas('contract', function ($query) use ($start, $end) {
                     $query->whereDate('contract_end_date', '>=', $start)
@@ -70,23 +73,9 @@ class FollowUpReportsController extends Controller
             }
             if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
 
-                $users = $users->where('nationality_id', request()->nationality);
-                error_log(request()->nationality);
+                $users = $users->where('users.nationality_id', request()->nationality);
             }
-            // $users->select(
-            //     'users.*',
-            //     'users.nationality_id',
-            //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-            //     'contacts.supplier_business_name as contact_name'
-            // );
-            $users->select(
-                'users.*',
-                'users.id_proof_number',
-                'users.nationality_id',
-                'users.essentials_salary',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'contact_locations.name as contact_name'
-            );
+
             return Datatables::of($users)
 
                 ->addColumn('nationality', function ($user) {
@@ -119,7 +108,7 @@ class FollowUpReportsController extends Controller
                 ->make(true);
         }
 
-        return view('followup::reports.projectWorkers')->with(compact('contacts', 'nationalities'));
+        return view('followup::reports.projectWorkers')->with(compact('ContactsLocation', 'nationalities'));
     }
 
 
