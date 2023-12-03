@@ -46,7 +46,7 @@ class SaleSourcesController extends Controller
                     $html = '';
                     if ($is_admin) {
                         $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
-                         data-id="' . $row->id . '" >
+                         data-id="' . $row->id . '" data-orig-value="' . $row->source . '">
                          <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
                        
                         $html .= '<button class="btn btn-xs btn-danger delete_item_button"
@@ -142,9 +142,44 @@ class SaleSourcesController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
+
     {
-        //
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $input = $request->only(['source2','source_id']);
+
+            $salesSource = salesSource::find($input['source_id']);
+
+            if (!$salesSource) {
+                abort(404, 'Sales Source not found');
+            }
+
+            // Update the source field
+            $salesSource->source = $input['source2'];
+            $salesSource->save();
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return redirect()->route('sales_sources')->with($output);
+     
     }
 
     /**
