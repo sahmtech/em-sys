@@ -392,7 +392,7 @@ class FollowUpRequestController extends Controller
          ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
       
         $workers = $all_users->pluck('full_name', 'id');
-
+      
 
         return view('followup::requests.allRequest')->with(compact('workers','main_reasons','classes', 'leaveTypes'));
     }
