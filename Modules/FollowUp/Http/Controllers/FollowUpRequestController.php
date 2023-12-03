@@ -423,7 +423,7 @@ class FollowUpRequestController extends Controller
     // }
     public function viewRequest($id)
     {
-        $request = FollowupWorkerRequest::with(['user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'])
+        $request = followupWorkerRequest::with(['user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'])
             ->find($id);
     
         if (!$request) {

@@ -28,6 +28,6 @@ class FollowupWorkerRequest extends Model
    
     public function followupWorkerRequestProcess()
     {
-        return $this->hasMany(FollowupWorkerRequestProcess::class, 'worker_request_id');
+        return $this->hasMany(followupWorkerRequestProcess::class, 'worker_request_id');
     }
 }
