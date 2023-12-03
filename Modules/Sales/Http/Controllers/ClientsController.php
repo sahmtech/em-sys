@@ -87,7 +87,7 @@ class ClientsController extends Controller
                 'email',
                 'city'
             ])->where('business_id',$business_id)->whereIn('type',['customer','lead'])->orderby('id','desc');
-            //dd($contacts);
+         
             return Datatables::of($contacts)
                 // ->addColumn('nameAr', function ($row) {
                 //     $name = json_decode($row->name, true);
