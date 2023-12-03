@@ -4,6 +4,7 @@ namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Modules\Essentials\Entities\essentialsAllowanceType;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 class EssentialsUserAllowancesAndDeduction extends Model
 {
     /**
@@ -23,6 +24,13 @@ class EssentialsUserAllowancesAndDeduction extends Model
     {
       
         return $this->belongsTo(EssentialsAllowanceType::class, 'allowance_deduction_id');
+    }
+
+
+    public function allowancedescription()
+    {
+      
+        return $this->belongsTo(EssentialsAllowanceAndDeduction::class, 'allowance_deduction_id');
     }
 
 }

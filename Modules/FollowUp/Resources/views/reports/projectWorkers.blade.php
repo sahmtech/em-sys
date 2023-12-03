@@ -61,7 +61,7 @@
                                 {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
                                 {!! Form::text('doc_filter_date_range', null, [
                                     'placeholder' => __('lang_v1.select_a_date_range'),
-                                    'class' => 'form-control',
+                                    'class' => 'form-control ',
                                     'readonly',
                                 ]) !!}
                             </div>
