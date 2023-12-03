@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 
-class followupWorkerRequest extends Model
+class FollowupWorkerRequest extends Model
 {
     use HasFactory;
     protected $table = 'followup_worker_requests';
@@ -16,14 +16,18 @@ class followupWorkerRequest extends Model
     {
         return $this->belongsTo(User::class, 'worker_id');
     }
-
+    public function createdUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
     public function procedure()
     {
         return $this->belongsTo(EssentialsWkProcedure::class, 'type', 'type');
     }
-
+   
+   
     public function followupWorkerRequestProcess()
     {
-        return $this->has(followupWorkerRequestProcess::class, 'worker_request_id');
+        return $this->hasMany(followupWorkerRequestProcess::class, 'worker_request_id');
     }
 }

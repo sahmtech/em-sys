@@ -21,6 +21,14 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/', [\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->name('sales_landing');
 
+        Route::get('/sales_sources', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index'])->name('sales_sources');
+        Route::post('/store_source', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'store'])->name('store_source');
+        Route::DELETE('/source/delete/{id}', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'destroy'])->name('sale_source_destroy');
+        Route::post('/store_source/update', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'update'])->name('source.update');
+
+
+
+
         Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('price_offer');
         Route::get('/createOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create'])->name('createOfferPrice');
         Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'store'])->name('storeOfferPrice');
@@ -91,5 +99,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             Route::get('/{id}/edit',  [\App\Http\Controllers\ContactLocationController::class,  'edit'])->name('sale.editContactLocations');
             Route::put('/updateContactLocations/{id}',  [\App\Http\Controllers\ContactLocationController::class, 'update'])->name('sale.updateContactLocations');
         });
+
+       
     });
 });

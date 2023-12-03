@@ -18,6 +18,7 @@ use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsWorkCard;
+
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -372,14 +373,19 @@ class User extends Authenticatable
         return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');
     }
 
-    public function UserallowancesAndDeductions()
-    {
-        return $this->belongsToMany(EssentialsUserAllowancesAndDeduction::class, 'user_id');
-    }
+    // public function UserallowancesAndDeductions()
+    // {
+    //     return $this->belongsToMany(EssentialsUserAllowancesAndDeduction::class, 'user_id');
+    // }
 
     public function assignedTo()
     {
         return $this->belongsTo(ContactLocation::class, 'assigned_to');
+    }
+
+    public function UserallowancesAndDeductions()
+    {
+        return $this->hasMany( \Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction::class, 'user_id');
     }
 
     public function essentials_admission_to_works()

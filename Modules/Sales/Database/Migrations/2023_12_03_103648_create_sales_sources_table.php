@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('followup_worker_requests', function (Blueprint $table) {
-            $table->unsignedInteger('updated_by')->after('type')->nullable();
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+        Schema::create('sales_sources', function (Blueprint $table) {
+            $table->id();
+            $table->string('source')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -26,8 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('', function (Blueprint $table) {
-
-        });
+        Schema::dropIfExists('sales_sources');
     }
 };
