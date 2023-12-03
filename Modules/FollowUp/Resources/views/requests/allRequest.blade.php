@@ -85,8 +85,11 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                            {!! Form::select('worker_id', $workers, null, ['class' => 'form-control', 'required','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.select_worker')]) !!}
+                            {!! Form::select('worker_id[]', $workers, null, ['class' => 'form-control select2',
+                             'multiple','required', 'style' => 'height: 60px; width: 250px;' 
+                              ]) !!}
                         </div>
+ 
                         <div class="form-group col-md-6">
                             {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
                             {!! Form::select('type',[
@@ -151,6 +154,15 @@
                             'name'=>__('followup::lang.name'),
                             'religion'=>__('followup::lang.religion'),
                             ], null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
+                        </div>
+                        <div class="form-group col-md-6" id="atmType" style="display: none;">
+                            {!! Form::label('atmType', __('followup::lang.request_type') . ':*') !!}
+                            {!! Form::select('atmType',[
+                            'release'=>__('followup::lang.release'),
+                            're_issuing'=>__('followup::lang.re_issuing'),
+                            'update'=>__('followup::lang.update_info'),
+
+                            ], null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'atmType']) !!}
                         </div>
                         <div class="form-group col-md-6" id="baladyType" style="display: none;">
                             {!! Form::label('baladyType', __('followup::lang.request_type') . ':*') !!}
@@ -312,7 +324,7 @@
                                     return data;
                             }
                         }
-                    },
+                },
                 { data: 'note' },
               
                
@@ -430,6 +442,14 @@
 
             } else {
                 $('#visa_number').hide();
+              
+            }
+            if (selectedType === 'atmCard') {
+                $('#atmType').show();
+            
+
+            } else {
+                $('#atmType').hide();
               
             }
         }

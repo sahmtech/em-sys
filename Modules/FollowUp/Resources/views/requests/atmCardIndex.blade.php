@@ -24,10 +24,9 @@
                         <tr>
                          
                             <th>@lang('followup::lang.worker_name')</th>
-               
                             <th>@lang('followup::lang.status')</th>
+                            <th>@lang('followup::lang.type')</th>
                             <th>@lang('followup::lang.note')</th>
-                           
                             <th>@lang('followup::lang.action')</th>
 
 
@@ -83,10 +82,27 @@
                
              
                 { data: 'user' },
-            
                 { data: 'status' } ,
-                 { data: 'status_note' },
-          
+                
+                {
+                        data: 'atmCardType',
+                        render: function(data, type, full, meta) {
+                            switch (data) {
+
+
+                                case 'release':
+                                    return '{{ trans('followup::lang.release') }}';
+                                case 're_issuing':
+                                    return '{{ trans('followup::lang.re_issuing') }}';
+                              
+                                    case 'update':
+                                    return '{{ trans('followup::lang.update_info') }}';
+                                default:
+                                    return data;
+                            }
+                        }
+                    },
+                { data: 'status_note' },
                 {
                     data: 'can_return',
                     

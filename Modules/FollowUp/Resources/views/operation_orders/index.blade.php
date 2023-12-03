@@ -40,7 +40,7 @@
         @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
-            @slot('tool')
+            {{-- @slot('tool')
                 <div class="box-tools">
 
                     <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
@@ -48,7 +48,7 @@
                         <i class="fa fa-plus"></i> @lang('messages.add')
                     </button>
                 </div>
-            @endslot
+            @endslot --}}
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped ajax_view" id="operation_table">
@@ -71,7 +71,7 @@
 
         <div class="modal fade item_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         </div>
-        <div class="modal fade" id="addOperationModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        {{-- <div class="modal fade" id="addOperationModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     {!! Form::open([
@@ -197,7 +197,7 @@
                     {!! Form::close() !!}
                 </div>
             </div>
-        </div>
+        </div> --}}
 
 
 

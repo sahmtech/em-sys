@@ -15,6 +15,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
@@ -36,18 +37,20 @@
                                 ]) !!}
 
                             </div>
+
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
-                                {!! Form::text('doc_filter_date_range', null, [
-                                    'placeholder' => __('lang_v1.select_a_date_range'),
-                                    'class' => 'form-control',
-                                    'readonly',
-                                ]) !!}
-                            </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
+                            {!! Form::text('doc_filter_date_range', null, [
+                                'placeholder' => __('lang_v1.select_a_date_range'),
+                                'class' => 'form-control',
+                                'readonly',
+                            ]) !!}
                         </div>
-                    @endcomponent
+                    </div>
+                @endcomponent
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
@@ -59,7 +62,7 @@
                             <th>@lang('followup::lang.eqama')</th>
                             <th>@lang('followup::lang.project_name')</th>
                             <th>@lang('followup::lang.essentials_salary')</th>
-                          
+
                             <th>@lang('followup::lang.nationality')</th>
                             <th>@lang('followup::lang.eqama_end_date')</th>
                             <th>@lang('followup::lang.contract_end_date')</th>
@@ -82,7 +85,7 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
-
+            var date_filter = null;
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -96,39 +99,61 @@
                             d.nationality = $('#nationality_filter').val();
                         }
                         if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
-                            d.start_date = start;
-                            d.end_date = end;
+                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
+                                .format('YYYY-MM-DD');
+                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
+                                .format('YYYY-MM-DD');
+                            d.filter_start_date = start;
+                            d.filter_end_date = end;
+                            d.date_filter = date_filter;
                         }
                     }
                 },
-                columns: [
-                    { data: 'worker' },
-                    { data: 'id_proof_number' },
-                    { data: 'contact_name' },
-                    { data: 'essentials_salary' },
-                
-                    
-                    { data: 'nationality' },
-                    { data: 'residence_permit_expiration' },
-                    { data: 'contract_end_date' },
+                columns: [{
+                        data: 'worker'
+                    },
+                    {
+                        data: 'id_proof_number'
+                    },
+                    {
+                        data: 'contact_name'
+                    },
+                    {
+                        data: 'essentials_salary'
+                    },
+
+
+                    {
+                        data: 'nationality'
+                    },
+                    {
+                        data: 'residence_permit_expiration'
+                    },
+                    {
+                        data: 'contract_end_date'
+                    },
                 ]
             });
+
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {
-                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
+                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
+                        moment_date_format));
                 }
             );
             $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
                 $('#doc_filter_date_range').val('');
+                date_filter = null;
                 reloadDataTable();
             });
-            $('#project_name_filter, #doc_filter_date_range, #nationality_filter').on('change', function() {
+            $('#project_name_filter, #nationality_filter').on('change', function() {
+                workers_table.ajax.reload();
+            });
+            $('#doc_filter_date_range').on('change', function() {
+                date_filter = 1;
                 workers_table.ajax.reload();
             });
         });
     </script>
 @endsection
-

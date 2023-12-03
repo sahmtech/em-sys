@@ -56,7 +56,7 @@ return [
     'residenceEditRequest' => ' طلبات تعديل بيانات الإقامة',
     'baladyCardRequest' => ' طلبات كرت بلدية',
     'insuranceUpgradeRequest' => ' طلبات ترقية التأمين',
-    'mofaRequest' => ' طلبات تصديق غرفة وزارة الخارجية',
+    'mofaRequest' => ' طلبات تصديق وزارة الخارجية',
     'chamberRequest' => ' طلبات تصديق غرفة تجارية',
     'allRequests' => 'جميع الطلبات',
     'request_number' => 'رقم الطلب',
@@ -144,7 +144,7 @@ return [
     'viewResidenceEditRequest' => 'عرض طلبات تعديل بيانات الإقامة',
     'viewBaladyCardRequest' => 'عرض طلبات كرت بلدية',
     'viewInsuranceUpgradeRequest' => 'عرض طلبات ترقية التأمين',
-    'viewMofaRequest' => 'عرض طلبات تصديق غرفة وزارة الخارجية',
+    'viewMofaRequest' => 'عرض طلبات تصديق  وزارة الخارجية',
     'viewChamberRequest' => 'عرض طلبات تصديق غرفة تجارية',
     'insurance_class' => 'فئة التأمين',
     'type' => 'النوع',
@@ -181,7 +181,10 @@ return [
     'recruitmentRequests' => 'طلبات التوظيف الداخلي',
     'attachment_view' => 'عرض المرفقات',
     'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
-    'attachments' => 'المرفقات'
+    'attachments' => 'المرفقات',
+    'release'=>'إصدار جديد',
+    're_issuing'=>'إعادة إصدار',
+    'update_info'=>'تحديث بيانات',
 
 
 
