@@ -415,7 +415,7 @@ class FollowUpRequestController extends Controller
                 return [
                     'id' => $user->id,
                     'full_name' => $user->full_name, 
-                  
+                    'text' => $user->full_name, 
                 ];
             });
     
