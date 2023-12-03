@@ -663,17 +663,15 @@ class EssentialsEmployeeImportController extends Controller
                         
                             try {
 
-                                if($allowanceData['salaryType'] != null)
+                                if($allowanceData['salaryType'] != null && $allowanceData['amount'] !== null && isset($allowanceData['amount']))
                                 {
                                             $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction(); 
                                             $userAllowancesAndDeduction->user_id = $emp_data['employee_id'];
                                             $userAllowancesAndDeduction->allowance_deduction_id = (int)$allowanceData['salaryType'];
-                            
-                                            if ($allowanceData['amount'] !== null && isset($allowanceData['amount'])) {
-                                            
-                                                $userAllowancesAndDeduction->amount = $allowanceData['amount'];
+                        
+                                            $userAllowancesAndDeduction->amount = $allowanceData['amount'];
 
-                                            } 
+                                         
                                             $userAllowancesAndDeduction->save();
                                 }
                             } catch (\Exception $e) {

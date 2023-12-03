@@ -85,7 +85,7 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                            {!! Form::select('worker_id[]', $workers, null, ['class' => 'form-control select2',
+                            {!! Form::select('worker_id[]', $workers, null, ['class' => 'form-control select2 ',
                              'multiple','required', 'style' => 'height: 60px; width: 250px;' 
                               ]) !!}
                         </div>
@@ -340,6 +340,9 @@
 
 
 </script>
+
+
+
 <script>
     $(document).ready(function () {
         var mainReasonSelect = $('#mainReasonSelect');
