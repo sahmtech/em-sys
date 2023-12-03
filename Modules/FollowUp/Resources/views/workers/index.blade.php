@@ -15,25 +15,28 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                            {!! Form::select('project_name_filter', $ContactsLocation, null, [
-                                'class' => 'form-control',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
 
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                                {!! Form::select('project_name_filter', $ContactsLocation, null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%;padding:2px;',
+                                    'placeholder' => __('lang_v1.all'),
+                                ]) !!}
+
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
-                            {!! Form::select('nationality_filter', $nationalities, null, [
-                                'class' => 'form-control',
-                                'style' => 'width:100%;padding:2px;',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {!! Form::label('nationality_filter', __('followup::lang.nationality') . ':') !!}
+                                {!! Form::select('nationality_filter', $nationalities, null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%;padding:2px;',
+                                    'placeholder' => __('lang_v1.all'),
+                                ]) !!}
+
+                            </div>
 
                         </div>
                     </div>
