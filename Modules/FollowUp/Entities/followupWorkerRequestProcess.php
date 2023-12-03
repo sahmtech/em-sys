@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 
-class followupWorkerRequestProcess extends Model
+class FollowupWorkerRequestProcess extends Model
 {
     use HasFactory;
     protected $table = 'followup_worker_requests_process';
