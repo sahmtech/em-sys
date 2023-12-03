@@ -59,7 +59,7 @@
 
     @endcomponent
 
-    <div class="modal fade" id="addwish" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+<div class="modal fade" id="addwish" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
         {!! Form::open(['route' => 'store_wish', 'enctype' => 'multipart/form-data']) !!}

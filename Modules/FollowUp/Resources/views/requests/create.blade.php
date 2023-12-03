@@ -47,7 +47,7 @@
         <div class="row">
             <div class="form-group col-md-6">
                 {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                {!! Form::select('worker_id', $workers, null, ['class' => 'form-control', 'required','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.select_worker')]) !!}
+                {!! Form::select('worker_id', $workers, null, [   'class' => 'form-control select2', 'required','style'=>' height: 40px' ,  'placeholder' => __('followup::lang.select_worker')]) !!}
             </div>
             <div class="form-group col-md-6">
                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
@@ -72,7 +72,7 @@
             </div>
             <div class="form-group col-md-6" id="leaveType" style="display: none;">
                 {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
-                {!! Form::select('leaveType',$leaveTypes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_leaveType'), 'id' => 'leaveType']) !!}
+                {!! Form::select('leaveType',$leaveTypes, null, [   'class' => 'form-control select2', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_leaveType'), 'id' => 'leaveType']) !!}
             </div>
 
             <div class="form-group col-md-6" id="start_date" style="display: none;">

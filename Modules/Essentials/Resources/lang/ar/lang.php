@@ -1049,13 +1049,18 @@ return[
 'curd_wishes'=>'حذف \ إضافة\ تعديل الرغبات',
 'wish'=>'الرغبة',
 'add_wish'=>'إضافة رغبة',
-'wish_file'=>'مرفق الرغبة',
+'wish_file_select'=>'قم بتحميل مرفق الرغبة',
 'nationlity'=>'الجنسية',
 'quantity'=>'العدد',
 'notes'=>'ملاحظات',
 'required_date'=>'التاريخ المطلوب',
 'contact_not_found'=>'رقم العميل غير موجود في السطر رقم ',
-'contact_location_not_found'=>'رقم المشروع غير موجود في السطر رقم'
+'contact_location_not_found'=>'رقم المشروع غير موجود في السطر رقم',
+'housing_allowance_id_not_found'=>'رقم بدل السكن غير موجود',
+'trans_allowance_id_not_found'=>'رقم بدل المواصلات غير موجود',
+'other_allowance_id_not_found'=>'رقم البدل أخرى غير موجود',
+'no_wish_file_to_show'=>'لايوجد مرفق للرغبة ',
+'view_wish_file'=>'عرض ملف المرفق للرغبة',
 
 
 

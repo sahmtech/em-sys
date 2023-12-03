@@ -75,6 +75,7 @@
                     </thead>
                 </table>
             </div>
+
         @endcomponent
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
@@ -86,6 +87,7 @@
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
                     </div>
+
 
                     <div class="modal-body">
                         <div class="row">
@@ -475,6 +477,7 @@
                                     return data;
                             }
                         }
+
                     },
                     {
                         data: 'note'

@@ -21,7 +21,7 @@
                 <div class="form-group">
                     <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
-                        'class' => 'form-control select2', // Add the select2 class
+                        'class' => 'form-control select2',
                         'style' => 'height:36px',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'specializations-select',

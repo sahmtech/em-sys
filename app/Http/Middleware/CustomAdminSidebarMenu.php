@@ -681,6 +681,13 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sale_operation_orders'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
             );
+
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index']),
+                __('sales::lang.sale_sources'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'salesources'],
+            );
+
         });
     }
     public function houseMovementsMenu()

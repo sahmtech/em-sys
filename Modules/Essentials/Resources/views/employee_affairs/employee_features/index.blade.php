@@ -31,6 +31,7 @@
                     <table class="table table-bordered table-striped" id="employee_allowances_table">
                         <thead>
                             <tr>
+                         
                                 <th>@lang('essentials::lang.employee' )</th>
                                 <th>@lang('essentials::lang.allowance' )</th>
                                 <th>@lang('essentials::lang.amount' )</th>
@@ -103,6 +104,7 @@
                 },
                 
                 columns: [
+                      
                         { data: 'user' },
                         { data: 'description' },
                         { data: 'amount' },
