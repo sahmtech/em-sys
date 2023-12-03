@@ -95,6 +95,7 @@
                                     'class' => 'form-control select2',
                                     'multiple',
                                     'required',
+                                    'id' => 'worker',
                                     'style' => 'height: 60px; width: 250px;',
                                 ]) !!}
                             </div>
@@ -742,5 +743,50 @@
 });
 </script>
 
+
+<script>
+$(document).ready(function () {
+    $('#worker').select2({
+       
+        ajax: {
+            url: '{{ route('search_proofname') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results,
+                };
+            },
+            cache: true,
+        },
+        minimumInputLength: 1,
+        templateResult: formatResult,
+        templateSelection: formatSelection,
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+    });
+
+    function formatResult(result) {
+        if (result.loading) return result.text;
+
+        var markup = "<div class='select2-result-repository clearfix'>" +
+            "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
+         
+            "</div>";
+
+        return markup;
+    }
+
+    function formatSelection(result) {
+        return result.full_name || result.text;
+    }
+});
+</script>
 
 @endsection
