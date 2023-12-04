@@ -419,7 +419,8 @@ class FollowUpRequestController extends Controller
 
     public function viewRequest($id)
     {
-        $request = followupWorkerRequest::with(['user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'])
+        $request = followupWorkerRequest::with(['user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'
+        ])
             ->find($id);
     
         if (!$request) {
@@ -434,7 +435,35 @@ class FollowUpRequestController extends Controller
             'created_at' => $request->created_at,
             'updated_at' => $request->updated_at,
         ];
-    
+        $workflow = [];
+        $currentStep = EssentialsWkProcedure::where('type', $request->type)->where('start', 1)->first();
+
+        while ($currentStep && $currentStep->end != 1) {
+            
+            $workflow[] = [ 
+                'id'=> $currentStep->id,
+                'process_id' => $this->getProcessIdForStep($request, $currentStep),
+                'status'=>$this->getProcessStatusForStep($request, $currentStep),
+                'department' =>optional(DB::table('essentials_departments')->where('id', $currentStep->department_id)->first())->name,
+                'next_department' => optional(DB::table('essentials_departments')->where('id', $currentStep->next_department_id)->first())->name,
+            ];
+
+            $currentStep = EssentialsWkProcedure::where('type', $request->type)
+                                ->where('department_id', $currentStep->next_department_id)
+                                ->first();
+        }
+      
+        if ($currentStep && $currentStep->end == 1) {
+            $workflow[] = [
+                'id'=> $currentStep->id,
+                'process_id' => $this->getProcessIdForStep($request, $currentStep),
+                'status'=>$this->getProcessStatusForStep($request, $currentStep),
+                'department' => optional(DB::table('essentials_departments')->where('id', $currentStep->department_id)->first())->name,
+                'next_department' => null,
+            ];
+        };
+
+      
         $userInfo = [
             'worker_id' => $request->user->id,
             'user_type' =>trans("followup::lang.{$request->user->user_type}"), 
@@ -454,8 +483,7 @@ class FollowUpRequestController extends Controller
             'nationality_id' => $request->createdUser->nationality_id,
             'created_user_full_name' => $request->createdUser->first_name . ' ' . $request->createdUser->last_name,
             'id_proof_number' => $request->createdUser->id_proof_number,
-            'location_id' => $request->createdUser->location_id,
-            'has_insurance' => $request->createdUser->has_insurance,
+     
         ];
     
         $followupProcesses = [];
@@ -463,6 +491,7 @@ class FollowUpRequestController extends Controller
             $processInfo = [
                 'id' => $process->id,
                 'status' => trans("followup::lang.{$process->status}"),
+                'procedure_id'=>$process->procedure_id,
                 'is_returned' => $process->is_returned,
                 'updated_by' =>  $this->getFullName($process->updated_by),
                 'reason' => $process->reason,
@@ -471,6 +500,7 @@ class FollowUpRequestController extends Controller
                     'id' => $process->procedure->department->id,
                     'name' => $process->procedure->department->name,
                 ],
+           
             ];
             $followupProcesses[] = $processInfo;
         }
@@ -480,11 +510,21 @@ class FollowUpRequestController extends Controller
             'user_info' => $userInfo,
             'created_user_info' => $createdUserInfo,
             'followup_processes' => $followupProcesses,
+            'workflow'=>$workflow
         ];
     
         return response()->json($result);
     }
     
+    private function getProcessIdForStep($request, $step)
+    {
+        return optional($request->followupWorkerRequestProcess->where('procedure_id', $step->id)->first())->id;
+    }
+    
+    private function getProcessStatusForStep($request, $step)
+    {
+        return optional($request->followupWorkerRequestProcess->where('procedure_id', $step->id)->first())->status;
+    }
     
     private function getFullName($userId)
     {

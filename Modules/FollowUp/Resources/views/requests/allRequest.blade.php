@@ -1,12 +1,6 @@
 @extends('layouts.app')
 @section('title', __('followup::lang.allRequests'))
-<style>
-        .vertical-line {
-            border-left: 1px solid #ccc; /* Adjust the color and size as needed */
-            height: 100%; /* Adjust the height of the line */
-            margin-left: 10px; /* Adjust the margin as needed */
-        }
-    </style>
+
 @section('content')
     @include('followup::layouts.nav_requests')
 
@@ -15,7 +9,7 @@
             <span>@lang('followup::lang.allRequests')</span>
         </h1>
     </section>
-    
+    <head>
     <style>
         .alert {
             animation: fadeOut 5s forwards;
@@ -29,7 +23,74 @@
                 visibility: hidden;
             }
         }
+
+        .workflow-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #fff;
+         
+        }
+        .workflow-arrow {
+            position: relative;
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin: 0 10px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            
+  
+        }
+        .workflow-circle span {
+            margin-top: 5px; 
+         
+        }
+
+        .workflow-container {
+            display: flex;
+            align-items: center; 
+            margin-bottom: 20px;
+            white-space: nowrap;
+            overflow-x: auto;
+            margin-bottom: 20px; 
+        }
+        
+        .workflow-circle.pending {
+            background-color: orange;
+        }
+
+        .workflow-circle.approved {
+            background-color: green;
+        }
+
+        .workflow-circle.rejected {
+            background-color: red;
+        }
+
+        .workflow-circle.grey {
+            background-color: grey;
+        }
+
+        .pending-arrow,
+        .approved-arrow,
+        .rejected-arrow,
+        .grey-arrow {
+            color: #000; /* Change this to the color you want for the arrows */
+        }
+        .department-name {
+            text-align: center;
+            margin-top: 5px; /* Adjust as needed to control the space between the circle and the department name */
+            font-weight: bold;
+        }
     </style>
+    </head>
     <!-- Main content -->
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -357,20 +418,41 @@
         </div>
 
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('followup::lang.view_request')</h4>
                     </div>
-
+        
                     <div class="modal-body">
-                        <div id="modal-content">
-                            <!-- Content will be dynamically added here -->
+                        <div class="row">
+                            
+                                <div class="workflow-container" id="workflow-container">
+                                    <!-- Workflow circles will be dynamically added here -->
+                                </div>
+                            
+                           
+                        </div>
+        
+        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>@lang('followup::lang.worker_details')</h4>
+                                <ul id="worker-list">
+                                <!-- Worker info will be dynamically added here -->
+                            </div>
+                            <div class="col-md-6">
+                                
+                                <h4>@lang('followup::lang.activites')</h4>
+                                <ul id="activities-list">
+                                    <!-- Activities will be dynamically added here -->
+                                </ul>
+                            </div>
                         </div>
                     </div>
-
+        
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
@@ -489,108 +571,93 @@
                 ],
             });
 
-
             $('#requests_table tbody').on('click', 'tr', function() {
                 var data = requests_table.row(this).data();
                 var requestId = data.id;
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
+                    url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
-                        method: 'GET',
+                    method: 'GET',
                         success: function(response) {
                             console.log(response);
 
-                            // Extracted data from the response
-                            var requestInfo = response.request_info;
-                            var followupProcesses = response.followup_processes;
-                            var userInfo = response.user_info;
-                            var created_user_info = response.created_user_info;
-                            // Display the data in the modal
-                            var modalContent = '<div>';
-                                
-                            modalContent += '<p>' +
-                                '{{ __('followup::lang.request_number') }}' + ': ' + requestInfo
-                                .request_no + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.status') }}' + ': ' +
-                                requestInfo.status + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.request_type') }}' +
-                                ': ' + requestInfo.type + '</p>';
-                            //  modalContent += '<p>' + '{{ __('followup::lang.worker_name') }}' + ': ' + userInfo.worker_full_name + '</p>';
-                            modalContent += '<div class="row">';
-                            modalContent += '<div class="col-md-6">';
-                            modalContent += '<h4>' + '{{ __("followup::lang.worker_details") }}' + '</h4>';
-
-                            modalContent += '<p>' + '{{ __('followup::lang.worker_name') }}' +
-                                ': ' + response.user_info.worker_full_name + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.nationality') }}' +
-                                ': ' + response.user_info.nationality + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.project_name') }}' +
-                                ': ' + response.user_info.assigned_to + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.eqama_number') }}' +
-                                ': ' + response.user_info.id_proof_number + '</p>';
-                            
-                           
-                            modalContent += '<p>' + '{{ __('followup::lang.contract_end_date') }}' +
-                                ': ' + response.user_info.contract_end_date + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.eqama_end_date') }}' +
-                                ': ' + response.user_info.eqama_end_date + '</p>';
-                            modalContent += '<p>' + '{{ __('followup::lang.passport_number') }}' +
-                                ': ' + response.user_info.passport_number + '</p>';
-                                
-                                
-                            modalContent += '</div>';
-                         
-                            
-                            modalContent += '<div class="col-md-6">';
-                            modalContent += '<h4>' + '{{ __("followup::lang.activites") }}' + '</h4>';
-
-                                
-                            modalContent += '<p>' + '{{ __('followup::lang.created_by') }}' +
-                                ': ' + created_user_info.created_user_full_name + '</p>';
+                    var workflowContainer = $('#workflow-container');
+                    var activitiesList = $('#activities-list');
+                    var workerList = $('#worker-list');
 
 
-                            // Display follow-up processes
-                            modalContent += '<ul>';
-                            for (var i = 0; i < followupProcesses.length; i++) {
-                                modalContent += '<li>';
-                                modalContent += '<p style="color: red;">' +
-                                    '{{ __('followup::lang.department_name') }}' + ': ' +
-                                    followupProcesses[i].department.name + '</p>';
-                                modalContent += '<p>' + '{{ __('followup::lang.status') }}' +
-                                    ': ' + followupProcesses[i].status + '</p>';
-                                modalContent += '<p>' + '{{ __('followup::lang.reason') }}' +
-                                    ': ' + (followupProcesses[i].reason ||
-                                        '{{ __('followup::lang.not_exist') }}') + '</p>';
-                                modalContent += '<p>' + '{{ __('followup::lang.note') }}' + ': ';
-                                if (followupProcesses[i].status_note) {
-                                    modalContent += '<strong>' + followupProcesses[i].status_note + '</strong>';
-                                } else {
-                                    modalContent += '{{ __('followup::lang.not_exist') }}';
-                                }
-                                modalContent += '</p>';
-                                modalContent += '<p style="color: green;">' +
-                                    '{{ __('followup::lang.updated_by') }}' + ': ' + (
-                                        followupProcesses[i].updated_by ||
-                                        '{{ __('followup::lang.not_exist') }}') + '</p>';
+                    // Clear previous content
+                    workflowContainer.html('');
+                    workerList.html('');
+                    activitiesList.html('');
 
-                                modalContent += '</li>';
-                            }
-                            modalContent += '</ul>';
+                    for (var i = 0; i < response.workflow.length; i++) {
+                      
+                        var status = response.workflow[i].status ? response.workflow[i].status.toLowerCase() : 'grey';
+                        var circle = '<div class="workflow-circle ' + status + '">';
+                        circle += '<p class="department-name">' + response.workflow[i].department + '</p>';
+                        circle += '</div>';
 
-                            modalContent += '</div>';
-                            modalContent += '</div>';
+                        workflowContainer.append(circle);
 
-                            $('#modal-content').html(modalContent);
-                            $('#requestModal').modal('show');
-                        },
-                        error: function(error) {
-                            console.log(error);
+                        // Add arrow (except for the last circle)
+                        if (i < response.workflow.length - 1) {
+                            workflowContainer.append('<i class="fas fa-arrow-left workflow-arrow ' + status + '-arrow"></i>');
                         }
+                    }
+
+                 // Dynamically add worker info
+                workerList.append('<p class="worker-info">' +'{{ __('followup::lang.worker_name') }}' + ': ' + response.user_info.worker_full_name + '</p>');
+                workerList.append('<p class="worker-info">' +'{{ __('followup::lang.nationality') }}' + ': ' + response.user_info.nationality + '</p>');
+                workerList.append('<p class="worker-info">' + '{{ __('followup::lang.project_name') }}' + ': ' +response.user_info.assigned_to + '</p>');
+                workerList.append('<p class="worker-info">' +'{{ __('followup::lang.eqama_number') }}' + ': '  +response.user_info.id_proof_number + '</p>');
+                workerList.append('<p class="worker-info">' +'{{ __('followup::lang.contract_end_date') }}' + ': '  +response.user_info.contract_end_date + '</p>');
+                workerList.append('<p class="worker-info">' +'{{ __('followup::lang.eqama_end_date') }}' + ': '  +response.user_info.eqama_end_date + '</p>');
+                workerList.append('<p class="worker-info">' +'{{ __('followup::lang.passport_number') }}' + ': '  +response.user_info.passport_number + '</p>');
+
+                     
+                       
+                    // Dynamically add activities
+             
+            //  activitiesList.append('<p class="worker-info">' + '{{ __('followup::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
+
+                for (var j = 0; j < response.followup_processes.length; j++) {
+                var activity = '<li>';
+             
+                activity += '<p>' + '{{ __('followup::lang.department_name') }}' + ': ' + response.followup_processes[j].department.name;
+           
+                activity += '<p class="{{ __('followup::lang.status') }} ' + response.followup_processes[j].status.toLowerCase() + '">' + '<strong>{{ __('followup::lang.status') }}:</strong> ' + response.followup_processes[j].status + '</p>';
+
+
+                // activity += '<p>'+ '{{ __('followup::lang.reason') }}' + ': ' ;
+                // if (response.followup_processes[j].reason) {
+                //     activity += '<strong>' + response.followup_processes[j].reason + '</strong>';
+                // } else {
+                //     activity += '{{ __('followup::lang.not_exist') }}';
+                // }
+                // activity += '<p>' + '{{ __('followup::lang.note') }}' + ': ';
+                // if (response.followup_processes[j].status_note) {
+                //     activity += '<strong>' + response.followup_processes[j].status_note + '</strong>';
+                // } else {
+                //     activity += '{{ __('followup::lang.not_exist') }}';
+                // }
+                // activity += '</p>';
+                activity += '<p style="color: green;">' + '{{ __('followup::lang.updated_by') }}' + ': ' + (
+                    response.followup_processes[j].updated_by || '{{ __('followup::lang.not_exist') }}') + '</p>';
+                activity += '</li>';
+
+                activitiesList.append(activity);
+            }
+
+                    $('#requestModal').modal('show');
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
                     });
                 }
-
             });
 
 
