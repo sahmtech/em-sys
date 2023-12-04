@@ -82,11 +82,11 @@
         .approved-arrow,
         .rejected-arrow,
         .grey-arrow {
-            color: #000; /* Change this to the color you want for the arrows */
+            color: #000;
         }
         .department-name {
             text-align: center;
-            margin-top: 5px; /* Adjust as needed to control the space between the circle and the department name */
+            margin-top: 5px; 
             font-weight: bold;
         }
     </style>
@@ -600,13 +600,13 @@
 
                         workflowContainer.append(circle);
 
-                        // Add arrow (except for the last circle)
+                        
                         if (i < response.workflow.length - 1) {
                             workflowContainer.append('<i class="fas fa-arrow-left workflow-arrow ' + status + '-arrow"></i>');
                         }
                     }
 
-                 // Dynamically add worker info
+                 //  worker info
                 workerList.append('<p class="worker-info">' +'{{ __('followup::lang.worker_name') }}' + ': ' + response.user_info.worker_full_name + '</p>');
                 workerList.append('<p class="worker-info">' +'{{ __('followup::lang.nationality') }}' + ': ' + response.user_info.nationality + '</p>');
                 workerList.append('<p class="worker-info">' + '{{ __('followup::lang.project_name') }}' + ': ' +response.user_info.assigned_to + '</p>');
@@ -617,9 +617,9 @@
 
                      
                        
-                    // Dynamically add activities
+                //activities
              
-            //  activitiesList.append('<p class="worker-info">' + '{{ __('followup::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
+               // activitiesList.append('<p class="worker-info">' + '{{ __('followup::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
 
                 for (var j = 0; j < response.followup_processes.length; j++) {
                 var activity = '<li>';
@@ -629,19 +629,19 @@
                 activity += '<p class="{{ __('followup::lang.status') }} ' + response.followup_processes[j].status.toLowerCase() + '">' + '<strong>{{ __('followup::lang.status') }}:</strong> ' + response.followup_processes[j].status + '</p>';
 
 
-                // activity += '<p>'+ '{{ __('followup::lang.reason') }}' + ': ' ;
-                // if (response.followup_processes[j].reason) {
-                //     activity += '<strong>' + response.followup_processes[j].reason + '</strong>';
-                // } else {
-                //     activity += '{{ __('followup::lang.not_exist') }}';
-                // }
-                // activity += '<p>' + '{{ __('followup::lang.note') }}' + ': ';
-                // if (response.followup_processes[j].status_note) {
-                //     activity += '<strong>' + response.followup_processes[j].status_note + '</strong>';
-                // } else {
-                //     activity += '{{ __('followup::lang.not_exist') }}';
-                // }
-                // activity += '</p>';
+                activity += '<p>'+ '{{ __('followup::lang.reason') }}' + ': ' ;
+                if (response.followup_processes[j].reason) {
+                    activity += '<strong>' + response.followup_processes[j].reason + '</strong>';
+                } else {
+                    activity += '{{ __('followup::lang.not_exist') }}';
+                }
+                activity += '<p>' + '{{ __('followup::lang.note') }}' + ': ';
+                if (response.followup_processes[j].status_note) {
+                    activity += '<strong>' + response.followup_processes[j].status_note + '</strong>';
+                } else {
+                    activity += '{{ __('followup::lang.not_exist') }}';
+                }
+                activity += '</p>';
                 activity += '<p style="color: green;">' + '{{ __('followup::lang.updated_by') }}' + ': ' + (
                     response.followup_processes[j].updated_by || '{{ __('followup::lang.not_exist') }}') + '</p>';
                 activity += '</li>';
