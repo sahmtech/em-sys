@@ -211,6 +211,8 @@ return [
     'worker_details'=>'تفاصيل العامل',
     'activites'=>'النشاطات',
     'passport_number'=>'رقم الجواز',
+    'worker'=>'العامل',
+    'choose_worker'=>'اختر عامل',
     
 
 
