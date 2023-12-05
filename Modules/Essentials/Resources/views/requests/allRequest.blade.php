@@ -2,7 +2,7 @@
 @section('title', __('followup::lang.allRequests'))
 
 @section('content')
-    @include('followup::layouts.nav_requests')
+   
 
     <section class="content-header">
         <h1>
@@ -129,7 +129,7 @@
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-
+                            <th>@lang('followup::lang.action')</th>
 
 
                         </tr>
@@ -137,10 +137,12 @@
                 </table>
             </div>
         @endcomponent
+
+         {{-- add request --}}
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'storeRequest', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'storeEssentialRequest', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -416,6 +418,7 @@
             </div>
         </div>
 
+         {{-- view request --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -459,9 +462,33 @@
             </div>
         </div>
 
+        {{-- return request --}}
+        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="returnModalForm">
+                            <div class="form-group">
+                                <label for="reasonInput">@lang('followup::lang.reason')</label>
+                                <input type="text" class="form-control" id="reasonInput" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-
-
+        @include('essentials::requests.change_status_modal')
 
     </section>
     <!-- /.content -->
@@ -469,17 +496,17 @@
 @endsection
 
 @section('javascript')
-    <script type="text/javascript">
+<script type="text/javascript">
         $(document).ready(function() {
 
 
 
-            var requests_table = $('#requests_table').DataTable({
+        var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('allRequests') }}"
+                    url: "{{ route('allEssentialsRequests') }}"
                 },
 
                 columns: [
@@ -543,40 +570,109 @@
                     },
                     {
                         data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-
-
-                                case 'approved':
-                                    return '{{ trans('followup::lang.approved') }}';
-                                case 'pending':
-                                    return '{{ trans('followup::lang.pending') }}';
-
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
-                            }
-                        }
+                      
                     },
                     {
                         data: 'note'
                     },
+   
+                    {
+                        data: 'can_return',
+                        render: function (data, type, row) {
+                            var buttonsHtml = '';
 
+                        
+                            if (data == 1) {
+                                buttonsHtml += '<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.process_id + '">@lang('followup::lang.return_the_request')</button>';
+                            }
+
+                          
+                            buttonsHtml += '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' + row.id + '">@lang('followup::lang.view_request')</button>';
+
+                            return buttonsHtml;
+                        }
+                    },
 
 
 
                 ],
-            });
+        });
 
-            $('#requests_table tbody').on('click', 'tr', function() {
-                var data = requests_table.row(this).data();
-                var requestId = data.id;
+        $(document).on('click', 'a.change_status', function(e) {
+            e.preventDefault();
+
+            $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
+            $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
+            $('#change_status_modal').modal('show');
+        
+            
+        });
+        
+
+        $(document).on('submit', 'form#change_status_form', function(e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            var ladda = Ladda.create(document.querySelector('.update-offer-status'));
+            ladda.start();
+            $.ajax({
+                method: $(this).attr('method'),
+                url: $(this).attr('action'),
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    ladda.stop();
+                    if (result.success == true) {
+                        $('div#change_status_modal').modal('hide');
+                        toastr.success(result.msg);
+                        requests_table.ajax.reload();
+                
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+            });
+        });
+        $('#requests_table').on('click', '.btn-return', function () {
+        var requestId = $(this).data('request-id');
+        $('#returnModal').modal('show');
+        $('#returnModal').data('id', requestId);
+    });
+
+
+    $('#returnModalForm').submit(function (e) {
+        e.preventDefault();
+
+        var requestId = $('#returnModal').data('id');
+        var reason = $('#reasonInput').val();
+
+        $.ajax({
+            url: "{{ route('ess_returnReq') }}",
+            method: "POST",
+            data: { requestId: requestId, reason: reason },
+            success: function(result) {
+                   
+                    if (result.success == true) {
+                        $('#returnModal').modal('hide');
+                        toastr.success(result.msg);
+                        requests_table.ajax.reload();
+                
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+        });
+    });
+
+
+        $(document).on('click', '.btn-view-request', function() {
+                var requestId = $(this).data('request-id');
+              
+                // var data = requests_table.row(this).data();
+                // var requestId = data.id;
 
                 if (requestId) {
                     $.ajax({
-                    url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
-                            ':requestId', requestId),
+                    url: '{{ route("viewRequest", ["requestId" => ":requestId"]) }}'.replace(':requestId', requestId),
                     method: 'GET',
                         success: function(response) {
                             console.log(response);
@@ -585,8 +681,6 @@
                     var activitiesList = $('#activities-list');
                     var workerList = $('#worker-list');
 
-
-                    // Clear previous content
                     workflowContainer.html('');
                     workerList.html('');
                     activitiesList.html('');
@@ -647,7 +741,7 @@
                 activity += '</li>';
 
                 activitiesList.append(activity);
-            }
+                }
 
                     $('#requestModal').modal('show');
                     },
@@ -662,8 +756,10 @@
 
 
         });
-    </script>
-    <script>
+</script>
+
+
+<script>
         $(document).ready(function() {
             var mainReasonSelect = $('#mainReasonSelect');
             var subReasonContainer = $('#sub_reason_container');
@@ -806,61 +902,56 @@
             }
         });
         
+        });
     });
-});
 </script>
 
 
 <script>
-$(document).ready(function () {
-  
-    $('#worker').select2({
+    $(document).ready(function () {
+        $('#worker').select2({
+        
+            ajax: {
+                url: '{{ route('search_proofname') }}',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.results,
+                    };
+                },
+                cache: true,
+            },
+            minimumInputLength: 1,
+            templateResult: formatResult,
+            templateSelection: formatSelection,
+            escapeMarkup: function (markup) {
+                return markup;
+            },
+        });
 
-       
-        ajax: {
-            url: '{{ route('search_proofname') }}',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term,
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.results,
-                };
-            },
-            cache: true,
-        },
-        minimumInputLength: 1,
-        multiple: true, 
-        tags: true, 
-        tokenSeparators: [',', ' '], 
-        templateResult: formatResult,
-        templateSelection: formatSelection,
-        templateResult: formatResult,
-        templateSelection: formatSelection,
-        escapeMarkup: function (markup) {
+        function formatResult(result) {
+            if (result.loading) return result.text;
+
+            var markup = "<div class='select2-result-repository clearfix'>" +
+                "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
+            
+                "</div>";
+
             return markup;
-        },
+        }
+
+        function formatSelection(result) {
+            return result.full_name || result.text;
+        }
+
+ 
     });
-
-    function formatResult(result) {
-        if (result.loading) return result.text;
-
-        var markup = "<div class='select2-result-repository clearfix'>" +
-            "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
-         
-            "</div>";
-
-        return markup;
-    }
-
-    function formatSelection(result) {
-        return result.full_name || result.text;
-    }
-});
 </script>
 
 @endsection

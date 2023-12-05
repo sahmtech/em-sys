@@ -16,9 +16,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'index'])->name('essentials_landing');
 // routes/web.php
 
-Route::get('/leave-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaveStatusData'])->name('leaveStatusData');
+        Route::get('/leave-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaveStatusData'])->name('leaveStatusData');
 
-Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\EssentialsController::class, 'getContractStatusData'])->name('contractStatusData');
+        Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\EssentialsController::class, 'getContractStatusData'])->name('contractStatusData');
 
         //document controller
         Route::resource('document', 'Modules\Essentials\Http\Controllers\DocumentController')->only(['index', 'store', 'destroy', 'show']);
@@ -340,7 +340,11 @@ Route::get('/contract-status-data',[Modules\Essentials\Http\Controllers\Essentia
         Route::post('/ess_change-status', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class,'changeStatus'])->name('ess_changeStatus');
         Route::post('/ess_returnReq', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class,'returnReq'])->name('ess_returnReq');
 
-       //reports
+        Route::post('/storeEssentialRequest', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'store'])->name('storeEssentialRequest');
+        Route::get('/createRequest', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'create'])->name('createRequest');
+        Route::get('/allEssentialsRequests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests'])->name('allEssentialsRequests');
+       
+        //reports
 
        Route::get('/employess-info-report',[\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index'])->name('employess-info-report');
         

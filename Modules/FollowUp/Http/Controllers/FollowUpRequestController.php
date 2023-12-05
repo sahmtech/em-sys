@@ -63,31 +63,34 @@ class FollowUpRequestController extends Controller
 
     public function changeStatus(Request $request)
     {
+
+
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
-
-            $requestProcess = FollowupWorkerRequestProcess::find($input['request_id']);
-
+    
+            $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
+            error_log($requestProcess);
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
             $requestProcess->status_note = $input['note'] ?? null;
-            $requestProcess->updated_by = auth()->user()->id;
-
+            $requestProcess->updated_by =auth()->user()->id;
+    
             $requestProcess->save();
-
+    
             if ($input['status'] == 'approved') {
                 $procedure = EssentialsWkProcedure::find($requestProcess->procedure_id);
-
-
+    
+                
                 if ($procedure && $procedure->end == 1) {
                     $requestProcess->followupWorkerRequest->status = 'approved';
                     $requestProcess->followupWorkerRequest->save();
+
                 } else {
                     $nextDepartmentId = $procedure->next_department_id;
                     $nextProcedure = EssentialsWkProcedure::where('department_id', $nextDepartmentId)
                         ->where('type', $requestProcess->followupWorkerRequest->type)
                         ->first();
-
+        
                     if ($nextProcedure) {
                         $newRequestProcess = new FollowupWorkerRequestProcess();
                         $newRequestProcess->worker_request_id = $requestProcess->worker_request_id;
@@ -97,24 +100,24 @@ class FollowUpRequestController extends Controller
                     }
                 }
             }
-            if ($input['status'] == 'rejected') {
+            if ($input['status'] == 'rejected'){
                 $requestProcess->followupWorkerRequest->status = 'rejected';
                 $requestProcess->followupWorkerRequest->save();
             }
-
+    
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+    
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
+    
         return $output;
     }
 
@@ -373,8 +376,8 @@ class FollowUpRequestController extends Controller
                     'followup_worker_requests.type as type',
                     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
                     'followup_worker_requests.created_at',
-                    'followup_worker_requests.status',
-                    'followup_worker_requests.note',
+                    'followup_worker_requests_process.status',
+                    'followup_worker_requests_process.status_note as note',
                     'followup_worker_requests.reason',
                     'essentials_wk_procedures.department_id as department_id',
                     'users.id_proof_number',
