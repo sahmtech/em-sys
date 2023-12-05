@@ -746,7 +746,9 @@
 
 <script>
 $(document).ready(function () {
+  
     $('#worker').select2({
+
        
         ajax: {
             url: '{{ route('search_proofname') }}',
@@ -765,6 +767,11 @@ $(document).ready(function () {
             cache: true,
         },
         minimumInputLength: 1,
+        multiple: true, 
+        tags: true, 
+        tokenSeparators: [',', ' '], 
+        templateResult: formatResult,
+        templateSelection: formatSelection,
         templateResult: formatResult,
         templateSelection: formatSelection,
         escapeMarkup: function (markup) {
