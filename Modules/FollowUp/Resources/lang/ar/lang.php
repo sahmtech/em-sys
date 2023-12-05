@@ -95,7 +95,18 @@ return [
     'escape_date' => 'تاريخ الهروب',
     'add_new_worker' => 'إضافة عامل جديد',
     'operation_orders' => 'أوامر التشغيل',
-
+    'choose_fields' => 'اختيار الحقول',
+    "department" => "القسم",
+    "designation" => "الوظيفة",
+    'specialization'=>'اسم الاختصاص',
+    'status' => 'الحالة',
+    'Basic_salary' => 'الراتب الأساسي',
+    'total_salary'=>'الراتب النهائي',
+    'gender'=>'الجنس',
+    'marital_status'=>'الحالة الاجتماعية',
+    'blood_group'=>'فصيلة الدم',
+    'bank_code'=>'رقم الآيبان',
+    
     'reports' => [
         'title' => 'التقارير',
         'projectWorkers' => 'عمال المشاريع',
@@ -182,9 +193,9 @@ return [
     'attachment_view' => 'عرض المرفقات',
     'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
     'attachments' => 'المرفقات',
-    'release'=>'إصدار جديد',
-    're_issuing'=>'إعادة إصدار',
-    'update_info'=>'تحديث بيانات',
+    'release' => 'إصدار جديد',
+    're_issuing' => 'إعادة إصدار',
+    'update_info' => 'تحديث بيانات',
 
 
 
