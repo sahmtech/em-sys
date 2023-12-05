@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
 
-                                {!! Form::select('project_name_filter', $contacts, null, [
+                                {!! Form::select('project_name_filter', $ContactsLocation, null, [
                                     'class' => 'form-control select2',
 
                                     'style' => 'width:100%;padding:2px;',
