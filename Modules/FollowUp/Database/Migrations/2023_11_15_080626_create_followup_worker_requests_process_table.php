@@ -22,9 +22,8 @@ return new class extends Migration
             $table->text('status_note')->nullable();
             $table->timestamps();
 
-            $table->foreign('worker_request_id')->references('id')->on('followup_worker_requests');
-            $table->foreign('procedure_id')->references('id')->on('essentials_wk_procedures');
-        
+            $table->foreign('worker_request_id')->references('id')->on('followup_worker_requests')->onDelete('cascade');
+            $table->foreign('procedure_id')->references('id')->on('essentials_wk_procedures')->onDelete('cascade');
         });
     }
 

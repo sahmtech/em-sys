@@ -67,7 +67,7 @@
                         <div class="form-group">
                             {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':*') !!}
                             {!! Form::select('assigned_to', [$contact->id => $contact->supplier_business_name], $contact->id, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
                                 'style' => 'height:40px',
                                 'readonly',
                             ]) !!}

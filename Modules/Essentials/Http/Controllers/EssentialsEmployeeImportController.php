@@ -169,7 +169,7 @@ class EssentialsEmployeeImportController extends Controller
                                             $emp_array['last_name'] = $value[2];
                                         } else {
                                             $is_valid = false;
-                                            $error_msg = __('essentials::lang.first_name_required', ['row_no' => $row_no]);
+                                            $error_msg = __('essentials::lang.first_name_required') .$row_no;
                                             break;
                                         }
                                     
@@ -180,7 +180,7 @@ class EssentialsEmployeeImportController extends Controller
                                         else
                                         {
                                              $is_valid = false;
-                                            $error_msg = __('essentials::lang.user_type_required',  $row_no);
+                                            $error_msg = __('essentials::lang.user_type_required' ).$row_no;
                                             break;
                                         }
                                     
@@ -318,7 +318,8 @@ class EssentialsEmployeeImportController extends Controller
 
                                         if ($emp_array['business_id'] !== null) {
                                         
-                                            $business = BusinessLocation::find($emp_array['business_id']);
+                                            $business = Business::find($emp_array['business_id']);
+                                          
                                             if (!$business) {
                                             
                                                 $is_valid = false;
@@ -339,7 +340,8 @@ class EssentialsEmployeeImportController extends Controller
 
                                         if ($emp_array['location_id'] !== null) {
                                         
-                                            $location = Business::find($emp_array['location_id']);
+                                            $location = BusinessLocation::find($emp_array['location_id']);
+                                            
                                             if (!$location) {
                                             
                                                 $is_valid = false;
@@ -660,24 +662,18 @@ class EssentialsEmployeeImportController extends Controller
                             $allowanceData = json_decode($allowanceJson, true);
                         
                             try {
-                                $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction(); 
-                                $userAllowancesAndDeduction->user_id = $emp_data['employee_id'];
-                                $userAllowancesAndDeduction->allowance_deduction_id = (int)$allowanceData['salaryType'];
-                
-                                if ($allowanceData['amount'] !== null && isset($allowanceData['amount'])) {
-                                
-                                    $userAllowancesAndDeduction->amount = $allowanceData['amount'];
 
-                                } else {
-                                    $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
-                                        ->where('id', (int)$allowanceData['salaryType'])
-                                        ->first();
-        
-                                    if ($allowanceDeduction) {
-                                        $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
-                                    }
+                                if($allowanceData['salaryType'] != null && $allowanceData['amount'] !== null && isset($allowanceData['amount']))
+                                {
+                                            $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction(); 
+                                            $userAllowancesAndDeduction->user_id = $emp_data['employee_id'];
+                                            $userAllowancesAndDeduction->allowance_deduction_id = (int)$allowanceData['salaryType'];
+                        
+                                            $userAllowancesAndDeduction->amount = $allowanceData['amount'];
+
+                                         
+                                            $userAllowancesAndDeduction->save();
                                 }
-                                $userAllowancesAndDeduction->save();
                             } catch (\Exception $e) {
                                 \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                                 error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

@@ -37,7 +37,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');
         Route::get('/createRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'create'])->name('createRequest');
         Route::get('/allRequests', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests'])->name('allRequests');
+        Route::get('/viewRequest/{requestId}', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'viewRequest'])->name('viewRequest');
         Route::get('/filteredRequests', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'filteredRequests'])->name('filteredRequests');
+        Route::get('/search/byproof', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'search'])->name('search_proofname');
 
 
         Route::get('/exitRequest',[\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'exitRequestIndex'])->name('exitRequest');
@@ -73,6 +75,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::post('/addWishcontact', [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'add_wish'])->name('addWishcontact');
+        Route::get('/get-wish-file/{employeeId}',  [\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'getWishFile'])->name('getWishFile');
 
 
         Route::get('/reports/project-workers/choose-fields', [\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'chooseFields_projectsworker'])->name('projectWorkers_chooseFields');

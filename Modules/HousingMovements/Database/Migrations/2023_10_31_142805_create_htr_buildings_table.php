@@ -23,9 +23,9 @@ return new class extends Migration
             $table->unsignedInteger('cleaner_id');
 
             $table->foreign('city_id')->references('id')->on('essentials_cities');
-            $table->foreign('guard_id')->references('id')->on('users');
-            $table->foreign('supervisor_id')->references('id')->on('users');
-            $table->foreign('cleaner_id')->references('id')->on('users');
+            $table->foreign('guard_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('supervisor_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('cleaner_id')->references('id')->on('users')->onDelete('cascade');
 
 
             $table->timestamps();

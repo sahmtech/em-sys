@@ -20,7 +20,7 @@
                 <div class="form-group">
                     {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
                     {!! Form::select('project_name_filter', $contacts2, null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control select2',
                         'style' => 'width:100%;padding:2px;',
                         'placeholder' => __('lang_v1.all'),
                     ]) !!}

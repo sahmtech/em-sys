@@ -174,10 +174,17 @@ class FollowUpProjectController extends Controller
         $users = User::whereIn('assigned_to', $locationIds)
         
             
-            ->with(['country', 'appointment.profession', 'allowancesAndDeductions', 'appointment.location', 'contract', 'OfficialDocument', 'workCard'])
+            ->with(['country',
+                'appointment.profession',
+                'UserallowancesAndDeductions',
+                'appointment.location',
+             
+                'contract',
+                 'OfficialDocument',
+                  'workCard'])
             ->get();
 
-
+     
         return view('followup::projects.show', compact('users', 'id'));
     }
 

@@ -220,4 +220,8 @@ return [
     'contact_location_email_in_charge' => 'بريد الكتروني',
     'create_contact_location' => 'إضافة مشروع لعميل',
     'contact_locations_edit'=>'تعديل المشروع',
+    'sale_sources'=>'مصادر العملاء',
+    'source'=>'المصدر',
+    'add_source'=>'إضافة مصدر',
+    'edit_source'=>'تعديل المصدر',
 ];

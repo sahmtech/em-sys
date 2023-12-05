@@ -86,10 +86,15 @@ class ClientsController extends Controller
                 'mobile',
                 'email',
                 'city'
-            ])
-            //->where('business_id',$business_id)
-            ->whereIn('type',['customer','lead'])->orderby('id','desc');
-            //dd($contacts);
+// <<<<<<< Rahaf
+            ])->where('business_id',$business_id)->whereIn('type',['customer','lead'])->orderby('id','desc');
+         
+// =======
+//             ])
+//             //->where('business_id',$business_id)
+//             ->whereIn('type',['customer','lead'])->orderby('id','desc');
+//             //dd($contacts);
+// >>>>>>> Development
             return Datatables::of($contacts)
                 // ->addColumn('nameAr', function ($row) {
                 //     $name = json_decode($row->name, true);
