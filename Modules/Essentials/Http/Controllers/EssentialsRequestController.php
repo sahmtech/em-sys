@@ -68,7 +68,17 @@ class EssentialsRequestController extends Controller
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
     
             $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
-            error_log($requestProcess);
+            $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
+            error_log($procedure);
+            error_log($input['status']);
+
+            if($procedure == 0 && $input['status']=='rejected'){
+                $output = [
+                    'success' => false,
+                    'msg' => __('lang_v1.cant_reject_this_request'),
+                ];
+                return $output;
+            }
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
             $requestProcess->status_note = $input['note'] ?? null;
@@ -400,18 +410,18 @@ class EssentialsRequestController extends Controller
         )->get();
 
         $workers = $all_users->pluck('full_name', 'id');
-       
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','exitRequest')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
+        $statuses = $this->statuses;
+        // if ($department) {
+        //     $department = $department->id;
+        //     $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','exitRequest')->first();
+        //     if ($pros) {
+        //         $can_reject = $pros->can_reject;
+        //         $can_reject = $can_reject ?? 0;
+        //         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        //     } else {
+        //      
+        //     }
+        // }
        
 
         return view('essentials::requests.allRequest')->with(compact('workers','statuses' ,'main_reasons', 'classes', 'leaveTypes'));

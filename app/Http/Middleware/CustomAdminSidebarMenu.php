@@ -1441,6 +1441,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
             }
+              if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
+                $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']), __('followup::lang.requests'), 
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']);
+              
+            }
             //Modules menu
             if (auth()->user()->can('manage_modules')) {
                 $menu->url(action([\App\Http\Controllers\Install\ModulesController::class, 'index']), __('lang_v1.modules'), ['icon' => 'fa fas fa-plug', 'active' => request()->segment(1) == 'manage-modules']);
