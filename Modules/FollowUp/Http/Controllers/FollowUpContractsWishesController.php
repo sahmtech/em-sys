@@ -123,8 +123,8 @@ class FollowUpContractsWishesController extends Controller
              ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
              ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
              ->where('users.user_type', 'worker')
-             ->select(  DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as fullname"),'users.id',)->get();
-        
+             ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+             ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id',)->get();
              return view('followup::contracts_wishes.index', compact('projects', 'wishes','employees'));
      }
      
