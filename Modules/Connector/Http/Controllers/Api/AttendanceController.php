@@ -288,6 +288,7 @@ class AttendanceController extends ApiController
      */
     public function clockin(Request $request)
     {
+        // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
@@ -302,12 +303,12 @@ class AttendanceController extends ApiController
 
             $data = [
                 'business_id' => $business_id,
-                'user_id' => $request->input('user_id'),
+                // 'user_id' => $request->input('user_id'),
                 'clock_in_time' => empty($request->input('clock_in_time')) ? \Carbon::now() : $request->input('clock_in_time'),
                 'clock_in_note' => $request->input('clock_in_note'),
                 'ip_address' => $request->input('ip_address'),
             ];
-
+            $data['user_id'] = $user->id;
             if (!empty($settings['is_location_required'])) {
                 $long = $request->input('longitude');
                 $lat = $request->input('latitude');
