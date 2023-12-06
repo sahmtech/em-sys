@@ -18,6 +18,9 @@ use Modules\FollowUp\Entities\followupWorkerRequest;
 use Modules\FollowUp\Entities\followupWorkerRequestProcess;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Modules\Connector\Http\Controllers\Api\ApiController;
+use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 
 class ApiFollowUpRequestController extends ApiController
@@ -62,7 +65,7 @@ class ApiFollowUpRequestController extends ApiController
     }
 
 
-    public function requests()
+    public function getMyRequests()
     {
 
 
@@ -73,9 +76,9 @@ class ApiFollowUpRequestController extends ApiController
 
         try {
             $user = Auth::user();
-            $business_id = $user->business_id;
 
-            $requestsProcess = FollowupWorkerRequest::select([
+
+            $requests = FollowupWorkerRequest::select([
                 'followup_worker_requests.request_no',
                 'followup_worker_requests.id',
                 'followup_worker_requests.type as type',
@@ -91,12 +94,13 @@ class ApiFollowUpRequestController extends ApiController
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker')->get();
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->where('users.id', $user->id)->get();
 
 
 
             $res = [
-                'leave_types' => $leave_types
+                'requests' =>  $requests
             ];
 
 

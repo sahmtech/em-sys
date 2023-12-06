@@ -98,4 +98,5 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {
 
     Route::get('getLeaveTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getLeaveTypes']);
+    Route::get('getMyRequests', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyRequests']);
 });
