@@ -138,7 +138,7 @@ class AttendanceController extends ApiController
             }
             $daysBefore[] = [
                 'number_in_month' => $day->day,
-                'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
+                'number_in_week' => ($day->dayOfWeek + 1) % 7 ,
                 'month' => $month == 1 ? 12 : $month - 1,
                 'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
@@ -192,7 +192,7 @@ class AttendanceController extends ApiController
 
             $days[] = [
                 'number_in_month' => $day->day,
-                'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
+                'number_in_week' => ($day->dayOfWeek + 1) % 7 ,
                 'month' => (int)$month,
                 'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
@@ -246,7 +246,7 @@ class AttendanceController extends ApiController
 
             $daysAfter[] = [
                 'number_in_month' => $day->day,
-                'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
+                'number_in_week' => ($day->dayOfWeek + 1) % 7 ,
                 'month' => $month == 12 ? 1 : $month + 1,
                 'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
