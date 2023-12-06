@@ -357,6 +357,7 @@ class AttendanceController extends ApiController
      */
     public function clockout(Request $request)
     {
+          // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
@@ -370,11 +371,11 @@ class AttendanceController extends ApiController
 
             $data = [
                 'business_id' => $business_id,
-                'user_id' => $request->input('user_id'),
+           //     'user_id' => $request->input('user_id'),
                 'clock_out_time' => empty($request->input('clock_out_time')) ? \Carbon::now() : $request->input('clock_out_time'),
                 'clock_out_note' => $request->input('clock_out_note'),
             ];
-
+            $data['user_id'] = $user->id;
             $essentialsUtil = new \Modules\Essentials\Utils\EssentialsUtil;
 
             if (!empty($settings['is_location_required'])) {
