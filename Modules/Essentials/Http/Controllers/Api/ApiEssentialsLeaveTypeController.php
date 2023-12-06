@@ -4,12 +4,13 @@ namespace Modules\Essentials\Http\Controllers\Api;
 
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
+
 use Illuminate\Support\Facades\Auth;
+use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 
-class ApiEssentialsLeaveTypeController extends Controller
+class ApiEssentialsLeaveTypeController extends ApiController
 {
     /**
      * All Utils instance.
@@ -19,7 +20,6 @@ class ApiEssentialsLeaveTypeController extends Controller
     /**
      * Constructor
      *
-     * @param  ProductUtils  $product
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
