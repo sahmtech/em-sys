@@ -34,7 +34,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
      */
     public function getLeaveTypes()
     {
-        $business_id = request()->session()->get('user.business_id');
+
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
