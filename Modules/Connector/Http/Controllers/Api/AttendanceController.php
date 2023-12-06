@@ -73,10 +73,11 @@ class AttendanceController extends ApiController
 
     public function getAttendanceByDate()
     {
+
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
-        error_log("111");
+
         $user = Auth::user();
         $business_id = $user->business_id;
         $business = Business::where('id', $business_id)->first();
@@ -98,7 +99,9 @@ class AttendanceController extends ApiController
         $attended = 0;
         $late = 0;
         $absent = 0;
-        for ($day = $firstDayOfMonth->subWeek(); $day->lte($firstDayOfMonth); $day->addDay()) {
+        $day = $firstDayOfMonth->subWeek();
+        for ($i = 0; $i < 7; $i++) {
+            error_log($day);
             $clock_in_time = null;
             $clock_out_time = null;
             if ($day->isFuture()) {
@@ -133,16 +136,16 @@ class AttendanceController extends ApiController
                     $absent += 1;
                 }
             }
-
             $daysBefore[] = [
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
-                'month' => $month,
+                'month' => $month - 1,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
                 'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
             ];
+            $day->addDay();
         }
 
         //days
@@ -202,7 +205,8 @@ class AttendanceController extends ApiController
         $attended = 0;
         $late = 0;
         $absent = 0;
-        for ($day = $lastDayOfMonth; $day->lte($lastDayOfMonth->addWeek()); $day->addDay()) {
+        $day = $lastDayOfMonth->addDay();
+        for ($i = 0; $i < 7; $i++) {
             $clock_in_time = null;
             $clock_out_time = null;
             if ($day->isFuture()) {
@@ -241,12 +245,13 @@ class AttendanceController extends ApiController
             $daysAfter[] = [
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
-                'month' => $month,
+                'month' => $month + 1,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
                 'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
             ];
+            $day->addDay();
         }
 
 
