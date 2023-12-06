@@ -139,7 +139,8 @@ class AttendanceController extends ApiController
             $daysBefore[] = [
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
-                'month' => $month - 1,
+                'month' => $month == 1 ? 12 : $month - 1,
+                'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
@@ -193,6 +194,7 @@ class AttendanceController extends ApiController
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
                 'month' => $month,
+                'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
@@ -245,7 +247,8 @@ class AttendanceController extends ApiController
             $daysAfter[] = [
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
-                'month' => $month + 1,
+                'month' => $month == 12 ? 1 : $month + 1,
+                'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
@@ -357,7 +360,7 @@ class AttendanceController extends ApiController
      */
     public function clockout(Request $request)
     {
-          // modified to not need a user_id, it can depend on the token
+        // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
@@ -371,7 +374,7 @@ class AttendanceController extends ApiController
 
             $data = [
                 'business_id' => $business_id,
-           //     'user_id' => $request->input('user_id'),
+                //     'user_id' => $request->input('user_id'),
                 'clock_out_time' => empty($request->input('clock_out_time')) ? \Carbon::now() : $request->input('clock_out_time'),
                 'clock_out_note' => $request->input('clock_out_note'),
             ];
