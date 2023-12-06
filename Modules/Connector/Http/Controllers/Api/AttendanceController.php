@@ -76,7 +76,7 @@ class AttendanceController extends ApiController
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
-
+        error_log("111");
         $user = Auth::user();
         $business_id = $user->business_id;
         $business = Business::where('id', $business_id)->first();
@@ -92,6 +92,60 @@ class AttendanceController extends ApiController
         $firstDayOfMonth = Carbon::createFromDate($year, $month, 1);
         $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
 
+
+        //days before
+        $daysBefore = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
+        for ($day = $firstDayOfMonth->subWeek(); $day->lte($firstDayOfMonth); $day->addDay()) {
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 3;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+                        $start_time = Carbon::parse($attendance->shift->start_time);
+                        $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                        $clock_out_time = Carbon::parse($attendance->clock_out_time);
+                        $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
+                        $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
+
+                        if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
+                            $status = 1;
+                        } elseif ($clock_in_time->gt($checkin_end_range)) {
+                            $status = 2;
+                        }
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2) {
+                    $late += 1;
+                } elseif ($status == 3) {
+                    $absent += 1;
+                }
+            }
+
+            $daysBefore[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
+                'month' => $month,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status,
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+        }
+
+        //days
         $days = [];
         $attended = 0;
         $late = 0;
@@ -133,18 +187,76 @@ class AttendanceController extends ApiController
             }
 
             $days[] = [
-                'number' => $day->day,
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
+                'month' => $month,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
                 'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
             ];
         }
+
+        //days after
+        $daysAfter = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
+        for ($day = $lastDayOfMonth; $day->lte($lastDayOfMonth->addWeek()); $day->addDay()) {
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 3;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+                        $start_time = Carbon::parse($attendance->shift->start_time);
+                        $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                        $clock_out_time = Carbon::parse($attendance->clock_out_time);
+                        $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
+                        $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
+
+                        if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
+                            $status = 1;
+                        } elseif ($clock_in_time->gt($checkin_end_range)) {
+                            $status = 2;
+                        }
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2) {
+                    $late += 1;
+                } elseif ($status == 3) {
+                    $absent += 1;
+                }
+            }
+
+            $daysAfter[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
+                'month' => $month,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status,
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+        }
+
+
         $res = [
             'attended' => $attended,
             'late' => $late,
             'absent' => $absent,
+            'days_before' => $daysBefore,
             'days' => $days,
+            'days_after' => $daysAfter,
         ];
         return new CommonResource($res);
     }
