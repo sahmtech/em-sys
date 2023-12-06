@@ -193,7 +193,7 @@ class AttendanceController extends ApiController
             $days[] = [
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 7 + 1,
-                'month' => $month,
+                'month' => (int)$month,
                 'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
