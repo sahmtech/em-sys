@@ -6,6 +6,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -78,11 +79,26 @@ class ApiEssentialsLeaveTypeController extends ApiController
 
 
             $todos = ToDo::where('business_id', $business_id)
-                ->with(['users', 'assigned_by'])
+                ->with(['assigned_by' => function ($query) {
+                    $query->select('assigned_by.id', 'assigned_by.first_name', 'assigned_by.last_name'); // Specify the necessary columns
+                }])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
-                ->select('*')->get();
+                ->select([
+                    'todos.id',
+                    'todos.business_id',
+                    'todos.task',
+                    'todos.date',
+                    'todos.end_date',
+                    'todos.task_id',
+                    'todos.description',
+                    'todos.status',
+                    'todos.estimated_hours',
+                    'todos.priority',
+                    DB::raw("CONCAT(COALESCE(assigned_by.first_name, ''),' ',COALESCE(assigned_by.last_name,'')) as assigned_by"),
+
+                ])->get();
 
 
             $res = [
