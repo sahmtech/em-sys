@@ -6,6 +6,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -82,7 +83,22 @@ class ApiEssentialsLeaveTypeController extends ApiController
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
-                ->select('*')->get();
+                ->select(
+
+                    'id',
+                    'business_id',
+                    'task',
+                    'date',
+                    'end_date',
+                    'task_id',
+                    'description',
+                    'status',
+                    'estimated_hours',
+                    'priority',
+                    DB::raw("CONCAT(COALESCE(assigned_by.first_name, ''),' ',COALESCE(assigned_by.last_name,'')) as assigned_by"),
+                    
+
+                )->get();
 
 
             $res = [
