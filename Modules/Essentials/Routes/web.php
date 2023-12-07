@@ -362,5 +362,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/wishes/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'edit'])->name('wishes.edit');
         Route::post('/wishes/{id}/update', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'update'])->name('update_wish');
         Route::delete('/wish/delete/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'destroy'])->name('wish.destroy');
+
+        Route::get('/search/byproof', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'search'])->name('hrm.search_proofname');
     });
 });
