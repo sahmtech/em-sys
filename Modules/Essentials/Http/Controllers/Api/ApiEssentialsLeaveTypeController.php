@@ -79,9 +79,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
 
 
             $todos = ToDo::where('business_id', $business_id)
-                ->with([ 'assigned_by' => function ($query) {
-                    $query->select('id', 'first_name', 'last_name'); 
-                }])
+                ->with([ 'assigned_by'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
