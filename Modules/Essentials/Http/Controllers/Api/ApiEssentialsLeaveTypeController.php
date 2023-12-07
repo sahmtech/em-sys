@@ -48,7 +48,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
 
 
             $leave_types = EssentialsLeaveType::where('business_id', $business_id)
-                ->select(['id', 'leave_type', 'duration', 'max_leave_count',])->get();
+                ->select('*')->get();
 
 
 
