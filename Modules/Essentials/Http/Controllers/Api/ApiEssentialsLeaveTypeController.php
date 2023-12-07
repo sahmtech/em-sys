@@ -86,17 +86,16 @@ class ApiEssentialsLeaveTypeController extends ApiController
                     $query->where('users.id', $user->id);
                 })
                 ->select([
-                    'todos.id',
-                    'todos.business_id',
-                    'todos.task',
-                    'todos.date',
-                    'todos.end_date',
-                    'todos.task_id',
-                    'todos.description',
-                    'todos.status',
-                    'todos.estimated_hours',
-                    'todos.priority',
-                    DB::raw("CONCAT(COALESCE(assigned_by.first_name, ''),' ',COALESCE(assigned_by.last_name,'')) as assigned_by"),
+                    'id',
+                    'business_id',
+                    'task',
+                    'date',
+                    'end_date',
+                    'task_id',
+                    'description',
+                    'status',
+                    'estimated_hours',
+                    'priority',
 
                 ])->get();
 
