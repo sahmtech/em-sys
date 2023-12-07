@@ -392,7 +392,7 @@ class EssentialsRequestController extends Controller
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
+        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'employee');
         $all_users = $query->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
