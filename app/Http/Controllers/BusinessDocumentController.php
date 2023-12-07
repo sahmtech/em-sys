@@ -34,11 +34,21 @@ class BusinessDocumentController extends Controller
                 'action',
                 function ($row) use ($is_admin) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin)
+                    {
+                    if (!empty($row->path_file)) { 
                         $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->path_file . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.doc_view') . '</a>
-                      &nbsp;';
+                        &nbsp;';
+                    }
+                    else 
+                    {
+                        $html .= '<a class="btn btn-xs btn-warning">' . __('essentials::lang.no_file_path') . '</a>';
+                        
+                    }
+                    
                         $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('doc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
+                    
         
                     return $html;
                 }
