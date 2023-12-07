@@ -28,7 +28,7 @@
                                             <th>@lang('followup::lang.request_date')</th>
                                             <th>@lang('followup::lang.status')</th>
                                             <th>@lang('followup::lang.note')</th>
-
+                                            <th>@lang('followup::lang.action')</th>
 
 
                                         </tr>
@@ -117,11 +117,11 @@
                 serverSide: true,
                 fixedHeader: false,
                 scrollCollapse: true,
-                paging: false, 
+                paging: false,
                 info: false,
                 dom: 'rtip',
                 ajax: {
-                    url: "{{ route('allRequests') }}"
+                    url: "{{ route('my_requests') }}"
                 },
 
                 columns: [
@@ -215,28 +215,12 @@
                 serverSide: true,
                 fixedHeader: false,
                 scrollCollapse: true,
-                paging: false, 
+                paging: false,
                 info: false,
                 dom: 'rtip',
                 ajax: {
-                    url: '/essentials/todo',
-                    data: function(d) {
-                        d.user_id = $('#user_id_filter').length ? $('#user_id_filter').val() : '';
-                        d.priority = $('#priority_filter').val();
-                        d.status = $('#status_filter').val();
-                        var start = '';
-                        var end = '';
-                        if ($('#date_range_filter').val()) {
-                            start = $('input#date_range_filter')
-                                .data('daterangepicker')
-                                .startDate.format('YYYY-MM-DD');
-                            end = $('input#date_range_filter')
-                                .data('daterangepicker')
-                                .endDate.format('YYYY-MM-DD');
-                        }
-                        d.start_date = start;
-                        d.end_date = end;
-                    }
+                    url: "{{ route('my_todo') }}",
+                  
                 },
                 columnDefs: [{
 
