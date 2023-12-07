@@ -78,27 +78,32 @@ class ApiEssentialsLeaveTypeController extends ApiController
             $business_id = $user->business_id;
 
 
-            $todos = ToDo::where('business_id', $business_id)
+            $data = ToDo::where('business_id', $business_id)
                 ->with(['assigned_by'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
-                ->select([
-                    'id',
-                    'business_id',
-                    'task',
-                    'date',
-                    'end_date',
-                    'task_id',
-                    'description',
-                    'status',
-                    'estimated_hours',
-                    'priority',
-                ])->get();
+                ->select('*')->get();
+            $todos = [];
+            foreach ($data as $todo) {
+                $todos[] = [
+                    'id' => $todo->id,
+                    'business_id' => $todo->business_id,
+                    'task' => $todo->task,
+                    'date' => $todo->date,
+                    'end_date' => $todo->end_date,
+                    'task_id' => $todo->task_id,
+                    'description' => $todo->description,
+                    'status' => $todo->status,
+                    'estimated_hours' => $todo->estimated_hours,
+                    'priority' => $todo->priority,
+                    'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+                ];
+            }
 
 
             $res = [
-                'todos' => $todos
+                'todos' => collect($todos),
             ];
 
 
