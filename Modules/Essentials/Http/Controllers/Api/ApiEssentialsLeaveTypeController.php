@@ -6,7 +6,6 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -83,19 +82,7 @@ class ApiEssentialsLeaveTypeController extends ApiController
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
-                ->select(
-
-                    'id',
-                    'business_id',
-                    'task',
-                    'date',
-                    'end_date',
-                    'task_id',
-                    'description',
-                    'status',
-                    'estimated_hours',
-                    'priority',                    
-                )->get();
+                ->select('*')->get();
 
 
             $res = [
