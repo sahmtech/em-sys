@@ -163,8 +163,8 @@ class WorkerController extends Controller
                
                 ->addColumn('action', function ($row) {
 
-                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
-
+                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+                   
                     return $html;
                 })
 
@@ -180,6 +180,25 @@ class WorkerController extends Controller
 
         $interview_status=$this->statuses;
         return view('internationalrelations::worker.proposed_laborIndex')->with(compact('interview_status','nationalities', 'specializations', 'professions', 'agencys'));
+    }
+
+
+    public function showWorker($id)
+    {
+     
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $user = IrProposedLabor::select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+                    ->find($id);
+     
+        $dataArray=[];
+       
+        return view('internationalrelations::worker.show')->with(compact('user'));
+
     }
     public function accepted_workers(Request $request)
     {
@@ -266,9 +285,22 @@ class WorkerController extends Controller
                 
                     return '<span style="color: ' . $color . ';">' . $text . '</span>';
                 })
+                ->editColumn('is_accepted_by_worker', function ($row) {
+                    $text = $row->is_accepted_by_worker == 1
+                        ? __('lang_v1.accepted')
+                        : __('lang_v1.not_yet');
+                
+                    $color = $row->is_accepted_by_worker == 1
+                        ? 'green'
+                        : 'red';
+                
+                    return '<span style="color: ' . $color . ';">' . $text . '</span>';
+                })
+                
                 ->addColumn('action', function ($row) {
 
-                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+
 
                     return $html;
                 })
@@ -279,7 +311,7 @@ class WorkerController extends Controller
                 })
 
 
-                ->rawColumns(['action','is_price_offer_sent', 'profession_id', 'specialization_id', 'nationality_id'])
+                ->rawColumns(['action','is_price_offer_sent','is_accepted_by_worker', 'profession_id', 'specialization_id', 'nationality_id'])
                 ->make(true);
         }
 
@@ -375,7 +407,8 @@ class WorkerController extends Controller
                 })
                 ->addColumn('action', function ($row) {
 
-                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
+
 
                     return $html;
                 })
@@ -620,7 +653,7 @@ class WorkerController extends Controller
                 'marital_status', 'blood_group', 'age',
                 'contact_number', 'alt_number', 'family_number', 'permanent_address',
                 'current_address', 'transaction_sell_line_id', 'agency_id',
-                'profile_picture', 'delegation_id'
+                'profile_picture', 'delegation_id','passport_number'
             ]);
 
 

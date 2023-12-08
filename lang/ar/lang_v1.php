@@ -1446,6 +1446,7 @@ return [
 'accepted_success'=>'تم القبول بنجاح',
 'not_yet'=>'ليس بعد',
 'done'=>'تمت',
+'accepted'=>'تم القبول'
 
 
 ];
