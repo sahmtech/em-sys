@@ -9,6 +9,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App;
 class LoginController extends Controller
 {
     /*
@@ -85,6 +86,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+     
         $this->businessUtil->activityLog($user, 'login', null, [], false, $user->business_id);
 
         if (! $user->business->is_active) {
