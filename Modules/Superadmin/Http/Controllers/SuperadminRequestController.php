@@ -17,6 +17,7 @@ use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
+use Exception;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 class SuperadminRequestController extends Controller
 {
@@ -78,35 +79,31 @@ class SuperadminRequestController extends Controller
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
       
-      
+        $requestsProcess = null;
+        $requestsProcess = FollowupWorkerRequest::select([
+            'followup_worker_requests.request_no',
+            'followup_worker_requests_process.id as process_id',
+            'followup_worker_requests.id',
+            'followup_worker_requests.type as type',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'followup_worker_requests.created_at',
+            'followup_worker_requests_process.status',
+            'followup_worker_requests_process.status_note as note',
+            'followup_worker_requests.reason',
+            'essentials_wk_procedures.department_id as department_id',
+            'users.id_proof_number',
+            'essentials_wk_procedures.can_return',
+            'users.assigned_to'
 
+        ])
+        ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+        ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+        ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker');
+            
+ 
         if (request()->ajax()) {
 
-            $requestsProcess = null;
-
-             
-
-                $requestsProcess = FollowupWorkerRequest::select([
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests_process.id as process_id',
-                    'followup_worker_requests.id',
-                    'followup_worker_requests.type as type',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.created_at',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.status_note as note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'users.id_proof_number',
-                    'essentials_wk_procedures.can_return',
-                    'users.assigned_to'
-
-                ])
-                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker');
           
-           
             return DataTables::of($requestsProcess ?? [])
 
                 ->editColumn('created_at', function ($row) {
@@ -120,7 +117,7 @@ class SuperadminRequestController extends Controller
                     return $item;
                 })
                 ->editColumn('status', function ($row) {
-                    
+                    try{
                     $statusClass = $this->statuses[$row->status]['class'];
                     $statusName = $this->statuses[$row->status]['name'];
                     $status = $row->status;
@@ -156,6 +153,11 @@ class SuperadminRequestController extends Controller
                     }
                  
                     return $status;
+                }
+                    catch(\Exception $e){
+                       return '';
+
+                    }
                 })
                 
                 ->rawColumns(['status'])
