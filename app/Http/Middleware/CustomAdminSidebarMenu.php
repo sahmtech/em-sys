@@ -244,8 +244,11 @@ class CustomAdminSidebarMenu
 
 
             if (auth()->user()->can('essentials.crud_all_essentials_requests') || true) {
-                $menu->url(action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']), __('followup::lang.requests'), 
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'allRequests'])->order(6);
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'allRequests']
+                )->order(6);
                 // $menu->dropdown(
                 //     __('followup::lang.requests'),
                 //     function ($sub) use ($enabled_modules) {
@@ -639,7 +642,7 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
             );
             $menu->url(
-               route('sale.contactLocations'),
+                route('sale.contactLocations'),
                 __('sales::lang.contact_locations'),
                 ['icon' => 'fa fas fa-plus-circle'],
             );
@@ -688,7 +691,6 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sale_sources'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'salesources'],
             );
-
         });
     }
     public function houseMovementsMenu()
@@ -718,12 +720,7 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
             );
 
-            $menu->url(
-                action([\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index']),
-                __('housingmovements::lang.movement_management'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
 
-            )->order(2);
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
                 function ($buildingSubMenu) {
@@ -747,6 +744,31 @@ class CustomAdminSidebarMenu
                 },
                 ['icon' => 'fa fas fa-plus-circle',],
             );
+            $menu->dropdown(
+                __('housingmovements::lang.movement_management'),
+                function ($movement_management_SubMenu) {
+                    $movement_management_SubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index']),
+                        __('housingmovements::lang.carTypes'),
+                        ['icon' => 'fa fas fa-plus-circle',  request()->segment(2) == 'carTypes']
+                    )->order(7);
+
+                    $movement_management_SubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index']),
+                        __('housingmovements::lang.carModels'),
+                        ['icon' => 'fa fas fa-plus-circle' , request()->segment(2) == 'carModels']
+                    )->order(8);
+
+                    $movement_management_SubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\CarController::class, 'index']),
+                        __('housingmovements::lang.cars'),
+                        ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'cars']
+                    )->order(9);
+                },
+                ['icon' => 'fa fas fa-plus-circle',],
+                // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+
+            )->order(2);
         });
     }
 
