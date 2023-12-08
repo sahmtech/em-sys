@@ -912,7 +912,7 @@
         $('#worker').select2({
         
             ajax: {
-                url: '{{ route('search_proofname') }}',
+                url: '{{ route('hrm.search_proofname') }}',
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {

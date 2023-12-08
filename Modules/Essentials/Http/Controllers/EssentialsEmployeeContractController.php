@@ -36,26 +36,32 @@ class EssentialsEmployeeContractController extends Controller
         // }
         $contract_types = EssentialsContractType::pluck('type','id')->all();
         if (request()->ajax()) {
+          
             $employees_contracts = EssentialsEmployeesContract::
-                join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')->where('u.business_id', $business_id)
-                
-                ->select([
-                    'essentials_employees_contracts.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'essentials_employees_contracts.contract_number',
-                    'essentials_employees_contracts.contract_start_date',
-                    'essentials_employees_contracts.contract_end_date',
-                    'essentials_employees_contracts.contract_duration',
-                    'essentials_employees_contracts.contract_per_period',
-                    'essentials_employees_contracts.probation_period',
-                    'essentials_employees_contracts.contract_type_id',
-                    'essentials_employees_contracts.is_renewable',
-                    'essentials_employees_contracts.file_path',
-                    'essentials_employees_contracts.status',
-
-
-
-                ]);
+            join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+            ->where('u.business_id', $business_id)
+            ->select([
+                'essentials_employees_contracts.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_employees_contracts.contract_number',
+                'essentials_employees_contracts.contract_start_date',
+                'essentials_employees_contracts.contract_end_date',
+                'essentials_employees_contracts.contract_duration',
+                'essentials_employees_contracts.contract_per_period',
+                'essentials_employees_contracts.probation_period',
+                'essentials_employees_contracts.contract_type_id',
+                'essentials_employees_contracts.is_renewable',
+                'essentials_employees_contracts.file_path',
+                DB::raw("
+                    CASE 
+                        WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
+                        WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
+                        WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
+                        WHEN DATE(essentials_employees_contracts.contract_end_date) > CURDATE() THEN 'valid'
+                        ELSE 'Null'
+                    END as status
+                "),
+            ]);
 
 
             if (!empty(request()->input('contract_type')) && request()->input('contract_type') !== 'all') {
@@ -82,7 +88,7 @@ class EssentialsEmployeeContractController extends Controller
                 'action',
                  function ($row) {
                     $html = ''; 
-                //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+               
                 if (!empty($row->file)) {   
                 $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file_path.'\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
                     '&nbsp;';
@@ -90,7 +96,7 @@ class EssentialsEmployeeContractController extends Controller
                     $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
                 }
 
-                //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+              
                     $html .= '<button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     
                     return $html;

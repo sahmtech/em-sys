@@ -90,30 +90,17 @@
                 <div class="row">
          
                 <div class="form-group col-md-6">
-                {!! Form::label('employees', __('essentials::lang.employee') . ':*') !!}
-                {!! Form::select('employees', $employees->pluck('fullname', 'id'), null, [
+                {!! Form::label('employees', __('followup::lang.worker') . ':*') !!}
+                {!! Form::select('employees', $employees->pluck('full_name', 'id'), null, [
                     'class' => 'form-control',
-                    'placeholder' => __('essentials::lang.select_employee'),
+                    'placeholder' => __('followup::lang.choose_worker'),
                     'required',
                     'style' => 'height:40px',
                     'onchange' => 'loadWishFile(this.value)',
                 ]) !!}
             </div>
 
-            
-                       
-                   
-            <!-- <div class="form-group col-md-6">
-                    {!! Form::label('employee_type_filter', __('essentials::lang.employee_type') . ':*') !!}
-                    {!! Form::select('employee_type', [
-                         'employee' => __('essentials::lang.employee'),
-                          'manager' => __('essentials::lang.manager'), 'worker' => __('essentials::lang.worker')], null, ['class' => 'form-control select2',  'required', 'id' => 'employee_type_filter', 'style' => 'width: 100%;']) !!}
-                </div>
-             -->
-                       
-                   
-
-                    <div class="clearfix"></div>
+                  <div class="clearfix"></div>
 
                     <div class="form-group col-md-6" id="main_reason_box">
                    
@@ -136,14 +123,14 @@
                     
 
 
-                                   
+                    <div class="form-group col-md-6">
                                     <button type="button" id="viewWishFileButton" class="btn btn-primary" style="display: none;">
                                         @lang('essentials::lang.view_wish_file')
                                     </button>
-
+                        </div>
                                    
                                     <div id="noWishFileMessage" style="display: none;">
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-8">
                                             <button type="button"  class="btn btn-primary">
                                             @lang('essentials::lang.no_wish_file_to_show')
                                             </button>

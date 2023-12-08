@@ -16,6 +16,7 @@ use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Modules\Essentials\Entities\EssentialsCountry;
+
 class ManageUserController extends Controller
 {
     /**
@@ -46,12 +47,11 @@ class ManageUserController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
-           
-            $users = User::where('business_id', $business_id)->where('user_type', '!=', 'admin' )
+            $users = User::where('business_id', $business_id)->where('user_type', '!=', 'admin')
                 //->user()
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
-                    'id', 'username','user_type',
+                    'id', 'username', 'user_type',
                     DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
                 ]);
 
@@ -84,42 +84,41 @@ class ManageUserController extends Controller
                 //    '@can("user.update")
                 //       <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
                 //     &nbsp;
-                 
+
                 //     @endcan
                 //     @can("user.update")
                 //         <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
                 //     &nbsp;
                 //     @endcan
-                  
+
                 //     @can("user.delete")
                 //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
                 //     @endcan'
-                             
-                          
+
+
                 // )
                 ->addColumn(
                     'action',
-                    function($row){
-                        $html='';
-                        if(auth()->user()->can('user.update')){
-                            $html.='  <a href="'.URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]).'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__("messages.edit").'</a>
+                    function ($row) {
+                        $html = '';
+                        if (auth()->user()->can('user.update')) {
+                            $html .= '  <a href="' . URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a>
                             &nbsp;';
-                            if($row->allow_login == 0){
-                                $html.=' <a href="'. route('makeUser',[$row->id]).'" class="btn btn-xs btn-primary">'.__("messages.create_user").'
+                            if ($row->allow_login == 0) {
+                                $html .= ' <a href="' . route('makeUser', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("messages.create_user") . '
                                 </a>
                                 &nbsp;';
                             }
-                           
                         }
-                        if(auth()->user()->can('user.delete')){
-                            $html.='
-                            <button data-href="'.URL::action('App\Http\Controllers\ManageUserController@destroy', [$row->id]).'" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>'.__("messages.delete").'</button>
+                        if (auth()->user()->can('user.delete')) {
+                            $html .= '
+                            <button data-href="' . URL::action('App\Http\Controllers\ManageUserController@destroy', [$row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                         ';
                         }
-                           
-                              
+
+
                         return $html;
-                    }   
+                    }
                 )
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
@@ -207,9 +206,9 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
-        $nationalities=EssentialsCountry::nationalityForDropdown();
+        $nationalities = EssentialsCountry::nationalityForDropdown();
         return view('manage_user.create')
-            ->with(compact('roles', 'username_ext', 'locations', 'form_partials','nationalities'));
+            ->with(compact('roles', 'username_ext', 'locations', 'form_partials', 'nationalities'));
     }
 
     /**
@@ -220,11 +219,11 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
-       
+
         if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
-      
+
         try {
             if (!empty($request->input('dob'))) {
                 $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
@@ -458,7 +457,7 @@ class ManageUserController extends Controller
                 }
 
                 $role = Role::findOrFail($role_id);
-                
+
                 $user->assignRole($role->name);
             }
 

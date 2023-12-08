@@ -73,6 +73,7 @@ class AttendanceController extends ApiController
 
     public function getAttendanceByDate()
     {
+
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
@@ -92,6 +93,63 @@ class AttendanceController extends ApiController
         $firstDayOfMonth = Carbon::createFromDate($year, $month, 1);
         $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
 
+
+        //days before
+        $daysBefore = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
+        $day = $firstDayOfMonth->subWeek();
+        for ($i = 0; $i < 7; $i++) {
+            error_log($day);
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 3;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+                        $start_time = Carbon::parse($attendance->shift->start_time);
+                        $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                        $clock_out_time = Carbon::parse($attendance->clock_out_time);
+                        $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
+                        $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
+
+                        if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
+                            $status = 1;
+                        } elseif ($clock_in_time->gt($checkin_end_range)) {
+                            $status = 2;
+                        }
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2) {
+                    $late += 1;
+                } elseif ($status == 3) {
+                    $absent += 1;
+                }
+            }
+            $daysBefore[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 8 ,
+                'month' => $month == 1 ? 12 : $month - 1,
+                'year' => $year,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status,
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+            $day->addDay();
+        }
+
+        //days
         $days = [];
         $attended = 0;
         $late = 0;
@@ -133,18 +191,80 @@ class AttendanceController extends ApiController
             }
 
             $days[] = [
-                'number' => $day->day,
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 8 ,
+                'month' => (int)$month,
+                'year' => $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
                 'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
             ];
         }
+
+        //days after
+        $daysAfter = [];
+        $attended = 0;
+        $late = 0;
+        $absent = 0;
+        $day = $lastDayOfMonth->addDay();
+        for ($i = 0; $i < 7; $i++) {
+            $clock_in_time = null;
+            $clock_out_time = null;
+            if ($day->isFuture()) {
+                $status = 0;
+            } else {
+                $status = 3;
+
+                foreach ($attendanceList as $attendance) {
+                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->toDateString() == $attendanceDate) {
+                        $start_time = Carbon::parse($attendance->shift->start_time);
+                        $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                        $clock_out_time = Carbon::parse($attendance->clock_out_time);
+                        $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
+                        $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
+
+                        if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
+                            $status = 1;
+                        } elseif ($clock_in_time->gt($checkin_end_range)) {
+                            $status = 2;
+                        }
+                        break;
+                    }
+                }
+                if ($status == 1) {
+                    $attended += 1;
+                } elseif ($status == 2) {
+                    $late += 1;
+                } elseif ($status == 3) {
+                    $absent += 1;
+                }
+            }
+
+            $daysAfter[] = [
+                'number_in_month' => $day->day,
+                'number_in_week' => ($day->dayOfWeek + 1) % 8 ,
+                'month' => $month == 12 ? 1 : $month + 1,
+                'year' => $year,
+                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                'status' => $status,
+                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+            ];
+            $day->addDay();
+        }
+
+
         $res = [
             'attended' => $attended,
             'late' => $late,
             'absent' => $absent,
+            'days_before' => $daysBefore,
             'days' => $days,
+            'days_after' => $daysAfter,
         ];
         return new CommonResource($res);
     }
@@ -171,6 +291,7 @@ class AttendanceController extends ApiController
      */
     public function clockin(Request $request)
     {
+        // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
@@ -185,12 +306,12 @@ class AttendanceController extends ApiController
 
             $data = [
                 'business_id' => $business_id,
-                'user_id' => $request->input('user_id'),
+                // 'user_id' => $request->input('user_id'),
                 'clock_in_time' => empty($request->input('clock_in_time')) ? \Carbon::now() : $request->input('clock_in_time'),
                 'clock_in_note' => $request->input('clock_in_note'),
                 'ip_address' => $request->input('ip_address'),
             ];
-
+            $data['user_id'] = $user->id;
             if (!empty($settings['is_location_required'])) {
                 $long = $request->input('longitude');
                 $lat = $request->input('latitude');
@@ -239,6 +360,7 @@ class AttendanceController extends ApiController
      */
     public function clockout(Request $request)
     {
+        // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
         }
@@ -252,11 +374,11 @@ class AttendanceController extends ApiController
 
             $data = [
                 'business_id' => $business_id,
-                'user_id' => $request->input('user_id'),
+                //     'user_id' => $request->input('user_id'),
                 'clock_out_time' => empty($request->input('clock_out_time')) ? \Carbon::now() : $request->input('clock_out_time'),
                 'clock_out_note' => $request->input('clock_out_note'),
             ];
-
+            $data['user_id'] = $user->id;
             $essentialsUtil = new \Modules\Essentials\Utils\EssentialsUtil;
 
             if (!empty($settings['is_location_required'])) {
