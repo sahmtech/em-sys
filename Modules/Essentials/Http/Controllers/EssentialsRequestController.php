@@ -69,13 +69,12 @@ class EssentialsRequestController extends Controller
     
             $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
             $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
-            error_log($procedure);
-            error_log($input['status']);
+           
 
             if($procedure == 0 && $input['status']=='rejected'){
                 $output = [
                     'success' => false,
-                    'msg' => __('lang_v1.cant_reject_this_request'),
+                    'msg' => __('lang_v1.this_department_cant_reject_this_request'),
                 ];
                 return $output;
             }

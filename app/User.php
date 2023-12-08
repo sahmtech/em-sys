@@ -193,8 +193,7 @@ class User extends Authenticatable
      */
     public static function forDropdown($business_id, $prepend_none = true, $include_commission_agents = false, $prepend_all = false, $check_location_permission = false)
     {
-        $query = User::where('business_id', $business_id)
-            ->user();
+        $query = User::where('business_id', $business_id);
 
         if (!$include_commission_agents) {
             $query->where('is_cmmsn_agnt', 0);

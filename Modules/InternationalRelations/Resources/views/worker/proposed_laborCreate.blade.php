@@ -14,7 +14,10 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget')
-
+                
+                <input type="hidden" name="delegation_id" value="{{ $delegation_id }}">
+                <input type="hidden" name="agency_id" value="{{ $agency_id }}">
+                <input type="hidden" name="transaction_sell_line_id" value="{{ $transaction_sell_line_id }}">
                     <div class="form-group col-md-3">
                             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
                             {!! Form::text('first_name', null, [
@@ -95,27 +98,7 @@
                         {!! Form::label('current_address', __( 'lang_v1.current_address') . ':') !!}
                         {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.current_address'), 'rows' => 3 ]); !!}
                     </div>
-                    <div class="clearfix"></div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                          {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-                          {!! Form::select('profession',$professions,!empty($user->profession_id) ? $user->profession_id : null,
-                             ['class' => 'form-control select2', 'required','style'=>'height:40px',
-                             'placeholder' => __('sales::lang.profession'),'id' => 'professionSelect']); !!}
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                            {!! Form::select('specialization',$specializations ,!empty($user->specialization_id) ? $user->specialization_id : null,
-                                 ['class' => 'form-control select2','style'=>'height:40px', 'required',
-                                'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
-                          </div>
-                    </div>
-                    <div class="form-group col-md-3">
-                        {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
-                        {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, ['class' => 'form-control','style'=>'height:40px', 'required', 'placeholder' => __('sales::lang.nationality')]); !!}
-                    </div>
+                  
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <button type="submit" class="btn btn-primary btn-big"
@@ -131,36 +114,7 @@
     @endsection
 
     @section('javascript')
-    <script type="text/javascript">
-         $(document).ready(function() {
-
-            var professionSelect = $('#professionSelect');
-            var specializationSelect = $('#specializationSelect');
-            professionSelect.on('change', function () {
-                    var selectedProfession = $(this).val();
-                    console.log(selectedProfession);
-                    var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        url: '{{ route('specializations') }}',
-                        type: 'POST',
-                        data: {
-                            _token: csrfToken,
-                            profession_id: selectedProfession
-                        },
-                        success: function (data) {
-                            specializationSelect.empty();
-                            $.each(data, function (id, name) {
-                                specializationSelect.append($('<option>', {
-                                    value: id,
-                                    text: name
-                                }));
-                            });
-                        }
-                    });
-            });
- 
-        });
-    </script>
+    
     <script type="text/javascript">
    $('form#user_add_form').validate({
         rules: {
