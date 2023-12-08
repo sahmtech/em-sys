@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::rename('car_models', 'housingMovements_car_models');
-        Schema::rename('car_types', 'housingMovements_car_types');
-        Schema::rename('cars', 'housingMovements_cars');
+        Schema::rename('housingmovements_car_models', 'housing_movements_car_models');
+        Schema::rename('housingmovements_car_types', 'housing_movements_car_types');
+        Schema::rename('housingmovements_cars', 'housing_movements_cars');
     }
 
     /**
