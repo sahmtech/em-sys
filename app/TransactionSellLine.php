@@ -28,6 +28,7 @@ class TransactionSellLine extends Model
         return $this->belongsTo(\Modules\Sales\Entities\salesService::class, 'service_id');
     }
     
+    
     public function variations()
     {
         return $this->belongsTo(\App\Variation::class, 'variation_id');

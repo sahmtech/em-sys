@@ -19,7 +19,7 @@
           
     <div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('employees', __('essentials::lang.select_employee') . ':*') !!}
+        {!! Form::label('employees', __('followup::lang.choose_worker') . ':*') !!}
         <div class="input-group">
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>

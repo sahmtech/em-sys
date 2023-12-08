@@ -23,7 +23,20 @@ return [
    'area'=>'المساحة',
    'beds_count'=>'عدد الأسرّة',
    'contents'=>'المحتويات',
-   ''=>'',
+   'travelers'=>'المسافرون',
+   'worker_name'=>'اسم العامل',
+   'passport_number'=>'رقم الجواز',
+   'location'=>'الموقع',
+   'arrival_date'=>'تاريخ الوصول',
+   'profession'=>'المهنة ',
+   'nationality'=>'الجنسية ',
+   'arrive_date'=>'تاريخ الوصول',
+   'project'=>'المشروع',
+   'location'=>'الموقع',
+   'arrived'=>'تم الوصول',
+   'housed'=>'تسكين',
+   'workers'=>'عمال المشاريع',
+
 
 
 
