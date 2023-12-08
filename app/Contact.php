@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Modules\InternationalRelations\Entities\IrDelegation;
 
 class Contact extends Authenticatable
 {
@@ -40,7 +41,10 @@ class Contact extends Authenticatable
     {
         return $query->where('contacts.contact_status', 'active');
     }
-
+    public function irDelegations()
+    {
+        return $this->hasMany(IrDelegation::class);
+    }
     /**
      * Filters only own created suppliers or has access to the supplier
      */

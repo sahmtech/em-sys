@@ -88,7 +88,10 @@
                         {!! Form::text('family_number', !empty($user->family_number) ? $user->family_number : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.family_contact_number') ]); !!}
                     </div>
                     
-                    
+                    <div class="form-group col-md-3">
+                        {!! Form::label('passport_number', __('business.passport_number') . ':*') !!}
+                        {!! Form::text('passport_number', null, ['class' => 'form-control','required', 'placeholder' => __('business.passport_number')]) !!}
+                </div>
                     <div class="clearfix"></div>
                     <div class="form-group col-md-3">
                         {!! Form::label('permanent_address', __( 'lang_v1.permanent_address') . ':') !!}

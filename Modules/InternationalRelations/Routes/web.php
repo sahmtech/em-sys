@@ -25,7 +25,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('store/EmploymentCompanies', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'store'])->name('store.EmploymentCompanies');
         Route::get('companyRequests/{id}', [Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'companyRequests'])->name('companyRequests');
         Route::get('delegations', [Modules\InternationalRelations\Http\Controllers\DelegationController::class, 'index'])->name('delegations');
-    
+        
+        Route::get('viewDelegation/{id}', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'viewDelegation'])->name('viewDelegation');
+
         Route::get('proposed_laborIndex',[\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex'])->name('proposed_laborIndex');
         Route::get('/createProposed_labor/{delegation_id}/{agency_id}/{transaction_sell_line_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'createProposed_labor'])->name('createProposed_labor');
         Route::post('/storeProposed_labor', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeProposed_labor'])->name('storeProposed_labor');
