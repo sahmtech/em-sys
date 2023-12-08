@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Sales\Entities\salesOrdersOperation;
+use Modules\Sales\Entities\SalesOrdersOperation;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ContactUtil;
 use Modules\Essentials\Entities\EssentialsCountry;

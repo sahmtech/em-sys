@@ -6,7 +6,7 @@ use App\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class salesOrdersOperation extends Model
+class SalesOrdersOperation extends Model
 {
     protected $guarded = ['id'];
     public function contact()

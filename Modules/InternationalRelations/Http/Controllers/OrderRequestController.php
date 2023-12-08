@@ -13,7 +13,7 @@ use App\Transaction;
 use Modules\InternationalRelations\Entities\IrDelegation;
 use DB;
 use Modules\InternationalRelations\Entities\Ir_delegation;
-use Modules\Sales\Entities\salesOrdersOperation;
+use Modules\Sales\Entities\SalesOrdersOperation;
 
 class OrderRequestController extends Controller
 {
@@ -118,7 +118,7 @@ class OrderRequestController extends Controller
     
     public function Delegation($id)
     {
-        $operation = salesOrdersOperation::with('salesContract.transaction')
+        $operation = SalesOrdersOperation::with('salesContract.transaction')
         ->where('id', $id)
         ->first();
   
@@ -156,7 +156,7 @@ class OrderRequestController extends Controller
         $data = $request->input('data');
         $order_id = isset($data[0]['order_id']) ? $data[0]['order_id'] : null;
       
-        $order = salesOrdersOperation::find($order_id);
+        $order = SalesOrdersOperation::find($order_id);
 
         if (!$order) {
             return response()->json(['success' => false,  'message' => __('lang_v1.order_not_found')]);
