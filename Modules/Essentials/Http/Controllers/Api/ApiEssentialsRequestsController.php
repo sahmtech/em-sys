@@ -16,7 +16,7 @@ use Modules\Essentials\Entities\ToDo;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 
-class ApiEssentialsLeaveTypeController extends ApiController
+class ApiEssentialsRequestsController extends ApiController
 {
     /**
      * All Utils instance.
@@ -51,8 +51,8 @@ class ApiEssentialsLeaveTypeController extends ApiController
             if (isset($request->attachment) && !empty($request->attachment)) {
                 $attachmentPath = $request->attachment->store('/requests_attachments');
             }
-            $start_date = Carbon::parse($request->start_date);
-            $end_date = $request->end_date;
+            $start_date = Carbon::parse($request->start_date)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->format('Y-m-d');
             ////////////////////////
             // make sure the request has a procesure
             ////////////////
