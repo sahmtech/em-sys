@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\InternationalRelations\Entities\IrDelegation;
 
 class TransactionSellLine extends Model
 {
@@ -26,6 +27,18 @@ class TransactionSellLine extends Model
     {
      
         return $this->belongsTo(\Modules\Sales\Entities\salesService::class, 'service_id');
+    }
+
+    public function irDelegations()
+    {
+        return $this->hasMany(IrDelegation::class, 'transaction_sell_line_id');
+    }
+
+    public function agencies()
+    {
+        return $this->irDelegations()
+            ->join('contacts', 'ir_delegations.agency_id', '=', 'contacts.id')
+            ->select('contacts.*', 'ir_delegations.transaction_sell_line_id');
     }
     
     

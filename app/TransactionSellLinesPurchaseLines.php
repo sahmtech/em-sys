@@ -17,4 +17,8 @@ class TransactionSellLinesPurchaseLines extends Model
     {
         return $this->belongsTo(\App\PurchaseLine::class, 'purchase_line_id');
     }
+    public function proposedLabors()
+    {
+        return $this->hasMany(IrProposedLabor::class);
+    }
 }

@@ -71,6 +71,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/store/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.store.orderOperations');
         Route::get('sale/operation/edit/{id}', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'edit'])->name('sale.operation.edit');
         Route::get('show_operation/{id}', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'])->name('sale.show_operation');
+        Route::get('showForDelegation/{id}', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'showForDelegation'])->name('sale.showForDelegation');
         Route::delete('destroy/show_operation/{id}', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'destroy'])->name('sale.delete.order_operation');
         Route::post('/get-contract-details', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'getContractDetails'])->name('get-contract-details');
 

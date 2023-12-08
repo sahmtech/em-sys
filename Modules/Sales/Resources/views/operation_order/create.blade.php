@@ -60,24 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="form-group">
-                            {!! Form::label('status', __('sales::lang.Status') . ':*') !!}
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="fa fa-id-badge"></i>
-                                </span>
-                                {!! Form::select('status', $status, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height:36px',
-                                    'placeholder' => __('sales::lang.select_status'),
-                                    'required',
-                                    'id' => 'status-select',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
-
+                   
 
                     <div class="col-md-9">
                         <div class="form-group">
