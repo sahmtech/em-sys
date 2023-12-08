@@ -163,7 +163,7 @@ class WorkerController extends Controller
                
                 ->addColumn('action', function ($row) {
 
-                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    $html = '<a href="' . route('ir_showWorker', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
 
                     return $html;
                 })
@@ -180,6 +180,26 @@ class WorkerController extends Controller
 
         $interview_status=$this->statuses;
         return view('internationalrelations::worker.proposed_laborIndex')->with(compact('interview_status','nationalities', 'specializations', 'professions', 'agencys'));
+    }
+
+
+    public function showWorker($id)
+    {
+     
+        if (! auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $user = IrProposedLabor::select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+                    ->find($id);
+     
+        $dataArray=[];
+       
+        return view('internationalrelations::worker.show')->with(compact(
+            'user'));
+
     }
     public function accepted_workers(Request $request)
     {

@@ -53,6 +53,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/fingerprinting', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'fingerprinting'])->name('fingerprinting');
         Route::post('/passport_stamped', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'passport_stamped'])->name('passport_stamped');
         Route::post('/storeVisaWorker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeVisaWorker'])->name('storeVisaWorker');
+        Route::get('/ir_showWorker/{id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'])->name('ir_showWorker');
 
+        
     });
 });

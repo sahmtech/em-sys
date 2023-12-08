@@ -93,7 +93,7 @@ class OrderRequestController extends Controller
             $html = '<a href="#" data-href="'.action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'Delegation'], [$row->id]).'" class="btn btn-xs btn-warning btn-modal" data-container=".view_modal"><i class="fas fa-plus" aria-hidden="true"></i> '.__('internationalrelations::lang.Delegation').'</a>';
             }
             else {
-                $html = '<a href="#" data-href="" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('internationalrelations::lang.viewDelegation').'</a>';
+                $html = '<a href="#" data-href="'.action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'viewDelegation'], [$row->id]).'" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('internationalrelations::lang.viewDelegation').'</a>';
 
             }
             return $html;
@@ -134,23 +134,14 @@ class OrderRequestController extends Controller
     
         return view('internationalrelations::orderRequest.Delegation')->with(compact('query','agencies','id'));
     }
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('internationalrelations::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-
-  
     
+    public function viewDelegation($id)
+    {
+        $operation = salesOrdersOperation::with('salesContract.transaction')
+        ->where('id', $id)
+        ->first();
+        return view('internationalrelations::show');
+    }
     public function saveRequest(Request $request)
     {
         $data = $request->input('data');
@@ -223,10 +214,7 @@ class OrderRequestController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
-    {
-        return view('internationalrelations::show');
-    }
+   
 
     /**
      * Show the form for editing the specified resource.
