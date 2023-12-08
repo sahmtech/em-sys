@@ -103,5 +103,6 @@
 'website'=>'الموقع الالكتروني',
 'business_ar_name'=>'اسم الشركة بالعربية',
 'business_en_name'=>'اسم الشركة بالانجليزية',
-'view_business_docs'=>'عرض وثائق الشركة'
+'view_business_docs'=>'عرض وثائق الشركة',
+'passport_number'=>'جواز السفر'
 ];
