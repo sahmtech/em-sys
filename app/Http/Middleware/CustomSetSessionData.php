@@ -22,7 +22,7 @@ class CustomSetSessionData
         if (!$request->session()->has('user')) {
             $business_util = new BusinessUtil;
 
-            $user = User::where('id', Auth::user())->first();
+            $user = User::where('id', Auth::user()->id)->first();
             $session_data = [
                 'id' => $user->id,
                 'surname' => $user->surname,

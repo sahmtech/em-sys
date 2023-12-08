@@ -286,7 +286,8 @@ class BusinessController extends Controller
     //index
     public function getBusinessSettings()
     {
-        if (!auth()->user()->can('business_settings.access')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('business_settings.access'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -400,7 +401,7 @@ class BusinessController extends Controller
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
-               // ->removeColumn('id')
+                // ->removeColumn('id')
                 ->rawColumns(['action', 'missing_license_types'])
                 ->make(true);
         }
@@ -629,7 +630,7 @@ class BusinessController extends Controller
                 'decimal_separator' => $currency->decimal_separator,
             ]);
 
-            
+
             $financial_year = $this->businessUtil->getCurrentFinancialYear($business->id);
             $request->session()->put('financial_year', $financial_year);
 
@@ -819,7 +820,7 @@ class BusinessController extends Controller
             $attributes = $subscription->toArray();
             $attributes['business_id'] = $business->id;
             $attributes['id'] = null;
-  
+
             $sub = Subscription::create($attributes);
 
             //Update user with business id
@@ -861,7 +862,7 @@ class BusinessController extends Controller
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-          //  error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            //  error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),

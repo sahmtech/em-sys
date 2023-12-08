@@ -70,7 +70,7 @@ class HomeController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-
+        
         $is_admin = $this->businessUtil->is_admin(auth()->user());
         $roles = auth()->user()->roles;
         $roleHasPermission = false;

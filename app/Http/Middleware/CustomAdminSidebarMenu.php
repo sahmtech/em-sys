@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\User;
 use App\Utils\ModuleUtil;
 use Closure;
 use Menu;
@@ -244,8 +245,11 @@ class CustomAdminSidebarMenu
 
 
             if (auth()->user()->can('essentials.crud_all_essentials_requests') || true) {
-                $menu->url(action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']), __('followup::lang.requests'), 
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'allRequests'])->order(6);
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'allRequests']
+                )->order(6);
                 // $menu->dropdown(
                 //     __('followup::lang.requests'),
                 //     function ($sub) use ($enabled_modules) {
@@ -639,7 +643,7 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
             );
             $menu->url(
-               route('sale.contactLocations'),
+                route('sale.contactLocations'),
                 __('sales::lang.contact_locations'),
                 ['icon' => 'fa fas fa-plus-circle'],
             );
@@ -688,7 +692,6 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sale_sources'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'salesources'],
             );
-
         });
     }
     public function houseMovementsMenu()
@@ -1421,7 +1424,8 @@ class CustomAdminSidebarMenu
 
     public function superAdminMenu()
     {
-        Menu::create('admin-sidebar-menu', function ($menu) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        Menu::create('admin-sidebar-menu', function ($menu) use ($isSuperAdmin) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -1432,9 +1436,7 @@ class CustomAdminSidebarMenu
             $menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
-            if (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access')) {
-
-
+            if (($isSuperAdmin) || (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access'))) {
                 $menu->url(
                     action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
                     __('superadmin::lang.subscription'),
@@ -1442,11 +1444,11 @@ class CustomAdminSidebarMenu
                 );
             }
             //Modules menu
-            if (auth()->user()->can('manage_modules')) {
+            if (($isSuperAdmin) || (auth()->user()->can('manage_modules'))) {
                 $menu->url(action([\App\Http\Controllers\Install\ModulesController::class, 'index']), __('lang_v1.modules'), ['icon' => 'fa fas fa-plug', 'active' => request()->segment(1) == 'manage-modules']);
             }
             //Backup menu
-            if (auth()->user()->can('backup')) {
+            if (($isSuperAdmin) || (auth()->user()->can('backup'))) {
                 $menu->url(action([\App\Http\Controllers\BackUpController::class, 'index']), __('lang_v1.backup'), ['icon' => 'fa fas fa-hdd', 'active' => request()->segment(1) == 'backup']);
             }
         });
