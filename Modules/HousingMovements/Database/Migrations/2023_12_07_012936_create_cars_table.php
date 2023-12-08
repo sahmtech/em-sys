@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('color');
             $table->string('user_id');
 
-            $table->integer('car_model_id');
-            // $table->foreign('car_model_id')->references('id')->on('car_models');
+            $table->bigInteger('car_model_id');
+            $table->foreign('car_model_id')->references('id')->on('car_models');
 
             $table->timestamps();
         });
