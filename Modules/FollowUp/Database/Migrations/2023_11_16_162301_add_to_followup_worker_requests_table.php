@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('followup_worker_requests', function (Blueprint $table) {
             $table->unsignedInteger('updated_by')->after('type')->nullable();
-            $table->foreign('updated_by')->references('id')->on('users');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

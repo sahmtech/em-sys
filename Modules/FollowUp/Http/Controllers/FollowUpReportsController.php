@@ -2,6 +2,7 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\Category;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,6 +14,10 @@ use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use App\Transaction;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Sales\Entities\salesContract;
 
 class FollowUpReportsController extends Controller
@@ -42,12 +47,49 @@ class FollowUpReportsController extends Controller
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         //  Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-
+        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+        $categories = Category::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
 
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+
+        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+            ->where('user_type', 'worker')
+            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
+            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->with(['country', 'contract', 'OfficialDocument'])
+            ->select([
+                'users.id',
+                'users.emp_number',
+                'users.username',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+                'users.id_proof_number',
+                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+
+                'essentials_admission_to_works.admissions_date as admissions_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'users.email',
+                'users.allow_login',
+                'users.contact_number',
+                'users.essentials_department_id',
+                'users.essentials_salary',
+                'users.total_salary',
+                'users.bank_details',
+                'users.status',
+                'essentials_employee_appointmets.profession_id as profession_id',
+
+                'essentials_employee_appointmets.specialization_id as specialization_id'
+            ]);
+
         $users->select(
             'users.*',
             'users.id_proof_number',
@@ -56,12 +98,13 @@ class FollowUpReportsController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'contact_locations.name as contact_name'
         );
+
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
-           
+
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
                 $start = request()->filter_start_date;
                 $end = request()->filter_end_date;
@@ -101,8 +144,30 @@ class FollowUpReportsController extends Controller
                     // return $this->getDocumentnumber($user, 'admissions_date');
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
+
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
+                })
+
+                ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                    $professionId = $appointments[$row->id] ?? '';
+
+                    $professionName = $professions[$professionId] ?? '';
+
+                    return $professionName;
+                })
+
+
+
+                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
+                    $specializationId = $appointments2[$row->id] ?? '';
+                    $specializationName = $specializations[$specializationId] ?? '';
+
+                    return $specializationName;
+                })->addColumn('bank_code', function ($user) {
+                   
+                    $bank_details = json_decode($user->bank_details);
+                    return $bank_details->bank_code ?? ' ';
                 })
                 ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
@@ -155,7 +220,7 @@ class FollowUpReportsController extends Controller
         //     );
         // dd($contactLocations);
         if (request()->ajax()) {
-            $contracts = SalesContract::with([
+            $contracts = salesContract::with([
                 'transaction.contact.user',
                 'salesOrderOperation',
             ]);
@@ -250,7 +315,7 @@ class FollowUpReportsController extends Controller
                 ])
 
                 ->make(true);;
-            // $contracts = SalesContract::with([
+            // $contracts = salesContract::with([
             //     'transaction.contact.user',
             //     'salesOrderOperation',
             // ]);
@@ -338,6 +403,11 @@ class FollowUpReportsController extends Controller
         return view('followup::reports.projects')->with(compact('contacts_fillter'));
     }
 
+
+    public function chooseFields_projectsworker()
+    {
+        return view('followup::reports.chooseFields');
+    }
     private function getDocumentExpirationDate($user, $documentType)
     {
         foreach ($user->OfficialDocument as $off) {

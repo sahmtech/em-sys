@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('attachment')->nullable();
             $table->string('status')->default('under process');
      
-            $table->foreign('worker_id')->references('id')->on('users');
+            $table->foreign('worker_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

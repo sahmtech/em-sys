@@ -19,7 +19,7 @@ use App\Transaction;
 use App\Contact;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\Sales\Entities\salesContract;
-use Modules\Sales\Entities\salesOrdersOperation;
+use Modules\Sales\Entities\SalesOrdersOperation;
 
 class FollowUpOperationOrderController extends Controller
 {
@@ -147,7 +147,7 @@ class FollowUpOperationOrderController extends Controller
                  ];
                  $operation_details = $request->only($operation_order);
  
-                 $latestRecord = salesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
+                 $latestRecord = SalesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
  
                  if ($latestRecord) {
                      $latestRefNo = $latestRecord->operation_order_no;
@@ -165,7 +165,7 @@ class FollowUpOperationOrderController extends Controller
                  $operation_details['orderQuantity'] = $request->input('quantity');
 
  
-                 $operation = salesOrdersOperation::create($operation_details);
+                 $operation = SalesOrdersOperation::create($operation_details);
              });
  
              $output = [
@@ -228,7 +228,7 @@ class FollowUpOperationOrderController extends Controller
 
                 $operation_details['Status'] = $request->input('status');
 
-               // $operation = salesOrdersOperation::where('id',$id)->update($operation_details);
+               // $operation = SalesOrdersOperation::where('id',$id)->update($operation_details);
             });
 
             $output = [
