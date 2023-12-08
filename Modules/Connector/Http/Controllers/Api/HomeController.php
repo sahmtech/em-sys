@@ -70,13 +70,27 @@ class HomeController extends ApiController
                 ->first();
 
 
-            $lastTask = ToDo::where('business_id', $business_id)
+            $todo = ToDo::where('business_id', $business_id)
                 ->with(['assigned_by'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
                 ->select('*')->latest('created_at')
                 ->first();
+
+            $lastTask = [
+                'id' => $todo->id,
+                'business_id' => $todo->business_id,
+                'task' => $todo->task,
+                'date' => $todo->date,
+                'end_date' => $todo->end_date,
+                'task_id' => $todo->task_id,
+                'description' => $todo->description,
+                'status' => $todo->status,
+                'estimated_hours' => $todo->estimated_hours,
+                'priority' => $todo->priority,
+                'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+            ];
 
 
             $res = [
