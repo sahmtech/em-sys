@@ -93,6 +93,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
 Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(function () {
 
     Route::get('getAttendanceByDate', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'getAttendanceByDate']);
+    Route::get('home', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'home']);
 });
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {
