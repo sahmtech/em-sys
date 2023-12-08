@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name_ar');
             $table->string('name_en');
          
-            $table->bigInteger('car_type_id');
+            $table->unsignedBigInteger('car_type_id');
             $table->foreign('car_type_id')->references('id')->on('car_types');
 
             $table->timestamps();

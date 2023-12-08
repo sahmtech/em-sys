@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('color');
             $table->string('user_id');
 
-            $table->bigInteger('car_model_id');
+            $table->unsignedBigInteger('car_model_id');
             $table->foreign('car_model_id')->references('id')->on('car_models');
 
             $table->timestamps();
