@@ -89,7 +89,7 @@ class ApiFollowUpRequestController extends ApiController
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
-                'users.assigned_to'
+           
 
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')

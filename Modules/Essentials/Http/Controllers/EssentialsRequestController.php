@@ -449,12 +449,9 @@ class EssentialsRequestController extends Controller
                     $statusName = $this->statuses[$row->status]['name'];
                     $status = $row->status;
 
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $statusClass . '">' . $statusName . '</span>';
-                        $status = '<a href="#" class="change_status" data-request-id="' . $row->process_id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statusName . '"> ' . $status . '</a>';
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                 
                         $status = trans('followup::lang.' . $row->status);
-                    }
+                    
 
                     return $status;
                 })
@@ -465,12 +462,13 @@ class EssentialsRequestController extends Controller
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
+        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'employee');
         $all_users = $query->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
          ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->get();
+        )
+        ->get();
 
         $workers = $all_users->pluck('full_name', 'id');
 
@@ -488,6 +486,31 @@ class EssentialsRequestController extends Controller
 
 
         return view('essentials::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+    }
+
+    public function search(Request $request)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $query = User::where('business_id', $business_id)
+            ->where('user_type', 'employee')
+            ->where(function ($query) use ($request) {
+                $query->where('first_name', 'LIKE', '%' . $request->q . '%')
+                    ->orWhere('last_name', 'LIKE', '%' . $request->q . '%')
+                    ->orWhere('id_proof_number', 'LIKE', '%' . $request->q . '%');
+            });
+
+        $results = $query->select('id',  DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'full_name' => $user->full_name,
+                    'text' => $user->full_name,
+                ];
+            });
+
+        return response()->json(['results' => $results]);
     }
 
     private function getTypePrefix($type)

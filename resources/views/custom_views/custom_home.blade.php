@@ -185,21 +185,7 @@
                     },
                     {
                         data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-
-
-                                case 'approved':
-                                    return '{{ trans('followup::lang.approved') }}';
-                                case 'under process':
-                                    return '{{ trans('followup::lang.under process') }}';
-
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
-                            }
-                        }
+        
                     },
                     {
                         data: 'note'

@@ -6,6 +6,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -77,16 +78,32 @@ class ApiEssentialsLeaveTypeController extends ApiController
             $business_id = $user->business_id;
 
 
-            $todos = ToDo::where('business_id', $business_id)
-                ->with(['users', 'assigned_by'])
+            $data = ToDo::where('business_id', $business_id)
+                ->with(['assigned_by'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
                 ->select('*')->get();
+            $todos = [];
+            foreach ($data as $todo) {
+                $todos[] = [
+                    'id' => $todo->id,
+                    'business_id' => $todo->business_id,
+                    'task' => $todo->task,
+                    'date' => $todo->date,
+                    'end_date' => $todo->end_date,
+                    'task_id' => $todo->task_id,
+                    'description' => $todo->description,
+                    'status' => $todo->status,
+                    'estimated_hours' => $todo->estimated_hours,
+                    'priority' => $todo->priority,
+                    'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+                ];
+            }
 
 
             $res = [
-                'todos' => $todos
+                'todos' => collect($todos),
             ];
 
 
