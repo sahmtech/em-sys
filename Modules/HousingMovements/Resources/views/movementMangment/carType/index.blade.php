@@ -21,11 +21,11 @@
                     ]) !!}
                     <div class="col-sm-4">
                         <div class="form-group row">
-                            {!! Form::label('search_lable', __('بحث') . '  ') !!}
+                            {!! Form::label('search_lable', __('housingmovements::lang.search') . '  ') !!}
                             {!! Form::text('search', '', [
                                 'class' => 'form-control',
                                 'required',
-                                'placeholder' => __('الاسم باللغة العربية او الانكليزية'),
+                                'placeholder' => __('housingmovements::lang.name_in_ar_en'),
                                 'id' => 'search',
                             ]) !!}
 
@@ -33,12 +33,12 @@
                     </div>
                     <div class="col-sm-8" style="padding-right: 3px;">
                         <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            بحث</button>
+                            @lang('housingmovements::lang.search')</button>
                         @if ($after_serch)
                             <a class="btn btn-primary pull-right m-5 "
                                 href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@index') }}"
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@index') }}">
-                                عرض الكل</a>
+                                @lang('housingmovements::lang.viewAll')</a>
                         @endif
                     </div>
                     {!! Form::close() !!}
@@ -109,7 +109,8 @@
 
                                                     <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
                                                         href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@destroy', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@destroy', $row->id) }}" {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
+                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@destroy', $row->id) }}"
+                                                        {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
 
                                                         <i class="fa fa-trash cursor-pointer"
                                                             style="padding: 2px;color:red;"></i>
@@ -148,4 +149,3 @@
     <!-- /.content -->
 
 @endsection
-
