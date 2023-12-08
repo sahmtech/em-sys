@@ -87,7 +87,7 @@ class SaleOperationOrderController extends Controller
                 WHEN sales_orders_operations.operation_order_type = 'internal' THEN '" . __('sales::lang.Internal') . "'
                 ELSE sales_orders_operations.operation_order_type 
                 END AS operation_order_type"),
-                'sales_orders_operations.Status as Status'
+                'sales_orders_operations.status as Status'
             )->orderby('id', 'desc');
 
 
@@ -97,8 +97,8 @@ class SaleOperationOrderController extends Controller
             $operations->where('sales_contracts.number_of_contract', request()->input('number_of_contract'));
         }
 
-        if (request()->input('Status') && request()->input('Status') !== 'all') {
-            $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
+        if (request()->input('type') && request()->input('type') !== 'all') {
+            $operations->where('sales_orders_operations.operation_order_type', request()->input('type'));
         }
 
 
@@ -129,9 +129,9 @@ class SaleOperationOrderController extends Controller
         }
 
         $status = [
-            'Done' => __('sales::lang.Done'),
-            'Under_process' => __('sales::lang.Under_process'),
-            'Not_started' => __('sales::lang.Not_started'),
+            'done' => __('sales::lang.done'),
+            'under_process' => __('sales::lang.nnder_process'),
+            'not_started' => __('sales::lang.not_started'),
 
         ];
         $leads = Contact::where('type', 'customer')
@@ -214,9 +214,9 @@ class SaleOperationOrderController extends Controller
             ->pluck('supplier_business_name', 'id');
 
         $status = [
-            'Done' => __('sales::lang.Done'),
-            'Under_process' => __('sales::lang.Under_process'),
-            'Not_started' => __('sales::lang.Not_started'),
+            'done' => __('sales::lang.done'),
+            'under_process' => __('sales::lang.under_process'),
+            'not_started' => __('sales::lang.Not_started'),
 
         ];
         return view('sales::operation_order.create')->with(compact('leads', 'agencies', 'status'));
@@ -238,7 +238,7 @@ class SaleOperationOrderController extends Controller
             DB::transaction(function () use ($request) {
                 $operation_order = [
                     'contact_id', 'sale_contract_id', 'operation_order_type', 'quantity',
-                    'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
+                    'Interview', 'Location', 'Delivery', 'Note', 'Industry'
                 ];
                 $operation_details = $request->only($operation_order);
 
@@ -253,7 +253,6 @@ class SaleOperationOrderController extends Controller
                     $operation_details['operation_order_no'] = 'POP1111';
                 }
 
-                $operation_details['Status'] = $request->input('status');
                 $operation_details['orderQuantity'] = $request->input('quantity');
 
                 $operation = salesOrdersOperation::create($operation_details);
@@ -298,6 +297,8 @@ class SaleOperationOrderController extends Controller
 
             return view('sales::operation_order.show')
                 ->with(compact('operations', 'sell_lines'));
+          
+   
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -308,6 +309,8 @@ class SaleOperationOrderController extends Controller
             ];
         }
     }
+
+  
     /**
      * Show the form for editing the specified resource.
      * @param int $id

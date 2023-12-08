@@ -28,8 +28,8 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="status_filter">@lang('sales::lang.operation_order_type'):</label>
-                    <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
+                    <label for="type_filter">@lang('sales::lang.operation_order_type'):</label>
+                    <select class="form-control select2" name="type_filter" required id="type_filter" style="width: 100%;">
                         <option value="all">@lang('lang_v1.all')</option>
                         <option value="external">@lang('sales::lang.external')</option>
                         <option value="internal">@lang('sales::lang.internal')</option>
@@ -111,23 +111,14 @@
                                 ]) !!}
                             </div>
 
-                            <div class="form-group col-md-6">
-                                {!! Form::label('status', __('sales::lang.Status') . ':*') !!}
-                                {!! Form::select('status', $status, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height:36px',
-                                    'placeholder' => __('sales::lang.select_status'),
-                                    'required',
-                                    'id' => 'status-select',
-                                ]) !!}
-                            </div>
+                           
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('Industry', __('sales::lang.Industry') . ':') !!}
                                 {!! Form::text('Industry', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.Industry')]) !!}
                             </div>
 
-                            <div class="clearfix"></div>
+                           
                             <div class="form-group col-md-6">
                                 {!! Form::label('quantity', __('sales::lang.quantity') . ':*') !!}
                                 {!! Form::Number('quantity', null, [
@@ -150,7 +141,7 @@
                                 ) !!}
 
                             </div>
-                            <div class="clearfix"></div>
+                     
                             <div class="form-group col-md-6">
 
                                 {!! Form::label('Interview', __('sales::lang.Interview') . ':*') !!}
@@ -171,7 +162,7 @@
 
 
                             </div>
-                            <div class="clearfix"></div>
+                           
                             <div class="form-group col-md-6">
 
                                 {!! Form::label('Delivery', __('sales::lang.Delivery') . ':') !!}
@@ -218,7 +209,7 @@
                     data: function(d) {
 
                         d.number_of_contract = $('#contract-select').val();
-                        d.Status = $('#status_filter').val();
+                        d.type = $('#type_filter').val();
 
                     }
                 },
@@ -278,7 +269,7 @@
             });
             // Add an event listener to trigger filtering when your filters change
 
-            $('#contract-select, #status_filter').change(function() {
+            $('#contract-select, #type_filter').change(function() {
                 customers_table.ajax.reload();
             });
 

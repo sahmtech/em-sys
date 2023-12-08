@@ -397,4 +397,8 @@ class Contact extends Authenticatable
     {
         return $this->hasMany(ContactLocation::class, 'contact_id');
     }
+    public function proposedLabors()
+    {
+        return $this->hasMany(IrProposedLabor::class);
+    }
 }

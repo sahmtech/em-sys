@@ -897,27 +897,45 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'OrderRequest'],
                 )->order(1);
             }
+            if (auth()->user()->can('internationalrelations.view_EmploymentCompanies') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
+                    __('internationalrelations::lang.EmploymentCompanies'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
+                )->order(2);
+            }
+            if (auth()->user()->can('internationalrelations.delegations') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\DelegationController::class, 'index']),
+                    __('internationalrelations::lang.Delegation'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'delegations'],
+                )->order(3);
+            }
             if (auth()->user()->can('internationalrelations.proposed_labor') || true) {
                 $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'proposed_laborIndex']),
+                    action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex']),
                     __('internationalrelations::lang.proposed_labor'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'],
-                )->order(2);
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'
+                    || request()->segment(2) == 'accepted_workers'
+                    || request()->segment(2) == 'unaccepted_workers'
+                    ],
+                )->order(4);
+            }
+            if (auth()->user()->can('internationalrelations.visa_cards') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'index']),
+                    __('internationalrelations::lang.visa_cards'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'visa_cards'],
+                )->order(4);
             }
             if (auth()->user()->can('internationalrelations.view_Airlines') || true) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\AirlinesController::class, 'index']),
                     __('internationalrelations::lang.Airlines'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
-                )->order(3);
+                )->order(5);
             }
-            if (auth()->user()->can('internationalrelations.view_EmploymentCompanies') || true) {
-                $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
-                    __('internationalrelations::lang.EmploymentCompanies'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
-                )->order(4);
-            }
+            
         });
     }
 
@@ -1462,6 +1480,11 @@ class CustomAdminSidebarMenu
                     __('superadmin::lang.subscription'),
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
+            }
+              if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
+                $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']), __('followup::lang.requests'), 
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']);
+              
             }
             //Modules menu
             if (auth()->user()->can('manage_modules')) {
