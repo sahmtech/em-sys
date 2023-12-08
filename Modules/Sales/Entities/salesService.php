@@ -14,6 +14,11 @@ class salesService extends Model
      
         return $this->belongsTo(\Modules\Essentials\Entities\EssentialsProfession::class, 'profession_id');
     }
+    public function nationality()
+    {
+     
+        return $this->belongsTo(\Modules\Essentials\Entities\EssentialsCountry::class, 'nationality_id');
+    }
     public function specialization()
     {
      

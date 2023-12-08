@@ -65,9 +65,24 @@ class EssentialsRequestController extends Controller
 
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
+// <<<<<<< 
+    
+            $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
+            $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
+           
 
-            $requestProcess = FollowupWorkerRequestProcess::where('id', $input['request_id'])->first();
-            error_log($requestProcess);
+            if($procedure == 0 && $input['status']=='rejected'){
+                $output = [
+                    'success' => false,
+                    'msg' => __('lang_v1.this_department_cant_reject_this_request'),
+                ];
+                return $output;
+            }
+// =======
+
+//             $requestProcess = FollowupWorkerRequestProcess::where('id', $input['request_id'])->first();
+//             error_log($requestProcess);
+// >>>>>>> Development
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
             $requestProcess->status_note = $input['note'] ?? null;
@@ -471,18 +486,34 @@ class EssentialsRequestController extends Controller
         ->get();
 
         $workers = $all_users->pluck('full_name', 'id');
+// <<<<<<< 
+        $statuses = $this->statuses;
+        // if ($department) {
+        //     $department = $department->id;
+        //     $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','exitRequest')->first();
+        //     if ($pros) {
+        //         $can_reject = $pros->can_reject;
+        //         $can_reject = $can_reject ?? 0;
+        //         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+        //     } else {
+        //      
+        //     }
+        // }
+       
+// =======
 
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'exitRequest')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
+//         if ($department) {
+//             $department = $department->id;
+//             $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'exitRequest')->first();
+//             if ($pros) {
+//                 $can_reject = $pros->can_reject;
+//                 $can_reject = $can_reject ?? 0;
+//                 $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
+//             } else {
+//                 $statuses = $this->statuses;
+//             }
+//         }
+// >>>>>>> Development
 
 
         return view('essentials::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));

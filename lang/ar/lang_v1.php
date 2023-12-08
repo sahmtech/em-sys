@@ -1435,5 +1435,14 @@ return [
 'order_not_found'=>'أمر التشغيل غير موجود',
 'Sum_of_target_quantity_is_greater_than_order_quantity'=>'الكمية المدخلة أكبر من العدد المسموح به',
 'saved_successfully'=>'تم الحفظ بنجاح',
-'age'=>'العمر'
+'age'=>'العمر',
+'this_department_cant_reject_this_request'=>'هذه الإدارة ليس لها صلاحية رفض  هذا الطلب',
+'send_success'=>'تم الإرسال بنجاح',
+'send'=>'تم الإرسال',
+'not_sent_yet'=>'لم يتم الإرسال بعد',
+'accepted_success'=>'تم القبول بنجاح',
+'not_yet'=>'ليس بعد',
+'done'=>'تمت',
+
+
 ];

@@ -69,7 +69,7 @@ class FollowUpRequestController extends Controller
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
     
             $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
-            error_log($requestProcess);
+          
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
             $requestProcess->status_note = $input['note'] ?? null;
