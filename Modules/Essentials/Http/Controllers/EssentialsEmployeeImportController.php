@@ -711,8 +711,9 @@ class EssentialsEmployeeImportController extends Controller
                         $contract->contract_duration=$emp_data['contract_duration'];
                         $contract->probation_period =$emp_data["probation_period"];
                         $contract->contract_type_id  =$emp_data["contract_type_id"];
-                        $contract->status = "vaild";
+                        $contract->status = "valid";
                         $contract->save();
+                       // dd($contract);
 
 
 

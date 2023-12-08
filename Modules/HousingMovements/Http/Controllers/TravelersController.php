@@ -1,0 +1,278 @@
+<?php
+
+namespace Modules\HousingMovements\Http\Controllers;
+
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use App\ContactLocation;
+use Yajra\DataTables\Facades\DataTables;
+use App\Utils\ContactUtil;
+use App\Utils\ModuleUtil;
+use App\Utils\NotificationUtil;
+use App\Utils\TransactionUtil;
+use App\Utils\Util;
+use App\User;
+use App\Business;
+use App\BusinessLocation;
+use App\Contact;
+use App\Events\ContactCreatedOrModified;
+use App\Transaction;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsCity;
+use DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\InternationalRelations\Entities\IrDelegation;
+use Modules\InternationalRelations\Entities\IrProposedLabor;
+
+class TravelersController extends Controller
+{
+    protected $commonUtil;
+
+    protected $contactUtil;
+
+    protected $transactionUtil;
+
+    protected $moduleUtil;
+
+    protected $notificationUtil;
+
+
+    public function __construct(
+        Util $commonUtil,
+        ModuleUtil $moduleUtil,
+        TransactionUtil $transactionUtil,
+        NotificationUtil $notificationUtil,
+        ContactUtil $contactUtil
+    ) {
+        $this->commonUtil = $commonUtil;
+        $this->contactUtil = $contactUtil;
+        $this->moduleUtil = $moduleUtil;
+        $this->transactionUtil = $transactionUtil;
+        $this->notificationUtil = $notificationUtil;
+    }
+    /**
+     * Display a listing of the resource.
+     * @return Renderable
+     */
+    public function index(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id = request()->session()->get('user.business_id');
+        $workers = IrProposedLabor::with([
+                'transactionSellLine.service.profession',
+                'transactionSellLine.service.nationality',
+                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
+                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact.contactLocation',
+                'visa',
+                'agency'
+            ])
+            ->select([
+                'ir_proposed_labors.id',
+                'passport_number',
+                'transaction_sell_line_id', 
+                'visa_id',
+                'agency_id',
+                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ]);
+       // dd( $workers->get());
+        
+            if (!empty($request->input('project_name_filter'))) {
+                $workers->whereHas('agency', function ($query) use ($request) {
+                    $query->where('id', '=', $request->input('project_name_filter'));
+                });
+            }
+
+            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                $start = request()->filter_start_date;
+                $end = request()->filter_end_date;
+            
+                $workers->whereHas('visa', function ($query) use ($start, $end) {
+                    $query->whereDate('arrival_date', '>=', $start)
+                        ->whereDate('arrival_date', '<=', $end);
+                });
+            }
+
+
+            if (request()->ajax()) 
+            {
+               
+             
+                return Datatables::of($workers)
+                
+
+                ->addColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
+                })
+
+                ->editColumn('project', function ($row) {
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact?->supplier_business_name ?? '';
+                })
+
+                ->editColumn('location', function ($row) {
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->Location ?? '';
+                })
+
+                ->editColumn('arrival_date', function ($row) {
+                    return $row->visa->arrival_date ?? '';
+                })
+
+                ->editColumn('profession', function ($row) {
+                    return $row->transactionSellLine?->service?->profession?->name ?? '';
+                })
+                ->editColumn('nationality', function ($row) {
+                    return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
+                })
+
+                ->addColumn('action', function ($row) {
+                  $html='';
+                   // $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    return $html;
+                })
+                ->filter(function ($query) use ($request) {
+                 
+                    if (!empty($request->input('full_name'))) {
+                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
+                    }
+                })
+              
+                ->rawColumns(['action', 'profession', 'nationality','checkbox'])
+                ->make(true);
+            
+    
+            }
+            
+        $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
+        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        return view('housingmovements::travelers.index')->with(compact('ContactsLocation','buildings'));
+    }
+
+    public function getRoomNumbers($buildingId)
+     {
+        
+            $roomNumber =DB::table('htr_rooms')->where('htr_building_id', $buildingId)->pluck('room_number')->first();
+            return response()->json(['roomNumber' => $roomNumber]);
+    }
+
+
+    public function getarrived(Request $request)
+        {
+            try {
+                if (!empty($request->selected_rows)) {
+                    $business_id = $request->session()->get('user.business_id');
+                    $selectedData = explode(',', $request->selected_rows);
+
+                    $workers = IrProposedLabor::whereIn('id', $selectedData)
+                    ->get();
+                
+                    DB::beginTransaction();
+                    foreach ($workers as $worker) {
+                      
+                        User::create([
+                            'first_name' => $worker->first_name, 
+                            'mid_name' => $worker->mid_name, 
+                            'last_name' => $worker->last_name, 
+                            'age' => $worker->age, 
+                            'gender' => $worker->gender, 
+                            'email' => $worker->email,
+                            'profile_image' => $worker->profile_image, 
+                            'dob' => $worker->dob, 
+                            'marital_status' => $worker->marital_status, 
+                            'blood_group' => $worker->blood_group, 
+                            'contact_number' => $worker->contact_number, 
+                            'permanent_address' => $worker->permanent_address, 
+                            'current_address' => $worker->current_address, 
+                            'passport_number' => $worker->passport_number, 
+                           // 'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact->contactLocation->id??null, 
+                            'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id??null, 
+                            'business_id' => $business_id,
+                            'user_type'=>'worker',
+                           
+                        ]);
+                    }
+                    DB::commit();
+        
+                    $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+                } else {
+                    $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+                }
+            } catch (\Exception $e) {
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        
+                $output = ['success' => 0, 'msg' => $e->getMessage()];
+            }
+        
+            return redirect()->back()->with(['status' => $output]);
+        }
+        
+    /**
+     * Show the form for creating a new resource.
+     * @return Renderable
+     */
+    public function create()
+    {
+        return view('housingmovements::create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Renderable
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Show the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function show($id)
+    {
+        return view('housingmovements::show');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function edit($id)
+    {
+        return view('housingmovements::edit');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Renderable
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $id
+     * @return Renderable
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

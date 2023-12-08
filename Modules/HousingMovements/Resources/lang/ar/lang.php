@@ -23,7 +23,40 @@ return [
    'area'=>'المساحة',
    'beds_count'=>'عدد الأسرّة',
    'contents'=>'المحتويات',
-   ''=>'',
+
+   'carTypes' => 'أنواع السيارات',
+    'carType' => 'نوع السيارة',
+    'carModels' => 'طراز السيارات',
+    'carModel' => 'طراز السيارة',
+    'cars' => 'السيارات',
+    'name_ar' => 'الاسم العربي',
+    'name_en' => 'الاسم الانكليزي',
+    'add_carType' => 'إضافة نوع سيارة',
+    'edit_carType' => 'تعديل نوع سيارة',
+    'add_carModel' => 'إضافة طراز سيارة',
+    'edit_carModel' => 'تعديل طراز سيارة',
+    'plate_number' => 'رقم اللوحة',
+    'color' => 'اللون',
+    'car_typeModel' => 'توع وطراز السيارة',
+    'driver' => 'السائق',
+    'add_car' => 'إضافة سيارة',
+    'edit_car' => 'تعديل سيارة',
+
+    
+   'travelers'=>'المسافرون',
+   'worker_name'=>'اسم العامل',
+   'passport_number'=>'رقم الجواز',
+   'location'=>'الموقع',
+   'arrival_date'=>'تاريخ الوصول',
+   'profession'=>'المهنة ',
+   'nationality'=>'الجنسية ',
+   'arrive_date'=>'تاريخ الوصول',
+   'project'=>'المشروع',
+   'location'=>'الموقع',
+   'arrived'=>'تم الوصول',
+   'housed'=>'تسكين',
+   'workers'=>'عمال المشاريع',
+
 
 
 

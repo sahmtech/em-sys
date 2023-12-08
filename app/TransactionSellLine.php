@@ -41,6 +41,7 @@ class TransactionSellLine extends Model
             ->select('contacts.*', 'ir_delegations.transaction_sell_line_id');
     }
     
+    
     public function variations()
     {
         return $this->belongsTo(\App\Variation::class, 'variation_id');

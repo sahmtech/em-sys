@@ -303,11 +303,12 @@
                         { 
                         data: 'status',
                             render: function (data, type, row) {
-                                if (data === 'valid') {
+                                if (data === 'valid' ) {
                                     return  '@lang('essentials::lang.valid')';
-                                } else {
-                                    return  '@lang('essentials::lang.canceled')';
+                                } else  if (data === 'canceled' ){
+                                    return  '@lang('essentials::lang.canceled')';;
                                 }
+                                else{return " ";}
                             }
                         },
 
@@ -316,9 +317,10 @@
                             render: function (data, type, row) {
                                 if (data === 'is_renewable') {
                                     return  '@lang('essentials::lang.is_renewable')';
-                                } else {
-                                    return  '@lang('essentials::lang.is_unrenewable')';
+                                } else if (data === null) {
+                                    return  ' ';
                                 }
+                                else{ return '@lang('essentials::lang.is_unrenewable')'}
                             }
                         },
                         { data: 'action' },

@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
 
-                                {!! Form::select('project_name_filter', $contacts, null, [
+                                {!! Form::select('project_name_filter', $ContactsLocation, null, [
                                     'class' => 'form-control select2',
 
                                     'style' => 'width:100%;padding:2px;',
@@ -56,31 +56,86 @@
 
                             </div>
                         </div>
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
                                 {!! Form::text('doc_filter_date_range', null, [
                                     'placeholder' => __('lang_v1.select_a_date_range'),
-                                    'class' => 'form-control ',
+
+                                    'class' => 'form-control',
+                                
+
                                     'readonly',
                                 ]) !!}
                             </div>
                         </div>
+
+                        @php
+                            $default_fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date')];
+
+                            $default = array_keys($default_fields);
+                            $fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date'), __('essentials::lang.mobile_number'), __('business.email'), __('followup::lang.department'), __('followup::lang.profession'), __('followup::lang.specialization'), __('followup::lang.status'), __('followup::lang.Basic_salary'), __('followup::lang.total_salary'), __('followup::lang.gender'), __('followup::lang.marital_status'), __('followup::lang.blood_group'), __('followup::lang.bank_code')];
+
+                        @endphp
+
+                        <div style="row">
+                            <div class="col-md-11">
+                                <div class="form-group">
+                                    {!! Form::label('choose_fields', __('followup::lang.choose_fields') . ':') !!}
+                                    {!! Form::select('choose_fields_select[]', $fields, $default, [
+                                        'class' => 'form-control select2',
+                                        'multiple',
+                                        'id' => 'choose_fields_select',
+                                    ]) !!}
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-1 ">
+                                <button class="btn btn-primary pull-right btn-flat" onclick="chooseFields();"
+                                    style="margin-top: 24px;
+                                width: 62px;
+                                height: 36px;
+                                border-radius: 4px;">تطبيق</button>
+                            </div>
+                        </div>
                     @endcomponent
+                    <div class="modal fade" id="chooseFields_projectsworker" tabindex="-1" role="dialog">
+                        @include('followup::reports.chooseFields')
+                    </div>
                     @component('components.widget', ['class' => 'box-primary'])
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="workers_table">
+                            <table class="table table-bordered table-striped" id="workers_table"
+                                style=" table-layout: fixed !important;
+                           ">
                                 <thead>
                                     <tr>
-                                        <th>@lang('followup::lang.name')</th>
-                                        <th>@lang('followup::lang.eqama')</th>
-                                        <th>@lang('followup::lang.project_name')</th>
-                                        <th>@lang('followup::lang.nationality')</th>
-                                        <th>@lang('followup::lang.eqama_end_date')</th>
-                                        <th>@lang('followup::lang.admissions_date')</th>
-                                        <th>@lang('followup::lang.contract_end_date')</th>
 
-                                        
+
+                                        <td style="width: 100px !important;">@lang('followup::lang.name')</td>
+
+
+                                        <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.admissions_date')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.contract_end_date')</td>
+                                        <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
+                                        <td style="width: 100px !important;">@lang('business.email')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.department')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.profession')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.specialization')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.status')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.Basic_salary')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.total_salary')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.gender')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
+                                        <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
+
+
 
                                     </tr>
                                 </thead>
@@ -109,14 +164,19 @@
     <script>
         $(document).ready(function() {
 
+            // $('#workers_table').DataTable({
+
+            // });
+
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
                 serverSide: true,
+
                 ajax: {
-                    
+
                     url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']) }}",
                     // url: "{{ route('projectWorkers') }}",
-                    
+
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -134,7 +194,7 @@
                         }
                     }
                 },
-                
+
                 columns: [{
                         data: 'worker'
                     },
@@ -156,6 +216,55 @@
                     {
                         data: 'contract_end_date'
                     },
+                    {
+                        "data": "contact_number"
+                    }, {
+                        "data": "email"
+                    }, {
+                        "data": "essentials_department_id"
+                    }, {
+                        "data": "profession",
+                        name: 'profession'
+                    },
+                    {
+                        "data": "specialization",
+                        name: 'specialization'
+                    },
+                    {
+                        data: 'status',
+                        render: function(data, type, row) {
+                            if (data === 'active') {
+                                return '@lang('essentials::lang.active')';
+                            } else if (data === 'vecation') {
+                                return '@lang('essentials::lang.vecation')';
+                            } else if (data === 'inactive') {
+                                return '@lang('essentials::lang.inactive')';
+                            } else if (data === 'terminated') {
+                                return '@lang('essentials::lang.terminated')';
+                            } else {
+                                return ' ';
+                            }
+                        }
+                    },
+                    {
+                        data: 'essentials_salary'
+
+                    },
+                    {
+                        data: 'total_salary'
+                    },
+                    {
+                        data: 'gender'
+                    },
+                    {
+                        data: 'marital_status'
+                    },
+                    {
+                        data: 'blood_group'
+                    }, {
+                        data: 'bank_code',
+                        
+                    },
                 ]
             });
             $('#doc_filter_date_range').daterangepicker(
@@ -169,9 +278,24 @@
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();
             });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter').on('change', function() {
-                workers_table.ajax.reload();
-            });
+            $('#project_name_filter,#doc_filter_date_range,#nationality_filter').on('change',
+                function() {
+                    workers_table.ajax.reload();
+                });
         });
+        chooseFields = function() {
+            var selectedOptions = $('#choose_fields_select').val();
+
+            var dt = $('#workers_table').DataTable();
+
+            var fields = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                13, 14, 15,
+                16, 17, 18
+            ];
+
+            dt.columns(fields).visible(false);
+            dt.columns(selectedOptions).visible(true);
+
+        }
     </script>
 @endsection
