@@ -117,7 +117,7 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact->contactLocation?->name ?? '';
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact?->supplier_business_name ?? '';
                 })
 
                 ->editColumn('location', function ($row) {
@@ -194,7 +194,7 @@ class TravelersController extends Controller
                             'permanent_address' => $worker->permanent_address, 
                             'current_address' => $worker->current_address, 
                             'passport_number' => $worker->passport_number, 
-                            'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact->contactLocation->id??null, 
+                           // 'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact->contactLocation->id??null, 
                             'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id??null, 
                             'business_id' => $business_id,
                             'user_type'=>'worker',
