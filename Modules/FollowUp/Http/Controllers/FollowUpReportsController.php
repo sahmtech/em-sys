@@ -220,7 +220,7 @@ class FollowUpReportsController extends Controller
         //     );
         // dd($contactLocations);
         if (request()->ajax()) {
-            $contracts = SalesContract::with([
+            $contracts = salesContract::with([
                 'transaction.contact.user',
                 'salesOrderOperation',
             ]);
@@ -315,7 +315,7 @@ class FollowUpReportsController extends Controller
                 ])
 
                 ->make(true);;
-            // $contracts = SalesContract::with([
+            // $contracts = salesContract::with([
             //     'transaction.contact.user',
             //     'salesOrderOperation',
             // ]);
