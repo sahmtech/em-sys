@@ -46,10 +46,10 @@
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group ">
-                                {!! Form::label('search_lable', __('اسم السائق او رقم اللوحة') . '  ') !!}
+                                {!! Form::label('search_lable', __('اسم السائق   ') . '  ') !!}
                                 {!! Form::text('search', '', [
                                     'class' => 'form-control',
-                                    'placeholder' => __('اسم السائق او رقم اللوحة'),
+                                    'placeholder' => __('اسم السائق'),
                                     'id' => 'search',
                                 ]) !!}
 

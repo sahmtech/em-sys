@@ -80,6 +80,7 @@
                                 <th>@lang('essentials::lang.profession')</th>
                                 <th>@lang('essentials::lang.specialization')</th>
                                 <th>@lang('sales::lang.offer_price')</th>
+                                <th>@lang('internationalrelations::lang.accepte_from_worker')</th>
                                 <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
@@ -166,8 +167,10 @@
                         "data": "is_price_offer_sent",
                      
                     },
-                    
-                   
+                    {
+                        "data": "is_accepted_by_worker",
+                     
+                    },
                     {
                         "data": "action"
                     }
