@@ -214,7 +214,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('sale.orderOperations') }}",
+                    url: "{{ route('operation_orders') }}",
                     data: function(d) {
 
                         d.number_of_contract = $('#contract-select').val();

@@ -17,6 +17,7 @@ use App\Utils\Util;
 use DB;
 use App\Transaction;
 use App\Contact;
+use App\UserProject;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesOrdersOperation;
@@ -39,8 +40,8 @@ class FollowUpOperationOrderController extends Controller
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_operation_orders= auth()->user()->can('followup.crud_operation_orders');
-        if (! $can_crud_operation_orders) {
+        $can_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
+        if (!$can_crud_operation_orders) {
             abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -51,11 +52,12 @@ class FollowUpOperationOrderController extends Controller
             ->get();
 
         $operations = DB::table('sales_orders_operations')
-            ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
+            ->leftjoin('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
             ->select(
                 'sales_orders_operations.id as id',
                 'sales_orders_operations.operation_order_no as operation_order_no',
+                'sales_orders_operations.operation_order_no as orderQuantity',
                 'contacts.supplier_business_name as contact_name',
                 'sales_contracts.number_of_contract as contract_number',
                 'sales_orders_operations.operation_order_type as operation_order_type',
@@ -73,6 +75,11 @@ class FollowUpOperationOrderController extends Controller
             $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
         }
 
+        if (!$is_admin) {
+            $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
+
+            $operations = $operations->whereIn('sales_orders_operations.contact_id', $userProjects);
+        }
 
         if (request()->ajax()) {
 
@@ -106,7 +113,7 @@ class FollowUpOperationOrderController extends Controller
             'Not_started' => __('sales::lang.Not_started'),
 
         ];
-        $leads = Contact::whereIn('type', ['customer','lead'])
+        $leads = Contact::whereIn('type', ['customer', 'lead'])
 
             ->where('business_id', $business_id)
             ->pluck('supplier_business_name', 'id');
@@ -115,7 +122,7 @@ class FollowUpOperationOrderController extends Controller
             ->where('business_id', $business_id)
             ->pluck('supplier_business_name', 'id');
 
-        return view('followup::operation_orders.index')->with(compact('contracts','leads','agencies', 'status'));
+        return view('followup::operation_orders.index')->with(compact('contracts', 'leads', 'agencies', 'status'));
     }
 
     /**
@@ -132,59 +139,59 @@ class FollowUpOperationOrderController extends Controller
      * @param Request $request
      * @return Renderable
      */
-   
-     public function store(Request $request)
-     {
-   
-        $business_id = $request->session()->get('user.business_id');
- 
-         try {
-            
-             DB::transaction(function () use ($request) {
-                 $operation_order = [
-                     'contact_id', 'sale_contract_id', 'operation_order_type','quantity',
-                     'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
-                 ];
-                 $operation_details = $request->only($operation_order);
- 
-                 $latestRecord = SalesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
- 
-                 if ($latestRecord) {
-                     $latestRefNo = $latestRecord->operation_order_no;
-                   
-                     $numericPart = (int)substr($latestRefNo, 3);
-                     $numericPart++;  
-                  
-                     $operation_details['operation_order_no'] = 'POP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                 } else {
-                  
-                     $operation_details['operation_order_no'] = 'POP1111';
-                 }
-                 
-                 $operation_details['Status'] = $request->input('status');
-                 $operation_details['orderQuantity'] = $request->input('quantity');
 
- 
-                 $operation = SalesOrdersOperation::create($operation_details);
-             });
- 
-             $output = [
-                 'success' => 1,
-                 'msg' => __('sales::lang.operationOrder_added_success'),
-             ];
-         } catch (\Exception $e) {
-             DB::rollBack();
-             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
- 
-             $output = [
-                 'success' => 0,
-                 'msg' => $e->getMessage(),
-             ];
-         }
- 
-         // return $output;
-         return redirect()->route('operation_orders')->with($output);
-     }
+    public function store(Request $request)
+    {
+
+        $business_id = $request->session()->get('user.business_id');
+
+        try {
+
+            DB::transaction(function () use ($request) {
+                $operation_order = [
+                    'contact_id', 'sale_contract_id', 'operation_order_type', 'quantity',
+                    'Interview', 'Location', 'Delivery', 'Note', 'Industry', 'status',
+                ];
+                $operation_details = $request->only($operation_order);
+
+                $latestRecord = SalesOrdersOperation::orderBy('operation_order_no', 'desc')->first();
+
+                if ($latestRecord) {
+                    $latestRefNo = $latestRecord->operation_order_no;
+
+                    $numericPart = (int)substr($latestRefNo, 3);
+                    $numericPart++;
+
+                    $operation_details['operation_order_no'] = 'POP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                } else {
+
+                    $operation_details['operation_order_no'] = 'POP1111';
+                }
+
+                $operation_details['Status'] = $request->input('status');
+                $operation_details['orderQuantity'] = $request->input('quantity');
+
+
+                $operation = SalesOrdersOperation::create($operation_details);
+            });
+
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+        // return $output;
+        return redirect()->route('operation_orders')->with($output);
+    }
 
     /**
      * Show the specified resource.
@@ -218,7 +225,7 @@ class FollowUpOperationOrderController extends Controller
     {
         return $request;
         try {
-            
+
             DB::transaction(function () use ($request) {
                 $operation_order = [
                     'contact_id', 'sale_contract_id', 'operation_order_type',
@@ -228,7 +235,7 @@ class FollowUpOperationOrderController extends Controller
 
                 $operation_details['Status'] = $request->input('status');
 
-               // $operation = SalesOrdersOperation::where('id',$id)->update($operation_details);
+                // $operation = SalesOrdersOperation::where('id',$id)->update($operation_details);
             });
 
             $output = [

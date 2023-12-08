@@ -208,6 +208,12 @@ class DataController extends Controller
       
             ],
             [
+                'value' => 'followup.view_requests',
+                'label' => __('followup::lang.view_requests'),
+                'default' => false,
+      
+            ],
+            [
                 'value' => 'followup.viewReturnRequest',
                 'label' => __('followup::lang.viewReturnRequest'),
                 'default' => false,

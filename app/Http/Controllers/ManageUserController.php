@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BusinessLocation;
+use App\Contact;
 use App\User;
 use App\Utils\ModuleUtil;
 use DB;
@@ -13,7 +14,7 @@ use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
-use Illuminate\Support\Str;
+use App\UserProject;
 use Illuminate\Support\Facades\URL;
 use Modules\Essentials\Entities\EssentialsCountry;
 
@@ -102,11 +103,13 @@ class ManageUserController extends Controller
                     function ($row) {
                         $html = '';
                         if (auth()->user()->can('user.update')) {
-                            $html .= '  <a href="' . URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a>
-                            &nbsp;';
+
                             if ($row->allow_login == 0) {
                                 $html .= ' <a href="' . route('makeUser', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("messages.create_user") . '
                                 </a>
+                                &nbsp;';
+                            } else {
+                                $html .= '  <a href="' . URL::action('App\Http\Controllers\ManageUserController@edit', [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a>
                                 &nbsp;';
                             }
                         }
@@ -207,8 +210,9 @@ class ManageUserController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
+        $contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
         return view('manage_user.create')
-            ->with(compact('roles', 'username_ext', 'locations', 'form_partials', 'nationalities'));
+            ->with(compact('contacts', 'roles', 'username_ext', 'locations', 'form_partials', 'nationalities'));
     }
 
     /**
@@ -219,7 +223,6 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
-
         if (!auth()->user()->can('user.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -235,7 +238,19 @@ class ManageUserController extends Controller
 
             $user = $this->moduleUtil->createUser($request);
 
+
+            $contactLocationsIds = $request->contact_locations ?? [];
+
+            if (!empty($contactLocationsIds)) {
+                foreach ($contactLocationsIds as $contactLocationsId) {
+                    UserProject::create([
+                        'user_id' => $user->id,
+                        'contact_location_id' => $contactLocationsId,
+                    ]);
+                }
+            }
             event(new UserCreatedOrModified($user, 'added'));
+
 
             $output = [
                 'success' => 1,
@@ -314,9 +329,9 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-
+        $contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
         return view('manage_user.make_user')
-            ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+            ->with(compact('contacts', 'roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
 
@@ -355,9 +370,10 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-
+        $userProjects = UserProject::where('user_id', $id)->pluck('contact_location_id')->unique()->toArray();
+        $contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
         return view('manage_user.edit')
-            ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+            ->with(compact('contacts', 'userProjects', 'roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
     /**
@@ -476,6 +492,17 @@ class ManageUserController extends Controller
             $this->moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user]);
 
             $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
+
+            $contactLocationsIds = $request->contact_locations ?? [];
+
+            if (!empty($contactLocationsIds)) {
+                foreach ($contactLocationsIds as $contactLocationsId) {
+                    UserProject::create([
+                        'user_id' => $user->id,
+                        'contact_location_id' => $contactLocationsId,
+                    ]);
+                }
+            }
 
             event(new UserCreatedOrModified($user, 'updated'));
 
