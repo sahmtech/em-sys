@@ -13,7 +13,7 @@
 
 
 
-Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
+Route::middleware('web', 'authh', 'auth', 'CustomSetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
 
     Route::prefix('sale')->group(function () {

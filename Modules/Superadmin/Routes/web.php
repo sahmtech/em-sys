@@ -41,7 +41,7 @@ Route::middleware('web', 'auth', 'language', 'CustomAdminSidebarMenu', 'superadm
     Route::resource('/frontend-pages', 'Modules\Superadmin\Http\Controllers\PageController');
 });
 
-Route::middleware('web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
+Route::middleware('web', 'CustomSetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
     //Routes related to paypal checkout
     Route::post('/paypal-express-checkout', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'paypalExpressCheckout'])->name('paypalExpressCheckout');
 

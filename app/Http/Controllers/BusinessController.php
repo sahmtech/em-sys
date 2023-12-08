@@ -629,7 +629,7 @@ class BusinessController extends Controller
                 'decimal_separator' => $currency->decimal_separator,
             ]);
 
-
+            
             $financial_year = $this->businessUtil->getCurrentFinancialYear($business->id);
             $request->session()->put('financial_year', $financial_year);
 

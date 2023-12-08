@@ -9,6 +9,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+
 class LoginController extends Controller
 {
     /*
@@ -86,53 +87,54 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         $this->businessUtil->activityLog($user, 'login', null, [], false, $user->business_id);
+        if (!$user->user_type == 'superdmin') {
 
-        if (! $user->business->is_active) {
-            \Auth::logout();
+            if (!$user->business->is_active) {
+                \Auth::logout();
 
-            return redirect('/login')
-              ->with(
-                  'status',
-                  ['success' => 0, 'msg' => __('lang_v1.business_inactive')]
-              );
-        } elseif ($user->status != 'active') {
-            \Auth::logout();
+                return redirect('/login')
+                    ->with(
+                        'status',
+                        ['success' => 0, 'msg' => __('lang_v1.business_inactive')]
+                    );
+            } elseif ($user->status != 'active') {
+                \Auth::logout();
 
-            return redirect('/login')
-              ->with(
-                  'status',
-                  ['success' => 0, 'msg' => __('lang_v1.user_inactive')]
-              );
-        } elseif (! $user->allow_login) {
-            \Auth::logout();
+                return redirect('/login')
+                    ->with(
+                        'status',
+                        ['success' => 0, 'msg' => __('lang_v1.user_inactive')]
+                    );
+            } elseif (!$user->allow_login) {
+                \Auth::logout();
 
-            return redirect('/login')
-                ->with(
-                    'status',
-                    ['success' => 0, 'msg' => __('lang_v1.login_not_allowed')]
-                );
-        } elseif ((Str::contains($user->user_type , 'user_customer')) && ! $this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
-            \Auth::logout();
+                return redirect('/login')
+                    ->with(
+                        'status',
+                        ['success' => 0, 'msg' => __('lang_v1.login_not_allowed')]
+                    );
+            } elseif ((Str::contains($user->user_type, 'user_customer')) && !$this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
+                \Auth::logout();
 
-            return redirect('/login')
-                ->with(
-                    'status',
-                    ['success' => 0, 'msg' => __('lang_v1.business_dont_have_crm_subscription')]
-                );
+                return redirect('/login')
+                    ->with(
+                        'status',
+                        ['success' => 0, 'msg' => __('lang_v1.business_dont_have_crm_subscription')]
+                    );
+            }
         }
     }
 
     protected function redirectTo()
     {
         $user = \Auth::user();
-        if (! $user->can('dashboard.data') && $user->can('sell.create')) {
+        if (!$user->can('dashboard.data') && $user->can('sell.create')) {
             return '/pos/create';
         }
 
-        if (Str::contains($user->user_type , 'user_customer')) {
+        if (Str::contains($user->user_type, 'user_customer')) {
             return 'contact/contact-dashboard';
         }
-
         return '/home';
     }
 }

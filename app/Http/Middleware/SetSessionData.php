@@ -7,7 +7,7 @@ use App\Utils\BusinessUtil;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-class SetSessionData
+class CustomSetSessionData
 {
     /**
      * Checks if session data is set or not for a user. If data is not set then set it.

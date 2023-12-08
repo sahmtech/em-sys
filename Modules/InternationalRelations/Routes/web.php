@@ -11,7 +11,7 @@
 |
 */
 
-Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
+Route::middleware('web', 'authh', 'auth', 'CustomSetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('international-Relations')->group(function () {
 
