@@ -17,7 +17,7 @@ use App\Utils\Util;
 use App\Business;
 use DB;
 use App\User;
-use App\Contact;
+use App\ContactLocation;
 use Modules\Essentials\Entities\WorkCard;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
@@ -68,9 +68,10 @@ class EssentialsCardsController extends Controller
         $business_name = $business_name ? $business_name->name : null;
       
         $responsible_client = null;
+        
         $operations = DB::table('essentials_work_cards')
         ->leftjoin('users as u','essentials_work_cards.employee_id','=','u.id')
-        ->leftjoin('contacts', 'u.assigned_to', '=', 'contacts.id')
+        ->leftjoin('contact_locations', 'u.assigned_to', '=', 'contact_locations.id')
         ->leftjoin('essentials_official_documents as doc', 'doc.employee_id', '=', 'u.id')
         ->where('u.business_id', $business_id)
       
@@ -80,7 +81,7 @@ class EssentialsCardsController extends Controller
             DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
             'doc.number as proof_number',
             'doc.expiration_date as expiration_date',
-            'contacts.supplier_business_name as project',
+            'contact_locations.name as project',
             DB::raw("COALESCE('" . optional($responsible_client)->name . "', '') as responsible_client"),
             'essentials_work_cards.workcard_duration as workcard_duration',
             'essentials_work_cards.Payment_number as Payment_number',
@@ -123,7 +124,7 @@ class EssentialsCardsController extends Controller
     
     
         $contacts=Contact::where('type','customer')
-        ->pluck('supplier_business_name','id');
+        ->pluck('name','id');
         return view('essentials::cards.index')->with(compact('contacts'));
     }
 
@@ -174,25 +175,25 @@ class EssentialsCardsController extends Controller
              ]);
          } else {
              // If user type is worker
-             $all_responsible_users = User::join('contacts', 'users.assigned_to', '=', 'contacts.id')
-                 ->where('contacts.type', 'customer')
+             $all_responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
                  ->where('users.id', '=', $employeeId)
-                 ->select('contacts.supplier_business_name', 'contacts.id')
+                 ->select('contact_locations.name', 'contact_locations.id')
                  ->first();
      
              if (!$all_responsible_users) {
                  return response()->json(['error' => 'No responsible users found for the given employee ID']);
              }
      
-             $responsible_clients = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
-                 ->where('contacts.id', '=', $all_responsible_users->id)
-                 ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+             $responsible_clients = User::join('contact_locations', 'contact_locations.name_in_charge', '=', 'users.id')
+                 ->where('contact_locations.id', '=', $all_responsible_users->id)
+                 ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''))
+                  as name"))
                  ->get();
      
              return response()->json([
                  'all_responsible_users' => [
                      'id' => $all_responsible_users->id,
-                     'name' => $all_responsible_users->supplier_business_name,
+                     'name' => $all_responsible_users->name,
                  ],
                  'responsible_client' => $responsible_clients,
              ]);
@@ -207,19 +208,21 @@ class EssentialsCardsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
         $all_users = User::where('users.business_id', $business_id)
+      
         ->where(function ($query) {
             $query->whereNotNull('users.border_no')
                 ->orWhere('users.id_proof_name', 'eqama');
+
         })
+       
         ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name"))
         ->get();
-    //dd($all_users);
+   
 
-     $responsible_users = contact::where('type', 'customer')
-   ->join('users as u','u.assigned_to','=','contacts.id')
-   ->where('u.id','=', $employeeId)
-    ->select('contacts.id','contacts.supplier_business_name')
-    ->get();
+        $responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id') 
+        ->where('users.id', '=', $employeeId)
+        ->select('contact_locations.name', 'contact_locations.id')
+        ->get();
  
 
             
@@ -230,7 +233,7 @@ class EssentialsCardsController extends Controller
 
     
         $employees = $all_users->pluck('full_name', 'id');
-        $all_responsible_users=$responsible_users->pluck('supplier_business_name', 'id');
+        $all_responsible_users=$responsible_users->pluck('name', 'id');
 
 
         $business=Business::where('id', $business_id)->pluck('name','id');

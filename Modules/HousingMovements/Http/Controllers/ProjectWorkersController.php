@@ -1,0 +1,183 @@
+<?php
+
+namespace Modules\HousingMovements\Http\Controllers;
+
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Yajra\DataTables\Facades\DataTables;
+use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Spatie\Activitylog\Models\Activity;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+use App\Contact;
+use App\ContactLocation;
+use App\User;
+class ProjectWorkersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     * @return Renderable
+     */
+    protected $moduleUtil;
+
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
+    public function index()
+    {
+        
+        $business_id = request()->session()->get('user.business_id');
+
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_crud_workers = auth()->user()->can('followup.crud_workers');
+        if (!$can_crud_workers) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $users = User::where('user_type', 'worker')
+
+            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->with(['country', 'contract', 'OfficialDocument']);
+        $users->select(
+            'users.*',
+            'users.id_proof_number',
+            'users.nationality_id',
+            'users.essentials_salary',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            'contact_locations.name as contact_name'
+        );
+        if (request()->ajax()) {
+
+            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+
+                $users = $users->where('users.assigned_to', request()->input('project_name'));
+            }
+            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                $start = request()->filter_start_date;
+                $end = request()->filter_end_date;
+
+                $users->whereHas('contract', function ($query) use ($start, $end) {
+                    $query->whereDate('contract_end_date', '>=', $start)
+                        ->whereDate('contract_end_date', '<=', $end);
+                });
+            }
+            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
+
+                $users = $users->where('users.nationality_id', request()->nationality);
+            }
+
+            return Datatables::of($users)
+
+                ->addColumn('nationality', function ($user) {
+                    return optional($user->country)->nationality ?? ' ';
+                })
+                ->addColumn('worker', function ($user) {
+                    return $user->first_name . ' ' . $user->last_name;
+                })
+                ->addColumn('contact_name', function ($user) {
+                    return $user->assignedTo?->name ;
+                })
+
+                ->addColumn('residence_permit_expiration', function ($user) {
+                    $residencePermitDocument = $user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
+                    if ($residencePermitDocument) {
+
+                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                    } else {
+
+                        return ' ';
+                    }
+                })
+
+                ->addColumn('contract_end_date', function ($user) {
+                    return optional($user->contract)->contract_end_date ?? ' ';
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->where('first_name', 'LIKE', "%{$keyword}%")->orWhere('last_name', 'LIKE', "%{$keyword}%");
+                })
+
+                ->rawColumns(['nationality', 'worker', 'residence_permit_expiration', 'contract_end_date'])
+                ->make(true);
+        }
+
+        return view('housingmovements::projects_workers.index')->with(compact('contacts', 'nationalities', 'ContactsLocation'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     * @return Renderable
+     */
+    public function create()
+    {
+        return view('housingmovements::create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Renderable
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Show the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function show($id)
+    {
+        return view('housingmovements::show');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function edit($id)
+    {
+        return view('housingmovements::edit');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Renderable
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $id
+     * @return Renderable
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}
