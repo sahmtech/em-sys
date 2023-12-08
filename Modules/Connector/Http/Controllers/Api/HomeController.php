@@ -4,6 +4,7 @@ namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -95,8 +96,8 @@ class HomeController extends ApiController
 
             $res = [
                 'new_notifications' => 0,
-                'work_day_start' => $shift->start_time,
-                'work_day_end' => $shift->end_time,
+                'work_day_start' => Carbon::parse($shift->start_time)->format('h:i A'),
+                'work_day_end' => Carbon::parse($shift->end_time)->format('h:i A'),
                 'business_name' => $business->name,
                 'request' => $lastRequest,
                 'task' => $lastTask,
