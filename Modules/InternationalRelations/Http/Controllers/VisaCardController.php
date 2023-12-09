@@ -220,9 +220,9 @@ class VisaCardController extends Controller
             }
             $visaCards = IrVisaCard::where('id', $visaId)->with('operationOrder.salesContract.transaction.sell_lines')->first();
             $sellLineIds = $visaCards->operationOrder->salesContract->transaction->sell_lines->pluck('id')->toArray();
-            $workers = IrProposedLabor::whereIn('transaction_sell_line_id', $sellLineIds)->where('visa_id',Null)->get();
+            $workers = IrProposedLabor::whereIn('transaction_sell_line_id', $sellLineIds)->where('visa_id',Null)->where('is_accepted_by_worker',1)->get();
             
-            // Create the desired array for the select dropdown directly
+       
             $workersOptions = $workers->map(function ($worker) {
                 return [
                     'id' => $worker->id,
