@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['assigned_to']);
-            $table->dropColumn('assigned_to');
-      
+        Schema::table('contact_locations', function (Blueprint $table) {
+            $table->unsignedBigInteger('sales_project_id')->nullable()->after('id');
+            $table->foreign('sales_project_id')->references('id')->on('sales_projects')->onDelete('cascade');
+            $table->string('address')->after('name');
         });
     }
 
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('contact_locations', function (Blueprint $table) {
             //
         });
     }

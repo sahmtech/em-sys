@@ -242,7 +242,7 @@ class Util
             }
             $mysql_format = 'Y-m-d H:i:s';
         }
-      
+
         return !empty($date_format) ? \Carbon::createFromFormat($date_format, $date)->format($mysql_format) : null;
     }
 
@@ -1445,7 +1445,7 @@ class Util
 
         $business = session()->has('business') ? session('business') : Business::find($business_id);
 
-        date_default_timezone_set($business->time_zone);
+        date_default_timezone_set($business->time_zone ?? config('app.timezone'));
 
         $activity = activity()
             ->performedOn($on)
@@ -1557,32 +1557,32 @@ class Util
      */
     public function createUser($request)
     {
-      
+
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email','mid_name',
-            'profile_picture','profession','specialization',
+            'surname', 'first_name', 'last_name', 'email', 'mid_name',
+            'profile_picture', 'profession', 'specialization',
             'user_type', 'crm_contact_id', 'allow_login',
-             'username', 'password',
+            'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob',
-             'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
+            'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1', 'nationality',
-            'custom_field_2', 'custom_field_3','eqama_end_date',
-             'custom_field_4', 'guardian_name', 'assigned_to',
-             'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no','expiration_date',
-              'current_address', 'bank_details', 'selected_contacts','emp_number',
+            'custom_field_2', 'custom_field_3', 'eqama_end_date',
+            'custom_field_4', 'guardian_name', 'assigned_to',
+            'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
+            'current_address', 'bank_details', 'selected_contacts', 'emp_number',
         ]);
 
         if ($request->input('border_no') == 3) {
-            
+
             $user_details['border_no'] = null;
         }
 
         if ($request->input('contact_number') == 05) {
-            
+
             $user_details['contact_number'] = null;
         }
 
-       
+
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
             $profile = $image->store('/profile_images');
@@ -1591,17 +1591,16 @@ class Util
 
         $user_details['status'] = !empty($request->input('is_active')) ? $request->input('is_active') : 'active';
         $user_details['user_type'] = !empty($user_details['user_type']) ? $user_details['user_type'] : 'user';
-        
-     
-       // $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
-       if(!empty($user_details['assigned_to']))
-       {
-        $user_details['assigned_to']= $request->input('assigned_to');
-       }
+
+
+        // $user_details['assigned_to'] = !empty($user_details['assigned_to']) ? $user_details['assigned_to'] : 'assigned_to';
+        if (!empty($user_details['assigned_to'])) {
+            $user_details['assigned_to'] = $request->input('assigned_to');
+        }
         $business_id = Auth::user()->business_id;
         $user_details['business_id'] = $business_id;
         $user_details['nationality_id'] = $request->input('nationality');
-    
+
 
         //Check if subscribed or not, then check for users quota
         if (
@@ -1624,14 +1623,11 @@ class Util
         }
 
         $user_details['selected_contacts'] = isset($user_details['selected_contacts']) ? $user_details['selected_contacts'] : 0;
-      
-        if ($request->hasFile('bank_details.Iban_file'))
-        {
+
+        if ($request->hasFile('bank_details.Iban_file')) {
             $file = $request->file('bank_details.Iban_file');
             $path = $file->store('/employee_bank_ibans');
             $user_details['bank_details']['Iban_file'] = $path;
-
-          
         }
 
 
@@ -1653,60 +1649,59 @@ class Util
         }
 
 
-      
+
         //Create the user
         $user = User::create($user_details);
-        
-    if(!empty( $user_details['expiration_date']))
-      { 
-        $input2['type'] ='residence_permit';
-        $input2['status'] ='valid';
-        $input2['employee_id'] = $user->id;
-        $input2['number'] = $user_details['id_proof_number'];
-        $input2['expiration_date'] = $user_details['expiration_date'];
-        EssentialsOfficialDocument::create($input2);
-      }
-      
-      $bankDetails = json_decode($user_details['bank_details'], true);
 
-      if ($request->hasFile('bank_details.Iban_file') && !empty($bankDetails) && array_key_exists('bank_code', $bankDetails)) {
-          $bankCode = $bankDetails['bank_code'];
-          $input['type'] = 'Iban';
-          $input['status'] = 'valid';
-          $input['employee_id'] = $user->id;
-          $input['number'] = $bankCode;
-      
-          $file = request()->file('bank_details.Iban_file');
-      
-       
-          if ($file->isValid() && $file->getMimeType() && in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
-              $input['file_path'] = $file->store('/officialDocuments');
-      
-              $Iban_doc = EssentialsOfficialDocument::create($input);
-          } else {
-           
-              return response()->json(['error' => 'Invalid file format. Please upload an image.']);
-          }
-      }
-      
+        if (!empty($user_details['expiration_date'])) {
+            $input2['type'] = 'residence_permit';
+            $input2['status'] = 'valid';
+            $input2['employee_id'] = $user->id;
+            $input2['number'] = $user_details['id_proof_number'];
+            $input2['expiration_date'] = $user_details['expiration_date'];
+            EssentialsOfficialDocument::create($input2);
+        }
+
+        $bankDetails = json_decode($user_details['bank_details'], true);
+
+        if ($request->hasFile('bank_details.Iban_file') && !empty($bankDetails) && array_key_exists('bank_code', $bankDetails)) {
+            $bankCode = $bankDetails['bank_code'];
+            $input['type'] = 'Iban';
+            $input['status'] = 'valid';
+            $input['employee_id'] = $user->id;
+            $input['number'] = $bankCode;
+
+            $file = request()->file('bank_details.Iban_file');
+
+
+            if ($file->isValid() && $file->getMimeType() && in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
+                $input['file_path'] = $file->store('/officialDocuments');
+
+                $Iban_doc = EssentialsOfficialDocument::create($input);
+            } else {
+
+                return response()->json(['error' => 'Invalid file format. Please upload an image.']);
+            }
+        }
+
 
         $role = null;
         if ($request->input('role')) {
-           
+
             $role = Role::findOrFail($request->input('role'));
             $user->assignRole($role->name);
         } else {
             $role = Role::where('name', 'User#' . $business_id)->first();
         }
-       
+
         // //Remove Location permissions from role
         // $this->revokeLocationPermissionsFromRole($role);
-      
+
         // {"_token":"E9u4vfdXl3uLr42OhSZidjpMt3Wdkdt6RUBO7SS7","surname":"rrr",
         //     "first_name":"rrr","last_name":"rrr","email":"rr@gmail.com","password":"1234",
         //     "confirm_password":"1234","is_active":"active","username":"rr",
         //     "allow_login":"1","role":"1","access_all_locations":"access_all_locations"}
-      
+
 
         // //Grant Location permissions
         // $this->giveLocationPermissions($user, $request);
@@ -1717,10 +1712,10 @@ class Util
         //     $user->contactAccess()->sync($contact_ids);
         // }
 
-            $moduleUtil = new \App\Utils\ModuleUtil;
-            $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user,'request'=>$user_details]);
-            $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
-            
+        $moduleUtil = new \App\Utils\ModuleUtil;
+        $moduleUtil->getModuleData('afterModelSaved', ['event' => 'user_saved', 'model_instance' => $user, 'request' => $user_details]);
+        $this->activityLog($user, 'added', null, ['name' => $user->user_full_name], true, $business_id);
+
 
         return $user;
     }

@@ -66,7 +66,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'Europe/London'),
+    'timezone' => env('APP_TIMEZONE', 'Asia/Riyadh'),
 
     /*
     |--------------------------------------------------------------------------
@@ -79,7 +79,8 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'ar'),
+   'locale' => env('APP_LOCALE', 'ar'),
+   
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +93,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'ar',
 
     /*
     |--------------------------------------------------------------------------
@@ -104,7 +105,7 @@ return [
     | localized telephone numbers, street address information and more.
     |
     */
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'ar',
 
     /*
     |--------------------------------------------------------------------------
@@ -178,6 +179,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Unicodeveloper\Paystack\PaystackServiceProvider::class,
+
         /*
          * Package Service Providers...
          */
@@ -191,6 +193,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
 
         Collective\Html\HtmlServiceProvider::class,
         //Yajra\Datatables\DatatablesServiceProvider::class,

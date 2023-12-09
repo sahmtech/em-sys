@@ -2,21 +2,45 @@
 
 namespace Modules\InternationalRelations\Http\Controllers;
 
+use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use App\Utils\ModuleUtil;
 use Modules\InternationalRelations\Entities\IrDelegation;
+
 class DelegationController extends Controller
 {
+    protected $moduleUtil;
+
+
+
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+
+        $this->moduleUtil = $moduleUtil;
+    }
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
+
     {
-        $irDelegations = IrDelegation::with(['agency','transactionSellLine.service'])->get();
-        
-      
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_view_delegation = auth()->user()->can('ir.view_delegation');
+        if (!($isSuperAdmin || $can_view_delegation)) {
+            abort(403, 'Unauthorized action.');
+        }
+        $irDelegations = IrDelegation::with(['agency', 'transactionSellLine.service'])->get();
+
+
         return view('internationalrelations::EmploymentCompanies.requests')->with(compact('irDelegations'));
     }
 

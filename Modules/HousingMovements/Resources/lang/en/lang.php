@@ -37,9 +37,15 @@ return [
     'plate_number' => 'Plate Number',
     'color' => 'Color',
     'car_typeModel' => 'Type & Model Car',
-    'driver'=>'Driver',
+    'driver' => 'Driver',
+    'driverName' => 'Driver Name',
     'add_car' => 'Add Car',
     'edit_car' => 'Edit Car',
+    'carModel' => 'Car Model',
+    'search'=>'Search',
+    'viewAll'=>'View All',
+    'name_in_ar_en'=>'Name in Arabic or English',
+
 
 
 

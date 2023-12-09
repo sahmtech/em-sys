@@ -25,11 +25,11 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('name_ar', __('الاسم بالعربي') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::label('name_ar', __('housingmovements::lang.name_ar') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     {!! Form::text('name_ar', '', [
                                         'class' => 'form-control',
                                         'required',
-                                        'placeholder' => __('الاسم بالعربي'),
+                                        'placeholder' => __('housingmovements::lang.name_ar'),
                                         'id' => 'name_ar',
                                     ]) !!}
                                 </div>
@@ -38,11 +38,11 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        {!! Form::label('name_en', __('الاسم الانكليزي') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                        {!! Form::label('name_en', __('housingmovements::lang.name_en') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                         {!! Form::text('name_en', '', [
                                             'class' => 'form-control',
                                             'required',
-                                            'placeholder' => __('الاسم الانكليزي'),
+                                            'placeholder' => __('housingmovements::lang.name_en'),
                                             'id' => 'name_en',
                                         ]) !!}
                                     </div>

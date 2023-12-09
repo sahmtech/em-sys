@@ -9,13 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Car extends Model
 {
     use HasFactory;
-    public $table='housingmovements_cars';
+    public $table='housing_movements_cars';
 
     protected $fillable = [
         'plate_number', 'color','user_id', 'car_model_id',
     ];
-
-    public function CarModel()
+     public function CarModel()
     {
         return $this->belongsTo(CarModel::class, 'car_model_id');
     }

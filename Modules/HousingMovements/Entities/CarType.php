@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class CarType extends Model
 {
     use HasFactory;
-    public $table='housingMovements_car_types';
+    public $table='housing_movements_car_types';
 
     protected $fillable = [
         'name_ar', 'name_en'

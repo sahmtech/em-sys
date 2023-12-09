@@ -10,6 +10,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use App\Contact;
 use App\Transaction;
+use App\User;
 use Modules\InternationalRelations\Entities\IrDelegation;
 use DB;
 use Modules\InternationalRelations\Entities\Ir_delegation;
@@ -24,11 +25,8 @@ class OrderRequestController extends Controller
 
 
 
-    public function __construct(
-
-        ModuleUtil $moduleUtil,
-
-    ) {
+    public function __construct(ModuleUtil $moduleUtil)
+    {
 
         $this->moduleUtil = $moduleUtil;
     }
@@ -38,11 +36,16 @@ class OrderRequestController extends Controller
      */
     public function index(Request $request)
     {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+        $can_crud_orders_operations = auth()->user()->can('ir.crud_orders_operations');
+        if (!($isSuperAdmin || $can_crud_orders_operations)) {
+            abort(403, 'Unauthorized action.');
+        }
         $operations = DB::table('sales_orders_operations')
             ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
@@ -62,7 +65,7 @@ class OrderRequestController extends Controller
             ->select('sales_contracts.number_of_contract as contract_number')
             ->get();
         if (request()->input('number_of_contract')) {
-            // dd(request()->input('number_of_contract'));
+
             $operations->where('sales_contracts.number_of_contract', request()->input('number_of_contract'));
         }
 
@@ -70,7 +73,7 @@ class OrderRequestController extends Controller
             $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
         }
 
-        // dd($operations);
+
         if (request()->ajax()) {
 
 
@@ -114,10 +117,20 @@ class OrderRequestController extends Controller
 
     public function Delegation($id)
     {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_delegate_order = auth()->user()->can('ir.delegate_order');
+        if (!($isSuperAdmin || $can_delegate_order)) {
+            abort(403, 'Unauthorized action.');
+        }
         $operation = SalesOrdersOperation::with('salesContract.transaction')
             ->where('id', $id)
             ->first();
-        
+
         $business_id = request()->session()->get('user.business_id');
         $query = Transaction::where('business_id', $business_id)
             ->where('id', $operation->salesContract->transaction->id)->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service'])
@@ -143,6 +156,16 @@ class OrderRequestController extends Controller
 
     public function viewDelegation($id)
     {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_view_delegation_info = auth()->user()->can('ir.view_delegation_info');
+        if (!($isSuperAdmin || $can_view_delegation_info)) {
+            abort(403, 'Unauthorized action.');
+        }
         $operation = SalesOrdersOperation::with('salesContract.transaction')
             ->where('id', $id)
             ->first();
@@ -155,9 +178,8 @@ class OrderRequestController extends Controller
         $sellLineIds = $query->pluck('sell_lines.*.id')->flatten()->toArray();
 
         $irDelegations = IrDelegation::with('agency')->whereIn('transaction_sell_line_id', $sellLineIds)->get();
-       
-        return view('internationalrelations::orderRequest.viewDelegation')->with(compact( 'irDelegations'));
 
+        return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
     public function saveRequest(Request $request)
     {
@@ -197,13 +219,13 @@ class OrderRequestController extends Controller
                     ->first();
 
                 if ($delegation) {
-                    // If the row exists, update the targeted_quantity
+
                     DB::table('ir_delegations')
                         ->where('transaction_sell_line_id', $item['product_id'])
                         ->where('agency_id', $item['agency_id'])
                         ->update(['targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity'])]);
                 } else {
-                    // If the row doesn't exist, insert a new row
+
                     DB::table('ir_delegations')->insert([
                         'transaction_sell_line_id' => $item['product_id'],
                         'agency_id' => $item['agency_id'],

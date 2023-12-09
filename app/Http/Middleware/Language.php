@@ -17,11 +17,12 @@ class Language
     public function handle($request, Closure $next)
     {
         $locale = config('app.locale');
+        // dd( $locale);
         if ($request->session()->has('user.language')) {
             $locale = $request->session()->get('user.language');
         }
-        App::setLocale($locale);
-
+        App::setLocale( $locale );
+       
         return $next($request);
     }
 }
