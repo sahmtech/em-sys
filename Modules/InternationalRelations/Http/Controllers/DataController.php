@@ -34,27 +34,145 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
-                'value' => 'internationalrelations.view_EmploymentCompanies',
-                'label' => __('internationalrelations::lang.view_EmploymentCompanies'),
-                'default' => false,
-            ],
-
-            [
                 'value' => 'internationalrelations.crud_airlines',
                 'label' => __('internationalrelations::lang.crud_airlines'),
                 'default' => false,
             ],
             [
-                'value' => 'internationalrelations.order_request_view',
-                'label' => __('internationalrelations::lang.order_request_view'),
+                'value' => 'internationalrelations.crud_employment_companies',
+                'label' => __('internationalrelations::lang.crud_employment_companies'),
                 'default' => false,
             ],
             [
-                'value' => 'internationalrelations.crud_order_request',
-                'label' => __('internationalrelations::lang.crud_order_request'),
+                'value' => 'internationalrelations.view_company_requests',
+                'label' => __('internationalrelations::lang.view_company_requests'),
                 'default' => false,
             ],
+            [
+                'value' => 'internationalrelations.store_emoloyment_company',
+                'label' => __('internationalrelations::lang.store_emoloyment_company'),
+                'default' => false,
+            ],
+          
+            [
+                'value' => 'internationalrelations.crud_orders_operations',
+                'label' => __('internationalrelations::lang.crud_orders_operations'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.delegate_order',
+                'label' => __('internationalrelations::lang.delegate_order'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_delegation_info',
+                'label' => __('internationalrelations::lang.view_delegation_info'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_delegation',
+                'label' => __('internationalrelations::lang.view_delegation'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.crud_visa_cards',
+                'label' => __('internationalrelations::lang.crud_visa_cards'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.store_visa_card',
+                'label' => __('internationalrelations::lang.store_visa_card'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_visa_workers',
+                'label' => __('internationalrelations::lang.view_visa_workers'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'internationalrelations.view_proposed_labors',
+                'label' => __('internationalrelations::lang.view_proposed_labors'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_worker_info',
+                'label' => __('internationalrelations::lang.view_worker_info'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_accepted_workers',
+                'label' => __('internationalrelations::lang.view_accepted_workers'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.view_unaccepted_workers',
+                'label' => __('internationalrelations::lang.view_unaccepted_workers'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'internationalrelations.fingerprinting',
+                'label' => __('internationalrelations::lang.fingerprinting'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'internationalrelations.medical_examination',
+                'label' => __('internationalrelations::lang.medical_examination'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'internationalrelations.passport_stamped',
+                'label' => __('internationalrelations::lang.passport_stamped'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'internationalrelations.send_offer_price',
+                'label' => __('internationalrelations::lang.send_offer_price'),
+                'default' => false,
+            ],
+            
+            [
+                'value' => 'internationalrelations.accepted_by_worker',
+                'label' => __('internationalrelations::lang.accepted_by_worker'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.store_visa_worker',
+                'label' => __('internationalrelations::lang.store_visa_worker'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.store_proposed_labor',
+                'label' => __('internationalrelations::lang.store_proposed_labor'),
+                'default' => false,
+            ],
+            [
+                'value' => 'internationalrelations.change_worker_status',
+                'label' => __('internationalrelations::lang.change_worker_status'),
+                'default' => false,
+            ],
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         ];
+        
     }
 
     /**
