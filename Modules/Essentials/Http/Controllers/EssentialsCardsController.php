@@ -15,7 +15,6 @@ use App\Utils\TransactionUtil;
 use App\BusinessLocation;
 use App\Utils\Util;
 use App\Business;
-use App\Contact;
 use DB;
 use App\User;
 use App\ContactLocation;
@@ -160,8 +159,8 @@ class EssentialsCardsController extends Controller
      
          if ($userType !== 'worker') {
              $professionId = 56;
-             $responsible_clients = User::where('business_id', $business_id)
-                 ->whereHas('appointment', function ($query) use ($professionId) {
+             
+             $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
                      $query->where('profession_id', $professionId);
                  })
                  ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
@@ -175,28 +174,35 @@ class EssentialsCardsController extends Controller
                  'responsible_client' => $responsible_clients,
              ]);
          } else {
-           
+          
              $all_responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
                  ->where('users.id', '=', $employeeId)
-                 ->select('contact_locations.name', 'contact_locations.id')
+                 ->select('contact_locations.name as name', 'contact_locations.id as id')
                  ->first();
      
              if (!$all_responsible_users) {
                  return response()->json(['error' => 'No responsible users found for the given employee ID']);
              }
      
-             $responsible_clients = User::with(['assignedTo'])
+             $responsible_clients = User::join('contact_locations', 'contact_locations.name_in_charge', '=', 'users.id')
                  ->where('contact_locations.id', '=', $all_responsible_users->id)
-                 ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''))
+                
+                 ->select(
+                 'users.id',
+                  DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''))
                   as name"))
                  ->get();
-     
-             return response()->json([
+            $b_id=user::where('id', $employeeId)->select('business_id')->get();
+           
+            $business=Business::where('id', 1)->select('name as name','id as id')->get();
+            
+            return response()->json([
                  'all_responsible_users' => [
                      'id' => $all_responsible_users->id,
                      'name' => $all_responsible_users->name,
                  ],
                  'responsible_client' => $responsible_clients,
+                 'business' => $business,
              ]);
          }
      }
@@ -208,9 +214,8 @@ class EssentialsCardsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
-        $all_users = User::where('users.business_id', $business_id)
-      
-        ->where(function ($query) {
+        
+        $all_users = User::where('business_id', $business_id)->where(function ($query) {
             $query->whereNotNull('users.border_no')
                 ->orWhere('users.id_proof_name', 'eqama');
 
@@ -237,7 +242,7 @@ class EssentialsCardsController extends Controller
         $all_responsible_users=$responsible_users->pluck('name', 'id');
 
 
-        $business=Business::where('id', $business_id)->pluck('name','id');
+       
         $employee=user::with('business') ->where('id','=', $employeeId)
         ->first();
 
@@ -247,7 +252,8 @@ class EssentialsCardsController extends Controller
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
         ];
-
+        $business=Business::pluck('name','id');
+       // dd( $business);
         return view('essentials::cards.create')
             ->with(compact(
             'employees',
