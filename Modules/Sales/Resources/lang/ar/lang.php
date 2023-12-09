@@ -130,6 +130,7 @@ return [
     'offer_price_view' => 'استعراض عرض السعر',
     'customer' => 'العميل',
     'select_customer' => 'اختر عميل',
+    'select_project' => 'اختر مشروع عميل',
     'under_study' => 'قيد الدراسة',
     'contract_view' => 'عرض ملف العقد',
     'offer_details' => 'تفاصيل عرض السعر',
@@ -224,4 +225,5 @@ return [
     'source'=>'المصدر',
     'add_source'=>'إضافة مصدر',
     'edit_source'=>'تعديل المصدر',
+   
 ];

@@ -13,6 +13,11 @@ class SalesOrdersOperation extends Model
     {
         return $this->belongsTo(Contact::class, 'contact_id');
     }
+    public function project()
+    {
+        return $this->belongsTo(SalesProject::class, 'sales_project_id');
+    }
+
 
     public function salesContract()
     {
