@@ -71,7 +71,7 @@ return [
 'fingerprinting'=>'التبصيم',
 'passport_stamped'=>'ختم الجواز',
 'addWorker'=>'إضافة عامل',
-
+'view_delegation'=>'عرض معلومات التفويض'
 
 
 

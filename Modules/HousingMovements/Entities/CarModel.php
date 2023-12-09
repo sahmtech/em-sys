@@ -9,7 +9,7 @@ class CarModel extends Model
 {
     use HasFactory;
 
-    public $table = 'housingMovements_car_models';
+    public $table = 'housing_movements_car_models';
     protected $fillable = [
         'name_ar', 'name_en', 'car_type_id'
     ];

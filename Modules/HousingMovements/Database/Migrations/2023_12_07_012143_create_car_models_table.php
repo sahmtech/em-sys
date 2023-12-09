@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('car_models', function (Blueprint $table) {
+        Schema::create('housing_movements_car_models', function (Blueprint $table) {
             $table->id();
             $table->string('name_ar');
             $table->string('name_en');
          
-            $table->bigInteger('car_type_id');
-            $table->foreign('car_type_id')->references('id')->on('car_types');
+            $table->unsignedBigInteger('car_type_id');
+            $table->foreign('car_type_id')->references('id')->on('housing_movements_car_types');
 
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('car_models');
+        Schema::dropIfExists('housing_movements_car_models');
     }
 };
