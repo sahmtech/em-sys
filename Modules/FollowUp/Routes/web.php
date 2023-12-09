@@ -12,7 +12,7 @@
 */
 //Route::get('/testtt', [\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'withinTwoMonthExpiryContracts'])->name('withinTwoMonthExpiryContracts');
 
-Route::middleware('web', 'authh', 'auth', 'CustomSetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
+Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('followup')->group(function () {
         Route::get('/dashboard', [Modules\FollowUp\Http\Controllers\DashboardController::class, 'index'])->name('followup.dashboard');

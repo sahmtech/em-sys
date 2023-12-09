@@ -11,7 +11,7 @@
 |
 */
 
-Route::middleware('web', 'authh', 'auth', 'CustomSetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
+Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezone', 'CustomAdminSidebarMenu')->group(function () {
 
     Route::prefix('housingmovements')->group(function () {
         Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
