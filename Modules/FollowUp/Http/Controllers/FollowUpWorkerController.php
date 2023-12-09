@@ -5,7 +5,7 @@ namespace Modules\FollowUp\Http\Controllers;
 use App\Contact;
 use App\ContactLocation;
 use App\User;
-use App\UserProject;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -57,11 +57,11 @@ class FollowUpWorkerController extends Controller
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
-        if (!$is_admin) {
-            $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
+        // if (!$is_admin) {
+        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
 
-            $users = $users->whereIn('assigned_to', $userProjects);
-        }
+        //     $users = $users->whereIn('assigned_to', $userProjects);
+        // }
         $users->select(
             'users.*',
             'users.id_proof_number',

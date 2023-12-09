@@ -5,7 +5,7 @@ namespace Modules\FollowUp\Http\Controllers;
 use App\Business;
 use App\User;
 use App\ContactLocation;
-use App\UserProject;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -388,12 +388,12 @@ class FollowUpRequestController extends Controller
                 ->where('department_id', $department);
         }
 
-        if (!$is_admin) {
-            $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
+        // if (!$is_admin) {
+        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
 
-            $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
+        //     $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
           
-        }
+        // }
         if (request()->ajax()) {
 
 

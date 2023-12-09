@@ -6,7 +6,7 @@ use App\Contact;
 use App\ContactLocation;
 use App\Transaction;
 use App\User;
-use App\UserProject;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -49,11 +49,11 @@ class FollowUpProjectController extends Controller
 
 
 
-        if (!$is_admin) {
-            $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
+        // if (!$is_admin) {
+        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
 
-            $contacts = $contacts->whereIn('id', $userProjects);
-        }
+        //     $contacts = $contacts->whereIn('id', $userProjects);
+        // }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {

@@ -187,7 +187,7 @@
                     </div>
 
                     <div class="clearfix"></div>
-                    <hr>
+                    {{-- <hr>
 
                     <div class="col-md-3">
                         <h4>@lang('role.access_contact_locations') </h4>
@@ -222,7 +222,7 @@
                             <hr>
                         @endforeach
 
-                    </div>
+                    </div> --}}
                 @endcomponent
             </div>
 

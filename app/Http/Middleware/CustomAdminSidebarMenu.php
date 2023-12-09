@@ -32,7 +32,7 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if (Str::startsWith($currentPath, 'users')) {
+        if (Str::startsWith($currentPath, ['users','manage_user'])) {
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm', 'roles'])) {
             $this->essentialsMenu();

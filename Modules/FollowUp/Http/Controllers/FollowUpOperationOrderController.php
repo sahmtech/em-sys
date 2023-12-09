@@ -17,7 +17,7 @@ use App\Utils\Util;
 use DB;
 use App\Transaction;
 use App\Contact;
-use App\UserProject;
+
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesOrdersOperation;
@@ -75,11 +75,11 @@ class FollowUpOperationOrderController extends Controller
             $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
         }
 
-        if (!$is_admin) {
-            $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
+        // if (!$is_admin) {
+        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
 
-            $operations = $operations->whereIn('sales_orders_operations.contact_id', $userProjects);
-        }
+        //     $operations = $operations->whereIn('sales_orders_operations.contact_id', $userProjects);
+        // }
 
         if (request()->ajax()) {
 

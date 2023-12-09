@@ -14,7 +14,7 @@ use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
-use App\UserProject;
+
 use Illuminate\Support\Facades\URL;
 use Modules\Essentials\Entities\EssentialsCountry;
 
@@ -155,16 +155,16 @@ class ManageUserController extends Controller
             $user = $this->moduleUtil->createUser($request);
 
 
-            $contactLocationsIds = $request->contact_locations ?? [];
+            // $contactLocationsIds = $request->contact_locations ?? [];
 
-            if (!empty($contactLocationsIds)) {
-                foreach ($contactLocationsIds as $contactLocationsId) {
-                    UserProject::create([
-                        'user_id' => $user->id,
-                        'contact_location_id' => $contactLocationsId,
-                    ]);
-                }
-            }
+            // if (!empty($contactLocationsIds)) {
+            //     foreach ($contactLocationsIds as $contactLocationsId) {
+            //         UserProject::create([
+            //             'user_id' => $user->id,
+            //             'contact_location_id' => $contactLocationsId,
+            //         ]);
+            //     }
+            // }
             event(new UserCreatedOrModified($user, 'added'));
 
 
@@ -289,10 +289,10 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-        $userProjects = UserProject::where('user_id', $id)->pluck('contact_location_id')->unique()->toArray();
-        $contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
+        // $userProjects = UserProject::where('user_id', $id)->pluck('contact_location_id')->unique()->toArray();
+        //$contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
         return view('manage_user.edit')
-            ->with(compact('contacts', 'userProjects', 'roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+            ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
     /**
@@ -413,16 +413,16 @@ class ManageUserController extends Controller
 
             $this->moduleUtil->activityLog($user, 'edited', null, ['name' => $user->user_full_name]);
 
-            $contactLocationsIds = $request->contact_locations ?? [];
+            // $contactLocationsIds = $request->contact_locations ?? [];
 
-            if (!empty($contactLocationsIds)) {
-                foreach ($contactLocationsIds as $contactLocationsId) {
-                    UserProject::create([
-                        'user_id' => $user->id,
-                        'contact_location_id' => $contactLocationsId,
-                    ]);
-                }
-            }
+            // if (!empty($contactLocationsIds)) {
+            //     foreach ($contactLocationsIds as $contactLocationsId) {
+            //         UserProject::create([
+            //             'user_id' => $user->id,
+            //             'contact_location_id' => $contactLocationsId,
+            //         ]);
+            //     }
+            // }
 
             event(new UserCreatedOrModified($user, 'updated'));
 
