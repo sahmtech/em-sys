@@ -68,29 +68,39 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('name', __('housingmovements::lang.building_name') . ':*') !!}
-                                {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.building_name'), 'required']) !!}
+                                {!! Form::text('name', null,
+                                     ['class' => 'form-control ',
+                                      'placeholder' => __('housingmovements::lang.building_name'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('address', __('housingmovements::lang.address') . ':') !!}
-                                {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.address'),'required']) !!}
+                                {!! Form::text('address', null,
+                                     ['class' => 'form-control',
+                                      'placeholder' => __('housingmovements::lang.address'),'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('city', __('housingmovements::lang.city') . ':*') !!}
-                                {!! Form::select('city', $cities, null, ['class' => 'form-control select2', 'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
+                                {!! Form::select('city', $cities, null,
+                                     ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
                             </div>
         
                         
                             <div class="form-group col-md-6">
                                 {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':*') !!}
-                                {!! Form::select('guard', $users2, null, ['class' => 'form-control select2', 'placeholder' => __('housingmovements::lang.building_guard'), 'required']) !!}
+                                {!! Form::select('guard', $users2, null,
+                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
+                                      'placeholder' => __('housingmovements::lang.building_guard'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':*') !!}
-                                {!! Form::select('supervisor', $users2, null, ['class' => 'form-control select2', 'placeholder' => __('housingmovements::lang.building_supervisor'), 'required']) !!}
+                                {!! Form::select('supervisor', $users2, null,
+                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
+                                      'placeholder' => __('housingmovements::lang.building_supervisor'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('cleaner', __('housingmovements::lang.building_cleaner') . ':*') !!}
-                                {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2', 'placeholder' => __('housingmovements::lang.building_cleaner'), 'required']) !!}
+                                {!! Form::select('cleaner', $users2, null, ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
+                                     'placeholder' => __('housingmovements::lang.building_cleaner'), 'required']) !!}
                             </div>
                         </div>
                     </div>
