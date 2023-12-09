@@ -86,7 +86,7 @@ class HomeController extends Controller
             return view('home.index');
         }
 
-        if (!$isSuperAdmin) {
+      
             $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
             $currency = Currency::where('id', request()->session()->get('business.currency_id'))->first();
 
@@ -205,7 +205,7 @@ class HomeController extends Controller
             if (count($all_locations) > 1) {
                 $sells_chart_2->dataset(__('report.all_locations'), 'line', $values);
             }
-        }
+        
 
 
 
