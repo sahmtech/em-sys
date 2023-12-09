@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace Modules\Sales\Http\Controllers;
 use App\Contact;
 use App\ContactLocation;
 use App\User;
@@ -16,7 +15,7 @@ use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\SalesProject;
 
-class ContactLocationController extends Controller
+class SalesProjectController extends Controller
 {
     protected $moduleUtil;
 
@@ -35,12 +34,16 @@ class ContactLocationController extends Controller
         if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $contact_locations = ContactLocation::with(['project']);
+        $SalesProjects = SalesProject::with(['contact']);
+      
         $cities = EssentialsCity::forDropdown();
+        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         if (request()->ajax()) {
 
 
-            return Datatables::of($contact_locations)
+            return Datatables::of($SalesProjects)
                 ->addColumn(
                     'id',
                     function ($row) {
@@ -48,13 +51,13 @@ class ContactLocationController extends Controller
                     }
                 )
                 ->addColumn(
-                    'project_name',
+                    'contact_name',
                     function ($row) {
-                        return $row->project->name;
+                        return $row->contact->supplier_business_name;
                     }
                 )
                 ->addColumn(
-                    'location_name',
+                    'contact_location_name',
                     function ($row) {
                         return  $row->name;
                     }
@@ -69,8 +72,11 @@ class ContactLocationController extends Controller
                 )
                 ->addColumn(
                     'contact_location_name_in_charge',
-                    function ($row) {
-                        return   $row->name_in_charge;
+                    function ($row) use ($name_in_charge_choices) {
+                      
+                        if ($row->name_in_charge) {
+                            return $name_in_charge_choices[$row->name_in_charge];
+                        } else return null;
                     }
                 )
                 ->addColumn(
@@ -91,35 +97,33 @@ class ContactLocationController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '';
                         if ($is_admin) {
-                            $html .= '<a href="' . route('sale.editContactLocations', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                            $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                              &nbsp;';
-                            $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroyContactLocations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                            $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroySaleProject', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
                         return $html;
                     }
                 )
-                ->filterColumn('project_name', function ($query, $keyword) {
+                ->filterColumn('contact_name', function ($query, $keyword) {
 
-                    $query->whereHas('project', function ($qu) use ($keyword) {
-                        $qu->where('name', 'like', "%{$keyword}%");
+                    $query->whereHas('contact', function ($qu) use ($keyword) {
+                        $qu->where('supplier_business_name', 'like', "%{$keyword}%");
                     });
                 })
-                ->filterColumn('location_name', function ($query, $keyword) {
+                ->filterColumn('contact_location_name', function ($query, $keyword) {
 
                     $query->where('name', 'like', "%{$keyword}%");
                 })
 
 
-                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'project_name', 'location_name', 'action'])
+                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'contact_id', 'action'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+      
         $cities = EssentialsCity::forDropdown();
-        $contacts = SalesProject::pluck('name', 'id');
-        return view('sales::contact_locations.index')->with(compact('cities','contacts', 'name_in_charge_choices', 'cities'));
+        $contacts = Contact::pluck('supplier_business_name', 'id');
+        return view('sales::sales_projects.index')->with(compact('cities','contacts', 'name_in_charge_choices', 'cities'));
     }
 
     /**
@@ -129,7 +133,6 @@ class ContactLocationController extends Controller
      */
     public function store(Request $request)
     {
-
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -140,13 +143,13 @@ class ContactLocationController extends Controller
         try {
             error_log($request->contact_name);
 
-            $contactLocation['sales_project_id'] = $request->contact_name;
+            $contactLocation['contact_id'] = $request->contact_name;
             $contactLocation['name'] = $request->contact_location_name;
             $contactLocation['city'] = $request->contact_location_city;
             $contactLocation['name_in_charge'] = $request->contact_location_name_in_charge;
             $contactLocation['phone_in_charge'] = $request->contact_location_phone_in_charge;
             $contactLocation['email_in_charge'] = $request->contact_location_email_in_charge;
-            ContactLocation::create($contactLocation);
+            SalesProject::create($contactLocation);
 
 
             $output = [
@@ -161,10 +164,10 @@ class ContactLocationController extends Controller
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
-            return redirect()->route('sale.contactLocations')->withErrors([$output['msg']]);
+            return redirect()->route('sale.saleProjects')->withErrors([$output['msg']]);
         }
 
-        return redirect()->route('sale.contactLocations')->with('success', $output['msg']);
+        return redirect()->route('sale.saleProjects')->with('success', $output['msg']);
     }
     // /**
     //  * Show the specified resource.
@@ -192,14 +195,14 @@ class ContactLocationController extends Controller
             || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
-        $contactLocation = ContactLocation::findOrFail($id);
-        $cities = EssentialsCity::forDropdown();
-        $contacts = SalesProject::pluck('name', 'id');
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-        return view('sales::contact_locations.edit')->with(compact('cities','name_in_charge_choices','contacts','contactLocation'));
+        $contactLocation = SalesProject::findOrFail($id);
+        $cities = EssentialsCity::forDropdown();
+        $contacts = Contact::pluck('supplier_business_name', 'id');
+
+        return view('sales::sales_projects.edit')->with(compact('cities','name_in_charge_choices','contacts','contactLocation'));
     }
 
     /**
@@ -219,13 +222,13 @@ class ContactLocationController extends Controller
         }
 
         try {
-            $contactLocation['sales_project_id'] = $request->contact_name;
+            $contactLocation['contact_id'] = $request->contact_name;
             $contactLocation['name'] = $request->contact_location_name;
             $contactLocation['city'] = $request->contact_location_city;
             $contactLocation['name_in_charge'] = $request->contact_location_name_in_charge;
             $contactLocation['phone_in_charge'] = $request->contact_location_phone_in_charge;
             $contactLocation['email_in_charge'] = $request->contact_location_email_in_charge;
-            ContactLocation::where('id', $id)->update($contactLocation);
+            SalesProject::where('id', $id)->update($contactLocation);
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
@@ -237,16 +240,16 @@ class ContactLocationController extends Controller
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
-            return redirect()->route('sale.contactLocations')->withErrors([$output['msg']]);
+            return redirect()->route('sale.saleProjects')->withErrors([$output['msg']]);
         }
 
 
-        return redirect()->route('sale.contactLocations')->with('success', $output['msg']);
+        return redirect()->route('sale.saleProjects')->with('success', $output['msg']);
     }
 
     public function destroy($id)
     {
-        error_log("Asdas");
+       
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -255,7 +258,7 @@ class ContactLocationController extends Controller
         }
 
         try {
-            ContactLocation::where('id', $id)
+            SalesProject::where('id', $id)
                 ->delete();
 
             $output = [

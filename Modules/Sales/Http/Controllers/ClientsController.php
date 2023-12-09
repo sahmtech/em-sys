@@ -78,23 +78,23 @@ class ClientsController extends Controller
 
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
-            ->select([
-                'id',
-                'supplier_business_name',
-                'contact_id',
-                'commercial_register_no',
-                'mobile',
-                'email',
-                'city'
-// <<<<<<< Rahaf
-            ])->where('business_id',$business_id)->whereIn('type',['customer','lead'])->orderby('id','desc');
-         
-// =======
-//             ])
-//             //->where('business_id',$business_id)
-//             ->whereIn('type',['customer','lead'])->orderby('id','desc');
-//             //dd($contacts);
-// >>>>>>> Development
+                ->select([
+                    'id',
+                    'supplier_business_name',
+                    'contact_id',
+                    'commercial_register_no',
+                    'mobile',
+                    'email',
+                    'city'
+                    // <<<<<<< Rahaf
+                ])->where('business_id', $business_id)->whereIn('type', ['customer', 'lead'])->orderby('id', 'desc');
+
+            // =======
+            //             ])
+            //             //->where('business_id',$business_id)
+            //             ->whereIn('type',['customer','lead'])->orderby('id','desc');
+            //             //dd($contacts);
+            // >>>>>>> Development
             return Datatables::of($contacts)
                 // ->addColumn('nameAr', function ($row) {
                 //     $name = json_decode($row->name, true);

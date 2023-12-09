@@ -34,7 +34,7 @@ class DelegationController extends Controller
         if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_view_delegation = auth()->user()->can('ir.view_delegation');
+        $can_view_delegation = auth()->user()->can('internationalrelations.view_delegation');
         if (!($isSuperAdmin || $can_view_delegation)) {
             abort(403, 'Unauthorized action.');
         }

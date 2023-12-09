@@ -66,7 +66,7 @@ class EmploymentCompaniesController extends Controller
         if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_employment_companies = auth()->user()->can('ir.crud_employment_companies');
+        $can_crud_employment_companies = auth()->user()->can('internationalrelations.crud_employment_companies');
         if (!($isSuperAdmin || $can_crud_employment_companies)) {
             abort(403, 'Unauthorized action.');
         }
@@ -140,7 +140,7 @@ class EmploymentCompaniesController extends Controller
         if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_view_company_requests = auth()->user()->can('ir.view_company_requests');
+        $can_view_company_requests = auth()->user()->can('internationalrelations.view_company_requests');
         if (!($isSuperAdmin || $can_view_company_requests)) {
             abort(403, 'Unauthorized action.');
         }
@@ -163,7 +163,7 @@ class EmploymentCompaniesController extends Controller
         if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_store_emoloyment_company = auth()->user()->can('ir.store_emoloyment_company');
+        $can_store_emoloyment_company = auth()->user()->can('internationalrelations.store_emoloyment_company');
         if (!($isSuperAdmin || $can_store_emoloyment_company)) {
             abort(403, 'Unauthorized action.');
         }

@@ -14,8 +14,8 @@
                 <div class="col-sm-3 col-sm-4">
                     <b>{{ __('sales::lang.transaction_number') }} :</b></b> {{ $query->ref_no }}<br>
                     <b>{{ __('sales::lang.transaction_date') }} :</b></b> {{ $query->transaction_date }}<br>
-                    <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->contact->name }}<br>
-                    <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->contact->mobile }}<br>
+                    <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->sale_project->name }}<br>
+                    <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->sale_project->phone_in_charge }}<br>
                 </div>
 
                 <div class="col-sm-2 col-sm-4">

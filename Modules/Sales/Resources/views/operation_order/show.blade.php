@@ -20,12 +20,13 @@
                     <div>
                         <b>{{ __('sales::lang.operation_order_number') }} :</b></b> {{ $operations->operation_order_no }}<br>
                         <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $operations->contact->supplier_business_name }}<br>
+                        <b>{{ __('sales::lang.project_name') }} :</b></b> {{ $operations->project->name }}<br>
                         <b>{{ __('sales::lang.contact_email') }} :</b></b> {{ $operations->contact->email }}<br>
                        
 
                     
                         <b>{{ __('sales::lang.operation_order_type') }} :</b></b> {{ __('sales::lang.' . $operations->operation_order_type ) }}<br>
-                        <b>{{ __('sales::lang.Status') }} :</b> {{ __('sales::lang.' . $operations->Status) }}<br>
+                        <b>{{ __('sales::lang.Status') }} :</b> {{ __('sales::lang.' . $operations->status) }}<br>
                         <b>{{ __('sales::lang.Location') }} :</b></b> {{ $operations->Location }}<br>
                        
 

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Entities\SalesProject;
 
 class ContactLocation extends Model
 {
@@ -15,12 +16,9 @@ class ContactLocation extends Model
      */
     protected $guarded = [];
 
-    public function contact()
+    public function project()
     {
-        return $this->belongsTo(Contact::class, 'contact_id');
+        return $this->belongsTo(SalesProject::class, 'sales_project_id');
     }
-    public function assignedTo()
-    {
-        return $this->hasMany(User::class, 'assigned_to');
-    }
+   
 }

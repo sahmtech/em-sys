@@ -575,9 +575,10 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
             );
             $menu->url(
-                route('sale.contactLocations'),
-                __('sales::lang.contact_locations'),
-                ['icon' => 'fa fas fa-plus-circle'],
+                route('sale.saleProjects'),__('sales::lang.sales_projects'),['icon' => 'fa fas fa-plus-circle'],
+            );
+            $menu->url(
+                route('sale.contactLocations'),__('sales::lang.contact_locations'),['icon' => 'fa fas fa-plus-circle'],
             );
 
             $menu->url(
