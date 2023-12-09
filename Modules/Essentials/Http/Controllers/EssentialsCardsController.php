@@ -174,7 +174,7 @@ class EssentialsCardsController extends Controller
                  'responsible_client' => $responsible_clients,
              ]);
          } else {
-             // If user type is worker
+           
              $all_responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
                  ->where('users.id', '=', $employeeId)
                  ->select('contact_locations.name', 'contact_locations.id')
@@ -184,7 +184,7 @@ class EssentialsCardsController extends Controller
                  return response()->json(['error' => 'No responsible users found for the given employee ID']);
              }
      
-             $responsible_clients = User::join('contact_locations', 'contact_locations.name_in_charge', '=', 'users.id')
+             $responsible_clients = User::with(['assignedTo'])
                  ->where('contact_locations.id', '=', $all_responsible_users->id)
                  ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''))
                   as name"))
