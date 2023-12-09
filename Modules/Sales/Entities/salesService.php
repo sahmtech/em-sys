@@ -24,4 +24,6 @@ class salesService extends Model
      
         return $this->belongsTo(\Modules\Essentials\Entities\EssentialsSpecialization::class, 'specialization_id');
     }
+
+
 }

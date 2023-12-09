@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
-use Modules\FollowUp\Entities\followupWorkerRequest;
-use Modules\FollowUp\Entities\followupWorkerRequestProcess;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
@@ -218,7 +218,7 @@ class FollowUpRequestController extends Controller
                     $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $workerId)->first()->contract_end_date;
                 }
 
-                $workerRequest = new followupWorkerRequest;
+                $workerRequest = new FollowupWorkerRequest;
 
                 $workerRequest->request_no = $this->generateRequestNo($request->type);
                 $workerRequest->worker_id = $workerId;
@@ -247,7 +247,7 @@ class FollowUpRequestController extends Controller
 
 
                 if ($workerRequest) {
-                    $process = followupWorkerRequestProcess::create([
+                    $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
                         'procedure_id' => $this->getProcedureIdForType($request->type),
                         'status' => 'pending',
@@ -458,7 +458,7 @@ class FollowUpRequestController extends Controller
 
     public function viewRequest($id)
     {
-        $request = followupWorkerRequest::with([
+        $request = FollowupWorkerRequest::with([
             'user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'
         ])
             ->find($id);

@@ -41,11 +41,11 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group row">
-                            {!! Form::label('search_lable', __('بحث') . '  ') !!}
+                            {!! Form::label('search_lable', __('housingmovements::lang.search') . '  ') !!}
                             {!! Form::text('search', '', [
                                 'class' => 'form-control',
-                               
-                                'placeholder' => __('الاسم باللغة العربية او الانكليزية'),
+                            
+                                'placeholder' => __('housingmovements::lang.name_in_ar_en'),
                                 'id' => 'search',
                             ]) !!}
 
@@ -53,12 +53,12 @@
                     </div>
                     <div class="col-sm-4" style="padding-right: 3px;">
                         <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            بحث</button>
+                            @lang('housingmovements::lang.search')</button>
                         @if ($after_serch)
                             <a class="btn btn-primary pull-right m-5 "
                                 href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@index') }}"
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@index') }}">
-                                عرض الكل</a>
+                                @lang('housingmovements::lang.viewAll') </a>
                         @endif
                     </div>
                     {!! Form::close() !!}
@@ -109,7 +109,7 @@
                                         </td>
 
                                         <td style="text-align: center;">
-                                            
+
                                             {{ $row->CarType->name_ar . ' - ' . $row->CarType->name_en }}
 
                                         </td>
@@ -176,4 +176,3 @@
     <!-- /.content -->
 
 @endsection
-

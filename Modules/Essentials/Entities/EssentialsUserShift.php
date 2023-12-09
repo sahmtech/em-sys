@@ -15,6 +15,10 @@ class EssentialsUserShift extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\User::class);
+        return $this->belongsTo(\App\User::class, 'user_id');
+    }
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class, 'essentials_shift_id');
     }
 }

@@ -33,10 +33,10 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group ">
-                                {!! Form::label('search_lable', __('طراز السيارة') . '  ') !!}
+                                {!! Form::label('search_lable', __('housingmovements::lang.carType') . '  ') !!}
                                 {!! Form::text('search_carModle', '', [
                                     'class' => 'form-control',
-                                    'placeholder' => __('طراز السيارة'),
+                                    'placeholder' => __('housingmovements::lang.carType'),
                                     'id' => 'search_carModle',
                                 ]) !!}
 
@@ -46,10 +46,10 @@
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group ">
-                                {!! Form::label('search_lable', __('اسم السائق   ') . '  ') !!}
+                                {!! Form::label('search_lable', __('housingmovements::lang.driverName') . '  ') !!}
                                 {!! Form::text('search', '', [
                                     'class' => 'form-control',
-                                    'placeholder' => __('اسم السائق'),
+                                    'placeholder' => __('housingmovements::lang.driverName'),
                                     'id' => 'search',
                                 ]) !!}
 
@@ -57,10 +57,10 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group ">
-                                {!! Form::label('search_lable', __('رقم اللوحة') . '  ') !!}
+                                {!! Form::label('search_lable', __('housingmovements::lang.plate_number') . '  ') !!}
                                 {!! Form::text('search_plate_number', '', [
                                     'class' => 'form-control',
-                                    'placeholder' => __('رقم اللوحة'),
+                                    'placeholder' => __('housingmovements::lang.plate_number'),
                                     'id' => 'search_plate_number',
                                 ]) !!}
 
@@ -69,12 +69,12 @@
                     </div>
                     <div class="col-md-12">
                         <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            بحث</button>
+                            @lang('housingmovements::lang.search')</button>
                         @if ($after_serch)
                             <a class="btn btn-primary pull-right m-5 "
                                 href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@index') }}"
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@index') }}">
-                                عرض الكل</a>
+                                @lang('housingmovements::lang.viewAll')</a>
                         @endif
                     </div>
                     {!! Form::close() !!}

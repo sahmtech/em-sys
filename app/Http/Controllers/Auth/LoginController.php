@@ -86,6 +86,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+     
         $this->businessUtil->activityLog($user, 'login', null, [], false, $user->business_id);
         if (!$user->user_type == 'superdmin') {
 

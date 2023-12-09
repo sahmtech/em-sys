@@ -44,6 +44,12 @@ Route::middleware('web', 'authh', 'auth', 'CustomSetSessionData', 'language', 't
         //movement_management
         Route::get('/movement', [\Modules\HousingMovements\Http\Controllers\MovementController::class, 'index'])->name('movement');
 
+
+        //traveleres
+        Route::get('/travelers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
+        Route::get('/workers', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers');
+        Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
+        Route::post('/get-arrived', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getarrived'])->name('get-arrived');
         // Routes Car Types
         Route::get('/cars-type', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index'])->name('car-type');
         Route::get('/cars-type-create', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'create'])->name('car-type-create');

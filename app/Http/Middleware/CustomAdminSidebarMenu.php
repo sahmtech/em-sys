@@ -713,13 +713,33 @@ class CustomAdminSidebarMenu
             )->order(0);
             $menu->header("");
             $menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(0);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']),
+             __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(0);
 
             $menu->url(
                 action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
                 __('housingmovements::lang.requests'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
-            );
+                ['icon' => 'fa fas fa-plus-circle',
+                 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
+            )->order(1);
+
+
+      
+
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
+                __('housingmovements::lang.workers'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'workers'],
+
+            )->order(2);
+            
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),
+                __('housingmovements::lang.travelers'),
+                ['icon' => 'fa fas fa-plus-circle',
+                 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers'],
+
+            )->order(3);
 
 
             $menu->dropdown(

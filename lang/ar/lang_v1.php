@@ -5,6 +5,9 @@ return [
     "sales_commission_agents" =>  "المناديب",
     "disable" => "تعطيل",
     "logged_in_user" => "المستخدم المتصل",
+    'are_you_sure_submit'=>'هل أنت متاكد ؟',
+    'confirm'=>'نعم',
+    'cancel'=>'إلغاء',
     "select_from_users_list" => "اختر من قائمة المستخدمين",
     "select_from_commisssion_agents_list" => "اختر من قائمة المناديب",
     "add_sales_commission_agent" => "إضافة مندوب",
@@ -1443,6 +1446,7 @@ return [
 'accepted_success'=>'تم القبول بنجاح',
 'not_yet'=>'ليس بعد',
 'done'=>'تمت',
+'accepted'=>'تم القبول'
 
 
 ];

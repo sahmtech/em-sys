@@ -23,6 +23,7 @@ return [
     'area' => 'المساحة',
     'beds_count' => 'عدد الأسرّة',
     'contents' => 'المحتويات',
+
     'carTypes' => 'أنواع السيارات',
     'carType' => 'نوع السيارة',
     'carModels' => 'طراز السيارات',
@@ -36,10 +37,33 @@ return [
     'edit_carModel' => 'تعديل طراز سيارة',
     'plate_number' => 'رقم اللوحة',
     'color' => 'اللون',
+    'driverName' => 'اسم السائق',
+    'search' => 'بحث',
+    'viewAll' => 'عرض الكل',
+    'name_in_ar_en'=>'الاسم بالعربية او الانكليزية',
+
+
+
     'car_typeModel' => 'توع وطراز السيارة',
     'driver' => 'السائق',
     'add_car' => 'إضافة سيارة',
     'edit_car' => 'تعديل سيارة',
+
+
+    'travelers' => 'المسافرون',
+    'worker_name' => 'اسم العامل',
+    'passport_number' => 'رقم الجواز',
+    'location' => 'الموقع',
+    'arrival_date' => 'تاريخ الوصول',
+    'profession' => 'المهنة ',
+    'nationality' => 'الجنسية ',
+    'arrive_date' => 'تاريخ الوصول',
+    'project' => 'المشروع',
+    'location' => 'الموقع',
+    'arrived' => 'تم الوصول',
+    'housed' => 'تسكين',
+    'workers' => 'عمال المشاريع',
+
 
 
 
