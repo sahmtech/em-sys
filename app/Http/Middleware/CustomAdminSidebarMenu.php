@@ -48,7 +48,13 @@ class CustomAdminSidebarMenu
             $this->followUpMenu();
         } elseif (Str::startsWith($currentPath, 'purchase')) {
             $this->purchasesMenu();
-        } elseif (Str::startsWith($currentPath, ['superadmin', 'subscription', 'alladminRequests'])) {
+        } elseif (Str::startsWith($currentPath, [
+            'superadmin',
+            'subscription',
+            'alladminRequests',
+            'manage-modules',
+            'backup',
+        ])) {
             $this->superAdminMenu();
         } elseif (
             Str::startsWith($currentPath, [
