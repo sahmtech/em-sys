@@ -141,19 +141,20 @@
 
 <div class="col-md-9">
     <div class="form-group">
-        {!! Form::label('company_name', __('essentials::lang.company_name') . ':') !!}
+        {!! Form::label('business', __('essentials::lang.business') . ':') !!}
         <div class="input-group">
             <span class="input-group-addon">
-                <i class="fa fa-id-badge"></i>
+                <i class="fa fa-building"></i>
             </span>
-            {!! Form::select('company_id', $business, $employee->business->name ?? null,
-                 ['class' => 'form-control', 'style'=>'height:36px',
-                ]); !!}
+            {!! Form::select('business', $business, null, [
+                'class' => 'form-control',
+                'style' => 'height:36px',
+                'placeholder' => __('essentials::lang.business'),
+                'id' => 'business',
+            ]) !!}
         </div>
-
     </div>
-</div>
-				
+</div>		
 
 
 <div class="col-md-9">
@@ -251,6 +252,16 @@ function getResponsibleData(employeeId) {
                     text: item.name
                 }));
             });
+
+            $('#business').empty();
+            $.each(data.business, function (index, item) {
+                $('#business').append($('<option>', {
+                    value: item.id,
+                    text: item.name
+                }));
+            });
+
+           
         },
         error: function (xhr, status, error) {
             console.error(error);

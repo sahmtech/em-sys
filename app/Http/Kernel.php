@@ -63,6 +63,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'language' => \App\Http\Middleware\Language::class,
         'timezone' => \App\Http\Middleware\Timezone::class,
+     
         'SetSessionData' => \App\Http\Middleware\SetSessionData::class,
         'setData' => \App\Http\Middleware\IsInstalled::class,
         'authh' => \App\Http\Middleware\IsInstalled::class,

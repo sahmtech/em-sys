@@ -4,6 +4,7 @@ namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -70,7 +71,7 @@ class HomeController extends ApiController
                 ->first();
 
 
-            $lastTask = ToDo::where('business_id', $business_id)
+            $todo = ToDo::where('business_id', $business_id)
                 ->with(['assigned_by'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
@@ -78,11 +79,25 @@ class HomeController extends ApiController
                 ->select('*')->latest('created_at')
                 ->first();
 
+            $lastTask = [
+                'id' => $todo->id,
+                'business_id' => $todo->business_id,
+                'task' => $todo->task,
+                'date' => $todo->date,
+                'end_date' => $todo->end_date,
+                'task_id' => $todo->task_id,
+                'description' => $todo->description,
+                'status' => $todo->status,
+                'estimated_hours' => $todo->estimated_hours,
+                'priority' => $todo->priority,
+                'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+            ];
+
 
             $res = [
                 'new_notifications' => 0,
-                'work_day_start' => $shift->start_time,
-                'work_day_end' => $shift->end_time,
+                'work_day_start' => Carbon::parse($shift->start_time)->format('h:i A'),
+                'work_day_end' => Carbon::parse($shift->end_time)->format('h:i A'),
                 'business_name' => $business->name,
                 'request' => $lastRequest,
                 'task' => $lastTask,

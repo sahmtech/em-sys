@@ -14,9 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['assigned_to']);
-            $table->dropColumn('assigned_to');
-      
+            $table->bigInteger('contact_location_id')->unsigned()->nullable()->after('assigned_to');
+            $table->foreign('contact_location_id')->references('id')->on('contact_locations')->onDelete('cascade');
         });
     }
 

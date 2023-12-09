@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Modules\Sales\Entities\SalesOrdersOperation;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ContactUtil;
+use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
@@ -19,12 +20,32 @@ use Modules\InternationalRelations\Entities\IrProposedLabor;
 
 class VisaCardController extends Controller
 {
+    protected $moduleUtil;
+
+
+
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+
+        $this->moduleUtil = $moduleUtil;
+    }
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index(Request $request)
     { 
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_crud_visa_card = auth()->user()->can('ir.crud_visa_cards');
+        if (!($isSuperAdmin || $can_crud_visa_card)) {
+            abort(403, 'Unauthorized action.');
+        }
         $visaCards = IrVisaCard::with('operationOrder.contact','operationOrder.salesContract.transaction.sell_lines.agencies',
         'operationOrder.salesContract.transaction.sell_lines.service');
        
@@ -111,6 +132,16 @@ class VisaCardController extends Controller
     public function store(Request $request)
     {
      
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_store_visa_card = auth()->user()->can('ir.store_visa_card');
+        if (!($isSuperAdmin || $can_store_visa_card)) {
+            abort(403, 'Unauthorized action.');
+        }
         try {
             DB::transaction(function () use ($request) {
                 $visaDetails = [
@@ -148,6 +179,17 @@ class VisaCardController extends Controller
      */
     public function viewVisaWorkers($visaId)
     {
+        
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_view_visa_workers = auth()->user()->can('ir.view_visa_workers');
+        if (!($isSuperAdmin || $can_view_visa_workers)) {
+            abort(403, 'Unauthorized action.');
+        }
         try {
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');

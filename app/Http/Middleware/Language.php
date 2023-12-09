@@ -18,9 +18,9 @@ class Language
     {
         $locale = config('app.locale');
         // dd( $locale);
-        // if ($request->session()->has('user.language')) {
-        //     $locale = $request->session()->get('user.language');
-        // }
+        if ($request->session()->has('user.language')) {
+            $locale = $request->session()->get('user.language');
+        }
         App::setLocale( $locale );
        
         return $next($request);

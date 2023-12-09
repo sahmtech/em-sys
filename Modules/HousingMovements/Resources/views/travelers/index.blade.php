@@ -76,16 +76,15 @@
                     }
 
                     if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.filter_start_date = start;
-                            d.filter_end_date = end;
-                            d.date_filter = date_filter;
-                        }
-                      
+                        var start = $('#doc_filter_date_range').data('daterangepicker').startDate
+                            .format('YYYY-MM-DD');
+                        var end = $('#doc_filter_date_range').data('daterangepicker').endDate
+                            .format('YYYY-MM-DD');
+                        d.filter_start_date = start;
+                        d.filter_end_date = end;
+                        d.date_filter = date_filter;
                     }
+                }
             },
             columns: [
                 { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
@@ -102,6 +101,8 @@
 
 
         $('#project_name_filter').on('change', function() {
+            date_filter=null;
+         
             reloadDataTable() ;
             });
 

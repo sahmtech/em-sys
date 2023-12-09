@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\User;;
+
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
@@ -19,66 +20,66 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
 use Exception;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
 class SuperadminRequestController extends Controller
 {
-    
-   protected $moduleUtil;
-   protected $statuses;
-   protected $statuses2;
 
-   
-   public function __construct(ModuleUtil $moduleUtil)
-   {
-       $this->moduleUtil = $moduleUtil;
-       $this->statuses = [
-           'approved' => [
-               'name' => __('followup::lang.approved'),
-               'class' => 'bg-green',
-           ],
-           'rejected' => [
-               'name' => __('followup::lang.rejected'),
-               'class' => 'bg-red',
-           ],
-           'pending' => [
-               'name' =>__('followup::lang.pending'),
-               'class' => 'bg-yellow',
-           ],
-       ];
-       $this->statuses2 = [
-           'approved' => [
-               'name' => __('followup::lang.approved'),
-               'class' => 'bg-green',
-           ],
-         
-           'pending' => [
-               'name' =>__('followup::lang.pending'),
-               'class' => 'bg-yellow',
-           ],
-       ];
+    protected $moduleUtil;
+    protected $statuses;
+    protected $statuses2;
 
-   }
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+        $this->statuses = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+            'rejected' => [
+                'name' => __('followup::lang.rejected'),
+                'class' => 'bg-red',
+            ],
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+        $this->statuses2 = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+    }
     public function requests()
     {
-        
-        $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'superadmin'))) {
+        $business_id = request()->session()->get('user.business_id');
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'superadmin'))) {
             abort(403, 'Unauthorized action.');
         }
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
+        if (!($isSuperAdmin || $crud_requests)) {
             abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id); 
-       
-     
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
-      
+
         $requestsProcess = null;
         $requestsProcess = FollowupWorkerRequest::select([
             'followup_worker_requests.request_no',
@@ -96,14 +97,14 @@ class SuperadminRequestController extends Controller
             'users.assigned_to'
 
         ])
-        ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-        ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-        ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker');
-            
- 
+            ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+            ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker');
+
+
         if (request()->ajax()) {
 
-          
+
             return DataTables::of($requestsProcess ?? [])
 
                 ->editColumn('created_at', function ($row) {
@@ -117,49 +118,46 @@ class SuperadminRequestController extends Controller
                     return $item;
                 })
                 ->editColumn('status', function ($row) {
-                    try{
-                    $statusClass = $this->statuses[$row->status]['class'];
-                    $statusName = $this->statuses[$row->status]['name'];
-                    $status = $row->status;
-                    $business_id = request()->session()->get('user.business_id');
-                
-                    $department1 = EssentialsDepartment::where('business_id', $business_id)
-                        ->where(function ($query) {
-                            $query->where('name', 'LIKE', '%تنفيذ%');
-                        })
-                        ->first();
-                
-                    $department2 = EssentialsDepartment::where('business_id', $business_id)
-                        ->where(function ($query) {
-                            $query->where('name', 'LIKE', '%مجلس%');
-                           
-                        })
-                        ->first();
-                
-                    if ($department1 && $department2) {
-                        $departmentId1 = $department1->id;
-                        $departmentId2 = $department2->id;
-                
-                        if ($row->status == 'pending' && ($row->department_id == $departmentId1 || $row->department_id == $departmentId2)) {
-                            $status = '<span class="label ' . $statusClass . '">' . $statusName . '</span>';
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->process_id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statusName . '"> ' . $status . '</a>';
-                        } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                            $status = trans('followup::lang.' . $row->status);
-                        } elseif ($row->status == 'pending' && !($row->department_id == $departmentId1 || $row->department_id == $departmentId2)) {
-                            $status = trans('followup::lang.under_process');
-                        }
-                    } else {
-                        $status = trans('followup::lang.' . $row->status);
-                    }
-                 
-                    return $status;
-                }
-                    catch(\Exception $e){
-                       return '';
+                    try {
+                        $statusClass = $this->statuses[$row->status]['class'];
+                        $statusName = $this->statuses[$row->status]['name'];
+                        $status = $row->status;
+                        $business_id = request()->session()->get('user.business_id');
 
+                        $department1 = EssentialsDepartment::where('business_id', $business_id)
+                            ->where(function ($query) {
+                                $query->where('name', 'LIKE', '%تنفيذ%');
+                            })
+                            ->first();
+
+                        $department2 = EssentialsDepartment::where('business_id', $business_id)
+                            ->where(function ($query) {
+                                $query->where('name', 'LIKE', '%مجلس%');
+                            })
+                            ->first();
+
+                        if ($department1 && $department2) {
+                            $departmentId1 = $department1->id;
+                            $departmentId2 = $department2->id;
+
+                            if ($row->status == 'pending' && ($row->department_id == $departmentId1 || $row->department_id == $departmentId2)) {
+                                $status = '<span class="label ' . $statusClass . '">' . $statusName . '</span>';
+                                $status = '<a href="#" class="change_status" data-request-id="' . $row->process_id . '" data-orig-value="' . $row->status . '" data-status-name="' . $statusName . '"> ' . $status . '</a>';
+                            } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                                $status = trans('followup::lang.' . $row->status);
+                            } elseif ($row->status == 'pending' && !($row->department_id == $departmentId1 || $row->department_id == $departmentId2)) {
+                                $status = trans('followup::lang.under_process');
+                            }
+                        } else {
+                            $status = trans('followup::lang.' . $row->status);
+                        }
+
+                        return $status;
+                    } catch (\Exception $e) {
+                        return '';
                     }
                 })
-                
+
                 ->rawColumns(['status'])
 
 
@@ -175,21 +173,20 @@ class SuperadminRequestController extends Controller
 
         $workers = $all_users->pluck('full_name', 'id');
         $statuses = $this->statuses;
-       
+
         $department1 = EssentialsDepartment::where('business_id', $business_id)
-        ->where(function ($query) {
-            $query->where('name', 'LIKE', '%تنفيذ%');
-        })
-        ->first();
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%تنفيذ%');
+            })
+            ->first();
 
         $department2 = EssentialsDepartment::where('business_id', $business_id)
-        ->where(function ($query) {
-            $query->where('name', 'LIKE', '%مجلس%');
-           
-        })
-        ->first();
+            ->where(function ($query) {
+                $query->where('name', 'LIKE', '%مجلس%');
+            })
+            ->first();
 
-        return view('superadmin::requests.allRequest')->with(compact('workers','statuses','department1','department2' ,'main_reasons', 'classes', 'leaveTypes'));
+        return view('superadmin::requests.allRequest')->with(compact('workers', 'statuses', 'department1', 'department2', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
     /**

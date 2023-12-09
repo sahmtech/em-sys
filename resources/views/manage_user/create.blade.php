@@ -170,6 +170,44 @@
                             </div>
                         @endforeach
                     </div>
+                    <div class="clearfix"></div>
+
+{{-- 
+                    <hr>
+                    <div class="col-md-3">
+                        <h4>@lang('role.access_contact_locations') </h4>
+                    </div>
+                    <div class="col-md-9">
+                        @foreach ($contacts as $contact)
+                            <div class="row check_group">
+                                <div class="col-md-5">
+                                    <h4>{{ $contact->supplier_business_name }}</h4>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+
+                                    @foreach ($contact->contactLocation as $project)
+                                        <div class="col-md-12">
+                                            <div class="checkbox">
+                                                <label>
+                                                    {!! Form::checkbox('contact_locations[]', $project->id, false, ['class' => 'input-icheck']) !!} {{ $project->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr>
+                        @endforeach
+
+                    </div> --}}
                 @endcomponent
             </div>
 
