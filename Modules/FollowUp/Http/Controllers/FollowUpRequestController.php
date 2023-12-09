@@ -5,7 +5,7 @@ namespace Modules\FollowUp\Http\Controllers;
 use App\Business;
 use App\User;
 use App\ContactLocation;
-
+use Modules\Sales\Entities\SalesProject;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -357,7 +357,7 @@ class FollowUpRequestController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -578,7 +578,7 @@ class FollowUpRequestController extends Controller
     }
     private function getContactLocation($id)
     {
-        $contact = ContactLocation::find($id);
+        $contact = SalesProject::find($id);
 
         if ($contact) {
             return $contact->name;

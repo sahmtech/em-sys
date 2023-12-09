@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\InternationalRelations\Entities\IrDelegation;
+use Modules\Sales\Entities\SalesProject;
 
 class Contact extends Authenticatable
 {
@@ -397,9 +398,9 @@ class Contact extends Authenticatable
     {
         return $this->hasOne(Transaction::class, 'contact_id');
     }
-    public function contactLocation()
+    public function salesProject()
     {
-        return $this->hasMany(ContactLocation::class, 'contact_id');
+        return $this->hasMany(SalesProject::class, 'contact_id');
     }
     public function proposedLabors()
     {
