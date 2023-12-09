@@ -28,7 +28,7 @@ class CustomSetSessionData
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'business_id' => $user->business_id,
-                'language' => $user->language,
+                'language' => 'ar',
             ];
             $business = Business::findOrFail($user->business_id);
 
