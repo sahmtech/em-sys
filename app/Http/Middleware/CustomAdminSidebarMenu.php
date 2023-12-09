@@ -712,18 +712,23 @@ class CustomAdminSidebarMenu
             )->order(0);
             $menu->header("");
             $menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']),
-             __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(0);
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
+            )->order(0);
 
             $menu->url(
                 action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
                 __('housingmovements::lang.requests'),
-                ['icon' => 'fa fas fa-plus-circle',
-                 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'],
+                [
+                    'icon' => 'fa fas fa-plus-circle',
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'
+                ],
             )->order(1);
 
 
-      
+
 
             $menu->url(
                 action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
@@ -731,16 +736,28 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'workers'],
 
             )->order(2);
-            
+
             $menu->url(
                 action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),
                 __('housingmovements::lang.travelers'),
-                ['icon' => 'fa fas fa-plus-circle',
-                 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers'],
+                [
+                    'icon' => 'fa fas fa-plus-circle',
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers'
+                ],
 
             )->order(3);
 
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'index']),
+                __('housingmovements::lang.shifts'),
+                [
+                    'icon' => 'fa fas fa-plus-circle',
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'shifts'
+                ],
 
+            )->order(4);
+
+            
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
                 function ($buildingSubMenu) {
@@ -776,7 +793,7 @@ class CustomAdminSidebarMenu
                     $movement_management_SubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index']),
                         __('housingmovements::lang.carModels'),
-                        ['icon' => 'fa fas fa-plus-circle' , request()->segment(2) == 'carModels']
+                        ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'carModels']
                     )->order(8);
 
                     $movement_management_SubMenu->url(
@@ -935,9 +952,10 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex']),
                     __('internationalrelations::lang.proposed_labor'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'
-                    || request()->segment(2) == 'accepted_workers'
-                    || request()->segment(2) == 'unaccepted_workers'
+                    [
+                        'icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'proposed_laborIndex'
+                            || request()->segment(2) == 'accepted_workers'
+                            || request()->segment(2) == 'unaccepted_workers'
                     ],
                 )->order(4);
             }
@@ -955,7 +973,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 )->order(5);
             }
-            
         });
     }
 
@@ -1501,10 +1518,12 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
             }
-              if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
-                $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']), __('followup::lang.requests'), 
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']);
-              
+            if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
+                $menu->url(
+                    action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']
+                );
             }
             //Modules menu
             if (auth()->user()->can('manage_modules')) {

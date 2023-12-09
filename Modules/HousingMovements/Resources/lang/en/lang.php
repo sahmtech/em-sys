@@ -25,6 +25,8 @@ return [
     'contents' => 'Contents',
     'carTypes' => 'Car Types',
     'carType' => 'Car Type',
+    'shifts' => 'Shifts',
+
 
     'carModels' => 'Car Models',
     'cars' => 'Cars',
@@ -42,9 +44,9 @@ return [
     'add_car' => 'Add Car',
     'edit_car' => 'Edit Car',
     'carModel' => 'Car Model',
-    'search'=>'Search',
-    'viewAll'=>'View All',
-    'name_in_ar_en'=>'Name in Arabic or English',
+    'search' => 'Search',
+    'viewAll' => 'View All',
+    'name_in_ar_en' => 'Name in Arabic or English',
 
 
 

@@ -23,13 +23,14 @@
                         <div class="col-sm-4">
                             {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
 
-                            <select class="form-control" name="car_type_id" style="padding: 2px;">
+                            <select class="form-control" name="car_type_id" id='carTypeSelect' style="padding: 2px;">
                                 <option value="all" selected>@lang('lang_v1.all')</option>
                                 @foreach ($carTypes as $type)
                                     <option value="{{ $type->id }}">
                                         {{ $type->name_ar . ' - ' . $type->name_en }}</option>
                                 @endforeach
                             </select>
+
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group ">
@@ -181,7 +182,8 @@
 
 
                     <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog"></div>
+                    <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog">
+                    </div>
                 @endcomponent
             </div>
 
@@ -192,14 +194,17 @@
 @endsection
 
 @section('javascript')
+
+
     <script type="text/javascript">
         $(document).ready(function() {
 
-            $('.select2').select2({
-                placeholder: 'Select a worker',
-                allowClear: true,
-                tags: true
-            });
+
+            $('#carTypeSelect').select2();
+            $('#car_type_id').select2();
+            $('#carModel_id').select2();
+            $('#worker_select').select2();
+
 
             $(document).on('change', '#car_type_id', function() {
                 if ($(this).val() !== '') {

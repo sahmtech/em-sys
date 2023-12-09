@@ -26,7 +26,7 @@
                             <div class="col-sm-6" style="margin-top: 0px;">
                                 {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control select2" name="user_id" style="padding: 2px;">
+                                <select class="form-control " name="user_id" id="worker_select" style="padding: 2px;">
                                     {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}">
@@ -34,14 +34,15 @@
                                         </option>
                                     @endforeach
                                 </select>
-
+                                {{-- <input type="text" id="searchWorkerInput" placeholder="Search Worker"
+                                    style="margin-top: 5px;"> --}}
                             </div>
 
                             <div class="col-sm-6">
                                 {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control select2" id="car_type_id" name="car_type_id"
-                                    style="padding: 2px;" required>
+                                <select class="form-control" id="car_type_id" name="car_type_id" style="padding: 2px;"
+                                    required>
                                     <option value="">@lang('messages.please_select')</option>
 
                                     @foreach ($carTypes as $carType)
@@ -51,6 +52,8 @@
                                 </select>
 
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-sm-6" style="margin-top: 5px;">
                                 <div class="form-group">
                                     {!! Form::label('carModel', __('housingmovements::lang.carModel') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
@@ -75,6 +78,8 @@
                                 </div>
                             </div>
 
+                        </div>
+                        <div class="row">
 
                             <div class="col-sm-6">
                                 <div class="form-group">
@@ -87,39 +92,28 @@
                                     ]) !!}
                                 </div>
                             </div>
+                        </div>
 
-
-
-
-
-
-
-
-
-                            <div class="row" style="margin-top: 220px;">
-                                <div class="col-sm-12"
-                                    style="display: flex;
+                        <div class="row" style="margin-top: 220px;">
+                            <div class="col-sm-12"
+                                style="display: flex;
                                         justify-content: center;">
-                                    <button type="submit"
-                                        style="    width: 50%;
+                                <button type="submit"
+                                    style="    width: 50%;
                                             border-radius: 28px;"
-                                        id="add_car_type"
-                                        class="btn btn-primary pull-right btn-flat journal_add_btn">@lang('messages.save')</button>
-                                </div>
+                                    id="add_car_type"
+                                    class="btn btn-primary pull-right btn-flat journal_add_btn">@lang('messages.save')</button>
                             </div>
                         </div>
 
+                        {!! Form::close() !!}
+                    </section>
+
+
                 </div>
 
-
-                {!! Form::close() !!}
-                </section>
-
-
             </div>
-
         </div>
-    </div>
 
-</div> <!-- /.modal-content -->
+    </div> <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
