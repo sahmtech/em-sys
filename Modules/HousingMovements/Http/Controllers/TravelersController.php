@@ -86,10 +86,10 @@ class TravelersController extends Controller
                 'agency_id',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ]);
-       // dd( $workers->get());
+     
         
             if (!empty($request->input('project_name_filter'))) {
-                $workers->whereHas('agency', function ($query) use ($request) {
+                $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact', function ($query) use ($request) {
                     $query->where('id', '=', $request->input('project_name_filter'));
                 });
             }
@@ -104,7 +104,7 @@ class TravelersController extends Controller
                 });
             }
 
-
+          
             if (request()->ajax()) 
             {
                
@@ -154,7 +154,8 @@ class TravelersController extends Controller
             }
             
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $ContactsLocation = Contact::all()->pluck('supplier_business_name', 'id');
+        //dd(  $ContactsLocation );
         return view('housingmovements::travelers.index')->with(compact('ContactsLocation','buildings'));
     }
 
