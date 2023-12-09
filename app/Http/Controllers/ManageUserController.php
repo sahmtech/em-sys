@@ -41,7 +41,8 @@ class ManageUserController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -49,7 +50,6 @@ class ManageUserController extends Controller
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
             $users = User::where('business_id', $business_id)->where('user_type', '!=', 'admin')
-                //->user()
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
                     'id', 'username', 'user_type',
@@ -58,51 +58,11 @@ class ManageUserController extends Controller
 
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-                // ->addColumn(
-                //     'role',
-                //     function ($row) {
-                //         $role_name = $this->moduleUtil->getUserRoleName($row->id);
-
-                //         return $role_name;
-                //     }
-                // )
-                // ->addColumn(
-                //     'action',
-                //     '@can("user.update")
-                //         <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                //         &nbsp;
-                //     @endcan
-                //     @can("user.view")
-                //      <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                //      &nbsp;
-                //      @endcan
-                //     @can("user.delete")
-                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                //     @endcan'
-                // )
-                // ->addColumn(
-                //     'action',
-                //    '@can("user.update")
-                //       <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                //     &nbsp;
-
-                //     @endcan
-                //     @can("user.update")
-                //         <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
-                //     &nbsp;
-                //     @endcan
-
-                //     @can("user.delete")
-                //         <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                //     @endcan'
-
-
-                // )
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($isSuperAdmin) {
                         $html = '';
-                        if (auth()->user()->can('user.update')) {
+                        if ($isSuperAdmin || auth()->user()->can('user.update')) {
 
                             if ($row->allow_login == 0) {
                                 $html .= ' <a href="' . route('makeUser', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("messages.create_user") . '
@@ -113,7 +73,7 @@ class ManageUserController extends Controller
                                 &nbsp;';
                             }
                         }
-                        if (auth()->user()->can('user.delete')) {
+                        if ($isSuperAdmin || auth()->user()->can('user.delete')) {
                             $html .= '
                             <button data-href="' . URL::action('App\Http\Controllers\ManageUserController@destroy', [$row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                         ';
@@ -134,52 +94,6 @@ class ManageUserController extends Controller
         return view('manage_user.index');
     }
 
-    // public function employeesIndex()
-    // {
-    //     if (!auth()->user()->can('user.view') && !auth()->user()->can('user.create')) {
-    //         abort(403, 'Unauthorized action.');
-    //     }
-
-    //     if (request()->ajax()) {
-    //         $business_id = request()->session()->get('user.business_id');
-    //         $user_id = request()->session()->get('user.id');
-
-    //         $users = User::where('business_id', $business_id)->where('user_type', 'LIKE', '%employee%' )->where('user_type', 'NOT LIKE', '%user%')
-    //             // ->user()
-    //             ->where('is_cmmsn_agnt', 0)
-    //             ->select([
-    //                 'id', 'username',
-    //                 DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
-    //             ]);
-
-    //         return Datatables::of($users)
-    //             ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
-    //             ->addColumn(
-    //                 'role',
-    //                 function ($row) {
-    //                     $role_name = $this->moduleUtil->getUserRoleName($row->id);
-
-    //                     return $role_name;
-    //                 }
-    //             )
-    //             ->addColumn(
-    //                 'action',
-    //                 '@can("user.update")
-    //                     <a href="{{ route(\'makeUser\',[\'id\'=>$id]) }}" class="btn btn-xs btn-primary"> @lang("messages.create_user")</a>
-    //                     &nbsp;
-    //                 @endcan'
-    //             )
-    //             ->filterColumn('full_name', function ($query, $keyword) {
-    //                 $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
-    //             })
-    //             ->removeColumn('id')
-    //             ->rawColumns(['action', 'username'])
-    //             ->make(true);
-    //     }
-    //     return view('manage_user.employeesIndex');
-    // }
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -188,7 +102,8 @@ class ManageUserController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('user.create')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -223,7 +138,8 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('user.create')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -277,7 +193,8 @@ class ManageUserController extends Controller
      */
     public function show($id)
     {
-        if (!auth()->user()->can('user.view')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.view'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -302,7 +219,8 @@ class ManageUserController extends Controller
 
     public function makeUser($id)
     {
-        if (!auth()->user()->can('user.update')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -343,7 +261,8 @@ class ManageUserController extends Controller
      */
     public function edit($id)
     {
-        if (!auth()->user()->can('user.update')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -391,7 +310,8 @@ class ManageUserController extends Controller
             return $notAllowed;
         }
 
-        if (!auth()->user()->can('user.update')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -548,7 +468,8 @@ class ManageUserController extends Controller
             return $notAllowed;
         }
 
-        if (!auth()->user()->can('user.delete')) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('user.delete'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -610,7 +531,9 @@ class ManageUserController extends Controller
      */
     public function signInAsUser($id)
     {
-        if (!auth()->user()->can('superadmin') && empty(session('previous_user_id'))) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        if (!($isSuperAdmin || auth()->user()->can('superadmin')) && empty(session('previous_user_id'))) {
             abort(403, 'Unauthorized action.');
         }
 
