@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->bigInteger('contact_location_id')->unsigned()->nullable()->after('assigned_to');
-            $table->foreign('contact_location_id')->references('id')->on('contact_locations')->onDelete('cascade');
+        Schema::create('access_roles', function (Blueprint $table) {
+            $table->id();
+            $table->String('name');
+            $table->timestamps();
         });
-    }   
+    }
 
     /**
      * Reverse the migrations.
@@ -26,8 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('access_roles');
     }
 };

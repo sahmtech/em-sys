@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_projects', function (Blueprint $table) {
+        Schema::create('user_access_roles', function (Blueprint $table) {
             $table->id();
             $table->Integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('contact_location_id')->nullable();
-            $table->foreign('contact_location_id')->references('id')->on('contact_locations')->onDelete('cascade');
+            $table->unsignedBigInteger('access_roles_id')->nullable();
+            $table->foreign('access_roles_id')->references('id')->on('access_roles')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_projects');
+        Schema::dropIfExists('user_access_roles');
     }
 };
