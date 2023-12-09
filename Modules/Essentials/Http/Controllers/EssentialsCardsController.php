@@ -15,6 +15,7 @@ use App\Utils\TransactionUtil;
 use App\BusinessLocation;
 use App\Utils\Util;
 use App\Business;
+use App\Contact;
 use DB;
 use App\User;
 use App\ContactLocation;
