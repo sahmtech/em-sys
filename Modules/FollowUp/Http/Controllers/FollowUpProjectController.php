@@ -2,6 +2,7 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRoleProject;
 use App\Contact;
 use App\ContactLocation;
 use App\Transaction;
@@ -13,6 +14,7 @@ use Illuminate\Routing\Controller;
 use Modules\Sales\Entities\salesContract;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Http\Controllers\SalesController;
 
 class FollowUpProjectController extends Controller
@@ -49,11 +51,12 @@ class FollowUpProjectController extends Controller
 
 
 
-        // if (!$is_admin) {
-        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
-
-        //     $contacts = $contacts->whereIn('id', $userProjects);
-        // }
+        if (!$is_admin) {
+            $role = auth()->user()->roles[0];
+            $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
+            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
+            $contacts = $contacts->whereIn('id', $contactIds);
+        }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
