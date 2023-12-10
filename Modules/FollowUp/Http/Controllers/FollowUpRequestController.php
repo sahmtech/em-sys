@@ -389,13 +389,13 @@ class FollowUpRequestController extends Controller
                 ->where('department_id', $department);
         }
 
-        if (!$is_admin) {
-            $role = auth()->user()->roles[0];
+        // if (!$is_admin) {
+        //     $role = auth()->user()->roles[0];
 
-            $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
+        //     $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
 
-            $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
-        }
+        //     $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
+        // }
         if (request()->ajax()) {
 
 
