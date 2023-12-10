@@ -125,9 +125,9 @@ class ManageUserController extends Controller
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
+
         return view('manage_user.create')
-            ->with(compact('contacts', 'roles', 'username_ext', 'locations', 'form_partials', 'nationalities'));
+            ->with(compact('roles', 'username_ext', 'locations', 'form_partials', 'nationalities'));
     }
 
     /**
@@ -247,9 +247,9 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-        $contacts = Contact::with('contactLocation')->select(['id', 'supplier_business_name'])->get();
+      
         return view('manage_user.make_user')
-            ->with(compact('contacts', 'roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+            ->with(compact( 'roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
 

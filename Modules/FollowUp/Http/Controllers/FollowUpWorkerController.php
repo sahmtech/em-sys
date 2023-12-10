@@ -2,6 +2,7 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRoleProject;
 use App\Contact;
 use App\ContactLocation;
 use App\User;
@@ -58,8 +59,8 @@ class FollowUpWorkerController extends Controller
             ->with(['country', 'contract', 'OfficialDocument']);
 
         // if (!$is_admin) {
-        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
-
+        //     $role = auth()->user()->roles[0];
+        //     $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
         //     $users = $users->whereIn('assigned_to', $userProjects);
         // }
         $users->select(
