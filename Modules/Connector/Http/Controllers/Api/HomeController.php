@@ -99,7 +99,7 @@ class HomeController extends ApiController
             $fullName = $user->first_name . ' ' . $user->last_name;
             $image =  $user->profile_image ? 'uploads/' . $user->profile_image : null;
             $essentialsEmployeeAppointmet = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->first();
-            $professions=EssentialsProfession::all()->pluck('id','name');
+            $professions=EssentialsProfession::all()->pluck('id','name')->toArray();
             $work = $professions[$essentialsEmployeeAppointmet->profession_id];
             $res = [
                 'new_notifications' => 0,
