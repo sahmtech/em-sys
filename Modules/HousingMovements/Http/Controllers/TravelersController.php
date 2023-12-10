@@ -90,7 +90,8 @@ class TravelersController extends Controller
             ])
             ->whereNotNull('visa_id')
             ->where('interviewStatus','acceptable')
-            ->where('arrival_status',0);
+            ->where('arrival_status',1)
+            ->where('housed_status',0);
      
         
             if (!empty($request->input('project_name_filter'))) {
@@ -317,6 +318,7 @@ class TravelersController extends Controller
                         if ($worker) {
                             // Update the room_id for the worker
                             $worker->update(['room_id' => $data['room_number']]);
+                            $worker->update(['housed_status' => 1]);
                         }
                     }
         
