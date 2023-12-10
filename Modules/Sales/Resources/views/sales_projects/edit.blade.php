@@ -14,7 +14,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             {!! Form::open([
-                'route' => ['sale.updateContactLocations', $contactLocation->id],
+                'route' => ['sale.updateSaleProject', $contactLocation->id],
                 'method' => 'put',
                 'id' => 'edit_contact_lcoation_form',
             ]) !!}
@@ -30,7 +30,7 @@
 
                     <div class="form-group col-md-6">
                         {!! Form::label('contact_name', __('sales::lang.contact_name') . ':*') !!}
-                        {!! Form::select('contact_name', $contacts, $contactLocation->sales_project_id , [
+                        {!! Form::select('contact_name', $contacts, $contactLocation->contact_id , [
                             'class' => 'form-control',
                             'style' => ' height: 40px',
                             'required',

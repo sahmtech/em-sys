@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('sales::lang.contact_locations'))
+@section('title', __('sales::lang.sales_projects'))
 
 
 
@@ -7,7 +7,7 @@
 @section('content')
 
     <section class="content-header">
-        <h1>@lang('sales::lang.contact_locations')</h1>
+        <h1>@lang('sales::lang.sales_projects')</h1>
     </section>
 
 
@@ -32,8 +32,8 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>@lang('sales::lang.project_name')</th>
-                                    <th>@lang('sales::lang.location_name')</th>
+                                    <th>@lang('sales::lang.contact_name')</th>
+                                    <th>@lang('sales::lang.contact_location_name')</th>
                                     <th>@lang('sales::lang.contact_location_city')</th>
                                     <th>@lang('sales::lang.contact_location_name_in_charge')</th>
                                     <th>@lang('sales::lang.contact_location_phone_in_charge')</th>
@@ -50,7 +50,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
 
-                        {!! Form::open(['route' => 'sale.storeContactLocations', 'enctype' => 'multipart/form-data']) !!}
+                        {!! Form::open(['route' => 'sale.storeSaleProject', 'enctype' => 'multipart/form-data']) !!}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
@@ -150,7 +150,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('sale.contactLocations') }}",
+                    url: "{{ route('sale.saleProjects') }}",
 
                 },
 
@@ -158,10 +158,10 @@
                         data: 'id'
                     },
                     {
-                        data: 'project_name'
+                        data: 'contact_name'
                     },
                     {
-                        data: 'location_name'
+                        data: 'contact_location_name'
                     },
                     {
                         data: 'contact_location_city'

@@ -54,7 +54,7 @@ class FollowUpWorkerController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $users = User::where('user_type', 'worker')
 
-            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
         // if (!$is_admin) {
@@ -68,7 +68,7 @@ class FollowUpWorkerController extends Controller
             'users.nationality_id',
             'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'contact_locations.name as contact_name'
+            'sales_projects.name as contact_name'
         );
         if (request()->ajax()) {
 

@@ -20,6 +20,7 @@ use App\Contact;
 use App\TransactionSellLine;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesOrdersOperation;
+use Modules\Sales\Entities\SalesProject;
 
 class SaleOperationOrderController extends Controller
 {
@@ -74,13 +75,13 @@ class SaleOperationOrderController extends Controller
 
 
         $operations = DB::table('sales_orders_operations')
-            ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
+            ->join('sales_projects', 'sales_orders_operations.sales_project_id', '=', 'sales_projects.id')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
             ->select(
                 'sales_orders_operations.id as id',
                 'sales_orders_operations.operation_order_no as operation_order_no',
                 'sales_orders_operations.orderQuantity as orderQuantity',
-                'contacts.supplier_business_name as contact_name',
+                'sales_projects.name as contact_name',
                 'sales_contracts.number_of_contract as contract_number',
                 DB::raw("CASE 
                 WHEN sales_orders_operations.operation_order_type = 'external' THEN '" . __('sales::lang.external') . "'
@@ -134,10 +135,7 @@ class SaleOperationOrderController extends Controller
             'not_started' => __('sales::lang.not_started'),
 
         ];
-        $leads = Contact::where('type', 'customer')
-
-            ->where('business_id', $business_id)
-            ->pluck('supplier_business_name', 'id');
+        $leads = SalesProject::pluck('name', 'id');
 
         $agencies = Contact::where('type', 'agency')
             ->where('business_id', $business_id)
@@ -158,10 +156,10 @@ class SaleOperationOrderController extends Controller
         $customerId = $request->input('customer_id');
         $business_id = $request->session()->get('user.business_id');
 
-        $offer_prices = Transaction::where('contact_id', $customerId)
+        $offer_prices = Transaction::where('sales_project_id', $customerId)
             ->where('business_id', $business_id)
             ->pluck('id');
-
+        
         $contracts = [];
         foreach ($offer_prices as $key) {
             $contractIds = salesContract::where('offer_price_id', $key)
@@ -172,11 +170,11 @@ class SaleOperationOrderController extends Controller
 
             $totalQuantity = 0;
             foreach ($contractIds as $contract) {
-                $contractQuantity = TransactionSellLine::where('transaction_id', $contract['id'])->sum('quantity');
-                error_log($contractQuantity);
+                $contractQuantity = TransactionSellLine::where('transaction_id', $key)->sum('quantity');
+                
                 $salesOrdersQuantity = SalesOrdersOperation::where('sale_contract_id', $contract['id'])->sum('orderQuantity');
                 $totalQuantity += ($contractQuantity - $salesOrdersQuantity);
-                error_log($totalQuantity);
+        
             }
             if ($totalQuantity > 0) {
                 $contracts = array_merge($contracts, $contractIds);
@@ -237,7 +235,7 @@ class SaleOperationOrderController extends Controller
 
             DB::transaction(function () use ($request) {
                 $operation_order = [
-                    'contact_id', 'sale_contract_id', 'operation_order_type', 'quantity',
+                 'sale_contract_id', 'operation_order_type', 'quantity',
                     'Interview', 'Location', 'Delivery', 'Note', 'Industry'
                 ];
                 $operation_details = $request->only($operation_order);
@@ -254,6 +252,10 @@ class SaleOperationOrderController extends Controller
                 }
 
                 $operation_details['orderQuantity'] = $request->input('quantity');
+                $operation_details['sales_project_id'] = $request->input('contact_id');
+                $contact=SalesProject::whereId($request->input('contact_id'))->first()->contact_id;
+                $operation_details['contact_id'] = $contact;
+
 
                 $operation = SalesOrdersOperation::create($operation_details);
             });
@@ -287,7 +289,7 @@ class SaleOperationOrderController extends Controller
     public function show($id)
     {
         try {
-            $operations = SalesOrdersOperation::with('contact', 'salesContract.transaction.sell_lines.service')
+            $operations = SalesOrdersOperation::with('contact','project', 'salesContract.transaction.sell_lines.service')
                 ->where('id', $id)
                 ->first();
 

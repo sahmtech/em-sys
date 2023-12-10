@@ -25,6 +25,8 @@ use App\InvoiceScheme;
 use App\TransactionSellLine;
 use App\TypesOfService;
 use Carbon\Carbon; 
+use Modules\Sales\Entities\SalesProject;
+
 
 class OfferPriceController extends Controller
 {   
@@ -90,26 +92,27 @@ class OfferPriceController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_locations = BusinessLocation::forDropdown($business_id, false);
-   
+        $sells = Transaction::leftJoin('sales_projects', 'transactions.sales_project_id', '=', 'sales_projects.id')
+        ->where('transactions.business_id', $business_id)
+        ->where('transactions.type', 'sell')
+        ->select(
+            'transactions.id as id',
+            'transactions.location_id as location_id',
+            'transactions.transaction_date',
+            'transactions.ref_no',
+            'transactions.final_total',
+            'transactions.is_direct_sale',
+            'sales_projects.name as supplier_business_name',
+            'sales_projects.phone_in_charge as mobile',
+            'transactions.status as status',
+            
+
+        );
+      //  return $sells->get();
         if (request()->ajax()) {
         
             
-            $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
-                ->where('transactions.business_id', $business_id)
-                ->where('transactions.type', 'sell')
-                ->select(
-                    'transactions.id as id',
-                    'transactions.location_id as location_id',
-                    'transactions.transaction_date',
-                    'transactions.ref_no',
-                    'transactions.final_total',
-                    'transactions.is_direct_sale',
-                    'contacts.supplier_business_name',
-                    'contacts.mobile',
-                    'transactions.status as status',
-                    
-
-                );
+          
 
             $sells->groupBy('transactions.id');
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
@@ -172,9 +175,9 @@ class OfferPriceController extends Controller
                
                 ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
               //  ->addColumn('supplier_business_name', '@if(!empty($supplier_business_name)) {{$supplier_business_name}}, <br>@endif {{$name}}')
-                ->filterColumn('supplier_business_name', function ($query, $keyword) {
+                ->filterColumn('name', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
-                        $q->where('contacts.supplier_business_name', 'like', "%{$keyword}%")
+                        $q->where('sales_projects.name', 'like', "%{$keyword}%")
                         ;
                     });
                 })
@@ -237,8 +240,6 @@ class OfferPriceController extends Controller
     {
         $sale_type = request()->get('sale_type', '');
 
-      
-        
         $can_create_offer_price= auth()->user()->can('sales.create_offer_price');
             if (! $can_create_offer_price) {
                 abort(403, 'Unauthorized action.');
@@ -345,9 +346,7 @@ class OfferPriceController extends Controller
         $change_return = $this->dummyPaymentLine;
 
         //    $leads=Contact::where('type','lead')->where('business_id',$business_id)->pluck('supplier_business_name','id');
-            $leads = Contact::whereIn('type', ['lead', 'customer'])
-            ->where('business_id', $business_id)
-            ->pluck('supplier_business_name', 'id');
+            $leads = SalesProject::pluck('name', 'id');
         
             return view('sales::price_offer.create')
             ->with(compact(
@@ -388,19 +387,16 @@ class OfferPriceController extends Controller
      */
     public function store(Request $request)
     { 
-        
-
         try {
             $business_id = $request->session()->get('user.business_id');
-            $offer = ['contract_form', 'location_id','contact_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
+            $offer = ['contract_form', 'location_id','down_payment', 'transaction_date', 'final_total', 'status'];
             $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
             $offer_details = $request->only($offer);
             $offer_details['location_id'] = $request->input('location_id');
+            $offer_details['sales_project_id'] = $request->input('contact_id');
             $offer_details['business_id'] = $business_id;
             $offer_details['transaction_date'] = $transactionDate;
-
             $offer_details['created_by'] = $request->session()->get('user.id');
-        
             $offer_details['type'] = 'sell';
             $offer_details['sub_type'] = 'service';	
             $offer_details['is_quotation'] = 1;
@@ -473,12 +469,14 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
             
         $query = Transaction::where('business_id', $business_id)
-            ->where('id', $id)->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service'])
+             ->where('id', $id)
+             ->with(['sale_project:id,name,phone_in_charge', 'sell_lines', 'sell_lines.service'])
         
-            ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
+            ->select('id', 'business_id','location_id','status','sales_project_id','ref_no','final_total','down_payment','contract_form','transaction_date'
             
-            )->get()[0];
+         )->get()[0];
    
+
         
         return view('sales::price_offer.show')
             ->with(compact('query'));
@@ -497,9 +495,7 @@ class OfferPriceController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $offer_price=Transaction::find($id);
         $business_locations = BusinessLocation::forDropdown($business_id, false);
-        $leads = Contact::whereIn('type', ['lead', 'customer'])
-        ->where('business_id', $business_id)
-        ->pluck('supplier_business_name', 'id');
+        $leads = SalesProject::pluck('name', 'id');
         return view('sales::price_offer.edit')->with(compact('offer_price','business_locations','leads'));
     }
 
@@ -509,27 +505,19 @@ class OfferPriceController extends Controller
         
         try {
          
-                $offer = ['contract_form', 'location_id','contact_id', 'down_payment', 'transaction_date', 'status'];
-                
-               // $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
-                error_log('2222222222');
-
+                $offer = ['contract_form', 'location_id','down_payment', 'transaction_date', 'status'];
+             
                 $offer_details = $request->only($offer);
-                error_log('33333333333');
+             
 
                 $offer_details['location_id'] = $request->input('location_id');
-                error_log('4444444444');
-
+                $offer_details['sales_project_id'] = $request->input('contact_id');
                 $offer_details['transaction_date'] =$request->input('transaction_date');
                 $offer_details['created_by'] = $request->session()->get('user.id');
              
             
             Transaction::where('id', $id)->update($offer_details);
-            error_log('555555555');
-
-           
-        
-           
+    
                 $output = [
                     'success' => 1,
                     'msg' => __('sales::lang.client_updated_success'),

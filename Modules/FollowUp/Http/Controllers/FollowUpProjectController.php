@@ -42,7 +42,7 @@ class FollowUpProjectController extends Controller
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
-                'transactions', 'transactions.salesContract', 'contactLocation', 'contactLocation.assignedTo',
+                'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
