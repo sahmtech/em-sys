@@ -82,25 +82,36 @@ class HomeController extends ApiController
                 ->select('*')->latest('created_at')
                 ->first();
 
-            $lastTask = [
-                'id' => $todo->id,
-                'business_id' => $todo->business_id,
-                'task' => $todo->task,
-                'date' => $todo->date,
-                'end_date' => $todo->end_date,
-                'task_id' => $todo->task_id,
-                'description' => $todo->description,
-                'status' => $todo->status,
-                'estimated_hours' => $todo->estimated_hours,
-                'priority' => $todo->priority,
-                'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
-            ];
+            $lastTask = [];
+            if ($todo) {
+                $lastTask = [
+                    'id' => $todo->id,
+                    'business_id' => $todo->business_id,
+                    'task' => $todo->task,
+                    'date' => $todo->date,
+                    'end_date' => $todo->end_date,
+                    'task_id' => $todo->task_id,
+                    'description' => $todo->description,
+                    'status' => $todo->status,
+                    'estimated_hours' => $todo->estimated_hours,
+                    'priority' => $todo->priority,
+                    'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+                ];
+            }
+
+
             $user = User::where('id', $user->id)->first();
             $fullName = $user->first_name . ' ' . $user->last_name;
             $image =  $user->profile_image ? 'uploads/' . $user->profile_image : null;
             $essentialsEmployeeAppointmet = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->first();
-            $professions=EssentialsProfession::all()->pluck('id','name')->toArray();
-            $work = $professions[$essentialsEmployeeAppointmet->profession_id];
+
+            $professions = EssentialsProfession::all()->pluck( 'name','id')->toArray();
+            $work = null;
+            if ($essentialsEmployeeAppointmet) {
+                $work = $professions[$essentialsEmployeeAppointmet->profession_id];
+            }
+
+
             $res = [
                 'new_notifications' => 0,
                 'work_day_start' => Carbon::parse($shift->start_time)->format('h:i A'),
