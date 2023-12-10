@@ -206,9 +206,9 @@ class FollowUpWorkerController extends Controller
 
 
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
-        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
-        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        // $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+        // $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
+        // $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
         // dd( $Qualification);
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
