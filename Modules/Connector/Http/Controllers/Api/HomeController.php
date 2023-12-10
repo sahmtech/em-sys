@@ -71,6 +71,7 @@ class HomeController extends ApiController
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->where('users.id', $user->id)->latest('followup_worker_requests.created_at')
+          
                 ->first();
 
 
@@ -79,10 +80,11 @@ class HomeController extends ApiController
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
+           
                 ->select('*')->latest('created_at')
                 ->first();
 
-            $lastTask = [];
+            $lastTask = null;
             if ($todo) {
                 $lastTask = [
                     'id' => $todo->id,
@@ -105,7 +107,7 @@ class HomeController extends ApiController
             $image =  $user->profile_image ? 'uploads/' . $user->profile_image : null;
             $essentialsEmployeeAppointmet = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->first();
 
-            $professions = EssentialsProfession::all()->pluck( 'name','id')->toArray();
+            $professions = EssentialsProfession::all()->pluck('name', 'id')->toArray();
             $work = null;
             if ($essentialsEmployeeAppointmet) {
                 $work = $professions[$essentialsEmployeeAppointmet->profession_id];
