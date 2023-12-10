@@ -51,12 +51,12 @@ class FollowUpProjectController extends Controller
 
 
 
-        if (!$is_admin) {
-            $role = auth()->user()->roles[0];
-            $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
-            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
-            $contacts = $contacts->whereIn('id', $contactIds);
-        }
+        // if (!$is_admin) {
+        //     $role = auth()->user()->roles[0];
+        //     $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
+        //     $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
+        //     $contacts = $contacts->whereIn('id', $contactIds);
+        // }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
