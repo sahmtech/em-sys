@@ -3,12 +3,15 @@
 namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
+use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Connector\Transformers\CommonResource;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\ToDo;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
@@ -92,8 +95,12 @@ class HomeController extends ApiController
                 'priority' => $todo->priority,
                 'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
             ];
-
-
+            $user = User::where('id', $user->id)->first();
+            $fullName = $user->first_name . ' ' . $user->last_name;
+            $image =  $user->profile_image ? 'uploads/' . $user->profile_image : null;
+            $essentialsEmployeeAppointmet = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->first();
+            $professions=EssentialsProfession::all()->pluck('id','name');
+            $work = $professions[$essentialsEmployeeAppointmet->profession_id];
             $res = [
                 'new_notifications' => 0,
                 'work_day_start' => Carbon::parse($shift->start_time)->format('h:i A'),
@@ -101,6 +108,9 @@ class HomeController extends ApiController
                 'business_name' => $business->name,
                 'request' => $lastRequest,
                 'task' => $lastTask,
+                'full_name' => $fullName,
+                'image' => $image,
+                'work' => $work,
 
             ];
 
