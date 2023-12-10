@@ -81,7 +81,7 @@
                         <div style="row">
                             <div class="col-md-11">
                                 <div class="form-group">
-                                    {!! Form::label('choose_fields', __('followup::lang.choose_fields') . ':') !!}
+                                    {!! Form::label('choose_fields', __('followup::lang.choose_fields') . ' ') !!}
                                     {!! Form::select('choose_fields_select[]', $fields, $default, [
                                         'class' => 'form-control select2',
                                         'multiple',

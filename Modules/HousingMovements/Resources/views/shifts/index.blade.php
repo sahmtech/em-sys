@@ -10,7 +10,7 @@
 
     <!-- Main content -->
     <section class="content">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     {!! Form::open([
@@ -33,17 +33,12 @@
                     <div class="col-sm-8" style="padding-right: 3px;">
                         <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
                             @lang('housingmovements::lang.search')</button>
-                        {{-- @if ($after_serch)
-                            <a class="btn btn-primary pull-right m-5 "
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@index') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@index') }}">
-                                @lang('housingmovements::lang.viewAll')</a>
-                        @endif --}}
+                      
                     </div>
                     {!! Form::close() !!}
                 @endcomponent
             </div>
-        </div>
+        </div> --}}
 
         <div class="row">
             <div class="col-md-12">
@@ -60,7 +55,7 @@
                             <a class="btn btn-primary pull-right m-5 btn-modal"
                                 href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@create') }}"
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@create') }}"
-                                data-container="#create_account_modal">
+                                data-container="#add_shits_model">
                                 <i class="fas fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot
@@ -75,6 +70,7 @@
                                     <th style="text-align: center;">@lang('restaurant.start_time')</th>
                                     <th style="text-align: center;">@lang('restaurant.end_time')</th>
                                     <th style="text-align: center;">@lang('essentials::lang.holiday')</th>
+                                    <th style="text-align: center;">@lang('housingmovements::lang.project_name')</th>
                                     <th style="text-align: center;">@lang('messages.action')</th>
                                 </tr>
 
@@ -98,13 +94,27 @@
                                             {{ $row->end_time }}
 
                                         </td>
+
                                         <td style="display: flex;gap: 5px;">
                                             @foreach ($row->holidays as $holiday)
-                                                <h4><span class="badge badge-secondary">{{ $holiday }}</span></h4>
+                                                <h6 style="margin-top: 0px;"><span
+                                                        class="badge badge-secondary">{{ __('lang_v1.' . $holiday) }}</span>
+                                                </h6>
                                             @endforeach
 
 
                                         </td>
+
+                                        <td style="text-align: center;">
+
+                                            {{ $row->project->name }}
+
+
+
+                                        </td>
+
+
+
 
                                         <td style="text-align: center;">
                                             <div class="btn-group" role="group">
@@ -121,7 +131,7 @@
                                                         title="@lang('messages.edit')"
                                                         href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@edit', $row->id) }}"
                                                         data-href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@edit', $row->id) }}"
-                                                        data-container="#edit_car_type_model">
+                                                        data-container="#edit_shits_model">
 
                                                         <i class="fas fa-edit cursor-pointer"
                                                             style="padding: 2px;color:rgb(8, 158, 16);"></i>
@@ -158,9 +168,12 @@
                         </center>
                     </div>
 
-
-                    <div class="modal fade" id="create_account_modal" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_car_type_model" tabindex="-1" role="dialog"></div>
+                    {{-- <div class="modal fade" id="shift_modal" tabindex="-1" role="dialog"
+                        aria-labelledby="gridSystemModalLabel">
+                        @include('housingmovements::shifts.create')
+                    </div> --}}
+                    <div class="modal fade" id="add_shits_model" tabindex="-1" role="dialog"></div>
+                    <div class="modal fade" id="edit_shits_model" tabindex="-1" role="dialog"></div>
                 @endcomponent
             </div>
 
@@ -168,4 +181,15 @@
     </section>
     <!-- /.content -->
 
+@endsection
+
+
+@section('javascript')
+
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
+    </script>
 @endsection

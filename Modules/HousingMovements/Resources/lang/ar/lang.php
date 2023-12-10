@@ -42,6 +42,10 @@ return [
     'viewAll' => 'عرض الكل',
     'name_in_ar_en'=>'الاسم بالعربية او الانكليزية',
     'shifts'=>'فترات الدوام',
+    'project_name'=>'اسم المشروع',
+    'shift_name'=>'اسم الفترة',
+    'add_shift'=>'إضافة فترة ',
+    'edit_shift'=>'تعديل فترة',
 
 
     'car_typeModel' => 'توع وطراز السيارة',

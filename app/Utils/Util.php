@@ -258,7 +258,7 @@ class Util
         if (session('business.time_format') == 12) {
             $time_format = 'h:i A';
         }
-
+   
         return !empty($time_format) ? \Carbon::createFromFormat($time_format, $time)->format('H:i') : null;
     }
 

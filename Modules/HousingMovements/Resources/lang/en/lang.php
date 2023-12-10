@@ -26,7 +26,10 @@ return [
     'carTypes' => 'Car Types',
     'carType' => 'Car Type',
     'shifts' => 'Shifts',
-
+    'project_name'=>'Project Name',
+    'shift_name'=>'Shift Name',
+    'add_shift'=>'Add Shift',
+    'edit_shift'=>'Edit Shift',
 
     'carModels' => 'Car Models',
     'cars' => 'Cars',
