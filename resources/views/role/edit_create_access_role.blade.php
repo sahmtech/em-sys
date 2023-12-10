@@ -15,11 +15,10 @@
         @endphp
         @component('components.widget', ['class' => 'box-primary'])
             {!! Form::open([
-                'url' => action([\App\Http\Controllers\RoleController::class, 'updateAccessRole']),
+                'url' => action([\App\Http\Controllers\RoleController::class, 'updateAccessRole'], ['roleId' => $accessRole->id]),
                 'method' => 'post',
                 'id' => 'role_add_form',
             ]) !!}
-            <input type=hidden name="access_role_id" valu="{{ $accessRole->id }}">
             <div class="row check_group">
                 <div class="col-md-3">
                     <h4>@lang('role.access_contact_locations') </h4>

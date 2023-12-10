@@ -246,7 +246,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('roles', RoleController::class);
 
     Route::get('hrm/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
- Route::post('hrm/roles/updateAccessRole', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
+    Route::post('hrm/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::resource('users', ManageUserController::class);
 
     Route::resource('group-taxes', GroupTaxController::class);

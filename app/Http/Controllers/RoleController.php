@@ -105,18 +105,19 @@ class RoleController extends Controller
         return view('role.edit_create_access_role')
             ->with(compact('accessRole', 'contacts', 'accessRoleProjects'));
     }
-    public function updateAccessRole(Request $request)
+    public function updateAccessRole(Request $request, $roleId)
     {
         $projectsIds = $request->projects ?? [];
 
         if (!empty($projectsIds)) {
             foreach ($projectsIds as $projectsId) {
                 AccessRoleProject::create([
-                    'access_role_id' =>  $request->access_role_id,
+                    'access_role_id' =>  $roleId,
                     'sales_project_id' => $projectsId,
                 ]);
             }
         }
+        return redirect()->route('roles.index');
     }
 
     /**
