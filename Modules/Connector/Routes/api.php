@@ -103,4 +103,6 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     Route::get('getMyToDo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getMyToDo']);
     Route::post('makeRequest', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsRequestsController::class, 'makeRequest']);
     Route::get('getMyLeaves', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyLeaves']);
+    Route::get('getEditUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getEditUserInfo']);
+    Route::post('updateUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'updateUserInfo']);
 });
