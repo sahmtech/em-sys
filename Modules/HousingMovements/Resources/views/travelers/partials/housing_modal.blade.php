@@ -8,6 +8,7 @@
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('housingmovements::lang.housed')</h4>
         </div>
+        {!! Form::open(['url' => action( [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
             <div class="modal-body">
            
                         <div class="form-group col-md-6">
@@ -28,7 +29,7 @@
                         <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
             </div>
-            
+            {!! Form::close() !!}
         </div>
     </div>
 </div>

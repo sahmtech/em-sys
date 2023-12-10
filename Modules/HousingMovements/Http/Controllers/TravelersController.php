@@ -289,7 +289,21 @@ class TravelersController extends Controller
 
    
    
-   
+    public function housed()
+    {
+       
+        try{  
+        $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+  
+     
+} catch (\Exception $e) {
+    \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+    $output = ['success' => 0, 'msg' => $e->getMessage()];
+}
+
+return redirect()->back()->with(['status' => $output]);
+   }
    
    
     public function getRoomNumbers($buildingId)

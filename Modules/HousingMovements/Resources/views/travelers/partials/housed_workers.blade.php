@@ -79,10 +79,10 @@
     
                 
                     &nbsp;
-                            {!! Form::open(['url' => action([\App\Http\Controllers\ProductController::class, 'bulkEdit']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
+
                             {!! Form::hidden('selected_products', null, ['id' => 'selected_products_for_edit']); !!}
                             <button type="submit" class="btn btn-xs btn-warning" id="edit-selected"> <i class="fa fa-home"></i>{{__('housingmovements::lang.housed')}}</button>
-                            {!! Form::close() !!}
+                           
                 
               
                
@@ -129,7 +129,7 @@
                             .format('YYYY-MM-DD');
                         d.filter_start_date = start;
                         d.filter_end_date = end;
-                        d.date_filter = date_filter;
+                        d.date_filter = d.date_filter;
                     }
                 }
             },
@@ -285,27 +285,58 @@
 
 
 
-        $('#edit-selected').on('click', function (e) {
-            e.preventDefault();
+       // Inside the click event for 'edit-selected'
+$('#edit-selected').on('click', function (e) {
+    e.preventDefault();
 
-            var selectedRows =  getCheckRecords();
+    var selectedRows = getCheckRecords();
 
-            if (selectedRows.length > 0) {
-                $('#bulkEditModal').modal('show');
-            }
-             else
-             {
-                $('input#selected_rows').val('');
-                swal('@lang("lang_v1.no_row_selected")');
-            }
+    if (selectedRows.length > 0) {
+        // Open the bulk edit modal
+        $('#bulkEditModal').modal('show');
+
+        // Clear existing inputs in the modal body
+        $('#bulk_edit_form').find('input[name="worker_id[]"]').remove();
+
+        // Loop through each selected row and add hidden input fields to the form
+        $.each(selectedRows, function (index, workerId) {
+            var workerIdInput = $('<input>', {
+                type: 'hidden',
+                name: 'worker_id[]',
+                value: workerId
+            });
+
+            // Append the input field to the bulk_edit_form
+            $('#bulk_edit_form').append(workerIdInput);
         });
+    } else {
+        $('input#selected_rows').val('');
+        swal('@lang("lang_v1.no_row_selected")');
+    }
+});
 
       
-        $('#applyBulkEdit').on('click', function () {
-           
-            $('#bulkEditModal').modal('hide');
-        });
+$('#bulk_edit_form').submit(function (e) {
+    // Additional logic if needed
 
+    // Submit the form
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'post',
+        data: $(this).serialize(),
+        success: function (response) {
+            // Handle the response if needed
+            console.log(response);
+            // Close the modal after successful submission
+            $('#bulkEditModal').modal('hide');
+            // Reload the DataTable
+            reloadDataTable();
+        }
+    });
+
+    // Prevent the default form submission
+    e.preventDefault();
+});
 
  
 
