@@ -681,7 +681,17 @@ class CustomAdminSidebarMenu
 
             )->order(3);
 
+            $menu->url(
+                action([\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'index']),
+                __('housingmovements::lang.shifts'),
+                [
+                    'icon' => 'fa fas fa-plus-circle',
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'shifts'
+                ],
 
+            )->order(4);
+
+            
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
                 function ($buildingSubMenu) {
@@ -1441,12 +1451,10 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
             }
-            if (($isSuperAdmin) || (auth()->user()->can('Superadmin.crud_all_admin_requests'))) {
-                $menu->url(
-                    action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']),
-                    __('followup::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']
-                );
+              if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
+                $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']), __('followup::lang.requests'), 
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']);
+              
             }
             //Modules menu
             if (($isSuperAdmin) || (auth()->user()->can('manage_modules'))) {

@@ -19,6 +19,7 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Sales\Entities\salesContract;
+use Modules\Sales\Entities\SalesProject;
 
 class FollowUpReportsController extends Controller
 {
@@ -43,9 +44,9 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        // $contacts = ContactLocation::all()->pluck('name', 'id');
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        //  Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+       
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+    
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -56,47 +57,15 @@ class FollowUpReportsController extends Controller
 
         $users = User::where('user_type', 'worker')
 
-            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-
-        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->where('user_type', 'worker')
-            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
-            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
-            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
-            ->with(['country', 'contract', 'OfficialDocument'])
-            ->select([
-                'users.id',
-                'users.emp_number',
-                'users.username',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
-                'users.id_proof_number',
-                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
-
-                'essentials_admission_to_works.admissions_date as admissions_date',
-                'essentials_employees_contracts.contract_end_date as contract_end_date',
-                'users.email',
-                'users.allow_login',
-                'users.contact_number',
-                'users.essentials_department_id',
-                'users.essentials_salary',
-                'users.total_salary',
-                'users.bank_details',
-                'users.status',
-                'essentials_employee_appointmets.profession_id as profession_id',
-
-                'essentials_employee_appointmets.specialization_id as specialization_id'
-            ]);
-
         $users->select(
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',
             'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'contact_locations.name as contact_name'
+            'sales_projects.name as contact_name'
         );
 
         if (request()->ajax()) {
@@ -165,7 +134,7 @@ class FollowUpReportsController extends Controller
 
                     return $specializationName;
                 })->addColumn('bank_code', function ($user) {
-                   
+
                     $bank_details = json_decode($user->bank_details);
                     return $bank_details->bank_code ?? ' ';
                 })
@@ -173,7 +142,7 @@ class FollowUpReportsController extends Controller
                 ->make(true);
         }
 
-        return view('followup::reports.projectWorkers')->with(compact('ContactsLocation', 'nationalities'));
+        return view('followup::reports.projectWorkers')->with(compact('contacts_fillter', 'nationalities'));
     }
 
 
@@ -190,68 +159,30 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        // $contacts_fillter = ContactLocation::all()->pluck('name', 'id');
+       
         $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
 
 
-        // $contactsLocation = ContactLocation::with(['contact']);
-        // $contacts = ContactLocation::with(['contact'])->with(
-        //     [
-        //         'user', 'transactions', 'transactions.salesContract',
-        //         'transactions.salesContract.salesOrderOperation'
-
-        //     ]
-        // );
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
-                'transactions', 'transactions.salesContract', 'contactLocation', 'contactLocation.assignedTo',
+                'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
 
-        // $contactLocations = ContactLocation::join('contacts', 'contact_locations.id', '=', 'contacts.contact_id')
-        //     ->with(
-        //         [
-        //             'user', 'transactions', 'transactions.salesContract',
-        //             'transactions.salesContract.salesOrderOperation'
-
-        //         ]
-        //     );
-        // dd($contactLocations);
+       
         if (request()->ajax()) {
             $contracts = salesContract::with([
                 'transaction.contact.user',
                 'salesOrderOperation',
             ]);
-            // if (!empty(request()->input('customer_name')) && request()->input('customer_name') !== 'all') {
-            // $contactLocations = ContactLocation::where(request()->input('customer_name'))->get();
-
-            // $contactsLocation = ContactLocation::where('contact_id', request()->input('customer_name'))->with(['contact']);
-            // if ($contactsLocation) {
-
-            //     $contacts = ContactLocation::with(['contact'])->with(
-            //         [
-            //             'user', 'transactions', 'transactions.salesContract',
-            //             'transactions.salesContract.salesOrderOperation'
-
-            //         ]
-            //     );
-            // }
-
-            // $contracts->whereHas('transaction', function ($query) use ($contactId) {
-            //     $query->where('id', $contactId);
-            // });
-            // }
+          
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
                 $contacts->where('id', request()->input('project_name'));
-                // $contactsLocation = ContactLocation::where('id', request()->input('project_name'));
+                
             }
-            // if (!empty(request()->input('type')) && request()->input('type') !== 'all') {
-            //     $contracts->whereHas('salesOrderOperation', function ($query) {
-            //         $query->where('operation_order_type', request()->input('type'));
-            //     });
-            // }
+           
             return Datatables::of($contacts)
                 ->addColumn('contact_name', function ($contact) {
                     return $contact->supplier_business_name ?? null;
@@ -315,91 +246,9 @@ class FollowUpReportsController extends Controller
                 ])
 
                 ->make(true);;
-            // $contracts = salesContract::with([
-            //     'transaction.contact.user',
-            //     'salesOrderOperation',
-            // ]);
-            // if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-            //     $contactId = Transaction::where('contact_id', request()->input('project_name'))->value('id');
-
-            //     $contracts->whereHas('transaction', function ($query) use ($contactId) {
-            //         $query->where('id', $contactId);
-            //     });
-            // }
-            // if (!empty(request()->input('offer_status')) && request()->input('offer_status') !== 'all') {
-            //     $contracts->whereHas('salesOrderOperation', function ($query) {
-            //         $query->where('Status', request()->input('offer_status'));
-            //     });
-            // }
-            // if (!empty(request()->input('type')) && request()->input('type') !== 'all') {
-            //     $contracts->whereHas('salesOrderOperation', function ($query) {
-            //         $query->where('operation_order_type', request()->input('type'));
-            //     });
-            // }
-            // return Datatables::of($contracts)
-            //     ->addColumn('contact_name', function ($contract) {
-            //         return $contract->transaction->contact->supplier_business_name;
-            //     })
-            //     ->addColumn('active_worker_count', function ($contract) {
-            //         return $contract->transaction->contact->user->where('user_type', 'worker')->where('status', 'active')->count();
-            //     })
-            //     ->addColumn('worker_count', function ($contract) {
-            //         return $contract->transaction->contact->user->where('user_type', 'worker')->count();
-            //     })
-            //     ->addColumn('duration', function ($contract) {
-            //         $startDate = \Carbon\Carbon::parse($contract->start_date);
-            //         $endDate = \Carbon\Carbon::parse($contract->end_date);
-
-            //         $duration = $startDate->diff($endDate);
-
-
-            //         $years = $duration->y > 0 ? ($duration->y == 1 ? $duration->y . ' ' . trans('sales::lang.year') : $duration->y . ' ' . trans_choice('sales::lang.years', $duration->y)) : '';
-            //         $months = $duration->m > 0 ? ($duration->m == 1 ? $duration->m . ' ' . trans('sales::lang.month') : $duration->m . ' ' . trans_choice('sales::lang.months', $duration->m)) : '';
-            //         $days = $duration->d > 0 ? ($duration->d == 1 ? $duration->d . ' ' . trans('sales::lang.day') : $duration->d . ' ' . trans_choice('sales::lang.days', $duration->d)) : '';
-
-
-            //         $durationString = implode(', ', array_filter([$years, $months, $days]));
-
-            //         return $durationString;
-            //     })
-
-            //     ->addColumn('contract_form', function ($contract) {
-            //         return $contract->transaction ? $contract->transaction->contract_form : null;
-            //     })
-            //     ->addColumn('status', function ($contract) {
-            //         return $contract->salesOrderOperation ? $contract->salesOrderOperation->Status : null;
-            //     })
-            //     ->addColumn('type', function ($contract) {
-            //         return $contract->salesOrderOperation ? $contract->salesOrderOperation->operation_order_type : null;
-            //     })
-            //     ->addColumn(
-            //         'action',
-            //         function ($row) use ($is_admin) {
-            //             $html = '';
-            //             if ($is_admin) {
-            //                 $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
-            //                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
-            //                 </a>';
-            //                 // $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
-            //                 //  &nbsp;
-            //                 //     $html .= '<button class="btn btn-xs btn-danger delete_project_button" data-href="' . route('project.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-            //             }
-
-            //             return $html;
-            //         }
-            //     )
-            //     ->filterColumn('name', function ($query, $keyword) {
-            //         $query->where('name', 'like', "%{$keyword}%");
-            //     })
-
-            //     ->rawColumns(['action'])
-
-            //     ->make(true);
+          
         }
 
-
-        // $contacts_fillter = [];
-        // $contactLocation_fillter = [];
         return view('followup::reports.projects')->with(compact('contacts_fillter'));
     }
 

@@ -83,8 +83,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-update/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'update'])->name('car-update');
         Route::get('/cars-delete/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'destroy'])->name('car-delete');
         Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'getCarModelByCarType_id'])->name('getCarModelByCarType_id');
-   
-
-        
+        // Routes Shifts
+        Route::get('/shifts', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'index'])->name('shifts');
+        Route::get('/shifts-create', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'create'])->name('shifts-create');
+        Route::get('/shifts-edit/{id}', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'edit'])->name('shifts-edit');
+        Route::post('/shifts-store', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'store'])->name('shifts-store');
+        Route::post('/shifts-search', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'search'])->name('shifts-search');
+        Route::put('/shifts-update/{id}', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'update'])->name('shifts-update');
+        Route::get('/shifts-delete/{id}', [\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'destroy'])->name('shifts-delete');
     });
 });
