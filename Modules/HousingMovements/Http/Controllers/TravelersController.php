@@ -85,7 +85,9 @@ class TravelersController extends Controller
                 'visa_id',
                 'agency_id',
                 DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
-            ]);
+            ])
+            ->whereNotNull('visa_id')
+            ->where('interviewStatus','acceptable');
      
         
             if (!empty($request->input('project_name_filter'))) {
