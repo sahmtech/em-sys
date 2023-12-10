@@ -314,18 +314,12 @@
     }
 });
 
-      
 $('#bulk_edit_form').submit(function (e) {
     // Prevent the default form submission
     e.preventDefault();
 
-    // Serialize the form data including selected rows and room number
+    // Serialize the form data including selected rows
     var formData = $(this).serializeArray();
-    console.log(formData);
-    var roomNumber = $('#room_number').val();
-    console.log(roomNumber);
-    // Add room number to the serialized data
-    formData.push({name: 'room_number', value: roomNumber});
 
     $.ajax({
         url: $(this).attr('action'),

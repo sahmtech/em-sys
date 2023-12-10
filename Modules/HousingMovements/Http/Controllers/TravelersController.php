@@ -90,8 +90,8 @@ class TravelersController extends Controller
             ])
             ->whereNotNull('visa_id')
             ->where('interviewStatus','acceptable')
-            ->where('arrival_status',1)
-            ->where('housed_status',0);
+            ->where('arrival_status',0);
+          
      
         
             if (!empty($request->input('project_name_filter'))) {
@@ -214,7 +214,8 @@ class TravelersController extends Controller
             ])
             ->whereNotNull('visa_id')
             ->where('interviewStatus','acceptable')
-            ->where('arrival_status',1);
+            ->where('arrival_status',1)
+            ->where('housed_status',0);
      
         
             if (!empty($request->input('project_name_filter'))) {
@@ -290,55 +291,57 @@ class TravelersController extends Controller
 
    
    
-        public function housed_data(Request $request)
-        {
-            try {
-                $requestData = $request->only(['htr_building', 'room_number', 'worker_id']);
-
-                $jsonData = [];
+    public function housed_data(Request $request)
+    {
+        try {
+            $requestData = $request->only(['htr_building', 'room_number', 'worker_id']);
+    
+            $jsonData = [];
         
-                foreach ($requestData['worker_id'] as $index => $workerId) {
-                    $jsonObject = [
-                        'worker_id' => $workerId,
-                        'room_number' => $requestData['room_number'][$index], // Assuming 'room_number' is an array in the request
-                    ];
+            foreach ($requestData['worker_id'] as $index => $workerId) {
+                $jsonObject = [
+                    'worker_id' => $workerId,
+                    'room_number' => $requestData['room_number'][$index] ?? null,
+                ];
         
-                    $jsonData[] = $jsonObject;
-                }
-        
-                $jsonData = json_encode($jsonData);
-                if (!empty($jsonData)) {
-                    $selectedData = json_decode($jsonData, true);
-        
-                    DB::beginTransaction();
-        
-                    foreach ($selectedData as $data) {
-                        $worker = User::where('proposal_worker_id', $data['worker_id'])->first();
-        
-                        if ($worker) {
-                            // Update the room_id for the worker
-                            $worker->update(['room_id' => $data['room_number']]);
-                            $worker->update(['housed_status' => 1]);
-                        }
-                    }
-        
-                    DB::commit();
-        
-                    $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-                } else {
-                    $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
-                }
-            } catch (\Exception $e) {
-                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-        
-                $output = ['success' => 0, 'msg' => $e->getMessage()];
+                $jsonData[] = $jsonObject;
             }
         
-            return response()->json($output);
+            $jsonData = json_encode($jsonData);
+    
+            \Log::info('JSON Data: ' . $jsonData);
+    
+            if (!empty($jsonData)) {
+                $selectedData = json_decode($jsonData, true);
+    
+                DB::beginTransaction();
+    
+                foreach ($selectedData as $data) {
+                    // Use update method to update multiple columns at once
+                    User::where('proposal_worker_id', $data['worker_id'])
+                        ->update([
+                            'room_id' => $data['room_number'],
+                        ]);
+    
+                    $worker = IrProposedLabor::find($data['worker_id']);
+                    $worker->update(['housed_status' => 1]);
+                }
+    
+                DB::commit();
+    
+                $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+            } else {
+                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-        
-
-
+    
+        return response()->json($output);
+    }
+    
    
    
     public function getRoomNumbers($buildingId)
