@@ -184,10 +184,10 @@ class EssentialsManageEmployeeController extends Controller
             }
             $userProjects = array_unique($userProjects);
             $workers = $workers->whereIn('assigned_to', $userProjects);
-            $users = $users->union($workers)->orderby('id', 'desc');
+           
         }
 
-
+        $users = $users->union($workers)->orderby('id', 'desc');
 
 
         if (!empty($request->input('specialization'))) {
