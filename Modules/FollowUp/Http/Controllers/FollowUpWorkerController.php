@@ -196,9 +196,9 @@ class FollowUpWorkerController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
+        $user = User::with(['contactAccess'])
             ->find($id);
+        
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
@@ -206,9 +206,9 @@ class FollowUpWorkerController extends Controller
 
 
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
-        // $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
-        // $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
-        // $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
         // dd( $Qualification);
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
