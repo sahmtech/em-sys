@@ -7,6 +7,7 @@ use App\Contact;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Essentials\Entities\Shift;
 
 class SalesProject extends Model
 {
@@ -18,5 +19,10 @@ class SalesProject extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'assigned_to');
+    }
+
+    public function Shifts()
+    {
+        return $this->hasMany(Shift::class, 'project_id');
     }
 }

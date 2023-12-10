@@ -3,6 +3,7 @@
 namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Entities\SalesProject;
 
 class Shift extends Model
 {
@@ -40,5 +41,9 @@ class Shift extends Model
                     ->find($shift_id);
 
         return $shift;
+    }
+
+    public function Project(){
+        return $this->belongsTo(SalesProject::class);
     }
 }
