@@ -41,12 +41,6 @@
               
 
                 
-                    &nbsp;
-                            {!! Form::open(['url' => action([\App\Http\Controllers\ProductController::class, 'bulkEdit']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
-                            {!! Form::hidden('selected_products', null, ['id' => 'selected_products_for_edit']); !!}
-                            <button type="submit" class="btn btn-xs btn-warning" id="edit-selected"> <i class="fa fa-home"></i>{{__('housingmovements::lang.housed')}}</button>
-                            {!! Form::close() !!}
-                
               
                
                 </div>

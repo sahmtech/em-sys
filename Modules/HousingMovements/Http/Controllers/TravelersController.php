@@ -356,6 +356,7 @@ class TravelersController extends Controller
                         'business_id' => $business_id,
                         'user_type' => 'worker',
                         'border_no' => $data['border_no'],
+                        'proposal_worker_id' => $data['worker_id'],
                        
                     ]);
                     $worker->update(['arrival_status' => 1]);
