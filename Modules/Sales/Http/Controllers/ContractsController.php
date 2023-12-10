@@ -14,6 +14,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\Utils\ModuleUtil;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
+use Modules\Sales\Entities\SalesProject;
 
 class ContractsController extends Controller
 {
@@ -38,7 +39,7 @@ class ContractsController extends Controller
         if (! $can_crud_contracts) {
             abort(403, 'Unauthorized action.');
         }
-        $contacts=Contact::all()->pluck('supplier_business_name','id');
+        $contacts=SalesProject::all()->pluck('name','id');
         $offer_prices = Transaction::where([['transactions.type','=','sell'],['transactions.status','=','approved']])
         ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
         ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no','transactions.id');
@@ -48,7 +49,7 @@ class ContractsController extends Controller
                 $contracts = salesContract::join('transactions','transactions.id','=','sales_contracts.offer_price_id')->
                 select(['sales_contracts.number_of_contract','sales_contracts.id','sales_contracts.offer_price_id','sales_contracts.start_date',
                 'sales_contracts.end_date','sales_contracts.status','sales_contracts.file',
-                'transactions.contract_form as contract_form','transactions.contact_id','transactions.id as tra']);
+                'transactions.contract_form as contract_form','transactions.sales_project_id','transactions.id as tra']);
 
                 if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                     $contracts->where('sales_contracts.status', request()->input('status'));
@@ -59,8 +60,8 @@ class ContractsController extends Controller
             return Datatables::of($contracts)
 
           
-            ->editColumn('contact_id',function($row)use($contacts){
-                $item = $contacts[$row->contact_id]??'';
+            ->editColumn('sales_project_id',function($row)use($contacts){
+                $item = $contacts[$row->sales_project_id]??'';
 
                 return $item;
             })
@@ -115,9 +116,10 @@ class ContractsController extends Controller
     {
         
          $offerPrice = $request->input('offer_price');
-            $contact = Transaction::whereId($offerPrice)->first()->contact_id;
+        $project = Transaction::whereId($offerPrice)->first()->sales_project_id;
+        $contact= SalesProject::whereId($project)->first()->contact_id;
    
-           
+    
         $contract_signer = User::where([
             ['crm_contact_id', $contact],
             ['contact_user_type', 'contact_signer']
@@ -145,7 +147,7 @@ class ContractsController extends Controller
      */
     public function store(Request $request)
     {
-    //  return $request;
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -229,21 +231,22 @@ class ContractsController extends Controller
 
     public function show($id)
     {
+      
        if (! auth()->user()->can('user.view')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
         $offer = Transaction::findOrFail($id)
-        ->leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+        ->leftJoin('sales_projects', 'transactions.sales_projects_id', '=', 'contacts.id')
         ->select(
             'transactions.id as id',
             'transactions.transaction_date',
             'transactions.ref_no',
             'transactions.final_total as final_total',
             'transactions.is_direct_sale',
-            'contacts.name as name',
-            'contacts.mobile as mobile',
+            'sales_projects.name as name',
+            'sales_projects.phone_in_charge as mobile',
             'transactions.status as status',
 
         )
@@ -263,9 +266,9 @@ class ContractsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $offer_price=salesContract::where('id',$id)->first()->offer_price_id;
         $query = Transaction::where('business_id', $business_id)
-            ->where('id', $offer_price)->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service'])
+            ->where('id', $offer_price)->with(['sale_project:id,name,phone_in_charge', 'sell_lines', 'sell_lines.service'])
         
-            ->select('id', 'business_id','location_id','status','contact_id','ref_no','final_total','down_payment','contract_form','transaction_date'
+            ->select('id', 'business_id','location_id','status','sales_project_id','ref_no','final_total','down_payment','contract_form','transaction_date'
             
             )->get()[0];
 

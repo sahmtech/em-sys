@@ -60,14 +60,17 @@ class EmploymentCompaniesController extends Controller
      */
     public function index(Request $request)
     {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
-        $can_crud_airlines = auth()->user()->can('internationalrelations.crud_airlines');
-        if (!$can_crud_airlines) {
+        $can_crud_employment_companies = auth()->user()->can('internationalrelations.crud_employment_companies');
+        if (!($isSuperAdmin || $can_crud_employment_companies)) {
             abort(403, 'Unauthorized action.');
         }
+      
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
 
@@ -131,6 +134,16 @@ class EmploymentCompaniesController extends Controller
 
     public function companyRequests($id)
     {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $can_view_company_requests = auth()->user()->can('internationalrelations.view_company_requests');
+        if (!($isSuperAdmin || $can_view_company_requests)) {
+            abort(403, 'Unauthorized action.');
+        }
     
         $irDelegations = IrDelegation::where('agency_id',$id)->with(['transactionSellLine.service'])->get();
 
@@ -144,10 +157,17 @@ class EmploymentCompaniesController extends Controller
      */
     public function store(Request $request)
     {
-        $can_crud_airlines = auth()->user()->can('internationalrelations.crud_airlines');
-        if (!$can_crud_airlines) {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
             abort(403, 'Unauthorized action.');
         }
+        $can_store_emoloyment_company = auth()->user()->can('internationalrelations.store_emoloyment_company');
+        if (!($isSuperAdmin || $can_store_emoloyment_company)) {
+            abort(403, 'Unauthorized action.');
+        }
+    
         try {
             $business_id = $request->session()->get('user.business_id');
 

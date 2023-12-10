@@ -60,11 +60,11 @@
 				<div class="@if(!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
 					<div class="form-group">
 						<div class="form-group col-md-10">
-							{!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
+							{!! Form::label('contact_id', __('sales::lang.project_name') . ':*') !!}
 							{!! Form::select('contact_id',$leads, null,
 								 ['class' => 'form-control',
 								 'style'=>'height:40px',
-								  'placeholder' => __('sales::lang.select_customer'), 'required']) !!}
+								  'placeholder' => __('sales::lang.select_project'), 'required']) !!}
 						</div>
 					</div>
 				</div>

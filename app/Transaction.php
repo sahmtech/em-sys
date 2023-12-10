@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Modules\Sales\Entities\salesContract;
+use Modules\Sales\Entities\SalesProject;
 
 class Transaction extends Model
 {
@@ -52,6 +53,13 @@ class Transaction extends Model
        
         return $this->belongsTo(\App\Contact::class, 'contact_id');
     }
+    
+    public function sale_project()
+    {
+       error_log('1111111111111');
+        return $this->belongsTo(SalesProject::class, 'sales_project_id');
+    }
+  
   
     public function delivery_person_user()
     {

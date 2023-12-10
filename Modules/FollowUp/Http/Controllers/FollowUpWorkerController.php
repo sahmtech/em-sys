@@ -5,6 +5,7 @@ namespace Modules\FollowUp\Http\Controllers;
 use App\Contact;
 use App\ContactLocation;
 use App\User;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -53,15 +54,21 @@ class FollowUpWorkerController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $users = User::where('user_type', 'worker')
 
-            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+
+        // if (!$is_admin) {
+        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
+
+        //     $users = $users->whereIn('assigned_to', $userProjects);
+        // }
         $users->select(
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',
             'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'contact_locations.name as contact_name'
+            'sales_projects.name as contact_name'
         );
         if (request()->ajax()) {
 
@@ -92,7 +99,7 @@ class FollowUpWorkerController extends Controller
                     return $user->first_name . ' ' . $user->last_name;
                 })
                 ->addColumn('contact_name', function ($user) {
-                    return $user->assignedTo?->name ;
+                    return $user->assignedTo?->name;
                 })
 
                 ->addColumn('residence_permit_expiration', function ($user) {

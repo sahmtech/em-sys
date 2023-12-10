@@ -101,6 +101,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             Route::put('/updateContactLocations/{id}',  [\App\Http\Controllers\ContactLocationController::class, 'update'])->name('sale.updateContactLocations');
         });
 
-       
+        
+        Route::prefix('saleProjects')->group(function () {
+            Route::get('/', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'index'])->name('sale.saleProjects');
+            Route::post('/addSaleProject', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'store'])->name('sale.storeSaleProject');
+            Route::delete('/destroySaleProject/{id}', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'destroy'])->name('sale.destroySaleProject');
+            Route::get('/{id}/edit',  [\Modules\Sales\Http\Controllers\SalesProjectController::class,  'edit'])->name('sale.editSaleProject');
+            Route::put('/updateSaleProject/{id}',  [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'update'])->name('sale.updateSaleProject');
+        });
     });
 });

@@ -173,7 +173,7 @@
                 columns: [
                         { data: 'id' },
                         { data: 'number_of_contract' },
-                        { data: 'contact_id' },
+                        { data: 'sales_project_id' },
                         
                         { data: 'status',render: function (data, type, row) {
                                 if (data === 'valid') {

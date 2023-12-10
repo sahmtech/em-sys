@@ -21,11 +21,13 @@ class SuperadminController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('superadmin')) {
+        $isSuperAdmin = auth()->user()->user_type == 'superadmin';
+        if (!($isSuperAdmin || auth()->user()->can('superadmin'))) {
             abort(403, 'Unauthorized action.');
         }
 
-        $date_filters['this_yr'] = ['start' => Carbon::today()->startOfYear()->toDateString(),
+        $date_filters['this_yr'] = [
+            'start' => Carbon::today()->startOfYear()->toDateString(),
             'end' => Carbon::today()->endOfYear()->toDateString(),
         ];
         $date_filters['this_month']['start'] = date('Y-m-01');
@@ -70,7 +72,7 @@ class SuperadminController extends Controller
         $subscription_formatted = [];
         foreach ($subscriptions as $value) {
             $month_year = Carbon::createFromFormat('Y-m-d H:i:s', $value->created_at)->format('M-Y');
-            if (! isset($subscription_formatted[$month_year])) {
+            if (!isset($subscription_formatted[$month_year])) {
                 $subscription_formatted[$month_year] = 0;
             }
             $subscription_formatted[$month_year] += (float) $value->package_price;
@@ -88,7 +90,7 @@ class SuperadminController extends Controller
      */
     public function stats(Request $request)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -106,7 +108,8 @@ class SuperadminController extends Controller
             ->first()
             ->total;
 
-        return ['new_subscriptions' => $subscription,
+        return [
+            'new_subscriptions' => $subscription,
             'new_registrations' => $registrations,
         ];
     }

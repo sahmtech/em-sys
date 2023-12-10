@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('assigned_to')->nullable()->after('contact_user_type');
-            $table->foreign('assigned_to')->references('id')->on('contact_locations')->onDelete('cascade');
+            $table->foreign('assigned_to')->references('id')->on('sales_projects')->onDelete('cascade');
         });
     }
 

@@ -130,6 +130,7 @@ return [
     'offer_price_view' => 'استعراض عرض السعر',
     'customer' => 'العميل',
     'select_customer' => 'اختر عميل',
+    'select_project' => 'اختر مشروع عميل',
     'under_study' => 'قيد الدراسة',
     'contract_view' => 'عرض ملف العقد',
     'offer_details' => 'تفاصيل عرض السعر',
@@ -211,7 +212,8 @@ return [
     'External' => 'خارجي',
     'no_file_to_show' => 'لايوجد ملف العقد ',
     'no_doc_file_to_show' => 'لايوجد ملف الوثيقة',
-    'contact_locations' => 'مشاريع العملاء',
+    'contact_locations' => 'فروع المشاريع',
+    'sales_projects' => 'مشاريع العملاء',
     'contact_name' => 'العميل',
     'contact_location_name' => 'اسم المشروع',
     'contact_location_city' => 'المدينة',
@@ -224,4 +226,6 @@ return [
     'source'=>'المصدر',
     'add_source'=>'إضافة مصدر',
     'edit_source'=>'تعديل المصدر',
+    'location_name'=>' الفرع'
+   
 ];

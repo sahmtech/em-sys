@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['assigned_to']);
-            $table->dropColumn('assigned_to');
-      
+        Schema::table('contact_locations', function (Blueprint $table) {
+            $table->dropForeign(['contact_id']);
+            $table->dropColumn('contact_id');
         });
     }
 
@@ -27,7 +26,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('contact_locations', function (Blueprint $table) {
             //
         });
     }

@@ -62,8 +62,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
 
+        $user = User::where('id', auth()->user()->id)->first();
+        $isSuperAdmin =  $user->user_type == 'superadmin';
         if (Str::contains($user->user_type, 'user_customer')) {
             return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
         }
@@ -80,13 +81,15 @@ class HomeController extends Controller
                 break;
             }
         }
-        if (!(auth()->user()->can('dashboard.data') || $roleHasPermission)) {
+        if (!($isSuperAdmin || auth()->user()->can('dashboard.data') || $roleHasPermission)) {
+
             return view('home.index');
         }
 
-        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
 
+        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
         $currency = Currency::where('id', request()->session()->get('business.currency_id'))->first();
+
         //ensure start date starts from at least 30 days before to get sells last 30 days
         $least_30_days = \Carbon::parse($fy['start'])->subDays(30)->format('Y-m-d');
 
@@ -203,6 +206,9 @@ class HomeController extends Controller
             $sells_chart_2->dataset(__('report.all_locations'), 'line', $values);
         }
 
+
+
+
         //Get Dashboard widgets from module
         $module_widgets = $this->moduleUtil->getModuleData('dashboard_widget');
 
@@ -300,21 +306,23 @@ class HomeController extends Controller
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
-          //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
+            //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
             ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fa fas fa-network-wired', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
             ['id' => 'settings',  'permissions' => $settingsPermissions, 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
-           
+
 
         ];
         $cards = [];
 
         $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+
+
         foreach ($cardsPack as $card) {
             if (!empty($card['permissions'])) {
                 $canAccessCard = false;
                 foreach ($card['permissions'] as $permission) {
-                    if (auth()->user()->can($permission['value']) || $is_admin) {
+                    if ($isSuperAdmin || auth()->user()->can($permission['value']) || $is_admin) {
                         $canAccessCard = true;
                         break;
                     }
@@ -328,15 +336,16 @@ class HomeController extends Controller
                     error_log("cant " . $card['title']);
                 }
             } else {
-                if ($is_admin) {
+                if ($is_admin || $isSuperAdmin) {
                     $cards[] = $card;
                 }
                 //$cards[] = $card;
                 error_log("empty " . $card['title']);
             }
         }
+        return view('custom_views.custom_home', compact('cards',  'widgets', 'common_settings', 'is_admin'));
 
-        return view('custom_views.custom_home', compact('cards', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
+        // return view('custom_views.custom_home', compact('cards', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
 
         // return view('custom_views.home', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
     }

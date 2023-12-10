@@ -1,26 +1,22 @@
 <?php
 
 namespace Modules\Sales\Entities;
+
 use Modules\Sales\Entities\salesContract;
 use App\Contact;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class SalesOrdersOperation extends Model
+class SalesProject extends Model
 {
     protected $guarded = ['id'];
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'contact_id');
     }
-    public function project()
+    public function users()
     {
-        return $this->belongsTo(SalesProject::class, 'sales_project_id');
-    }
-
-
-    public function salesContract()
-    {
-        return $this->belongsTo(salesContract::class, 'sale_contract_id');
+        return $this->hasMany(User::class, 'assigned_to');
     }
 }

@@ -42,19 +42,26 @@ class FollowUpProjectController extends Controller
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
-                 'transactions', 'transactions.salesContract','contactLocation','contactLocation.assignedTo',
+                'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
 
+
+
+        // if (!$is_admin) {
+        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
+
+        //     $contacts = $contacts->whereIn('id', $userProjects);
+        // }
+
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-               
+
                 $contacts->where('id', request()->input('project_name'));
-              
             }
-           
-         
+
+
             return Datatables::of($contacts)
                 ->addColumn('contact_name', function ($contact) {
                     return $contact->supplier_business_name ?? null;
@@ -116,11 +123,11 @@ class FollowUpProjectController extends Controller
                 })
                 ->addColumn('action', function ($row) use ($is_admin) {
                     $html = '';
-                    if ($is_admin) {
-                        $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
+
+                    $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
                              <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
                          </a>';
-                    }
+
                     return $html;
                 })
                 ->filterColumn('contact_name', function ($query, $keyword) {
@@ -128,9 +135,9 @@ class FollowUpProjectController extends Controller
                 })
 
                 ->rawColumns([
-                    'contact_name','number_of_contract','start_date','end_date',
+                    'contact_name', 'number_of_contract', 'start_date', 'end_date',
                     // 'active_worker_count', 'worker_count',
-                     'duration', 'contract_form',
+                    'duration', 'contract_form',
                     'status', 'type', 'action'
                 ])
 
@@ -138,7 +145,7 @@ class FollowUpProjectController extends Controller
         }
 
 
-       
+
         $contacts2 = Contact::all()->pluck('supplier_business_name', 'id');
         return view('followup::projects.index')->with(compact('contacts2'));
     }
@@ -172,19 +179,21 @@ class FollowUpProjectController extends Controller
         $contact = Contact::findOrFail($id);
         $locationIds = $contact->contactLocation->pluck('id');
         $users = User::whereIn('assigned_to', $locationIds)
-        
-            
-            ->with(['country',
+
+
+            ->with([
+                'country',
                 'appointment.profession',
                 'UserallowancesAndDeductions',
                 'appointment.location',
-             
+
                 'contract',
-                 'OfficialDocument',
-                  'workCard'])
+                'OfficialDocument',
+                'workCard'
+            ])
             ->get();
 
-     
+
         return view('followup::projects.show', compact('users', 'id'));
     }
 

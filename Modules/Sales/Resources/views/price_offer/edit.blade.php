@@ -43,7 +43,7 @@
                         <div class="form-group">
                             <div class="form-group col-md-10">
                                 {!! Form::label('contact_id', __('sales::lang.customer') . ':*') !!}
-                                {!! Form::select('contact_id',$leads,$offer_price->contact_id, ['class' => 'form-control', 'placeholder' => __('sales::lang.select_customer'), 'required']) !!}
+                                {!! Form::select('contact_id',$leads,$offer_price->sales_project_id, ['class' => 'form-control', 'placeholder' => __('sales::lang.select_customer'), 'required']) !!}
                             </div>
                         </div>
                     </div>
