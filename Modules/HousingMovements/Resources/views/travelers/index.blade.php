@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', __('housingmovements::lang.travelers'))
 @section('content')
+@include('housingmovements::layouts.nav_trevelers')
 
 <section class="content-header">
     <h1>
@@ -47,7 +48,7 @@
             @include('housingmovements::travelers.partials.travelers_list')
         
             @include('housingmovements::travelers.partials.housing_modal')
-            @include('housingmovements::travelers.partials.border_arrival_modal')
+       
     @endcomponent
 
 
@@ -145,49 +146,98 @@
             getCheckRecords();
         });
 
-        $('#arraived-selected').on('click', function (e) {
-            e.preventDefault();
+    $('#arraived-selected').on('click', function (e) {
+        e.preventDefault();
 
-            var selectedRows = getCheckRecords();
-            console.log(selectedRows);
-            
-            if (selectedRows.length > 0) {
-               
-             $('#arrivedModal').modal('show');
+        var selectedRows = getCheckRecords();
+        console.log(selectedRows);
 
-               
-                $.ajax({
-                    url: '{{ route("getSelectedArrivalsData") }}',
-                    type: 'POST',
-                    data: { selectedRows: selectedRows },
-                    success: function (data) {
-                       
-                        $.each(data, function (index, row) {
-                          
-                            $('input[name="worker_name"]').eq(index).val(row.worker_name);
-                            $('input[name="passport_number"]').eq(index).val(row.passport_number);
-                           
+        if (selectedRows.length > 0) {
+            $('#arrivedModal').modal('show');
+
+            $.ajax({
+                url: '{{ route("getSelectedArrivalsData") }}',
+                type: 'post',
+                data: { selectedRows: selectedRows },
+                success: function (data) {
+                    // Clear existing inputs in the modal body
+                    $('.modal-body').find('input').remove();
+
+                    // Get the common style classes from existing inputs
+                    var inputClasses = 'form-group col-md-4 ';
+
+                    // Loop through each row in the data
+                    $.each(data, function (index, row) {
+                        // Create input fields dynamically and append them to the modal body
+                        var workerIDInput = $('<input>', {
+                            type: 'hidden',
+                            name: 'worker_id[]',
+                            class: inputClasses + 'mb-2', 
+                            placeholder: '{{ __('housingmovements::lang.id') }}',
+                            required: true,
+                            value: row.worker_id
                         });
+                        
+                        var workerNameInput = $('<input>', {
+                            type: 'text',
+                            name: 'worker_name[]',
+                            class: inputClasses + 'mb-2', 
+                            placeholder: '{{ __('housingmovements::lang.worker_name') }}',
+                            required: true,
+                            value: row.worker_name
+                        });
+
+                        var passportNumberInput = $('<input>', {
+                            type: 'text',
+                            name: 'passport_number[]',
+                            class: inputClasses+ 'mb-2',
+                            placeholder: '{{ __('housingmovements::lang.passport_number') }}',
+                            required: true,
+                            value: row.passport_number
+                        });
+
+                        var borderNoInput = $('<input>', {
+                            type: 'number',
+                            name: 'border_no[]',
+                            class: inputClasses + 'mb-2',
+                            placeholder: '{{ __('housingmovements::lang.border_no') }}',
+                            required: true
+                        });
+
+                        // Append the input fields to the modal body
+                        $('.modal-body').append(workerIDInput,workerNameInput, passportNumberInput, borderNoInput);
+                    });
+                }
+            });
+
+            $('#submitArrived').click(function () {
+                // Additional AJAX call to submit the form inside the modal
+                $.ajax({
+                    url: $('#arrived_form').attr('action'),
+                    type: 'post',
+                    data: $('#arrived_form').serialize(),
+                    success: function (response) {
+
+                        // Handle the response if needed
+                        console.log(response);
+                        // Close the modal after successful submission
+                        $('#arrivedModal').modal('hide');
+                        reloadDataTable();
                     }
                 });
-                
-                 
-                $('#submitArrived').click(function() {
-    
-                       $('#arraived_form').submit();
-                });
+            });
 
-            }
-             else {
-              
-                $('input#selected_rows').val('');
-                swal({
-                    title: "@lang('lang_v1.no_row_selected')",
-                    icon: "warning",
-                    button: "OK",
-                });
-            }
-        });
+        } else {
+            $('input#selected_rows').val('');
+            swal({
+                title: "@lang('lang_v1.no_row_selected')",
+                icon: "warning",
+                button: "OK",
+            });
+        }
+    });
+
+
 
 
         $('#edit-selected').on('click', function (e) {

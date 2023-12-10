@@ -85,10 +85,12 @@ class TravelersController extends Controller
                 'transaction_sell_line_id', 
                 'visa_id',
                 'agency_id',
-                DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+                DB::raw("CONCAT(COALESCE(first_name, ''),
+                 ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
             ])
             ->whereNotNull('visa_id')
-            ->where('interviewStatus','acceptable');
+            ->where('interviewStatus','acceptable')
+            ->where('arrival_status',0);
      
         
             if (!empty($request->input('project_name_filter'))) {
@@ -165,16 +167,37 @@ class TravelersController extends Controller
     public function getSelectedRowsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
-
+         
        
         $data = IrProposedLabor::whereIn('id', $selectedRows)
-        ->select(  DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),'passport_number')
+        ->select('id as worker_id',
+         DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as worker_name"),
+         'passport_number')
+
         ->get();
-       dd($data);
+
+      
+      
+
         return response()->json($data);
     }
 
 
+    public function  housed_workers_index(Request $request)
+    {
+
+        
+        $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
+        $salesProjects = SalesProject::all()->pluck('name', 'id');
+
+        return view('housingmovements::travelers.partials.housed_workers')->with(compact('salesProjects','buildings'));
+    }
+
+   
+   
+   
+   
+   
     public function getRoomNumbers($buildingId)
      {
         
@@ -183,42 +206,68 @@ class TravelersController extends Controller
     }
 
 
-    public function getarrived(Request $request)
+    public function postarrivaldata(Request $request)
         {
             try {
-                if (!empty($request->selected_rows)) {
-                    $business_id = $request->session()->get('user.business_id');
-                    $selectedData = explode(',', $request->selected_rows);
+            $requestData = $request->only([
+            'worker_id',
+            'worker_name',
+            'passport_number',
+            'border_no',
+            
+        ]);
 
-                    $workers = IrProposedLabor::whereIn('id', $selectedData)
-                    ->get();
-                
-                    DB::beginTransaction();
-                    foreach ($workers as $worker) {
-                      
-                        User::create([
-                            'first_name' => $worker->first_name, 
-                            'mid_name' => $worker->mid_name, 
-                            'last_name' => $worker->last_name, 
-                            'age' => $worker->age, 
-                            'gender' => $worker->gender, 
-                            'email' => $worker->email,
-                            'profile_image' => $worker->profile_image, 
-                            'dob' => $worker->dob, 
-                            'marital_status' => $worker->marital_status, 
-                            'blood_group' => $worker->blood_group, 
-                            'contact_number' => $worker->contact_number, 
-                            'permanent_address' => $worker->permanent_address, 
-                            'current_address' => $worker->current_address, 
-                            'passport_number' => $worker->passport_number, 
-                           // 'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact->contactLocation->id??null, 
-                            'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id??null, 
-                            'business_id' => $business_id,
-                            'user_type'=>'worker',
-                           
-                        ]);
-                    }
-                    DB::commit();
+        $jsonData = [];
+
+        foreach ($requestData['worker_id'] as $index => $workerId) {
+            $jsonObject = [
+                'worker_id' => $workerId,
+                'worker_name' => $requestData['worker_name'][$index],
+                'passport_number' => $requestData['passport_number'][$index],
+                'border_no' => $requestData['border_no'][$index],
+            ];
+        
+            $jsonData[] = $jsonObject;
+        }
+        
+        $jsonData = json_encode($jsonData);
+        
+        if (!empty($jsonData)) {
+            $business_id = $request->session()->get('user.business_id');
+            $selectedData = json_decode($jsonData, true); 
+
+            DB::beginTransaction();
+            foreach ($selectedData as $data) {
+             
+                $worker = IrProposedLabor::find($data['worker_id']);
+
+             
+                if ($worker) {
+                    User::create([
+                        'first_name' => $worker->first_name,
+                        'mid_name' => $worker->mid_name,
+                        'last_name' => $worker->last_name,
+                        'age' => $worker->age,
+                        'gender' => $worker->gender,
+                        'email' => $worker->email,
+                        'profile_image' => $worker->profile_image,
+                        'dob' => $worker->dob,
+                        'marital_status' => $worker->marital_status,
+                        'blood_group' => $worker->blood_group,
+                        'contact_number' => $worker->contact_number,
+                        'permanent_address' => $worker->permanent_address,
+                        'current_address' => $worker->current_address,
+                        'passport_number' => $worker->passport_number,
+                        'nationality_id' => $worker->transactionSellLine?->service?->nationality?->id??null,
+                        'business_id' => $business_id,
+                        'user_type' => 'worker',
+                        'border_no' => $data['border_no'],
+                       
+                    ]);
+                    $worker->update(['arrival_status' => 1]);
+                }
+            }
+            DB::commit();
         
                     $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
                 } else {

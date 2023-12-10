@@ -9,17 +9,17 @@
                         <h4 class="modal-title">@lang('housingmovements::lang.bordar_arrival')</h4>
         </div>
             <div class="modal-body">
-           
 
+        
             <div class="form-group col-md-4">
                         {!! Form::label('worker_name', __('housingmovements::lang.worker_name') . ':*') !!}
-                        {!! Form::number('worker_name', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.worker_name'), 'required']) !!}
+                        {!! Form::text('worker_name', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.worker_name'), 'required']) !!}
             </div>
 
 
                     <div class="form-group col-md-4">
                         {!! Form::label('passport_number', __('housingmovements::lang.passport_number') . ':*') !!}
-                        {!! Form::number('passport_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.passport_number'), 'required']) !!}
+                        {!! Form::text('passport_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.passport_number'), 'required']) !!}
                     </div>
 
                     <div class="form-group col-md-4">
@@ -28,11 +28,12 @@
                       </div>
 
             </div>
-
+</br>
             <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
             </div>
+        
             
         </div>
     </div>

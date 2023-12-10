@@ -29,15 +29,15 @@
         <tr>
         <td colspan="5">
             <div style="display: flex; width: 100%;">
-               
-                    {!! Form::open(['url' => action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getarrived']),
-                         'method' => 'post', 'id' => 'arraived_form' ]) !!}
+            {!! Form::open(['url' => action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'postarrivaldata']),
+              'method' => 'post', 'id' => 'arrived_form' ]) !!}
+                 
                     {!! Form::hidden('selected_rows', null, ['id' => 'selected_rows']); !!}
-                    
+                    @include('housingmovements::travelers.partials.border_arrival_modal')
                     {!! Form::submit(__('housingmovements::lang.arrived'),
                          array('class' => 'btn btn-xs btn-success', 'id' => 'arraived-selected')) !!}
-                         
-                    {!! Form::close() !!}
+
+                {!! Form::close() !!}
               
 
                 
