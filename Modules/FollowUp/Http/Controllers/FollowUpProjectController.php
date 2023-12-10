@@ -189,7 +189,7 @@ class FollowUpProjectController extends Controller
     public function show($id)
     {
         $contact = Contact::findOrFail($id);
-        $locationIds = $contact->contactLocation->pluck('id');
+        $locationIds = $contact->salesProject->pluck('id');
         $users = User::whereIn('assigned_to', $locationIds)
 
 
