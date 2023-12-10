@@ -8,7 +8,7 @@
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('housingmovements::lang.housed')</h4>
         </div>
-        {!! Form::open(['url' => action( [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
+        {!! Form::open(['url' => action( [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
             <div class="modal-body">
            
                         <div class="form-group col-md-6">
@@ -21,7 +21,7 @@
 
                     <div class="form-group col-md-6">
                         {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
-                        {!! Form::number('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
+                        {!! Form::number('room_number', null, ['class' => 'form-control','id'=>'room_number', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
                     </div>
             </div>
 
