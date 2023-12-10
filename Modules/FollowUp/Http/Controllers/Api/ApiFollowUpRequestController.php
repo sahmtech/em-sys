@@ -64,6 +64,52 @@ class ApiFollowUpRequestController extends ApiController
         ];
     }
 
+    public function getMyLeaves()
+    {
+
+
+
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $user = Auth::user();
+
+
+            $requests = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->where('users.id', $user->id)->get();
+
+
+
+            $res = [
+                'requests' =>  $requests
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
 
     public function getMyRequests()
     {
@@ -89,7 +135,7 @@ class ApiFollowUpRequestController extends ApiController
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
-           
+
 
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
