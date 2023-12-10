@@ -50,6 +50,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/workers', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers');
         Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
         Route::post('/get-arrived', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getarrived'])->name('get-arrived');
+        Route::POST('/get-selected-arrived-data', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getSelectedRowsData'])->name('getSelectedArrivalsData');
         // Routes Car Types
         Route::get('/cars-type', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index'])->name('car-type');
         Route::get('/cars-type-create', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'create'])->name('car-type-create');

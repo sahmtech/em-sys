@@ -17,6 +17,7 @@ use App\Business;
 use App\BusinessLocation;
 use App\Contact;
 use App\Events\ContactCreatedOrModified;
+use Modules\Sales\Entities\SalesProject;
 use App\Transaction;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsCity;
@@ -74,7 +75,7 @@ class TravelersController extends Controller
                 'transactionSellLine.service.profession',
                 'transactionSellLine.service.nationality',
                 'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
-                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact.contactLocation',
+                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject',
                 'visa',
                 'agency'
             ])
@@ -91,7 +92,7 @@ class TravelersController extends Controller
      
         
             if (!empty($request->input('project_name_filter'))) {
-                $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact', function ($query) use ($request) {
+                $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject', function ($query) use ($request) {
                     $query->where('id', '=', $request->input('project_name_filter'));
                 });
             }
@@ -156,10 +157,23 @@ class TravelersController extends Controller
             }
             
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
-        $ContactsLocation = Contact::all()->pluck('supplier_business_name', 'id');
-        //dd(  $ContactsLocation );
-        return view('housingmovements::travelers.index')->with(compact('ContactsLocation','buildings'));
+        $salesProjects = SalesProject::all()->pluck('name', 'id');
+    
+        return view('housingmovements::travelers.index')->with(compact('salesProjects','buildings'));
     }
+
+    public function getSelectedRowsData(Request $request)
+    {
+        $selectedRows = $request->input('selectedRows');
+
+       
+        $data = IrProposedLabor::whereIn('id', $selectedRows)
+        ->select(  DB::raw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),'passport_number')
+        ->get();
+       dd($data);
+        return response()->json($data);
+    }
+
 
     public function getRoomNumbers($buildingId)
      {

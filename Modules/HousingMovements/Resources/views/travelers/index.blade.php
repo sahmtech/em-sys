@@ -18,7 +18,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
-                    {!! Form::select('project_name_filter', $ContactsLocation, null, [
+                    {!! Form::select('project_name_filter', $salesProjects, null, [
                         'class' => 'form-control select2',
                         'id'=>'project_name_filter',
                         'style' => 'width:100%;padding:2px;',
@@ -47,6 +47,7 @@
             @include('housingmovements::travelers.partials.travelers_list')
         
             @include('housingmovements::travelers.partials.housing_modal')
+            @include('housingmovements::travelers.partials.border_arrival_modal')
     @endcomponent
 
 
@@ -151,33 +152,33 @@
             console.log(selectedRows);
             
             if (selectedRows.length > 0) {
-             
-                swal({
-                    title: LANG.sure,
-                
-                    icon: "warning",
-                    buttons: {
-                        cancel: "@lang('lang_v1.cancel')",
-                        confirm: {
-                            text: "@lang('lang_v1.confirm')",
-                            value: true,
-                            visible: true,
-                            className: "btn-danger",
-                            closeModal: false
-                        }
-                    }
-                })
-                .then((willSubmit) => {
-                    if (willSubmit) {
-                     
-                        $('input#selected_rows').val(selectedRows.join(','));
-                        $('form#arraived_form').submit();
-                    } else {
-                      
-                        $('input#selected_rows').val('');
+               
+             $('#arrivedModal').modal('show');
+
+               
+                $.ajax({
+                    url: '{{ route("getSelectedArrivalsData") }}',
+                    type: 'POST',
+                    data: { selectedRows: selectedRows },
+                    success: function (data) {
+                       
+                        $.each(data, function (index, row) {
+                          
+                            $('input[name="worker_name"]').eq(index).val(row.worker_name);
+                            $('input[name="passport_number"]').eq(index).val(row.passport_number);
+                           
+                        });
                     }
                 });
-            } else {
+                
+                 
+                $('#submitArrived').click(function() {
+    
+                       $('#arraived_form').submit();
+                });
+
+            }
+             else {
               
                 $('input#selected_rows').val('');
                 swal({

@@ -36,6 +36,7 @@
                     
                     {!! Form::submit(__('housingmovements::lang.arrived'),
                          array('class' => 'btn btn-xs btn-success', 'id' => 'arraived-selected')) !!}
+                         
                     {!! Form::close() !!}
               
 

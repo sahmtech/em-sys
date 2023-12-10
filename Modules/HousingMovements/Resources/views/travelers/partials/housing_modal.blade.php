@@ -10,13 +10,13 @@
         </div>
             <div class="modal-body">
            
-            <div class="form-group col-md-6">
-                {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
-                {!! Form::select('htr_building', $buildings,
-                    null,
-                    [  'class' => 'form-control select2','style'=>'width:100%',
-                    'placeholder' => __('housingmovements::lang.htr_building'), 'required', 'id' => 'htr_building_select']) !!}
-            </div>
+                        <div class="form-group col-md-6">
+                            {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
+                            {!! Form::select('htr_building', $buildings,
+                                null,
+                                [  'class' => 'form-control select2','style'=>'width:100%',
+                                'placeholder' => __('housingmovements::lang.htr_building'), 'required', 'id' => 'htr_building_select']) !!}
+                        </div>
 
                     <div class="form-group col-md-6">
                         {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
@@ -28,6 +28,7 @@
                         <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
             </div>
+            
         </div>
     </div>
 </div>
