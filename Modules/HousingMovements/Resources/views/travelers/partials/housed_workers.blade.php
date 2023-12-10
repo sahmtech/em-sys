@@ -51,7 +51,7 @@
 @endphp
 <div class="col-md-8 selectedDiv" style="display:none;">
 </div>
-<table class="table table-bordered table-striped ajax_view hide-footer" id="product_table">
+<table class="table table-bordered table-striped ajax_view hide-footer" id="product_table2">
     <thead>
         <tr>
              <th>
@@ -101,4 +101,253 @@
 </section>
 <!-- /.content -->
 
+@endsection
+@section('javascript')
+<script type="text/javascript">
+    var product_table2;
+
+    function reloadDataTable() {
+        product_table2.ajax.reload();
+    }
+
+    $(document).ready(function () {
+        product_table2 = $('#product_table2').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route("housed_workers") }}',
+                data: function(d) {
+                    if ($('#project_name_filter').val()) {
+                        d.project_name_filter = $('#project_name_filter').val();
+                        console.log(d.project_name_filter);
+                    }
+
+                    if ($('#doc_filter_date_range').val()) {
+                        var start = $('#doc_filter_date_range').data('daterangepicker').startDate
+                            .format('YYYY-MM-DD');
+                        var end = $('#doc_filter_date_range').data('daterangepicker').endDate
+                            .format('YYYY-MM-DD');
+                        d.filter_start_date = start;
+                        d.filter_end_date = end;
+                        d.date_filter = date_filter;
+                    }
+                }
+            },
+            columns: [
+                { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+                { "data": "full_name" },
+                { "data": "project" },
+                { "data": "location" },
+                { "data": "arrival_date" },
+                { "data": "passport_number" },
+                { "data": "profession" },
+                { "data": "nationality" },
+                { data: 'action', name: 'action', orderable: false, searchable: false }
+            ]
+        });
+
+
+        $('#project_name_filter').on('change', function() {
+            date_filter=null;
+         
+            reloadDataTable() ;
+            });
+
+            $('#doc_filter_date_range').daterangepicker(
+                dateRangeSettings,
+                function(start, end) {
+                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
+                        moment_date_format));
+                }
+            );
+            $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+                $('#doc_filter_date_range').val('');
+                date_filter = null;
+                reloadDataTable();
+            });
+           
+            $('#doc_filter_date_range').on('change', function() {
+                date_filter = 1;
+                product_table2.ajax.reload();
+            });
+
+        $('#product_table2').on('change', '.tblChk', function (){
+         
+            if ($('.tblChk:checked').length == $('.tblChk').length) {
+                $('#chkAll').prop('checked', true);
+            } else {
+                $('#chkAll').prop('checked', false);
+            }
+            getCheckRecords();
+        });
+
+        $("#chkAll").change(function () {
+          
+            if ($(this).prop('checked')) {
+                $('.tblChk').prop('checked', true);
+            } else {
+                $('.tblChk').prop('checked', false);
+            }
+            getCheckRecords();
+        });
+
+    $('#arraived-selected').on('click', function (e) {
+        e.preventDefault();
+
+        var selectedRows = getCheckRecords();
+        console.log(selectedRows);
+
+        if (selectedRows.length > 0) {
+            $('#arrivedModal').modal('show');
+
+            $.ajax({
+                url: '{{ route("getSelectedArrivalsData") }}',
+                type: 'post',
+                data: { selectedRows: selectedRows },
+                success: function (data) {
+                    // Clear existing inputs in the modal body
+                    $('.modal-body').find('input').remove();
+
+                    // Get the common style classes from existing inputs
+                    var inputClasses = 'form-group col-md-4 ';
+
+                    // Loop through each row in the data
+                    $.each(data, function (index, row) {
+                        // Create input fields dynamically and append them to the modal body
+                        var workerIDInput = $('<input>', {
+                            type: 'hidden',
+                            name: 'worker_id[]',
+                            class: inputClasses + 'mb-2', 
+                            placeholder: '{{ __('housingmovements::lang.id') }}',
+                            required: true,
+                            value: row.worker_id
+                        });
+                        
+                        var workerNameInput = $('<input>', {
+                            type: 'text',
+                            name: 'worker_name[]',
+                            class: inputClasses + 'mb-2', 
+                            placeholder: '{{ __('housingmovements::lang.worker_name') }}',
+                            required: true,
+                            value: row.worker_name
+                        });
+
+                        var passportNumberInput = $('<input>', {
+                            type: 'text',
+                            name: 'passport_number[]',
+                            class: inputClasses+ 'mb-2',
+                            placeholder: '{{ __('housingmovements::lang.passport_number') }}',
+                            required: true,
+                            value: row.passport_number
+                        });
+
+                        var borderNoInput = $('<input>', {
+                            type: 'number',
+                            name: 'border_no[]',
+                            class: inputClasses + 'mb-2',
+                            placeholder: '{{ __('housingmovements::lang.border_no') }}',
+                            required: true
+                        });
+
+                        // Append the input fields to the modal body
+                        $('.modal-body').append(workerIDInput,workerNameInput, passportNumberInput, borderNoInput);
+                    });
+                }
+            });
+
+            $('#submitArrived').click(function () {
+                // Additional AJAX call to submit the form inside the modal
+                $.ajax({
+                    url: $('#arrived_form').attr('action'),
+                    type: 'post',
+                    data: $('#arrived_form').serialize(),
+                    success: function (response) {
+
+                        // Handle the response if needed
+                        console.log(response);
+                        // Close the modal after successful submission
+                        $('#arrivedModal').modal('hide');
+                        reloadDataTable();
+                    }
+                });
+            });
+
+        } else {
+            $('input#selected_rows').val('');
+            swal({
+                title: "@lang('lang_v1.no_row_selected')",
+                icon: "warning",
+                button: "OK",
+            });
+        }
+    });
+
+
+
+
+        $('#edit-selected').on('click', function (e) {
+            e.preventDefault();
+
+            var selectedRows =  getCheckRecords();
+
+            if (selectedRows.length > 0) {
+                $('#bulkEditModal').modal('show');
+            }
+             else
+             {
+                $('input#selected_rows').val('');
+                swal('@lang("lang_v1.no_row_selected")');
+            }
+        });
+
+      
+        $('#applyBulkEdit').on('click', function () {
+           
+            $('#bulkEditModal').modal('hide');
+        });
+
+
+ 
+
+    });
+
+        function getCheckRecords() {
+            var selectedRows = [];
+            $(".selectedDiv").html("");
+            $('.tblChk:checked').each(function () {
+                if ($(this).prop('checked')) {
+                    const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
+                    $(".selectedDiv").append(rec);
+                    selectedRows.push($(this).attr("data-id"));
+                    
+                }
+
+            });
+        
+            return selectedRows;
+        }
+
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#htr_building_select').on('change', function () {
+            var buildingId = $(this).val();
+          
+            $.ajax({
+                url: '{{ route("getRoomNumbers", ["buildingId" => ":buildingId"]) }}'.replace(':buildingId', buildingId),
+                type: 'GET',
+                success: function (data) {
+                  
+                    $('#room_number').val(data.roomNumber);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching room numbers:', error);
+                }
+            });
+        });
+    });
+</script>
 @endsection

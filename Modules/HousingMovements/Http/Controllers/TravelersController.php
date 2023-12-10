@@ -185,8 +185,102 @@ class TravelersController extends Controller
 
     public function  housed_workers_index(Request $request)
     {
+        $business_id = request()->session()->get('user.business_id');
+        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+            abort(403, 'Unauthorized action.');
+        }
 
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $business_id = request()->session()->get('user.business_id');
+        $workers = IrProposedLabor::with([
+                'transactionSellLine.service.profession',
+                'transactionSellLine.service.nationality',
+                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
+                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject',
+                'visa',
+                'agency'
+            ])
+            ->select([
+                'ir_proposed_labors.id',
+                'passport_number',
+                'transaction_sell_line_id', 
+                'visa_id',
+                'agency_id',
+                DB::raw("CONCAT(COALESCE(first_name, ''),
+                 ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
+            ])
+            ->whereNotNull('visa_id')
+            ->where('interviewStatus','acceptable')
+            ->where('arrival_status',1);
+     
         
+            if (!empty($request->input('project_name_filter'))) {
+                $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject', function ($query) use ($request) {
+                    $query->where('id', '=', $request->input('project_name_filter'));
+                });
+            }
+
+            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+                $start = request()->filter_start_date;
+                $end = request()->filter_end_date;
+            
+                $workers->whereHas('visa', function ($query) use ($start, $end) {
+                    $query->whereDate('arrival_date', '>=', $start)
+                        ->whereDate('arrival_date', '<=', $end);
+                });
+            }
+
+          
+            if (request()->ajax()) 
+            {
+               
+             
+                return Datatables::of($workers)
+                
+
+                ->addColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
+                })
+
+                ->editColumn('project', function ($row) {
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact?->supplier_business_name ?? '';
+                })
+
+                ->editColumn('location', function ($row) {
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->Location ?? '';
+                })
+
+                ->editColumn('arrival_date', function ($row) {
+                    return $row->visa->arrival_date ?? '';
+                })
+
+                ->editColumn('profession', function ($row) {
+                    return $row->transactionSellLine?->service?->profession?->name ?? '';
+                })
+                ->editColumn('nationality', function ($row) {
+                    return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
+                })
+
+                ->addColumn('action', function ($row) {
+                  $html='';
+                   // $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    return $html;
+                })
+                ->filter(function ($query) use ($request) {
+                 
+                    if (!empty($request->input('full_name'))) {
+                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
+                    }
+                })
+              
+                ->rawColumns(['action', 'profession', 'nationality','checkbox'])
+                ->make(true);
+            
+    
+            }
+
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
         $salesProjects = SalesProject::all()->pluck('name', 'id');
 
