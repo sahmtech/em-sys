@@ -289,27 +289,60 @@ class TravelersController extends Controller
 
    
    
-    public function housed()
-    {
-       
-        try{  
-        $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-  
-     
-} catch (\Exception $e) {
-    \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        public function housed_data(Request $request)
+        {
+            try {
+                $requestData = $request->only(['htr_building', 'room_number', 'worker_id']);
 
-    $output = ['success' => 0, 'msg' => $e->getMessage()];
-}
+                $jsonData = [];
+        
+                foreach ($requestData['worker_id'] as $index => $workerId) {
+                    $jsonObject = [
+                        'worker_id' => $workerId,
+                        'room_number' => $requestData['room_number'][$index], // Assuming 'room_number' is an array in the request
+                    ];
+        
+                    $jsonData[] = $jsonObject;
+                }
+        
+                $jsonData = json_encode($jsonData);
+                if (!empty($jsonData)) {
+                    $selectedData = json_decode($jsonData, true);
+        
+                    DB::beginTransaction();
+        
+                    foreach ($selectedData as $data) {
+                        $worker = User::where('proposal_worker_id', $data['worker_id'])->first();
+        
+                        if ($worker) {
+                            // Update the room_id for the worker
+                            $worker->update(['room_id' => $data['room_number']]);
+                        }
+                    }
+        
+                    DB::commit();
+        
+                    $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+                } else {
+                    $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+                }
+            } catch (\Exception $e) {
+                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        
+                $output = ['success' => 0, 'msg' => $e->getMessage()];
+            }
+        
+            return response()->json($output);
+        }
+        
 
-return redirect()->back()->with(['status' => $output]);
-   }
+
    
    
     public function getRoomNumbers($buildingId)
      {
         
-            $roomNumber =DB::table('htr_rooms')->where('htr_building_id', $buildingId)->pluck('room_number')->first();
+            $roomNumber =DB::table('htr_rooms')->where('htr_building_id', $buildingId)->pluck('id')->first();
             return response()->json(['roomNumber' => $roomNumber]);
     }
 
