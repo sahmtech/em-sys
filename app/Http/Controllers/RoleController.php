@@ -102,13 +102,14 @@ class RoleController extends Controller
         }
         $accessRoleProjects = AccessRoleProject::where('access_role_id',  $accessRole->$id)->pluck('sales_project_id')->unique()->toArray();
         $contacts = Contact::with('salesProject')->select(['id', 'supplier_business_name'])->get();
+     
         return view('role.edit_create_access_role')
             ->with(compact('accessRole', 'contacts', 'accessRoleProjects'));
     }
     public function updateAccessRole(Request $request, $roleId)
     {
         $projectsIds = $request->projects ?? [];
-
+    
         if (!empty($projectsIds)) {
             foreach ($projectsIds as $projectsId) {
                 AccessRoleProject::create([
@@ -117,7 +118,11 @@ class RoleController extends Controller
                 ]);
             }
         }
-        return redirect()->route('roles.index');
+        $output = [
+            'success' => 1,
+            'msg' => __('user.role_updated'),
+        ];
+        return redirect('roles')->with('status', $output);
     }
 
     /**

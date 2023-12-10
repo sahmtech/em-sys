@@ -2,6 +2,7 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRole;
 use App\AccessRoleProject;
 use App\Business;
 use App\User;
@@ -389,13 +390,21 @@ class FollowUpRequestController extends Controller
                 ->where('department_id', $department);
         }
 
-        // if (!$is_admin) {
-        //     $role = auth()->user()->roles[0];
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+             
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
+        }
 
-        //     $userProjects = AccessRoleProject::where('access_role_id', $role)->pluck('sales_project_id')->unique()->toArray();
 
-        //     $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
-        // }
         if (request()->ajax()) {
 
 
