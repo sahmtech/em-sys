@@ -2,6 +2,8 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleProject;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -119,7 +121,7 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
         $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->whereIn('user_type', ['employee', 'worker', 'manager'])
+            ->whereIn('user_type', ['employee', 'manager'])
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
@@ -143,6 +145,47 @@ class EssentialsManageEmployeeController extends Controller
 
                 'essentials_employee_appointmets.specialization_id as specialization_id'
             ])->orderby('id', 'desc');
+
+        $workers = User::where('users.is_cmmsn_agnt', 0)
+            ->whereIn('user_type', ['worker'])
+            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
+            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            ->select([
+                'users.id',
+                'users.emp_number',
+                'users.username',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+                'users.id_proof_number',
+                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+
+                'essentials_admission_to_works.admissions_date as admissions_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'users.email',
+                'users.allow_login',
+                'users.contact_number',
+                'users.essentials_department_id',
+                'users.status',
+                'essentials_employee_appointmets.profession_id as profession_id',
+
+                'essentials_employee_appointmets.specialization_id as specialization_id'
+            ])->orderby('id', 'desc');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $userProjects = [];
+        if (!$is_admin) {
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $workers = $workers->whereIn('assigned_to', $userProjects);
+            $users = $users->union($workers)->orderby('id', 'desc');
+        }
 
 
 
