@@ -1,5 +1,3 @@
-
-
 <div class="modal-dialog modal-lg" id="add_shits_model" role="document">
     <div class="modal-content">
 
@@ -89,19 +87,21 @@
 
                             <div class="col-sm-12">
 
-                                <div class="form-group">
-                                    {!! Form::label('holidays', __('essentials::lang.holiday') . ' ') !!}
-                                    {!! Form::select(
-                                        'holidays[]',
-                                        $days,
-                                        $days,
-                                    
-                                        [
-                                            'class' => 'form-control select2',
-                                            'multiple',
-                                        ],
-                                    ) !!}
+                                {!! Form::label('holidays', __('essentials::lang.holiday') . ' ') !!}
+
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+
+                                    {!! Form::select('holidays[]', $days, [], [
+                                        'class' => 'form-control select2',
+                                        'multiple',
+                                        'id' => 'holidays',
+                                        'style' => 'width: 100% !important;',
+                                    ]) !!}
                                 </div>
+
+
                             </div>
                         </div>
 
@@ -127,3 +127,8 @@
 
     </div> <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    $(document).ready(function() {
+        $('#holidays').select2();
+    });
+</script>

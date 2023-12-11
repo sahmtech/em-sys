@@ -88,6 +88,27 @@
 
                             <div class="col-sm-12">
 
+                                {!! Form::label('holidays', __('essentials::lang.holiday') . ' ') !!}
+
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+
+                                    {!! Form::select('holidays[]', $days, $shift->holidays, [
+                                        'class' => 'form-control select2',
+                                        'multiple',
+                                        'id' => 'holidays',
+                                        'style' => 'width: 100% !important;',
+                                    ]) !!}
+                                </div>
+
+
+                            </div>
+                        </div>
+                        {{-- <div class="row" style="margin-top: 8px;">
+
+                            <div class="col-sm-12">
+
                                 <div class="form-group">
                                     {!! Form::label('holidays', __('essentials::lang.holiday') . ' ') !!}
                                     {!! Form::select('holidays[]', $days, $shift->holidays, [
@@ -96,7 +117,7 @@
                                     ]) !!}
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="row" style="margin-top: 220px;">
                             <div class="col-sm-12" style="display: flex;
@@ -120,3 +141,8 @@
 
     </div> <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    $(document).ready(function() {
+        $('#holidays').select2();
+    });
+</script>
