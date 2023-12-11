@@ -86,12 +86,18 @@
                                             {{ $row->type }}
 
                                         </td> --}}
+                                        @php
+                                            $dateTime = DateTime::createFromFormat('H:i:s', $row->start_time);
+                                            $start_time = $dateTime->format('g:i A');
+                                            $dateTime_ = DateTime::createFromFormat('H:i:s', $row->end_time);
+                                            $end_time = $dateTime_->format('g:i A');
+                                        @endphp
                                         <td style="text-align: center;">
-                                            {{ $row->start_time }}
+                                            {{ $start_time }}
 
                                         </td>
                                         <td style="text-align: center;">
-                                            {{ $row->end_time }}
+                                            {{ $end_time }}
 
                                         </td>
 
@@ -188,8 +194,8 @@
 
 
     <script type="text/javascript">
-    $(document).ready(function() {
-        $('.select2').select2();
-    });
+        $(document).ready(function() {
+            $('#holidays').select2();
+        });
     </script>
 @endsection
