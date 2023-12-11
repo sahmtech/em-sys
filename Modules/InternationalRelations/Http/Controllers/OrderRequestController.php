@@ -133,13 +133,13 @@ class OrderRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $query = Transaction::where('business_id', $business_id)
-            ->where('id', $operation->salesContract->transaction->id)->with(['contact:id,name,mobile', 'sell_lines', 'sell_lines.service'])
+            ->where('id', $operation->salesContract->transaction->id)->with(['sale_project:id,name,phone_in_charge', 'sell_lines', 'sell_lines.service'])
             ->select(
                 'id',
                 'business_id',
                 'location_id',
                 'status',
-                'contact_id',
+                'sales_project_id',
                 'ref_no',
                 'final_total',
                 'down_payment',
@@ -147,7 +147,7 @@ class OrderRequestController extends Controller
                 'transaction_date'
 
             )->get()[0];
-
+      
         $agencies = Contact::where('type', '=', 'recruitment')->get();
 
 
