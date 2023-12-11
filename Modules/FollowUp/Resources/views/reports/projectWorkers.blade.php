@@ -59,6 +59,22 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
+                                {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
+
+                                <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
+                                    <option value="all" selected>@lang('lang_v1.all')</option>
+
+                                    <option value="active">@lang('essentials::lang.active')</option>
+                                    <option value="vecation">@lang('essentials::lang.vecation')</option>
+                                    <option value="inactive">@lang('essentials::lang.inactive')</option>
+                                    <option value="terminated">@lang('essentials::lang.terminated')</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
                                 {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
                                 {!! Form::text('doc_filter_date_range', null, [
                                     'placeholder' => __('lang_v1.select_a_date_range'),
@@ -69,6 +85,8 @@
                                 ]) !!}
                             </div>
                         </div>
+
+
 
                         @php
                             $default_fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date')];
@@ -113,8 +131,6 @@
 
 
                                         <td style="width: 100px !important;">@lang('followup::lang.name')</td>
-
-
                                         <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
                                         <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
                                         <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
@@ -182,6 +198,9 @@
                         }
                         if ($('#nationality_filter').val()) {
                             d.nationality = $('#nationality_filter').val();
+                        }
+                        if ($('#status_fillter').val()) {
+                            d.status_fillter = $('#status_fillter').val();
                         }
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate
@@ -277,7 +296,7 @@
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();
             });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter').on('change',
+            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter').on('change',
                 function() {
                     workers_table.ajax.reload();
                 });

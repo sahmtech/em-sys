@@ -2,8 +2,12 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+
+use App\Category;
+
 use App\AccessRole;
 use App\AccessRoleProject;
+
 use App\Contact;
 use App\ContactLocation;
 use App\User;
@@ -23,7 +27,8 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
-
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Sales\Entities\SalesProject;
 
 class FollowUpWorkerController extends Controller
 {
@@ -50,14 +55,99 @@ class FollowUpWorkerController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        // $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        // $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+        // $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        // $nationalities = EssentialsCountry::nationalityForDropdown();
+        // $users = User::where('user_type', 'worker')
+
+        //     ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+        //     ->with(['country', 'contract', 'OfficialDocument']);
+
+        // // if (!$is_admin) {
+        // //     $userProjects = UserProject::where('user_id', auth()->user()->id)->pluck('contact_location_id')->unique()->toArray();
+
+        // //     $users = $users->whereIn('assigned_to', $userProjects);
+        // // }
+        // $users->select(
+        //     'users.*',
+        //     'users.id_proof_number',
+        //     'users.nationality_id',
+        //     'users.essentials_salary',
+        //     DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+        //     'sales_projects.name as contact_name'
+        // );
+        // if (request()->ajax()) {
+
+        //     if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
+
+        //         $users = $users->where('users.assigned_to', request()->input('project_name'));
+        //     }
+        //     if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+        //         $start = request()->filter_start_date;
+        //         $end = request()->filter_end_date;
+
+        //         $users->whereHas('contract', function ($query) use ($start, $end) {
+        //             $query->whereDate('contract_end_date', '>=', $start)
+        //                 ->whereDate('contract_end_date', '<=', $end);
+        //         });
+        //     }
+        //     if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
+
+        //         $users = $users->where('users.nationality_id', request()->nationality);
+        //     }
+
+        //     return Datatables::of($users)
+
+        //         ->addColumn('nationality', function ($user) {
+        //             return optional($user->country)->nationality ?? ' ';
+        //         })
+        //         ->addColumn('worker', function ($user) {
+        //             return $user->first_name . ' ' . $user->last_name;
+        //         })
+        //         ->addColumn('contact_name', function ($user) {
+        //             return $user->assignedTo?->name;
+        //         })
+
+        //         ->addColumn('residence_permit_expiration', function ($user) {
+        //             $residencePermitDocument = $user->OfficialDocument
+        //                 ->where('type', 'residence_permit')
+        //                 ->first();
+        //             if ($residencePermitDocument) {
+
+        //                 return optional($residencePermitDocument)->expiration_date ?? ' ';
+        //             } else {
+
+        //                 return ' ';
+        //             }
+        //         })
+
+        //         ->addColumn('contract_end_date', function ($user) {
+        //             return optional($user->contract)->contract_end_date ?? ' ';
+        //         })
+        //         ->filterColumn('worker', function ($query, $keyword) {
+        //             $query->where('first_name', 'LIKE', "%{$keyword}%")->orWhere('last_name', 'LIKE', "%{$keyword}%");
+        //         })
+
+        //         ->rawColumns(['nationality', 'worker', 'residence_permit_expiration', 'contract_end_date'])
+        //         ->make(true);
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
+        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+        $categories = Category::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+
 
         if (!$is_admin) {
             $userProjects = [];
@@ -72,6 +162,7 @@ class FollowUpWorkerController extends Controller
             $userProjects = array_unique($userProjects);
             $users = $users->whereIn('assigned_to', $userProjects);
         }
+
         $users->select(
             'users.*',
             'users.id_proof_number',
@@ -80,12 +171,13 @@ class FollowUpWorkerController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         );
-        if (request()->ajax()) {
 
+        if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
+
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
                 $start = request()->filter_start_date;
                 $end = request()->filter_end_date;
@@ -105,13 +197,6 @@ class FollowUpWorkerController extends Controller
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
-                ->addColumn('worker', function ($user) {
-                    return $user->first_name . ' ' . $user->last_name;
-                })
-                ->addColumn('contact_name', function ($user) {
-                    return $user->assignedTo?->name;
-                })
-
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
                         ->where('type', 'residence_permit')
@@ -125,17 +210,42 @@ class FollowUpWorkerController extends Controller
                     }
                 })
 
+                ->addColumn('residence_permit', function ($user) {
+                    return $this->getDocumentnumber($user, 'residence_permit');
+                })
+                ->addColumn('admissions_date', function ($user) {
+                    // return $this->getDocumentnumber($user, 'admissions_date');
+                    return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
+                })
+
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-                ->filterColumn('worker', function ($query, $keyword) {
-                    $query->where('first_name', 'LIKE', "%{$keyword}%")->orWhere('last_name', 'LIKE', "%{$keyword}%");
+
+                ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                    $professionId = $appointments[$row->id] ?? '';
+
+                    $professionName = $professions[$professionId] ?? '';
+
+                    return $professionName;
                 })
 
-                ->rawColumns(['nationality', 'worker', 'residence_permit_expiration', 'contract_end_date'])
+
+
+                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
+                    $specializationId = $appointments2[$row->id] ?? '';
+                    $specializationName = $specializations[$specializationId] ?? '';
+
+                    return $specializationName;
+                })->addColumn('bank_code', function ($user) {
+
+                    $bank_details = json_decode($user->bank_details);
+                    return $bank_details->bank_code ?? ' ';
+                })
+                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')->with(compact('contacts', 'nationalities', 'ContactsLocation'));
+        return view('followup::workers.index')->with(compact('contacts_fillter', 'nationalities'));
     }
 
 

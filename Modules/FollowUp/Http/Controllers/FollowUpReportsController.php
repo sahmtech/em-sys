@@ -44,9 +44,9 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-       
+
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-    
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -72,6 +72,11 @@ class FollowUpReportsController extends Controller
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
+            }
+
+            if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
+
+                $users = $users->where('users.status', request()->input('status_fillter'));
             }
 
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
@@ -159,7 +164,7 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-       
+
         $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
 
 
@@ -171,18 +176,17 @@ class FollowUpReportsController extends Controller
 
             ]);
 
-       
+
         if (request()->ajax()) {
             $contracts = salesContract::with([
                 'transaction.contact.user',
                 'salesOrderOperation',
             ]);
-          
+
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
                 $contacts->where('id', request()->input('project_name'));
-                
             }
-           
+
             return Datatables::of($contacts)
                 ->addColumn('contact_name', function ($contact) {
                     return $contact->supplier_business_name ?? null;
@@ -246,7 +250,6 @@ class FollowUpReportsController extends Controller
                 ])
 
                 ->make(true);;
-          
         }
 
         return view('followup::reports.projects')->with(compact('contacts_fillter'));
