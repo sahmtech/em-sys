@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('housingmovements::lang.travelers'))
+@section('title', __('housingmovements::lang.housed'))
 @section('content')
 @include('housingmovements::layouts.nav_trevelers')
 
 <section class="content-header">
     <h1>
-        <span>@lang('housingmovements::lang.travelers')</span>
+        <span>@lang('housingmovements::lang.housed')</span>
     </h1>
 </section>
 
@@ -45,8 +45,53 @@
     </div>
     @component('components.widget', ['class' => 'box-primary'])
 
-            @include('housingmovements::travelers.partials.travelers_list')
-        
+    @php 
+    $colspan = 5;
+   
+@endphp
+<div class="col-md-8 selectedDiv" style="display:none;">
+</div>
+<table class="table table-bordered table-striped ajax_view hide-footer" id="product_table2">
+    <thead>
+        <tr>
+             <th>
+                <input type="checkbox" class="largerCheckbox" id="chkAll" />
+              </th>
+          
+                    <th>@lang('housingmovements::lang.worker_name')</th>  
+                    <th>@lang('housingmovements::lang.project')</th> 
+                    <th>@lang('housingmovements::lang.location')</th> 
+                    <th>@lang('housingmovements::lang.arrival_date')</th> 
+                    <th>@lang('housingmovements::lang.passport_number')</th>          
+                    <th>@lang('housingmovements::lang.profession')</th>
+                    <th>@lang('housingmovements::lang.nationality')</th>
+                    <th>@lang('messages.action')</th>
+           
+        </tr>
+    </thead>
+    
+
+    
+    <tfoot>
+        <tr>
+        <td colspan="5">
+            <div style="display: flex; width: 100%;">
+    
+                
+                    &nbsp;
+
+                            {!! Form::hidden('selected_products', null, ['id' => 'selected_products_for_edit']); !!}
+                            <button type="submit" class="btn btn-xs btn-warning" id="edit-selected"> <i class="fa fa-home"></i>{{__('housingmovements::lang.housed')}}</button>
+                           
+                
+              
+               
+                </div>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
             @include('housingmovements::travelers.partials.housing_modal')
        
     @endcomponent
@@ -59,18 +104,18 @@
 @endsection
 @section('javascript')
 <script type="text/javascript">
-    var product_table;
+    var product_table2;
 
     function reloadDataTable() {
-        product_table.ajax.reload();
+        product_table2.ajax.reload();
     }
 
     $(document).ready(function () {
-        product_table = $('#product_table').DataTable({
+        product_table2 = $('#product_table2').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route("travelers") }}',
+                url: '{{ route("housed_workers") }}',
                 data: function(d) {
                     if ($('#project_name_filter').val()) {
                         d.project_name_filter = $('#project_name_filter').val();
@@ -84,7 +129,7 @@
                             .format('YYYY-MM-DD');
                         d.filter_start_date = start;
                         d.filter_end_date = end;
-                        d.date_filter = date_filter;
+                        d.date_filter = d.date_filter;
                     }
                 }
             },
@@ -123,10 +168,10 @@
            
             $('#doc_filter_date_range').on('change', function() {
                 date_filter = 1;
-                product_table.ajax.reload();
+                product_table2.ajax.reload();
             });
 
-        $('#product_table').on('change', '.tblChk', function (){
+        $('#product_table2').on('change', '.tblChk', function (){
          
             if ($('.tblChk:checked').length == $('.tblChk').length) {
                 $('#chkAll').prop('checked', true);
@@ -240,26 +285,56 @@
 
 
 
-        $('#edit-selected').on('click', function (e) {
-            e.preventDefault();
+    $('#edit-selected').on('click', function (e) {
+    e.preventDefault();
 
-            var selectedRows =  getCheckRecords();
+    var selectedRows = getCheckRecords();
 
-            if (selectedRows.length > 0) {
-                $('#bulkEditModal').modal('show');
-            }
-             else
-             {
-                $('input#selected_rows').val('');
-                swal('@lang("lang_v1.no_row_selected")');
-            }
+    if (selectedRows.length > 0) {
+        // Open the bulk edit modal
+        $('#bulkEditModal').modal('show');
+
+        // Clear existing inputs in the modal body
+        $('#bulk_edit_form').find('input[name="worker_id[]"]').remove();
+
+        // Loop through each selected row and add hidden input fields to the form
+        $.each(selectedRows, function (index, workerId) {
+            var workerIdInput = $('<input>', {
+                type: 'hidden',
+                name: 'worker_id[]',
+                value: workerId
+            });
+
+            // Append the input field to the bulk_edit_form
+            $('#bulk_edit_form').append(workerIdInput);
         });
+    } else {
+        $('input#selected_rows').val('');
+        swal('@lang("lang_v1.no_row_selected")');
+    }
+});
 
-      
-        $('#applyBulkEdit').on('click', function () {
-           
+$('#bulk_edit_form').submit(function (e) {
+    // Prevent the default form submission
+    e.preventDefault();
+
+    // Serialize the form data including selected rows
+    var formData = $(this).serializeArray();
+   console.log(formData);
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'post',
+        data: formData,
+        success: function (response) {
+            // Handle the response if needed
+            console.log(response);
+
+            // Close the modal after successful submission
             $('#bulkEditModal').modal('hide');
-        });
+            reloadDataTable();
+        }
+    });
+});
 
 
  
@@ -305,8 +380,4 @@
         });
     });
 </script>
-
-
-
 @endsection
-

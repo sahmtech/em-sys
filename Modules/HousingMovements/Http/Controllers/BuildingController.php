@@ -91,7 +91,8 @@ class BuildingController extends Controller
         
             }
             $query = User::where('business_id', $business_id)->where('user_type','worker');
-            $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $all_users = $query->select('id',
+             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' ',COALESCE(id_proof_number,'')) as full_name"))->get();
             $users2 = $all_users->pluck('full_name', 'id');
      
             return view('housingmovements::buildings.index')->with(compact('users2','cities'));

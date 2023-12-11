@@ -10,6 +10,7 @@ use App\Contact;
 use App\Transaction;
 use App\User;
 use App\ContactLocation;
+use Modules\Sales\Entities\SalesProject;
 use DataTables;
 use DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
@@ -44,8 +45,8 @@ class FollowUpContractsWishesController extends Controller
      
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         
-         $workers = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
-         ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
+         $workers = User::join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
+         ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
          ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
          ->where('users.user_type', 'worker')
          ->whereNotNull('essentials_employees_contracts.wish_id') // Add this line
@@ -56,7 +57,7 @@ class FollowUpContractsWishesController extends Controller
              'users.mid_name as mid_name ',
              'users.last_name as last_name',
              'users.id_proof_number as residency',
-             'contact_locations.name as project_name',
+             'sales_projects.name as project_name',
              'essentials_employees_contracts.contract_start_date as contract_start_date',
              'essentials_employees_contracts.contract_end_date as contract_end_date',
              'essentials_employees_contracts.wish_id as wish',
@@ -70,7 +71,7 @@ class FollowUpContractsWishesController extends Controller
              }
 
              if (!empty(request()->input('project_name_filter')) ) {
-                $workers->where('contact_locations.id', request()->input('project_name_filter'));
+                $workers->where('sales_projects.id', request()->input('project_name_filter'));
              }
 
          if (request()->ajax()) {
@@ -117,10 +118,10 @@ class FollowUpContractsWishesController extends Controller
          $wishes=EssentailsReasonWish::where('type','wish')
          ->where('employee_type','worker')
          ->pluck('reason', 'id');
-         $projects= ContactLocation::pluck('name','id');
+         $projects= SalesProject::pluck('name','id');
      
-       $employees=User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
-             ->join('contacts', 'contact_locations.contact_id', '=', 'contacts.id')
+       $employees=User::join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
+             ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
              ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
              ->where('users.user_type', 'worker')
              ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),

@@ -136,7 +136,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('workers') }}",
+                    url:  "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();

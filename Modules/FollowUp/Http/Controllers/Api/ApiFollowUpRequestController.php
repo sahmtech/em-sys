@@ -64,6 +64,96 @@ class ApiFollowUpRequestController extends ApiController
         ];
     }
 
+    public function getMyLeaves()
+    {
+
+
+
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $user = Auth::user();
+
+
+            $requests = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                'followup_worker_requests.essentials_leave_type_id as leave_type_id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'followup_worker_requests.start_date',
+                'followup_worker_requests.end_date',
+
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->where('users.id', $user->id)->get();
+
+            $business_id = $user->business_id;
+            $leave_types = EssentialsLeaveType::where('business_id', $business_id)
+                ->select(['id', 'leave_type', 'duration', 'max_leave_count',])->get();
+
+            $statistics = [];
+            foreach ($leave_types as  $leave) {
+                $count =  $requests->where('leave_type_id', $leave->id)->count();
+                $statistics[] = [
+                    'leave_type' => $leave->leave_type,
+                    'max_leave_count' => $leave->max_leave_count,
+                    'taken_leave_count' => $count,
+                ];
+            }
+            $requestsArr = [];
+            foreach ($requests as  $request) {
+             
+                $startDate = Carbon::parse($request->start_date);
+                $endDate = Carbon::parse($request->start_date);
+                error_log( $startDate);
+                error_log($endDate);
+                $duration = $startDate->diffInDays($endDate);
+                $requestsArr[] = [
+                    "id" => $request->id,
+                    "request_no" => $request->request_no,
+                    "duration" => $duration,
+                    "type" => $request->type,
+                    "user" => $request->user,
+                    "status" => $request->status,
+                    "note" => $request->note,
+                    "reason" => $request->reason,
+                    "department_id" => $request->department_id,
+                    "id_proof_number" => $request->id_proof_number,
+                ];
+            }
+
+
+
+
+
+
+
+            $res = [
+                'statistics' => $statistics,
+                'requests' =>  $requestsArr
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
 
     public function getMyRequests()
     {
@@ -89,7 +179,7 @@ class ApiFollowUpRequestController extends ApiController
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
-           
+
 
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')

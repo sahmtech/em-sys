@@ -34,6 +34,8 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.crud_buildings'),
                 'default' => false,
             ],
+
+           
            
         ];
     }

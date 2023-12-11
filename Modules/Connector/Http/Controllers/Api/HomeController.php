@@ -3,12 +3,15 @@
 namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
+use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Connector\Transformers\CommonResource;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\ToDo;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
@@ -68,6 +71,7 @@ class HomeController extends ApiController
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->where('users.id', $user->id)->latest('followup_worker_requests.created_at')
+          
                 ->first();
 
 
@@ -76,22 +80,38 @@ class HomeController extends ApiController
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
+           
                 ->select('*')->latest('created_at')
                 ->first();
 
-            $lastTask = [
-                'id' => $todo->id,
-                'business_id' => $todo->business_id,
-                'task' => $todo->task,
-                'date' => $todo->date,
-                'end_date' => $todo->end_date,
-                'task_id' => $todo->task_id,
-                'description' => $todo->description,
-                'status' => $todo->status,
-                'estimated_hours' => $todo->estimated_hours,
-                'priority' => $todo->priority,
-                'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
-            ];
+            $lastTask = null;
+            if ($todo) {
+                $lastTask = [
+                    'id' => $todo->id,
+                    'business_id' => $todo->business_id,
+                    'task' => $todo->task,
+                    'date' => $todo->date,
+                    'end_date' => $todo->end_date,
+                    'task_id' => $todo->task_id,
+                    'description' => $todo->description,
+                    'status' => $todo->status,
+                    'estimated_hours' => $todo->estimated_hours,
+                    'priority' => $todo->priority,
+                    'assigned_by' => $todo->assigned_by->first_name . ' ' . $todo->assigned_by->last_name,
+                ];
+            }
+
+
+            $user = User::where('id', $user->id)->first();
+            $fullName = $user->first_name . ' ' . $user->last_name;
+            $image =  $user->profile_image ? 'uploads/' . $user->profile_image : null;
+            $essentialsEmployeeAppointmet = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->first();
+
+            $professions = EssentialsProfession::all()->pluck('name', 'id')->toArray();
+            $work = null;
+            if ($essentialsEmployeeAppointmet) {
+                $work = $professions[$essentialsEmployeeAppointmet->profession_id];
+            }
 
 
             $res = [
@@ -101,6 +121,9 @@ class HomeController extends ApiController
                 'business_name' => $business->name,
                 'request' => $lastRequest,
                 'task' => $lastTask,
+                'full_name' => $fullName,
+                'image' => $image,
+                'work' => $work,
 
             ];
 

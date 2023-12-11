@@ -2,7 +2,12 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+
 use App\Category;
+
+use App\AccessRole;
+use App\AccessRoleProject;
+
 use App\Contact;
 use App\ContactLocation;
 use App\User;
@@ -142,6 +147,22 @@ class FollowUpWorkerController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+
+
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+                
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+             
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $users = $users->whereIn('assigned_to', $userProjects);
+        }
+
         $users->select(
             'users.*',
             'users.id_proof_number',
@@ -285,9 +306,9 @@ class FollowUpWorkerController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
+        $user = User::with(['contactAccess'])
             ->find($id);
+        
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];

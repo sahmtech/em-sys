@@ -2,6 +2,8 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleProject;
 use App\Contact;
 use App\ContactLocation;
 use App\Transaction;
@@ -13,6 +15,7 @@ use Illuminate\Routing\Controller;
 use Modules\Sales\Entities\salesContract;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Http\Controllers\SalesController;
 
 class FollowUpProjectController extends Controller
@@ -47,13 +50,22 @@ class FollowUpProjectController extends Controller
 
             ]);
 
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
+            $contacts = $contacts->whereIn('id', $contactIds);
+        }
 
 
-        // if (!$is_admin) {
-        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
-
-        //     $contacts = $contacts->whereIn('id', $userProjects);
-        // }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -177,7 +189,7 @@ class FollowUpProjectController extends Controller
     public function show($id)
     {
         $contact = Contact::findOrFail($id);
-        $locationIds = $contact->contactLocation->pluck('id');
+        $locationIds = $contact->salesProject->pluck('id');
         $users = User::whereIn('assigned_to', $locationIds)
 
 
