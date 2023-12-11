@@ -81,6 +81,7 @@ class ClientsController extends Controller
                 ->select([
                     'id',
                     'supplier_business_name',
+                    'type',
                     'contact_id',
                     'commercial_register_no',
                     'mobile',
@@ -110,6 +111,10 @@ class ClientsController extends Controller
                     // $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('sale.deleteCustomer', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     return $html;
+                })
+                ->editColumn('type', function ($row) {
+                    // Translate the status here
+                    return __('sales::lang.' . $row->type);
                 })
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");

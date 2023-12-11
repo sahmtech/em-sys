@@ -320,7 +320,7 @@ $('#bulk_edit_form').submit(function (e) {
 
     // Serialize the form data including selected rows
     var formData = $(this).serializeArray();
-
+   console.log(formData);
     $.ajax({
         url: $(this).attr('action'),
         type: 'post',

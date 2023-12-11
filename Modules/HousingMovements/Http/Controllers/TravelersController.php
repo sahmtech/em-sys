@@ -296,17 +296,20 @@ class TravelersController extends Controller
         try {
             $requestData = $request->only(['htr_building', 'room_number', 'worker_id']);
     
+            // Use the first room number from the request as the common room number for all workers
+            $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
+    
             $jsonData = [];
-        
+    
             foreach ($requestData['worker_id'] as $index => $workerId) {
                 $jsonObject = [
                     'worker_id' => $workerId,
-                    'room_number' => $requestData['room_number'][$index] ?? null,
+                    'room_number' => $commonRoomNumber,
                 ];
-        
+    
                 $jsonData[] = $jsonObject;
             }
-        
+    
             $jsonData = json_encode($jsonData);
     
             \Log::info('JSON Data: ' . $jsonData);

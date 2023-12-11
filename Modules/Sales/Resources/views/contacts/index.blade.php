@@ -33,7 +33,7 @@
                             <th>#</th>
                             <th>@lang('sales::lang.contact_number')</th>
                             <th>@lang('sales::lang.supplier_business_name')</th>
-
+                            <th>@lang('sales::lang.Status')</th>
                             <th>@lang('sales::lang.commercial_register_no')</th>
                             <th>@lang('sales::lang.contact_mobile')</th>
                             <th>@lang('sales::lang.contact_email')</th>
@@ -626,6 +626,11 @@
                     {
                         data: 'supplier_business_name',
                         name: 'supplier_business_name'
+                    },
+
+                    {
+                        data: 'type',
+                        name: 'type'
                     },
 
                     {
