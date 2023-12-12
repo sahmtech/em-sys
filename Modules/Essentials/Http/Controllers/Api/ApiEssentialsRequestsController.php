@@ -40,8 +40,83 @@ class ApiEssentialsRequestsController extends ApiController
      */
     public function makeRequest(Request $request)
     {
+        try {
+            $user = Auth::user();
+            $business_id = $user->business_id;
 
 
+            $attachmentPath = null;
+            if (isset($request->attachment) && !empty($request->attachment)) {
+                $attachmentPath = $request->attachment->store('/requests_attachments');
+            }
+            $start_date = Carbon::parse($request->start_date)->format('Y-m-d');
+            $end_date = Carbon::parse($request->end_date)->format('Y-m-d');
+            ////////////////////////
+            // make sure the request has a procesure
+            ////////////////
+            $workerRequest = new FollowupWorkerRequest;
+
+            $workerRequest->request_no = $this->generateRequestNo("leavesAndDepartures");
+            $workerRequest->worker_id =  $user->id;
+            $workerRequest->type = "leavesAndDepartures";
+            $workerRequest->start_date = $start_date;
+            $workerRequest->end_date = $end_date;
+            $workerRequest->note = $request->note;
+            $workerRequest->attachment = $attachmentPath;
+            $workerRequest->essentials_leave_type_id = $request->leaveTypeId;
+            $workerRequest->save();
+            $success = 1;
+            if ($workerRequest) {
+                $process = FollowupWorkerRequestProcess::create([
+                    'worker_request_id' => $workerRequest->id,
+                    'procedure_id' => $this->getProcedureIdForType("leavesAndDepartures"),
+                    'status' => 'pending',
+                    'reason' => null,
+                    'status_note' => null,
+                ]);
+
+                if (!$process) {
+
+                    $workerRequest->delete();
+                    // $output = [
+                    //     'success' => 0,
+                    //     'msg' => __('messages.something_went_wrong'),
+                    // ];
+                    // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                    $success = 0;
+                }
+            } else {
+
+                $success = 0;
+                // $output = [
+                //     'success' => 0,
+                //     'msg' => __('messages.something_went_wrong'),
+                // ];
+                // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+            }
+
+
+
+
+
+
+
+
+            $res = [
+                'msg' => "تم رفع الطلب بنجاح"
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
+
+    public function makeLeaves(Request $request)
+    {
         try {
             $user = Auth::user();
             $business_id = $user->business_id;

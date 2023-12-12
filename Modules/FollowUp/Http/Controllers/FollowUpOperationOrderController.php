@@ -2,6 +2,8 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleProject;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -21,6 +23,7 @@ use App\Contact;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesOrdersOperation;
+use Modules\Sales\Entities\SalesProject;
 
 class FollowUpOperationOrderController extends Controller
 {
@@ -75,11 +78,22 @@ class FollowUpOperationOrderController extends Controller
             $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
         }
 
-        // if (!$is_admin) {
-        //     $userProjects = UserProject::where('user_id', auth()->user()->id)->with('contactLocation.contact:id')->get()->pluck('contactLocation.contact.id')->unique()->values()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
 
-        //     $operations = $operations->whereIn('sales_orders_operations.contact_id', $userProjects);
-        // }
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
+
+            $operations = $operations->whereIn('sales_orders_operations.contact_id',   $contactIds);
+        }
+
 
         if (request()->ajax()) {
 

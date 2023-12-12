@@ -11,6 +11,8 @@ return [
     'supplier_business_name' => 'اسم الشركة',
     'date' => 'التاريخ',
     'value' => 'القيمة',
+    'lead'=>'العميل المحتمل',
+    'customer'=>'عميل',
     'offer_type' => 'نوع العرض',
     'offer_status' => 'حالة العرض',
     'action' => 'العمليات',

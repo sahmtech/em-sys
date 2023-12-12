@@ -23,7 +23,7 @@ return [
     'area' => 'المساحة',
     'beds_count' => 'عدد الأسرّة',
     'contents' => 'المحتويات',
-
+'bordar_arrival'=>'إضافة أرقام الحدود',
     'carTypes' => 'أنواع السيارات',
     'carType' => 'نوع السيارة',
     'carModels' => 'طراز السيارات',
@@ -52,7 +52,7 @@ return [
     'driver' => 'السائق',
     'add_car' => 'إضافة سيارة',
     'edit_car' => 'تعديل سيارة',
-
+'border_no'=>'رقم الحدود',
 
     'travelers' => 'المسافرون',
     'worker_name' => 'اسم العامل',

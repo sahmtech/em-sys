@@ -491,6 +491,9 @@ class WorkerController extends Controller
     
         return $output;
     }
+
+
+    
     public function passport_stamped(Request $request)
     {  
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';

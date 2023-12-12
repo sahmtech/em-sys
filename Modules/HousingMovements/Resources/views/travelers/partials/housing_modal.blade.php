@@ -8,19 +8,20 @@
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('housingmovements::lang.housed')</h4>
         </div>
+        {!! Form::open(['url' => action( [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
             <div class="modal-body">
            
-            <div class="form-group col-md-6">
-                {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
-                {!! Form::select('htr_building', $buildings,
-                    null,
-                    [  'class' => 'form-control select2','style'=>'width:100%',
-                    'placeholder' => __('housingmovements::lang.htr_building'), 'required', 'id' => 'htr_building_select']) !!}
-            </div>
+                        <div class="form-group col-md-6">
+                            {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
+                            {!! Form::select('htr_building', $buildings,
+                                null,
+                                [  'class' => 'form-control select2','style'=>'width:100%',
+                                'placeholder' => __('housingmovements::lang.htr_building'), 'required', 'id' => 'htr_building_select']) !!}
+                        </div>
 
                     <div class="form-group col-md-6">
                         {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
-                        {!! Form::number('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
+                        {!! Form::number('room_number', null, ['class' => 'form-control','id'=>'room_number', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
                     </div>
             </div>
 
@@ -28,6 +29,7 @@
                         <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
             </div>
+            {!! Form::close() !!}
         </div>
     </div>
 </div>

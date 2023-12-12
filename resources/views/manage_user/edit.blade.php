@@ -136,7 +136,10 @@
                                     </div>
                                     <p class="help-block" id="show_username"></p>
                                 @else
-                                    {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __('business.username')]) !!}
+                                    {!! Form::text('username', $user->username ?? null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('business.username'),
+                                    ]) !!}
                                 @endif
                                 <p class="help-block">@lang('lang_v1.username_help')</p>
                             </div>
