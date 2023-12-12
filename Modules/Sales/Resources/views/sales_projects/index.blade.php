@@ -63,9 +63,10 @@
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('contact_name', __('sales::lang.contact_name') . ':*') !!}
+
                                     {!! Form::select('contact_name', $contacts, null, [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
+                                        'class' => 'form-control select2',
+                                        'style' => 'height: 40px',
                                         'required',
                                         'placeholder' => __('sales::lang.contact_name'),
                                         'id' => 'contact_name',
@@ -140,11 +141,26 @@
 @endsection
 @section('javascript')
 
+    <!-- Your other scripts and styles -->
+
+
 
     <script type="text/javascript">
         $(document).ready(function() {
             // var professionSelect = $('#professionSelect');
             // var specializationSelect = $('#specializationSelect');
+
+
+
+
+            $('#addContactLocationModal').on('shown.bs.modal', function(e) {
+                $('#contact_name').select2({
+                    dropdownParent: $(
+                        '#addContactLocationModal'),
+                    width: '100%',
+                });
+            });
+
 
             var contact_locations_table = $('#contact_locations_table').DataTable({
                 processing: true,
