@@ -63,11 +63,12 @@
 
                                 <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
                                     <option value="all" selected>@lang('lang_v1.all')</option>
-
-                                    <option value="active">@lang('essentials::lang.active')</option>
-                                    <option value="vecation">@lang('essentials::lang.vecation')</option>
+                                    @foreach ($status_filltetr as $key => $value)
+                                        <option value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                    {{-- <option value="vecation">@lang('essentials::lang.vecation')</option>
                                     <option value="inactive">@lang('essentials::lang.inactive')</option>
-                                    <option value="terminated">@lang('essentials::lang.terminated')</option>
+                                    <option value="terminated">@lang('essentials::lang.terminated')</option> --}}
 
                                 </select>
                             </div>
@@ -252,6 +253,7 @@
                         data: 'status',
                         render: function(data, type, row) {
                             if (data === 'active') {
+
                                 return '@lang('essentials::lang.active')';
                             } else if (data === 'vecation') {
                                 return '@lang('essentials::lang.vecation')';
@@ -265,7 +267,8 @@
                         }
                     },
                     {
-                        data: 'essentials_salary'
+                        data: 'essentials_salary',
+
 
                     },
                     {

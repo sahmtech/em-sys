@@ -37,6 +37,19 @@
 
                         </div>
                     </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('status_label', __('followup::lang.status') . ':') !!}
+
+                            <select class="form-control" name="status_fillter" id='status_fillter' style="padding: 2px;">
+                                <option value="all" selected>@lang('lang_v1.all')</option>
+                                @foreach ($status_filltetr as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('doc_filter_date_range', __('essentials::lang.contract_end_date') . ':') !!}
@@ -81,7 +94,7 @@
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="workers_table"  style=" table-layout: fixed !important;">
+                <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
                             {{-- <th>@lang('followup::lang.name')</th>
@@ -313,6 +326,9 @@
                         if ($('#nationality_filter').val()) {
                             d.nationality = $('#nationality_filter').val();
                         }
+                        if ($('#status_fillter').val()) {
+                            d.status_fillter = $('#status_fillter').val();
+                        }
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate
                                 .format('YYYY-MM-DD');
@@ -407,7 +423,7 @@
                 $('#doc_filter_date_range').val('');
                 reloadDataTable();
             });
-            $('#project_name_filter,#doc_filter_date_range,#nationality_filter').on('change',
+            $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter').on('change',
                 function() {
                     workers_table.ajax.reload();
                 });
