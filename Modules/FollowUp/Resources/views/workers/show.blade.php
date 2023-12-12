@@ -110,21 +110,37 @@
                         <li class="active">
                             <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user" aria-hidden="true"></i> @lang( 'essentials::lang.employee_info')</a>
                         </li>
-                        
-                     
+                        <li>
+                            <a href="#activities_tab" 
+                             data-toggle="tab"
+                             aria-expanded="true">
+                             <i class="fas fa-money-check" aria-hidden="true"></i>
+
+                             @lang('followup::lang.salaries')</a>
+                        </li>
+
+                        <li>
+                            <a href="#activities_tab" 
+                             data-toggle="tab"
+                             aria-expanded="true">
+                             <i class="fas fa-clock" aria-hidden="true"></i>
+
+
+                             @lang('followup::lang.timesheet')</a>
+                        </li>
 
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square" aria-hidden="true"></i> @lang('lang_v1.activities')</a>
                         </li>
                     </ul>
 
+
+
                     <div class="tab-content">
                         <div class="tab-pane active" id="user_info_tab">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="col-md-6">
-                                            <p><strong>@lang( 'lang_v1.cmmsn_percent' ): </strong> {{$user->cmmsn_percent}}%</p>
-                                    </div>
+                                  
                                     <div class="col-md-6">
                                         @php
                                             $selected_contacts = ''

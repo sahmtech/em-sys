@@ -88,6 +88,7 @@ class FollowUpWorkerController extends Controller
         }
 
         $users->select(
+            'id',
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',
@@ -171,10 +172,17 @@ class FollowUpWorkerController extends Controller
                     $bank_details = json_decode($user->bank_details);
                     return $bank_details->bank_code ?? ' ';
                 })
-                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->addColumn('worker', function ($user) {
+                    $html = '<a href="' . route('projectView', ['id' => $user->id]) . '">' . optional($user->worker)->name . '</a>';
+                    return $html;
+                })
+             
+                ->rawColumns(['nationality','worker',
+                 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr', 'nationalities'));
+        return view('followup::workers.index')
+        ->with(compact('contacts_fillter', 'status_filltetr', 'nationalities'));
     }
 
 
@@ -235,7 +243,7 @@ class FollowUpWorkerController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::with(['contactAccess'])
+        $user = User::with(['contactAccess','assignedTo'])
             ->find($id);
         
         $dataArray = [];
@@ -290,7 +298,6 @@ class FollowUpWorkerController extends Controller
 
         return view('followup::workers.show')->with(compact(
             'user',
-
             'view_partials',
             'users',
             'activities',

@@ -62,6 +62,25 @@
 			<p><strong>@lang('lang_v1.id_proof_number'):</strong>
 			{{$user->id_proof_number ?? ''}}</p>
 		</div>
+
+		<div class="clearfix"></div>
+		<hr>
+	
+
+		<div class="col-md-4">
+			<p><strong>@lang('followup::lang.project'):</strong>
+			{{$user->assignedTo->name ?? ''}}</p>
+		</div>
+		<div class="col-md-4">
+			<p><strong>@lang('essentials::lang.city'):</strong>
+			{{ json_decode($user->assignedTo->project_city->name)->ar ?? '' }}</p>
+		</div>
+
+		<div class="col-md-4">
+			<p><strong>@lang('followup::lang.customer_name'):</strong>
+			{{$user->assignedTo->contact->supplier_business_name ?? ''}}</p>
+		</div>
+
 		<div class="clearfix"></div>
 		<hr>
 		<div class="col-md-6">
@@ -72,6 +91,7 @@
 			<strong>@lang('lang_v1.current_address'):</strong><br>
 			<p>{{$user->current_address ?? ''}}</p>
 		</div>
+
 		<div class="clearfix"></div>
 		<hr>
 		<div class="col-md-12">
