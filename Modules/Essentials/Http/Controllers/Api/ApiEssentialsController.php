@@ -82,6 +82,7 @@ class ApiEssentialsController extends ApiController
                     'contact_number' => $request->contact_number ?? $user->contact_number,
                 ];
 
+                $user->update($res);
                 return new CommonResource($res);
             } else {
                 throw new \Exception("The provided OTP is incorrect.");
