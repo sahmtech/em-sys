@@ -395,12 +395,17 @@
                         }
                     },
                     {
-                        data: 'essentials_salary'
-
-                    },
-                    {
-                        data: 'total_salary'
-                    },
+        data: 'essentials_salary',
+        render: function(data, type, row) {
+            return Math.round(data); 
+        }
+    },
+    {
+        data: 'total_salary',
+        render: function(data, type, row) {
+            return Math.round(data); 
+        }
+    },
                     {
                         data: 'gender'
                     },
