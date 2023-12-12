@@ -1267,6 +1267,17 @@ class Util
         ];
     }
 
+    public function getUserStatus()
+    {
+        return [
+            'active' => __('essentials::lang.active'),
+            'vecation' => __('essentials::lang.vecation'),
+            'inactive' => __('essentials::lang.inactive'),
+            'terminated' => __('essentials::lang.terminated'),
+          
+        ];
+    }
+ 
     public function parseNotifications($notifications)
     {
         $notifications_data = [];

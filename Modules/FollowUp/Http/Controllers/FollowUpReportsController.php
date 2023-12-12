@@ -54,7 +54,7 @@ class FollowUpReportsController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
-
+        $status_filltetr = $this->moduleUtil->getUserStatus();
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
@@ -147,7 +147,7 @@ class FollowUpReportsController extends Controller
                 ->make(true);
         }
 
-        return view('followup::reports.projectWorkers')->with(compact('contacts_fillter', 'nationalities'));
+        return view('followup::reports.projectWorkers')->with(compact('contacts_fillter','status_filltetr', 'nationalities'));
     }
 
 
