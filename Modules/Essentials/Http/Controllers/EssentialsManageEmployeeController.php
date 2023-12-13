@@ -34,6 +34,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Sales\Entities\SalesProject;
 
 
 
@@ -385,7 +386,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contacts = ContactLocation::pluck('name', 'id');
+        $contacts = SalesProject::pluck('name', 'id');
         //  dd($contacts);
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -734,8 +735,9 @@ class EssentialsManageEmployeeController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
+            ->with(['contactAccess' ,'assignedTo'])
             ->findOrFail($id);
+
         $appointments = EssentialsEmployeeAppointmet::select([
 
             'profession_id',
