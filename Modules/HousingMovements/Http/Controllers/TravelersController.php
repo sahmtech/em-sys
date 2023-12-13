@@ -422,7 +422,21 @@ class TravelersController extends Controller
                     ]);
                     $worker->update(['arrival_status' => 1]);
                 }
+                $proposalWorkersCount = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)->count();
+                $proposalWorkersWithArrivalStatus1Count = IrProposedLabor::where('transaction_sell_line_id', $worker->transaction_sell_line_id)
+                    ->where('arrival_status', 1)
+                    ->count();
+
+                if ($proposalWorkersCount > 0 && $proposalWorkersCount === $proposalWorkersWithArrivalStatus1Count) {
+                  
+                    $orderOperation = $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation;
+                    $orderOperation->update(['status' => 'done']);
+                }
+                else{  $orderOperation = $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation;
+                    $orderOperation->update(['status' => 'under_process']);}
             }
+          
+
             DB::commit();
         
                     $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
