@@ -21,6 +21,7 @@
                     <p>
                         {{ __('internationalrelations::lang.Office_name') }}: {{ $delegation->agency->supplier_business_name }}<br>
                         {{ __('internationalrelations::lang.target_quantity') }}: {{ $delegation->targeted_quantity }}<br>
+                        {{ __('essentials::lang.profession') }}: {{ $delegation->transactionSellLine->service->profession->name }}<br>
                         {{ __('internationalrelations::lang.currently_proposed_labors_quantity') }}: {{ $delegation->proposed_labors_quantity }}
                     </p>
                     @endforeach

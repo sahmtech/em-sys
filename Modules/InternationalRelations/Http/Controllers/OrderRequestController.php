@@ -188,7 +188,7 @@ class OrderRequestController extends Controller
 
         $sellLineIds = $query->pluck('sell_lines.*.id')->flatten()->toArray();
 
-        $irDelegations = IrDelegation::with('agency')->whereIn('transaction_sell_line_id', $sellLineIds)->get();
+        $irDelegations = IrDelegation::with('agency','transactionSellLine.service.profession')->whereIn('transaction_sell_line_id', $sellLineIds)->get();
 
         return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
@@ -225,29 +225,31 @@ class OrderRequestController extends Controller
 
             foreach ($data_array as $index => $item) {
                 if (isset($item['target_quantity'])) {
+                    $filePath = null;
+
+                    if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
+                     
+                        $file = $request->file('attachments')[$index];
+                        $filePath = $file->store('/delegations_validation_files');
+                       
+                    } 
 
                     $delegation = DB::table('ir_delegations')
                         ->where('transaction_sell_line_id', $item['product_id'])
                         ->where('agency_id', $item['agency_name'])
                         ->first();
 
-                    if ($delegation) {
+                        if ($delegation) {
+                            DB::table('ir_delegations')
+                                ->where('transaction_sell_line_id', $item['product_id'])
+                                ->where('agency_id', $item['agency_name'])
+                                ->update([
+                                    'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
+                                    'validationFile' => $filePath ?? null
+                                ]);
+                        } else {
+
                        
-                        DB::table('ir_delegations')
-                            ->where('transaction_sell_line_id', $item['product_id'])
-                            ->where('agency_id', $item['agency_name'])
-                            ->update(['targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity'])]);
-                    } else {
-
-                        $filePath = null;
-
-                        if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
-                         
-                            $file = $request->file('attachments')[$index];
-                            $filePath = $file->store('/delegations_validation_files');
-                           
-                        } 
-
 
                         DB::table('ir_delegations')->insert([
                             'transaction_sell_line_id' => $item['product_id'],
