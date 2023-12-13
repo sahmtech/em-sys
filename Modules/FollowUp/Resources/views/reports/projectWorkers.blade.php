@@ -90,10 +90,9 @@
 
 
                         @php
-                            $default_fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date')];
+                            $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
 
                             $default = array_keys($default_fields);
-                            $fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date'), __('essentials::lang.mobile_number'), __('business.email'), __('followup::lang.department'), __('followup::lang.profession'), __('followup::lang.specialization'), __('followup::lang.status'), __('followup::lang.Basic_salary'), __('followup::lang.total_salary'), __('followup::lang.gender'), __('followup::lang.marital_status'), __('followup::lang.blood_group'), __('followup::lang.bank_code')];
 
                         @endphp
 
@@ -309,10 +308,11 @@
 
             var dt = $('#workers_table').DataTable();
 
-            var fields = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                13, 14, 15,
-                16, 17, 18
-            ];
+            var fields = fields;
+            // var fields = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+            //     13, 14, 15,
+            //     16, 17, 18
+            // ];
 
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);

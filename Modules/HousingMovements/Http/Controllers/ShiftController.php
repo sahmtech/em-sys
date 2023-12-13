@@ -40,7 +40,8 @@ class ShiftController extends Controller
         $shifts = Shift::where('essentials_shifts.business_id', $business_id)->where('user_type', 'worker')
             ->with('Project')
             ->paginate(5);
-        $salesProject = SalesProject::all();
+        $salesProject = SalesProject::all()->pluck('name', 'id');
+
 
         return view('housingmovements::shifts.index', compact('shifts', 'salesProject'));
     }
@@ -51,7 +52,8 @@ class ShiftController extends Controller
      */
     public function create()
     {
-        $salesProject = SalesProject::all();
+        $salesProject = SalesProject::all()->pluck('name', 'id');
+
         $essentialsUtil = new Util();
 
         $days = $essentialsUtil->getDays();
