@@ -193,78 +193,105 @@ class OrderRequestController extends Controller
         return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
     public function saveRequest(Request $request)
-    {  
+    {
+
         try {
+
+            // $order_id = $request->input('order_id');
+            // $data_array = $request->input('data_array');
+
+            // // Process the data or perform any other necessary actions
+
+            // // Return the data as a JSON response
+            // return response()->json([
+            //     'res' => $request->data_array[0]['attachment'],
+
+            // ]);
             DB::beginTransaction();
-    
-            $data = $request->all();
-            $order_id = isset($data['order_id']) ? $data['order_id'] : null;
+
+
+
+            $order_id = isset($request->order_id) ? $request->order_id : null;
             $order = SalesOrdersOperation::find($order_id);
-   
+
             if (!$order) {
                 return response()->json(['success' => false, 'message' => __('lang_v1.order_not_found')]);
             }
-            error_log( $order_id);
-    
+
+            $data_array = $request->input('data_array');
             $sumTargetQuantity = 0;
-    
-            foreach ($data as $item){
-              
+
+            foreach ($data_array as $item) {
+
                 $sumTargetQuantity += $item['target_quantity'];
-              error_log( $sumTargetQuantity);
+                error_log($sumTargetQuantity);
             }
-    
+
             if ($sumTargetQuantity > $order->orderQuantity - $order->DelegatedQuantity) {
                 return response()->json(['success' => false, 'message' => __('lang_v1.Sum_of_target_quantity_is_greater_than_order_quantity')]);
             }
-    
+
             if ($sumTargetQuantity < $order->orderQuantity - $order->DelegatedQuantity) {
                 $order->Status = 'under_process';
                 $order->save();
             }
-    
-            foreach ($data as $item) {
-                if ($item['target_quantity'] !== null) {
-                   
+
+            foreach ($data_array as $index => $item) {
+                if (isset($item['target_quantity'])) {
+
                     $delegation = DB::table('ir_delegations')
                         ->where('transaction_sell_line_id', $item['product_id'])
-                        ->where('agency_id', $item['agency_id'])
+                        ->where('agency_id', $item['agency_name'])
                         ->first();
-    
+
                     if ($delegation) {
-                        error_log( $delegation);
+                        error_log('delegation');
                         DB::table('ir_delegations')
                             ->where('transaction_sell_line_id', $item['product_id'])
-                            ->where('agency_id', $item['agency_id'])
+                            ->where('agency_id', $item['agency_name'])
                             ->update(['targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity'])]);
                     } else {
-                        error_log( $item);
-                        if (array_key_exists('attachments', $item)) {
-            error_log('333333333333333');
 
-                            $file = $item['attachments'];
+                        $filePath = null; // Initialize $filePath here
+
+                        if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
+                            error_log('begin');
+                            $file = $request->file('attachments')[$index];
                             $filePath = $file->store('/delegations_validation_files');
+                            error_log('end');
+                        } else {
+                            error_log('not found');
                         }
-    
+
+                        // if (isset($item['attachment'])) {
+                        //     error_log('begin');
+                        //     $file = $item['attachment'];
+                        //     $filePath = $file->store('/delegations_validation_files');
+                        //     error_log('end');
+                        // }else{
+                        //     error_log('not found');
+                        // }
+
                         DB::table('ir_delegations')->insert([
                             'transaction_sell_line_id' => $item['product_id'],
-                            'agency_id' => $item['agency_id'],
+                            'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
                             'validationFile' => $filePath ?? null
                         ]);
                     }
                 }
             }
-    
+
             $order->DelegatedQuantity = $order->DelegatedQuantity + $sumTargetQuantity;
             $order->save();
-    
+
             DB::commit();
-    
+
             return response()->json(['success' => true, 'message' => __('lang_v1.saved_successfully')]);
         } catch (\Exception $e) {
             Log::error('Error storing file: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => __('lang_v1.error_storing_file')]);
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            return 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage();
         }
     }
     // public function saveRequest(Request $request)
