@@ -17,6 +17,10 @@ return [
     'passport' => 'رقم جواز السفر',
     'gender' => 'الجنس',
     'salary' => 'الراتب',
+    'salaries' => 'الرواتب',
+    'timesheet'=>'مواعيد الدوام',
+    'attachements'=>'المرفقات',
+    'showdetails'=>'عرض العامل',
     'profession' => 'المهنة',
     'passport_end_date' => 'تاريخ انتهاء جواز السفر',
     'workers' => 'عمال المشاريع',
@@ -213,6 +217,16 @@ return [
     'passport_number'=>'رقم الجواز',
     'worker'=>'العامل',
     'choose_worker'=>'اختر عامل',
+    'visa'=>'مرفق الفيزا',
+    'offer_price'=>'مرفق عرض السعر',
+    'acceptance_offer'=>'مرفق قبول عرض السعر',
+    'Iban'=>'مرفق الايبان',
+    'national_id'=>'مرفق الهوية الوطنية ',
+    'passport'=>'مرفق الجواز',
+    'residence_permit'=>'مرفق الاقامة ',
+    'drivers_license'=>'مرفق شهادة قيادة السيارة ',
+    'car_registration'=>'مرفق تسجيل السيارة ',
+    'international_certificate'=>'مرفق الشهادة الدولية ',
     
 
 

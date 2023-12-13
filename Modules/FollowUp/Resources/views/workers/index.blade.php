@@ -104,6 +104,7 @@
                             <th>@lang('followup::lang.nationality')</th>
                             <th>@lang('followup::lang.eqama_end_date')</th>
                             <th>@lang('followup::lang.contract_end_date')</th> --}}
+
                             <td style="width: 100px !important;">@lang('followup::lang.name')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
@@ -123,7 +124,7 @@
                             <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
-
+                          
 
 
 
@@ -305,9 +306,6 @@
     <script>
         $(document).ready(function() {
 
-            // $('#workers_table').DataTable({
-
-            // });
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
@@ -339,10 +337,15 @@
                     }
                 },
 
-                columns: [{
-                        data: 'worker'
-                    },
+                columns: [
                     {
+        data: 'worker',
+        render: function(data, type, row) {
+            var link = '<a href="' + '{{ route("showWorker", ["id" => ":id"]) }}'.replace(':id', row.id) + '">' + data + '</a>';
+            return link;
+        }
+    },
+                {
                         data: 'residence_permit'
                     },
                     {
@@ -391,6 +394,7 @@
                         }
                     },
                     {
+
                         data: 'essentials_salary',
                         render: function(data, type, row) {
                             return Math.floor(data);
@@ -403,6 +407,7 @@
                             return Math.floor(data);
                         }
                     },
+
                     {
                         data: 'gender'
                     },
@@ -411,12 +416,15 @@
                     },
                     {
                         data: 'blood_group'
-                    }, {
+                    },
+                     {
                         data: 'bank_code',
 
                     },
+    
                 ]
             });
+
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {

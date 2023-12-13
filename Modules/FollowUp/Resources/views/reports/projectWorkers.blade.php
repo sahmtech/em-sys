@@ -90,9 +90,11 @@
 
 
                         @php
+
                             $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
 
                             $default = array_keys($default_fields);
+
 
                         @endphp
 
