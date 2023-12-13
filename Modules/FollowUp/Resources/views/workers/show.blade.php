@@ -16,7 +16,7 @@
 
         <div class="row">
             <div class="col-md-3">
-                <!-- Profile Image -->
+              
                 <div class="box box-primary">
                     <div class="box-body box-profile">
                         @php
@@ -64,43 +64,57 @@
                         </div>
                     <!-- /.box-body -->
                 </div>
-                <!-- /.box -->
-
-
-                  <!-- Profile Image -->
-                  <div class="box box-primary">
+            
+                <div class="box box-primary">
                     <div class="box-body box-profile">
-                      
-
-                     
-        <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
-        <!-- Other user details go here -->
-
-        <div>
-           
-            <label>
-                <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" name="qualifications"  {{ $Qualification ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" name="health_insurance"> @lang( 'essentials::lang.health_insurance' )
-            </label>
-        </div>
-
-                      
+                           <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
+                             
+                                        <div>
+                                        
+                                        <label>
+                                            <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
+                                        </label>
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
+                                        </label>
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="qualifications"  {{ $Qualification ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
+                                        </label>
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="health_insurance"> @lang( 'essentials::lang.health_insurance' )
+                                        </label>
+                                    </div>
+ 
                        
                         </div>
                     <!-- /.box-body -->
                 </div>
-                <!-- /.box -->
+              
+                <div class="box box-primary">
+                    <div class="box-body box-profile">
+                        <h3>@lang('followup::lang.attachments')</h3>
+
+                        @if(!empty($documents))
+                            <div class="checkbox-group">
+                                @foreach($documents as $document)
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox"  checked name="document_types[]" value="{{ $document->type }}">
+                                            {{ trans('followup::lang.' . $document->type) }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p> {{ trans('followup::lang.no_attachment_to_show') }}</p>
+                        @endif
+                    </div>
+                </div>
+
+              
             </div>
 
             

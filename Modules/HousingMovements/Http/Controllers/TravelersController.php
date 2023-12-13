@@ -84,6 +84,7 @@ class TravelersController extends Controller
                 'passport_number',
                 'transaction_sell_line_id', 
                 'visa_id',
+                'arrival_date',
                 'agency_id',
                 DB::raw("CONCAT(COALESCE(first_name, ''),
                  ' ', COALESCE(mid_name, ''),' ', COALESCE(last_name, '')) as full_name"),
@@ -123,7 +124,7 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact?->supplier_business_name ?? '';
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->project?->name ?? '';
                 })
 
                 ->editColumn('location', function ($row) {
@@ -131,7 +132,7 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('arrival_date', function ($row) {
-                    return $row->visa->arrival_date ?? '';
+                    return $row->arrival_date ?? '';
                 })
 
                 ->editColumn('profession', function ($row) {
@@ -206,6 +207,7 @@ class TravelersController extends Controller
             ->select([
                 'ir_proposed_labors.id',
                 'passport_number',
+                'arrival_date',
                 'transaction_sell_line_id', 
                 'visa_id',
                 'agency_id',
@@ -217,6 +219,9 @@ class TravelersController extends Controller
             ->where('arrival_status',1)
             ->where('housed_status',0);
      
+
+
+         
         
             if (!empty($request->input('project_name_filter'))) {
                 $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject', function ($query) use ($request) {
@@ -247,7 +252,7 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->contact?->supplier_business_name ?? '';
+                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->project?->name ?? '';
                 })
 
                 ->editColumn('location', function ($row) {
@@ -255,7 +260,7 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('arrival_date', function ($row) {
-                    return $row->visa->arrival_date ?? '';
+                    return $row->arrival_date ?? '';
                 })
 
                 ->editColumn('profession', function ($row) {
@@ -403,6 +408,7 @@ class TravelersController extends Controller
                         'dob' => $worker->dob,
                         'marital_status' => $worker->marital_status,
                         'blood_group' => $worker->blood_group,
+                        'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->project?->id ,
                         'contact_number' => $worker->contact_number,
                         'permanent_address' => $worker->permanent_address,
                         'current_address' => $worker->current_address,

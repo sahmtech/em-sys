@@ -18,6 +18,7 @@ use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsWorkCard;
+use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -366,6 +367,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(EssentialsOfficialDocument::class, 'employee_id');
     }
+
+
+    public function proposal_worker()
+    {
+        return $this->belongsTo(IrProposedLabor::class, 'proposal_worker_id');
+    }
+
 
     public function allowancesAndDeductions()
     {
