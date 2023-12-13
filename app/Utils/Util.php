@@ -258,7 +258,7 @@ class Util
         if (session('business.time_format') == 12) {
             $time_format = 'h:i A';
         }
-   
+
         return !empty($time_format) ? \Carbon::createFromFormat($time_format, $time)->format('H:i') : null;
     }
 
@@ -1267,6 +1267,31 @@ class Util
         ];
     }
 
+    public function getWorkerFields()
+    {
+        return  [
+            __('followup::lang.name'),
+            __('followup::lang.eqama'),
+            __('followup::lang.project_name'),
+            __('followup::lang.nationality'),
+            __('followup::lang.eqama_end_date'),
+            __('followup::lang.admissions_date'),
+            __('followup::lang.contract_end_date'),
+            __('essentials::lang.mobile_number'),
+            __('business.email'),
+            __('followup::lang.department'),
+            __('followup::lang.profession'),
+            __('followup::lang.specialization'),
+            __('followup::lang.status'),
+            __('followup::lang.Basic_salary'),
+            __('followup::lang.total_salary'),
+            __('followup::lang.gender'),
+            __('followup::lang.marital_status'),
+            __('followup::lang.blood_group'),
+            __('followup::lang.bank_code')
+        ];
+    }
+
     public function getUserStatus()
     {
         return [
@@ -1274,10 +1299,10 @@ class Util
             'vecation' => __('essentials::lang.vecation'),
             'inactive' => __('essentials::lang.inactive'),
             'terminated' => __('essentials::lang.terminated'),
-          
+
         ];
     }
- 
+
     public function parseNotifications($notifications)
     {
         $notifications_data = [];

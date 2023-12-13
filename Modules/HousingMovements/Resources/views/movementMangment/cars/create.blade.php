@@ -26,7 +26,7 @@
                             <div class="col-sm-6" style="margin-top: 0px;">
                                 {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control " name="user_id" id="worker_select" style="padding: 2px;">
+                                <select class="form-control " name="user_id" id="worker__select" style="padding: 2px;">
                                     {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}">
@@ -117,3 +117,22 @@
 
     </div> <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    $(document).ready(function() {
+
+        $('#add_car_model').on('shown.bs.modal', function(e) {
+            $('#worker__select').select2({
+                dropdownParent: $(
+                    '#add_car_model'),
+                width: '100%',
+            });
+
+            $('#car_type_id').select2({
+                dropdownParent: $(
+                    '#add_car_model'),
+                width: '100%',
+            });
+        });
+
+    });
+</script>
