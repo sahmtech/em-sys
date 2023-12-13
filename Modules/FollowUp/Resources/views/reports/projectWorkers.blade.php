@@ -90,10 +90,19 @@
 
 
                         @php
-                            $default_fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date')];
+                            $default_fields = [__('followup::lang.name'),
+                             __('followup::lang.eqama'),
+                              __('followup::lang.project_name'),
+                               __('followup::lang.nationality'),
+                                __('followup::lang.eqama_end_date'),
+                                 __('followup::lang.admissions_date'),
+                                  __('followup::lang.contract_end_date')];
 
                             $default = array_keys($default_fields);
-                            $fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date'), __('essentials::lang.mobile_number'), __('business.email'), __('followup::lang.department'), __('followup::lang.profession'), __('followup::lang.specialization'), __('followup::lang.status'), __('followup::lang.Basic_salary'), __('followup::lang.total_salary'), __('followup::lang.gender'), __('followup::lang.marital_status'), __('followup::lang.blood_group'), __('followup::lang.bank_code')];
+                            $fields = [__('followup::lang.name'),
+                             __('followup::lang.eqama'),
+                             __('followup::lang.project_name'),
+                              __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date'), __('essentials::lang.mobile_number'), __('business.email'), __('followup::lang.department'), __('followup::lang.profession'), __('followup::lang.specialization'), __('followup::lang.status'), __('followup::lang.Basic_salary'), __('followup::lang.total_salary'), __('followup::lang.gender'), __('followup::lang.marital_status'), __('followup::lang.blood_group'), __('followup::lang.bank_code')];
 
                         @endphp
 
