@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-lg" id="add_car_models_model" role="document">
+<div class="modal-dialog modal-lg" id="add_carModels_model" role="document">
     <div class="modal-content">
 
 
@@ -51,7 +51,8 @@
                             <div class="col-sm-12">
                                 {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control" name="car_type_id" style="padding: 2px;">
+                                <select class="form-control" name="car_type_id" id="car_type_select"
+                                    style="padding: 2px;">
                                     {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
                                     @foreach ($carTypes as $type)
                                         <option value="{{ $type->id }}">
@@ -87,3 +88,17 @@
 
     </div> <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    $(document).ready(function() {
+
+        $('#add_carModels_model').on('shown.bs.modal', function(e) {
+            $('#car_type_select').select2({
+                dropdownParent: $(
+                    '#add_carModels_model'),
+                width: '100%',
+            });
+
+        });
+
+    });
+</script>
