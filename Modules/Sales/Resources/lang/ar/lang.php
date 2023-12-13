@@ -186,7 +186,7 @@ return [
     'inactive' => 'غير نشط',
     'terminated' => 'أنهيت',
     'vecation' => 'إجازة',
-    'quantity' => 'الكمية',
+    'quantity' => 'العدد',
     'additional_allwances' => 'بدلات إضافية',
     'final_total' => 'الاجمالي',
     'transaction_number' => 'رقم عرض السعر',
@@ -228,6 +228,8 @@ return [
     'source'=>'المصدر',
     'add_source'=>'إضافة مصدر',
     'edit_source'=>'تعديل المصدر',
-    'location_name'=>' الفرع'
+    'location_name'=>' الفرع',
+    'workers'=>'العمال',
+    'uploade_file_for'=>'إرفاق الملف لـ'
    
 ];

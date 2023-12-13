@@ -1,7 +1,7 @@
 <style>
     .custom-modal-dialog {
-        width: 50%; /* You can adjust the percentage as needed */
-        max-width: none; /* Override the max-width if set by Bootstrap */
+        width: 50%; 
+        max-width: none;
     }
 </style>
 

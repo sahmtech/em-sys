@@ -21,7 +21,14 @@
 	      			@endforeach
 	      		</select>
 	      	</div>
-
+			  <div class="form-group col-md-12">
+				{!! Form::label('note', __('followup::lang.note') . ':') !!}
+				{!! Form::textarea('note', null, [
+					'class' => 'form-control',
+					'placeholder' => __('followup::lang.note'),
+					'rows' => 3,
+				]) !!}
+			</div>
 	    </div>
 
 	    <div class="modal-footer">

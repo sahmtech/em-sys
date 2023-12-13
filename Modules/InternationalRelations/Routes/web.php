@@ -31,10 +31,16 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('proposed_laborIndex',[\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex'])->name('proposed_laborIndex');
         Route::get('/createProposed_labor/{delegation_id}/{agency_id}/{transaction_sell_line_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'createProposed_labor'])->name('createProposed_labor');
         Route::post('/storeProposed_labor', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeProposed_labor'])->name('storeProposed_labor');
+        Route::get('/importWorkers/{delegation_id}/{agency_id}/{transaction_sell_line_id}', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'importWorkers'])->name('importWorkers');
         
+        Route::post('/postImportWorkers', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkers'])->name('postImportWorkers');
+
         Route::get('accepted_workers',[\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'accepted_workers'])->name('accepted_workers');
         Route::get('unaccepted_workers',[\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'unaccepted_workers'])->name('unaccepted_workers');
-
+        Route::get('workers_under_trialPeriod',[\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'workers_under_trialPeriod'])->name('workers_under_trialPeriod');
+        Route::post('/add_worker_visa', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'storeVisaForWorkers'])->name('add_worker_visa');
+       
+         
         Route::post('/changeStatus', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'changeStatus'])->name('changeStatus');
         Route::post('/send_offer_price', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'send_offer_price'])->name('send_offer_price');
         Route::post('/accepted_by_worker', [\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'accepted_by_worker'])->name('accepted_by_worker');

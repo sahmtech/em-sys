@@ -29,13 +29,21 @@
                             </a>
                         </li>
                     @endcan
+                  
+                    @can('essentials.view_workers_under_trialPeriod')
+                    <li @if(request()->segment(2) == 'workers_under_trialPeriod') class="active" @endif>
+                        <a href="{{ route('workers_under_trialPeriod') }}">
+                            <i class="fa fa-spinner" aria-hidden="true"></i> @lang('internationalrelations::lang.workers_under_trialPeriod')
+                        </a>
+                    </li>
+                    @endcan
                     @can('essentials.view_unaccepted_workers')
                     <li @if(request()->segment(2) == 'unaccepted_workers') class="active" @endif>
                         <a href="{{ route('unaccepted_workers') }}">
                             <i class="fas fa-times" aria-hidden="true" style="font-size: smaller;"></i> @lang('internationalrelations::lang.unaccepted_workers')
 
                     </li>
-                @endcan
+                    @endcan
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
