@@ -194,48 +194,10 @@
                 }
             });
 
-            // var formData = new FormData($('#saveDataForm')[0]);
-
-
-
-            // var dataArray = [];
-
-            // var order_id = formData.get('order_id');
-            // var agencyNames = formData.getAll('agency_name[]');
-            // var targetQuantities = formData.getAll('target_quantity[]');
-            // var attachments = formData.getAll('attachments[]');
-
-
-            // for (var i = 0; i < agencyNames.length; i++) {
-            //     dataArray.push({
-            //         'product_id': formData.getAll('product_id')[i],
-            //         'agency_name': agencyNames[i],
-            //         'target_quantity': targetQuantities[i],
-            //         'attachment': attachments[i]
-            //     });
-            // }
-
-            // $.ajax({
-            //     url: '{{ route('save-data') }}',
-            //     type: 'POST',
-            //     data: {
-            //         order_id: order_id,
-            //         data_array: dataArray,
-            //     },
-            //     processData: false,
-            //     contentType: false,
-            //     success: function(response) {
-            //         console.log('successs');
-            //         console.log(response);
-            //     },
-            //     error: function(error) {
-            //         console.log('failed');
-            //         console.error(error);
-            //     }
-            // });
+           
         }
 
-        // Trigger saveData on saveButton click
+       
         $('#saveButton').on('click', saveData);
 
         function addRow() {
