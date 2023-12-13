@@ -34,6 +34,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Sales\Entities\SalesProject;
 
 
 
@@ -385,7 +386,7 @@ class EssentialsManageEmployeeController extends Controller
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contacts = ContactLocation::pluck('name', 'id');
+        $contacts = SalesProject::pluck('name', 'id');
         //  dd($contacts);
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -734,8 +735,11 @@ class EssentialsManageEmployeeController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
+            ->with(['contactAccess' ,'assignedTo'])
             ->findOrFail($id);
+
+        //dd( $user->assigned_to);
+        $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
 
             'profession_id',
@@ -789,7 +793,7 @@ class EssentialsManageEmployeeController extends Controller
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
         return view('essentials::employee_affairs.employee_affairs.edit')
-            ->with(compact('resident_doc', 'roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
+            ->with(compact('projects','resident_doc', 'roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
     }
 
     /**
