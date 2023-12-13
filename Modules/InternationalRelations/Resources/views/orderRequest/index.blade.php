@@ -39,7 +39,7 @@
                             <th>@lang('sales::lang.contract_number')</th>
                             <th>@lang('sales::lang.orderQuantity')</th>
                             <th>@lang('sales::lang.Status')</th>
-                            <th>@lang('internationalrelations::lang.Delegation')</th>
+                            <th>@lang('messages.action')</th>
 
 
                         </tr>
@@ -48,8 +48,41 @@
             </div>
         @endcomponent
 
-
-
+        <div class="modal fade" id="addVisaModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {!! Form::open(['route' => 'storeVisa', 'enctype' => 'multipart/form-data', 'id' => 'addVisaForm']) !!}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">@lang('internationalrelations::lang.addvisa')</h4>
+                    </div>
+        
+                    <div class="modal-body">
+                        <div class="row">
+                            @csrf
+                            <input type="hidden" name="id" id="visaOrderId" value="">
+                            <div class="form-group col-md-6">
+                                {!! Form::label('visa_number', __('internationalrelations::lang.visa_number') . ':*') !!}
+                                {!! Form::number('visa_number', null, ['class' => 'form-control', 'placeholder' => __('internationalrelations::lang.visa_number'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('file', __('internationalrelations::lang.attachments') . ':*') !!}
+                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+        
     </section>
     <!-- /.content -->
 
@@ -57,7 +90,7 @@
 
 @section('javascript')
     <script type="text/javascript">
-        // Countries table
+
         $(document).ready(function() {
             var customers_table = $('#operation_table').DataTable({
 
@@ -102,46 +135,28 @@
                
                     {
                         data: 'Delegation',
-                        name: 'Delegation'
+                        name: 'Delegation',
+                      
                     },
 
 
                 ]
             });
-            // Add an event listener to trigger filtering when your filters change
+
+            $(document).on('click', '.btn-add-visa', function () {
+                var orderId = $(this).data('id');
+             
+                $('#visaOrderId').val(orderId);
+                $('#addVisaModal').modal('show');
+            });
+
 
             $('#contract-select, #status_filter').change(function() {
                 customers_table.ajax.reload();
             });
-
-            $(document).on('click', 'button.delete_operation_button', function() {
-                swal({
-                    title: LANG.sure,
-                    text: LANG.confirm_contract,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        var href = $(this).data('href');
-                        console.log(href);
-                        $.ajax({
-                            method: "DELETE",
-                            url: href,
-                            dataType: "json",
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    contracts_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            }
-                        });
-                    }
+            
+          
                 });
-            });
-        });
     </script>
 
 

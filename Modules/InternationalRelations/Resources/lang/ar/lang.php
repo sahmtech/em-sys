@@ -94,6 +94,10 @@ return [
 'store_visa_worker'=>'إضافة عامل لتأشيرة',
 'store_proposed_labor'=>'إضافة عامل مقترح',
 'change_worker_status'=>'تغيير حالة العامل',
+'attachments'=>'المرفقات',
+'importWorkers'=>'استيراد عمال',
+'workers_under_trialPeriod'=>'العمال تحت الفترة التجريبية',
+'worker_visa'=>'تأشيرة العامل',
 
 
 

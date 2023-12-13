@@ -28,15 +28,19 @@
 
                 </div>
             </div>
+            <br>
+            <h4>{{ __('sales::lang.workers') }}:</h4>
             <div class="row">
 
-                <div class="col-sm-12">
-                    <h4>{{ __('sale.products') }}:</h4>
+                <div class="col-sm-16">
+
 
                     {!! Form::open([
                         'url' => action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'saveRequest']),
-                        'method' => 'post',
+                        'method' => 'post','id'=>"saveDataForm",
+                        'enctype' => 'multipart/form-data',
                     ]) !!}
+                   
                     <input type="hidden" name="order_id" value="{{ $id }}">
 
                     <div class="table-responsive">
@@ -46,16 +50,18 @@
 
                             <tr @if (empty($for_ledger)) class="bg-green" @endif>
 
-                                <th style="width: 30px;">#</th>
-                                <th style="width: 80px;">{{ __('sales::lang.quantity') }}</th>
-                                <th style="width: 120px;">{{ __('sales::lang.profession_name') }}</th>
-                                <th style="width: 120px;">{{ __('sales::lang.specialization_name') }}</th>
-                                <th style="width: 120px;">{{ __('sales::lang.nationality_name') }}</th>
-                                <th style="width: 80px;">{{ __('sales::lang.gender') }}</th>
-                                <th style="width: 100px;">{{ __('sales::lang.service_price') }}</th>
-                                <th style="width: 150px;">{{ __('sales::lang.additional_allwances') }}</th>
-                                <th style="width: 150px;">{{ __('internationalrelations::lang.agency_name') }}</th>
-                                <th style="width: 120px;">{{ __('internationalrelations::lang.target_quantity') }}</th>
+                                <th>#</th>
+                                <th>{{ __('sales::lang.quantity') }}</th>
+                                <th>{{ __('sales::lang.profession_name') }}</th>
+                                <th>{{ __('sales::lang.specialization_name') }}</th>
+                                <th>{{ __('sales::lang.nationality_name') }}</th>
+                                <th>{{ __('sales::lang.gender') }}</th>
+                                <th>{{ __('sales::lang.salary') }}</th>
+                                <th>{{ __('sales::lang.additional_allwances') }}</th>
+                                <th>{{ __('internationalrelations::lang.agency_name') }}</th>
+                                <th>{{ __('internationalrelations::lang.target_quantity') }}</th>
+                                <th>{{ __('internationalrelations::lang.attachments') }}</th>
+
                             </tr>
 
                             @foreach ($query->sell_lines as $sell_line)
@@ -71,20 +77,20 @@
                                     <td> {{ __('sales::lang.' . $sell_line['service']['gender']) }}</td>
 
                                     <td>{{ $sell_line['service']['service_price'] }}</td>
-                                   
-                                    <td style="width: 200px;">
+
+                                    <td style="width: 400px;">
                                         @if (!empty($sell_line->additional_allwances))
                                             <ul>
                                                 @foreach (json_decode($sell_line->additional_allwances) as $allwance)
                                                     @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
-                                                    <li>
-                                                        {{ __('sales::lang.' . $allwance->salaryType) }}:
-                                                        @if ($allwance->amount == 0)
-                                                            {{ __('sales::lang.insured_by_the_other') }}
-                                                        @else
-                                                            {{ $allwance->amount }}
-                                                        @endif
-                                                    </li>
+                                                        <li>
+                                                            {{ __('sales::lang.' . $allwance->salaryType) }}:
+                                                            @if ($allwance->amount == 0)
+                                                                {{ __('sales::lang.insured_by_the_other') }}
+                                                            @else
+                                                                {{ $allwance->amount }}
+                                                            @endif
+                                                        </li>
                                                     @endif
                                                 @endforeach
                                             </ul>
@@ -95,25 +101,34 @@
                                     </td>
 
                                     <td>
-                                       
-                                        <select name="agency_name" class="form-control" style="width: 200px; height: 40px;">
+
+                                        <select name="agency_name[]" class="form-control" style="width: 200px; height: 40px;">
                                             <option value="" disabled selected>
                                                 @lang('internationalrelations::lang.select_agency')
                                             </option>
                                             @foreach ($agencies as $agency)
-                                            
                                                 <option value="{{ $agency->id }}">
-                                                    {{ $agency->supplier_business_name }}</option>
+                                                    {{ $agency->supplier_business_name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
 
                                     <td>
 
-                                        {!! Form::text('target_quantity', null, [
+                                        {!! Form::text('target_quantity[]', null, [
                                             'class' => 'form-control',
-                                            'style' => 'width: 120px;',
+                                            'style' => 'width: 110px;',
                                             'placeholder' => __('internationalrelations::lang.target_quantity'),
+                                        ]) !!}
+                                    </td>
+
+                                    <td>
+                                        {!! Form::file('attachments[][]', [
+                                            'class' => 'form-control',
+                                            'style' => 'width: 110px',
+                                            'placeholder' => __('essentials::lang.file'),
+                                            'required',
                                         ]) !!}
                                     </td>
 
@@ -147,58 +162,34 @@
 
 <script>
     $(document).ready(function() {
-        $('#saveButton').click(function() {
-            var data = [];
-            var data2 = [];
+       
+        function saveData() {
+        var formData = new FormData($('#saveDataForm')[0]);
+      
 
-            data.push({
-                order_id: $('input[name="order_id"]').val(),
-            });
-            $('table tbody tr:gt(0)').each(function() {
-                var product_id = $(this).find('input[name="product_id"]').val();
-                var agency_id = $(this).find('select[name="agency_name"]').val();
-                var target_quantity = $(this).find('input[name="target_quantity"]').val();
-
-
-                if (product_id !== undefined && agency_id !== undefined && target_quantity !==
-                    undefined) {
-                    data2.push({
-                        product_id: product_id,
-                        agency_id: agency_id,
-                        target_quantity: target_quantity
-                    });
-                }
-
-            });
-
-            console.log(data);
-            console.log(data2);
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/ir/save-data',
-                method: 'POST',
-                data: {
-                    data: data,
-                    data2: data2
-                },
-                success: function(response) {
-                    if (response.success) {
-                        toastr.success(response.message);
-                        location.reload();
-
-                    } else {
-
-                        console.log('Server response indicated failure: ' + response
-                            .message);
-                        toastr.error(response.message);
-                        $('#error-message').text(response.message).css('color', 'red');
-                    }
-                }
-
-            });
+// Log the form data (for debugging purposes)
+for (var pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+}
+        $.ajax({
+            url: '/ir/save-data',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+               
+                console.log(response);
+            },
+            error: function(error) {
+               
+                console.error(error);
+            }
         });
+    }
+
+    // Trigger saveData on saveButton click
+    $('#saveButton').on('click', saveData);
 
         function addRow() {
 
@@ -218,14 +209,7 @@
         $('.add_row').on('click', addRow);
 
         $(document).on('click', '.remove_row', removeRow);
-
-
+      
 
     });
 </script>
-{{-- //    $('.add-row').on('click', function () {
-    //         var clonedRow = $(this).closest('tr').clone();
-    //         clonedRow.find('input:text').val('');
-    //         clonedRow.find('select').val('');
-    //         $(this).closest('tr').after(clonedRow);
-    //     }); --}}

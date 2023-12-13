@@ -2,30 +2,24 @@
 @section('title', __('internationalrelations::lang.proposed_labor'))
 
 @section('content')
-<style>
-    .custom-btn {
-    padding: 0.50rem 0.5rem; 
-}
-</style>
-@include('internationalrelations::layouts.nav_proposed_labor')
-    <!-- Content Header (Page header) -->
+    @include('internationalrelations::layouts.nav_proposed_labor')
+
     <section class="content-header">
         <h1>
             @lang('internationalrelations::lang.accepted_workers')
         </h1>
-   
+
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        
-        @component('components.filters', ['title' => __('report.filters')])
 
+    <section class="content">
+
+        @component('components.filters', ['title' => __('report.filters')])
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="professions_filter">@lang('essentials::lang.professions'):</label>
                     {!! Form::select('professions-select', $professions, request('professions-select'), [
-                        'class' => 'form-control select2', // Add the select2 class
+                        'class' => 'form-control select2',
                         'style' => 'height:36px',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'professions-select',
@@ -45,100 +39,162 @@
                 </div>
             </div>
 
-        
+
 
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="agency_filter">@lang('internationalrelations::lang.agency_name'):</label>
                     {!! Form::select('agency_filter', $agencys, request('agency_filter'), [
-                        'class' => 'form-control select2', // Add the select2 class
+                        'class' => 'form-control select2',
                         'style' => 'height:36px',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'agency_filter',
                     ]) !!}
                 </div>
             </div>
-        
         @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
-          
-        
-                <div class="table-responsive">
-                   
-                        <table class="table table-bordered table-striped ajax_view hide-footer" id="employees">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" id="select-all">
-                                </th>
-                                <th>@lang('internationalrelations::lang.worker_number')</th>
-                                <th>@lang('internationalrelations::lang.worker_name')</th>
-                                <th>@lang('internationalrelations::lang.agency_name')</th>
-                                <th>@lang('essentials::lang.mobile_number')</th>
-                                <th>@lang('essentials::lang.contry_nationality')</th>
-                                <th>@lang('essentials::lang.profession')</th>
-                                <th>@lang('essentials::lang.specialization')</th>
-                                <th>@lang('sales::lang.offer_price')</th>
-                                <th>@lang('internationalrelations::lang.accepte_from_worker')</th>
-                                <th>@lang('messages.action')</th>
-                            </tr>
-                        </thead>
-                    </table>
-                    <div style="margin-bottom: 10px;">
-                        <button type="button" class="btn btn-success btn-sm custom-btn" id="change-status-selected">
-                            @lang('internationalrelations::lang.send_offer_price')
-                        </button>
-                        <button type="button" class="btn btn-warning btn-sm custom-btn" id="accepted-selected">
-                            @lang('internationalrelations::lang.accepte_from_worker')
-                        </button>
-                       
-                    </div>
-                    
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped ajax_view hide-footer" id="employees">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select-all">
+                            </th>
+                            <th>@lang('internationalrelations::lang.worker_number')</th>
+                            <th>@lang('internationalrelations::lang.worker_name')</th>
+                            <th>@lang('internationalrelations::lang.agency_name')</th>
+                            <th>@lang('essentials::lang.mobile_number')</th>
+                            <th>@lang('essentials::lang.contry_nationality')</th>
+                            <th>@lang('essentials::lang.profession')</th>
+                            <th>@lang('essentials::lang.specialization')</th>
+                            <th>@lang('sales::lang.offer_price')</th>
+                            <th>@lang('internationalrelations::lang.accepte_from_worker')</th>
+                            <th>@lang('messages.action')</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div style="margin-bottom: 10px;">
+                    <button type="button" class="btn btn-success btn-sm custom-btn" id="change-status-selected">
+                        @lang('internationalrelations::lang.send_offer_price')
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm custom-btn" id="accepted-selected">
+                        @lang('internationalrelations::lang.accepte_from_worker')
+                    </button>
+
                 </div>
-             
+
+            </div>
+
+            <div class="modal fade" id="uploadFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadFilesModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadFilesModalLabel">Upload Files for Selected Rows</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+                            <form id="uploadFilesForm">
+
+                                <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
+
+                                <div id="fileInputsContainer"></div>
+
+
+
+                                {{ csrf_field() }}
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-primary" id="submitFilesBtn">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="uploadAcceptanceFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadAcceptanceFilesModalLabel" aria-hidden="true">
+
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="uploadAcceptanceFilesModalLabel">Upload Files for Selected Rows</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+                            <form id="uploadAcceptanceFilesForm">
+
+                                <input type="hidden" name="selectedRowsData" id="selectedRowsData2" />
+
+                                <div id="acceptanceFileInputsContainer"></div>
+
+
+
+                                {{ csrf_field() }}
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-primary"
+                                id="submitAcceptanceFilesBtn">@lang('messages.save')</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endcomponent
 
-       
 
 
     </section>
-   
+
 @stop
 @section('javascript')
-   
+
 
 
     <script type="text/javascript">
         $(document).ready(function() {
             var users_table = $('#employees').DataTable({
-               
+
                 processing: true,
                 serverSide: true,
-                info : false,
-               
+                info: false,
+
                 ajax: {
                     url: "{{ route('accepted_workers') }}",
                     data: function(d) {
                         d.specialization = $('#specializations-select').val();
                         d.profession = $('#professions-select').val();
                         d.agency = $('#agency_filter').val();
-                     
+
                     },
                 },
 
-                "columns": [
-                    {
+                "columns": [{
                         data: null,
-                        render: function (data, type, row, meta) {
-                            return '<input type="checkbox" class="select-row" data-id="' + row.id + '">';
+                        render: function(data, type, row, meta) {
+                            return '<input type="checkbox" class="select-row" data-id="' + row.id +
+                                '" data-full_name="' + row.full_name +
+                                '" data-is_price_offer_sent="' + row.is_price_offer_sent +
+                                '" data-is_accepted_by_worker="' + row.is_accepted_by_worker + '">';
                         },
                         orderable: false,
                         searchable: false,
                     },
                     {
                         data: "id",
-                       
+
                     },
                     {
                         "data": "full_name"
@@ -146,7 +202,7 @@
                     {
                         "data": "agency_id"
                     },
-                    
+
 
                     {
                         "data": "contact_number"
@@ -154,83 +210,113 @@
                     {
                         "data": "nationality_id"
                     },
-               
+
                     {
                         "data": "profession_id",
-                       
+
                     },
                     {
                         "data": "specialization_id",
-                     
+
                     },
                     {
                         "data": "is_price_offer_sent",
-                     
+                        "render": function(data, type, row) {
+                            var isPriceOfferSent = row.is_price_offer_sent || 0;
+                            var text = isPriceOfferSent == 1 ?
+                                '{{ __('lang_v1.send') }}' :
+                                '{{ __('lang_v1.not_sent_yet') }}';
+
+                            var color = isPriceOfferSent == 1 ?
+                                'green' :
+                                'red';
+
+                            return '<span style="color: ' + color + ';">' + text + '</span>';
+                        }
                     },
+
                     {
                         "data": "is_accepted_by_worker",
-                     
+                        "render": function(data, type, row) {
+                            var text = row.is_accepted_by_worker == 1 ?
+                                '{{ __('lang_v1.accepted') }}' :
+                                '{{ __('lang_v1.not_yet') }}';
+
+                            var color = row.is_accepted_by_worker == 1 ?
+                                'green' :
+                                'red';
+
+                            return '<span style="color: ' + color + ';">' + text + '</span>';
+                        }
                     },
                     {
                         "data": "action"
                     }
                 ],
-                
-        });
+
+            });
 
             $('#specializations-select, #professions-select, #agency_filter').change(
-             function() {
-                users_table.ajax.reload();
+                function() {
+                    users_table.ajax.reload();
 
-            });
-            $(document).on('click', 'button.delete_user_button', function() {
-                swal({
-                    title: LANG.sure,
-                    text: LANG.confirm_delete_user,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        var href = $(this).data('href');
-                        var data = $(this).serialize();
-                        $.ajax({
-                            method: "DELETE",
-                            url: href,
-                            dataType: "json",
-                            data: data,
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    users_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            }
-                        });
-                    }
                 });
-            });
+
             $('#select-all').change(function() {
                 $('.select-row').prop('checked', $(this).prop('checked'));
             });
 
             $('#employees').on('change', '.select-row', function() {
-                $('#select-all').prop('checked', $('.select-row:checked').length === users_table.rows().count());
+                $('#select-all').prop('checked', $('.select-row:checked').length === users_table.rows()
+                    .count());
             });
-          
             $('#change-status-selected').click(function() {
                 var selectedRows = $('.select-row:checked').map(function() {
-                    return $(this).data('id');
-                }).get(); // Convert the jQuery object to a regular array
+                    return {
+                        id: $(this).data('id'),
+                        full_name: $(this).data('full_name'),
+                        is_price_offer_sent: $(this).data('is_price_offer_sent')
+                    };
+                }).get();
+
+
+                $('#selectedRowsData').val(JSON.stringify(selectedRows));
+                var modalTitle = '{{ __('sales::lang.offer_price') }}';
+
+
+                $('#uploadFilesModalLabel').text(modalTitle);
+
+                $('#fileInputsContainer').empty();
+                var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
+
+                selectedRows.forEach(function(row) {
+                    console.log('is_price_offer_sent:', row.is_price_offer_sent);
+                    if (row.is_price_offer_sent != 1) {
+                        var fileInputHtml = '<div class="form-group">' +
+                            '<label for="fileInput' +  row.id + '">' + selectFileLabel + ' ' +  row
+                            .full_name +
+                            '</label>' +
+                            '<input type="file" class="form-control file-input" name="files[' + row
+                            .id +
+                            '][]" id="fileInput' + row.id + '" multiple />' +
+                            '</div>';
+                        $('#fileInputsContainer').append(fileInputHtml);
+                    }
+                });
+
+                $('#uploadFilesModal').modal('show');
+            });
+
+            $('#submitFilesBtn').click(function() {
+                var formData = new FormData($('#uploadFilesForm')[0]);
+
 
                 $.ajax({
                     type: 'POST',
                     url: '{{ route('send_offer_price') }}',
-                    data: {
-                        selectedRows: selectedRows,
-                        _token: '{{ csrf_token() }}'
-                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(result) {
                         if (result.success == true) {
                             toastr.success(result.msg);
@@ -240,23 +326,59 @@
                         }
                     },
                     error: function(error) {
-                    
+
                     }
                 });
+
+
+                $('#uploadFilesModal').modal('hide');
             });
 
             $('#accepted-selected').click(function() {
                 var selectedRows = $('.select-row:checked').map(function() {
-                    return $(this).data('id');
+                    return {
+                        id: $(this).data('id'),
+                        full_name: $(this).data('full_name'),
+                        is_accepted_by_worker: $(this).data('is_accepted_by_worker')
+                    };
                 }).get();
+                $('#selectedRowsData2').val(JSON.stringify(selectedRows));
+                var modalTitle = '{{ __('internationalrelations::lang.accepte_from_worker') }}';
+
+
+                $('#uploadAcceptanceFilesModalLabel').text(modalTitle);
+
+                $('#acceptanceFileInputsContainer').empty();
+                var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
+
+                selectedRows.forEach(function(row) {
+                    console.log('is_accepted_by_worker:', row.is_accepted_by_worker);
+                    if (row.is_accepted_by_worker != 1) {
+                        var fileInputHtml = '<div class="form-group">' +
+                            '<label for="fileInput' + row.id + '">' + selectFileLabel + ' ' + row
+                            .full_name +
+                            '</label>' +
+                            '<input type="file" class="form-control file-input" name="files[' + row
+                            .id +
+                            '][]" id="fileInput' + row.id + '" multiple />' +
+                            '</div>';
+                        $('#acceptanceFileInputsContainer').append(fileInputHtml);
+                    }
+                });
+
+                $('#uploadAcceptanceFilesModal').modal('show');
+            });
+
+            $('#submitAcceptanceFilesBtn').click(function() {
+                var formData = new FormData($('#uploadAcceptanceFilesForm')[0]);
+
 
                 $.ajax({
                     type: 'POST',
                     url: '{{ route('accepted_by_worker') }}',
-                    data: {
-                        selectedRows: selectedRows,
-                        _token: '{{ csrf_token() }}'
-                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(result) {
                         if (result.success == true) {
                             toastr.success(result.msg);
@@ -266,16 +388,15 @@
                         }
                     },
                     error: function(error) {
-                    
+
                     }
                 });
+
+
+                $('#uploadAcceptanceFilesModal').modal('hide');
             });
         });
-
-
-      
     </script>
-
 
 
 @endsection

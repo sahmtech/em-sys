@@ -55,7 +55,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('gender', __( 'lang_v1.gender' ) . ':') !!}
-                        {!! Form::select('gender', ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control','style'=>'height:40px', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
+                        {!! Form::select('gender', ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')], !empty($user->gender) ? $user->gender : null, ['class' => 'form-control','style'=>'height:40px','required', 'id' => 'gender', 'placeholder' => __( 'messages.please_select') ]); !!}
                     </div>
                     <div class="form-group col-md-3">
                         {!! Form::label('marital_status', __( 'lang_v1.marital_status' ) . ':') !!}
@@ -69,7 +69,7 @@
               
                     <div class="form-group col-md-3">
                         {!! Form::label('age', __('lang_v1.age') . ':') !!}
-                        {!! Form::number('age', null, ['class' => 'form-control', 'placeholder' => __('lang_v1.age')]) !!}
+                        {!! Form::number('age', null, ['class' => 'form-control','required', 'placeholder' => __('lang_v1.age')]) !!}
                     </div>
                 
                     <div class="clearfix"></div>

@@ -3,6 +3,7 @@
 namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Business;
+use App\Notification;
 use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
@@ -71,7 +72,7 @@ class HomeController extends ApiController
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->where('users.id', $user->id)->latest('followup_worker_requests.created_at')
-          
+
                 ->first();
 
 
@@ -80,7 +81,7 @@ class HomeController extends ApiController
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
-           
+
                 ->select('*')->latest('created_at')
                 ->first();
 
@@ -129,6 +130,24 @@ class HomeController extends ApiController
 
 
             return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
+
+    function readAllNotifications()
+    {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $user = Auth::user();
+            $user = User::where('id', $user->id)->first();
+            Notification::where('notifiable_id', $user->id)->update(['read_at' => Carbon::now()]);
+            return new CommonResource(['msg' => 'تم قراءة الاشعارات بنجاح']);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 

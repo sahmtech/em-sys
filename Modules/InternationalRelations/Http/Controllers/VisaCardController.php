@@ -131,7 +131,7 @@ class VisaCardController extends Controller
      */
     public function store(Request $request)
     {
-     
+    
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
@@ -144,13 +144,18 @@ class VisaCardController extends Controller
         }
         try {
             DB::transaction(function () use ($request) {
+                $file = request()->file('file');
+                $filePath = $file->store('/visa_cards');
                 $visaDetails = [
                     'visa_number' => $request->input('visa_number'),
-                    'arrival_date' => $request->input('arrival_date'),
-                    'operation_order_id' => $request->input('operation_order'),
+                    'file' => $filePath,
+                    'operation_order_id' => $request->input('id'),
                 ];
-    
+                  
                 DB::table('ir_visa_cards')->insert($visaDetails);
+                SalesOrdersOperation::where('id', $request->input('id'))->update(['has_visa' => '1']);
+
+                
             });
     
             $output = [
@@ -167,7 +172,7 @@ class VisaCardController extends Controller
             ];
         }
     
-        return redirect()->route('visa_cards')->with($output);
+        return redirect()->route('order_request')->with($output);
     }
     
     

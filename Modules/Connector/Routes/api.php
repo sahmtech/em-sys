@@ -94,6 +94,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
 
     Route::get('getAttendanceByDate', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'getAttendanceByDate']);
     Route::get('home', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'home']);
+    Route::get('readAllNotifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'readAllNotifications']);
 });
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {
@@ -105,4 +106,6 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     Route::get('getMyLeaves', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyLeaves']);
     Route::get('getEditUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getEditUserInfo']);
     Route::post('updateUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'updateUserInfo']);
+    Route::post('resetPassword', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'resetPassword']);
+    Route::post('changeToDoStatus/{id}', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'changeToDoStatus']);
 });
