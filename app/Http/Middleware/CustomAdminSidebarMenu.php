@@ -32,7 +32,7 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if (Str::startsWith($currentPath, ['users','manage_user'])) {
+        if (Str::startsWith($currentPath, ['users', 'manage_user'])) {
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm', 'roles'])) {
             $this->essentialsMenu();
@@ -575,10 +575,14 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
             );
             $menu->url(
-                route('sale.saleProjects'),__('sales::lang.sales_projects'),['icon' => 'fa fas fa-plus-circle'],
+                route('sale.saleProjects'),
+                __('sales::lang.sales_projects'),
+                ['icon' => 'fa fas fa-plus-circle'],
             );
             $menu->url(
-                route('sale.contactLocations'),__('sales::lang.contact_locations'),['icon' => 'fa fas fa-plus-circle'],
+                route('sale.contactLocations'),
+                __('sales::lang.contact_locations'),
+                ['icon' => 'fa fas fa-plus-circle'],
             );
 
             $menu->url(
@@ -691,7 +695,7 @@ class CustomAdminSidebarMenu
 
             )->order(4);
 
-            
+
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
                 function ($buildingSubMenu) {
@@ -907,6 +911,25 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 )->order(5);
             }
+            if (auth()->user()->can('essentials.crud_all_ir_requests') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
+                )->order(6);
+            }
+
+            $menu->url(
+                action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                __('followup::lang.reports.title'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
+            )->order(7);
+
+            $menu->url(
+                action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                __('followup::lang.salary_requests'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
+            )->order(8);
         });
     }
 
@@ -1451,10 +1474,12 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
             }
-              if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
-                $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']), __('followup::lang.requests'), 
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']);
-              
+            if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
+                $menu->url(
+                    action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']
+                );
             }
             //Modules menu
             if (($isSuperAdmin) || (auth()->user()->can('manage_modules'))) {

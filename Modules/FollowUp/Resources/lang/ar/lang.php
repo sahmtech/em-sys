@@ -213,6 +213,8 @@ return [
     'passport_number'=>'رقم الجواز',
     'worker'=>'العامل',
     'choose_worker'=>'اختر عامل',
+    'salary_requests'=>'طلبات الرواتب',
+    
     
 
 
