@@ -117,4 +117,22 @@ class ApiEssentialsController extends ApiController
             return $this->otherExceptions($e);
         }
     }
+
+    function changeToDoStatus(Request $request, $id)
+    {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $toDo = ToDo::find($id);
+            $status = ['new', 'in_progress', 'on_hold', 'completed',];
+            $toDo->update(['status' => $status[$request->status]]);
+            return new CommonResource(['msg' => 'تم تغيير حالة المهمة بنجاح']);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
 }
