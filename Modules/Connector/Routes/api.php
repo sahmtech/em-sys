@@ -106,4 +106,5 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     Route::get('getEditUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getEditUserInfo']);
     Route::post('updateUserInfo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'updateUserInfo']);
     Route::post('resetPassword', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'resetPassword']);
+    Route::post('changeToDoStatus/{id}', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'changeToDoStatus']);
 });
