@@ -217,6 +217,10 @@ return [
     'passport_number'=>'رقم الجواز',
     'worker'=>'العامل',
     'choose_worker'=>'اختر عامل',
+
+    'salary_requests'=>'طلبات الرواتب',
+    
+
     'visa'=>'مرفق الفيزا',
     'offer_price'=>'مرفق عرض السعر',
     'acceptance_offer'=>'مرفق قبول عرض السعر',
@@ -227,6 +231,7 @@ return [
     'drivers_license'=>'مرفق شهادة قيادة السيارة ',
     'car_registration'=>'مرفق تسجيل السيارة ',
     'international_certificate'=>'مرفق الشهادة الدولية ',
+
     
 
 
