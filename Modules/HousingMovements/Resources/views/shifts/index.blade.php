@@ -169,12 +169,13 @@
 
                             </tbody>
                         </table>
+
                         <center class="mt-5">
                             {{ $shifts->links() }}
                         </center>
                     </div>
 
-                    {{-- <div class="modal fade" id="shift_modal" tabindex="-1" role="dialog"
+                    {{-- <div class="modal fade" id="add_shits_model" tabindex="-1" role="dialog"
                         aria-labelledby="gridSystemModalLabel">
                         @include('housingmovements::shifts.create')
                     </div> --}}
@@ -196,6 +197,8 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#holidays').select2();
+
+
         });
     </script>
 @endsection

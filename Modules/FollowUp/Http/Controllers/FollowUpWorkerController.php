@@ -67,6 +67,8 @@ class FollowUpWorkerController extends Controller
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
+        $fields = $this->moduleUtil->getWorkerFields();
+
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
@@ -77,9 +79,9 @@ class FollowUpWorkerController extends Controller
             $userProjects = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
-                
+
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-             
+
                 $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
@@ -183,8 +185,9 @@ class FollowUpWorkerController extends Controller
                  'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')
-        ->with(compact('contacts_fillter', 'status_filltetr', 'nationalities'));
+
+        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+
     }
 
 
@@ -249,6 +252,7 @@ class FollowUpWorkerController extends Controller
             ->find($id);
 
 
+
             $documents = null;
 
             if ($user->user_type == 'employee') {
@@ -271,6 +275,7 @@ class FollowUpWorkerController extends Controller
             
         
     
+
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];

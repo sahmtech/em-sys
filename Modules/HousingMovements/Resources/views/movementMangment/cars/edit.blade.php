@@ -26,7 +26,8 @@
                             <div class="col-sm-6" style="margin-top: 0px;">
                                 {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control select2" name="user_id" style="padding: 2px;">
+                                <select class="form-control select2" name="user_id" id="worker_select"
+                                    style="padding: 2px;">
                                     {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}"
@@ -41,7 +42,7 @@
                             <div class="col-sm-6">
                                 {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control select2" id="car_type_id" name="car_type_id"
+                                <select class="form-control select2" id="car_type_id_select" name="car_type_id"
                                     style="padding: 2px;" required>
                                     <option value="">@lang('messages.please_select')</option>
 
@@ -60,9 +61,8 @@
                                         style="padding: 2px;">
                                         <option value="">@lang('messages.please_select')</option>
                                         @foreach ($carModels as $Model)
-                                            <option value="{{ $Model->id }}" @if ($carModel->id == $Model->id)
-                                                selected
-                                            @endif>
+                                            <option value="{{ $Model->id }}"
+                                                @if ($carModel->id == $Model->id) selected @endif>
                                                 {{ $Model->name_ar . ' - ' . $Model->name_en }}</option>
                                         @endforeach
                                     </select>
@@ -131,3 +131,30 @@
 
 </div> <!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    $(document).ready(function() {
+        $('#holidays').select2();
+
+
+        $('#edit_car_model').on('shown.bs.modal', function(e) {
+            $('#worker_select').select2({
+                dropdownParent: $(
+                    '#edit_car_model'),
+                width: '100%',
+            });
+
+            $('#car_type_id_select').select2({
+                dropdownParent: $(
+                    '#edit_car_model'),
+                width: '100%',
+            });
+
+            //     $('#carModel_id').select2({
+            //         dropdownParent: $(
+            //             '#add_car_model'),
+            //         width: '100%',
+            //     });
+        });
+
+    });
+</script>
