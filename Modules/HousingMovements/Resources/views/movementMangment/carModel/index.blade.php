@@ -22,7 +22,7 @@
                     <div class="col-md-4">
                         {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
 
-                        <select class="form-control" name="car_type_id" style="padding: 2px;">
+                        <select class="form-control" id="car__type_id" name="car_type_id" style="padding: 2px;">
                             <option value="all" selected>@lang('lang_v1.all')</option>
                             @foreach ($carTypes as $type)
                                 <option value="{{ $type->id }}">
@@ -81,7 +81,7 @@
                             <a class="btn btn-primary pull-right m-5 btn-modal"
                                 href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@create') }}"
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@create') }}"
-                                data-container="#create_account_modal">
+                                data-container="#add_carModels_model">
                                 <i class="fas fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot
@@ -128,7 +128,7 @@
                                                         title="@lang('messages.edit')"
                                                         href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@edit', $row->id) }}"
                                                         data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@edit', $row->id) }}"
-                                                        data-container="#edit_car_models_model">
+                                                        data-container="#edit_carModels_model">
 
                                                         <i class="fas fa-edit cursor-pointer"
                                                             style="padding: 2px;color:rgb(8, 158, 16);"></i>
@@ -166,8 +166,8 @@
                     </div>
 
 
-                    <div class="modal fade" id="create_account_modal" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_car_models_model" tabindex="-1" role="dialog"></div>
+                    <div class="modal fade" id="add_carModels_model" tabindex="-1" role="dialog"></div>
+                    <div class="modal fade" id="edit_carModels_model" tabindex="-1" role="dialog"></div>
                 @endcomponent
             </div>
 
@@ -175,4 +175,15 @@
     </section>
     <!-- /.content -->
 
+@endsection
+@section('javascript')
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#car__type_id').select2();
+
+
+        });
+    </script>
 @endsection
