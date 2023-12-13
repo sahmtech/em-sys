@@ -395,4 +395,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(EssentialsWorkCard::class, 'employee_id');
     }
+
+    public function allNotifications()
+    {
+        return $this->hasMany(Notification::class, 'notifiable_id');
+    }
 }
