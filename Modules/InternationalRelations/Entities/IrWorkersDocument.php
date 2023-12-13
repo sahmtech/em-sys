@@ -8,13 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Sales\Entities\SalesOrdersOperation;
 
-class IrVisaCard extends Model
-{ 
-     use HasFactory;
+class IrWorkersDocument extends Model
+{
+    use HasFactory;
     protected $guarded = ['id'];
-   
-    public function operationOrder()
-    {
-        return $this->belongsTo(SalesOrdersOperation::class, 'operation_order_id');
-    }
+  
 }

@@ -1062,7 +1062,8 @@ return[
 'other_allowance_id_not_found'=>'رقم البدل أخرى غير موجود',
 'no_wish_file_to_show'=>'لايوجد مرفق للرغبة ',
 'view_wish_file'=>'عرض ملف المرفق للرغبة',
-
+'passport_number'=>'جواز السفر',
+'single'=>'عازب'
 
 
 

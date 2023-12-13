@@ -146,9 +146,10 @@ class EmploymentCompaniesController extends Controller
         }
     
         $irDelegations = IrDelegation::where('agency_id',$id)->with(['transactionSellLine.service'])->get();
+     
 
         
-        return view('internationalrelations::EmploymentCompanies.requests')->with(compact('irDelegations'));
+        return view('internationalrelations::EmploymentCompanies.companyRequests')->with(compact('irDelegations'));
     }
     /**
      * Store a newly created resource in storage.

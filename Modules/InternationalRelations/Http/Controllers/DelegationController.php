@@ -2,11 +2,14 @@
 
 namespace Modules\InternationalRelations\Http\Controllers;
 
+use App\Contact;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
+use Yajra\DataTables\Facades\DataTables;
+
 use Modules\InternationalRelations\Entities\IrDelegation;
 
 class DelegationController extends Controller
@@ -25,7 +28,7 @@ class DelegationController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
 
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
@@ -38,10 +41,74 @@ class DelegationController extends Controller
         if (!($isSuperAdmin || $can_view_delegation)) {
             abort(403, 'Unauthorized action.');
         }
-        $irDelegations = IrDelegation::with(['agency', 'transactionSellLine.service'])->get();
+
+        
+        $agencys = Contact::where('type', 'recruitment')->pluck('supplier_business_name', 'id');
+        if (request()->ajax()) {
+           $irDelegations = IrDelegation::with(['agency', 'transactionSellLine.service']);
+           if (!empty($request->input('agency'))) {
+            $irDelegations->where('agency_id', $request->input('agency'));
+            }
+
+            return Datatables::of($irDelegations)
+            ->addColumn('agency_name', function ($delegation) {
+                return $delegation->agency->supplier_business_name ?? null;
+            })
+            ->addColumn('target_quantity', function ($delegation) {
+                return $delegation->targeted_quantity ?? null;
+            })
+            ->addColumn('currently_proposed_labors_quantity', function ($delegation) {
+                return $delegation->proposed_labors_quantity ?? null;
+            })
+            ->addColumn('profession_name', function ($delegation) {
+                return $delegation->transactionSellLine->service->profession->name ?? null;
+            })
+            ->addColumn('specialization_name', function ($delegation) {
+                return $delegation->transactionSellLine->service->specialization->name ?? null;
+            })
+            ->addColumn('gender', function ($delegation) {
+                return __('sales::lang.' . $delegation->transactionSellLine->service->gender)?? null;
+            })
+            ->addColumn('service_price', function ($delegation) {
+                return $delegation->transactionSellLine->service->service_price ?? null;
+            })
+            ->addColumn('additional_allwances', function ($delegation) {
+                if (!empty($delegation->transactionSellLine->additional_allwances)) {
+                    $allowancesHtml = '<ul>';
+                    foreach (json_decode($delegation->transactionSellLine->additional_allwances) as $allowance) {
+                        if (is_object($allowance) && property_exists($allowance, 'salaryType') && property_exists($allowance, 'amount')) {
+                            $allowancesHtml .= '<li>' . __('sales::lang.' . $allowance->salaryType) . ': ' . $allowance->amount . '</li>';
+                        }
+                    }
+                    $allowancesHtml .= '</ul>';
+                    return $allowancesHtml;
+                }
+
+                return null;
+            })
+            ->addColumn('monthly_cost_for_one', function ($delegation) {
+                return $delegation->transactionSellLine->service->monthly_cost_for_one ?? null;
+            })
+          
+            ->addColumn('actions', function ($delegation) {
+                $html = '<button class="btn btn-xs btn-primary">
+                            <a href="' . route('createProposed_labor', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
+                                . trans("internationalrelations::lang.addWorker") .
+                            '</a>
+                        </button>
+                        <button class="btn btn-xs btn-success">
+                            <a href="' . route('importWorkers', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
+                                . trans("internationalrelations::lang.importWorkers") .
+                            '</a>
+                        </button>';
+                return $html;
+            })
+            ->rawColumns(['actions', 'additional_allwances'])
+            ->make(true);
+            }
 
 
-        return view('internationalrelations::EmploymentCompanies.requests')->with(compact('irDelegations'));
+        return view('internationalrelations::EmploymentCompanies.requests')->with(compact('agencys'));
     }
 
     /**
