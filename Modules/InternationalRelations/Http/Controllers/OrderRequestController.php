@@ -198,10 +198,6 @@ class OrderRequestController extends Controller
         try {
 
     
-            DB::beginTransaction();
-
-
-
             $order_id = isset($request->order_id) ? $request->order_id : null;
             $order = SalesOrdersOperation::find($order_id);
 
@@ -215,7 +211,7 @@ class OrderRequestController extends Controller
             foreach ($data_array as $item) {
 
                 $sumTargetQuantity += $item['target_quantity'];
-                error_log($sumTargetQuantity);
+             
             }
 
             if ($sumTargetQuantity > $order->orderQuantity - $order->DelegatedQuantity) {
@@ -236,7 +232,7 @@ class OrderRequestController extends Controller
                         ->first();
 
                     if ($delegation) {
-                        error_log('delegation');
+                       
                         DB::table('ir_delegations')
                             ->where('transaction_sell_line_id', $item['product_id'])
                             ->where('agency_id', $item['agency_name'])
@@ -246,13 +242,11 @@ class OrderRequestController extends Controller
                         $filePath = null;
 
                         if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
-                            error_log('begin');
+                         
                             $file = $request->file('attachments')[$index];
                             $filePath = $file->store('/delegations_validation_files');
-                            error_log('end');
-                        } else {
-                            error_log('not found');
-                        }
+                           
+                        } 
 
 
                         DB::table('ir_delegations')->insert([
@@ -268,14 +262,23 @@ class OrderRequestController extends Controller
             $order->DelegatedQuantity = $order->DelegatedQuantity + $sumTargetQuantity;
             $order->save();
 
-            DB::commit();
-
-            return response()->json(['success' => true, 'message' => __('lang_v1.saved_successfully')]);
+            // $output = [
+            //     'success' => true,
+            //     'msg' => __('lang_v1.added_success'),
+            // ];
+            return response()->json(['success' => true, 'message' =>  __('lang_v1.saved_successfully')]);
         } catch (\Exception $e) {
-            Log::error('Error storing file: ' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            return 'File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]; 
+            return redirect()->route('order_request')->with($output);
         }
+    
+      
+       
     }
   
     public function store(Request $request)
