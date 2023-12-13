@@ -37,10 +37,11 @@
 
                     {!! Form::open([
                         'url' => action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'saveRequest']),
-                        'method' => 'post','id'=>"saveDataForm",
+                        'method' => 'post',
+                        'id' => 'saveDataForm',
                         'enctype' => 'multipart/form-data',
                     ]) !!}
-                   
+
                     <input type="hidden" name="order_id" value="{{ $id }}">
 
                     <div class="table-responsive">
@@ -102,7 +103,8 @@
 
                                     <td>
 
-                                        <select name="agency_name[]" class="form-control" style="width: 200px; height: 40px;">
+                                        <select name="agency_name[]" class="form-control"
+                                            style="width: 200px; height: 40px;">
                                             <option value="" disabled selected>
                                                 @lang('internationalrelations::lang.select_agency')
                                             </option>
@@ -115,7 +117,6 @@
                                     </td>
 
                                     <td>
-
                                         {!! Form::text('target_quantity[]', null, [
                                             'class' => 'form-control',
                                             'style' => 'width: 110px;',
@@ -124,7 +125,7 @@
                                     </td>
 
                                     <td>
-                                        {!! Form::file('attachments[][]', [
+                                        {!! Form::file('attachments[]', [
                                             'class' => 'form-control',
                                             'style' => 'width: 110px',
                                             'placeholder' => __('essentials::lang.file'),
@@ -162,41 +163,49 @@
 
 <script>
     $(document).ready(function() {
-       
+
         function saveData() {
-        var formData = new FormData($('#saveDataForm')[0]);
-      
 
-// Log the form data (for debugging purposes)
-for (var pair of formData.entries()) {
-    console.log(pair[0] + ': ' + pair[1]);
-}
-        $.ajax({
-            url: '/ir/save-data',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-               
-                console.log(response);
-            },
-            error: function(error) {
-               
-                console.error(error);
-            }
-        });
-    }
+            var formData = new FormData($('#saveDataForm')[0]);
 
-    // Trigger saveData on saveButton click
-    $('#saveButton').on('click', saveData);
+            $.each(formData.getAll('agency_name[]'), function(index, value) {
+                formData.append('data_array[' + index + '][product_id]', formData.getAll('product_id')[
+                    index]);
+                formData.append('data_array[' + index + '][agency_name]', value);
+                formData.append('data_array[' + index + '][target_quantity]', formData.getAll(
+                    'target_quantity[]')[index]);
+                formData.append('data_array[' + index + '][attachment]', formData.getAll(
+                    'attachments[]')[index]);
+            });
+
+            $.ajax({
+                url: '{{ route('save-data') }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log('success');
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log('failed');
+                    console.error(error);
+                }
+            });
+
+           
+        }
+
+       
+        $('#saveButton').on('click', saveData);
 
         function addRow() {
 
             var clonedRow = $(this).closest('tr').clone();
             clonedRow.find('input:text').val('');
             clonedRow.find('select').val('');
-            // clonedRow.find('.add_row').removeClass('add_row').addClass('remove_row').text('Remove');
+
             clonedRow.find('.add_row').removeClass('add_row btn-success').addClass('remove_row btn-danger')
                 .text('Remove');
             $('#products_table tbody').append(clonedRow);
@@ -209,7 +218,7 @@ for (var pair of formData.entries()) {
         $('.add_row').on('click', addRow);
 
         $(document).on('click', '.remove_row', removeRow);
-      
+
 
     });
 </script>
