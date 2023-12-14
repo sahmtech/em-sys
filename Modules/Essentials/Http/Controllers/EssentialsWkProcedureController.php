@@ -45,7 +45,8 @@ class EssentialsWkProcedureController extends Controller
             'insuranceUpgradeRequest',
             'mofaRequest',
             'chamberRequest',
-            'cancleContractRequest'
+            'cancleContractRequest',
+            'WarningRequest'
             
         ];
         

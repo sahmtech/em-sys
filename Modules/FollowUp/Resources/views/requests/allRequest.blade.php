@@ -182,6 +182,7 @@
                                         'mofaRequest' => __('followup::lang.mofaRequest'),
                                         'chamberRequest' => __('followup::lang.chamberRequest'),
                                         'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
+                                        'WarningRequest' => __('followup::lang.WarningRequest'),
                                     ],
                                     null,
                                     [
@@ -450,6 +451,18 @@
                                 </ul>
                             </div>
                         </div>
+                           <!-- Attachment Form -->
+                           <form id="attachmentForm" method="POST" enctype="multipart/form-data">
+                            @csrf
+                        
+                            <div class="form-group">
+                                <label for="attachment">
+                                    <h4>@lang('followup::lang.attachment')</h4>
+                                </label>
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        </form>
                     </div>
         
                     <div class="modal-footer">
@@ -533,7 +546,9 @@
                                 return '@lang('followup::lang.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('followup::lang.cancleContractRequest')';
-                            } else {
+                            } else if (data === 'WarningRequest') {
+                                return '@lang('followup::lang.WarningRequest')';
+                            }else {
                                 return data;
                             }
                         }
@@ -648,6 +663,10 @@
 
                 activitiesList.append(activity);
             }
+                    $('#attachmentForm').attr('action', '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'.replace(':requestId', response.request_info.id));
+
+                    $('#attachmentForm input[name="requestId"]').val(requestId);
+
 
                     $('#requestModal').modal('show');
                     },

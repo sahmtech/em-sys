@@ -214,8 +214,7 @@ return [
     'worker'=>'العامل',
     'choose_worker'=>'اختر عامل',
     'salary_requests'=>'طلبات الرواتب',
-    
-    
+    'WarningRequest'=>'طلب إنذار',
 
 
 

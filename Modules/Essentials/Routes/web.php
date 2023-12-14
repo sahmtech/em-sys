@@ -364,5 +364,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/wish/delete/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWishesController::class, 'destroy'])->name('wish.destroy');
 
         Route::get('/search/byproof', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'search'])->name('hrm.search_proofname');
+        Route::post('/save-attachment/{requestId}',  [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'saveAttachment'])->name('saveAttachment');
+
     });
 });
