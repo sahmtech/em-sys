@@ -102,15 +102,15 @@ return [
     'choose_fields' => 'اختيار الحقول',
     "department" => "القسم",
     "designation" => "الوظيفة",
-    'specialization'=>'اسم الاختصاص',
+    'specialization' => 'اسم الاختصاص',
     'status' => 'الحالة',
     'Basic_salary' => 'الراتب الأساسي',
-    'total_salary'=>'الراتب النهائي',
-    'gender'=>'الجنس',
-    'marital_status'=>'الحالة الاجتماعية',
-    'blood_group'=>'فصيلة الدم',
-    'bank_code'=>'رقم الآيبان',
-    
+    'total_salary' => 'الراتب النهائي',
+    'gender' => 'الجنس',
+    'marital_status' => 'الحالة الاجتماعية',
+    'blood_group' => 'فصيلة الدم',
+    'bank_code' => 'رقم الآيبان',
+
     'reports' => [
         'title' => 'التقارير',
         'projectWorkers' => 'عمال المشاريع',
@@ -197,7 +197,7 @@ return [
     'attachment_view' => 'عرض المرفقات',
     'no_attachment_to_show' => 'لا يوجد مرفقات للعرض',
     'attachments' => 'المرفقات',
-    'view_requests'=>'عرض كل الطلبات',
+    'view_requests' => 'عرض كل الطلبات',
     'release' => 'إصدار جديد',
     're_issuing' => 'إعادة إصدار',
     'update_info' => 'تحديث بيانات',
@@ -217,6 +217,10 @@ return [
     'passport_number'=>'رقم الجواز',
     'worker'=>'العامل',
     'choose_worker'=>'اختر عامل',
+
+    'salary_requests'=>'طلبات الرواتب',
+    
+
     'visa'=>'مرفق الفيزا',
     'offer_price'=>'مرفق عرض السعر',
     'acceptance_offer'=>'مرفق قبول عرض السعر',
@@ -227,9 +231,14 @@ return [
     'drivers_license'=>'مرفق شهادة قيادة السيارة ',
     'car_registration'=>'مرفق تسجيل السيارة ',
     'international_certificate'=>'مرفق الشهادة الدولية ',
+
     
-
-
+    'customer_home_workers_count' => 'عدد العمال',
+    'customer_home_active_workers_count' => 'عدد العمال النشطة',
+    'customer_home_in_active_workers_count' => 'عدد العمال غير النشطة',
+    'customer_home_under_process__workers_requests_count' => 'عدد طلبات العمال قيد الإجراء',
+    'customer_home_workers_requests' => 'طلبات العمال',
+    'customer_home_workers' => 'حالات العمال',
 
 
 

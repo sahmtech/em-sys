@@ -605,7 +605,7 @@ class WorkerController extends Controller
                 abort(403, 'Unauthorized action.');
             }
         
-            error_log('444444444444');
+          
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
            
 
@@ -615,7 +615,7 @@ class WorkerController extends Controller
                 IrProposedLabor::where('id', $row->id)->update([
                     'is_passport_stamped' => 1,
                 ]);
-                error_log('66666666666666');
+           
     
                 $arrivalDates = $validatedData['arrival_dates'];
                 foreach ($arrivalDates as $date) {

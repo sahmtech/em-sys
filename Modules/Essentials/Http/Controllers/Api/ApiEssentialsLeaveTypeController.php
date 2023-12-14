@@ -76,14 +76,19 @@ class ApiEssentialsLeaveTypeController extends ApiController
         try {
             $user = Auth::user();
             $business_id = $user->business_id;
-
+            $priority_filter = request()->priority;
 
             $data = ToDo::where('business_id', $business_id)
                 ->with(['assigned_by'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('users.id', $user->id);
                 })
-                ->select('*')->get();
+                ->select('*');
+
+            if ($priority_filter) {
+                $data = $data->where('priority', $priority_filter);
+            }
+            $data = $data->get();
             $todos = [];
             foreach ($data as $todo) {
                 $todos[] = [

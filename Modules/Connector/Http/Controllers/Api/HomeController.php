@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Connector\Transformers\CommonResource;
+use Modules\Essentials\Entities\EssentialsAttendance;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsUserShift;
@@ -115,6 +116,11 @@ class HomeController extends ApiController
             }
 
 
+            $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->first();
+            $signed_in = $attendanceList ? true : false;
+            $signed_out = $signed_in ? ($attendanceList->clock_out_time ? true : false) : false;
+
+
             $res = [
                 'new_notifications' => 0,
                 'work_day_start' => Carbon::parse($shift->start_time)->format('h:i A'),
@@ -125,7 +131,8 @@ class HomeController extends ApiController
                 'full_name' => $fullName,
                 'image' => $image,
                 'work' => $work,
-
+                'signed_in' => $signed_in,
+                'signed_out' => $signed_out,
             ];
 
 

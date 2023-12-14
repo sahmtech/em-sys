@@ -394,9 +394,9 @@ class FollowUpRequestController extends Controller
             $userProjects = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
-                
+
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-             
+
                 $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
@@ -439,6 +439,57 @@ class FollowUpRequestController extends Controller
 
         return view('followup::requests.allRequest')->with(compact('workers', 'main_reasons', 'classes', 'leaveTypes'));
     }
+
+    public function agentWorkersRequests()
+    {
+        if (request()->ajax()) {
+
+            $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+            $requestsProcess = null;
+
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'users.assigned_to'
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->where('user_type', 'worker')
+                ->whereIn('assigned_to', $projectsIds);
+
+
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
+                    $item = $ContactsLocation[$row->assigned_to] ?? '';
+
+                    return $item;
+                })
+
+
+
+                ->make(true);
+        }
+    }
+
 
     public function search(Request $request)
     {

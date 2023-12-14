@@ -115,10 +115,10 @@ class ApiFollowUpRequestController extends ApiController
             }
             $requestsArr = [];
             foreach ($requests as  $request) {
-             
+
                 $startDate = Carbon::parse($request->start_date);
                 $endDate = Carbon::parse($request->start_date);
-                error_log( $startDate);
+                error_log($startDate);
                 error_log($endDate);
                 $duration = $startDate->diffInDays($endDate);
                 $requestsArr[] = [
@@ -132,6 +132,8 @@ class ApiFollowUpRequestController extends ApiController
                     "reason" => $request->reason,
                     "department_id" => $request->department_id,
                     "id_proof_number" => $request->id_proof_number,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
                 ];
             }
 
@@ -165,6 +167,7 @@ class ApiFollowUpRequestController extends ApiController
         }
 
         try {
+            $status_filter = request()->status;
             $user = Auth::user();
 
 
@@ -179,18 +182,24 @@ class ApiFollowUpRequestController extends ApiController
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
+                'followup_worker_requests.start_date',
+                'followup_worker_requests.end_date',
 
 
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->where('users.id', $user->id)->get();
+                ->where('users.id', $user->id);
 
+            if ($status_filter) {
+             
+                $requests = $requests->where('followup_worker_requests_process.status', $status_filter);
+            }
 
 
             $res = [
-                'requests' =>  $requests
+                'requests' =>  $requests->get(),
             ];
 
 

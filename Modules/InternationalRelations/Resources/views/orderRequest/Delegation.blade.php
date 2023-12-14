@@ -185,40 +185,47 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    console.log('success');
-                    console.log(response);
-                },
-                error: function(error) {
-                    console.log('failed');
-                    console.error(error);
+                    if (response.success) {
+                        toastr.success(response.message);
+                        location.reload();
+
+                    } else {
+
+                        console.log('Server response indicated failure: ' + response.message);
+                        toastr.error(response.message);
+                        $('#error-message').text(response.message).css('color', 'red');
+                    }
                 }
+
             });
 
-           
         }
 
-       
-        $('#saveButton').on('click', saveData);
-
-        function addRow() {
-
-            var clonedRow = $(this).closest('tr').clone();
-            clonedRow.find('input:text').val('');
-            clonedRow.find('select').val('');
-
-            clonedRow.find('.add_row').removeClass('add_row btn-success').addClass('remove_row btn-danger')
-                .text('Remove');
-            $('#products_table tbody').append(clonedRow);
-        }
-
-        function removeRow() {
-            $(this).closest('tr').remove();
-        }
-
-        $('.add_row').on('click', addRow);
-
-        $(document).on('click', '.remove_row', removeRow);
 
 
-    });
+            $('#saveButton').on('click', saveData);
+
+            function addRow() {
+
+                var clonedRow = $(this).closest('tr').clone();
+                clonedRow.find('input:text').val('');
+                clonedRow.find('select').val('');
+
+                clonedRow.find('.add_row').removeClass('add_row btn-success').addClass('remove_row btn-danger')
+                    .text('Remove');
+                $('#products_table tbody').append(clonedRow);
+            }
+
+            function removeRow() {
+                $(this).closest('tr').remove();
+            }
+
+            $('.add_row').on('click', addRow);
+
+            $(document).on('click', '.remove_row', removeRow);
+
+
+        });
+
+  
 </script>
