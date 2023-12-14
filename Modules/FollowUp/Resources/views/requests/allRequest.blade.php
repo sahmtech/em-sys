@@ -441,13 +441,13 @@
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
                                 <ul id="worker-list">
-                                <!-- Worker info will be dynamically added here -->
+                                
                             </div>
                             <div class="col-md-6">
                                 
                                 <h4>@lang('followup::lang.activites')</h4>
                                 <ul id="activities-list">
-                                    <!-- Activities will be dynamically added here -->
+                                  
                                 </ul>
                             </div>
                         </div>
