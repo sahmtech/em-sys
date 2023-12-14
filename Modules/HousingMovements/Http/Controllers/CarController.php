@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
+use Yajra\DataTables\Facades\DataTables;
 
 class CarController extends Controller
 {
@@ -18,12 +19,96 @@ class CarController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        $Cars = Car::paginate(5);
-        $carTypes = CarType::all();
+        $Cars = Car::all();
+        $carTypes = CarModel::all();
         $after_serch = false;
-        return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'after_serch', 'Cars'));
+        $drivers = User::where('user_type', 'worker')->get();
+        if (request()->ajax()) {
+
+            if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+                // $CarModel = CarType::find()->CarModel;
+
+                $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
+                // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
+            }
+
+            if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
+
+                $Cars = $Cars->where('user_id', request()->input('driver_select'));
+            }
+
+            return DataTables::of($Cars)
+
+
+
+                ->editColumn('driver', function ($row) {
+                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name  ?? '';
+                })
+
+                ->editColumn('car_typeModel', function ($row) {
+                    return $row->CarModel->CarType->name_ar . ' - ' . $row->CarModel->name_ar ?? '';
+                })
+
+                ->editColumn('plate_number', function ($row) {
+                    return $row->plate_number ?? '';
+                })
+
+                ->editColumn('number_seats', function ($row) {
+                    return  $row->number_seats ?? '';
+                })
+                ->editColumn('color', function ($row) {
+                    return $row->color ?? '';
+                })
+
+                ->addColumn('action', function ($row) {
+                    $html = '';
+                    $html = '<div class="btn-group" role="group">
+                    <button id="btnGroupDrop1" type="button"
+                        style="background-color: transparent;
+                    font-size: x-large;
+                    padding: 0px 20px;"
+                        class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-cog" aria-hidden="true"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item btn-modal" style="margin: 2px;"
+                            title="تعديل"
+                            href="' . route('car.edit', ['id' => $row->id]) . ' "
+                            data-href="' . route('car.edit', ['id' => $row->id]) . ' "
+                            data-container="#edit_car_model">
+
+                            <i class="fas fa-edit cursor-pointer"
+                                style="padding: 2px;color:rgb(8, 158, 16);"></i>
+                            تعديل </a>
+
+                        <a class="dropdown-item" style="margin: 2px;" 
+                            href=" ' . route('car.delete', ['id' => $row->id]) . ' "
+                            data-href="' . route('car.delete', ['id' => $row->id]) . '"
+                            {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
+
+                            <i class="fa fa-trash cursor-pointer"
+                                style="padding: 2px;color:red;"></i>
+                            حذف
+
+                        </a>
+                    </div>
+                </div>';
+                    return $html;
+                })
+                ->filter(function ($query) use ($request) {
+
+                    // if (!empty($request->input('full_name'))) {
+                    //     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('driver')}%"]);
+                    // }
+                })
+
+                ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'number_seats', 'color'])
+                ->make(true);
+        }
+        return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'after_serch', 'drivers', 'Cars'));
     }
 
     /**
@@ -59,6 +144,8 @@ class CarController extends Controller
                 'color' => $request->input('color'),
                 'user_id' => $request->input('user_id'),
                 'car_model_id' => $request->input('car_model_id'),
+                'number_seats' => $request->input('number_seats'),
+
             ]);
 
             $output = [
@@ -117,6 +204,7 @@ class CarController extends Controller
                 'color' => $request->input('color'),
                 'user_id' => $request->input('user_id'),
                 'car_model_id' => $request->input('car_model_id'),
+                'number_seats' => $request->input('number_seats'),
             ]);
 
             $output = [
@@ -157,7 +245,7 @@ class CarController extends Controller
             $filters_search_carModle = $request->input("search_carModle");
             $filters_search_plate_number = $request->input("search_plate_number");
 
-            
+
             $query->whereHas('User', function ($q) use ($filters) {
                 $q->where('first_name', 'like', "%{$filters}%")
                     ->orwhere('last_name', 'like', "%{$filters}%");

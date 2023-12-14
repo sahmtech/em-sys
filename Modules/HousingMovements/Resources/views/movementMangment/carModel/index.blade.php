@@ -22,7 +22,7 @@
                     <div class="col-md-4">
                         {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
 
-                        <select class="form-control" id="car__type_id" name="car_type_id" style="padding: 2px;">
+                        <select class="form-control" id="carTypeSelect" name="carTypeSelect" style="padding: 2px;">
                             <option value="all" selected>@lang('lang_v1.all')</option>
                             @foreach ($carTypes as $type)
                                 <option value="{{ $type->id }}">
@@ -39,7 +39,7 @@
 
                         </div> --}}
                     </div>
-                    <div class="col-sm-4">
+                    {{-- <div class="col-sm-4">
                         <div class="form-group row">
                             {!! Form::label('search_lable', __('housingmovements::lang.search') . '  ') !!}
                             {!! Form::text('search', '', [
@@ -50,8 +50,8 @@
                             ]) !!}
 
                         </div>
-                    </div>
-                    <div class="col-sm-4" style="padding-right: 3px;">
+                    </div> --}}
+                    {{-- <div class="col-sm-4" style="padding-right: 3px;">
                         <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
                             @lang('housingmovements::lang.search')</button>
                         @if ($after_serch)
@@ -60,7 +60,7 @@
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@index') }}">
                                 @lang('housingmovements::lang.viewAll') </a>
                         @endif
-                    </div>
+                    </div> --}}
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -87,7 +87,7 @@
                     @endslot
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="rooms_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="carsModel_table" style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">@lang('housingmovements::lang.name_ar')</th>
@@ -96,73 +96,11 @@
                                     <th style="text-align: center;">@lang('messages.action')</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody">
-                                @foreach ($carModles as $row)
-                                    <tr>
-                                        <td style="text-align: center;">
-                                            {{ $row->name_ar }}
 
-                                        </td>
-                                        <td style="text-align: center;">
-                                            {{ $row->name_en }}
-
-                                        </td>
-
-                                        <td style="text-align: center;">
-
-                                            {{ $row->CarType->name_ar . ' - ' . $row->CarType->name_en }}
-
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <div class="btn-group" role="group">
-                                                <button id="btnGroupDrop1" type="button"
-                                                    style="background-color: transparent;
-                                                font-size: x-large;
-                                                padding: 0px 20px;"
-                                                    class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fa fa-cog" aria-hidden="true"></i>
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item btn-modal" style="margin: 2px;"
-                                                        title="@lang('messages.edit')"
-                                                        href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@edit', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@edit', $row->id) }}"
-                                                        data-container="#edit_carModels_model">
-
-                                                        <i class="fas fa-edit cursor-pointer"
-                                                            style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                                                        @lang('messages.edit') </a>
-
-                                                    <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
-                                                        href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@destroy', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarModelController@destroy', $row->id) }}"
-                                                        {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
-
-                                                        <i class="fa fa-trash cursor-pointer"
-                                                            style="padding: 2px;color:red;"></i>
-                                                        @lang('messages.delete')
-
-                                                    </a>
-                                                </div>
-                                            </div>
-
-
-
-
-                                        </td>
-
-
-
-
-                                    </tr>
-                                @endforeach
-
-                            </tbody>
                         </table>
-                        <center class="mt-5">
+                        {{-- <center class="mt-5">
                             {{ $carModles->links() }}
-                        </center>
+                        </center> --}}
                     </div>
 
 
@@ -183,7 +121,44 @@
         $(document).ready(function() {
             $('#car__type_id').select2();
 
+            carsModel_table = $('#carsModel_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ route('car-models') }}',
+                    data: function(d) {
+                        if ($('#carTypeSelect').val()) {
+                            d.carTypeSelect = $('#carTypeSelect').val();
+                            // console.log(d.project_name_filter);
+                        }
+                        if ($('#name').val()) {
+                            d.name = $('#name').val();
+                            // console.log(d.project_name_filter);
+                        }
+                    }
+                },
+                columns: [
+                    // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+                    {
+                        "data": "name_ar"
+                    },
+                    {
+                        "data": "name_en"
+                    },
+                    {
+                        "data": "carType"
+                    },
 
+                    {
+                        data: 'action'
+                    }
+                ]
+            });
+
+            $('#carTypeSelect,#name').on('change',
+                function() {
+                    carsModel_table.ajax.reload();
+                });
         });
     </script>
 @endsection

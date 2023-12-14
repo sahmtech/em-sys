@@ -95,7 +95,17 @@
                                     ]) !!}
                                 </div>
                             </div>
-
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('number_seats', __('housingmovements::lang.number_seats') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::number('number_seats', $car->number_seats, [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'placeholder' => __('housingmovements::lang.number_seats'),
+                                        'id' => 'number_seats',
+                                    ]) !!}
+                                </div>
+                            </div>
 
 
 

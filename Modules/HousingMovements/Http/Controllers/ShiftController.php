@@ -2,6 +2,7 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
+use App\Contact;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Exception;
@@ -11,6 +12,7 @@ use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\Shift;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class ShiftController extends Controller
 {
@@ -41,7 +43,7 @@ class ShiftController extends Controller
             ->with('Project')
             ->paginate(5);
         $salesProject = SalesProject::all()->pluck('name', 'id');
-
+        
 
         return view('housingmovements::shifts.index', compact('shifts', 'salesProject'));
     }
@@ -52,15 +54,18 @@ class ShiftController extends Controller
      */
     public function create()
     {
-        $salesProject = SalesProject::all()->pluck('name', 'id');
-
+        // $salesProject = SalesProject
+        $contacts = Contact::all()->pluck('supplier_business_name', 'id');
         $essentialsUtil = new Util();
 
         $days = $essentialsUtil->getDays();
 
-        return view('housingmovements::shifts.create', compact('salesProject', 'days'));
+        return view('housingmovements::shifts.create', compact('contacts', 'days'));
     }
 
+    public function ProjectsByContacts($id){
+        return Contact::find($id)->salesProject;
+    }
     /**
      * Store a newly created resource in storage.
      * @param Request $request
