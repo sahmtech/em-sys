@@ -438,6 +438,11 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            $menu->url(
+                action([\App\Http\Controllers\ContactLocationController::class, 'index']),
+                __('sales::lang.contact_locations'),
+                ['icon' => 'fa fas fa-plus-circle'],
+            );
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects2']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
@@ -623,11 +628,7 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sales_projects'),
                 ['icon' => 'fa fas fa-plus-circle'],
             );
-            $menu->url(
-                route('sale.contactLocations'),
-                __('sales::lang.contact_locations'),
-                ['icon' => 'fa fas fa-plus-circle'],
-            );
+          
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
@@ -896,6 +897,8 @@ class CustomAdminSidebarMenu
                     'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             )->order(0);
+
+          
             $menu->header("");
             $menu->header("");
             // if (auth()->user()->can('internationalrelations.view_dashboard') || true) {
@@ -913,6 +916,8 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'OrderRequest'],
                 )->order(1);
             }
+
+
             if (auth()->user()->can('internationalrelations.view_EmploymentCompanies') || true) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
