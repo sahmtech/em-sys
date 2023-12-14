@@ -113,12 +113,27 @@ class CustomAdminSidebarMenu
             $menu->url(
                 route('agent_projects'),
                 __('agent.projects'),
-                ['icon' => 'fa fas fa-plus-circle'],
+                ['icon' => 'fa fas fa-plus-circle','active' => request()->segment(1) == 'agent_projects'],
             );
             $menu->url(
                 route('agent_contracts'),
-                __('sales::lang.contracts'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
+                __('agent.contracts'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_contracts' ],
+            );
+            $menu->url(
+                route('agent_workers'),
+                __('agent.workers'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent_workers'],
+            );
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('agent.requests'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers'],
+            );
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('agent.pills'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers'],
             );
         });
     }

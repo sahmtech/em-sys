@@ -522,6 +522,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/agent_workers_requests', [FollowUpRequestController::class, 'agentWorkersRequests'])->name('agent_workers_requests');
     Route::get('/agent_projects', [AgentController::class, 'agentProjects'])->name('agent_projects');
     Route::get('/agent_contracts', [AgentController::class, 'agentContracts'])->name('agent_contracts');
+    Route::get('/agent_workers', [AgentController::class, 'agentWorker'])->name('agent_workers');
+    Route::get('/agent_workers/{id}', [AgentController::class, 'showAgentWorker'])->name('show_agent_worker');
 
     //
 });

@@ -9,7 +9,7 @@
         <br>
         <div class="row">
             <div class="col-md-3">
-                <a href="{{ route('filteredRequests', ['filter' => 'new']) }}">
+                <a href="{{ route('agent_workers') }}">
                     <div class=" custom_card_customer">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -32,7 +32,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('filteredRequests', ['filter' => 'under_process']) }}">
+                <a href="{{ route('agent_workers')}}">
                     <div class="  custom_card_customer">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -55,7 +55,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('filteredRequests', ['filter' => 'finished']) }}">
+                <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -78,7 +78,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']) }}">
+                <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
                         <div class="widget widget-one_hybrid widget-engagement">
