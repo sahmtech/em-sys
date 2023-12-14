@@ -507,10 +507,12 @@ class EssentialsManageEmployeeController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $numericPart = (int)substr($business_id, 3);
-            $lastEmployee = User::where('business_id', $business_id)
-                ->orderBy('emp_number', 'desc')
+            $lastEmployee = User::orderBy('emp_number', 'desc')
                 ->first();
 
+            if ($user && $user->user_type == 'employee') {
+                    $user = $user->where('business_id', $business_id);
+                }
             if ($lastEmployee) {
 
                 $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
@@ -621,13 +623,15 @@ class EssentialsManageEmployeeController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess','OfficialDocument','proposal_worker'])
+        $user = User::with(['contactAccess','OfficialDocument','proposal_worker'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
             ->find($id);
         // dd( $user);
 
-
+        if ($user && $user->user_type == 'employee') {
+            $user = $user->where('business_id', $business_id);
+        }
+    
         
         $documents = null;
 
@@ -738,10 +742,12 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess' ,'assignedTo'])
+        $user = User::with(['contactAccess' ,'assignedTo'])
             ->findOrFail($id);
 
+        if ($user && $user->user_type == 'employee') {
+                $user = $user->where('business_id', $business_id);
+            }
         //dd( $user->assigned_to);
         $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
@@ -880,8 +886,10 @@ class EssentialsManageEmployeeController extends Controller
                 }
             }
 
-            $user = User::where('business_id', $business_id)
-                ->findOrFail($id);
+            $user = User::findOrFail($id);
+            if ($user && $user->user_type == 'employee') {
+                $user = $user->where('business_id', $business_id);
+            }
 
             $user->update($user_data);
 
