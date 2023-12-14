@@ -1,5 +1,6 @@
 <?php
 
+use App\Contact;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\AccountTypeController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CombinedPurchaseReturnController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardConfiguratorController;
@@ -60,7 +62,9 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\WarrantyController;
+use App\User;
 use Illuminate\Support\Facades\Route;
+use Modules\FollowUp\Http\Controllers\FollowUpRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +84,23 @@ include_once 'install_r.php';
 //     exec('composer upgrade --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
 //     return $output;
 // });
+
+Route::get('/userFromContact', function () {
+    $contacts = Contact::all();
+    foreach ($contacts as $contact) {
+        $temp = User::where('first_name', $contact->supplier_business_name)->first();
+        if (!($temp  && $temp->user_type == 'customer')) {
+            $userInfo['user_type'] = 'customer';
+            $userInfo['first_name'] = $contact->supplier_business_name;
+            $userInfo['allow_login'] = 0;
+            $userInfo['business_id'] =  1;
+            $userInfo['crm_contact_id'] =  $contact->id;
+            $user = User::create($userInfo);
+            // error_log($user);
+            // error_log("********************************");
+        }
+    }
+});
 
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
@@ -120,6 +141,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/sign-in-as-user/{id}', [ManageUserController::class, 'signInAsUser'])->name('sign-in-as-user');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+
     Route::get('/showCard/{cardId}', [HomeController::class, 'showCard'])->name('showCard');
     Route::get('/home/get-totals', [HomeController::class, 'getTotals']);
     Route::get('/home/product-stock-alert', [HomeController::class, 'getProductStockAlert']);
@@ -494,6 +516,14 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/manage_user/employeesIndex', [ManageUserController::class, 'employeesIndex'])->name('employeesIndex');
     Route::get('/manage_user/makeUser/{id}', [ManageUserController::class, 'makeUser'])->name('makeUser');
+
+
+    Route::get('/agent_home', [AgentController::class, 'agentHome'])->name('agent_home');
+    Route::get('/agent_workers_requests', [FollowUpRequestController::class, 'agentWorkersRequests'])->name('agent_workers_requests');
+    Route::get('/agent_projects', [AgentController::class, 'agentProjects'])->name('agent_projects');
+    Route::get('/agent_contracts', [AgentController::class, 'agentContracts'])->name('agent_contracts');
+
+    //
 });
 
 // Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {

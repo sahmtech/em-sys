@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BusinessLocation;
 use App\Charts\CommonChart;
+use App\Contact;
 use App\Currency;
 use App\Media;
 use App\Transaction;
@@ -14,14 +15,18 @@ use App\Utils\RestaurantUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use App\VariationLocationDetails;
-use Datatables;
 use DB;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\DB as FacadesDB;
 use Illuminate\Support\Str;
+use Modules\Essentials\Entities\EssentialsCity;
+use Modules\Sales\Entities\salesContract;
+use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\SalesProject;
 
-class HomeController extends Controller
+class AgentController extends Controller
 {
     /**
      * All Utils instance.
@@ -54,165 +59,25 @@ class HomeController extends Controller
         $this->commonUtil = $commonUtil;
         $this->restUtil = $restUtil;
     }
-
-
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    private function __chartOptions2()
     {
-
-        $user = User::where('id', auth()->user()->id)->first();
-        $isSuperAdmin =  $user->user_type == 'superadmin';
-        if (Str::contains($user->user_type, 'user_customer')) {
-            return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
-        }
-
-        $business_id = request()->session()->get('user.business_id');
-
-        $is_admin = $this->businessUtil->is_admin(auth()->user());
-        $is_customer = $user->user_type == 'customer';
-        $roles = auth()->user()->roles;
-        $roleHasPermission = false;
-        foreach ($roles as $role) {
-
-            if ($role->hasPermissionTo('dashboard.data')) {
-                $roleHasPermission = true;
-                break;
-            }
-        }
+        return [
+            'plotOptions' => [
+                'pie' => [
+                    'allowPointSelect' => true,
+                    'cursor' => 'pointer',
+                    'dataLabels' => [
+                        'enabled' => false
+                    ],
+                    'showInLegend' => true,
+                ],
+            ],
+        ];
+    }
 
 
-        if (!($isSuperAdmin  ||  $is_customer ||  auth()->user()->can('dashboard.data') || $roleHasPermission)) {
-            return view('home.index');
-        }
-
-
-        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
-        $currency = Currency::where('id', request()->session()->get('business.currency_id'))->first();
-
-        //ensure start date starts from at least 30 days before to get sells last 30 days
-        $least_30_days = \Carbon::parse($fy['start'])->subDays(30)->format('Y-m-d');
-
-        //get all sells
-        $sells_this_fy = $this->transactionUtil->getSellsCurrentFy($business_id, $least_30_days, $fy['end']);
-
-        $all_locations = BusinessLocation::forDropdown($business_id)->toArray();
-
-        //Chart for sells last 30 days
-        $labels = [];
-        $all_sell_values = [];
-        $dates = [];
-        for ($i = 29; $i >= 0; $i--) {
-            $date = \Carbon::now()->subDays($i)->format('Y-m-d');
-            $dates[] = $date;
-
-            $labels[] = date('j M Y', strtotime($date));
-
-            $total_sell_on_date = $sells_this_fy->where('date', $date)->sum('total_sells');
-
-            if (!empty($total_sell_on_date)) {
-                $all_sell_values[] = (float) $total_sell_on_date;
-            } else {
-                $all_sell_values[] = 0;
-            }
-        }
-
-        //Group sells by location
-        $location_sells = [];
-        foreach ($all_locations as $loc_id => $loc_name) {
-            $values = [];
-            foreach ($dates as $date) {
-                $total_sell_on_date_location = $sells_this_fy->where('date', $date)->where('location_id', $loc_id)->sum('total_sells');
-
-                if (!empty($total_sell_on_date_location)) {
-                    $values[] = (float) $total_sell_on_date_location;
-                } else {
-                    $values[] = 0;
-                }
-            }
-            $location_sells[$loc_id]['loc_label'] = $loc_name;
-            $location_sells[$loc_id]['values'] = $values;
-        }
-
-        $sells_chart_1 = new CommonChart;
-
-        $sells_chart_1->labels($labels)
-            ->options($this->__chartOptions(__(
-                'home.total_sells',
-                ['currency' => $currency->code]
-            )));
-
-        if (!empty($location_sells)) {
-            foreach ($location_sells as $location_sell) {
-                $sells_chart_1->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
-            }
-        }
-
-        if (count($all_locations) > 1) {
-            $sells_chart_1->dataset(__('report.all_locations'), 'line', $all_sell_values);
-        }
-
-        $labels = [];
-        $values = [];
-        $date = strtotime($fy['start']);
-        $last = date('m-Y', strtotime($fy['end']));
-        $fy_months = [];
-        do {
-            $month_year = date('m-Y', $date);
-            $fy_months[] = $month_year;
-
-            $labels[] = \Carbon::createFromFormat('m-Y', $month_year)
-                ->format('M-Y');
-            $date = strtotime('+1 month', $date);
-
-            $total_sell_in_month_year = $sells_this_fy->where('yearmonth', $month_year)->sum('total_sells');
-
-            if (!empty($total_sell_in_month_year)) {
-                $values[] = (float) $total_sell_in_month_year;
-            } else {
-                $values[] = 0;
-            }
-        } while ($month_year != $last);
-
-        $fy_sells_by_location_data = [];
-
-        foreach ($all_locations as $loc_id => $loc_name) {
-            $values_data = [];
-            foreach ($fy_months as $month) {
-                $total_sell_in_month_year_location = $sells_this_fy->where('yearmonth', $month)->where('location_id', $loc_id)->sum('total_sells');
-
-                if (!empty($total_sell_in_month_year_location)) {
-                    $values_data[] = (float) $total_sell_in_month_year_location;
-                } else {
-                    $values_data[] = 0;
-                }
-            }
-            $fy_sells_by_location_data[$loc_id]['loc_label'] = $loc_name;
-            $fy_sells_by_location_data[$loc_id]['values'] = $values_data;
-        }
-
-        $sells_chart_2 = new CommonChart;
-        $sells_chart_2->labels($labels)
-            ->options($this->__chartOptions(__(
-                'home.total_sells',
-                ['currency' => $currency->code]
-            )));
-        if (!empty($fy_sells_by_location_data)) {
-            foreach ($fy_sells_by_location_data as $location_sell) {
-                $sells_chart_2->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
-            }
-        }
-        if (count($all_locations) > 1) {
-            $sells_chart_2->dataset(__('report.all_locations'), 'line', $values);
-        }
-
-
-
-
+    public function agentHome()
+    {
         //Get Dashboard widgets from module
         $module_widgets = $this->moduleUtil->getModuleData('dashboard_widget');
 
@@ -225,139 +90,238 @@ class HomeController extends Controller
         }
 
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id =  $user->crm_contact_id;
+        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+        $workers = User::whereIn('assigned_to', $projectsIds);
+        $workers_count = $workers->count();
+        $active_workers_count = $workers->where('status', 'active')->count();
+        $inactive_workers_count = $workers->whereNot('status', 'active')->count();
 
-        if ($is_customer) {
-            return redirect()->route('agent_home');
-        }
-        //essentials
-        $essentialsControllerClass = \Modules\Essentials\Http\Controllers\DataController::class;
-        $essentialsController = new $essentialsControllerClass();
-        $essentialsPermissions = $essentialsController->user_permissions();
 
-        //sales
-        $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
-        $salesController = new $salesControllerClass();
-        $salesPermissions = $salesController->user_permissions();
-
-        //internationalRelations
-        $irControllerClass = \Modules\InternationalRelations\Http\Controllers\DataController::class;
-        $irController = new $irControllerClass();
-        $irPermissions = $irController->user_permissions();
-
-        //housingMovements
-        $houseingMovementControllerClass = \Modules\HousingMovements\Http\Controllers\DataController::class;
-        $houseingMovementController = new $houseingMovementControllerClass();
-        $houseingMovementPermissions = $houseingMovementController->user_permissions();
-
-        //superadmin
-        $superadminControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
-        $superadminController = new $superadminControllerClass();
-        $superadminPermissions = $superadminController->user_permissions();
-
-        //accounting
-        $accountingControllerClass = \Modules\Accounting\Http\Controllers\DataController::class;
-        $accountingController = new $accountingControllerClass();
-        $accountingPermissions = $accountingController->user_permissions();
-
-        //followUp
-        $FollowUpControllerClass = \Modules\FollowUp\Http\Controllers\DataController::class;
-        $FollowUpController = new $FollowUpControllerClass();
-        $FollowUpPermissions = $FollowUpController->user_permissions();
-
-        // //connector
-        // $ConnectorControllerClass = \Modules\Connector\Http\Controllers\DataController::class;
-        // $ConnectorController = new $ConnectorControllerClass();
-        // $ConnectorPermissions = $ConnectorController->user_permissions();
-
-        $userManagementPermissions = [
-            ['value' => 'user.view'],
-            ['value' => 'user.create'],
-            ['value' => 'user.update'],
-            ['value' => 'user.delete'],
+        $chart = new CommonChart;
+        $colors = [
+            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
+            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
         ];
-
-
-        $settingsPermissions = [
-            ['value' => 'business_settings.access'],
-            ['value' => 'barcode_settings.access'],
-            ['value' => 'invoice_settings.access'],
-            ['value' => 'tax_rate.view'],
-            ['value' => 'tax_rate.create'],
-            ['value' => 'access_package_subscriptions'],
-
-            ['value' => 'purchase_n_sell_report.view'],
-            ['value' => 'contacts_report.view'],
-            ['value' => 'stock_report.view'],
-            ['value' => 'tax_report.view'],
-            ['value' => 'trending_product_report.view'],
-            ['value' => 'sales_representative.view'],
-            ['value' => 'expense_report.view'],
-            ['value' => 'backup'],
-        ];
-
-
-
-
-
-
-
-        //action([\App\Http\Controllers\ManageUserController::class, 'index'])
-        $cardsPack = [
-            ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
-            ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
-            ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
-            ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
-            ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fa fas fa-users', 'link' =>  route('sales_landing')],
-            ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
-            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-users', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
-            ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
-            ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
-            //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
-            ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
-            ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fa fas fa-network-wired', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
-            ['id' => 'settings',  'permissions' => $settingsPermissions, 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
-
+        $labels = [
+            __('followup::lang.customer_home_active_workers_count'),
+            __('followup::lang.customer_home_in_active_workers_count'),
 
         ];
-        $cards = [];
+        $values = [
+            $active_workers_count,
+            $inactive_workers_count,
 
-        $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-
-
-        foreach ($cardsPack as $card) {
-            if (!empty($card['permissions'])) {
-                $canAccessCard = false;
-                foreach ($card['permissions'] as $permission) {
-                    if ($isSuperAdmin || auth()->user()->can($permission['value']) || $is_admin) {
-                        $canAccessCard = true;
-                        break;
-                    }
-                }
-
-                if ($canAccessCard) {
-                    $cards[] = $card;
-
-                    error_log($card['title']);
-                } else {
-                    error_log("cant " . $card['title']);
-                }
-            } else {
-                if ($is_admin || $isSuperAdmin) {
-                    $cards[] = $card;
-                }
-                //$cards[] = $card;
-                error_log("empty " . $card['title']);
-            }
-        }
-
-
-        return view('custom_views.custom_home', compact('cards',  'widgets', 'common_settings', 'is_admin'));
-
-        // return view('custom_views.custom_home', compact('cards', 'sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
-
-        // return view('custom_views.home', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
+        ];
+        $chart->labels($labels)
+            ->options($this->__chartOptions2())
+            ->dataset(__('followup::lang.customer_home_workers_count'), 'pie', $values)
+            ->color($colors);
+        return view('custom_views.agents.agent_home', compact(
+            'active_workers_count',
+            'inactive_workers_count',
+            'workers_count',
+            'chart',
+            'widgets',
+            'common_settings'
+        ));
     }
+
+
+    public function agentProjects()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id =  $user->crm_contact_id;
+        $SalesProjects = SalesProject::where('contact_id', $contact_id);
+        $cities = EssentialsCity::forDropdown();
+        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+        $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+        if (request()->ajax()) {
+
+
+            return Datatables::of($SalesProjects)
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
+
+                ->addColumn(
+                    'contact_location_name',
+                    function ($row) {
+                        return  $row->name;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_city',
+                    function ($row) use ($cities) {
+                        if ($row->city) {
+                            return  $cities[$row->city];
+                        } else return null;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_name_in_charge',
+                    function ($row) use ($name_in_charge_choices) {
+
+                        if ($row->name_in_charge) {
+                            return $name_in_charge_choices[$row->name_in_charge];
+                        } else return null;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_phone_in_charge',
+                    function ($row) {
+                        return  $row->phone_in_charge;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_email_in_charge',
+                    function ($row) {
+                        return $row->email_in_charge;
+                    }
+                )
+
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '';
+
+                        $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                             &nbsp;';
+                        $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroySaleProject', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+
+                        return $html;
+                    }
+                )
+                ->filterColumn('contact_name', function ($query, $keyword) {
+
+                    $query->whereHas('contact', function ($qu) use ($keyword) {
+                        $qu->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('contact_location_name', function ($query, $keyword) {
+
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+
+
+                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_id', 'action'])
+                ->make(true);
+        }
+
+        $cities = EssentialsCity::forDropdown();
+        $contacts = Contact::pluck('supplier_business_name', 'id');
+        return view('custom_views.agents.agent_projects')->with(compact('cities', 'contacts', 'name_in_charge_choices'));
+    }
+
+
+    public function agentContracts()
+    {
+
+
+        $contacts = SalesProject::all()->pluck('name', 'id');
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id =  $user->crm_contact_id;
+        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+        if (request()->ajax()) {
+
+            $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+                ->select([
+                    'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
+                    'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
+                    'transactions.contract_form as contract_form', 'transactions.sales_project_id', 'transactions.id as tra'
+                ])->whereIn('sales_project_id', $projectsIds);
+
+            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                $contracts->where('sales_contracts.status', request()->input('status'));
+            }
+            if (!empty(request()->input('contract_form')) && request()->input('contract_form') !== 'all') {
+                $contracts->where('transactions.contract_form', request()->input('contract_form'));
+            }
+            return Datatables::of($contracts)
+
+
+                ->editColumn('sales_project_id', function ($row) use ($contacts) {
+                    $item = $contacts[$row->sales_project_id] ?? '';
+
+                    return $item;
+                })
+
+
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '';
+                        $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
+                        $html .= '&nbsp;';
+
+                        if (!empty($row->file)) {
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
+                        } else {
+                            $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                        }
+                        $html .= '&nbsp;';
+                        $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                        return $html;
+                    }
+                )
+
+
+
+                ->filterColumn('number_of_contract', function ($query, $keyword) {
+                    $query->whereRaw("number_of_contract like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+
+
+        return view('custom_views.agents.agent_contracts');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**

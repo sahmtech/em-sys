@@ -215,7 +215,8 @@ class ClientsController extends Controller
             $output = $this->contactUtil->createNewContact($input);
             $responseData = $output['data'];
             $contactId = $responseData->id;
-
+            
+            $user->update(['crm_contact_id' => $contactId]);
 
             event(new ContactCreatedOrModified($input, 'added'));
 

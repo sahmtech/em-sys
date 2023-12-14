@@ -32,7 +32,7 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if (Str::startsWith($currentPath, ['users','manage_user'])) {
+        if (Str::startsWith($currentPath, ['users', 'manage_user'])) {
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm', 'roles'])) {
             $this->essentialsMenu();
@@ -75,6 +75,8 @@ class CustomAdminSidebarMenu
             $this->productsMenu();
         } elseif (Str::startsWith($currentPath, 'connector')) {
             $this->connectorMenu();
+        } elseif (Str::startsWith($currentPath, 'agent')) {
+            $this->agnetMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -93,6 +95,33 @@ class CustomAdminSidebarMenu
         return $next($request);
     }
 
+    public function agnetMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+
+            $menu->header("");
+            $menu->header("");
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'],
+            );
+            $menu->url(
+                route('agent_projects'),
+                __('agent.projects'),
+                ['icon' => 'fa fas fa-plus-circle'],
+            );
+            $menu->url(
+                route('agent_contracts'),
+                __('sales::lang.contracts'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
+            );
+        });
+    }
     public function connectorMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
@@ -575,10 +604,14 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
             );
             $menu->url(
-                route('sale.saleProjects'),__('sales::lang.sales_projects'),['icon' => 'fa fas fa-plus-circle'],
+                route('sale.saleProjects'),
+                __('sales::lang.sales_projects'),
+                ['icon' => 'fa fas fa-plus-circle'],
             );
             $menu->url(
-                route('sale.contactLocations'),__('sales::lang.contact_locations'),['icon' => 'fa fas fa-plus-circle'],
+                route('sale.contactLocations'),
+                __('sales::lang.contact_locations'),
+                ['icon' => 'fa fas fa-plus-circle'],
             );
 
             $menu->url(
@@ -594,14 +627,11 @@ class CustomAdminSidebarMenu
 
             );
 
-
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
                 __('sales::lang.contracts'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
             );
-
-
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
@@ -691,7 +721,7 @@ class CustomAdminSidebarMenu
 
             )->order(4);
 
-            
+
             $menu->dropdown(
                 __('housingmovements::lang.building_management'),
                 function ($buildingSubMenu) {
@@ -1451,10 +1481,12 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
             }
-              if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
-                $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']), __('followup::lang.requests'), 
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']);
-              
+            if (auth()->user()->can('Superadmin.crud_all_admin_requests') || true) {
+                $menu->url(
+                    action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']
+                );
             }
             //Modules menu
             if (($isSuperAdmin) || (auth()->user()->can('manage_modules'))) {
