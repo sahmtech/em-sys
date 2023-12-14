@@ -132,6 +132,8 @@ class ApiFollowUpRequestController extends ApiController
                     "reason" => $request->reason,
                     "department_id" => $request->department_id,
                     "id_proof_number" => $request->id_proof_number,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
                 ];
             }
 
@@ -188,15 +190,16 @@ class ApiFollowUpRequestController extends ApiController
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->where('users.id', $user->id)->get();
+                ->where('users.id', $user->id);
 
             if ($status_filter) {
-                $requests = $requests->where('followup_worker_requests.status', $status_filter);
+             
+                $requests = $requests->where('followup_worker_requests_process.status', $status_filter);
             }
 
 
             $res = [
-                'requests' =>  $requests
+                'requests' =>  $requests->get(),
             ];
 
 
