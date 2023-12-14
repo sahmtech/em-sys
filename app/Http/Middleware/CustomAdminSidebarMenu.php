@@ -937,6 +937,25 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 )->order(5);
             }
+            if (auth()->user()->can('essentials.crud_all_ir_requests') || true) {
+                $menu->url(
+                    action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                    __('followup::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
+                )->order(6);
+            }
+
+            $menu->url(
+                action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                __('followup::lang.reports.title'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
+            )->order(7);
+
+            $menu->url(
+                action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                __('followup::lang.salary_requests'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
+            )->order(8);
         });
     }
 

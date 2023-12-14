@@ -67,6 +67,8 @@ class FollowUpWorkerController extends Controller
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
+        $fields = $this->moduleUtil->getWorkerFields();
+
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
@@ -77,9 +79,9 @@ class FollowUpWorkerController extends Controller
             $userProjects = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
-                
+
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-             
+
                 $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
@@ -88,6 +90,7 @@ class FollowUpWorkerController extends Controller
         }
 
         $users->select(
+            'id',
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',
@@ -171,10 +174,20 @@ class FollowUpWorkerController extends Controller
                     $bank_details = json_decode($user->bank_details);
                     return $bank_details->bank_code ?? ' ';
                 })
-                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->addColumn('worker', function ($user) {
+                    $html = '<a href="' . route('projectView', ['id' => $user->id]) . '">' . optional($user->worker)->name . '</a>';
+                    return $html;
+                })
+
+               
+             
+                ->rawColumns(['nationality','worker',
+                 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
-        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr', 'nationalities'));
+
+        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+
     }
 
 
@@ -235,9 +248,34 @@ class FollowUpWorkerController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::with(['contactAccess'])
+        $user = User::with(['contactAccess','assignedTo','OfficialDocument','proposal_worker'])
             ->find($id);
+
+
+
+            $documents = null;
+
+            if ($user->user_type == 'employee') {
+               
+                $documents = $user->OfficialDocument;
+            } 
+
+            else if ($user->user_type == 'worker') {
+               
+                if (!empty($user->proposal_worker_id)) {
+                  
+                    $officialDocuments = $user->OfficialDocument;
+                    $workerDocuments = $user->proposal_worker?->worker_documents;
+                    $documents = $officialDocuments->merge($workerDocuments);
+                } 
+                else {
+                    $documents = $user->OfficialDocument;
+                }
+            }
+            
         
+    
+
         $dataArray = [];
         if (!empty($user->bank_details)) {
             $dataArray = json_decode($user->bank_details, true)['bank_name'];
@@ -248,7 +286,7 @@ class FollowUpWorkerController extends Controller
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-        // dd( $Qualification);
+       
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -282,15 +320,16 @@ class FollowUpWorkerController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $nationality_id = $user->nationality_id;
         $nationality = "";
+       
         if (!empty($nationality_id)) {
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
 
 
 
+
         return view('followup::workers.show')->with(compact(
             'user',
-
             'view_partials',
             'users',
             'activities',
@@ -299,7 +338,8 @@ class FollowUpWorkerController extends Controller
             'Qualification',
             'Contract',
             'nationalities',
-            'nationality'
+            'nationality',
+            'documents',
         ));
     }
 

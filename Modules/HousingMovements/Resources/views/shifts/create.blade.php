@@ -21,18 +21,15 @@
                         ]) !!}
 
                         <div class="row">
+
                             <div class="col-sm-6">
                                 {!! Form::label('project_name_label', __('housingmovements::lang.project_name')) !!}<span style="color: red; font-size:10px"> *</span>
-
-                                <select class="form-control" id="project_id" name="project_id" style="padding: 2px;"
-                                    required>
-                                    <option value="">@lang('messages.please_select')</option>
-
-                                    @foreach ($salesProject as $project)
-                                        <option value="{{ $project->id }}">
-                                            {{ $project->name }}</option>
-                                    @endforeach
-                                </select>
+                                {!! Form::select('project_id', $salesProject, null, [
+                                    'class' => 'form-control',
+                                    // 'style' => 'padding:2px;',
+                                    'placeholder' => __('messages.please_select'),
+                                    'id' => 'project_id',
+                                ]) !!}
 
                             </div>
 
@@ -93,12 +90,17 @@
                             <div class="form-group">
                                 <div class="col-md-12">
 
-                                    {!! Form::select('holidays[]', $days, [], [
-                                        'class' => 'form-control select2',
-                                        'multiple',
-                                        'id' => 'holidays',
-                                        'style' => 'width: 100% !important;',
-                                    ]) !!}
+                                    {!! Form::select(
+                                        'holidays[]',
+                                        $days,
+                                        [],
+                                        [
+                                            'class' => 'form-control select2',
+                                            'multiple',
+                                            'id' => 'holidays',
+                                            'style' => 'width: 100% !important;',
+                                        ],
+                                    ) !!}
                                 </div>
 
 
@@ -130,5 +132,15 @@
 <script>
     $(document).ready(function() {
         $('#holidays').select2();
+
+ 
+        $('#add_shits_model').on('shown.bs.modal', function(e) {
+                $('#project_id').select2({
+                    dropdownParent: $(
+                        '#add_shits_model'),
+                    width: '100%',
+                });
+            });
+
     });
 </script>

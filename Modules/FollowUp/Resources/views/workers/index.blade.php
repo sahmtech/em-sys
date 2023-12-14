@@ -61,10 +61,9 @@
                         </div>
                     </div>
                     @php
-                        $default_fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date')];
+                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
 
                         $default = array_keys($default_fields);
-                        $fields = [__('followup::lang.name'), __('followup::lang.eqama'), __('followup::lang.project_name'), __('followup::lang.nationality'), __('followup::lang.eqama_end_date'), __('followup::lang.admissions_date'), __('followup::lang.contract_end_date'), __('essentials::lang.mobile_number'), __('business.email'), __('followup::lang.department'), __('followup::lang.profession'), __('followup::lang.specialization'), __('followup::lang.status'), __('followup::lang.Basic_salary'), __('followup::lang.total_salary'), __('followup::lang.gender'), __('followup::lang.marital_status'), __('followup::lang.blood_group'), __('followup::lang.bank_code')];
 
                     @endphp
 
@@ -105,6 +104,7 @@
                             <th>@lang('followup::lang.nationality')</th>
                             <th>@lang('followup::lang.eqama_end_date')</th>
                             <th>@lang('followup::lang.contract_end_date')</th> --}}
+
                             <td style="width: 100px !important;">@lang('followup::lang.name')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
@@ -124,7 +124,7 @@
                             <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
-
+                          
 
 
 
@@ -306,9 +306,6 @@
     <script>
         $(document).ready(function() {
 
-            // $('#workers_table').DataTable({
-
-            // });
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
@@ -340,10 +337,15 @@
                     }
                 },
 
-                columns: [{
-                        data: 'worker'
-                    },
+                columns: [
                     {
+        data: 'worker',
+        render: function(data, type, row) {
+            var link = '<a href="' + '{{ route("showWorker", ["id" => ":id"]) }}'.replace(':id', row.id) + '">' + data + '</a>';
+            return link;
+        }
+    },
+                {
                         data: 'residence_permit'
                     },
                     {
@@ -392,12 +394,20 @@
                         }
                     },
                     {
-                        data: 'essentials_salary'
+
+                        data: 'essentials_salary',
+                        render: function(data, type, row) {
+                            return Math.floor(data);
+                        }
 
                     },
                     {
-                        data: 'total_salary'
+                        data: 'total_salary',
+                        render: function(data, type, row) {
+                            return Math.floor(data);
+                        }
                     },
+
                     {
                         data: 'gender'
                     },
@@ -406,12 +416,15 @@
                     },
                     {
                         data: 'blood_group'
-                    }, {
+                    },
+                     {
                         data: 'bank_code',
 
                     },
+    
                 ]
             });
+
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {
@@ -433,10 +446,11 @@
 
             var dt = $('#workers_table').DataTable();
 
-            var fields = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                13, 14, 15,
-                16, 17, 18
-            ];
+            var fields = fields;
+            //  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+            //     13, 14, 15,
+            //     16, 17, 18
+            // ];
 
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
