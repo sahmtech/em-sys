@@ -609,7 +609,7 @@ class EssentialsRequestController extends Controller
             ]);
 
             $attachment = $request->file('attachment');
-            $attachmentPath = $attachment->store('/requestsAttachments');
+            $attachmentPath = $attachment->store('/requests_attachments');
     
           
             FollowupRequestsAttachment::create([

@@ -448,9 +448,17 @@
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                                <h4>@lang('followup::lang.activities')</h4>
+
+                                <h4>@lang('followup::lang.activites')</h4>
                                 <ul id="activities-list">
-                                    <!-- Activities content here -->
+                                    <!-- Activities will be dynamically added here -->
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+
+                                <h4>@lang('followup::lang.attachments')</h4>
+                                <ul id="attachments-list">
+                                    
                                 </ul>
                             </div>
                         </div>
@@ -718,10 +726,12 @@
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
                             var workerList = $('#worker-list');
+                            var attachmentsList= $('#attachments-list');
 
                             workflowContainer.html('');
                             workerList.html('');
                             activitiesList.html('');
+                            attachmentsList.html('');
 
                             for (var i = 0; i < response.workflow.length; i++) {
 
@@ -807,7 +817,19 @@
 
                                 activitiesList.append(activity);
                             }
-                           
+                            for (var j = 0; j < response.attachments.length; j++) {
+                                var attachment = '<li>';
+
+                                    attachment += '<p>';
+                                   
+                               //  attachment += '<a href="uploads/' + response.attachments[j].file_path + '" target="_blank">' + response.attachments[j].file_path + '</a>';
+                                 attachment += '<a href="uploads/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+                               
+                                 attachment += '</p>';
+                                attachment += '</li>';
+
+                                attachmentsList.append(attachment);
+                            }
                             $('#attachmentForm').attr('action', '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'.replace(':requestId', response.request_info.id));
 
                             $('#attachmentForm input[name="requestId"]').val(requestId);
