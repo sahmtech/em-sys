@@ -10,7 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\FollowUp\Entities\followupWorkerRequest;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use DB;
 class EssentialsController extends Controller
 {
@@ -82,7 +82,7 @@ class EssentialsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         
       
-        $rawLeaveStatusData = followupWorkerRequest::where('type','leavesAndDepartures')
+        $rawLeaveStatusData = FollowupWorkerRequest::where('type','leavesAndDepartures')
             ->select(DB::raw('status, COUNT(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
