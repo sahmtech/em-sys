@@ -1038,6 +1038,15 @@ class WorkerController extends Controller
                         break;
                     }
                     $worker_array['age'] = $value[3];
+                    
+                    if (!empty($value[3])) 
+                    {
+                        $worker_array['age'] = $value[3];
+                    } else {
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.age_required') .$row_no;
+                        break;
+                    }
                     $worker_array['gender'] = $value[4];
                     $worker_array['email'] = $value[5];
 
