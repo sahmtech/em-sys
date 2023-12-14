@@ -20,6 +20,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
 use Exception;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Sales\Entities\SalesProject;
 
 class SuperadminRequestController extends Controller
 {
@@ -73,7 +74,7 @@ class SuperadminRequestController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
 

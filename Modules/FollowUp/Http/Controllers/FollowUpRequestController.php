@@ -522,17 +522,16 @@ class FollowUpRequestController extends Controller
     public function viewRequest($id)
     {
         $request = FollowupWorkerRequest::with([
-            'user', 'createdUser', 'followupWorkerRequestProcess.procedure.department'
-        ])
-            ->find($id);
-
+            'user', 'createdUser', 'followupWorkerRequestProcess.procedure.department', 'attachments'
+        ])->where('id', $id)->first();
+      
         if (!$request) {
             return response()->json(['error' => 'Request not found'], 404);
         }
 
-        // Extracting information
+
         $requestInfo = [
-            'id'=>$request->id,
+            'id' => $request->id,
             'request_no' => $request->request_no,
             'status' => trans("followup::lang.{$request->status}"),
             'type' => trans("followup::lang.{$request->type}"),
@@ -567,6 +566,17 @@ class FollowUpRequestController extends Controller
             ];
         };
 
+        $attachments = null;
+        if ($request->attachments) {
+         
+            $attachments = $request->attachments->map(function ($attachments) {
+                return [
+                    'request_id' => $attachments->request_id,
+                    'file_path' => $attachments->file_path,
+                    'created_at' => $attachments->created_at,
+                ];
+            });
+        }
 
         $userInfo = [
             'worker_id' => $request->user->id,
@@ -610,12 +620,13 @@ class FollowUpRequestController extends Controller
         }
 
         $result = [
-           
+
             'request_info' => $requestInfo,
             'user_info' => $userInfo,
             'created_user_info' => $createdUserInfo,
             'followup_processes' => $followupProcesses,
-            'workflow' => $workflow
+            'workflow' => $workflow,
+            'attachments' => $attachments,
         ];
 
         return response()->json($result);

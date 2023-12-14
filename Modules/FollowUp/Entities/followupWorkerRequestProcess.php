@@ -15,7 +15,7 @@ class FollowupWorkerRequestProcess extends Model
 
     public function followupWorkerRequest()
     {
-        return $this->belongsTo(followupWorkerRequest::class, 'worker_request_id');
+        return $this->belongsTo(FollowupWorkerRequest::class, 'worker_request_id');
     }
 
     public function procedure()
