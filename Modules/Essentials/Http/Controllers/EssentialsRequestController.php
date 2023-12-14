@@ -14,6 +14,7 @@ use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 use Modules\FollowUp\Entities\followupWorkerRequest;
 use Modules\FollowUp\Entities\followupWorkerRequestProcess;
+use Modules\FollowUp\Entities\FollowupRequestsAttachment;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
@@ -65,12 +66,12 @@ class EssentialsRequestController extends Controller
 
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
-// <<<<<<< 
-    
-            $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
+            
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->first();
+            error_log($requestProcess->procedure_id);
             $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
-           
-
+           error_log($procedure);
+          
             if($procedure == 0 && $input['status']=='rejected'){
                 $output = [
                     'success' => false,
@@ -78,11 +79,11 @@ class EssentialsRequestController extends Controller
                 ];
                 return $output;
             }
-// =======
 
-//             $requestProcess = FollowupWorkerRequestProcess::where('id', $input['request_id'])->first();
-//             error_log($requestProcess);
-// >>>>>>> Development
+
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
+           
+
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
             $requestProcess->status_note = $input['note'] ?? null;
@@ -132,7 +133,6 @@ class EssentialsRequestController extends Controller
 
         return $output;
     }
-
 
     public function create()
     {
@@ -259,21 +259,13 @@ class EssentialsRequestController extends Controller
                     if (!$process) {
 
                         $workerRequest->delete();
-                        // $output = [
-                        //     'success' => 0,
-                        //     'msg' => __('messages.something_went_wrong'),
-                        // ];
-                        // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                        
                         $success = 0;
                     }
                 } else {
 
                     $success = 0;
-                    // $output = [
-                    //     'success' => 0,
-                    //     'msg' => __('messages.something_went_wrong'),
-                    // ];
-                    // return redirect()->route('allRequests')->withErrors([$output['msg']]);
+                  
                 }
             }
         }
@@ -316,7 +308,6 @@ class EssentialsRequestController extends Controller
 
         return $input['request_no'];
     }
-
 
     public function my_requests()
     {
@@ -443,7 +434,7 @@ class EssentialsRequestController extends Controller
                 ])
                     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker')
+                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                     ->where('department_id', $department);
             }
 
@@ -460,14 +451,19 @@ class EssentialsRequestController extends Controller
                     return $item;
                 })
                 ->editColumn('status', function ($row) {
-                    $statusClass = $this->statuses[$row->status]['class'];
-                    $statusName = $this->statuses[$row->status]['name'];
-                    $status = $row->status;
-
-                 
+                    $status = '';
+                
+                    if ($row->status == 'pending') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+                        
+                        if (auth()->user()->can('crudExitRequests')) {
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        }
+                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
-                    
-
+                    }
+                
                     return $status;
                 })
 
@@ -486,35 +482,9 @@ class EssentialsRequestController extends Controller
         ->get();
 
         $workers = $all_users->pluck('full_name', 'id');
-// <<<<<<< 
+
         $statuses = $this->statuses;
-        // if ($department) {
-        //     $department = $department->id;
-        //     $pros = EssentialsWkProcedure::where('department_id', $department)->where('type','exitRequest')->first();
-        //     if ($pros) {
-        //         $can_reject = $pros->can_reject;
-        //         $can_reject = $can_reject ?? 0;
-        //         $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-        //     } else {
-        //      
-        //     }
-        // }
        
-// =======
-
-//         if ($department) {
-//             $department = $department->id;
-//             $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'exitRequest')->first();
-//             if ($pros) {
-//                 $can_reject = $pros->can_reject;
-//                 $can_reject = $can_reject ?? 0;
-//                 $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-//             } else {
-//                 $statuses = $this->statuses;
-//             }
-//         }
-// >>>>>>> Development
-
 
         return view('essentials::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
@@ -544,6 +514,7 @@ class EssentialsRequestController extends Controller
         return response()->json(['results' => $results]);
     }
 
+
     private function getTypePrefix($type)
     {
 
@@ -557,755 +528,20 @@ class EssentialsRequestController extends Controller
             'atmCard' => 'atm',
             'residenceCard' => 'res',
             'workerTransfer' => 'wT',
-
+            'workInjuriesRequest' => 'wIng',
+            'residenceEditRequest' => 'resEd',
+            'baladyCardRequest' => 'bal',
+            'insuranceUpgradeRequest' => 'insUp',
+            'mofaRequest' => 'mofa',
+            'chamberRequest' => 'ch',
+            'cancleContractRequest' => 'con',
+            'WarningRequest' => 'WR'
         ];
 
         return $typePrefixMap[$type];
     }
 
-    public function exitRequestIndex()
-    {
-
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'exitRequest');
-            }
-
-
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'exitRequest')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.exitRequestIndex')->with(compact('statuses'));
-    }
-
-    public function returnRequestIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'returnRequest');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'returnRequest')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.returnRequestIndex')->with(compact('statuses'));
-    }
-
-    public function escapeRequestIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.created_at',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.escape_time',
-                    'followup_worker_requests.advSalaryAmount',
-                    'followup_worker_requests.monthlyInstallment',
-                    'followup_worker_requests.installmentsNumber',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'escapeRequest');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'escapeRequest')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.escapeRequestIndex')->with(compact('statuses'));
-    }
-
-    public function advanceSalaryIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at as created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'followup_worker_requests.advSalaryAmount',
-                    'followup_worker_requests.monthlyInstallment',
-                    'followup_worker_requests.installmentsNumber',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'advanceSalary');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->editColumn('created_at', function ($row) {
-
-
-                    return Carbon::parse($row->created_at);
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'advanceSalary')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.advanceSalaryIndex')->with(compact('statuses'));
-    }
-    public function leavesAndDeparturesIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'leavesAndDepartures');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'leavesAndDepartures')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.leavesAndDeparturesIndex')->with(compact('statuses'));
-    }
-
-    public function atmCardIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'atmCard');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-
-        if ($department) {
-
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'atmCard')->first();
-            if ($pros) {
-
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.atmCardIndex')->with(compact('statuses'));
-    }
-
-    public function residenceRenewalIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'residenceRenewal');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'residenceRenewal')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.residenceRenewalIndex')->with(compact('statuses'));
-    }
-
-    public function residenceCardIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'residenceCard');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'residenceCard')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.residenceCardIndex')->with(compact('statuses'));
-    }
-
-    public function workerTransferIndex()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%بشرية%')
-            ->first();
-
-
-        if (request()->ajax()) {
-            $requestsProcess = null;
-            if ($department) {
-                $department = $department->id;
-
-                $requestsProcess = FollowupWorkerRequestProcess::where('followup_worker_requests_process.status', 'pending')->select([
-                    'followup_worker_requests_process.id as id',
-                    'followup_worker_requests_process.worker_request_id',
-                    'followup_worker_requests_process.procedure_id',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.reason',
-                    'followup_worker_requests_process.status_note',
-                    'followup_worker_requests_process.created_at',
-                    'followup_worker_requests_process.updated_at',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.id as request_id',
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests.worker_id',
-                    'followup_worker_requests.type',
-                    'followup_worker_requests.start_date',
-                    'followup_worker_requests.end_date',
-                    'followup_worker_requests.note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.id as procedure_id',
-                    'essentials_wk_procedures.type as procedure_type',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'essentials_wk_procedures.can_return',
-                    'essentials_wk_procedures.start as start',
-
-                ])
-                    ->join('followup_worker_requests', 'followup_worker_requests.id', '=', 'followup_worker_requests_process.worker_request_id')
-                    ->join('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where('followup_worker_requests.type', 'workerTransfer');
-            }
-
-            return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
-                    return $status;
-                })
-                ->rawColumns(['status'])
-                ->make(true);
-        }
-
-        if ($department) {
-            $department = $department->id;
-            $pros = EssentialsWkProcedure::where('department_id', $department)->where('type', 'workerTransfer')->first();
-            if ($pros) {
-                $can_reject = $pros->can_reject;
-                $can_reject = $can_reject ?? 0;
-                $statuses = $can_reject == 1 ? $this->statuses : $this->statuses2;
-            } else {
-                $statuses = $this->statuses;
-            }
-        }
-        return view('essentials::requests.workerTransferIndex')->with(compact('statuses'));
-    }
+  
 
     public function returnReq(Request $request)
     {
@@ -1364,5 +600,25 @@ class EssentialsRequestController extends Controller
         }
 
         return $output;
+    }
+    public function saveAttachment(Request $request, $requestId)
+        {
+          
+            $request->validate([
+                'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
+            ]);
+
+            $attachment = $request->file('attachment');
+            $attachmentPath = $attachment->store('/requestsAttachments');
+    
+          
+            FollowupRequestsAttachment::create([
+                'request_id' => $requestId,
+                'file_path' => $attachmentPath,
+              
+            ]);
+    
+            return redirect()->back()->with('success', trans('messages.saved_successfully'));
+        
     }
 }

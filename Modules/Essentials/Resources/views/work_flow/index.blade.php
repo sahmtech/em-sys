@@ -191,6 +191,9 @@
                                 else if (data === 'cancleContractRequest') {
                                     return  '@lang('followup::lang.cancleContractRequest')';
                                 }
+                                else if (data === 'WarningRequest') {
+                                return '@lang('followup::lang.WarningRequest')';
+                                }
                                  else{
                                     return data;
                                 }

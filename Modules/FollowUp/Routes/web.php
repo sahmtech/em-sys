@@ -32,6 +32,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/getUpdatedData/{id}', [\Modules\Followup\Http\Controllers\FollowUpOperationOrderControlle::class, 'getUpdatedData'])->name('getUpdatedData');
 
 
+        Route::prefix('contactLocations')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ContactLocationController::class, 'index'])->name('sale.contactLocations');
+            Route::post('/addContactLocations', [\App\Http\Controllers\ContactLocationController::class, 'store'])->name('sale.storeContactLocations');
+            Route::delete('/destroyContactLocations/{id}', [\App\Http\Controllers\ContactLocationController::class, 'destroy'])->name('sale.destroyContactLocations');
+            Route::get('/{id}/edit',  [\App\Http\Controllers\ContactLocationController::class,  'edit'])->name('sale.editContactLocations');
+            Route::put('/updateContactLocations/{id}',  [\App\Http\Controllers\ContactLocationController::class, 'update'])->name('sale.updateContactLocations');
+        });
 
 
         Route::post('/storeRequest', [\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'store'])->name('storeRequest');

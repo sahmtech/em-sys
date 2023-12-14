@@ -217,10 +217,8 @@ return [
     'passport_number'=>'رقم الجواز',
     'worker'=>'العامل',
     'choose_worker'=>'اختر عامل',
-
     'salary_requests'=>'طلبات الرواتب',
-    
-
+    'WarningRequest'=>'طلب إنذار',
     'visa'=>'مرفق الفيزا',
     'offer_price'=>'مرفق عرض السعر',
     'acceptance_offer'=>'مرفق قبول عرض السعر',

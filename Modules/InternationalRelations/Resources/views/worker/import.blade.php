@@ -29,18 +29,20 @@
     <div class="row">
         <div class="col-sm-12">
             @component('components.widget', ['class' => 'box-primary'])
-                {!! Form::open(['url' => action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkers']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
+                {!! Form::open(['url' => action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'postImportWorkers']),
+                     'method' => 'post',
+                      'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
                         <div class="col-sm-6">
                         <div class="col-sm-8">
                             <div class="form-group">
                                 {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                                {!! Form::file('worker_csv', ['accept'=> '.xls', 'required' => 'required']); !!}
+                                {!! Form::file('workers_csv', ['accept'=> '.xls', 'required' => 'required']); !!}
                               </div>
                         </div>
-                        <input type="hidden" name='delegation_id' value="delegation_id">
-                        <input type="hidden" name='agency_id' value="agency_id">
-                        <input type="hidden" name='transaction_sell_line_id' value="transaction_sell_line_id">
+                        <input type="hidden" name="delegation_id" value="{{ $delegation_id }}">
+                <input type="hidden" name="agency_id" value="{{ $agency_id }}">
+                <input type="hidden" name="transaction_sell_line_id" value="{{ $transaction_sell_line_id }}">
 
                         <div class="col-sm-4">
                         <br>
@@ -48,6 +50,11 @@
                         </div>
                         </div>
                     </div>
+                    <div class="row">
+                    <div class="col-sm-4">
+                        <a href="{{ asset('files/import_workers_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
+                    </div>
+                </div>
 
                 {!! Form::close() !!}
                 

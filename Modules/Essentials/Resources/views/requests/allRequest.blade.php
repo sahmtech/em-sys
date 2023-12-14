@@ -157,7 +157,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
+                                {!! Form::label('worker_id', __('essentials::lang.employee_name') . ':*') !!}
                                 {!! Form::select('worker_id[]', $workers, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
@@ -188,6 +188,7 @@
                                         'mofaRequest' => __('followup::lang.mofaRequest'),
                                         'chamberRequest' => __('followup::lang.chamberRequest'),
                                         'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
+                                        'WarningRequest' => __('followup::lang.WarningRequest'),
                                     ],
                                     null,
                                     [
@@ -427,44 +428,56 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         <h4 class="modal-title">@lang('followup::lang.view_request')</h4>
                     </div>
-
+        
                     <div class="modal-body">
                         <div class="row">
-
                             <div class="workflow-container" id="workflow-container">
-                                <!-- Workflow circles will be dynamically added here -->
+                                <!-- Workflow content here -->
                             </div>
-
-
                         </div>
-
-
+        
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
                                 <ul id="worker-list">
-                                    <!-- Worker info will be dynamically added here -->
+                                    <!-- Worker details content here -->
+                                </ul>
                             </div>
                             <div class="col-md-6">
-
-                                <h4>@lang('followup::lang.activites')</h4>
+                                <h4>@lang('followup::lang.activities')</h4>
                                 <ul id="activities-list">
-                                    <!-- Activities will be dynamically added here -->
+                                    <!-- Activities content here -->
                                 </ul>
                             </div>
                         </div>
+        
+                        <!-- Attachment Form -->
+                        <form id="attachmentForm" method="POST" enctype="multipart/form-data">
+                            @csrf
+                        
+                            <div class="form-group">
+                                <label for="attachment">
+                                    <h4>@lang('followup::lang.attachment')</h4>
+                                </label>
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        </form>
+                        
                     </div>
-
+        
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
                 </div>
             </div>
         </div>
+        
 
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
@@ -574,9 +587,12 @@
                                 return '@lang('followup::lang.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
                                 return '@lang('followup::lang.chamberRequest')';
-                            } else if (data === 'cancleContractRequest') {
+                            } else if (data === 'WarningRequest') {
+                                return '@lang('followup::lang.WarningRequest')';
+                            }  else if (data === 'cancleContractRequest') {
                                 return '@lang('followup::lang.cancleContractRequest')';
-                            } else {
+                            } 
+                            else {
                                 return data;
                             }
                         }
@@ -653,7 +669,9 @@
                     },
                 });
             });
+
             $('#requests_table').on('click', '.btn-return', function() {
+                
                 var requestId = $(this).data('request-id');
                 $('#returnModal').modal('show');
                 $('#returnModal').data('id', requestId);
@@ -690,10 +708,8 @@
 
             $(document).on('click', '.btn-view-request', function() {
                 var requestId = $(this).data('request-id');
-
-                // var data = requests_table.row(this).data();
-                // var requestId = data.id;
-
+                console.log(requestId);
+            
                 if (requestId) {
                     $.ajax({
                         url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
@@ -794,7 +810,12 @@
 
                                 activitiesList.append(activity);
                             }
+                           
+                            $('#attachmentForm').attr('action', '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'.replace(':requestId', response.request_info.id));
 
+                            $('#attachmentForm input[name="requestId"]').val(requestId);
+                         
+                            
                             $('#requestModal').modal('show');
                         },
                         error: function(error) {
