@@ -95,6 +95,7 @@
                     'class' => 'form-control',
                     'placeholder' => __('followup::lang.choose_worker'),
                     'required',
+                    'id'=>'employees_select',
                     'style' => 'height:40px',
                     'onchange' => 'loadWishFile(this.value)',
                 ]) !!}
@@ -171,7 +172,22 @@
 @section('javascript')
 <script  type="text/javascript">
     $(document).ready(function() {
-        
+         
+        $('#add_wish_contact').on('shown.bs.modal', function(e) {
+                $('#status_dropdown').select2({
+                    dropdownParent: $(
+                        '#add_wish_contact'),
+                    width: '100%',
+                });
+
+                $('#employees_select').select2({
+                    dropdownParent: $(
+                        '#add_wish_contact'),
+                    width: '100%',
+                });
+               
+            });
+
         $('#change_status_modal').on('shown.bs.modal', function() {
            
             WishFile($('#employee_id').val());

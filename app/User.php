@@ -18,6 +18,7 @@ use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsWorkCard;
+use Modules\HousingMovements\Entities\Car;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
@@ -407,5 +408,9 @@ class User extends Authenticatable
     public function allNotifications()
     {
         return $this->hasMany(Notification::class, 'notifiable_id');
+    }
+
+    public function Car(){
+        return $this->belongsTo(Car::class);
     }
 }
