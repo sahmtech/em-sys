@@ -1170,8 +1170,7 @@ class PayrollController extends Controller
 
     private function __getEmployeesByLocation($business_id, $location_id = null)
     {
-        $query = User::where('business_id', $business_id)
-                    ->user();
+        $query = User::where('business_id', $business_id);
 
         if (! empty($location_id)) {
             $query->where('location_id', $location_id);
