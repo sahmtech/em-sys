@@ -25,6 +25,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\InternationalRelations\Entities\IrDelegation;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\InternationalRelations\Entities\IrWorkersDocument;
+use App\TransactionSellLine;
 
 
 class WorkerController extends Controller
@@ -89,8 +90,9 @@ class WorkerController extends Controller
             'interviewStatus',
             'agency_id', 'transaction_sell_line_id'
         ]);
-
-        if (!empty($request->input('specialization'))) {
+     //  dd(  $workers->get());
+       
+       if (!empty($request->input('specialization'))) {
             $workers->whereHas('transactionSellLine.service', function ($query) use ($request) {
                 $query->where('specialization_id', $request->input('specialization'));
             });
@@ -113,24 +115,24 @@ class WorkerController extends Controller
 
 
                 ->addColumn('profession_id', function ($row) use ($professions) {
-                    $item = $professions[$row->transactionSellLine->service->profession_id] ?? '';
+                    $item = $professions[$row->transactionSellLine?->service?->profession_id] ?? '';
 
                     return $item;
                 })
                 ->addColumn('specialization_id', function ($row) use ($specializations) {
-                    $item = $specializations[$row->transactionSellLine->service->specialization_id] ?? '';
+                    $item = $specializations[$row->transactionSellLine?->service?->specialization_id] ?? '';
 
                     return $item;
                 })
 
                 ->addColumn('nationality_id', function ($row) use ($nationalities) {
-                    $item = $nationalities[$row->transactionSellLine->service->nationality_id] ?? '';
+                    $item = $nationalities[$row->transactionSellLine?->service?->nationality_id] ?? '';
 
                     return $item;
                 })
                 ->editColumn('agency_id', function ($row) use ($agencys) {
 
-                    return $agencys[$row->agency_id];
+                    return $agencys[$row->agency_id] ?? '';
                 })
                 ->addColumn('interviewStatus', function ($row) {
                     if ($row->interviewStatus === null) {
@@ -608,8 +610,7 @@ class WorkerController extends Controller
            
 
             foreach ($selectedRowsData as $row) {
-             
-                
+ 
     
                 IrProposedLabor::where('id', $row->id)->update([
                     'is_passport_stamped' => 1,
@@ -987,20 +988,27 @@ class WorkerController extends Controller
     }
 
 
-    public function importWorkers($delegation_id, $agency_id, $transaction_sell_line_id)
+    public function importWorkers($delegation_id,$agency_id,$transaction_sell_line_id)
     {
-        return view('internationalrelations::worker.import')->with(compact('delegation_id', 'agency_id', 'transaction_sell_line_id'));
+        return view('internationalrelations::worker.import')->with(compact('delegation_id','agency_id','transaction_sell_line_id'));
     }
 
     public function postImportWorkers(Request $request)
     {
-
+        $delegation_id=$request->input('delegation_id');
+        $agency_id=$request->input('agency_id');
+        $transaction_sell_line_id=$request->input('transaction_sell_line_id');
+      //  dd(  $delegation_id);
         try {
 
             if ($request->hasFile('workers_csv')) {
+               
                 $file = $request->file('workers_csv');
+              
                 $parsed_array = Excel::toArray([], $file);
+               // dd(  $parsed_array );
                 $imported_data = array_splice($parsed_array[0], 1);
+                $passport_numbers = [];
                 $formated_data = [];
                 $is_valid = true;
                 $error_msg = '';
@@ -1065,22 +1073,107 @@ class WorkerController extends Controller
 
                     $worker_array['passport_number'] = $value[12];
 
+                    $passport_number = IrProposedLabor::where('passport_number', $worker_array['passport_number'])
+                    ->first();
+                    if ($passport_number) {
+                        $is_valid = false;
+                        $error_msg = __('lang_v1.the_passport_number_already_exists').$row_no;
+                        break;
+                       
+                       
+                    }
 
-                    $worker_array['agency_id'] = $request->agency_id;
-                    $worker_array['transaction_sell_line_id'] = $request->transaction_sell_line_id;
+                    $worker_array['agency_id'] = $value[13];
+                   
+                    if ($worker_array['agency_id'] !== null) {
+                                        
+                        $business = Contact::find($worker_array['agency_id']);
+                        if (!$business) {
+                        
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.contact_not_found').$row_no;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        $worker_array['agency_id']=null;
+                    } 
 
-                    IrProposedLabor::create($worker_array);
 
+                    $worker_array['transaction_sell_line_id'] =  $value[14];
+                    if ($worker_array['transaction_sell_line_id'] !== null) {
+                                        
+                        $business = TransactionSellLine::find($worker_array['transaction_sell_line_id']);
+                        if (!$business) {
+                        
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.contact_not_found').$row_no;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        $is_valid = false;
+                            $error_msg = __('essentials::lang.contact_not_found').$row_no;
+                            break;
+                    } 
+                    $formated_data[] = $worker_array;
+                 
+                  //  dd(   $formated_data );
+                  
+                  
 
-
-                    $output = [
-                        'success' => 1,
-                        'msg' => __('product.file_imported_successfully'),
-                    ];
-
-                    DB::commit();
+                   
                 }
+
+                   
+                if (!$is_valid) 
+                {
+                    throw new \Exception($error_msg);
+                }
+
+                if (! empty($formated_data)) 
+                {
+                 
+                    foreach ($formated_data as $worker_data) {
+                       
+                        $worker = IrProposedLabor::create($worker_data);
+                        IrDelegation::where('id', $request->input('delegation_id'))->increment('proposed_labors_quantity', 1);
+
+                        if (in_array($worker_data['passport_number'], $passport_numbers)) {
+                            throw new \Exception(__('lang_v1.the_passport_number_already_exists',
+                            
+                            ['passport_number' => $worker_data['passport_number']]));
+                        }
+                    
+                      $passport_numbers[] = $worker_data['passport_number'];             
+
+                     
+                      
+                    }
+                }
+                
+      
+               
+                $output = ['success' => 1,
+                    'msg' => __('product.file_imported_successfully'),
+                ];
+
+                DB::commit();
+
+
             }
+            else{
+                $output = [
+                    'success' => 0,
+                    'msg' => 'no file',
+                ];
+            }
+
+
+
+
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -1090,10 +1183,11 @@ class WorkerController extends Controller
                 'success' => 0,
                 'msg' => $e->getMessage(),
             ];
-
-            return redirect()->route('importWorkers')->with('notification', $output);
+           
+            return redirect()->route('importWorkers' ,['delegation_id'=>$delegation_id ,'agency_id'=>$agency_id,'transaction_sell_line_id'=>$transaction_sell_line_id])->with('notification', $output);
         }
-
-        return redirect()->route('proposed_laborIndex')->with('notification', 'success insert');
+      
+       //return $output;
+       return redirect()->route('proposed_laborIndex')->with('notification', 'success insert');
     }
 }
