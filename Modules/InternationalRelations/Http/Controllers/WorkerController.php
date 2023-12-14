@@ -1091,6 +1091,13 @@ class WorkerController extends Controller
 
                     $worker_array['passport_number'] = $value[12];
 
+                        if (in_array($worker_array['passport_number'], $passport_numbers)) {
+                            $is_valid = false;
+                            $error_msg = __('lang_v1.the_passport_number_already_exists') . $row_no;
+                            break;
+                        }
+                                        
+                        
                     $passport_number = IrProposedLabor::where('passport_number', $worker_array['passport_number'])
                     ->first();
                     if ($passport_number) {
@@ -1100,6 +1107,7 @@ class WorkerController extends Controller
                        
                        
                     }
+                    $passport_numbers[] = $worker_array['passport_number'];
 
                     $worker_array['agency_id'] = $agency_id;
                    
