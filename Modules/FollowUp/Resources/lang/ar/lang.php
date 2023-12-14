@@ -229,6 +229,7 @@ return [
     'drivers_license'=>'مرفق شهادة قيادة السيارة ',
     'car_registration'=>'مرفق تسجيل السيارة ',
     'international_certificate'=>'مرفق الشهادة الدولية ',
+    'add_attachment'=>'إضافة مرفق'
 
     
 
