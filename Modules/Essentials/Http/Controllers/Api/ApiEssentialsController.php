@@ -97,7 +97,7 @@ class ApiEssentialsController extends ApiController
         }
     }
 
-    function resetPassword(Request $request)
+    public function resetPassword(Request $request)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
@@ -120,7 +120,7 @@ class ApiEssentialsController extends ApiController
         }
     }
 
-    function changeToDoStatus(Request $request, $id)
+    public  function changeToDoStatus(Request $request, $id)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
@@ -137,6 +137,4 @@ class ApiEssentialsController extends ApiController
             return $this->otherExceptions($e);
         }
     }
-
-  
 }
