@@ -168,11 +168,11 @@
         @include('home.todays_profit_modal')
         <!-- /.content-wrapper -->
 
-        @if (!$pos_layout)
+        {{-- @if (!$pos_layout)
             @include('layouts.partials.footer')
         @else
             @include('layouts.partials.footer_pos')
-        @endif
+        @endif --}}
 
         <audio id="success-audio">
             <source src="{{ asset('/audio/success.ogg?v=' . $asset_v) }}" type="audio/ogg">

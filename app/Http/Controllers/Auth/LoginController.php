@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\User;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -86,7 +87,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-     
+
         $this->businessUtil->activityLog($user, 'login', null, [], false, $user->business_id);
         if (!$user->user_type == 'superdmin') {
 
@@ -135,6 +136,9 @@ class LoginController extends Controller
 
         if (Str::contains($user->user_type, 'user_customer')) {
             return 'contact/contact-dashboard';
+        }
+        if (User::where('id', auth()->user()->id)->first()->user_type == 'customer') {
+            return '/agent_home';
         }
         return '/home';
     }

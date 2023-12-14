@@ -18,4 +18,8 @@ class CarModel extends Model
     {
         return $this->belongsTo(CarType::class, 'car_type_id');
     }
+
+    public function Cars(){
+        return $this->hasMany(Car::class,'car_model_id');
+    }
 }

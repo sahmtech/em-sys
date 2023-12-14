@@ -139,7 +139,7 @@
                         </div>
                     @endcomponent
                 </div>
-             
+
 
             </div>
             <div class="row">
@@ -178,7 +178,7 @@
                     @endcomponent
                 </div>
             </div>
-           
+
     </section>
 
     <!-- Main content -->

@@ -87,7 +87,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'style' => 'height:36px; width:100%', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control','id'=>'employee_select', 'style' => 'height:36px; width:100%', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
                            
                             <div class="form-group col-md-6">
@@ -156,6 +156,20 @@
 
 <script>
     $(document).ready(function () {
+
+
+        
+
+        $('#addEmployeesContractModal').on('shown.bs.modal', function(e) {
+                $('#employee_select').select2({
+                    dropdownParent: $(
+                        '#addEmployeesContractModal'),
+                    width: '100%',
+                });
+
+              
+
+            });
         $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function () {
             updateContractEndDate();
         });

@@ -497,6 +497,14 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            $('#addRequestModal').on('shown.bs.modal', function(e) {
+                $('#requestType').select2({
+                    dropdownParent: $(
+                        '#addRequestModal'),
+                    width: '100%',
+                });
+
+            });
 
 
             var requests_table = $('#requests_table').DataTable({
@@ -632,12 +640,16 @@
                                 workflowContainer.append(circle);
 
 
+
                                 if (i < response.workflow.length - 1) {
                                     workflowContainer.append(
                                         '<i class="fas fa-arrow-left workflow-arrow ' +
                                         status + '-arrow"></i>');
                                 }
                             }
+
+                         
+
 
                             //  worker info
                             workerList.append('<p class="worker-info">' +

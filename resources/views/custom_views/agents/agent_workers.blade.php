@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('followup::lang.workers'))
+@section('title', __('agent.workers'))
 
 @section('content')
 
 
     <section class="content-header">
         <h1>
-            <span>@lang('followup::lang.workers')</span>
+            <span>@lang('agent.workers')</span>
         </h1>
     </section>
 
@@ -141,172 +141,10 @@
 
 @endsection
 
-{{-- @section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var date_filter = null;
-            var workers_table = $('#workers_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url:  "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
-                    data: function(d) {
-                        if ($('#project_name_filter').val()) {
-                            d.project_name = $('#project_name_filter').val();
-                        }
-                        if ($('#nationality_filter').val()) {
-                            d.nationality = $('#nationality_filter').val();
-                        }
-                        if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.filter_start_date = start;
-                            d.filter_end_date = end;
-                            d.date_filter = date_filter;
-                        }
-                    }
-                },
-                // columns: [{
-                //         data: 'worker'
-                //     },
-                //     {
-                //         data: 'id_proof_number'
-                //     },
-                //     {
-                //         data: 'contact_name'
-                //     },
-                //     {
-                //         data: 'essentials_salary'
-                //     },
-
-
-                //     {
-                //         data: 'nationality'
-                //     },
-                //     {
-                //         data: 'residence_permit_expiration'
-                //     },
-                //     {
-                //         data: 'contract_end_date'
-                //     },
-                // ]
-                columns: [{
-                        data: 'worker'
-                    },
-                    {
-                        data: 'residence_permit'
-                    },
-                    {
-                        data: 'contact_name'
-                    },
-                    {
-                        data: 'nationality'
-                    },
-                    {
-                        data: 'residence_permit_expiration'
-                    },
-                    {
-                        data: 'admissions_date'
-                    },
-                    {
-                        data: 'contract_end_date'
-                    },
-                    {
-                        "data": "contact_number"
-                    }, {
-                        "data": "email"
-                    }, {
-                        "data": "essentials_department_id"
-                    }, {
-                        "data": "profession",
-                        name: 'profession'
-                    },
-                    {
-                        "data": "specialization",
-                        name: 'specialization'
-                    },
-                    {
-                        data: 'status',
-                        render: function(data, type, row) {
-                            if (data === 'active') {
-                                return '@lang('essentials::lang.active')';
-                            } else if (data === 'vecation') {
-                                return '@lang('essentials::lang.vecation')';
-                            } else if (data === 'inactive') {
-                                return '@lang('essentials::lang.inactive')';
-                            } else if (data === 'terminated') {
-                                return '@lang('essentials::lang.terminated')';
-                            } else {
-                                return ' ';
-                            }
-                        }
-                    },
-                    {
-                        data: 'essentials_salary'
-
-                    },
-                    {
-                        data: 'total_salary'
-                    },
-                    {
-                        data: 'gender'
-                    },
-                    {
-                        data: 'marital_status'
-                    },
-                    {
-                        data: 'blood_group'
-                    }, {
-                        data: 'bank_code',
-
-                    },
-                ]
-            });
-
-            $('#doc_filter_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#doc_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                }
-            );
-            $('#doc_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
-                $('#doc_filter_date_range').val('');
-                date_filter = null;
-                reloadDataTable();
-            });
-            $('#project_name_filter, #nationality_filter').on('change', function() {
-                workers_table.ajax.reload();
-            });
-            $('#doc_filter_date_range').on('change', function() {
-                date_filter = 1;
-                workers_table.ajax.reload();
-            });
-        });
-
-        chooseFields = function() {
-            var selectedOptions = $('#choose_fields_select').val();
-
-            var dt = $('#workers_table').DataTable();
-
-            var fields = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                13, 14, 15,
-                16, 17, 18
-            ];
-
-            dt.columns(fields).visible(false);
-            dt.columns(selectedOptions).visible(true);
-
-        }
-    </script>
-@endsection --}}
 @section('javascript')
     <script>
         $(document).ready(function() {
 
-            $('#status_fillter').select2();
 
             var workers_table = $('#workers_table').DataTable({
                 processing: true,
@@ -314,8 +152,8 @@
 
                 ajax: {
 
-                    url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']) }}",
-                    // url: "{{ route('projectWorkers') }}",
+
+                    url: "{{ route('agent_workers') }}",
 
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
@@ -341,7 +179,7 @@
                 columns: [{
                         data: 'worker',
                         render: function(data, type, row) {
-                            var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
+                            var link = '<a href="' + '{{ route('show_agent_worker', ['id' => ':id']) }}'
                                 .replace(':id', row.id) + '">' + data + '</a>';
                             return link;
                         }
@@ -365,17 +203,20 @@
                         data: 'contract_end_date'
                     },
                     {
-                        "data": "contact_number"
-                    }, {
-                        "data": "email"
-                    }, {
-                        "data": "essentials_department_id"
-                    }, {
-                        "data": "profession",
+                        data: "contact_number"
+                    },
+                    {
+                        data: "email"
+                    },
+                    {
+                        data: "essentials_department_id"
+                    },
+                    {
+                        data: "profession",
                         name: 'profession'
                     },
                     {
-                        "data": "specialization",
+                        data: "specialization",
                         name: 'specialization'
                     },
                     {
@@ -444,15 +285,8 @@
         });
         chooseFields = function() {
             var selectedOptions = $('#choose_fields_select').val();
-
             var dt = $('#workers_table').DataTable();
-
             var fields = fields;
-            //  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-            //     13, 14, 15,
-            //     16, 17, 18
-            // ];
-
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
 

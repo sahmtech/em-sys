@@ -23,18 +23,30 @@
                         <div class="row">
 
                             <div class="col-sm-6">
-                                {!! Form::label('project_name_label', __('housingmovements::lang.project_name')) !!}<span style="color: red; font-size:10px"> *</span>
-                                {!! Form::select('project_id', $salesProject, null, [
+                                {!! Form::label('project_name_label', __('housingmovements::lang.contact_name')) !!}<span style="color: red; font-size:10px"> *</span>
+                                {!! Form::select('contacts', $contacts, null, [
                                     'class' => 'form-control',
                                     // 'style' => 'padding:2px;',
                                     'placeholder' => __('messages.please_select'),
-                                    'id' => 'project_id',
+                                    'id' => 'contacts_select',
                                 ]) !!}
 
                             </div>
+                            <div class="col-sm-6" >
+                                <div class="form-group">
+                                    {!! Form::label('project_name_label', __('housingmovements::lang.project_name')) !!}<span style="color: red; font-size:10px"> *</span>
+                                    <select class="form-control" name="project_id" id="project_id" required
+                                        style="padding: 2px;">
+                                        <option value="">@lang('messages.please_select')</option>
+                                    </select>
 
 
-                            <div class="col-sm-6">
+                                </div>
+                            </div>
+                           
+
+
+                            <div class="col-sm-12">
                                 <div class="form-group">
                                     {!! Form::label('shift_name', __('housingmovements::lang.shift_name') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     {!! Form::text('name', '', [
@@ -133,14 +145,40 @@
     $(document).ready(function() {
         $('#holidays').select2();
 
- 
+
         $('#add_shits_model').on('shown.bs.modal', function(e) {
-                $('#project_id').select2({
-                    dropdownParent: $(
-                        '#add_shits_model'),
-                    width: '100%',
-                });
+            $('#contacts_select').select2({
+                dropdownParent: $(
+                    '#add_shits_model'),
+                width: '100%',
             });
+            $('#project_id').select2({
+                dropdownParent: $(
+                    '#add_shits_model'),
+                width: '100%',
+            });
+        });
+
+        
+        $(document).on('change', '#contacts_select', function() {
+            if ($(this).val() !== '') {
+                $.ajax({
+                    url: '/housingmovements/projects-by-contacts/' + $(this).val(),
+                    dataType: 'json',
+                    success: function(result) {
+                        console.log(result);
+                        $('#project_id')
+                        $('#project_id').empty();
+                        $.each(result, function(index, project) {
+                            $('#project_id').append('<option value="' + project
+                                .id + '">' + project.name + '</option>');
+                        });
+
+                    },
+                });
+            }
+        })
+
 
     });
 </script>

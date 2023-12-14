@@ -93,13 +93,6 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index'])->name('sale.orderOperations');
         //Route::post('/storeSaleOperation', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.storeSaleOperation');
 
-        Route::prefix('contactLocations')->group(function () {
-            Route::get('/', [\App\Http\Controllers\ContactLocationController::class, 'index'])->name('sale.contactLocations');
-            Route::post('/addContactLocations', [\App\Http\Controllers\ContactLocationController::class, 'store'])->name('sale.storeContactLocations');
-            Route::delete('/destroyContactLocations/{id}', [\App\Http\Controllers\ContactLocationController::class, 'destroy'])->name('sale.destroyContactLocations');
-            Route::get('/{id}/edit',  [\App\Http\Controllers\ContactLocationController::class,  'edit'])->name('sale.editContactLocations');
-            Route::put('/updateContactLocations/{id}',  [\App\Http\Controllers\ContactLocationController::class, 'update'])->name('sale.updateContactLocations');
-        });
 
         
         Route::prefix('saleProjects')->group(function () {
