@@ -248,7 +248,7 @@ class EssentialsRequestController extends Controller
 
 
                 if ($workerRequest) {
-                    $process = followupWorkerRequestProcess::create([
+                    $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
                         'procedure_id' => $this->getProcedureIdForType($request->type),
                         'status' => 'pending',
@@ -609,7 +609,7 @@ class EssentialsRequestController extends Controller
             ]);
 
             $attachment = $request->file('attachment');
-            $attachmentPath = $attachment->store('/requestsAttachments');
+            $attachmentPath = $attachment->store('/requests_attachments');
     
           
             FollowupRequestsAttachment::create([

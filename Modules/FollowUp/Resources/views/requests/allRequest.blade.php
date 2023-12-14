@@ -439,14 +439,12 @@
 
 
                         </div>
-
-
+                       
+                     
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
                                 <ul id="worker-list">
-
-                                    <!-- Worker info will be dynamically added here -->
 
                             </div>
                             <div class="col-md-6">
@@ -455,6 +453,13 @@
                                 <ul id="activities-list">
 
                                 </ul>
+                            </div>
+                            <div class="col-md-6">
+
+                                <h4>@lang('followup::lang.attachments')</h4>
+                                    <ul id="attachments-list">
+                                    
+                                    </ul>
                             </div>
                         </div>
                         <!-- Attachment Form -->
@@ -613,13 +618,15 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
+                            var attachmentsList= $('#attachments-list');
                             var workerList = $('#worker-list');
 
 
-                            // Clear previous content
+                            
                             workflowContainer.html('');
                             workerList.html('');
                             activitiesList.html('');
+                            attachmentsList.html('');
 
                             for (var i = 0; i < response.workflow.length; i++) {
 
@@ -641,12 +648,7 @@
                                 }
                             }
 
-                            //     activitiesList.append(activity);
-                            // }
-                            //         $('#attachmentForm').attr('action', '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'.replace(':requestId', response.request_info.id));
-
-                            //         $('#attachmentForm input[name="requestId"]').val(requestId);
-
+                         
 
 
                             //  worker info
@@ -714,6 +716,26 @@
 
                                 activitiesList.append(activity);
                             }
+                            for (var j = 0; j < response.attachments.length; j++) {
+                                var attachment = '<li>';
+
+                                attachment += '<p>';
+
+                               
+                                attachment += '<a href="uploads/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+
+
+                                attachment += '</p>';
+                                attachment += '</li>';
+
+                                attachmentsList.append(attachment);
+                            }
+                            $('#attachmentForm').attr('action',
+                                '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
+                                .replace(':requestId', response.request_info.id));
+
+                            $('#attachmentForm input[name="requestId"]').val(requestId);
+
 
                             $('#requestModal').modal('show');
                         },
