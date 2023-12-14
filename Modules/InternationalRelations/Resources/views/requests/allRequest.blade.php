@@ -188,6 +188,8 @@
                                         'mofaRequest' => __('followup::lang.mofaRequest'),
                                         'chamberRequest' => __('followup::lang.chamberRequest'),
                                         'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
+                                        'WarningRequest' => __('followup::lang.WarningRequest'),
+
                                     ],
                                     null,
                                     [

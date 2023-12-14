@@ -338,7 +338,8 @@ class FollowUpRequestController extends Controller
             'insuranceUpgradeRequest' => 'insUp',
             'mofaRequest' => 'mofa',
             'chamberRequest' => 'ch',
-            'cancleContractRequest' => 'con'
+            'cancleContractRequest' => 'con',
+            'WarningRequest' => 'WR'
 
         ];
 
@@ -531,6 +532,7 @@ class FollowUpRequestController extends Controller
 
         // Extracting information
         $requestInfo = [
+            'id'=>$request->id,
             'request_no' => $request->request_no,
             'status' => trans("followup::lang.{$request->status}"),
             'type' => trans("followup::lang.{$request->type}"),
@@ -608,6 +610,7 @@ class FollowUpRequestController extends Controller
         }
 
         $result = [
+           
             'request_info' => $requestInfo,
             'user_info' => $userInfo,
             'created_user_info' => $createdUserInfo,

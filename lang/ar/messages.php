@@ -3,6 +3,7 @@ return [
     "add" => "إضافة",
     "edit" => "تعديل",
     "save" => "حفظ",
+    "saved_successfully" => "تم الحفظ بنجاح",
     "update" => "تحديث",
     "action" => "العمليات",
     "actions" => "خيارات",
