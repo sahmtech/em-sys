@@ -92,7 +92,8 @@ class ApiFollowUpRequestController extends ApiController
 
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
-
+                'followup_worker_requests.start_date',
+                'followup_worker_requests.end_date',
 
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
@@ -115,10 +116,10 @@ class ApiFollowUpRequestController extends ApiController
             }
             $requestsArr = [];
             foreach ($requests as  $request) {
-             
+
                 $startDate = Carbon::parse($request->start_date);
                 $endDate = Carbon::parse($request->start_date);
-                error_log( $startDate);
+                error_log($startDate);
                 error_log($endDate);
                 $duration = $startDate->diffInDays($endDate);
                 $requestsArr[] = [
