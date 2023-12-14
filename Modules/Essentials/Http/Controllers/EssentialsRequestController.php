@@ -248,7 +248,7 @@ class EssentialsRequestController extends Controller
 
 
                 if ($workerRequest) {
-                    $process = followupWorkerRequestProcess::create([
+                    $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
                         'procedure_id' => $this->getProcedureIdForType($request->type),
                         'status' => 'pending',
