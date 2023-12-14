@@ -631,26 +631,30 @@ class EssentialsManageEmployeeController extends Controller
         
         $documents = null;
 
-        if ($user->user_type == 'employee') {
+        if($user)
+        {
+            if ($user->user_type == 'employee') {
            
-            $documents = $user->OfficialDocument;
-        } 
-
-        else if ($user->user_type == 'worker') {
-           
-          
-            if (!empty($user->proposal_worker_id)) {
-              
-              
-                $officialDocuments = $user->OfficialDocument;
-                $workerDocuments = $user->proposal_worker?->worker_documents;
-               // dd($officialDocuments);
-                $documents = $officialDocuments->merge($workerDocuments);
-            } 
-            else {
                 $documents = $user->OfficialDocument;
+            } 
+    
+            else if ($user->user_type == 'worker') {
+               
+              
+                if (!empty($user->proposal_worker_id)) {
+                  
+                  
+                    $officialDocuments = $user->OfficialDocument;
+                    $workerDocuments = $user->proposal_worker?->worker_documents;
+                   // dd($officialDocuments);
+                    $documents = $officialDocuments->merge($workerDocuments);
+                } 
+                else {
+                    $documents = $user->OfficialDocument;
+                }
             }
         }
+      
 
         $dataArray = [];
         if (!empty($user->bank_details)) {
