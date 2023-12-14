@@ -510,9 +510,7 @@ class EssentialsManageEmployeeController extends Controller
             $lastEmployee = User::orderBy('emp_number', 'desc')
                 ->first();
 
-            if ($user && $user->user_type == 'employee') {
-                    $user = $user->where('business_id', $business_id);
-                }
+         
             if ($lastEmployee) {
 
                 $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
@@ -628,10 +626,7 @@ class EssentialsManageEmployeeController extends Controller
             ->find($id);
         // dd( $user);
 
-        if ($user && $user->user_type == 'employee') {
-            $user = $user->where('business_id', $business_id);
-        }
-    
+      
         
         $documents = null;
 
@@ -745,9 +740,7 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::with(['contactAccess' ,'assignedTo'])
             ->findOrFail($id);
 
-        if ($user && $user->user_type == 'employee') {
-                $user = $user->where('business_id', $business_id);
-            }
+     
         //dd( $user->assigned_to);
         $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
@@ -887,9 +880,7 @@ class EssentialsManageEmployeeController extends Controller
             }
 
             $user = User::findOrFail($id);
-            if ($user && $user->user_type == 'employee') {
-                $user = $user->where('business_id', $business_id);
-            }
+          
 
             $user->update($user_data);
 
