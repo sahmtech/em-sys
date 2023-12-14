@@ -116,7 +116,7 @@ class HomeController extends ApiController
             }
 
 
-            $attendanceList = EssentialsAttendance::where(['user_id', '=', $user->id])->whereDate('clock_in_time', Carbon::now()->toDateString())->first();
+            $attendanceList = EssentialsAttendance::where('user_id', $user->id)->whereDate('clock_in_time', Carbon::now()->toDateString())->first();
             $signed_in = $attendanceList ? true : false;
             $signed_out = $signed_in ? ($attendanceList->clock_out_time ? true : false) : false;
 
