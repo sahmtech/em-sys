@@ -160,8 +160,8 @@ class ApiEssentialsController extends ApiController
 
             $payrolls = Transaction::where('transactions.business_id', $business_id)
                 ->where('type', 'payroll')->where('transactions.expense_for', $user->id)
-                ->whereYear('transactions_date', $year)
-                ->whereMonth('transactions_date', $month)
+                ->whereYear('transaction_date', $year)
+                ->whereMonth('transaction_date', $month)
                 ->join('users as u', 'u.id', '=', 'transactions.expense_for')
                 ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
                 ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
