@@ -605,7 +605,7 @@ class WorkerController extends Controller
                 abort(403, 'Unauthorized action.');
             }
         
-          
+            error_log('444444444444');
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
            
 
@@ -615,7 +615,7 @@ class WorkerController extends Controller
                 IrProposedLabor::where('id', $row->id)->update([
                     'is_passport_stamped' => 1,
                 ]);
-           
+                error_log('66666666666666');
     
                 $arrivalDates = $validatedData['arrival_dates'];
                 foreach ($arrivalDates as $date) {
@@ -1037,7 +1037,7 @@ class WorkerController extends Controller
                         $error_msg = __('essentials::lang.last_name_required') . $row_no;
                         break;
                     }
-                    $worker_array['age'] = $value[3];
+                   // $worker_array['age'] = $value[3];
                     
                     if (!empty($value[3])) 
                     {
@@ -1047,7 +1047,16 @@ class WorkerController extends Controller
                         $error_msg = __('essentials::lang.age_required') .$row_no;
                         break;
                     }
-                    $worker_array['gender'] = $value[4];
+                  //  $worker_array['gender'] = $value[4];
+
+                    if (!empty($value[4])) 
+                    {
+                        $worker_array['gender'] = $value[4];
+                    } else {
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.gender_required') .$row_no;
+                        break;
+                    }
                     $worker_array['email'] = $value[5];
 
                     if (!empty($value[6])) {
@@ -1092,7 +1101,7 @@ class WorkerController extends Controller
                        
                     }
 
-                    $worker_array['agency_id'] = $value[13];
+                    $worker_array['agency_id'] = $agency_id;
                    
                     if ($worker_array['agency_id'] !== null) {
                                         
@@ -1110,7 +1119,7 @@ class WorkerController extends Controller
                     } 
 
 
-                    $worker_array['transaction_sell_line_id'] =  $value[14];
+                    $worker_array['transaction_sell_line_id'] =   $transaction_sell_line_id;
                     if ($worker_array['transaction_sell_line_id'] !== null) {
                                         
                         $business = TransactionSellLine::find($worker_array['transaction_sell_line_id']);
