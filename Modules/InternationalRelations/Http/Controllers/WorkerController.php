@@ -1167,13 +1167,7 @@ class WorkerController extends Controller
                         $worker = IrProposedLabor::create($worker_data);
                         IrDelegation::where('id', $request->input('delegation_id'))->increment('proposed_labors_quantity', 1);
 
-                        if (in_array($worker_data['passport_number'], $passport_numbers)) {
-                            throw new \Exception(__('lang_v1.the_passport_number_already_exists',
-                            
-                            ['passport_number' => $worker_data['passport_number']]));
-                        }
-                    
-                      $passport_numbers[] = $worker_data['passport_number'];             
+                                
 
                      
                       
