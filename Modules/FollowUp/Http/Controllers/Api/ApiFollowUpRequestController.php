@@ -179,6 +179,8 @@ class ApiFollowUpRequestController extends ApiController
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
+                'followup_worker_requests.start_date',
+                'followup_worker_requests.end_date',
 
 
             ])
