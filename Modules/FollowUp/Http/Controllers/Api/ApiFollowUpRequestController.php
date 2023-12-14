@@ -166,6 +166,7 @@ class ApiFollowUpRequestController extends ApiController
         }
 
         try {
+            $status_filter = request()->status;
             $user = Auth::user();
 
 
@@ -190,6 +191,9 @@ class ApiFollowUpRequestController extends ApiController
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->where('users.id', $user->id)->get();
 
+            if ($status_filter) {
+                $requests = $requests->where('followup_worker_requests.status', $status_filter);
+            }
 
 
             $res = [
