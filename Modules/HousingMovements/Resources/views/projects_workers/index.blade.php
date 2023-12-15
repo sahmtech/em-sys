@@ -107,7 +107,12 @@
                     }
                 },
                 columns: [{
-                        data: 'worker'
+                        data: 'worker',
+                        render: function(data, type, row) {
+                            var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
+                                .replace(':id', row.id) + '">' + data + '</a>';
+                            return link;
+                        }
                     },
                     {
                         data: 'id_proof_number'
@@ -116,7 +121,10 @@
                         data: 'contact_name'
                     },
                     {
-                        data: 'essentials_salary'
+                        data: 'essentials_salary',
+                        render: function(data, type, row) {
+                            return Math.floor(data);
+                        }
                     },
 
 
