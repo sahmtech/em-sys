@@ -20,9 +20,11 @@
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('contract_type_filter', __('essentials::lang.contract_type') . ':') !!}
-                    {!! Form::select('contract_type_filter',$contract_types, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    {!! Form::select('contract_type_filter',$contract_types, null, ['class' => 'form-control','id'=>'contract_type_filter',
+                         'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 </div>
             </div>
+          {{--
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('status_filter', __('essentials::lang.status') . ':') !!}
@@ -33,6 +35,7 @@
                      ], null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 </div>
             </div>
+            --}} 
         @endcomponent
         </div>
     </div>
@@ -265,10 +268,11 @@
                     url: "{{ route('employeeContracts') }}",
                     data: function(d) {
                         
-                        if ($('#contract_type_filter').length) {
-                            d.contract_type = $('#contract_type_filter').val();
-                        }
+                        
+                        d.contract_type = $('#contract_type_filter').val();
+                        
                         d.status=$('#status_filter').val();
+                       
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
@@ -300,6 +304,7 @@
                          },
               
                         { data: 'contract_type_id' },
+                      
                         { 
                         data: 'status',
                             render: function (data, type, row) {
@@ -340,6 +345,8 @@
             
           
             $('#contract_type_filter,#status_filter ,#doc_filter_date_range').on('change', function() {
+                console.log($('#contract_type_filter').val());
+                console.log($('#status_filter').val());
                 reloadDataTable();
             });
             $(document).on('click', 'button.delete_employeeContract_button', function () {

@@ -18,9 +18,11 @@
                        'bachelors'=>__('essentials::lang.bachelors'),
                         'master' =>__('essentials::lang.master'),
                         'PhD' =>__('essentials::lang.PhD'),
+                        
                         'diploma' =>__('essentials::lang.diploma'),
                 
-                    ], null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    ], null, ['class' => 'form-control','id'=>'qualification_type_filter',
+                     'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                 </div>
             </div>
         
@@ -28,7 +30,8 @@
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('major_filter', __('essentials::lang.major') . ':') !!}
-                    {!! Form::select('major_filter',$spacializations, null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    {!! Form::select('major_filter',$spacializations, null, ['class' => 'form-control','id'=>'major_filter',
+                         'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
             
                 </div>
             </div>
@@ -136,13 +139,12 @@
 @endsection
 @section('javascript')
     <script type="text/javascript">
+      
         $(document).ready(function() {
-            var qualifications_table;
-
             function reloadDataTable() {
                 qualifications_table.ajax.reload();
             }
-
+            var qualifications_table;
             qualifications_table  = $('#qualifications_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -186,11 +188,14 @@
                     ],
              });
 
-        
+             
             $(document).on('change', '#qualification_type_filter, #major_filter', function() {
+                console.log( $('#qualification_type_filter').val());
+                console.log( $('#major_filter').val());
                 reloadDataTable();
             });
-          
+
+
             $(document).on('click', 'button.delete_qualification_button', function () {
                 swal({
                     title: LANG.sure,
@@ -218,8 +223,12 @@
                 });
             });
 
-            
+
+
+
         });
+
+     
     
     </script>
 @endsection

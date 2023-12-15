@@ -132,7 +132,7 @@
             var classSelect = $('#classSelect');
             employeeSelect.on('change', function () {
    
-                    var selectedEmployee = $(this).val();
+            var selectedEmployee = $(this).val();
                console.log(selectedEmployee);
                     var csrfToken = $('meta[name="csrf-token"]').attr('content');
                     $.ajax({
@@ -164,23 +164,23 @@
         });
     
     </script>
-    <script>
-       
-        const eqamaNumberInput = document.getElementById('eqama_number');
-        const idProofNumberError = document.getElementById('idProofNumberError');
-    
-        eqamaNumberInput.addEventListener('input', function() {
-            const eqamaNumber = eqamaNumberInput.value;
-    
-            if (eqamaNumber.length !== 10) {
-                idProofNumberError.innerText = 'Eqama number must be 10 digits.';
-            } else if (!/^21\d{8}$/.test(eqamaNumber)) {
-                idProofNumberError.innerText = 'Eqama number must start with "21" and be followed by 8 digits.';
-            } else {
-                idProofNumberError.innerText = '';
-            }
-        });
-    
-    </script>
+        <script>
+        
+            const eqamaNumberInput = document.getElementById('eqama_number');
+            const idProofNumberError = document.getElementById('idProofNumberError');
+        
+            eqamaNumberInput.addEventListener('input', function() {
+                const eqamaNumber = eqamaNumberInput.value;
+        
+                if (eqamaNumber.length !== 10) {
+                    idProofNumberError.innerText = 'Eqama number must be 10 digits.';
+                } else if (!/^21\d{8}$/.test(eqamaNumber)) {
+                    idProofNumberError.innerText = 'Eqama number must start with "21" and be followed by 8 digits.';
+                } else {
+                    idProofNumberError.innerText = '';
+                }
+            });
+        
+        </script>
 @endsection
 
