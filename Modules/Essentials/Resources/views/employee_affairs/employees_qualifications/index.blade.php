@@ -147,7 +147,7 @@
                                         'class' => 'form-control',
                                         'placeholder' => __('essentials::lang.select_country'),
                                         'required',
-                                        'id'=>'select_country',
+                                        'id' => 'select_country',
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
@@ -176,22 +176,21 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#major_filter_select').select2();
+
             $('#addQualificationModal').on('shown.bs.modal', function(e) {
                 $('#employee_select').select2({
                     dropdownParent: $(
                         '#addQualificationModal'),
                     width: '100%',
                 });
-            });
-            $('#addQualificationModal').on('shown.bs.modal', function(e) {
+
                 $('#spacializations_select').select2({
                     dropdownParent: $(
                         '#addQualificationModal'),
                     width: '100%',
                 });
-            });
 
-            $('#addQualificationModal').on('shown.bs.modal', function(e) {
                 $('#select_country').select2({
                     dropdownParent: $(
                         '#addQualificationModal'),
@@ -199,101 +198,99 @@
                 });
             });
 
-        });
-        $('#major_filter_select').select2();
-        var qualifications_table;
+            var qualifications_table;
 
-        function reloadDataTable() {
-            qualifications_table.ajax.reload();
-        }
+            function reloadDataTable() {
+                qualifications_table.ajax.reload();
+            }
 
-        qualifications_table = $('#qualifications_table').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('qualifications') }}",
-                data: function(d) {
-                    if ($('#qualification_type_filter').length) {
-                        d.qualification_type = $('#qualification_type_filter').val();
-                    }
-                    if ($('#major_filter').length) {
-                        d.major = $('#major_filter').val();
-                    }
-                }
-            },
-
-            columns: [{
-                    data: 'user'
-                },
-
-                {
-                    data: 'qualification_type',
-                    render: function(data, type, row) {
-                        if (data === 'bachelors') {
-                            return '@lang('essentials::lang.bachelors')';
-                        } else if (data === 'master') {
-                            return '@lang('essentials::lang.master')';
-                        } else if (data === 'PhD') {
-                            return '@lang('essentials::lang.PhD')';
-                        } else if (data === 'diploma') {
-                            return '@lang('essentials::lang.diploma')';
-                        } else {
-                            return ' ';
+            qualifications_table = $('#qualifications_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('qualifications') }}",
+                    data: function(d) {
+                        if ($('#qualification_type_filter').length) {
+                            d.qualification_type = $('#qualification_type_filter').val();
+                        }
+                        if ($('#major_filter').length) {
+                            d.major = $('#major_filter').val();
                         }
                     }
                 },
-                {
-                    data: 'major'
-                },
-                {
-                    data: 'graduation_year'
-                },
-                {
-                    data: 'graduation_institution'
-                },
-                {
-                    data: 'graduation_country'
-                },
-                {
-                    data: 'degree'
-                },
-                {
-                    data: 'action'
-                },
-            ],
-        });
 
+                columns: [{
+                        data: 'user'
+                    },
 
-        $(document).on('change', '#qualification_type_filter, #major_filter', function() {
-            reloadDataTable();
-        });
-
-        $(document).on('click', 'button.delete_qualification_button', function() {
-        swal({
-            title: LANG.sure,
-            text: LANG.confirm_delete_qualification,
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        }).then((willDelete) => {
-            if (willDelete) {
-                var href = $(this).data('href');
-                $.ajax({
-                    method: "DELETE",
-                    url: href,
-                    dataType: "json",
-                    success: function(result) {
-                        if (result.success == true) {
-                            toastr.success(result.msg);
-                            qualifications_table.ajax.reload();
-                        } else {
-                            toastr.error(result.msg);
+                    {
+                        data: 'qualification_type',
+                        render: function(data, type, row) {
+                            if (data === 'bachelors') {
+                                return '@lang('essentials::lang.bachelors')';
+                            } else if (data === 'master') {
+                                return '@lang('essentials::lang.master')';
+                            } else if (data === 'PhD') {
+                                return '@lang('essentials::lang.PhD')';
+                            } else if (data === 'diploma') {
+                                return '@lang('essentials::lang.diploma')';
+                            } else {
+                                return ' ';
+                            }
                         }
+                    },
+                    {
+                        data: 'major'
+                    },
+                    {
+                        data: 'graduation_year'
+                    },
+                    {
+                        data: 'graduation_institution'
+                    },
+                    {
+                        data: 'graduation_country'
+                    },
+                    {
+                        data: 'degree'
+                    },
+                    {
+                        data: 'action'
+                    },
+                ],
+            });
+
+
+            $(document).on('change', '#qualification_type_filter, #major_filter', function() {
+                reloadDataTable();
+            });
+
+            $(document).on('click', 'button.delete_qualification_button', function() {
+                swal({
+                    title: LANG.sure,
+                    text: LANG.confirm_delete_qualification,
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        var href = $(this).data('href');
+                        $.ajax({
+                            method: "DELETE",
+                            url: href,
+                            dataType: "json",
+                            success: function(result) {
+                                if (result.success == true) {
+                                    toastr.success(result.msg);
+                                    qualifications_table.ajax.reload();
+                                } else {
+                                    toastr.error(result.msg);
+                                }
+                            }
+                        });
                     }
                 });
-            }
-        });
-        });
+            });
 
 
         });
