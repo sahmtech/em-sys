@@ -54,7 +54,7 @@ return [
     'edit_car' => 'تعديل سيارة',
     'border_no' => 'رقم الحدود',
 
-    'travelers' => 'المسافرون',
+    'travelers' => 'وصول جديد',
     'worker_name' => 'اسم العامل',
     'passport_number' => 'رقم الجواز',
     'location' => 'الموقع',
