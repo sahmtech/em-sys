@@ -95,7 +95,6 @@
 
                             $default = array_keys($default_fields);
 
-
                         @endphp
 
                         <div style="row">
@@ -216,7 +215,12 @@
                 },
 
                 columns: [{
-                        data: 'worker'
+                        data: 'worker',
+                        render: function(data, type, row) {
+                            var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
+                                .replace(':id', row.id) + '">' + data + '</a>';
+                            return link;
+                        }
                     },
                     {
                         data: 'residence_permit'
