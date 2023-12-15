@@ -77,7 +77,12 @@ class CustomAdminSidebarMenu
             $this->connectorMenu();
         } elseif (Str::startsWith($currentPath, 'agent')) {
             $this->agnetMenu();
-        } elseif ($is_admin) {
+        } elseif (Str::startsWith($currentPath, 'asset')) {
+            $this->assetManagementMenu();
+        }  elseif (Str::startsWith($currentPath, 'crm')) {
+            $this->crmMenu();
+        } 
+        elseif ($is_admin) {
             $this->settingsMenu();
         } else {
         }
@@ -93,6 +98,43 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_IR');
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
+    }
+
+    public function crmMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']), __('crm::lang.crm'), ['icon' => 'fas fa fa-broadcast-tower', 'style' => config('app.env') == 'demo' ? 'background-color: #8CAFD4;' : '', 'active' => request()->segment(1) == 'crm' || request()->get('type') == 'life_stage' || request()->get('type') == 'source']);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(
+                action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
+                __('crm::lang.order_request'),
+                ['icon' => 'fa fas fa-sync', 'active' => request()->segment(2) == 'order-request']
+            );
+        });
+    }
+
+    public function assetManagementMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(
+                action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard']),
+                __('assetmanagement::lang.asset_management'),
+                ['icon' => 'fas fa fa-boxes', 'active' => request()->segment(1) == 'asset',]
+            );
+            $menu->header("");
+            $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+        });
     }
 
     public function agnetMenu()
@@ -113,12 +155,12 @@ class CustomAdminSidebarMenu
             $menu->url(
                 route('agent_projects'),
                 __('agent.projects'),
-                ['icon' => 'fa fas fa-plus-circle','active' => request()->segment(1) == 'agent_projects'],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_projects'],
             );
             $menu->url(
                 route('agent_contracts'),
                 __('agent.contracts'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_contracts' ],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_contracts'],
             );
             $menu->url(
                 route('agent_workers'),
@@ -628,7 +670,7 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sales_projects'),
                 ['icon' => 'fa fas fa-plus-circle'],
             );
-          
+
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
@@ -898,7 +940,7 @@ class CustomAdminSidebarMenu
                 ],
             )->order(0);
 
-          
+
             $menu->header("");
             $menu->header("");
             // if (auth()->user()->can('internationalrelations.view_dashboard') || true) {
