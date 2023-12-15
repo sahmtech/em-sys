@@ -62,22 +62,22 @@
                             <div class="row">
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('contact_name', __('sales::lang.contact_name') . ':*') !!}
+                                    {!! Form::label('contact_name', __('sales::lang.project_name') . ':*') !!}
                                     {!! Form::select('contact_name', $contacts, null, [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'required',
-                                        'placeholder' => __('sales::lang.contact_name'),
+                                        'placeholder' => __('sales::lang.project_name'),
                                         'id' => 'contact_name',
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('contact_location_name', __('sales::lang.contact_location_name') . ':*') !!}
+                                    {!! Form::label('contact_location_name', __('sales::lang.location_name') . ':*') !!}
                                     {!! Form::text('contact_location_name', null, [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
                                         'required',
-                                        'placeholder' => __('sales::lang.contact_location_name'),
+                                        'placeholder' => __('sales::lang.location_name'),
                                         'id' => 'contact_location_name',
                                     ]) !!}
                                 </div>
