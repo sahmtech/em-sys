@@ -173,7 +173,7 @@ class HomeController extends ApiController
     }
 
 
-    public function terms_conditions()
+    public function terms_privacy()
     {
         try {
             $res = [
