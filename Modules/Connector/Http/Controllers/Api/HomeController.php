@@ -171,4 +171,21 @@ class HomeController extends ApiController
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
+
+
+    public function terms_conditions()
+    {
+        try {
+            $res = [
+                'terms_of_use' => 'terms and conditions of use place holder',
+                'privacy_policy' => 'privacy policy plave holder',
+                'support_phone' => '999999999999',
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
 }
