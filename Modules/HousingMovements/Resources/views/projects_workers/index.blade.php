@@ -107,7 +107,12 @@
                     }
                 },
                 columns: [{
-                        data: 'worker'
+                        data: 'worker',
+                        render: function(data, type, row) {
+                            var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
+                                .replace(':id', row.id) + '">' + data + '</a>';
+                            return link;
+                        }
                     },
                     {
                         data: 'id_proof_number'
