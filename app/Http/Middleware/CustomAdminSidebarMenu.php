@@ -79,10 +79,9 @@ class CustomAdminSidebarMenu
             $this->agnetMenu();
         } elseif (Str::startsWith($currentPath, 'asset')) {
             $this->assetManagementMenu();
-        }  elseif (Str::startsWith($currentPath, 'crm')) {
+        } elseif (Str::startsWith($currentPath, 'crm')) {
             $this->crmMenu();
-        } 
-        elseif ($is_admin) {
+        } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
         }
@@ -483,7 +482,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\ContactLocationController::class, 'index']),
                 __('sales::lang.contact_locations'),
-                ['icon' => 'fa fas fa-plus-circle'],
+                ['icon' => 'fa fas fa-meteor'],
             );
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects2']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
