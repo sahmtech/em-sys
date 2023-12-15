@@ -121,7 +121,10 @@
                         data: 'contact_name'
                     },
                     {
-                        data: 'essentials_salary'
+                        data: 'essentials_salary',
+                        render: function(data, type, row) {
+                            return Math.floor(data);
+                        }
                     },
 
 
