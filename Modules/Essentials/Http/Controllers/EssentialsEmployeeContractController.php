@@ -22,7 +22,7 @@ class EssentialsEmployeeContractController extends Controller
         $this->moduleUtil = $moduleUtil;
     }
     
-    public function index()
+    public function index(Request $request)
     {
        
         $business_id = request()->session()->get('user.business_id');
@@ -34,50 +34,54 @@ class EssentialsEmployeeContractController extends Controller
         // if (! $can_crud_employee_contracts) {
         //     abort(403, 'Unauthorized action.');
         // }
+
+        
+        $employees_contracts = EssentialsEmployeesContract::
+        join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+       // ->where('u.business_id', $business_id)
+        ->select([
+            'essentials_employees_contracts.id',
+            DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+            'essentials_employees_contracts.contract_number',
+            'essentials_employees_contracts.contract_start_date',
+            'essentials_employees_contracts.contract_end_date',
+            'essentials_employees_contracts.contract_duration',
+            'essentials_employees_contracts.contract_per_period',
+            'essentials_employees_contracts.probation_period',
+            'essentials_employees_contracts.contract_type_id',
+            'essentials_employees_contracts.is_renewable',
+            'essentials_employees_contracts.file_path',
+            DB::raw("
+                CASE 
+                    WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
+                    WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
+                    WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
+                    WHEN DATE(essentials_employees_contracts.contract_end_date) > CURDATE() THEN 'valid'
+                    ELSE 'Null'
+                END as status
+            "),
+        ])->orderby('id','desc');
+
+
+        if (!empty(request()->input('contract_type')) && request()->input('contract_type') !== 'all') {
+            $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
+        }
+        if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+            $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
+        }
+        if (!empty(request()->start_date) && !empty(request()->end_date)) {
+            $start = request()->start_date;
+            $end = request()->end_date;
+            $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
+                ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
+        }
+       
+
+      
         $contract_types = EssentialsContractType::pluck('type','id')->all();
         if (request()->ajax()) {
           
-            $employees_contracts = EssentialsEmployeesContract::
-            join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
-            ->where('u.business_id', $business_id)
-            ->select([
-                'essentials_employees_contracts.id',
-                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                'essentials_employees_contracts.contract_number',
-                'essentials_employees_contracts.contract_start_date',
-                'essentials_employees_contracts.contract_end_date',
-                'essentials_employees_contracts.contract_duration',
-                'essentials_employees_contracts.contract_per_period',
-                'essentials_employees_contracts.probation_period',
-                'essentials_employees_contracts.contract_type_id',
-                'essentials_employees_contracts.is_renewable',
-                'essentials_employees_contracts.file_path',
-                DB::raw("
-                    CASE 
-                        WHEN essentials_employees_contracts.contract_end_date IS NULL THEN NULL
-                        WHEN essentials_employees_contracts.contract_start_date IS NULL THEN NULL
-                        WHEN DATE(essentials_employees_contracts.contract_end_date) <= CURDATE() THEN 'canceled'
-                        WHEN DATE(essentials_employees_contracts.contract_end_date) > CURDATE() THEN 'valid'
-                        ELSE 'Null'
-                    END as status
-                "),
-            ]);
-
-
-            if (!empty(request()->input('contract_type')) && request()->input('contract_type') !== 'all') {
-                $employees_contracts->where('essentials_employees_contracts.contract_type_id', request()->input('contract_type'));
-            }
-            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
-                $employees_contracts->where('essentials_employees_contracts.status', request()->input('status'));
-            }
-            if (!empty(request()->start_date) && !empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
-                    ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
-            }
-           
-            return Datatables::of($employees_contracts)
+                     return Datatables::of($employees_contracts)
             ->editColumn('contract_type_id',function($row)use($contract_types){
                 $item = $contract_types[$row->contract_type_id]??'';
 
@@ -89,7 +93,7 @@ class EssentialsEmployeeContractController extends Controller
                  function ($row) {
                     $html = ''; 
                
-                if (!empty($row->file)) {   
+                if (!empty($row->file_path)) {   
                 $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->file_path.'\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
                     '&nbsp;';
                 } else {
@@ -142,6 +146,7 @@ class EssentialsEmployeeContractController extends Controller
                   'is_renewable',
                   'file']);
          
+          
             $input2['employee_id'] = $input['employee'];
         
 
@@ -189,9 +194,10 @@ class EssentialsEmployeeContractController extends Controller
             
             $input2['file_path'] = $filePath;}
        
-            EssentialsEmployeesContract::create($input2);
+          
+            $contract=EssentialsEmployeesContract::create($input2);
+           // dd( $contract );
             
- 
             $output = ['success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
@@ -207,7 +213,7 @@ class EssentialsEmployeeContractController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         
-    
+   // return  $output ;
        return redirect()->route('employeeContracts')->with(compact('users'));
     }
 
