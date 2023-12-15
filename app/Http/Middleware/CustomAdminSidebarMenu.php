@@ -672,11 +672,11 @@ class CustomAdminSidebarMenu
             );
 
 
-            $menu->url(
-                action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-                __('sales::lang.add_offer_price'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-            );
+            // $menu->url(
+            //     action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
+            //     __('sales::lang.add_offer_price'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+            // );
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
