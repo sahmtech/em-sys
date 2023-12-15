@@ -125,152 +125,17 @@
                             
                         </div>
                     </div>
-
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('major_filter', __('essentials::lang.major') . ':') !!}
-                            {!! Form::select('major_filter', $spacializations, null, [
-                                'class' => 'form-control',
-                                'id' => 'major_filter_select',
-                                'style' => 'width:100%',
-                                'placeholder' => __('lang_v1.all'),
-                            ]) !!}
-
-                        </div>
+        
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
-                @endcomponent
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.widget', ['class' => 'box-solid'])
-                    @slot('tool')
-                        <div class="box-tools">
-
-                            <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                data-target="#addQualificationModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
-                        </div>
-                    @endslot
-
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="qualifications_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('essentials::lang.employee')</th>
-                                    <th>@lang('essentials::lang.qualification_type')</th>
-                                    <th>@lang('essentials::lang.major')</th>
-                                    <th>@lang('essentials::lang.graduation_year')</th>
-                                    <th>@lang('essentials::lang.graduation_institution')</th>
-                                    <th>@lang('essentials::lang.graduation_country')</th>
-                                    <th>@lang('essentials::lang.degree')</th>
-
-                                    <th>@lang('messages.action')</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                @endcomponent
-            </div>
-            <div class="modal fade" id="addQualificationModal" tabindex="-1" role="dialog"
-                aria-labelledby="gridSystemModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-
-                        {!! Form::open(['route' => 'storeQualification', 'enctype' => 'multipart/form-data']) !!}
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">@lang('essentials::lang.add_qualification')</h4>
-                        </div>
-
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                    {!! Form::select('employee', $users, null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.select_employee'),
-                                        'required',
-                                        'id' => 'employee_select',
-                                    ]) !!}
-                                </div>
-
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
-                                    {!! Form::select(
-                                        'qualification_type',
-                                        [
-                                            'bachelors' => __('essentials::lang.bachelors'),
-                                            'master' => __('essentials::lang.master'),
-                                            'PhD' => __('essentials::lang.PhD'),
-                                            'diploma' => __('essentials::lang.diploma'),
-                                        ],
-                                        null,
-                                        ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
-                                    ) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                    {!! Form::select('major', $spacializations, null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.major'),
-                                        'required',
-                                        'id' => 'spacializations_select',
-                                    ]) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
-                                    {!! Form::date('graduation_year', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.graduation_year'),
-                                        'required',
-                                    ]) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
-                                    {!! Form::text('graduation_institution', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.graduation_institution'),
-                                        'required',
-                                    ]) !!}
-                                </div>
-
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
-                                    {!! Form::select('graduation_country', $countries, null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.select_country'),
-                                        'required',
-                                        'id'=>'select_country',
-                                    ]) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-                                    {!! Form::number('degree', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.degree'),
-                                        'required',
-                                    ]) !!}
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                        </div>
-                        {!! Form::close() !!}
-                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection
 @section('javascript')
     <script type="text/javascript">
@@ -367,3 +232,4 @@
     
     </script>
 @endsection
+
