@@ -445,20 +445,39 @@
                         </div>
 
 
+                        
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
                                 <ul id="worker-list">
-                                  
+                                    <!-- Worker info will be dynamically added here -->
                             </div>
                             <div class="col-md-6">
 
                                 <h4>@lang('followup::lang.activites')</h4>
                                 <ul id="activities-list">
-                                   
+                                    <!-- Activities will be dynamically added here -->
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+
+                                <h4>@lang('followup::lang.attachments')</h4>
+                                <ul id="attachments-list">
+                                    
                                 </ul>
                             </div>
                         </div>
+                        <form id="attachmentForm" method="POST" enctype="multipart/form-data">
+                            @csrf
+                        
+                            <div class="form-group">
+                                <label for="attachment">
+                                    <h4>@lang('followup::lang.add_attachment')</h4>
+                                </label>
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        </form>
                     </div>
 
                     <div class="modal-footer">
@@ -578,7 +597,9 @@
                                 return '@lang('followup::lang.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('followup::lang.cancleContractRequest')';
-                            } else {
+                            }  else if (data === 'WarningRequest') {
+                                return '@lang('followup::lang.WarningRequest')';
+                            }else {
                                 return data;
                             }
                         }
@@ -696,6 +717,7 @@
                 // var data = requests_table.row(this).data();
                 // var requestId = data.id;
 
+            
                 if (requestId) {
                     $.ajax({
                         url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
@@ -706,11 +728,13 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
+                            var attachmentsList= $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
                             workerList.html('');
                             activitiesList.html('');
+                            attachmentsList.html('');
 
                             for (var i = 0; i < response.workflow.length; i++) {
 
@@ -796,6 +820,26 @@
 
                                 activitiesList.append(activity);
                             }
+
+                            for (var j = 0; j < response.attachments.length; j++) {
+                                var attachment = '<li>';
+
+                                    attachment += '<p>';
+                                   
+                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+                               
+                                 attachment += '</p>';
+                                attachment += '</li>';
+
+                                attachmentsList.append(attachment);
+                            }
+
+                            $('#attachmentForm').attr('action',
+                                '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
+                                .replace(':requestId', response.request_info.id));
+
+                            $('#attachmentForm input[name="requestId"]').val(requestId);
+
 
                             $('#requestModal').modal('show');
                         },
