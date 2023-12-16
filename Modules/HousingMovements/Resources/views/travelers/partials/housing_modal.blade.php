@@ -28,7 +28,7 @@
                                 'id'=>'room_number']) !!}
                     </div>
 
-                    <div class="col-md-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('project_name2', __('followup::lang.project_name') . ':') !!}
                         {!! Form::select('project_name2', $salesProjects, null, [

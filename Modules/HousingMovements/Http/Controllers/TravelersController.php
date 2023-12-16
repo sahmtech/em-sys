@@ -219,8 +219,7 @@ class TravelersController extends Controller
             ->where('arrival_status',1)
             ->where('housed_status',0);
      
-
-
+     
          
         
             if (!empty($request->input('project_name_filter'))) {
