@@ -82,6 +82,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('essentials::lang.add_qualification')</h4>
                     </div>
+
         
                     <div class="modal-body">
     
@@ -89,6 +90,7 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
                                 {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+
                             </div>
                         
                             <div class="form-group col-md-6">
@@ -141,11 +143,37 @@
     <script type="text/javascript">
       
         $(document).ready(function() {
+
+            $('#major_filter_select').select2();
+
+            $('#addQualificationModal').on('shown.bs.modal', function(e) {
+                $('#employee_select').select2({
+                    dropdownParent: $(
+                        '#addQualificationModal'),
+                    width: '100%',
+                });
+
+                $('#spacializations_select').select2({
+                    dropdownParent: $(
+                        '#addQualificationModal'),
+                    width: '100%',
+                });
+
+                $('#select_country').select2({
+                    dropdownParent: $(
+                        '#addQualificationModal'),
+                    width: '100%',
+                });
+            });
+
+            var qualifications_table;
+
             function reloadDataTable() {
                 qualifications_table.ajax.reload();
             }
-            var qualifications_table;
-            qualifications_table  = $('#qualifications_table').DataTable({
+
+            qualifications_table = $('#qualifications_table').DataTable({
+
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -156,6 +184,7 @@
                         }
                         if ($('#major_filter').length) {
                             d.major = $('#major_filter').val();
+
                         }
                     }
                 },
@@ -197,6 +226,7 @@
 
 
             $(document).on('click', 'button.delete_qualification_button', function () {
+
                 swal({
                     title: LANG.sure,
                     text: LANG.confirm_delete_qualification,
@@ -210,7 +240,9 @@
                             method: "DELETE",
                             url: href,
                             dataType: "json",
-                            success: function (result) {
+
+                            success: function(result) {
+
                                 if (result.success == true) {
                                     toastr.success(result.msg);
                                     qualifications_table.ajax.reload();
@@ -222,7 +254,6 @@
                     }
                 });
             });
-
 
 
 

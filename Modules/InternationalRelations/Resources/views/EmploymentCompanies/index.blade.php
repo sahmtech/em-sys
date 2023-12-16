@@ -257,6 +257,8 @@
     <script type="text/javascript">
         // Countries table
         $(document).ready(function() {
+            $('#nationality_filter').select2();
+            $('#country_filter').select2();
             var company_table;
 
             function reloadDataTable() {

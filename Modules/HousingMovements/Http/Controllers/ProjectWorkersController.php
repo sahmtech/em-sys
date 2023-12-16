@@ -20,6 +20,8 @@ use Modules\Essentials\Entities\EssentialsBankAccounts;
 use App\Contact;
 use App\ContactLocation;
 use App\User;
+use Modules\Sales\Entities\SalesProject;
+
 class ProjectWorkersController extends Controller
 {
     /**
@@ -35,7 +37,7 @@ class ProjectWorkersController extends Controller
     }
     public function index()
     {
-        
+
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
@@ -47,7 +49,9 @@ class ProjectWorkersController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+        // $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+        $contacts = SalesProject::all()->pluck('name', 'id');
+
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $users = User::where('user_type', 'worker')
@@ -68,6 +72,7 @@ class ProjectWorkersController extends Controller
 
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
             }
+
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
                 $start = request()->filter_start_date;
                 $end = request()->filter_end_date;
@@ -91,7 +96,7 @@ class ProjectWorkersController extends Controller
                     return $user->first_name . ' ' . $user->last_name;
                 })
                 ->addColumn('contact_name', function ($user) {
-                    return $user->assignedTo?->name ;
+                    return $user->assignedTo?->name;
                 })
 
                 ->addColumn('residence_permit_expiration', function ($user) {
