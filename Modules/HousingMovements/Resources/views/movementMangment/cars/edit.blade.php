@@ -32,7 +32,7 @@
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}"
                                             @if ($car->user_id == $worker->id) selected @endif>
-                                            {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name }}
+                                            {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name . ' - ' . $worker->essentialsEmployeeAppointmets->specialization->name }}
                                         </option>
                                     @endforeach
                                 </select>

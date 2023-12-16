@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\HousingMovements\Http\Controllers;
+namespace Modules\FollowUp\Http\Controllers;
 
 use App\Contact;
 use App\Utils\ModuleUtil;
@@ -10,9 +10,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\Shift;
-use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\Sales\Entities\SalesProject;
-use Yajra\DataTables\Facades\DataTables;
 
 class ShiftController extends Controller
 {
@@ -45,7 +43,7 @@ class ShiftController extends Controller
         $salesProject = SalesProject::all()->pluck('name', 'id');
         
 
-        return view('housingmovements::shifts.index', compact('shifts', 'salesProject'));
+        return view('followup::shifts.index', compact('shifts', 'salesProject'));
     }
 
     /**
@@ -60,7 +58,7 @@ class ShiftController extends Controller
 
         $days = $essentialsUtil->getDays();
 
-        return view('housingmovements::shifts.create', compact('contacts', 'days'));
+        return view('followup::shifts.create', compact('contacts', 'days'));
     }
 
     public function ProjectsByContacts($id){
@@ -113,7 +111,7 @@ class ShiftController extends Controller
      */
     public function show($id)
     {
-        return view('housingmovements::show');
+        return view('followup::show');
     }
 
     /**
@@ -128,7 +126,7 @@ class ShiftController extends Controller
         $shift = Shift::find($id);
         $days = $essentialsUtil->getDays();
 
-        return view('housingmovements::shifts.edit', compact('salesProject', 'days', 'shift'));
+        return view('followup::shifts.edit', compact('salesProject', 'days', 'shift'));
     }
 
     /**

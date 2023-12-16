@@ -72,7 +72,7 @@ class CarModelController extends Controller
                                 style="padding: 2px;color:rgb(8, 158, 16);"></i>
                             تعديل </a>
 
-                        <a class="dropdown-item" style="margin: 2px;" 
+                        <a class="dropdown-item btn-modal" style="margin: 2px;" 
                             href=" ' . route('carmodel.delete', ['id' => $row->id]) . ' "
                             data-href="' . route('carmodel.delete', ['id' => $row->id]) . '"
                             {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
@@ -201,7 +201,8 @@ class CarModelController extends Controller
     {
         try {
             CarModel::find($id)->delete();
-            return redirect()->back();
+            return redirect()->back()->with(__('deleted_success'));
+
         } catch (Exception $e) {
             return redirect()->back();
         }

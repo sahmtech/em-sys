@@ -8,6 +8,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
@@ -24,7 +26,11 @@ class CarController extends Controller
         $Cars = Car::all();
         $carTypes = CarModel::all();
         $after_serch = false;
-        $drivers = User::where('user_type', 'worker')->get();
+        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        $drivers = User::where('user_type', 'worker')
+            ->whereIn('id', $essentials_employee_appointmets_ids)->get();
+
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
@@ -44,7 +50,7 @@ class CarController extends Controller
 
 
                 ->editColumn('driver', function ($row) {
-                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name  ?? '';
+                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name . ' - ' . $row->User->essentialsEmployeeAppointmets->specialization->name ?? '';
                 })
 
                 ->editColumn('car_typeModel', function ($row) {
@@ -84,8 +90,8 @@ class CarController extends Controller
                                 style="padding: 2px;color:rgb(8, 158, 16);"></i>
                             تعديل </a>
 
-                        <a class="dropdown-item" style="margin: 2px;" 
-                            href=" ' . route('car.delete', ['id' => $row->id]) . ' "
+                        <a class="dropdown-item btn-modal" style="margin: 2px;" 
+                            href="' . route('car.delete', ['id' => $row->id]) . '"
                             data-href="' . route('car.delete', ['id' => $row->id]) . '"
                             {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
 
@@ -117,11 +123,18 @@ class CarController extends Controller
      */
     public function create()
     {
+
+
         $carTypes = CarType::all();
-        $workers = User::where('user_type', 'worker')->get();
+        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
+        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        $workers = User::where('user_type', 'worker')
+            ->whereIn('id', $essentials_employee_appointmets_ids)->get();
+
         return view('housingmovements::movementMangment.cars.create', compact('carTypes', 'workers'));
     }
 
+    // 	
     public function getCarModelByCarType_id($carType_id)
     {
         if (request()->ajax()) {
@@ -182,7 +195,10 @@ class CarController extends Controller
             $carModel = CarModel::find($car->car_model_id);
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
-            $workers = User::where('user_type', 'worker')->get();
+            $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
+            $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+            $workers = User::where('user_type', 'worker')
+                ->whereIn('id', $essentials_employee_appointmets_ids)->get();
         }
 
         return view('housingmovements::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes', 'workers'));
@@ -228,7 +244,7 @@ class CarController extends Controller
     {
         try {
             Car::find($id)->delete();
-            return redirect()->back();
+            return redirect()->back()->with(__('deleted_success'));
         } catch (Exception $e) {
             return redirect()->back();
         }
