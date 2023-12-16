@@ -27,6 +27,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 
 use App\Utils\TransactionUtil;
@@ -295,7 +296,7 @@ class EssentialsEmployeeImportController extends Controller
                                         
                                         if ($emp_array['assigned_to'] !== null) {
                                         
-                                            $business = ContactLocation::find($emp_array['assigned_to']);
+                                            $business = SalesProject::find($emp_array['assigned_to']);
                                             if (!$business) {
                                             
                                                 $is_valid = false;

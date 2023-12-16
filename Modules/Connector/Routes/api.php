@@ -94,6 +94,8 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
 
     Route::get('getAttendanceByDate', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'getAttendanceByDate']);
     Route::get('home', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'home']);
+    Route::get('logout', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'logout']);
+    Route::get('terms_privacy', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'terms_privacy']);
     Route::get('readAllNotifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'readAllNotifications']);
 });
 
