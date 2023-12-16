@@ -401,7 +401,7 @@ class User extends Authenticatable
         return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id');
     }
 
-    public function essentials_employee_appointmets()
+    public function essentialsEmployeeAppointmets()
     {
         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
     }

@@ -50,7 +50,7 @@ class CarController extends Controller
 
 
                 ->editColumn('driver', function ($row) {
-                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name . ' - ' . $row->User->essentials_employee_appointmets->specialization->name ?? '';
+                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name . ' - ' . $row->User->essentialsEmployeeAppointmets->specialization->name ?? '';
                 })
 
                 ->editColumn('car_typeModel', function ($row) {
