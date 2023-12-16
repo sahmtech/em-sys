@@ -144,7 +144,7 @@ class HomeController extends ApiController
         }
     }
 
-    function readAllNotifications()
+    public function readAllNotifications()
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
             abort(403, 'Unauthorized action.');
@@ -159,6 +159,33 @@ class HomeController extends ApiController
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
+        }
+    }
+
+    public function logout()
+    {
+        try {
+            Auth::user()->tokens()->delete();
+            return new CommonResource(['msg' => 'تم تسجيل الخروج بنجاح']);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
+
+
+    public function terms_privacy()
+    {
+        try {
+            $res = [
+                'terms_of_use' => 'terms and conditions of use place holder',
+                'privacy_policy' => 'privacy policy plave holder',
+                'support_phone' => '999999999999',
+            ];
+
+
+            return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
         }
     }
 }

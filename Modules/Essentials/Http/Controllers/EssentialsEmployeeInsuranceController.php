@@ -117,12 +117,12 @@ class EssentialsEmployeeInsuranceController extends Controller
             
             $input = $request->only(['insurance_class','employee']);
             
-
+          
             $insurance_data['insurance_classes_id'] = $input['insurance_class'];
             $insurance_data['employee_id'] = $input['employee'];
             $business=User::find($input['employee'])->business_id;
             $insurance_data['insurance_company_id'] =Contact::where('type','insurance')->where('business_id',$business)->first()->id;
-
+           // dd(  $insurance_data );
 
 
             EssentialsEmployeesInsurance::create($insurance_data);
