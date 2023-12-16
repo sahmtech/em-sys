@@ -102,11 +102,18 @@
                                         </td>
 
                                         <td style="display: flex;gap: 5px;">
-                                            @foreach ($row->holidays as $holiday)
-                                                <h6 style="margin-top: 0px;"><span
-                                                        class="badge badge-secondary">{{ __('lang_v1.' . $holiday) }}</span>
+                                            @if ($row->holidays)
+                                                @foreach ($row->holidays as $holiday)
+                                                    <h6 style="margin-top: 0px;"><span
+                                                            class="badge badge-secondary">{{ __('lang_v1.' . $holiday) }}</span>
+                                                    </h6>
+                                                @endforeach
+                                            @else
+                                                <h6 style="margin-top: 0px;"><span class="badge badge-secondary">لا يوجد
+                                                        عطل</span>
                                                 </h6>
-                                            @endforeach
+                                            @endif
+
 
 
                                         </td>
