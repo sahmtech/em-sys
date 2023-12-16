@@ -143,6 +143,20 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            $('#addContactLocationModal').on('shown.bs.modal', function(e) {
+                $('#contact_name').select2({
+                    dropdownParent: $(
+                        '#addContactLocationModal'),
+                    width: '100%',
+                });
+                $('#contact_location_name_in_charge').select2({
+                    dropdownParent: $(
+                        '#addContactLocationModal'),
+                    width: '100%',
+                });
+
+
+            });
             // var professionSelect = $('#professionSelect');
             // var specializationSelect = $('#specializationSelect');
 
