@@ -104,7 +104,7 @@
 
 
 
-                <div class="box box-primary">
+                <div class="box box-primary" id="attachments-box">
                     <div class="box-body box-profile">
                         <h3>@lang('followup::lang.attachments')</h3>
 
@@ -113,17 +113,24 @@
                                 @foreach($documents as $document)
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox"  checked name="document_types[]" value="{{ $document->type }}">
+                                        @if($document->file_path || $document->attachment)
+                                            <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                {{ trans('followup::lang.' . $document->type) }}
+                                            </a>
+                                        @else
                                             {{ trans('followup::lang.' . $document->type) }}
+                                        @endif
                                         </label>
                                     </div>
                                 @endforeach
                             </div>
                         @else
-                                  {{ trans('followup::lang.no_attachment_to_show') }}
+                            <p> {{ trans('followup::lang.no_attachment_to_show') }}</p>
                         @endif
                     </div>
                 </div>
+
+
             </div>
 
    

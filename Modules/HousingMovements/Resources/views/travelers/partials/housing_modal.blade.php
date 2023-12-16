@@ -16,13 +16,44 @@
                             {!! Form::select('htr_building', $buildings,
                                 null,
                                 [  'class' => 'form-control select2','style'=>'width:100%',
-                                'placeholder' => __('housingmovements::lang.htr_building'), 'required', 'id' => 'htr_building_select']) !!}
+                                'placeholder' => __('housingmovements::lang.htr_building'), 'required',
+                                 'id' => 'htr_building_select']) !!}
                         </div>
 
                     <div class="form-group col-md-6">
-                        {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
-                        {!! Form::number('room_number', null, ['class' => 'form-control','id'=>'room_number', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
+                    {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
+                            {!! Form::select('room_number',[],null,
+                                [  'class' => 'form-control select2','style'=>'width:100%',
+                                'placeholder' => __('housingmovements::lang.room_number'), 'required',
+                                'id'=>'room_number']) !!}
                     </div>
+
+                    <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('project_name2', __('followup::lang.project_name') . ':') !!}
+                        {!! Form::select('project_name2', $salesProjects, null, [
+                            'class' => 'form-control select2',
+                            'id' => 'project_name2',
+                            'style' => 'width:100%;padding:2px;',
+                            'required',
+                            'placeholder' => __('lang_v1.all'),
+                        ]) !!}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('shift_name', __('housingmovements::lang.shift_name') . ':') !!}
+                        {!! Form::select('shift_name', [], null, [
+                            'class' => 'form-control select2',
+                            'id' => 'shift_name',
+                            'style' => 'width:100%;padding:2px;',
+                          
+                            'placeholder' => __('lang_v1.all'),
+                          
+                        ]) !!}
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">

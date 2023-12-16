@@ -299,9 +299,9 @@ class TravelersController extends Controller
     public function housed_data(Request $request)
     {
         try {
-            $requestData = $request->only(['htr_building', 'room_number', 'worker_id']);
+            $requestData = $request->only(['htr_building', 'room_number', 'worker_id','shift_name']);
     
-            // Use the first room number from the request as the common room number for all workers
+           
             $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
     
             $jsonData = [];
@@ -310,6 +310,7 @@ class TravelersController extends Controller
                 $jsonObject = [
                     'worker_id' => $workerId,
                     'room_number' => $commonRoomNumber,
+                    'shift_id' => $requestData['shift_name'],
                 ];
     
                 $jsonData[] = $jsonObject;
@@ -325,19 +326,29 @@ class TravelersController extends Controller
                 DB::beginTransaction();
     
                 foreach ($selectedData as $data) {
-                    // Use update method to update multiple columns at once
+                  
                     User::where('proposal_worker_id', $data['worker_id'])
-                        ->update([
-                            'room_id' => $data['room_number'],
-                        ]);
-    
+                    ->update([
+                        'room_id' => $data['room_number'],
+                    ]);
+            
+                    $user = User::where('proposal_worker_id', $data['worker_id'])->first();
+            
+                      
                     $worker = IrProposedLabor::find($data['worker_id']);
                     $worker->update(['housed_status' => 1]);
+
+                    $user_shifts = DB::table('essentials_user_shifts')->insert([
+                        'user_id' => $user->id,
+                        'essentials_shift_id' => $data['shift_id'],
+                    ]);
+                  
                 }
     
                 DB::commit();
     
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
@@ -353,12 +364,18 @@ class TravelersController extends Controller
    
    
     public function getRoomNumbers($buildingId)
-     {
-        
-            $roomNumber =DB::table('htr_rooms')->where('htr_building_id', $buildingId)->pluck('id')->first();
-            return response()->json(['roomNumber' => $roomNumber]);
+    {
+        $roomNumbers = DB::table('htr_rooms')->where('htr_building_id', $buildingId)->pluck('room_number', 'id');
+       
+        return response()->json(['roomNumber' => $roomNumbers]);
     }
 
+    public function getShifts($projectId)
+        {
+            $shifts = DB::table('essentials_shifts')->where('project_id', $projectId)->pluck('name', 'id');
+
+            return response()->json(['shifts' => $shifts]);
+        }
 
     public function postarrivaldata(Request $request)
         {
