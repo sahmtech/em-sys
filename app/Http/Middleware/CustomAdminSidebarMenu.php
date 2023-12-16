@@ -36,6 +36,8 @@ class CustomAdminSidebarMenu
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm', 'roles'])) {
             $this->essentialsMenu();
+        }elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
+                $this->assetManagementMenu();
         } elseif (Str::startsWith($currentPath, 'sale')) {
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
@@ -77,6 +79,10 @@ class CustomAdminSidebarMenu
             $this->connectorMenu();
         } elseif (Str::startsWith($currentPath, 'agent')) {
             $this->agnetMenu();
+        } elseif (Str::startsWith($currentPath, 'asset')) {
+            $this->assetManagementMenu();
+        } elseif (Str::startsWith($currentPath, 'crm')) {
+            $this->crmMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -93,6 +99,46 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_IR');
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
+    }
+
+    public function crmMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']), __('crm::lang.crm'), ['icon' => 'fas fa fa-broadcast-tower', 'style' => config('app.env') == 'demo' ? 'background-color: #8CAFD4;' : '', 'active' => request()->segment(1) == 'crm' || request()->get('type') == 'life_stage' || request()->get('type') == 'source']);
+            $menu->header("");
+            $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(
+                action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
+                __('crm::lang.order_request'),
+                ['icon' => 'fa fas fa-sync', 'active' => request()->segment(2) == 'order-request']
+            );
+        });
+    }
+
+    public function assetManagementMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(
+                action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard']),
+                __('assetmanagement::lang.asset_management'),
+                [
+                    'icon' => 'fas fa fa-boxes',
+                    'active' => request()->segment(1) === 'asset'
+                ]
+            );
+            $menu->header("");
+            $menu->header("");
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+        });
     }
 
     public function agnetMenu()
@@ -113,12 +159,12 @@ class CustomAdminSidebarMenu
             $menu->url(
                 route('agent_projects'),
                 __('agent.projects'),
-                ['icon' => 'fa fas fa-plus-circle','active' => request()->segment(1) == 'agent_projects'],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_projects'],
             );
             $menu->url(
                 route('agent_contracts'),
                 __('agent.contracts'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_contracts' ],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_contracts'],
             );
             $menu->url(
                 route('agent_workers'),
@@ -442,7 +488,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\ContactLocationController::class, 'index']),
                 __('sales::lang.contact_locations'),
-                ['icon' => 'fa fas fa-plus-circle'],
+                ['icon' => 'fa fas fa-meteor'],
             );
 
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects2']);
@@ -481,127 +527,7 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'contrascts_wishes']
             );
 
-            // $menu->dropdown(
-            //     __('followup::lang.requests'),
-            //     function ($sub) use ($enabled_modules) {
-            //         if (auth()->user()->can('followup::lang.create_order')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'create']),
-            //                 __('followup::lang.create_request'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewExitRequests')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'exitRequestIndex']),
-            //                 __('followup::lang.exitRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'exitRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewReturnRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'returnRequestIndex']),
-            //                 __('followup::lang.returnRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'returnRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewEscapeRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'escapeRequestIndex']),
-            //                 __('followup::lang.escapeRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'escapeRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewAdvanceSalary')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'advanceSalaryIndex']),
-            //                 __('followup::lang.advanceSalary'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'advanceSalary']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewLeavesAndDepartures')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'leavesAndDeparturesIndex']),
-            //                 __('followup::lang.leavesAndDepartures'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'leavesAndDepartures']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewAtmCard')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'atmCardIndex']),
-            //                 __('followup::lang.atmCard'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'atmCard']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewResidenceRenewal')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceRenewalIndex']),
-            //                 __('followup::lang.residenceRenewal'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'residenceRenewal']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewResidenceCard')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceCardIndex']),
-            //                 __('followup::lang.residenceCard'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'residenceCard']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewWorkerTransfer')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workerTransferIndex']),
-            //                 __('followup::lang.workerTransfer'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'workerTransfer']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewChamberRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'chamberRequestIndex']),
-            //                 __('followup::lang.chamberRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'chamberRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewMofaRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'mofaRequestIndex']),
-            //                 __('followup::lang.mofaRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'mofaRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewInsuranceUpgradeRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'insuranceUpgradeRequestIndex']),
-            //                 __('followup::lang.insuranceUpgradeRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'insuranceUpgradeRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewBaladyCardRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'baladyCardRequestIndex']),
-            //                 __('followup::lang.baladyCardRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'baladyCardRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewResidenceEditRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'residenceEditRequestIndex']),
-            //                 __('followup::lang.residenceEditRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'residenceEditRequest']
-            //             );
-            //         }
-            //         if (auth()->user()->can('followup::lang.viewWorkInjuriesRequest')) {
-            //             $sub->url(
-            //                 action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'workInjuriesRequestIndex']),
-            //                 __('followup::lang.workInjuriesRequest'),
-            //                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'workInjuriesRequest']
-            //             );
-            //         }
-
-
-            //         },
-            //         ['icon' => 'fa fas fa-meteor']
-
-            //     );
+          
         });
     }
     public function CUS_salesMenu()
@@ -630,13 +556,13 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sales_projects'),
                 ['icon' => 'fa fas fa-plus-circle'],
             );
-          
 
-            $menu->url(
-                action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-                __('sales::lang.add_offer_price'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-            );
+
+            // $menu->url(
+            //     action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
+            //     __('sales::lang.add_offer_price'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+            // );
 
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
@@ -900,7 +826,7 @@ class CustomAdminSidebarMenu
                 ],
             )->order(0);
 
-          
+
             $menu->header("");
             $menu->header("");
             // if (auth()->user()->can('internationalrelations.view_dashboard') || true) {

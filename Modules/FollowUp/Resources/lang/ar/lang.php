@@ -229,8 +229,8 @@ return [
     'drivers_license'=>'مرفق شهادة قيادة السيارة ',
     'car_registration'=>'مرفق تسجيل السيارة ',
     'international_certificate'=>'مرفق الشهادة الدولية ',
-
-    
+    'add_attachment'=>'إضافة مرفق',
+    'attach'=>'مرفق',
     'customer_home_workers_count' => 'عدد العمال',
     'customer_home_active_workers_count' => 'عدد العمال النشطة',
     'customer_home_in_active_workers_count' => 'عدد العمال غير النشطة',

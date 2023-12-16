@@ -269,6 +269,19 @@ class HomeController extends Controller
         // $ConnectorController = new $ConnectorControllerClass();
         // $ConnectorPermissions = $ConnectorController->user_permissions();
 
+
+        //AssetManagement
+        $AssetManagementControllerClass = \Modules\AssetManagement\Http\Controllers\DataController::class;
+        $AssetManagementController = new $AssetManagementControllerClass();
+        $AssetManagementPermissions = $AssetManagementController->user_permissions();
+
+
+        //CRM
+        $CRMControllerClass = \Modules\Crm\Http\Controllers\DataController::class;
+        $CRMController = new $CRMControllerClass();
+        $CRMPermissions = $CRMController->user_permissions();
+
+
         $userManagementPermissions = [
             ['value' => 'user.view'],
             ['value' => 'user.create'],
@@ -313,6 +326,9 @@ class HomeController extends Controller
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
+            ['id' => 'assetManagement',  'permissions' => $AssetManagementPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
+          //  ['id' => 'crm',  'permissions' => $CRMPermissions, 'title' => __('crm::lang.crm'),'icon' =>'fas fa fa-broadcast-tower', 'link' => action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']),],
+
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
             ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fa fas fa-network-wired', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],

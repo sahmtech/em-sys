@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
-use Modules\FollowUp\Entities\followupWorkerRequest;
-use Modules\FollowUp\Entities\followupWorkerRequestProcess;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
@@ -124,14 +124,19 @@ class IrRequestController extends Controller
                     return $item;
                 })
                 ->editColumn('status', function ($row) {
-                    $statusClass = $this->statuses[$row->status]['class'];
-                    $statusName = $this->statuses[$row->status]['name'];
-                    $status = $row->status;
-
-                 
+                    $status = '';
+                
+                    if ($row->status == 'pending') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+                        
+                        if (auth()->user()->can('crudExitRequests')) {
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        }
+                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
-                    
-
+                    }
+                
                     return $status;
                 })
 
@@ -164,12 +169,12 @@ class IrRequestController extends Controller
 
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
-
-    
-            $requestProcess = FollowupWorkerRequestProcess::where('id',$input['request_id'])->first();
+            
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->first();
+            error_log($requestProcess->procedure_id);
             $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
-           
-
+           error_log($procedure);
+          
             if($procedure == 0 && $input['status']=='rejected'){
                 $output = [
                     'success' => false,
@@ -177,6 +182,10 @@ class IrRequestController extends Controller
                 ];
                 return $output;
             }
+
+
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
+           
 
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
@@ -337,7 +346,7 @@ class IrRequestController extends Controller
                     $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $workerId)->first()->contract_end_date;
                 }
 
-                $workerRequest = new followupWorkerRequest;
+                $workerRequest = new FollowupWorkerRequest;
 
                 $workerRequest->request_no = $this->generateRequestNo($request->type);
                 $workerRequest->worker_id = $workerId;
@@ -366,7 +375,7 @@ class IrRequestController extends Controller
 
 
                 if ($workerRequest) {
-                    $process = followupWorkerRequestProcess::create([
+                    $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
                         'procedure_id' => $this->getProcedureIdForType($request->type),
                         'status' => 'pending',
@@ -439,7 +448,6 @@ class IrRequestController extends Controller
 
         return $input['request_no'];
     }
-
     private function getTypePrefix($type)
     {
 
@@ -453,7 +461,14 @@ class IrRequestController extends Controller
             'atmCard' => 'atm',
             'residenceCard' => 'res',
             'workerTransfer' => 'wT',
-
+            'workInjuriesRequest' => 'wIng',
+            'residenceEditRequest' => 'resEd',
+            'baladyCardRequest' => 'bal',
+            'insuranceUpgradeRequest' => 'insUp',
+            'mofaRequest' => 'mofa',
+            'chamberRequest' => 'ch',
+            'cancleContractRequest' => 'con',
+            'WarningRequest' => 'WR'
         ];
 
         return $typePrefixMap[$type];

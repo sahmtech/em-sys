@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
-use Modules\FollowUp\Entities\followupWorkerRequest;
-use Modules\FollowUp\Entities\followupWorkerRequestProcess;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Modules\FollowUp\Entities\FollowupRequestsAttachment;
 use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
@@ -219,7 +219,7 @@ class EssentialsRequestController extends Controller
                     $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $workerId)->first()->contract_end_date;
                 }
 
-                $workerRequest = new followupWorkerRequest;
+                $workerRequest = new FollowupWorkerRequest;
 
                 $workerRequest->request_no = $this->generateRequestNo($request->type);
                 $workerRequest->worker_id = $workerId;
@@ -248,7 +248,7 @@ class EssentialsRequestController extends Controller
 
 
                 if ($workerRequest) {
-                    $process = followupWorkerRequestProcess::create([
+                    $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
                         'procedure_id' => $this->getProcedureIdForType($request->type),
                         'status' => 'pending',
@@ -609,7 +609,7 @@ class EssentialsRequestController extends Controller
             ]);
 
             $attachment = $request->file('attachment');
-            $attachmentPath = $attachment->store('/requestsAttachments');
+            $attachmentPath = $attachment->store('/requests_attachments');
     
           
             FollowupRequestsAttachment::create([

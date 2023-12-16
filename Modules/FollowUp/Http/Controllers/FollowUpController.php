@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
-use Modules\FollowUp\Entities\followupWorkerRequest;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowUpController extends Controller
@@ -35,11 +35,11 @@ class FollowUpController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $business = Business::where('id', $business_id)->first();
 
-        $new_requests = followupWorkerRequest::whereDate('created_at', Carbon::now($business->time_zone)->toDateString())->count();
+        $new_requests = FollowupWorkerRequest::whereDate('created_at', Carbon::now($business->time_zone)->toDateString())->count();
 
-        $on_going_requests = followupWorkerRequest::where('status', 'under_process')->count();
-        $finished_requests = followupWorkerRequest::where('status', 'rejected')->orWhere('status', 'approved')->count();
-        $total_requests = followupWorkerRequest::count();
+        $on_going_requests = FollowupWorkerRequest::where('status', 'under_process')->count();
+        $finished_requests = FollowupWorkerRequest::where('status', 'rejected')->orWhere('status', 'approved')->count();
+        $total_requests = FollowupWorkerRequest::count();
 
 
         return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));

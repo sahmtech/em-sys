@@ -17,7 +17,7 @@ class FollowupRequestsAttachment extends Model
 
     public function followupWorkerRequest()
     {
-        return $this->belongsTo(followupWorkerRequest::class, 'request_id');
+        return $this->belongsTo(FollowupWorkerRequest::class, 'request_id');
     }
 
 }

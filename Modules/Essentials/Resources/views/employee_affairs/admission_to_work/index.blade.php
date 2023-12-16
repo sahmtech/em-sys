@@ -89,7 +89,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control','id'=>'employee_select', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
                             </div>
                          
                     
@@ -134,6 +134,17 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $('#addAdmissionsToWorkModal').on('shown.bs.modal', function(e) {
+                $('#employee_select').select2({
+                    dropdownParent: $(
+                        '#addAdmissionsToWorkModal'),
+                    width: '100%',
+                });
+
+              
+
+            });
             var admissions_to_work_table;
 
             function reloadDataTable() {

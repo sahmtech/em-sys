@@ -5,7 +5,7 @@
 @endphp
 @section('title', $heading)
 @section('content')
-@include('essentials::layouts.nav_hrm_setting')
+
 
 
 <!-- Content Header (Page header) -->

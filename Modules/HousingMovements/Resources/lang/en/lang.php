@@ -30,6 +30,7 @@ return [
     'shift_name'=>'Shift Name',
     'add_shift'=>'Add Shift',
     'edit_shift'=>'Edit Shift',
+    'number_seats' => 'Number of Seats',
 
     'carModels' => 'Car Models',
     'cars' => 'Cars',

@@ -69,7 +69,7 @@
             </div>
         @endcomponent
 
-<div class="modal fade item_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal fade item_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         </div>
         {{-- <div class="modal fade" id="addOperationModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
@@ -209,6 +209,10 @@
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+            
+            $('#contract-select').select2();
+            $('#status_filter').select2();
+            
             var customers_table = $('#operation_table').DataTable({
 
                 processing: true,
@@ -314,66 +318,67 @@
             });
 
             $('#customer-select').change(function() {
-                    var selectedCustomerId = $(this).val();
-                    if (selectedCustomerId) {
-                        $.ajax({
-                            url: '{{ route('get-contracts') }}',
-                            type: 'POST',
-                            data: {
-                                customer_id: selectedCustomerId
-                            },
-                            success: function(response) {
-                                var contactSelect = $('#contact-select');
-                                contactSelect.empty();
+                var selectedCustomerId = $(this).val();
+                if (selectedCustomerId) {
+                    $.ajax({
+                        url: '{{ route('get-contracts') }}',
+                        type: 'POST',
+                        data: {
+                            customer_id: selectedCustomerId
+                        },
+                        success: function(response) {
+                            var contactSelect = $('#contact-select');
+                            contactSelect.empty();
 
 
-                                contactSelect.append(
-                                    '<option value="">اختر العقد</option>');
+                            contactSelect.append(
+                                '<option value="">اختر العقد</option>');
 
 
 
-                                $.each(response, function(index, contract) {
-                                    contactSelect.append(new Option(contract
-                                        .number_of_contract, contract.id
-                                        ));
-                                });
+                            $.each(response, function(index, contract) {
+                                contactSelect.append(new Option(contract
+                                    .number_of_contract, contract.id
+                                ));
+                            });
 
-                                console.log(contactSelect);
-                                contactSelect.find('option').first().attr('selected',
-                                    'selected');
-                            },
-                            error: function() {
-                                console.error('An error occurred.');
-                            }
-                        });
-                    }
-                });
+                            console.log(contactSelect);
+                            contactSelect.find('option').first().attr('selected',
+                                'selected');
+                        },
+                        error: function() {
+                            console.error('An error occurred.');
+                        }
+                    });
+                }
+            });
 
-          
+
             $('#contact-select').change(function() {
-            var selectedContractId = $(this).val();
-      
-            if (selectedContractId) {
-                $.ajax({
-                    url: '{{ route('get-contract-details') }}',
-                    type: 'POST',
-                    data: {
-                        contract_id: selectedContractId
-                    },
-                    success: function(response) {
-                       
-                        $('#quantity-input').attr('max', response);
-                        $('#quantity-message').text('Enter a number equal or less than ' + response);
-                       
-                    },
-                    error: function() {
-                        console.error('An error occurred.');
-                    }
-                });
-            }
-        });
+                var selectedContractId = $(this).val();
 
-          
+                if (selectedContractId) {
+                    $.ajax({
+                        url: '{{ route('get-contract-details') }}',
+                        type: 'POST',
+                        data: {
+                            contract_id: selectedContractId
+                        },
+                        success: function(response) {
+
+                            $('#quantity-input').attr('max', response);
+                            $('#quantity-message').text('Enter a number equal or less than ' +
+                                response);
+
+                        },
+                        error: function() {
+                            console.error('An error occurred.');
+                        }
+                    });
+                }
+            });
+
+
 
         });
     </script>

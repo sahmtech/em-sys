@@ -21,7 +21,7 @@
                     ]) !!}
                     <div class="row">
                         <div class="col-sm-4">
-                            {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
+                            {!! Form::label('carType_label', __('housingmovements::lang.carModel')) !!}
 
                             <select class="form-control" name="car_type_id" id='carTypeSelect' style="padding: 2px;">
                                 <option value="all" selected>@lang('lang_v1.all')</option>
@@ -32,19 +32,23 @@
                             </select>
 
                         </div>
-                        <div class="col-sm-4">
-                            <div class="form-group ">
-                                {!! Form::label('search_lable', __('housingmovements::lang.carType') . '  ') !!}
-                                {!! Form::text('search_carModle', '', [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.carType'),
-                                    'id' => 'search_carModle',
-                                ]) !!}
 
-                            </div>
+                        <div class="col-sm-4" style="margin-top: 0px;">
+                            {!! Form::label('driver', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
+
+                            <select class="form-control " name="driver" id="driver_select" style="padding: 2px;">
+                                <option value="all" selected>@lang('lang_v1.all')</option>
+                                @foreach ($drivers as $driver)
+                                    <option value="{{ $driver->id }}">
+                                        {{ $driver->id_proof_number . ' - ' . $driver->first_name . ' ' . $driver->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            {{-- <input type="text" id="searchWorkerInput" placeholder="Search Worker"
+                                style="margin-top: 5px;"> --}}
                         </div>
                     </div>
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group ">
                                 {!! Form::label('search_lable', __('housingmovements::lang.driverName') . '  ') !!}
@@ -67,8 +71,8 @@
 
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
+                    </div> --}}
+                    {{-- <div class="col-md-12">
                         <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
                             @lang('housingmovements::lang.search')</button>
                         @if ($after_serch)
@@ -77,7 +81,7 @@
                                 data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@index') }}">
                                 @lang('housingmovements::lang.viewAll')</a>
                         @endif
-                    </div>
+                    </div> --}}
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -97,87 +101,22 @@
                     @endslot
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="rooms_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="cars_table" style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
                                     <th>@lang('housingmovements::lang.driver')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.car_typeModel')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.plate_number')</th>
+                                    <th style="text-align: center;">@lang('housingmovements::lang.number_seats')</th>
                                     <th style="text-align: center;">@lang('housingmovements::lang.color')</th>
                                     <th style="text-align: center;">@lang('messages.action')</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody">
-                                @foreach ($Cars as $row)
-                                    <tr>
-                                        <td>
 
-                                            {{ $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name }}
-                                        </td>
-                                        <td style="text-align: center;">
-                                            {{ $row->CarModel->CarType->name_ar . ' - ' . $row->CarModel->name_ar }}
-
-                                        </td>
-                                        <td style="text-align: center;">
-                                            {{ $row->plate_number }}
-
-                                        </td>
-                                        <td style="text-align: center;">
-                                            {{ $row->color }}
-
-                                        </td>
-
-
-                                        <td style="text-align: center;">
-                                            <div class="btn-group" role="group">
-                                                <button id="btnGroupDrop1" type="button"
-                                                    style="background-color: transparent;
-                                                font-size: x-large;
-                                                padding: 0px 20px;"
-                                                    class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fa fa-cog" aria-hidden="true"></i>
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item btn-modal" style="margin: 2px;"
-                                                        title="@lang('messages.edit')"
-                                                        href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@edit', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@edit', $row->id) }}"
-                                                        data-container="#edit_car_model">
-
-                                                        <i class="fas fa-edit cursor-pointer"
-                                                            style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                                                        @lang('messages.edit') </a>
-
-                                                    <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
-                                                        href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@destroy', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@destroy', $row->id) }}"
-                                                        {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
-
-                                                        <i class="fa fa-trash cursor-pointer"
-                                                            style="padding: 2px;color:red;"></i>
-                                                        @lang('messages.delete')
-
-                                                    </a>
-                                                </div>
-                                            </div>
-
-
-
-
-                                        </td>
-
-
-
-
-                                    </tr>
-                                @endforeach
-
-                            </tbody>
                         </table>
-                        <center class="mt-5">
+                        {{-- <center class="mt-5">
                             {{ $Cars->links() }}
-                        </center>
+                        </center> --}}
                     </div>
 
 
@@ -202,10 +141,54 @@
 
             $('#carTypeSelect').select2();
             $('#car_type_id').select2();
+            $('#driver_select').select2();
             $('#carModel_id').select2();
             $('#worker_select').select2();
 
+            cars_table = $('#cars_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ route('cars') }}',
+                    data: function(d) {
+                        if ($('#carTypeSelect').val()) {
+                            d.carTypeSelect = $('#carTypeSelect').val();
+                            // console.log(d.project_name_filter);
+                        }
+                        if ($('#driver_select').val()) {
+                            d.driver_select = $('#driver_select').val();
+                            // console.log(d.project_name_filter);
+                        }
+                    }
+                },
+                columns: [
+                    // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+                    {
+                        "data": "driver"
+                    },
+                    {
+                        "data": "car_typeModel"
+                    },
+                    {
+                        "data": "plate_number"
+                    },
+                    {
+                        "data": "number_seats"
+                    },
+                    {
+                        "data": "color"
+                    },
+                    {
+                        data: 'action'
+                    }
+                ]
+            });
 
+
+            $('#carTypeSelect,#driver_select').on('change',
+                function() {
+                    cars_table.ajax.reload();
+                });
             $(document).on('change', '#car_type_id', function() {
                 if ($(this).val() !== '') {
                     $.ajax({
