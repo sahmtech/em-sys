@@ -400,6 +400,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id');
     }
+
+    public function essentials_employee_appointmets()
+    {
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+    }
     public function essentialsworkCard()
     {
         return $this->hasOne(EssentialsWorkCard::class, 'employee_id');
@@ -410,7 +415,8 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class, 'notifiable_id');
     }
 
-    public function Car(){
+    public function Car()
+    {
         return $this->belongsTo(Car::class);
     }
 }

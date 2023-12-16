@@ -65,7 +65,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cars-type-search', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'search'])->name('car-type-search');
         Route::put('/cars-type-update/{id}', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'update'])->name('car-type-update');
         Route::get('/cars-type-delete/{id}', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'destroy'])->name('cartype.delete');
-        Route::get('/cars-model', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index'])->name('cars-model');
+        // Route::get('/cars-model', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index'])->name('cars-model');
         // Route Car Models
         Route::get('/cars-model', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index'])->name('car-models');
         Route::get('/cars-model-create', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'create'])->name('car-model-create');

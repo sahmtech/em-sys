@@ -3,6 +3,7 @@
 namespace Modules\Essentials\Entities;
 
 use App\BusinessLocation;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class EssentialsEmployeeAppointmet extends Model
@@ -23,6 +24,11 @@ class EssentialsEmployeeAppointmet extends Model
     public function profession()
     {
         return $this->belongsTo(EssentialsProfession::class, 'profession_id');
+    }
+    
+    public function Specialization()
+    {
+        return $this->belongsTo(EssentialsSpecialization::class, 'specialization_id');
     }
     public function location()
     {
