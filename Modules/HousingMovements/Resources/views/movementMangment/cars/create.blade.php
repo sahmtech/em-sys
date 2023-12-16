@@ -30,7 +30,7 @@
                                     {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}">
-                                            {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name . ' - ' . $worker->essentials_employee_appointmets->Specialization->name }}
+                                            {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name . ' - ' . $worker->essentials_employee_appointmets->specialization->name }}
                                         </option>
                                     @endforeach
                                 </select>

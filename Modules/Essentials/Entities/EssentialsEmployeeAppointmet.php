@@ -26,7 +26,7 @@ class EssentialsEmployeeAppointmet extends Model
         return $this->belongsTo(EssentialsProfession::class, 'profession_id');
     }
     
-    public function Specialization()
+    public function specialization()
     {
         return $this->belongsTo(EssentialsSpecialization::class, 'specialization_id');
     }
