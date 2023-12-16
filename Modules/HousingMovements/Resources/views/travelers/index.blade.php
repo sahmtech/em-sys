@@ -286,25 +286,8 @@
 </script>
 
 
-<script>
-    $(document).ready(function () {
-        $('#htr_building_select').on('change', function () {
-            var buildingId = $(this).val();
-          
-            $.ajax({
-                url: '{{ route("getRoomNumbers", ["buildingId" => ":buildingId"]) }}'.replace(':buildingId', buildingId),
-                type: 'GET',
-                success: function (data) {
-                  
-                    $('#room_number').val(data.roomNumber);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching room numbers:', error);
-                }
-            });
-        });
-    });
-</script>
+
+
 
 
 

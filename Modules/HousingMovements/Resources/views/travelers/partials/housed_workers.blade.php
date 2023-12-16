@@ -103,7 +103,10 @@
 
 @endsection
 @section('javascript')
+
+
 <script type="text/javascript">
+    $('#project_name2').select2();
     var product_table2;
 
     function reloadDataTable() {
@@ -291,13 +294,12 @@
     var selectedRows = getCheckRecords();
 
     if (selectedRows.length > 0) {
-        // Open the bulk edit modal
+      
         $('#bulkEditModal').modal('show');
 
-        // Clear existing inputs in the modal body
         $('#bulk_edit_form').find('input[name="worker_id[]"]').remove();
 
-        // Loop through each selected row and add hidden input fields to the form
+        
         $.each(selectedRows, function (index, workerId) {
             var workerIdInput = $('<input>', {
                 type: 'hidden',
@@ -305,7 +307,7 @@
                 value: workerId
             });
 
-            // Append the input field to the bulk_edit_form
+            
             $('#bulk_edit_form').append(workerIdInput);
         });
     } else {
@@ -315,10 +317,10 @@
 });
 
 $('#bulk_edit_form').submit(function (e) {
-    // Prevent the default form submission
+   
     e.preventDefault();
 
-    // Serialize the form data including selected rows
+
     var formData = $(this).serializeArray();
    console.log(formData);
     $.ajax({
@@ -326,10 +328,10 @@ $('#bulk_edit_form').submit(function (e) {
         type: 'post',
         data: formData,
         success: function (response) {
-            // Handle the response if needed
+         
             console.log(response);
 
-            // Close the modal after successful submission
+        
             $('#bulkEditModal').modal('hide');
             reloadDataTable();
         }
@@ -363,18 +365,61 @@ $('#bulk_edit_form').submit(function (e) {
 
 <script>
     $(document).ready(function () {
+        console.log("test");
         $('#htr_building_select').on('change', function () {
+           
             var buildingId = $(this).val();
           
             $.ajax({
                 url: '{{ route("getRoomNumbers", ["buildingId" => ":buildingId"]) }}'.replace(':buildingId', buildingId),
                 type: 'GET',
+                dataType: 'json', 
                 success: function (data) {
+                   
+                    $('#room_number').empty();
+
                   
-                    $('#room_number').val(data.roomNumber);
+                    $.each(data.roomNumber, function (id, text) {
+                        $('#room_number').append($('<option>', {
+                            value: id,
+                            text: text
+                        }));
+                        console.log(data);
+                    });
                 },
                 error: function (xhr, status, error) {
-                    console.error('Error fetching room numbers:', error);
+                  
+                    console.log(data);
+                }
+            });
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#project_name2').on('change', function () {
+            var projectId = $(this).val();
+
+            $.ajax({
+                url: '{{ route("getShifts", ["projectId" => ":projectId"]) }}'.replace(':projectId', projectId),
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                
+                    $('#shift_name').empty();
+
+                
+                    $.each(data.shifts, function (id, text) {
+                        $('#shift_name').append($('<option>', {
+                            value: id,
+                            text: text
+                        }));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching shifts:', error);
                 }
             });
         });

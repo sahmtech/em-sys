@@ -92,8 +92,7 @@
                         </div>
                     <!-- /.box-body -->
                 </div>
-              
-                <div class="box box-primary">
+                <div class="box box-primary" id="attachments-box">
                     <div class="box-body box-profile">
                         <h3>@lang('followup::lang.attachments')</h3>
 
@@ -102,8 +101,13 @@
                                 @foreach($documents as $document)
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox"  checked name="document_types[]" value="{{ $document->type }}">
+                                        @if($document->file_path || $document->attachment)
+                                            <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                {{ trans('followup::lang.' . $document->type) }}
+                                            </a>
+                                        @else
                                             {{ trans('followup::lang.' . $document->type) }}
+                                        @endif
                                         </label>
                                     </div>
                                 @endforeach
@@ -113,8 +117,7 @@
                         @endif
                     </div>
                 </div>
-
-              
+                                                
             </div>
 
             
@@ -305,4 +308,19 @@
         $('input[type="checkbox"]').prop('disabled', true);
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        $('.file-link').on('click', function (e) {
+            e.preventDefault();
+            var fileUrl = '/uploads/' + $(this).data('file-url');
+            openFile(fileUrl);
+        });
+
+        function openFile(fileUrl) {
+            window.open(fileUrl, '_blank');
+        }
+    });
+</script>
+
 @endsection
