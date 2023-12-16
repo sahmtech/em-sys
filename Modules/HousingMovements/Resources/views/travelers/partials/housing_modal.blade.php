@@ -28,6 +28,17 @@
                                 'id'=>'room_number']) !!}
                     </div>
 
+                    <div class="form-group col-md-6">
+                        {!! Form::label('beds_count', __('housingmovements::lang.beds_count') . ':*') !!}
+                        {!! Form::text('beds_count', null, [
+                            'class' => 'form-control',
+                            'style' => 'width:100%',
+                            'placeholder' => __('housingmovements::lang.beds_count'),
+                          
+                            'id' => 'beds_count'
+                        ]) !!}
+                    </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
                         {!! Form::label('project_name2', __('followup::lang.project_name') . ':') !!}
@@ -55,7 +66,7 @@
                     </div>
                 </div>
             </div>
-
+            <div class="clearfix"></div>
             <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>

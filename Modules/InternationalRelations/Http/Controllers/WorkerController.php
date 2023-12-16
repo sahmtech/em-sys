@@ -803,6 +803,9 @@ class WorkerController extends Controller
         $visa_id = $request->visaId;
         return redirect()->route('viewVisaWorkers', ['id' => $visa_id])->withErrors([$output['msg']]);
     }
+
+
+    
     public function storeVisaForWorkers(Request $request)
     {
         try {

@@ -47,6 +47,7 @@ return [
     'add_shift' => 'إضافة فترة ',
     'edit_shift' => 'تعديل فترة',
      'contact_name'=>'اسم العميل',
+     'beds_count'=>'عدد الأسرة المتاحة',
     'number_seats' => 'عدد المقاعد',
     'car_typeModel' => 'توع وطراز السيارة',
     'driver' => 'السائق',

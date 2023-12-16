@@ -104,9 +104,15 @@
 @endsection
 @section('javascript')
 
+<script>
+    $(document).ready(function() {
+        console.log( $('#project_name2').select2(););
+        $('#project_name2').select2();
+    });
+</script>
 
 <script type="text/javascript">
-    $('#project_name2').select2();
+   
     var product_table2;
 
     function reloadDataTable() {
@@ -362,37 +368,54 @@ $('#bulk_edit_form').submit(function (e) {
 
 </script>
 
-
 <script>
     $(document).ready(function () {
-        console.log("test");
         $('#htr_building_select').on('change', function () {
-           
             var buildingId = $(this).val();
-          
+
             $.ajax({
                 url: '{{ route("getRoomNumbers", ["buildingId" => ":buildingId"]) }}'.replace(':buildingId', buildingId),
                 type: 'GET',
-                dataType: 'json', 
+                dataType: 'json',
                 success: function (data) {
-                   
                     $('#room_number').empty();
 
-                  
                     $.each(data.roomNumber, function (id, text) {
                         $('#room_number').append($('<option>', {
                             value: id,
                             text: text
                         }));
-                        console.log(data);
                     });
+
+                    // Trigger change event to update beds count for the initial room number
+                    $('#room_number').trigger('change');
                 },
                 error: function (xhr, status, error) {
-                  
-                    console.log(data);
+                    console.error(xhr.responseText);
                 }
             });
         });
+
+        $('#room_number').on('change', function () {
+    var roomId = $(this).val();
+
+    // Fetch beds_count for the selected room
+    $.ajax({
+        url: '{{ route("getBedsCount", ["roomId" => ":roomId"]) }}'.replace(':roomId', roomId),
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            // Access the bedsCount property correctly
+            var bedsCount = data.roomNumber[roomId]; // Assuming bedsCount is a property of the selected room
+
+            // Set the value of beds_count
+            $('#beds_count').val(bedsCount);
+        },
+        error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+    });
+});
     });
 </script>
 

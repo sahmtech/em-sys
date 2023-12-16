@@ -298,9 +298,8 @@ class TravelersController extends Controller
     public function housed_data(Request $request)
     {
         try {
-            $requestData = $request->only(['htr_building', 'room_number', 'worker_id','shift_name']);
+            $requestData = $request->only(['htr_building', 'room_number', 'worker_id', 'shift_name']);
     
-           
             $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
     
             $jsonData = [];
@@ -325,29 +324,44 @@ class TravelersController extends Controller
                 DB::beginTransaction();
     
                 foreach ($selectedData as $data) {
-                  
-                    User::where('proposal_worker_id', $data['worker_id'])
-                    ->update([
-                        'room_id' => $data['room_number'],
-                    ]);
-            
-                    $user = User::where('proposal_worker_id', $data['worker_id'])->first();
-            
-                      
-                    $worker = IrProposedLabor::find($data['worker_id']);
-                    $worker->update(['housed_status' => 1]);
-
-                    $user_shifts = DB::table('essentials_user_shifts')->insert([
-                        'user_id' => $user->id,
-                        'essentials_shift_id' => $data['shift_id'],
-                    ]);
-                  
+                    // Check if there are available beds in the room
+                    $room = DB::table('htr_rooms')
+                        ->where('id', $data['room_number'])
+                        ->where('beds_count', '>', 0)
+                        ->select('id', 'beds_count')
+                        ->first();
+    
+                    if ($room) {
+                        // Update the user's room
+                        User::where('proposal_worker_id', $data['worker_id'])
+                            ->update([
+                                'room_id' => $room->id,
+                            ]);
+    
+                        // Decrement bed_count
+                        DB::table('htr_rooms')
+                            ->where('id', $room->id)
+                            ->decrement('beds_count');
+    
+                        $worker = IrProposedLabor::find($data['worker_id']);
+                        $worker->update(['housed_status' => 1]);
+    
+                        $user = User::where('proposal_worker_id', $data['worker_id'])->first();
+                        $user_shifts = DB::table('essentials_user_shifts')->insert([
+                            'user_id' => $user->id,
+                            'essentials_shift_id' => $data['shift_id'],
+                        ]);
+                    } else {
+                        // If no available beds, roll back transaction and return message
+                        DB::rollBack();
+                        $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
+                        return response()->json($output);
+                    }
                 }
     
+                // If the loop completes, commit the transaction
                 DB::commit();
-    
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
@@ -357,8 +371,10 @@ class TravelersController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-        return response()->json($output);
+        return redirect()->back()->with(['status' => $output]);
     }
+    
+    
     
    
    
@@ -369,6 +385,13 @@ class TravelersController extends Controller
         return response()->json(['roomNumber' => $roomNumbers]);
     }
 
+    
+    public function getBedsCount($roomId)
+    {
+        $roomNumbers = DB::table('htr_rooms')->where('id', $roomId)->pluck('beds_count', 'id');
+       
+        return response()->json(['roomNumber' => $roomNumbers]);
+    }
     public function getShifts($projectId)
         {
             $shifts = DB::table('essentials_shifts')->where('project_id', $projectId)->pluck('name', 'id');
