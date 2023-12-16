@@ -42,6 +42,7 @@
                                 'id' => 'major_filter',
                                 'style' => 'width:100%',
                                 'placeholder' => __('lang_v1.all'),
+                                'id'=>'major_filter_select',
                             ]) !!}
 
                         </div>
