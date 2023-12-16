@@ -175,9 +175,9 @@ class ApiEssentialsController extends ApiController
                     'dsgn.name as designation',
                     'epgt.payroll_group_id',
                 ])->get();
-
-            if ($payrolls) {
-                $payrollId = $payrolls->id;
+                $res=[];
+           foreach ($payrolls as $payroll) {
+                $payrollId = $payroll->id;
                 $query = Transaction::where('business_id', $business_id)
                     ->with(['transaction_for', 'payment_lines']);
 
@@ -238,7 +238,7 @@ class ApiEssentialsController extends ApiController
                     $end_of_month->format('Y-m-d')
                 );
 
-                $res = [
+                $res[] = [
                     'payroll' => $payroll,
                     'month_name' => $month_name,
                     'allowances' => $allowances,
@@ -255,10 +255,9 @@ class ApiEssentialsController extends ApiController
                     'location' => $location,
                     'total_days_present' => $total_days_present
                 ];
-                return new CommonResource($res);
-            } else {
-                throw new \Exception("المرتب لم يجهز بعد");
-            }
+              
+            }  
+             return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
