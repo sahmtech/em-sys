@@ -154,14 +154,11 @@ class ApiEssentialsController extends ApiController
         try {
             $user = Auth::user();
             $business_id = $user->business_id;
-            $business = Business::where('id', $business_id)->first();
-            $year = request()->year;
-            $month = request()->month;
+
+           
 
             $payrolls = Transaction::where('transactions.business_id', $business_id)
                 ->where('type', 'payroll')->where('transactions.expense_for', $user->id)
-                ->whereYear('transaction_date', $year)
-                ->whereMonth('transaction_date', $month)
                 ->join('users as u', 'u.id', '=', 'transactions.expense_for')
                 ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
                 ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
@@ -177,7 +174,7 @@ class ApiEssentialsController extends ApiController
                     'dept.name as department',
                     'dsgn.name as designation',
                     'epgt.payroll_group_id',
-                ])->first();
+                ])->get();
 
             if ($payrolls) {
                 $payrollId = $payrolls->id;
