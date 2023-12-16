@@ -36,8 +36,8 @@ class CustomAdminSidebarMenu
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm', 'roles'])) {
             $this->essentialsMenu();
-        }elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
-                $this->assetManagementMenu();
+        } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
+            $this->assetManagementMenu();
         } elseif (Str::startsWith($currentPath, 'sale')) {
             $this->CUS_salesMenu();
         } elseif (Str::startsWith($currentPath, 'housingmovements')) {
@@ -484,7 +484,7 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
-            
+
             $menu->url(
                 action([\App\Http\Controllers\ContactLocationController::class, 'index']),
                 __('sales::lang.contact_locations'),
@@ -527,7 +527,15 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'contrascts_wishes']
             );
 
-          
+            $menu->url(
+                action([\Modules\FollowUp\Http\Controllers\ShiftController::class, 'index']),
+                __('housingmovements::lang.shifts'),
+                [
+                    'icon' => 'fa fas fa-meteor',
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'shifts'
+                ],
+
+            )->order(4);
         });
     }
     public function CUS_salesMenu()
@@ -656,15 +664,6 @@ class CustomAdminSidebarMenu
 
             )->order(3);
 
-            $menu->url(
-                action([\Modules\HousingMovements\Http\Controllers\ShiftController::class, 'index']),
-                __('housingmovements::lang.shifts'),
-                [
-                    'icon' => 'fa fas fa-plus-circle',
-                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'shifts'
-                ],
-
-            )->order(4);
 
 
             $menu->dropdown(

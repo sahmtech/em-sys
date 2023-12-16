@@ -14,7 +14,7 @@
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     {!! Form::open([
-                        'url' => action('\Modules\HousingMovements\Http\Controllers\ShiftController@search'),
+                        'url' => action('\Modules\FollowUp\Http\Controllers\ShiftController@search'),
                         'method' => 'post',
                         'id' => 'carType_search',
                     ]) !!}
@@ -46,15 +46,15 @@
                     {{-- @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-block btn-primary"
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@create') }}">
+                                href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@create') }}">
                                 <i class="fas fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot --}}
                     @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-primary pull-right m-5 btn-modal"
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@create') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@create') }}"
+                                href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@create') }}"
+                                data-href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@create') }}"
                                 data-container="#add_shits_model">
                                 <i class="fas fa-plus"></i> @lang('messages.add')</a>
                         </div>
@@ -142,8 +142,8 @@
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item btn-modal" style="margin: 2px;"
                                                         title="@lang('messages.edit')"
-                                                        href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@edit', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@edit', $row->id) }}"
+                                                        href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@edit', $row->id) }}"
+                                                        data-href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@edit', $row->id) }}"
                                                         data-container="#edit_shits_model">
 
                                                         <i class="fas fa-edit cursor-pointer"
@@ -151,8 +151,8 @@
                                                         @lang('messages.edit') </a>
 
                                                     <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
-                                                        href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@destroy', $row->id) }}"
-                                                        data-href="{{ action('Modules\HousingMovements\Http\Controllers\ShiftController@destroy', $row->id) }}"
+                                                        href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@destroy', $row->id) }}"
+                                                        data-href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@destroy', $row->id) }}"
                                                         {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
 
                                                         <i class="fa fa-trash cursor-pointer"
