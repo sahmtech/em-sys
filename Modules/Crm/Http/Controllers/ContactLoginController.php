@@ -345,7 +345,9 @@ class ContactLoginController extends Controller
             }
 
             $commissions = $query->select('t.transaction_date', 'u.username', 't.invoice_no', 'bl.name as location', 'commission_amount',
-                DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as full_name"), 'u.contact_no', 'c.name as contact_name', 'c.supplier_business_name');
+                DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+                ' - ',COALESCE(id_proof_number,'')) as
+         full_name"), 'u.contact_no', 'c.name as contact_name', 'c.supplier_business_name');
 
             return Datatables::of($commissions)
                 ->editColumn('commission_amount', function ($row) {
