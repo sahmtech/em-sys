@@ -147,15 +147,16 @@
                                         </span>
                                         {!! Form::select('nationality', $nationalities, null, [
                                             'id' => 'country',
-                                            'style' => 'height:40px',
-                                            'class' => 'form-control',
+                                            'multiple',
+                                            'style' => 'width: 230px; height: 40px;',
+                                            'class' => 'form-control select2',
                                             'placeholder' => __('internationalrelations::lang.nationality'),
                                             'required',
                                         ]) !!}
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="clearfix"></div>
                             <div class="col-md-4 ">
                                 <div class="form-group">
                                     {!! Form::label('Office_representative', __('internationalrelations::lang.Office_representative') . ':*') !!}

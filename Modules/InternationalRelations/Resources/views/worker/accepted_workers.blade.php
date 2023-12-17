@@ -103,8 +103,13 @@
                             <form id="uploadFilesForm">
 
                                 <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
-
-                                <div id="fileInputsContainer"></div>
+                                <br>
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file', __('internationalrelations::lang.add_price_offer_for_selected_workers') . ':') !!}
+                                    <br>
+                                    
+                                    {!! Form::file('file', ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                                </div>
 
 
 
@@ -135,9 +140,12 @@
                             <form id="uploadAcceptanceFilesForm">
 
                                 <input type="hidden" name="selectedRowsData" id="selectedRowsData2" />
-
-                                <div id="acceptanceFileInputsContainer"></div>
-
+                               
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file', __('internationalrelations::lang.add_acceptance_offer_for_selected_workers') . ':') !!}
+                                    <br>
+                                    {!! Form::file('file', ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                                </div>
 
 
                                 {{ csrf_field() }}
@@ -289,20 +297,7 @@
                 $('#fileInputsContainer').empty();
                 var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
 
-                selectedRows.forEach(function(row) {
-                    console.log('is_price_offer_sent:', row.is_price_offer_sent);
-                    if (row.is_price_offer_sent != 1) {
-                        var fileInputHtml = '<div class="form-group">' +
-                            '<label for="fileInput' +  row.id + '">' + selectFileLabel + ' ' +  row
-                            .full_name +
-                            '</label>' +
-                            '<input type="file" class="form-control file-input" name="files[' + row
-                            .id +
-                            '][]" id="fileInput' + row.id + '" multiple />' +
-                            '</div>';
-                        $('#fileInputsContainer').append(fileInputHtml);
-                    }
-                });
+               
 
                 $('#uploadFilesModal').modal('show');
             });
@@ -351,20 +346,7 @@
                 $('#acceptanceFileInputsContainer').empty();
                 var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
 
-                selectedRows.forEach(function(row) {
-                    console.log('is_accepted_by_worker:', row.is_accepted_by_worker);
-                    if (row.is_accepted_by_worker != 1) {
-                        var fileInputHtml = '<div class="form-group">' +
-                            '<label for="fileInput' + row.id + '">' + selectFileLabel + ' ' + row
-                            .full_name +
-                            '</label>' +
-                            '<input type="file" class="form-control file-input" name="files[' + row
-                            .id +
-                            '][]" id="fileInput' + row.id + '" multiple />' +
-                            '</div>';
-                        $('#acceptanceFileInputsContainer').append(fileInputHtml);
-                    }
-                });
+               
 
                 $('#uploadAcceptanceFilesModal').modal('show');
             });
