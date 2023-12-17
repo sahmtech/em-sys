@@ -72,44 +72,62 @@ class DriverCarController extends Controller
                 ->editColumn('plate_number', function ($row) {
                     return $row->Car->plate_number ?? '';
                 })
+                ->addColumn(
+                    'action',
+                    function ($row) {
 
-                ->addColumn('action', function ($row) {
-                    $html = '';
+                        $html = '';
 
-                    $html = '<div class="btn-group" role="group">
-                    <button id="btnGroupDrop1" type="button"
-                        style="background-color: transparent;
-                    font-size: x-large;
-                    padding: 0px 20px;"
-                        class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-cog" aria-hidden="true"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item btn-modal" style="margin: 2px;"
-                            title="تعديل"
-                            href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id])  . ' "
-                            data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
-                            data-container="#edit_driver_model">
+                        $html .= '
+                        <a href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . '"
+                        data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
+                         class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_driver_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
+                    ';
+                        $html .= '
+                    <button data-href="' .  action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                ';
 
-                            <i class="fas fa-edit cursor-pointer"
-                                style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                            تعديل </a>
 
-                        <a class="dropdown-item btn-modal" style="margin: 2px;" 
-                            href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '"
-                            data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '"
-                            {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
+                        return $html;
+                    }
+                )
+                // ->addColumn('action', function ($row) {
+                //     $html = '';
 
-                            <i class="fa fa-trash cursor-pointer"
-                                style="padding: 2px;color:red;"></i>
-                            حذف
+                //     $html = '<div class="btn-group" role="group">
+                //     <button id="btnGroupDrop1" type="button"
+                //         style="background-color: transparent;
+                //     font-size: x-large;
+                //     padding: 0px 20px;"
+                //         class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                //         aria-haspopup="true" aria-expanded="false">
+                //         <i class="fa fa-cog" aria-hidden="true"></i>
+                //     </button>
+                //     <div class="dropdown-menu">
+                // <a class="dropdown-item btn-modal" style="margin: 2px;"
+                //     title="تعديل"
+                //     href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id])  . ' "
+                //     data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
+                //     data-container="#edit_driver_model">
 
-                        </a>
-                    </div>
-                </div>';
-                    return $html;
-                })
+                //     <i class="fas fa-edit cursor-pointer"
+                //         style="padding: 2px;color:rgb(8, 158, 16);"></i>
+                //     تعديل </a>
+
+                //         <a class="dropdown-item btn-modal" style="margin: 2px;" 
+                //             href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '"
+                //             data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '"
+                //             {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
+
+                //             <i class="fa fa-trash cursor-pointer"
+                //                 style="padding: 2px;color:red;"></i>
+                //             حذف
+
+                //         </a>
+                //     </div>
+                // </div>';
+                //     return $html;
+                // })
                 ->filter(function ($query) use ($request) {
 
                     // if (!empty($request->input('full_name'))) {
@@ -272,12 +290,17 @@ class DriverCarController extends Controller
      */
     public function destroy($id)
     {
-
-        try {
-            DriverCar::find($id)->delete();
-            return redirect()->back();
-        } catch (Exception $e) {
-            return redirect()->back();
+        if (request()->ajax()) {
+            try {
+                DriverCar::find($id)->delete();
+                $output = [
+                    'success' => true,
+                    'msg' => 'تم حذف السائق بنجاح',
+                ];
+            } catch (Exception $e) {
+                return redirect()->back();
+            }
+            return $output;
         }
     }
 }

@@ -182,6 +182,50 @@
                     }
                 ]
             });
+            $(document).on('click', 'button.delete_user_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "DELETE",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            carDrivers_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $(document).on('click', 'button.edit_user_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
 
 
             $('#carTypeSelect,#driver_select').on('change',
