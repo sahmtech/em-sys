@@ -31,14 +31,14 @@
     background-color: #245b80;
     border-radius: 10px;
     transition: transform 0.3s;
-    display: flex;
+
     flex-direction: column;
     align-items: center;
     padding: 15px;
-    margin: 2%;
+  
     text-align: center;
     height: 30%;
-    width: 20%;
+    width: 100%;
     color: #fff;
 
 }

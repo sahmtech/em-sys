@@ -11,8 +11,8 @@ return [
     'supplier_business_name' => 'اسم الشركة',
     'date' => 'التاريخ',
     'value' => 'القيمة',
-    'lead'=>'العميل المحتمل',
-    'customer'=>'عميل',
+    'lead' => 'العميل المحتمل',
+    'customer' => 'عميل',
     'offer_type' => 'نوع العرض',
     'offer_status' => 'حالة العرض',
     'action' => 'العمليات',
@@ -223,13 +223,23 @@ return [
     'contact_location_phone_in_charge' => 'هاتف',
     'contact_location_email_in_charge' => 'بريد الكتروني',
     'create_contact_location' => 'إضافة مشروع لعميل',
-    'contact_locations_edit'=>'تعديل المشروع',
-    'sale_sources'=>'مصادر العملاء',
-    'source'=>'المصدر',
-    'add_source'=>'إضافة مصدر',
-    'edit_source'=>'تعديل المصدر',
-    'location_name'=>' الفرع',
-    'workers'=>'العمال',
-    'uploade_file_for'=>'إرفاق الملف لـ'
-   
+    'contact_locations_edit' => 'تعديل المشروع',
+    'sale_sources' => 'مصادر العملاء',
+    'source' => 'المصدر',
+    'add_source' => 'إضافة مصدر',
+    'edit_source' => 'تعديل المصدر',
+    'location_name' => ' الفرع',
+    'workers' => 'العمال',
+    'uploade_file_for' => 'إرفاق الملف لـ',
+    'workers_count' => 'عدد العمال',
+    'active_workers_count' => 'عدد العمال النشطة',
+    'inactive_workers_count' => 'عدد العمال الغير نشطة',
+    'under_study_price_offers' => 'عدد عروض الأسعار قيد الدراسة',
+    'remaning_quantity' => 'الكمية المتبقية',
+    'operation_available_contracts' => 'العقود المتاحة للتشغيل',
+    'offer_price_number' => 'رقم عرض السعر',
+
+
+
+
 ];
