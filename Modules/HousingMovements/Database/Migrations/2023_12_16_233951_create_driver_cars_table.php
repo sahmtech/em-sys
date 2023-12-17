@@ -21,11 +21,12 @@ return new class extends Migration
             $table->bigInteger('counter_number');
 
             $table->integer('user_id')->unsigned();
-            $table->unsignedBigInteger('car_id');
-
+           
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('car_id')->references('id')->on('cars');
+          
 
+            $table->unsignedBigInteger('car_id');
+            $table->foreign('car_id')->references('id')->on('housing_movements_cars');
 
             $table->timestamps();
         });
