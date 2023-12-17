@@ -154,7 +154,50 @@
                     }
                 ]
             });
+            $(document).on('click', 'button.delete_carModel_button', function() {
 
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "DELETE",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            carsModel_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $(document).on('click', 'button.edit_carModel_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
             $('#carTypeSelect,#name').on('change',
                 function() {
                     carsModel_table.ajax.reload();
