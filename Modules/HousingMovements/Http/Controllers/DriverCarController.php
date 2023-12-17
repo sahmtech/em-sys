@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
+use Modules\HousingMovements\Entities\CarModel;
+use Modules\HousingMovements\Entities\CarType;
 use Modules\HousingMovements\Entities\DriverCar;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -34,17 +36,18 @@ class DriverCarController extends Controller
         $carDrivers = DriverCar::all();
         if (request()->ajax()) {
 
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-            //     // $CarModel = CarType::find()->CarModel;
+            if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+                // $CarModel = CarType::find()->CarModel;
 
-            //     $carDrivers = $carDrivers->where('car_model_id', request()->input('carTypeSelect'));
-            //     // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
-            // }
+                $car_ids = Car::where('car_model_id', request()->input('carTypeSelect'))->get()->pluck('id');
+                $carDrivers = $carDrivers->whereIn('car_id', $car_ids);
+                // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
+            }
 
-            // if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
+            if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
 
-            //     $Cars = $Cars->where('user_id', request()->input('driver_select'));
-            // }
+                $carDrivers = $carDrivers->where('user_id', request()->input('driver_select'));
+            }
 
             return DataTables::of($carDrivers)
 
@@ -72,6 +75,7 @@ class DriverCarController extends Controller
 
                 ->addColumn('action', function ($row) {
                     $html = '';
+
                     $html = '<div class="btn-group" role="group">
                     <button id="btnGroupDrop1" type="button"
                         style="background-color: transparent;
@@ -84,8 +88,8 @@ class DriverCarController extends Controller
                     <div class="dropdown-menu">
                         <a class="dropdown-item btn-modal" style="margin: 2px;"
                             title="تعديل"
-                            href="' . route('cardrivers.edit', ['id' => $row->id]) . ' "
-                            data-href="' . route('cardrivers.edit', ['id' => $row->id]) . ' "
+                            href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id])  . ' "
+                            data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
                             data-container="#edit_driver_model">
 
                             <i class="fas fa-edit cursor-pointer"
@@ -93,8 +97,8 @@ class DriverCarController extends Controller
                             تعديل </a>
 
                         <a class="dropdown-item btn-modal" style="margin: 2px;" 
-                            href="' . route('cardrivers.delete', ['id' => $row->id]) . '"
-                            data-href="' . route('cardrivers.delete', ['id' => $row->id]) . '"
+                            href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '"
+                            data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '"
                             {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
 
                             <i class="fa fa-trash cursor-pointer"
@@ -116,7 +120,10 @@ class DriverCarController extends Controller
                 ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'counter_number', 'delivery_date'])
                 ->make(true);
         }
-        return view('housingmovements::movementMangment.driverCar.index');
+        $car_Drivers = DriverCar::all();
+
+        $carTypes = CarModel::all();
+        return view('housingmovements::movementMangment.driverCar.index', compact('car_Drivers', 'carTypes'));
     }
 
     /**
@@ -265,9 +272,10 @@ class DriverCarController extends Controller
      */
     public function destroy($id)
     {
+
         try {
             DriverCar::find($id)->delete();
-            return redirect()->back()->with(__('deleted_success'));
+            return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back();
         }
