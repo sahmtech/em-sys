@@ -13,12 +13,12 @@ class DriverCar extends Model
     public $table = 'housing_movements_driver_cars';
     protected $fillable = ['user_id', 'car_image', 'delivery_date', 'counter_number', 'car_id'];
 
-    public function Car()
+    public function car()
     {
         return $this->belongsTo(Car::class, 'car_id');
     }
 
-    public function User()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
