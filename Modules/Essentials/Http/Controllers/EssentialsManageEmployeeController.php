@@ -284,15 +284,7 @@ class EssentialsManageEmployeeController extends Controller
 
                     return $html;
                 })
-                ->addColumn('nationality', function ($row) {
-                    return $row->nationality;
-                })
-                ->addColumn('admissions_date', function ($row) {
-                    return $row->admissions_date;
-                })
-                ->addColumn('contract_end_date', function ($row) {
-                    return $row->contract_end_date;
-                })
+               
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
                 })
@@ -316,7 +308,7 @@ class EssentialsManageEmployeeController extends Controller
                     });
                 })
                 ->removecolumn('id')
-                ->rawColumns(['contract_end_date', 'admissions_date', 'nationality', 'action', 'profession', 'specialization', 'view'])
+                ->rawColumns(['action', 'profession', 'specialization', 'view'])
                 ->make(true);
         }
 
