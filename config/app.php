@@ -55,6 +55,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    
+    'GOOGLE_MAP_KEY' => 'AIzaSyDR0MGyuJhRhzPTe65zy-WymhBirnmVTd4',
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -79,8 +82,8 @@ return [
     |
     */
 
-   'locale' => env('APP_LOCALE', 'ar'),
-   
+    'locale' => env('APP_LOCALE', 'ar'),
+
 
     /*
     |--------------------------------------------------------------------------
@@ -193,7 +196,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        
+
 
         Collective\Html\HtmlServiceProvider::class,
         //Yajra\Datatables\DatatablesServiceProvider::class,
