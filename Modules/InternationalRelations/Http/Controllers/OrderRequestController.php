@@ -232,14 +232,12 @@ class OrderRequestController extends Controller
                         $filePath = $file->store('/delegations_validation_files');
                     }
 
-                    $delegation = DB::table('ir_delegations')
-                        ->where('transaction_sell_line_id', $item['product_id'])
+                    $delegation = IrDelegation::where('transaction_sell_line_id', $item['product_id'])
                         ->where('agency_id', $item['agency_name'])
                         ->first();
 
                     if ($delegation) {
-                        DB::table('ir_delegations')
-                            ->where('transaction_sell_line_id', $item['product_id'])
+                        IrDelegation::where('transaction_sell_line_id', $item['product_id'])
                             ->where('agency_id', $item['agency_name'])
                             ->update([
                                 'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
@@ -249,11 +247,11 @@ class OrderRequestController extends Controller
 
 
 
-                        DB::table('ir_delegations')->insert([
+                        IrDelegation::create([
                             'transaction_sell_line_id' => $item['product_id'],
                             'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
-                            'validationFile' => $filePath ?? null
+                            'validationFile' => $filePath ?? null,
                         ]);
                     }
                 }
