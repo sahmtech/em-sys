@@ -11,6 +11,7 @@ use App\Utils\ModuleUtil;
 use App\Contact;
 use App\Transaction;
 use App\User;
+use App\TransactionSellLine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -243,6 +244,12 @@ class OrderRequestController extends Controller
                                 'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
                                 'validationFile' => $filePath ?? null
                             ]);
+                            
+                        TransactionSellLine::where('id', $item['product_id'])->update([
+                            'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
+                       
+                        ]);
+
                     } else {
 
 
@@ -252,6 +259,11 @@ class OrderRequestController extends Controller
                             'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
                             'validationFile' => $filePath ?? null,
+                        ]);
+
+                        TransactionSellLine::where('id', $item['product_id'])->update([
+                                'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
+                           
                         ]);
                     }
                 }

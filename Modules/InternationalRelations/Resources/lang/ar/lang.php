@@ -99,7 +99,10 @@ return [
 'workers_under_trialPeriod'=>'العمال تحت الفترة التجريبية',
 'worker_visa'=>'تأشيرة العامل',
 'add_price_offer_for_selected_workers'=>'أضف عرض سعر للعمالة المحددة',
-'add_acceptance_offer_for_selected_workers'=>'إضافة قبول العرض للعمالة المحددة'
+'add_acceptance_offer_for_selected_workers'=>'إضافة قبول العرض للعمالة المحددة',
+'should_be_equal_to_or_less_than'=>'يجب أن تكون أصغر أو تساوي القيمة',
+'Target_quantity_for_line'=>'العدد المطلوب للعمال رقم',
+
 
 
 

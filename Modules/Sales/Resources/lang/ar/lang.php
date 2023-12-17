@@ -230,6 +230,7 @@ return [
     'edit_source'=>'تعديل المصدر',
     'location_name'=>' الفرع',
     'workers'=>'العمال',
-    'uploade_file_for'=>'إرفاق الملف لـ'
+    'uploade_file_for'=>'إرفاق الملف لـ',
+    'operation_remaining_quantity'=>'الكمية المتبقية للتفويض'
    
 ];
