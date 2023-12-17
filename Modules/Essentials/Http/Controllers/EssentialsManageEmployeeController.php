@@ -80,6 +80,7 @@ class EssentialsManageEmployeeController extends Controller
 
     public function index(Request $request)
     {
+
         $business_id = request()->session()->get('user.business_id');
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
@@ -121,8 +122,12 @@ class EssentialsManageEmployeeController extends Controller
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-        $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-            ->whereIn('user_type', ['employee', 'manager'])
+        $users = User::where(function ($query) use ($business_id) {
+            $query->where(function ($query2) use ($business_id) {
+                $query2->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
+            })->orWhere('user_type', 'worker');
+        })->where('users.is_cmmsn_agnt', 0)
+
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
@@ -147,31 +152,31 @@ class EssentialsManageEmployeeController extends Controller
                 'essentials_employee_appointmets.specialization_id as specialization_id'
             ])->orderby('id', 'desc');
 
-        $workers = User::where('users.is_cmmsn_agnt', 0)
-            ->whereIn('user_type', ['worker'])
-            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
-            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
-            ->select([
-                'users.id',
-                'users.emp_number',
-                'users.username',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
-                'users.id_proof_number',
-                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+        // $workers = User::where('users.is_cmmsn_agnt', 0)
+        //     ->whereIn('user_type', ['worker'])
+        //     ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
+        //     ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+        //     ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+        //     ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+        //     ->select([
+        //         'users.id',
+        //         'users.emp_number',
+        //         'users.username',
+        //         DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+        //         'users.id_proof_number',
+        //         DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
 
-                'essentials_admission_to_works.admissions_date as admissions_date',
-                'essentials_employees_contracts.contract_end_date as contract_end_date',
-                'users.email',
-                'users.allow_login',
-                'users.contact_number',
-                'users.essentials_department_id',
-                'users.status',
-                'essentials_employee_appointmets.profession_id as profession_id',
+        //         'essentials_admission_to_works.admissions_date as admissions_date',
+        //         'essentials_employees_contracts.contract_end_date as contract_end_date',
+        //         'users.email',
+        //         'users.allow_login',
+        //         'users.contact_number',
+        //         'users.essentials_department_id',
+        //         'users.status',
+        //         'essentials_employee_appointmets.profession_id as profession_id',
 
-                'essentials_employee_appointmets.specialization_id as specialization_id'
-            ])->orderby('id', 'desc');
+        //         'essentials_employee_appointmets.specialization_id as specialization_id'
+        //     ])->orderby('id', 'desc');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $userProjects = [];
         if (!$is_admin) {
@@ -184,10 +189,11 @@ class EssentialsManageEmployeeController extends Controller
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
             $userProjects = array_unique($userProjects);
-            $workers = $workers->whereIn('assigned_to', $userProjects);
+            $users = $users->whereIn('assigned_to', $userProjects)
+                ->orWhereNull('assigned_to');
         }
 
-        $users = $users->union($workers)->orderby('id', 'desc');
+        // $users = $users->union($workers)->orderby('id', 'desc');
 
 
         if (!empty($request->input('specialization'))) {
@@ -278,10 +284,17 @@ class EssentialsManageEmployeeController extends Controller
 
                     return $html;
                 })
-
-
+                ->addColumn('nationality', function ($row) {
+                    return $row->nationality;
+                })
+                ->addColumn('admissions_date', function ($row) {
+                    return $row->admissions_date;
+                })
+                ->addColumn('contract_end_date', function ($row) {
+                    return $row->contract_end_date;
+                })
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
                 })
 
                 ->filterColumn('nationality', function ($query, $keyword) {
@@ -303,7 +316,7 @@ class EssentialsManageEmployeeController extends Controller
                     });
                 })
                 ->removecolumn('id')
-                ->rawColumns(['action', 'profession', 'specialization', 'view'])
+                ->rawColumns(['contract_end_date', 'admissions_date', 'nationality', 'action', 'profession', 'specialization', 'view'])
                 ->make(true);
         }
 
