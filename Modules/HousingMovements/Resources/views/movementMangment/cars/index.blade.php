@@ -209,6 +209,26 @@
                 }
             })
 
+            $(document).on('change', '#car_type_id_select', function() {
+                if ($(this).val() !== '') {
+                    $.ajax({
+                        url: '/housingmovements/carModel-by-carType_id/' + $(this).val(),
+                        dataType: 'json',
+                        success: function(result) {
+                            console.log(result);
+                            $('#carModel_id')
+                            $('#carModel_id').empty();
+                            $.each(result, function(index, carModel) {
+                                $('#carModel_id').append('<option value="' + carModel
+                                    .id + '">' + carModel.name_ar + ' - ' + carModel
+                                    .name_en + '</option>');
+                            });
+
+                        },
+                    });
+                }
+            })
+
         });
     </script>
 @endsection
