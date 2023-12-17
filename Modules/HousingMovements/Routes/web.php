@@ -75,6 +75,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-model-update/{id}', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'update'])->name('car-model-update');
         Route::get('/cars-model-delete/{id}', [\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'destroy'])->name('carmodel.delete');
         // Routes Cars
+      
         Route::get('/cars', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'index'])->name('cars');
         Route::get('/cars-create', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'create'])->name('car-create');
         Route::get('/cars-edit/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'edit'])->name('car.edit');
@@ -83,5 +84,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-update/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'update'])->name('car-update');
         Route::get('/cars-delete/{id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'destroy'])->name('car.delete');
         Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\HousingMovements\Http\Controllers\CarController::class, 'getCarModelByCarType_id'])->name('getCarModelByCarType_id');
+    
+    
+
+        Route::get('/car-drivers', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index'])->name('cardrivers');
+        Route::get('/cardrivers-create', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'create'])->name('cardrivers-create');
+        Route::get('/cardrivers-edit/{id}', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'])->name('cardrivers.edit');
+        Route::post('/cardrivers-store', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'store'])->name('cardrivers-store');
+        Route::post('/cardrivers-search', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'search'])->name('cardrivers-search');
+        Route::put('/cardrivers-update/{id}', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'update'])->name('cardrivers-update');
+        Route::get('/cardrivers-delete/{id}', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'])->name('cardrivers.delete');
+        // Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'getCarModelByCarType_id'])->name('getCarModelByCarType_id');
+ 
     });
 });

@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('housingmovements::lang.cars'))
+@section('title', __('housingmovements::lang.car_drivers'))
 
 @section('content')
 
     <section class="content-header">
         <h1>
-            <span>@lang('housingmovements::lang.cars')</span>
+            <span>@lang('housingmovements::lang.car_drivers')</span>
         </h1>
     </section>
 
@@ -15,12 +15,12 @@
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     {!! Form::open([
-                        'url' => action('\Modules\HousingMovements\Http\Controllers\CarController@search'),
+                        'url' => action('\Modules\HousingMovements\Http\Controllers\DriverCarController@search'),
                         'method' => 'post',
                         'id' => 'carType_search',
                     ]) !!}
                     <div class="row">
-                        <div class="col-sm-4">
+                        {{-- <div class="col-sm-4">
                             {!! Form::label('carType_label', __('housingmovements::lang.carModel')) !!}
 
                             <select class="form-control" name="car_type_id" id='carTypeSelect' style="padding: 2px;">
@@ -31,7 +31,7 @@
                                 @endforeach
                             </select>
 
-                        </div>
+                        </div> --}}
 
                         <div class="col-sm-4" style="margin-top: 0px;">
                             {{-- {!! Form::label('driver', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
@@ -77,8 +77,8 @@
                             @lang('housingmovements::lang.search')</button>
                         @if ($after_serch)
                             <a class="btn btn-primary pull-right m-5 "
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@index') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@index') }}">
+                                href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@index') }}"
+                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@index') }}">
                                 @lang('housingmovements::lang.viewAll')</a>
                         @endif
                     </div> --}}
@@ -93,23 +93,24 @@
                     @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-primary pull-right m-5 btn-modal"
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@create') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarController@create') }}"
+                                href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@create') }}"
+                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@create') }}"
                                 data-container="#add_car_model">
                                 <i class="fas fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="cars_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="carDrivers_table" style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
-                                    {{-- <th>@lang('housingmovements::lang.driver')</th> --}}
-                                    <th style="text-align: center;">@lang('housingmovements::lang.car_typeModel')</th>
-                                    <th style="text-align: center;">@lang('housingmovements::lang.plate_number')</th>
-                                    <th style="text-align: center;">@lang('housingmovements::lang.number_seats')</th>
-                                    <th style="text-align: center;">@lang('housingmovements::lang.color')</th>
-                                    <th style="text-align: center;">@lang('messages.action')</th>
+
+                                    <th>@lang('housingmovements::lang.driver')</th>
+                                    <th>@lang('housingmovements::lang.car_typeModel')</th>
+                                    <th>@lang('housingmovements::lang.counter_number')</th>
+                                    <th>@lang('housingmovements::lang.delivery_date')</th>
+                                    <th>@lang('housingmovements::lang.plate_number')</th>
+                                    <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
 
@@ -121,7 +122,7 @@
 
 
                     <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog">
+                    <div class="modal fade" id="edit_driver_model" tabindex="-1" role="dialog">
                     </div>
                 @endcomponent
             </div>
@@ -140,16 +141,13 @@
 
 
             $('#carTypeSelect').select2();
-            $('#car_type_id').select2();
-            $('#driver_select').select2();
-            $('#carModel_id').select2();
-            $('#worker_select').select2();
 
-            cars_table = $('#cars_table').DataTable({
+
+            carDrivers_table = $('#carDrivers_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('cars') }}',
+                    url: '{{ route('cardrivers') }}',
                     data: function(d) {
                         if ($('#carTypeSelect').val()) {
                             d.carTypeSelect = $('#carTypeSelect').val();
@@ -163,20 +161,20 @@
                 },
                 columns: [
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
-                    // {
-                    //     "data": "driver"
-                    // },
+                    {
+                        "data": "driver"
+                    },
                     {
                         "data": "car_typeModel"
                     },
                     {
+                        "data": "counter_number"
+                    },
+                    {
+                        "data": "delivery_date"
+                    },
+                    {
                         "data": "plate_number"
-                    },
-                    {
-                        "data": "number_seats"
-                    },
-                    {
-                        "data": "color"
                     },
                     {
                         data: 'action'
@@ -189,46 +187,7 @@
                 function() {
                     cars_table.ajax.reload();
                 });
-            $(document).on('change', '#car_type_id', function() {
-                if ($(this).val() !== '') {
-                    $.ajax({
-                        url: '/housingmovements/carModel-by-carType_id/' + $(this).val(),
-                        dataType: 'json',
-                        success: function(result) {
-                            console.log(result);
-                            $('#carModel_id')
-                            $('#carModel_id').empty();
-                            $.each(result, function(index, carModel) {
-                                $('#carModel_id').append('<option value="' + carModel
-                                    .id + '">' + carModel.name_ar + ' - ' + carModel
-                                    .name_en + '</option>');
-                            });
-
-                        },
-                    });
-                }
-            })
-
-            $(document).on('change', '#car_type_id_select', function() {
-                if ($(this).val() !== '') {
-                    $.ajax({
-                        url: '/housingmovements/carModel-by-carType_id/' + $(this).val(),
-                        dataType: 'json',
-                        success: function(result) {
-                            console.log(result);
-                            $('#carModel_id')
-                            $('#carModel_id').empty();
-                            $.each(result, function(index, carModel) {
-                                $('#carModel_id').append('<option value="' + carModel
-                                    .id + '">' + carModel.name_ar + ' - ' + carModel
-                                    .name_en + '</option>');
-                            });
-
-                        },
-                    });
-                }
-            })
-
+          
         });
     </script>
 @endsection

@@ -709,6 +709,12 @@ class CustomAdminSidebarMenu
                         __('housingmovements::lang.cars'),
                         ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'cars']
                     )->order(9);
+
+                    $movement_management_SubMenu->url(
+                        action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index']),
+                        __('housingmovements::lang.car_drivers'),
+                        ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'car_driver']
+                    )->order(9);
                 },
                 ['icon' => 'fa fas fa-plus-circle',],
                 // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],

@@ -46,15 +46,27 @@ return [
     'shift_name' => 'اسم الفترة',
     'add_shift' => 'إضافة فترة ',
     'edit_shift' => 'تعديل فترة',
-     'contact_name'=>'اسم العميل',
-     'beds_count'=>'عدد الأسرة المتاحة',
+    'contact_name' => 'اسم العميل',
+    'beds_count' => 'عدد الأسرة المتاحة',
     'number_seats' => 'عدد المقاعد',
     'car_typeModel' => 'توع وطراز السيارة',
     'driver' => 'السائق',
     'add_car' => 'إضافة سيارة',
     'edit_car' => 'تعديل سيارة',
     'border_no' => 'رقم الحدود',
+    'car_drivers' => 'السائقين',
+    'counter_number' => 'رقم العداد',
+    'delivery_date' => 'تاريخ التسليم',
+    'car' => 'السيارة',
+    'car_image' => 'صورة السيارة',
+    'add_driver' => 'إضافة سائق',
+    'notFountAvilableCars' => 'لا توجد سيارات متاحة جميع السيارات مُسلمة',
+    'notFountAvilableWorkers' => 'لا يوجد سائقين متاحين ',
+    'edit_driver'=>'تعديل معلومات السائق',
 
+
+    
+    'worning'=>'تنبيه!!',
     'travelers' => 'وصول جديد',
     'worker_name' => 'اسم العامل',
     'passport_number' => 'رقم الجواز',
@@ -68,7 +80,7 @@ return [
     'arrived' => 'تم الوصول',
     'housed' => 'تسكين',
     'workers' => 'عمال المشاريع',
-    
+
 
 
 
