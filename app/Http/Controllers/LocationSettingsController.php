@@ -27,6 +27,9 @@ class LocationSettingsController extends Controller
         $this->receiptPrinterType = ['browser' => __('lang_v1.browser_based_printing'), 'printer' => __('lang_v1.configured_printer')];
     }
 
+
+    
+
     public function savePolygon(Request $request)
     {
         $location_id = $request->input('location_id');
