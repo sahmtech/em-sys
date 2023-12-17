@@ -196,6 +196,7 @@ class OrderRequestController extends Controller
     public function saveRequest(Request $request)
     {
 
+      
         try {
 
 
@@ -222,30 +223,32 @@ class OrderRequestController extends Controller
                 $order->Status = 'under_process';
                 $order->save();
             }
-
+         
             foreach ($data_array as $index => $item) {
                 if (isset($item['target_quantity'])) {
                     $filePath = null;
+                   
 
                     if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
 
                         $file = $request->file('attachments')[$index];
                         $filePath = $file->store('/delegations_validation_files');
                     }
+                    $sellLine=TransactionSellLine::where('service_id', $item['product_id'])->first();
 
-                    $delegation = IrDelegation::where('transaction_sell_line_id', $item['product_id'])
+                    $delegation = IrDelegation::where('transaction_sell_line_id', $sellLine->id)
                         ->where('agency_id', $item['agency_name'])
                         ->first();
 
                     if ($delegation) {
-                        IrDelegation::where('transaction_sell_line_id', $item['product_id'])
+                        IrDelegation::where('transaction_sell_line_id', $sellLine->id)
                             ->where('agency_id', $item['agency_name'])
                             ->update([
                                 'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
                                 'validationFile' => $filePath ?? null
                             ]);
                             
-                        TransactionSellLine::where('id', $item['product_id'])->update([
+                        TransactionSellLine::where('id', $sellLine->id)->update([
                             'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
                        
                         ]);
@@ -253,15 +256,14 @@ class OrderRequestController extends Controller
                     } else {
 
 
-
                         IrDelegation::create([
-                            'transaction_sell_line_id' => $item['product_id'],
+                            'transaction_sell_line_id' =>  $sellLine->id,
                             'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
                             'validationFile' => $filePath ?? null,
                         ]);
 
-                        TransactionSellLine::where('id', $item['product_id'])->update([
+                        TransactionSellLine::where('id', $sellLine->id)->update([
                                 'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
                            
                         ]);
