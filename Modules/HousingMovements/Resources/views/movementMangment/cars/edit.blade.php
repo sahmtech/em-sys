@@ -23,12 +23,11 @@
 
 
                         <div class="row">
-                            <div class="col-sm-6" style="margin-top: 0px;">
+                            {{-- <div class="col-sm-6" style="margin-top: 0px;">
                                 {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
 
                                 <select class="form-control select2" name="user_id" id="worker_select"
                                     style="padding: 2px;">
-                                    {{-- <option value="all" selected>@lang('lang_v1.all')</option> --}}
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}"
                                             @if ($car->user_id == $worker->id) selected @endif>
@@ -37,7 +36,7 @@
                                     @endforeach
                                 </select>
 
-                            </div>
+                            </div> --}}
 
                             <div class="col-sm-6">
                                 {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}<span style="color: red; font-size:10px"> *</span>
@@ -54,7 +53,7 @@
                                 </select>
 
                             </div>
-                            <div class="col-sm-6" style="margin-top: 5px;">
+                            <div class="col-sm-6" >
                                 <div class="form-group">
                                     {!! Form::label('carModel', __('housingmovements::lang.carModel') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     <select class="form-control" name="car_model_id" id="carModel_id" required

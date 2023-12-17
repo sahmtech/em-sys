@@ -3,6 +3,7 @@
 namespace Modules\HousingMovements\Http\Controllers;
 
 use App\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -23,13 +24,14 @@ class CarController extends Controller
      */
     public function index(Request $request)
     {
+
         $Cars = Car::all();
         $carTypes = CarModel::all();
-        $after_serch = false;
-        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-        $drivers = User::where('user_type', 'worker')
-            ->whereIn('id', $essentials_employee_appointmets_ids)->get();
+        // $after_serch = false;
+        // $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
+        // $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        // $drivers = User::where('user_type', 'worker')
+        //     ->whereIn('id', $essentials_employee_appointmets_ids)->get();
 
         if (request()->ajax()) {
 
@@ -40,18 +42,18 @@ class CarController extends Controller
                 // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
             }
 
-            if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
+            // if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
 
-                $Cars = $Cars->where('user_id', request()->input('driver_select'));
-            }
+            //     $Cars = $Cars->where('user_id', request()->input('driver_select'));
+            // }
 
             return DataTables::of($Cars)
 
 
 
-                ->editColumn('driver', function ($row) {
-                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name . ' - ' . $row->User->essentialsEmployeeAppointmets->specialization->name ?? '';
-                })
+                // ->editColumn('driver', function ($row) {
+                //     return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name . ' - ' . $row->User->essentialsEmployeeAppointmets->specialization->name ?? '';
+                // })
 
                 ->editColumn('car_typeModel', function ($row) {
                     return $row->CarModel->CarType->name_ar . ' - ' . $row->CarModel->name_ar ?? '';
@@ -111,10 +113,10 @@ class CarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'number_seats', 'color'])
+                ->rawColumns(['action','car_typeModel', 'plate_number', 'number_seats', 'color'])
                 ->make(true);
         }
-        return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'after_serch', 'drivers', 'Cars'));
+        return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'Cars'));
     }
 
     /**
@@ -123,15 +125,19 @@ class CarController extends Controller
      */
     public function create()
     {
+        // return $Cars = Car::selectRaw('DATE_FORMAT(created_at, "%Y-%m-%d") as date')
+        //     ->selectRaw('COUNT(*) as count')
+        //     ->groupBy(DB::raw('WEEK(created_at)'))
+        //     ->get();
 
 
         $carTypes = CarType::all();
-        $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-        $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-        $workers = User::where('user_type', 'worker')
-            ->whereIn('id', $essentials_employee_appointmets_ids)->get();
+        // $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
+        // $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+        // $workers = User::where('user_type', 'worker')
+        //     ->whereIn('id', $essentials_employee_appointmets_ids)->get();
 
-        return view('housingmovements::movementMangment.cars.create', compact('carTypes', 'workers'));
+        return view('housingmovements::movementMangment.cars.create', compact('carTypes'));
     }
 
     // 	
@@ -155,7 +161,7 @@ class CarController extends Controller
             Car::create([
                 'plate_number' => $request->input('plate_number'),
                 'color' => $request->input('color'),
-                'user_id' => $request->input('user_id'),
+                // 'user_id' => $request->input('user_id'),
                 'car_model_id' => $request->input('car_model_id'),
                 'number_seats' => $request->input('number_seats'),
 
@@ -195,13 +201,13 @@ class CarController extends Controller
             $carModel = CarModel::find($car->car_model_id);
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
-            $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
-            $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-            $workers = User::where('user_type', 'worker')
-                ->whereIn('id', $essentials_employee_appointmets_ids)->get();
+            // $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
+            // $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
+            // $workers = User::where('user_type', 'worker')
+            //     ->whereIn('id', $essentials_employee_appointmets_ids)->get();
         }
 
-        return view('housingmovements::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes', 'workers'));
+        return view('housingmovements::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes'));
     }
 
     /**
@@ -218,7 +224,7 @@ class CarController extends Controller
             $car->update([
                 'plate_number' => $request->input('plate_number'),
                 'color' => $request->input('color'),
-                'user_id' => $request->input('user_id'),
+                // 'user_id' => $request->input('user_id'),
                 'car_model_id' => $request->input('car_model_id'),
                 'number_seats' => $request->input('number_seats'),
             ]);
