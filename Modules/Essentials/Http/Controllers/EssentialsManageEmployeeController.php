@@ -185,7 +185,6 @@ class EssentialsManageEmployeeController extends Controller
             }
             $userProjects = array_unique($userProjects);
             $workers = $workers->whereIn('assigned_to', $userProjects);
-           
         }
 
         $users = $users->union($workers)->orderby('id', 'desc');
@@ -309,7 +308,9 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);;
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as
+ full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $countries = EssentialsCountry::forDropdown();
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -510,7 +511,7 @@ class EssentialsManageEmployeeController extends Controller
             $lastEmployee = User::orderBy('emp_number', 'desc')
                 ->first();
 
-         
+
             if ($lastEmployee) {
 
                 $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
@@ -621,39 +622,36 @@ class EssentialsManageEmployeeController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::with(['contactAccess','OfficialDocument','proposal_worker'])
-            ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))
+        $user = User::with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
+            ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))
             ->find($id);
         // dd( $user);
 
-      
-        
+
+
         $documents = null;
 
-        if($user)
-        {
+        if ($user) {
             if ($user->user_type == 'employee') {
-           
+
                 $documents = $user->OfficialDocument;
-            } 
-    
-            else if ($user->user_type == 'worker') {
-               
-              
+            } else if ($user->user_type == 'worker') {
+
+
                 if (!empty($user->proposal_worker_id)) {
-                  
-                  
+
+
                     $officialDocuments = $user->OfficialDocument;
                     $workerDocuments = $user->proposal_worker?->worker_documents;
-                   // dd($officialDocuments);
+                    // dd($officialDocuments);
                     $documents = $officialDocuments->merge($workerDocuments);
-                } 
-                else {
+                } else {
                     $documents = $user->OfficialDocument;
                 }
             }
         }
-      
+
 
         $dataArray = [];
         if (!empty($user->bank_details)) {
@@ -737,10 +735,10 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $user = User::with(['contactAccess' ,'assignedTo'])
+        $user = User::with(['contactAccess', 'assignedTo'])
             ->findOrFail($id);
 
-     
+
         //dd( $user->assigned_to);
         $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
@@ -796,7 +794,7 @@ class EssentialsManageEmployeeController extends Controller
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
         return view('essentials::employee_affairs.employee_affairs.edit')
-            ->with(compact('projects','resident_doc', 'roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
+            ->with(compact('projects', 'resident_doc', 'roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
     }
 
     /**
@@ -880,7 +878,7 @@ class EssentialsManageEmployeeController extends Controller
             }
 
             $user = User::findOrFail($id);
-          
+
 
             $user->update($user_data);
 

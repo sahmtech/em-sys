@@ -25,7 +25,7 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-           
+
             abort(403, 'Unauthorized action.');
         }
         // $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
@@ -88,7 +88,9 @@ class EssentialsOfficialDocumentController extends Controller
                 ->make(true);
         }
         $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as
+ full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));
@@ -120,16 +122,19 @@ class EssentialsOfficialDocumentController extends Controller
 
         try {
             $input = $request->only(
-                ['employees2',
-                 'doc_type',
-                'doc_number',
-                 'issue_date',
-                 'issue_place',
-                  'status',
-                 'expiration_date',
-                 'file']);
+                [
+                    'employees2',
+                    'doc_type',
+                    'doc_number',
+                    'issue_date',
+                    'issue_place',
+                    'status',
+                    'expiration_date',
+                    'file'
+                ]
+            );
 
-           
+
             $input2['type'] = $input['doc_type'];
             $input2['number'] = $input['doc_number'];
             $input2['issue_date'] = $input['issue_date'];
@@ -144,7 +149,7 @@ class EssentialsOfficialDocumentController extends Controller
                 $input2['file_path'] = $filePath;
             }
 
-          
+
             EssentialsOfficialDocument::create($input2);
 
 
@@ -161,8 +166,9 @@ class EssentialsOfficialDocumentController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         // return $output;
@@ -219,8 +225,9 @@ class EssentialsOfficialDocumentController extends Controller
             ])
             ->firstOrFail();
 
-        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
-        $all_users = $query->select(['id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name")])->get();
+        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $all_users = $query->select(['id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name")])->get();
         $users = $all_users->pluck('full_name', 'id');
         $var = $users[$doc->employee_id];
 
@@ -287,8 +294,9 @@ class EssentialsOfficialDocumentController extends Controller
             ];
         }
 
-        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
 
