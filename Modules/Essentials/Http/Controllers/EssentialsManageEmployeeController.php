@@ -309,8 +309,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);;
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as
- full_name"))->get();
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $countries = EssentialsCountry::forDropdown();
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');

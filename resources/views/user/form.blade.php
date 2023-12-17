@@ -115,8 +115,7 @@
 
     <div class="form-group col-md-3">
         {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-        <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control"
-            onchange="updateNationalityOptions(this)">
+        <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control">
             <option value="">@lang('user.select_proof_name')</option>
             <option value="national_id"
                 {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>
@@ -165,8 +164,8 @@
 
     <div class="form-group col-md-3">
         {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
-        {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
-            'class' => 'form-control select2',
+        {!! Form::select('nationality', [], null, [
+            'class' => 'form-control select2 nationality-option',
             'id' => 'nationalities_select',
             'style' => 'height:40px',
             'required',
@@ -391,7 +390,6 @@
 
 
 
-
     <script>
         function validateContactNumber(input) {
             let contactNumber = input.value.trim();
@@ -420,9 +418,6 @@
     <script>
         let validationLength = 10;
 
-
-
-
         function validateBankCode(input) {
             const bankCode = input.value;
 
@@ -441,58 +436,89 @@
                 }
             }
         }
+        $(document).ready(function() {
+
+
+            var nationalities = @json($nationalities);
+            var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
+
+
+            var nationalitySelect = $('#nationalities_select');
+
+
+            $.each(nationalities, function(id, name) {
+                nationalitySelect.append(new Option(name, id));
+            });
+
+
+            nationalitySelect.val(selectedNationalityId);
+
+
+            nationalitySelect.trigger('change');
 
 
 
+            $('#id_proof_name').change(function() {
+                var selectedOption = $(this).val();
+
+                const idProofNumberInput = document.getElementById('id_proof_number');
+                idProofNumberInput.minLength = validationLength;
+
+                const nationalitySelect = document.querySelector('#nationalities_select');
+                const input = document.getElementById('id_proof_number');
+                const prefix = selectedOption === 'eqama' ? '2' : '1';
+                input.setAttribute('data-prefix', prefix);
+                input.value = prefix;
 
 
-        function updateNationalityOptions(selectElement) {
-            const idProofNumberInput = document.getElementById('id_proof_number');
-            idProofNumberInput.minLength = validationLength;
-            var selectedOption = selectElement.value;
-            const nationalitySelect = document.querySelector('#nationality');
-            const options = nationalitySelect.querySelectorAll('option');
-
-            const input = document.getElementById('id_proof_number');
-            const prefix = selectElement.value === 'eqama' ? '2' : '1';
-            input.setAttribute('data-prefix', prefix);
-            input.value = prefix;
-
-            if (selectedOption === 'eqama') {
-
-                validationLength = 10;
-                idProofNumberInput.value = '2';
-                options.forEach(function(option) {
-                    option.style.display = 'block';
-                });
+                nationalitySelect.innerHTML = '';
 
 
-            } else if (selectedOption === 'national_id') {
-                validationLength = 10;
-                idProofNumberInput.value = '1';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = '{{ __('sales::lang.nationality') }}';
+                nationalitySelect.appendChild(defaultOption);
 
-                options.forEach(function(option) {
-                    if (option.value === '5') {
-                        option.style.display = 'block';
-                    } else {
-                        option.style.display = 'none';
+                if (selectedOption === 'eqama') {
+                    validationLength = 10;
+                    idProofNumberInput.value = '2';
+
+
+                    for (const [id, name] of Object.entries(nationalities)) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.text = name;
+                        nationalitySelect.appendChild(option);
                     }
-                });
-
-            } else {
-                validationLength = 10;
-                idProofNumberInput.value = '';
-                options.forEach(function(option) {
-                    option.style.display = 'block';
-                });
-            }
+                } else if (selectedOption === 'national_id') {
+                    validationLength = 10;
+                    idProofNumberInput.value = '1';
 
 
+                    for (const [id, name] of Object.entries(nationalities)) {
+                        if (id === '5') {
+                            const option = document.createElement('option');
+                            option.value = id;
+                            option.text = name;
+                            nationalitySelect.appendChild(option);
+                        }
+                    }
+                } else {
+                    validationLength = 10;
+                    idProofNumberInput.value = '';
 
 
+                    for (const [id, name] of Object.entries(nationalities)) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.text = name;
+                        nationalitySelect.appendChild(option);
+                    }
+                }
+            });
 
 
-        }
+        });
     </script>
 
 
