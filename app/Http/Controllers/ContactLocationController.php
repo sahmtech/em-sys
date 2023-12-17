@@ -115,11 +115,13 @@ class ContactLocationController extends Controller
                 ->make(true);
         }
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as 
+ full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();
         $contacts = SalesProject::pluck('name', 'id');
-        return view('sales::contact_locations.index')->with(compact('cities','contacts', 'name_in_charge_choices', 'cities'));
+        return view('sales::contact_locations.index')->with(compact('cities', 'contacts', 'name_in_charge_choices', 'cities'));
     }
 
     /**
@@ -197,9 +199,11 @@ class ContactLocationController extends Controller
         $cities = EssentialsCity::forDropdown();
         $contacts = SalesProject::pluck('name', 'id');
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as 
+ full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-        return view('sales::contact_locations.edit')->with(compact('cities','name_in_charge_choices','contacts','contactLocation'));
+        return view('sales::contact_locations.edit')->with(compact('cities', 'name_in_charge_choices', 'contacts', 'contactLocation'));
     }
 
     /**

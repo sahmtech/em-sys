@@ -159,7 +159,9 @@ class AgentController extends Controller
         $SalesProjects = SalesProject::where('contact_id', $contact_id);
         $cities = EssentialsCity::forDropdown();
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as 
+ full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         if (request()->ajax()) {
 
