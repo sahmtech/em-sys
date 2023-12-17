@@ -12,7 +12,7 @@ class Car extends Model
     public $table='housing_movements_cars';
 
     protected $fillable = [
-        'plate_number', 'color','user_id', 'car_model_id','number_seats'
+        'plate_number', 'color', 'car_model_id','number_seats'
     ];
      public function CarModel()
     {
