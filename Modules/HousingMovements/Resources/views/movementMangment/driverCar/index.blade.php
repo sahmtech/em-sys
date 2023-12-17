@@ -20,7 +20,7 @@
                         'id' => 'carType_search',
                     ]) !!}
                     <div class="row">
-                        {{-- <div class="col-sm-4">
+                        <div class="col-sm-4">
                             {!! Form::label('carType_label', __('housingmovements::lang.carModel')) !!}
 
                             <select class="form-control" name="car_type_id" id='carTypeSelect' style="padding: 2px;">
@@ -31,19 +31,19 @@
                                 @endforeach
                             </select>
 
-                        </div> --}}
+                        </div>
 
                         <div class="col-sm-4" style="margin-top: 0px;">
-                            {{-- {!! Form::label('driver', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
+                            {!! Form::label('driver', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
 
                             <select class="form-control " name="driver" id="driver_select" style="padding: 2px;">
                                 <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($drivers as $driver)
-                                    <option value="{{ $driver->id }}">
-                                        {{ $driver->id_proof_number . ' - ' . $driver->first_name . ' ' . $driver->last_name }}
+                                @foreach ($car_Drivers as $driver)
+                                    <option value="{{ $driver->user_id }}">
+                                        {{ $driver->user->id_proof_number . ' - ' . $driver->user->first_name . ' ' . $driver->user->last_name }}
                                     </option>
                                 @endforeach
-                            </select> --}}
+                            </select>
                             {{-- <input type="text" id="searchWorkerInput" placeholder="Search Worker"
                                 style="margin-top: 5px;"> --}}
                         </div>
@@ -141,6 +141,7 @@
 
 
             $('#carTypeSelect').select2();
+            $('#driver_select').select2();
 
 
             carDrivers_table = $('#carDrivers_table').DataTable({
@@ -181,13 +182,57 @@
                     }
                 ]
             });
+            $(document).on('click', 'button.delete_user_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "DELETE",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            carDrivers_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $(document).on('click', 'button.edit_user_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
 
 
             $('#carTypeSelect,#driver_select').on('change',
                 function() {
-                    cars_table.ajax.reload();
+                    carDrivers_table.ajax.reload();
                 });
-          
+
         });
     </script>
 @endsection

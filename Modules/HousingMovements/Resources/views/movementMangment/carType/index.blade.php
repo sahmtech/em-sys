@@ -75,7 +75,7 @@
                                     <th style="text-align: center;">@lang('messages.action')</th>
                                 </tr>
                             </thead>
-                         
+
                         </table>
                         {{-- <center class="mt-5">
                             {{ $carTypes->links() }}
@@ -125,7 +125,50 @@
                     }
                 ]
             });
+            $(document).on('click', 'button.delete_carType_button', function() {
 
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "DELETE",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            carTypes_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $(document).on('click', 'button.edit_carType_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
             $('#name').on('change',
                 function() {
                     carTypes_table.ajax.reload();
