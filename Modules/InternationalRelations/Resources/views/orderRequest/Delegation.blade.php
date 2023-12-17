@@ -256,7 +256,7 @@
                     var quantity = parts[1];
 
                     if (quantityMap[key] > quantity) {
-                        alert('{{ __("internationalrelations::lang.Target_quantity_for_line")}}'+' ' + serviceId + '{{ __("internationalrelations::lang.should_be_equal_to_or_less_than")}}' +' '+
+                        alert('{{ __("internationalrelations::lang.Target_quantity_should_be_equal_to_or_less_than")}}' +' '+
                             quantity);
               
                         return false;

@@ -100,8 +100,7 @@ return [
 'worker_visa'=>'تأشيرة العامل',
 'add_price_offer_for_selected_workers'=>'أضف عرض سعر للعمالة المحددة',
 'add_acceptance_offer_for_selected_workers'=>'إضافة قبول العرض للعمالة المحددة',
-'should_be_equal_to_or_less_than'=>'يجب أن تكون أصغر أو تساوي القيمة',
-'Target_quantity_for_line'=>'العدد المطلوب للعمال رقم',
+'Target_quantity_should_be_equal_to_or_less_than'=>' العدد المطلوب يجب أن يكون أصغر أو يساوي القيمة',
 
 
 
