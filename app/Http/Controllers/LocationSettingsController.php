@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BusinessLocation;
+use App\BusinessLocationPolygonMarker;
 use App\InvoiceLayout;
 use App\InvoiceScheme;
 use App\Printer;
@@ -26,6 +27,40 @@ class LocationSettingsController extends Controller
         $this->receiptPrinterType = ['browser' => __('lang_v1.browser_based_printing'), 'printer' => __('lang_v1.configured_printer')];
     }
 
+    public function savePolygon(Request $request)
+    {
+        $location_id = $request->input('location_id');
+        $markersJson = $request->input('markers');
+
+
+        BusinessLocationPolygonMarker::where('business_location_id', $location_id)->delete();
+
+
+        $markers = json_decode($markersJson, true);
+        if ($markers !== null) {
+            foreach ($markers as $marker) {
+                $lat = $marker['lat'];
+                $lng = $marker['lng'];
+                BusinessLocationPolygonMarker::create([
+                    'business_location_id' => $location_id,
+                    'lat' => $lat,
+                    'lng' => $lng,
+                ]);
+            }
+        }
+
+        return redirect()->action([\App\Http\Controllers\BusinessLocationController::class, 'index']);
+    }
+
+    public function map($location_id)
+    {
+
+        $existingMarkers = BusinessLocationPolygonMarker::where('business_location_id', $location_id)->get();
+        $existingMarkersJson = json_encode($existingMarkers);
+
+        return view('business_location.map')->with(compact('location_id', 'existingMarkersJson'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -34,8 +69,9 @@ class LocationSettingsController extends Controller
     public function index($location_id)
     {
         //Check for locations access permission
-        if (! auth()->user()->can('business_settings.access') ||
-            ! auth()->user()->can_access_this_location($location_id)
+        if (
+            !auth()->user()->can('business_settings.access') ||
+            !auth()->user()->can_access_this_location($location_id)
         ) {
             abort(403, 'Unauthorized action.');
         }
@@ -43,7 +79,7 @@ class LocationSettingsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $location = BusinessLocation::where('business_id', $business_id)
-                        ->findorfail($location_id);
+            ->findorfail($location_id);
 
         $printers = Printer::forDropdown($business_id);
 
@@ -51,11 +87,11 @@ class LocationSettingsController extends Controller
         $receiptPrinterType = $this->receiptPrinterType;
 
         $invoice_layouts = InvoiceLayout::where('business_id', $business_id)
-                            ->get()
-                            ->pluck('name', 'id');
+            ->get()
+            ->pluck('name', 'id');
         $invoice_schemes = InvoiceScheme::where('business_id', $business_id)
-                            ->get()
-                            ->pluck('name', 'id');
+            ->get()
+            ->pluck('name', 'id');
 
         return view('location_settings.index')
             ->with(compact('location', 'printReceiptOnInvoice', 'receiptPrinterType', 'printers', 'invoice_layouts', 'invoice_schemes'));
@@ -71,8 +107,9 @@ class LocationSettingsController extends Controller
     {
         try {
             //Check for locations access permission
-            if (! auth()->user()->can('business_settings.access') ||
-                ! auth()->user()->can_access_this_location($location_id)
+            if (
+                !auth()->user()->can('business_settings.access') ||
+                !auth()->user()->can_access_this_location($location_id)
             ) {
                 abort(403, 'Unauthorized action.');
             }
@@ -87,16 +124,18 @@ class LocationSettingsController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $location = BusinessLocation::where('business_id', $business_id)
-                            ->findorfail($location_id);
+                ->findorfail($location_id);
 
             $location->fill($input);
             $location->update();
 
-            $output = ['success' => 1,
+            $output = [
+                'success' => 1,
                 'msg' => __('receipt.receipt_settings_updated'),
             ];
         } catch (\Exception $e) {
-            $output = ['success' => 0,
+            $output = [
+                'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
