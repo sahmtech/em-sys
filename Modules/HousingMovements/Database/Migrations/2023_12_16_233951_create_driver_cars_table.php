@@ -20,10 +20,10 @@ return new class extends Migration
             $table->date('delivery_date');
             $table->bigInteger('counter_number');
 
-            $table->unsignedBigInteger('user_id');
+            $table->integer('user_id')->unsigned();
             $table->unsignedBigInteger('car_id');
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('car_id')->references('id')->on('cars');
 
 
