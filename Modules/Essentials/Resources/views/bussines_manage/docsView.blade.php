@@ -51,7 +51,7 @@
         @endcan
     @endcomponent
 
-    <div class="modal fade business_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+<div class="modal fade business_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
     <div class="modal fade" id="addBusinessDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         <div class="modal-dialog" role="document">
@@ -79,6 +79,7 @@
 
                                 'memorandum_of_association'=> __('essentials::lang.memorandum_of_association'),
                                 'national_address'=> __('essentials::lang.national_address'),
+                                'activity'=> __('essentials::lang.activity'),
 
                             ], null, ['class' => 'form-control','style'=>'height:40px',
                              'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
@@ -172,6 +173,15 @@
                                 }
                                 else if (data === 'VAT'){
                                     return  '@lang('essentials::lang.VAT')';
+                                }
+                                else if (data === 'memorandum_of_association'){
+                                    return  '@lang('essentials::lang.memorandum_of_association')';
+                                }
+                                else if (data === 'national_address'){
+                                    return  '@lang('essentials::lang.national_address')';
+                                }
+                                else if (data === 'activity'){
+                                    return  '@lang('essentials::lang.activity')';
                                 }
                                 else {
                                     return  data;
