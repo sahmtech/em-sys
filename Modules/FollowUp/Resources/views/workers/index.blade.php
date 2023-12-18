@@ -314,7 +314,7 @@
 
                 ajax: {
 
-                    url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']) }}",
+                    url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
                     // url: "{{ route('projectWorkers') }}",
 
                     data: function(d) {

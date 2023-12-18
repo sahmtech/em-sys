@@ -45,6 +45,8 @@ class FollowUpWorkerController extends Controller
     }
     public function index()
     {
+       
+
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
@@ -68,29 +70,11 @@ class FollowUpWorkerController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-
         $users = User::where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-
-
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                $userProjects = array_merge($userProjects, $userProjectsForRole);
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('assigned_to', $userProjects);
-        }
-
         $users->select(
-            'id',
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',
@@ -174,15 +158,7 @@ class FollowUpWorkerController extends Controller
                     $bank_details = json_decode($user->bank_details);
                     return $bank_details->bank_code ?? ' ';
                 })
-                ->addColumn('worker', function ($user) {
-                    $html = '<a href="' . route('projectView', ['id' => $user->id]) . '">' . optional($user->worker)->name . '</a>';
-                    return $html;
-                })
-
-               
-             
-                ->rawColumns(['nationality','worker',
-                 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
