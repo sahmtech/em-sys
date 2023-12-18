@@ -44,44 +44,10 @@
                                     </option>
                                 @endforeach
                             </select>
-                            {{-- <input type="text" id="searchWorkerInput" placeholder="Search Worker"
-                                style="margin-top: 5px;"> --}}
+                         
                         </div>
                     </div>
-                    {{-- <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group ">
-                                {!! Form::label('search_lable', __('housingmovements::lang.driverName') . '  ') !!}
-                                {!! Form::text('search', '', [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.driverName'),
-                                    'id' => 'search',
-                                ]) !!}
-
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group ">
-                                {!! Form::label('search_lable', __('housingmovements::lang.plate_number') . '  ') !!}
-                                {!! Form::text('search_plate_number', '', [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.plate_number'),
-                                    'id' => 'search_plate_number',
-                                ]) !!}
-
-                            </div>
-                        </div>
-                    </div> --}}
-                    {{-- <div class="col-md-12">
-                        <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            @lang('housingmovements::lang.search')</button>
-                        @if ($after_serch)
-                            <a class="btn btn-primary pull-right m-5 "
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@index') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@index') }}">
-                                @lang('housingmovements::lang.viewAll')</a>
-                        @endif
-                    </div> --}}
+             
                     {!! Form::close() !!}
                 @endcomponent
             </div>

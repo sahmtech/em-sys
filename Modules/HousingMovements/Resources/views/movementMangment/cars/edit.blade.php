@@ -23,21 +23,6 @@
 
 
                         <div class="row">
-                            {{-- <div class="col-sm-6" style="margin-top: 0px;">
-                                {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
-
-                                <select class="form-control select2" name="user_id" id="worker_select"
-                                    style="padding: 2px;">
-                                    @foreach ($workers as $worker)
-                                        <option value="{{ $worker->id }}"
-                                            @if ($car->user_id == $worker->id) selected @endif>
-                                            {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name . ' - ' . $worker->essentialsEmployeeAppointmets->specialization->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                            </div> --}}
-
                             <div class="col-sm-6">
                                 {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}<span style="color: red; font-size:10px"> *</span>
 
@@ -53,7 +38,7 @@
                                 </select>
 
                             </div>
-                            <div class="col-sm-6" >
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('carModel', __('housingmovements::lang.carModel') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     <select class="form-control" name="car_model_id" id="carModel_id" required
@@ -69,7 +54,8 @@
 
                                 </div>
                             </div>
-
+                        </div>
+                        <div class="row">
                             <div class="col-sm-6" style="margin-top: 5px;">
                                 <div class="form-group">
                                     {!! Form::label('plate_number', __('housingmovements::lang.plate_number') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
@@ -81,8 +67,130 @@
                                     ]) !!}
                                 </div>
                             </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('plate_registration_type', __('housingmovements::lang.plate_registration_type') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+
+                                    <select class="form-control" id="plate_registration_type"
+                                        name="plate_registration_type" style="padding: 2px;" required>
+                                        <option value="">@lang('messages.please_select')</option>
+
+                                        <option value="private_transfer"
+                                            @if ($car->plate_registration_type == 'private_transfer') selected @endif>
+                                            {{ __('housingmovements::lang.private_transfer') }}</option>
+                                        <option value="private" @if ($car->plate_registration_type == 'private') selected @endif>
+                                            {{ __('housingmovements::lang.private') }}</option>
+                                        <option value="motorcycle" @if ($car->plate_registration_type == 'motorcycle') selected @endif>
+                                            {{ __('housingmovements::lang.motorcycle') }}
+                                        </option>
 
 
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('serial_number', __('housingmovements::lang.serial_number') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::number('serial_number', $car->serial_number, [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'placeholder' => __('housingmovements::lang.serial_number'),
+                                        'id' => 'serial_number',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('structure_no', __('housingmovements::lang.structure_no') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::text('structure_no', $car->structure_no, [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'placeholder' => __('housingmovements::lang.structure_no'),
+                                        'id' => 'structure_no',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('manufacturing_year', __('housingmovements::lang.manufacturing_year') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+
+                                    <select class="form-control" name="manufacturing_year" id="manufacturing_year">
+                                        @php
+                                            $currentYear = date('Y');
+                                            $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $car->manufacturing_year);
+                                            $year_stored = $carbonDate->year;
+                                            for ($year = $currentYear; $year >= 1900; $year--) {
+                                                if ($year_stored == $year) {
+                                                    echo '<option value="' . $year . '" selected>' . $year . '</option>';
+                                                } else {
+                                                    echo '<option value="' . $year . '">' . $year . '</option>';
+                                                }
+                                            }
+                                        @endphp
+
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('vehicle_status', __('housingmovements::lang.vehicle_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::text('vehicle_status', $car->vehicle_status, [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'placeholder' => __('housingmovements::lang.vehicle_status'),
+                                        'id' => 'vehicle_status',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('test_end_date', __('housingmovements::lang.test_end_date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::date('test_end_date', $car->test_end_date, [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'placeholder' => __('housingmovements::lang.test_end_date'),
+                                        'id' => 'test_end_date',
+                                    ]) !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('examination_status', __('housingmovements::lang.examination_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    <select class="form-control" id="examination_status" name="examination_status"
+                                        style="padding: 2px;" required>
+                                        <option value="">@lang('messages.please_select')</option>
+                                        <option value="not_expired" @if ($car->examination_status == 'not_expired') selected @endif>
+                                            {{ __('housingmovements::lang.not_expired') }}
+                                        </option>
+                                        <option value="expired" @if ($car->examination_status == 'expired') selected @endif>
+                                            {{ __('housingmovements::lang.expired') }}</option>
+                                        <option value="nothing" @if ($car->examination_status == 'nothing') selected @endif>
+                                            {{ __('housingmovements::lang.nothing') }}</option>
+
+
+                                    </select>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('color', __('housingmovements::lang.color') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
@@ -105,9 +213,31 @@
                                     ]) !!}
                                 </div>
                             </div>
+                        </div>
 
 
 
+                        <div class="row">
+
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('insurance_status', __('housingmovements::lang.insurance_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+
+                                    <select class="form-control" id="insurance_status" name="insurance_status"
+                                        style="padding: 2px;" required>
+                                        <option value="">@lang('messages.please_select')</option>
+                                        <option value="not_expired" @if ($car->insurance_status == 'not_expired') selected @endif>
+                                            {{ __('housingmovements::lang.not_expired') }}
+                                        </option>
+                                        <option value="expired" @if ($car->insurance_status == 'expired') selected @endif>
+                                            {{ __('housingmovements::lang.expired') }}</option>
+
+
+                                    </select>
+
+                                </div>
+                            </div>
 
 
 
@@ -158,11 +288,11 @@
                 width: '100%',
             });
 
-            //     $('#carModel_id').select2({
-            //         dropdownParent: $(
-            //             '#add_car_model'),
-            //         width: '100%',
-            //     });
+            $('#manufacturing_year').select2({
+                dropdownParent: $(
+                    '#edit_car_model'),
+                width: '100%',
+            });
         });
 
     });

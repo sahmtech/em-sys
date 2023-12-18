@@ -11,51 +11,12 @@
 
     <!-- Main content -->
     <section class="content">
-        <div class="row">
-            {{-- <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    {!! Form::open([
-                        'url' => action('\Modules\HousingMovements\Http\Controllers\CarTypeController@search'),
-                        'method' => 'post',
-                        'id' => 'carType_search',
-                    ]) !!}
-                    <div class="col-sm-4">
-                        <div class="form-group row">
-                            {!! Form::label('search_lable', __('housingmovements::lang.search') . '  ') !!}
-                            {!! Form::text('search', '', [
-                                'class' => 'form-control',
-                                'required',
-                                'placeholder' => __('housingmovements::lang.name_in_ar_en'),
-                                'id' => 'search',
-                            ]) !!}
-
-                        </div>
-                    </div>
-                    <div class="col-sm-8" style="padding-right: 3px;">
-                        <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            @lang('housingmovements::lang.search')</button>
-                        @if ($after_serch)
-                            <a class="btn btn-primary pull-right m-5 "
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@index') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@index') }}">
-                                @lang('housingmovements::lang.viewAll')</a>
-                        @endif
-                    </div>
-                    {!! Form::close() !!}
-                @endcomponent
-            </div> --}}
-        </div>
+        
 
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary'])
-                    {{-- @slot('tool')
-                        <div class="box-tools">
-                            <a class="btn btn-block btn-primary"
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\CarTypeController@create') }}">
-                                <i class="fas fa-plus"></i> @lang('messages.add')</a>
-                        </div>
-                    @endslot --}}
+                  
                     @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-primary pull-right m-5 btn-modal"

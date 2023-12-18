@@ -24,16 +24,12 @@ class CarModelController extends Controller
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-                // $CarModel = CarType::find()->CarModel;
-
+              
                 $carModles = $carModles->where('car_type_id', request()->input('carTypeSelect'));
-                // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
+            
             }
 
-            // if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
-
-            //     $carModles = $carModles->where('user_id', request()->input('driver_select'));
-            // }
+          
 
             return DataTables::of($carModles)
 
@@ -68,42 +64,7 @@ class CarModelController extends Controller
                         return $html;
                     }
                 )
-                // ->addColumn('action', function ($row) {
-                //     $html = '';
-                //     $html = '<div class="btn-group" role="group">
-                //     <button id="btnGroupDrop1" type="button"
-                //         style="background-color: transparent;
-                //     font-size: x-large;
-                //     padding: 0px 20px;"
-                //         class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                //         aria-haspopup="true" aria-expanded="false">
-                //         <i class="fa fa-cog" aria-hidden="true"></i>
-                //     </button>
-                //     <div class="dropdown-menu">
-                //         <a class="dropdown-item btn-modal" style="margin: 2px;"
-                //             title="تعديل"
-                //             href="' . route('carmodel.edit', ['id' => $row->id]) . ' "
-                //             data-href="' . route('carmodel.edit', ['id' => $row->id]) . ' "
-                //             data-container="#edit_carModels_model">
-
-                //             <i class="fas fa-edit cursor-pointer"
-                //                 style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                //             تعديل </a>
-
-                //         <a class="dropdown-item btn-modal" style="margin: 2px;" 
-                //             href=" ' . route('carmodel.delete', ['id' => $row->id]) . ' "
-                //             data-href="' . route('carmodel.delete', ['id' => $row->id]) . '"
-                //             {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
-
-                //             <i class="fa fa-trash cursor-pointer"
-                //                 style="padding: 2px;color:red;"></i>
-                //             حذف
-
-                //         </a>
-                //     </div>
-                // </div>';
-                //     return $html;
-                // })
+              
                 ->filter(function ($query) use ($request) {
 
                     // if (!empty($request->input('full_name'))) {
