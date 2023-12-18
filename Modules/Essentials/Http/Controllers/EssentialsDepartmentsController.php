@@ -218,7 +218,8 @@ class EssentialsDepartmentsController extends Controller
             $business_locations=BusinessLocation::all()->where('business_id',$business_id)->pluck('name','id');
             $specializations=EssentialsSpecialization::all()->pluck('name','id');
             $professions=EssentialsProfession::all()->pluck('name','id');
-      return view('essentials::settings.partials.departments.index')->with(compact('parent_departments','users','departments','business_locations','specializations','professions'));
+     
+            return view('essentials::settings.partials.departments.index')->with(compact('parent_departments','users','departments','business_locations','specializations','professions'));
     }
 
     public function destroy($id)
