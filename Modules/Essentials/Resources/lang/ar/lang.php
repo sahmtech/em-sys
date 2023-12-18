@@ -981,6 +981,7 @@ return[
 'edit_Appointme'=>'تعديل التعيين',
 'basic_info'=>'المعلومات الأساسية ',
 'hrm_details'=>'معلومات الموارد البشرية ',
+'renewal_residence'=>'تجديد الإقامة ',
 'add_procedure'=>'إضافة طلب',
 'procedure_type'=>'نوع الطلب',
 'can_reject'=>'له حق الرفض',
