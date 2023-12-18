@@ -87,33 +87,33 @@ class ClientsController extends Controller
                     'mobile',
                     'email',
                     'city'
-                    // <<<<<<< Rahaf
+                    
                 ])->where('business_id', $business_id)->whereIn('type', ['customer', 'lead'])->orderby('id', 'desc');
 
-            // =======
-            //             ])
-            //             //->where('business_id',$business_id)
-            //             ->whereIn('type',['customer','lead'])->orderby('id','desc');
-            //             //dd($contacts);
-            // >>>>>>> Development
+            
+            
+            
+            
+            
+            
             return Datatables::of($contacts)
-                // ->addColumn('nameAr', function ($row) {
-                //     $name = json_decode($row->name, true);
-                //     return $name['ar'] ?? '';
-                // })
-                // ->addColumn('nameEn', function ($row) {
-                //     $name = json_decode($row->name, true);
-                //     return $name['en'] ?? '';
-                // })
+                
+                
+                
+                
+                
+                
+                
+                
                 ->addColumn('action', function ($row) {
 
                     $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                    // $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('sale.deleteCustomer', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    
+                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; 
                     return $html;
                 })
                 ->editColumn('type', function ($row) {
-                    // Translate the status here
+                    
                     return __('sales::lang.' . $row->type);
                 })
                 ->filterColumn('name', function ($query, $keyword) {
@@ -148,7 +148,7 @@ class ClientsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        //Check if subscribed or not
+        
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
         }
@@ -296,7 +296,7 @@ class ClientsController extends Controller
             $errors = $e->errors();
             return response()->json(['success' => false, 'errors' => $errors], 422);
         }
-        // return $output;
+        
         return redirect()->route('sale.clients');
     }
 
@@ -327,13 +327,13 @@ class ClientsController extends Controller
             }
         }
 
-        //$reward_enabled = (request()->session()->get('business.enable_rp') == 1 && in_array($contact->type, ['customer', 'both'])) ? true : false;
+        
 
         $contact_dropdown = Contact::contactDropdown($business_id, false, false);
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
-        //get contact view type : ledger, notes etc.
+        
         $view_type = request()->get('view');
         if (is_null($view_type)) {
             $view_type = 'ledger';
@@ -416,7 +416,7 @@ class ClientsController extends Controller
             ->select('users.*')
             ->first();
 
-        //dd( $contactFollower);
+        
 
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -550,7 +550,7 @@ class ClientsController extends Controller
                     $contract_follower = User::create($contract_follower_input);
                 }
             }
-            //  dd( $contactFollower);
+            
             DB::commit();
 
 
@@ -570,7 +570,7 @@ class ClientsController extends Controller
                 'msg' => $e->getMessage(),
             ];
         }
-        //return $output;
+        
         return redirect()->route('sale.clients');
     }
 
@@ -619,7 +619,7 @@ class ClientsController extends Controller
         try {
             $contact = Contact::findOrFail($id);
             User::where('crm_contact_id', $contact->id)->delete();
-            // dd($contact);
+            
             $contact->delete();
 
             return response()->json([

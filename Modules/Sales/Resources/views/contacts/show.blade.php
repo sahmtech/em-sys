@@ -124,7 +124,7 @@ $(document).ready( function(){
         sell_table.ajax.reload();
     });
 
-    //Date picker
+    
     $('#discount_date').datetimepicker({
         format: moment_date_format + ' ' + moment_time_format,
         ignoreReadonly: true,

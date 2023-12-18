@@ -69,7 +69,7 @@ class ProjectWorkersController extends Controller
             'contact_locations.name as contact_name'
         );
 
-        //dd($users->find(5858));
+        
         
         if (request()->ajax()) {
 
@@ -161,7 +161,7 @@ class ProjectWorkersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -292,7 +292,7 @@ class ProjectWorkersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -302,6 +302,6 @@ class ProjectWorkersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }

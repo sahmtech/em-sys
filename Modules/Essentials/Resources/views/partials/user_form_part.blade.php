@@ -261,7 +261,7 @@
                 endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
             }
 
-            return endDateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            return endDateObj.toISOString().split('T')[0]; 
         }
     });
 </script>
@@ -309,7 +309,7 @@
                 endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
             }
 
-            return endDateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            return endDateObj.toISOString().split('T')[0]; 
         }
 
         function calculateDuration(startDate, endDate, unit) {
@@ -454,12 +454,12 @@
     function updateAmount(element) {
         var salaryType = $(element).val();
         console.log(salaryType);
-        // Make an AJAX call to retrieve the amount for the selected salary type
+        
         $.ajax({
-            url: '/hrm/get-amount/' + salaryType, // Modify the URL according to your Laravel route
+            url: '/hrm/get-amount/' + salaryType, 
             type: 'GET',
             success: function(response) {
-                // Update the corresponding amount input field
+                
                 var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
                 amountInput.val(response.amount);
                 updateSelectedData(); 

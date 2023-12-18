@@ -239,23 +239,23 @@
                             required: true
                         });
 
-                        // Append the input fields to the modal body
+                        
                         $('.modal-body').append(workerIDInput,workerNameInput, passportNumberInput, borderNoInput);
                     });
                 }
             });
 
             $('#submitArrived').click(function () {
-                // Additional AJAX call to submit the form inside the modal
+                
                 $.ajax({
                     url: $('#arrived_form').attr('action'),
                     type: 'post',
                     data: $('#arrived_form').serialize(),
                     success: function (response) {
 
-                        // Handle the response if needed
+                        
                         console.log(response);
-                        // Close the modal after successful submission
+                        
                         $('#arrivedModal').modal('hide');
                         reloadDataTable();
                     }
