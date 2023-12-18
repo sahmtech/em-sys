@@ -77,7 +77,11 @@
                                 'saudizationCertificate'=> __('essentials::lang.saudizationCertificate'),
                                 'VAT'=> __('essentials::lang.VAT'),
 
-                            ], null, ['class' => 'form-control', 'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
+                                'memorandum_of_association'=> __('essentials::lang.memorandum_of_association'),
+                                'national_address'=> __('essentials::lang.national_address'),
+
+                            ], null, ['class' => 'form-control','style'=>'height:40px',
+                             'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
                         </div>
                         <div class="form-group col-md-6" id="unified_number" style="display: none;">
                             {!! Form::label('unified_number', __('essentials::lang.unified_number') . ':*') !!}

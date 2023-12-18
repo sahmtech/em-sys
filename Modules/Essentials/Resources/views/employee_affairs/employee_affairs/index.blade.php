@@ -109,10 +109,11 @@
                             <tr>
 
                                 <th>@lang('essentials::lang.employee_number')</th>
+                                <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_name')</th>
                                 <th>@lang('essentials::lang.Identity_proof_id')</th>
                                 <th>@lang('essentials::lang.contry_nationality')</th>
-
+                                <th>@lang('essentials::lang.total_salary')</th>
                                 <th>@lang('essentials::lang.admissions_date')</th>
                                 <th>@lang('essentials::lang.contract_end_date')</th>
 
@@ -514,6 +515,18 @@
                         "data": "emp_number"
                     },
                     {
+                        "data": "profile_image",
+                        "render": function(data, type, row) {
+                            if (data) {
+                             
+                                var imageUrl = '/uploads/' + data;
+                                return '<img src="' + imageUrl + '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                            } else {
+                                return '@lang('essentials::lang.no_image')';
+                            }
+                        }
+                    },
+                    {
                         "data": "full_name"
                     },
 
@@ -523,6 +536,7 @@
                     {
                         "data": "nationality"
                     },
+                    {"data": "total_salary"},
                     {
                         "data": "admissions_date"
                     },

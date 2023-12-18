@@ -68,20 +68,18 @@ class EssentialsEmployeeQualificationController extends Controller
                 ->editColumn('major', function ($row) use ($spacializations) {
                     $item = $spacializations[$row->major] ?? '';
 
-                    return $item;
-                })
-                ->addColumn(
-                    'action',
-                    function ($row) {
-                        $html = '';
-                        //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                        //    $html .= '<a  href="'. route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
-                        $html .= '<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
-                        return $html;
-                    }
-                )
-
+                return $item;
+            })
+            ->addColumn(
+                'action',
+                function ($row) {
+                    $html = '';
+                    $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                    $html .= '<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    return $html;
+                }
+            )
+            
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
@@ -154,16 +152,100 @@ class EssentialsEmployeeQualificationController extends Controller
         return view('essentials::show');
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        return view('essentials::edit');
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+    
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+    
+        try {
+           
+            $qualification = EssentialsEmployeesQualification::findOrFail($id);
+    
+            $output = [
+                'success' => true,
+                'data' => [
+                    'employee' => $qualification->employee_id,
+                    'qualification_type' => $qualification->qualification_type,
+                    'major' => $qualification->major,
+                    'graduation_year' => $qualification->graduation_year,
+                    'graduation_institution' => $qualification->graduation_institution,
+                    'graduation_country' => $qualification->graduation_country,
+                    'degree' => $qualification->degree,
+                   
+                ],
+                'msg' => __('lang_v1.fetched_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+    
+        return response()->json($output);
     }
 
-
-    public function update(Request $request, $id)
+ 
+    public function updateQualification(Request $request, $qualificationId)
     {
-        //
+      
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+    
+        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+            abort(403, 'Unauthorized action.');
+        }
+    
+        try {
+          
+            $qualification = EssentialsEmployeesQualification::find($qualificationId);
+         //    dd( $qualification );
+          if( $qualification)
+          {
+            $qualification->update([
+                'employee_id' => $request->input('employee'),
+                'qualification_type' => $request->input('qualification_type'),
+                'major' => $request->input('major'),
+                'graduation_year' => $request->input('graduation_year'),
+                'graduation_institution' => $request->input('graduation_institution'),
+                'graduation_country' => $request->input('graduation_country'),
+                'degree' => $request->input('degree'),
+                
+            ]);
+    
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+          }
+          else{
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.no_data'),
+            ];
+          }
+           
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+    
+        return response()->json($output);
     }
+    
+
+
+
 
 
     public function destroy($id)

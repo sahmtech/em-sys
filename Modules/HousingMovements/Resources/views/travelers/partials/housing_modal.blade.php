@@ -10,7 +10,7 @@
         </div>
         {!! Form::open(['url' => action( [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data']), 'method' => 'post', 'id' => 'bulk_edit_form' ]) !!}
             <div class="modal-body">
-           
+            <input name="building_htr" id="building_htr" type="hidden" value="300" />
                         <div class="form-group col-md-6">
                             {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
                             {!! Form::select('htr_building', $buildings,
@@ -18,6 +18,16 @@
                                 [  'class' => 'form-control select2','style'=>'width:100%',
                                 'placeholder' => __('housingmovements::lang.htr_building'), 'required',
                                  'id' => 'htr_building_select']) !!}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            {!! Form::label('room_status', __('housingmovements::lang.room_status') . ':*') !!}
+                            {!! Form::select('room_status', $roomStatusOptions, null, [
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                                'placeholder' => __('housingmovements::lang.room_status'),
+                                'id' => 'room_status',
+                            ]) !!}
                         </div>
 
                     <div class="form-group col-md-6">

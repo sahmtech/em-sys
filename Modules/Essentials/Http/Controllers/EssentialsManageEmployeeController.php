@@ -78,6 +78,7 @@ class EssentialsManageEmployeeController extends Controller
      * @return Renderable
      */
 
+
     public function index(Request $request)
     {
 
@@ -135,6 +136,7 @@ class EssentialsManageEmployeeController extends Controller
             ->select([
                 'users.id',
                 'users.emp_number',
+                'users.profile_image',
                 'users.username',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
@@ -147,6 +149,8 @@ class EssentialsManageEmployeeController extends Controller
                 'users.contact_number',
                 'users.essentials_department_id',
                 'users.status',
+                'users.essentials_salary',
+                'users.total_salary',
                 'essentials_employee_appointmets.profession_id as profession_id',
 
                 'essentials_employee_appointmets.specialization_id as specialization_id'
@@ -215,6 +219,10 @@ class EssentialsManageEmployeeController extends Controller
 
 
             return Datatables::of($users)
+
+                    ->addColumn('total_salary', function ($row) {
+                        return $row->calculateTotalSalary();
+                    })
 
                 ->editColumn('essentials_department_id', function ($row) use ($departments) {
                     $item = $departments[$row->essentials_department_id] ?? '';
@@ -406,12 +414,15 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-
+        $spacializations=EssentialsSpecialization::all()->pluck('name','id');
+        $countries= $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
         $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
             ->with(compact(
                 'roles',
+                'countries',
+                'spacializations',
                 'nationalities',
                 'username_ext',
                 'blood_types',
