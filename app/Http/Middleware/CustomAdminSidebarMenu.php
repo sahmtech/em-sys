@@ -327,13 +327,13 @@ class CustomAdminSidebarMenu
                 $menu->dropdown(
                     __('essentials::lang.reports'),
                     function ($sub) use ($enabled_modules) {
-                        if (auth()->user()->can('')) {
+                     
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index']),
                                 __('essentials::lang.employees_information_report'),
                                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'emp_info_report']
                             );
-                        }
+                        
                     },
                     ['icon' => 'fa fas fa-plus-circle']
 
@@ -349,10 +349,20 @@ class CustomAdminSidebarMenu
                 )->order(6);
             }
             if ($isSuperAdmin || auth()->user()->can('essentials.view_work_cards') || true) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+               
+                $menu->dropdown(
                     __('essentials::lang.work_cards'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                    function ($sub) use ($enabled_modules) {
+                       
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+                                __('essentials::lang.renewal_residence'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                            )->order(1);
+                        
+                    },
+                    ['icon' => 'fa fas fa-plus-circle']
+
                 )->order(7);
             }
 
