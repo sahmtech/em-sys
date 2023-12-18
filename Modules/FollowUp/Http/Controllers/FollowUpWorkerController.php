@@ -28,6 +28,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\FollowUp\Entities\followupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
 
 class FollowUpWorkerController extends Controller
@@ -45,7 +46,7 @@ class FollowUpWorkerController extends Controller
     }
     public function index()
     {
-       
+
 
         $business_id = request()->session()->get('user.business_id');
 
@@ -163,7 +164,6 @@ class FollowUpWorkerController extends Controller
         }
 
         return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
-
     }
 
 
@@ -224,33 +224,33 @@ class FollowUpWorkerController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::with(['contactAccess','assignedTo','OfficialDocument','proposal_worker'])
+        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
 
 
 
-            $documents = null;
+        $documents = null;
+        $document_delivery = null;
 
-            if ($user->user_type == 'employee') {
-               
+        if ($user->user_type == 'employee') {
+
+            $documents = $user->OfficialDocument;
+        } else if ($user->user_type == 'worker') {
+
+            if (!empty($user->proposal_worker_id)) {
+
+                $officialDocuments = $user->OfficialDocument;
+                $workerDocuments = $user->proposal_worker?->worker_documents;
+                $documents = $officialDocuments->merge($workerDocuments);
+            } else {
                 $documents = $user->OfficialDocument;
-            } 
-
-            else if ($user->user_type == 'worker') {
-               
-                if (!empty($user->proposal_worker_id)) {
-                  
-                    $officialDocuments = $user->OfficialDocument;
-                    $workerDocuments = $user->proposal_worker?->worker_documents;
-                    $documents = $officialDocuments->merge($workerDocuments);
-                } 
-                else {
-                    $documents = $user->OfficialDocument;
-                }
             }
-            
-        
-    
+
+            $document_delivery = followupDeliveryDocument::where('user_id', $user->id)->get();
+        }
+
+
+
 
         $dataArray = [];
         if (!empty($user->bank_details)) {
@@ -262,7 +262,7 @@ class FollowUpWorkerController extends Controller
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-       
+
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -296,7 +296,7 @@ class FollowUpWorkerController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $nationality_id = $user->nationality_id;
         $nationality = "";
-       
+
         if (!empty($nationality_id)) {
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
@@ -316,6 +316,7 @@ class FollowUpWorkerController extends Controller
             'nationalities',
             'nationality',
             'documents',
+            'document_delivery',
         ));
     }
 

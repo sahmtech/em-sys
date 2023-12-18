@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('followup_delivery_documents', function (Blueprint $table) {
             $table->id();
-            $table->integer('worker_id');
-            $table->unsignedInteger('document_id');
+            $table->integer('user_id')->unsigned();
+            $table->unsignedBigInteger('document_id');
             $table->text('file_path');
             $table->text('nots')->nullable();
-            $table->foreign('worker_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('document_id')->references('id')->on('followup_documents')->onDelete('cascade');
 
             $table->timestamps();
