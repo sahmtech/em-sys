@@ -1,25 +1,26 @@
 <?php
 
-namespace Modules\HousingMovements\Http\Controllers;
+namespace Modules\Essentials\Http\Controllers;
 
-use App\User;
-use App\Utils\Util;
-use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use App\User;
+use App\Utils\Util;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
-use Modules\HousingMovements\Entities\CarType;
 use Modules\HousingMovements\Entities\DriverCar;
 use Yajra\DataTables\Facades\DataTables;
 
+
 class DriverCarController extends Controller
 {
-
+    
+   
     protected $commonUtil;
 
     public function __construct(Util $commonUtil)
@@ -79,12 +80,12 @@ class DriverCarController extends Controller
                         $html = '';
 
                         $html .= '
-                        <a href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . '"
-                        data-href="' . action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
+                        <a href="' . action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . '"
+                        data-href="' . action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_driver_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         $html .= '
-                    <button data-href="' .  action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                    <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
 
 
@@ -105,7 +106,7 @@ class DriverCarController extends Controller
         $car_Drivers = DriverCar::all();
 
         $carTypes = CarModel::all();
-        return view('housingmovements::movementMangment.driverCar.index', compact('car_Drivers', 'carTypes'));
+        return view('essentials::movementMangment.driverCar.index', compact('car_Drivers', 'carTypes'));
     }
 
     /**
@@ -123,19 +124,19 @@ class DriverCarController extends Controller
             ->whereNotIn('id', $driver_ids)->get();
         if (count($workers) == 0) {
             $message = 'notFountAvilableWorkers';
-            return view('housingmovements::movementMangment.driverCar.message', compact('message'));
+            return view('essentials::movementMangment.driverCar.message', compact('message'));
         }
         $carDriver_ids = DriverCar::all()->pluck('car_id');
 
         $cars = Car::whereNotIn('id', $carDriver_ids)->get();
         if (count($cars) == 0) {
             $message = 'notFountAvilableCars';
-            return view('housingmovements::movementMangment.driverCar.message', compact('message'));
+            return view('essentials::movementMangment.driverCar.message', compact('message'));
         }
 
 
 
-        return view('housingmovements::movementMangment.driverCar.create', compact('workers', 'cars'));
+        return view('essentials::movementMangment.driverCar.create', compact('workers', 'cars'));
     }
 
     /**
@@ -180,7 +181,7 @@ class DriverCarController extends Controller
      */
     public function show($id)
     {
-        return view('housingmovements::show');
+        return view('essentials::show');
     }
 
     /**
@@ -202,7 +203,7 @@ class DriverCarController extends Controller
             ->get();
         if (count($workers) == 0) {
             $message = 'notFountAvilableWorkers';
-            return view('housingmovements::movementMangment.driverCar.message', compact('message'));
+            return view('essentials::movementMangment.driverCar.message', compact('message'));
         }
         $carDriver_ids = DriverCar::all()->pluck('car_id');
 
@@ -211,7 +212,7 @@ class DriverCarController extends Controller
 
 
 
-        return view('housingmovements::movementMangment.driverCar.edit', compact('workers', 'cars', 'driver'));
+        return view('essentials::movementMangment.driverCar.edit', compact('workers', 'cars', 'driver'));
     }
 
     /**
@@ -267,4 +268,5 @@ class DriverCarController extends Controller
             return $output;
         }
     }
+
 }
