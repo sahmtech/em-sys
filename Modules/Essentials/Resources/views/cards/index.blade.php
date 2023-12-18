@@ -16,12 +16,25 @@
 <div class="col-md-3">
     <div class="form-group">
         <label for="offer_type_filter">@lang('essentials::lang.project'):</label>
-        {!! Form::select('contact-select', $contacts, null, [
+        {!! Form::select('contact-select', $sales_projects, null, [
             'class' => 'form-control',
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.all'),
-            'required',
+          
             'id' => 'contact-select'
+        ]) !!}
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="form-group">
+        <label for="offer_type_filter">@lang('essentials::lang.proof_numbers'):</label>
+        {!! Form::select('proof_numbers_select', $proof_numbers, null, [
+            'class' => 'form-control select2',
+            'style' => 'height:36px',
+            'placeholder' => __('lang_v1.all'),
+          
+            'id' => 'proof_numbers_select'
         ]) !!}
     </div>
 </div>

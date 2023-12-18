@@ -19,6 +19,7 @@ use App\Contact;
 use DB;
 use App\User;
 use App\ContactLocation;
+use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\WorkCard;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
@@ -47,7 +48,8 @@ class EssentialsCardsController extends Controller
         TransactionUtil $transactionUtil,
         NotificationUtil $notificationUtil,
         ContactUtil $contactUtil
-    ) {
+    ) 
+    {
         $this->commonUtil = $commonUtil;
         $this->contactUtil = $contactUtil;
         $this->moduleUtil = $moduleUtil;
@@ -67,7 +69,6 @@ class EssentialsCardsController extends Controller
         }
         $business_name=Business::where('id', $business_id)->select('name','id')->first();
         $business_name = $business_name ? $business_name->name : null;
-      
         $responsible_client = null;
         
         $operations = DB::table('essentials_work_cards')
@@ -99,9 +100,10 @@ class EssentialsCardsController extends Controller
        }
        if (request()->ajax()) {
         return Datatables::of($operations->get()->map(function ($item) {
-            $item->project = $item->project ?? __('essentials::lang.management');
+        
+        $item->project = $item->project ?? __('essentials::lang.management');
           
-         // Get responsible client for the project
+         
          $responsible_client = User::join('contacts', 'contacts.responsible_user_id', '=', 'users.id')
          ->where('contacts.supplier_business_name', '=', $item->project)
          ->select('users.id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
@@ -124,9 +126,14 @@ class EssentialsCardsController extends Controller
     }
     
     
-        $contacts=Contact::where('type','customer')
-        ->pluck('name','id');
-        return view('essentials::cards.index')->with(compact('contacts'));
+        $sales_projects = SalesProject::pluck('name', 'id');
+        
+        $proof_numbers=User::where('users.user_type', 'worker')
+        ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id')->get();
+
+
+        return view('essentials::cards.index')->with(compact('sales_projects','proof_numbers'));
     }
 
 
@@ -142,7 +149,7 @@ class EssentialsCardsController extends Controller
              'users.border_no as border_no',
              'users.id_proof_number as residency_no',
              'doc.expiration_date as residency_end_date')->first();
-        //dd( $residencyData);
+        
         return response()->json($residencyData);
     }
 
@@ -254,7 +261,7 @@ class EssentialsCardsController extends Controller
             '12' => __('essentials::lang.12_months'),
         ];
         $business=Business::pluck('name','id');
-       // dd( $business);
+       
         return view('essentials::cards.create')
             ->with(compact(
             'employees',
@@ -295,10 +302,10 @@ class EssentialsCardsController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $data['employee_id'] = (int)$request->input('employee_id');
-           //emp_number
-         //  $business_id = request()->session()->get('user.business_id');
+           
+         
 
-          // $numericPart = (int)substr($business_id, 3);
+          
            $lastrecord = WorkCard::orderBy('work_card_no', 'desc')->first();
 
            if ($lastrecord) {
@@ -342,7 +349,7 @@ class EssentialsCardsController extends Controller
             ];
         }
 
-   // return $output;
+   
      return redirect()->route('cards');
     }
 
@@ -374,7 +381,7 @@ class EssentialsCardsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -384,6 +391,6 @@ class EssentialsCardsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }

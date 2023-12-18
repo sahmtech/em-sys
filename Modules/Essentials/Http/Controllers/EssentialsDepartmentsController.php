@@ -149,7 +149,10 @@ class EssentialsDepartmentsController extends Controller
         $departments=EssentialsDepartment::all()->pluck('name','id');
         $parent_departments=EssentialsDepartment::where('is_main','1')->pluck('name','id');
        if (request()->ajax()) {
-            $depatments = DB::table('essentials_departments')->where('business_id','=',$business_id)->select(['id','name', 'level','is_main','parent_department_id','business_id','is_active'])->orderBy('id', 'asc');
+            $depatments = DB::table('essentials_departments')
+            ->where('business_id','=',$business_id)
+            ->select(['id','name', 'level','is_main','parent_department_id','business_id','is_active'])
+            ->orderBy('id', 'asc');
            
 
             return Datatables::of($depatments)

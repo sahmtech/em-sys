@@ -598,6 +598,13 @@
                         return '@lang('essentials::lang.saudizationCertificate')';
                     case 'VAT':
                         return '@lang('essentials::lang.VAT')';
+
+                    case 'memorandum_of_association':
+                        return '@lang('essentials::lang.memorandum_of_association')';
+                    case 'national_address':
+                        return '@lang('essentials::lang.national_address')';
+                    case 'activity':
+                        return '@lang('essentials::lang.activity')';
                     default:
                         return data;
                 }
