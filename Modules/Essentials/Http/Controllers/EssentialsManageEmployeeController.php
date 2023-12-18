@@ -136,6 +136,8 @@ class EssentialsManageEmployeeController extends Controller
                 'users.id',
                 'users.emp_number',
                 'users.username',
+                'users.business_id',
+                'users.user_type',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
                 DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
@@ -190,7 +192,9 @@ class EssentialsManageEmployeeController extends Controller
             }
             $userProjects = array_unique($userProjects);
             $users = $users->whereIn('assigned_to', $userProjects)
-                ->orWhereNull('assigned_to');
+                ->orWhere(function ($query) use ($business_id) {
+                    $query->whereNull('assigned_to')->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
+                });
         }
 
         // $users = $users->union($workers)->orderby('id', 'desc');
@@ -284,7 +288,7 @@ class EssentialsManageEmployeeController extends Controller
 
                     return $html;
                 })
-               
+
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
                 })
@@ -308,7 +312,7 @@ class EssentialsManageEmployeeController extends Controller
                     });
                 })
                 ->removecolumn('id')
-                ->rawColumns(['action', 'profession', 'specialization', 'view'])
+                ->rawColumns(['user_type','business_id', 'action', 'profession', 'specialization', 'view'])
                 ->make(true);
         }
 
