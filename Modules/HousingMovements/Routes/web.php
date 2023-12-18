@@ -48,7 +48,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //traveleres
         Route::get('/travelers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index'])->name('travelers');
         Route::get('/housed-workers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
-        Route::get('/workers', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers');
+        Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
+        Route::get('/workers/show/{id}', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'show'])->name('htr.show.workers');
+
         Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
         Route::post('/housed',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data'])->name('housed');
         Route::post('/postarrival_data', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'postarrivaldata'])->name('postarrivaldata');
@@ -56,7 +58,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/get-shifts/{projectId}', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getShifts'])->name('getShifts');
         Route::get('/getBedsCount/{roomId}', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getBedsCount'])->name('getBedsCount');
-        
+        Route::get('/room_status',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumberOnStatus'])->name('getRoomStatus');
         // Routes Car Types
         Route::get('/cars-type', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index'])->name('car-types');
         Route::get('/cars-type-create', [\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'create'])->name('car-type-create');

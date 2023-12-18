@@ -1,22 +1,22 @@
 @extends('layouts.app')
 
-@section('title', __( 'essentials::lang.view_employee' ))
+@section('title', __( 'followup::lang.view_worker' ))
 
 @section('content')
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-4">
-                <h3>@lang( 'essentials::lang.view_employee' )</h3>
+                <h3>@lang( 'followup::lang.view_worker' )</h3>
             </div>
-            <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
+            <div class="col-md-4 col-xs-12 mt-15 pull-right">
                 {!! Form::select('user_id', $users, $user->id , ['class' => 'form-control select2', 'id' => 'user_id']); !!}
-            </div> -->
+            </div>
         </div>
 
         <div class="row">
             <div class="col-md-3">
-                <!-- Profile Image -->
+              
                 <div class="box box-primary">
                     <div class="box-body box-profile">
                         @php
@@ -26,11 +26,11 @@
                                 $img_src = '/uploads/'.$user->profile_image;
                             }
                         @endphp
-                        @if(auth()->user()->can('view_profile_photo'))
+
                         <img class="profile-user-img img-responsive img-circle" src="{{$img_src}}" alt="User profile picture">
-                        @endif
+
                         <h3 class="profile-username text-center">
-                            {{$user->full_name}}
+                            {{$user->user_full_name}}
                         </h3>
 
                         <p class="text-muted text-center" title="@lang('user.role')">
@@ -59,51 +59,39 @@
                                 @endif
                             </li>
                         </ul>
-                        @can('user.update')
-                            <a href="{{action( [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'edit'], [$user->id])}}" class="btn btn-primary btn-block">
-                                <i class="glyphicon glyphicon-edit"></i>
-                                @lang("messages.edit")
-                            </a>
-                        @endcan
-
-
+                       
                        
                         </div>
                     <!-- /.box-body -->
                 </div>
-                <!-- /.box -->
-
-
-                  <!-- Profile Image -->
-                        <div class="box box-primary">
-                            <div class="box-body box-profile">      
-                                <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
-
-                                                        <div>
-                                                        
-                                                            <label>
-                                                                <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
-                                                            </label>
-                                                            <br>
-                                                            <label>
-                                                                <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
-                                                            </label>
-                                                            <br>
-                                                            <label>
-                                                                <input type="checkbox" name="qualifications"  {{ $Qualification ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
-                                                            </label>
-                                                            <br>
-                                                            <label>
-                                                                <input type="checkbox" name="health_insurance"> @lang( 'essentials::lang.health_insurance' )
-                                                            </label>
-                                                        </div>                    
-                                            
-                                                </div>
-                            </div>
-
-
-
-
+            
+                <div class="box box-primary">
+                    <div class="box-body box-profile">
+                           <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
+                             
+                                        <div>
+                                        
+                                        <label>
+                                            <input type="checkbox" name="contracts" {{ $Contract ? 'checked' : '' }}> @lang( 'essentials::lang.contracts' )
+                                        </label>
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="admissions_to_work" {{ $admissions_to_work ? 'checked' : '' }}> @lang( 'essentials::lang.admissions_to_work' )
+                                        </label>
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="qualifications"  {{ $Qualification ? 'checked' : '' }}>@lang( 'essentials::lang.qualifications' )
+                                        </label>
+                                        <br>
+                                        <label>
+                                            <input type="checkbox" name="health_insurance"> @lang( 'essentials::lang.health_insurance' )
+                                        </label>
+                                    </div>
+ 
+                       
+                        </div>
+                    <!-- /.box-body -->
+                </div>
                 <div class="box box-primary" id="attachments-box">
                     <div class="box-body box-profile">
                         <h3>@lang('followup::lang.attachments')</h3>
@@ -129,11 +117,8 @@
                         @endif
                     </div>
                 </div>
-
-
+                                                
             </div>
-
-   
 
             
             <div class="col-md-9">
@@ -142,19 +127,37 @@
                         <li class="active">
                             <a href="#user_info_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-user" aria-hidden="true"></i> @lang( 'essentials::lang.employee_info')</a>
                         </li>
-                        
-                     
+                        <li>
+                            <a href="#activities_tab" 
+                             data-toggle="tab"
+                             aria-expanded="true">
+                             <i class="fas fa-money-check" aria-hidden="true"></i>
+
+                             @lang('followup::lang.salaries')</a>
+                        </li>
+
+                        <li>
+                            <a href="#activities_tab" 
+                             data-toggle="tab"
+                             aria-expanded="true">
+                             <i class="fas fa-clock" aria-hidden="true"></i>
+
+
+                             @lang('followup::lang.timesheet')</a>
+                        </li>
 
                         <li>
                             <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square" aria-hidden="true"></i> @lang('lang_v1.activities')</a>
                         </li>
                     </ul>
 
+
+
                     <div class="tab-content">
                         <div class="tab-pane active" id="user_info_tab">
                             <div class="row">
                                 <div class="col-md-12">
-                                 
+                                  
                                 </div>
                             </div>
                             @include('user.show_details')
@@ -279,4 +282,19 @@
         $('input[type="checkbox"]').prop('disabled', true);
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        $('.file-link').on('click', function (e) {
+            e.preventDefault();
+            var fileUrl = '/uploads/' + $(this).data('file-url');
+            openFile(fileUrl);
+        });
+
+        function openFile(fileUrl) {
+            window.open(fileUrl, '_blank');
+        }
+    });
+</script>
+
 @endsection

@@ -1,6 +1,9 @@
-@component('components.widget', ['title' => __('essentials::lang.hrm_details')])
+@component('components.widget')
 <div class="row">
-    <div class="col-md-6">
+<div class="col-md-12" id="section4">
+        <hr>
+        <h4>@lang('essentials::lang.hrm_details'):</h4>
+        <div class="col-md-6">
         <div class="form-group">
         {!! Form::label('location_id', __('lang_v1.primary_work_location') . ':*') !!}
         {!! Form::select('location_id', $locations, !empty($user->location_id) ? $user->location_id : null, ['class' => 'form-control select2','style'=>'height:40px', 'required','placeholder' => __('messages.please_select')]); !!}
@@ -31,37 +34,24 @@
                 'placeholder' => __('sales::lang.specialization'),'id' => 'specializationSelect']); !!}
           </div>
     </div>
-
-
-	{{-- <div class="col-md-6">
-		<div class="form-group">
-            {!! Form::label('essentials_designation_id', __('essentials::lang.designation') . ':') !!}
-            <div class="form-group">
-                {!! Form::select('essentials_designation_id', $designations, !empty($user->essentials_designation_id) ? $user->essentials_designation_id : null, ['class' => 'form-control select2','style'=>'height:40px', 'style' => 'width: 100%;', 'required','placeholder' => __('messages.please_select') ]); !!}
+{{-- 
+    <div class="clearfix"></div>
+            <div class="row">
+                        <div class="col-md-12 text-center">
+                        <button onclick="submitSection('section4')" class="btn btn-primary btn-big">@lang('messages.save')</button>
+                    --}}
+       </div>
             </div>
-        </div>
-	</div> --}}
 
-
-    {{-- <div class="form-group col-md-3">
-        {!! Form::label('essentials::lang.qualification_type', __('essentials::lang.qualification_type') . ':') !!}
-        {!! Form::select('qualification_type',  ['bachelors_degree' => __('essentials::lang.bachelors_degree'), 
-        'master_degree' => __('essentials::lang.master_degree'),
-        'doctorate' => __('essentials::lang.doctorate'),
-        'diploma' => __('essentials::lang.diploma'),
-        'professional_certification' => __('essentials::lang.professional_certification'),
-        'language_proficiency_certificate' => __('essentials::lang.language_proficiency_certificate'),
+</div>
   
 
-        ], null,['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.qualification_type')]) !!}
-    
-    </div> --}}
-   
-        <div class="col-md-12">
+
+
+<div class="col-md-12" id="section5">
             <hr>
             <h4>@lang('essentials::lang.contract_details'):</h4>
-        </div>
-
+            
         <div class="form-group col-md-3">
             {!! Form::label('contract_number', __( 'essentials::lang.contract_number') . ':') !!}
             {!! Form::text('contract_number',  !empty($contract->contract_number) ? $contract->contract_number : null , ['class' => 'form-control','style'=>'height:40px',  'placeholder' => __( 'essentials::lang.contract_number') ]); !!}
@@ -113,21 +103,33 @@
             {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':') !!}
             {!! Form::select('is_renewable', ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')], !empty($contract->probation_period) ? $contract->probation_period : null , ['class' => 'form-control','style'=>'height:40px',]) !!}
         </div>
-        {{-- <div class="form-group col-md-3">
-            {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-            {!! Form::select('status', ['valid' =>__('essentials::lang.valid'), 'canceled' =>__('essentials::lang.canceled')], null, ['class' => 'form-control', 'required','style'=>'height:40px',]) !!}
-        </div> --}}
+       
         <div class="form-group col-md-3">
             {!! Form::label('essentials::lang.contract_file', __( 'essentials::lang.contract_file') . ':') !!}
             {!! Form::file('contract_file', null , ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __( 'essentials::lang.contract_file') ]); !!}
         </div>
+        {{--
+            <div class="clearfix"></div>
+            <div class="row">
+                        <div class="col-md-12 text-center">
+                        <button onclick="submitSection('section5')" class="btn btn-primary btn-big">@lang('messages.save')</button>
+                        </div>
+            </div> --}}
+      
+
+        </div>
+
 
 </div>
         
 @endcomponent
 
-@component('components.widget', ['title' => __('essentials::lang.payroll')])
+@component('components.widget')
 <div class="row">
+<div class="col-md-12" id="section6">
+            <hr>
+            <h4>@lang('essentials::lang.payroll'):</h4>
+
     <div class="col-md-4">
         <div class="form-group">
             <div class="multi-input">
@@ -161,15 +163,41 @@
     
     <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add') }}</button>
 
+
+    <div class="col-md-4">
+        <div class="form-group">
+            <div class="multi-input">
+                {!! Form::label('total_salary', __('essentials::lang.total_salary') . ':') !!}
+                <br/>
+                {!! Form::number('total_salary', !empty($user->total_salary) ? $user->total_salary : null, 
+                    ['class' => 'form-control width-40 pull-left','style'=>'height:40px','id' => 'total_salary',
+                     'placeholder' => __('essentials::lang.salary')]); !!}
+
+                
+            </div>
+        </div>
+    </div>
+
+       {{-- 
+        <div class="clearfix"></div>
+            <div class="row">
+                                <div class="col-md-12 text-center">
+                                <button onclick="submitSection('section6')" class="btn btn-primary btn-big">@lang('messages.save')</button>
+                                </div>
+            </div>--}}    
+     
     
-    
-</div>
-<div class="col-md-12">
-    <hr>
-    <h4>@lang('essentials::lang.features'):</h4>
 </div>
 
-<div>
+    
+</div>
+
+
+<div class="col-md-12" id="section7">
+    <hr>
+    <h4>@lang('essentials::lang.features'):</h4>
+
+    <div>
     <div class="form-group col-md-3">
         {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
         {{-- <input type="checkbox" id="can_add_category" name="can_add_category" value="1"> --}}
@@ -191,6 +219,17 @@
             {!! Form::select('health_insurance', ['1' =>__('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')], null, ['class' => 'form-control','style'=>'height:40px', 'placeholder' => __('essentials::lang.health_insurance')]) !!}
         </div>
     </div>
+{{--
+    <div class="clearfix"></div>
+            <div class="row">
+                        <div class="col-md-12 text-center">
+                        <button onclick="submitSection('section7')" class="btn btn-primary btn-big">@lang('messages.save')</button>
+                        </div>
+            </div> --}}
+   
+
+</div>
+
 
 
 
@@ -317,6 +356,30 @@
 
 <script>
     $(document).ready(function() {
+
+            function calculateTotalSalary() {
+                var essentialsSalary = parseFloat($('#essentials_salary').val()) || 0;
+                var totalAllowance = 0;
+
+            
+                $('input[name="amount[]"]').each(function () {
+                    totalAllowance += parseFloat($(this).val()) || 0;
+                });
+
+        
+                var totalSalary = essentialsSalary + totalAllowance;
+
+            
+                $('#total_salary').val(totalSalary);
+            }
+
+            calculateTotalSalary();
+
+            $('#essentials_salary').on('input', calculateTotalSalary);
+
+            $(document).on('input', 'input[name="amount[]"]', calculateTotalSalary);
+
+
         var selectedData = [];
         var professionSelect = $('#professionSelect');
         var specializationSelect = $('#specializationSelect');
@@ -384,6 +447,7 @@
         console.log(selectedData);
         var inputElement = document.getElementById('selectedData');
         inputElement.value = JSON.stringify(selectedData);
+        calculateTotalSalary();
     }
     
 
@@ -398,7 +462,8 @@
                 // Update the corresponding amount input field
                 var amountInput = $(element).closest('tr').find('input[name="amount[]"]');
                 amountInput.val(response.amount);
-                updateSelectedData(); // Update the selected data after updating the amount
+                updateSelectedData(); 
+                calculateTotalSalary();
             },
             error: function(xhr, status, error) {
                 console.error(error);
@@ -406,10 +471,10 @@
         });
     }
 
-    // Rest of your existing JavaScript code...
+  
 
     $(document).on('change', 'select[name="salary_type[]"]', function() {
-        updateAmount(this); // Call the function to update the amount
+        updateAmount(this); 
     });
 });
 </script>

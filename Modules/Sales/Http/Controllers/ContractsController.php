@@ -47,7 +47,8 @@ class ContractsController extends Controller
         if (request()->ajax()) {
     
                 $contracts = salesContract::join('transactions','transactions.id','=','sales_contracts.offer_price_id')->
-                select(['sales_contracts.number_of_contract','sales_contracts.id','sales_contracts.offer_price_id','sales_contracts.start_date',
+                select(['sales_contracts.number_of_contract','sales_contracts.id','sales_contracts.offer_price_id','sales_contracts.start_date','sales_contracts.contract_duration',
+                'sales_contracts.contract_per_period',
                 'sales_contracts.end_date','sales_contracts.status','sales_contracts.file',
                 'transactions.contract_form as contract_form','transactions.sales_project_id','transactions.id as tra']);
 
@@ -156,11 +157,15 @@ class ContractsController extends Controller
         }
  
         try {
-            $input = $request->only(['offer_price', 'start_date', 'end_date','status','contract_items','is_renewable','notes','file']);
+            $input = $request->only(['offer_price', 'start_date','contract_duration','contract_duration_unit', 'end_date','status','contract_items','is_renewable','notes','file']);
             
             $input2['offer_price_id'] = $input['offer_price'];
             $input2['start_date'] = $input['start_date'];
             $input2['end_date'] = $input['end_date'];
+
+            $input2['contract_duration'] = $input['contract_duration'];
+            $input2['contract_duration_unit'] = $input['contract_duration_unit'];
+
             $input2['status'] = $input['status'];
             $input2['is_renwable'] = $input['is_renewable'];
             $input2['notes'] = $input['notes'];

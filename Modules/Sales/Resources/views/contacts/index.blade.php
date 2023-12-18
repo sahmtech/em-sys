@@ -603,16 +603,15 @@
     </script>
 
 
-    <script type="text/javascript">
-        // Countries table
+<script type="text/javascript">
+     
         $(document).ready(function() {
             var customers_table = $('#cust_table').DataTable({
-                ajax: '',
+                ajax: '{{route('clients')}}',
                 processing: true,
                 serverSide: true,
 
-
-
+            
                 columns: [
 
                     {

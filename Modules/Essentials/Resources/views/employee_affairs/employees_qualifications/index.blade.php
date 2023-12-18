@@ -22,7 +22,7 @@
                         'diploma' =>__('essentials::lang.diploma'),
                 
                     ], null, ['class' => 'form-control','id'=>'qualification_type_filter',
-                     'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                    'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                 </div>
             </div>
         
@@ -31,7 +31,7 @@
                 <div class="form-group">
                     {!! Form::label('major_filter', __('essentials::lang.major') . ':') !!}
                     {!! Form::select('major_filter',$spacializations, null, ['class' => 'form-control','id'=>'major_filter',
-                         'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                        'style' => 'width:100%;height:40px','placeholder' => __('lang_v1.all')]); !!}
             
                 </div>
             </div>
@@ -89,7 +89,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee',$users, null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
+                                {!! Form::select('employee',$users, null, ['class' => 'form-control',   'style' => 'width:100%;height:40px', 'placeholder' => __('essentials::lang.select_employee'), 'required']) !!}
 
                             </div>
                         
@@ -101,11 +101,13 @@
                                      'PhD' =>__('essentials::lang.PhD'),
                                      'diploma' =>__('essentials::lang.diploma'),
                              
-                                 ], null, ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+                                 ], null, ['class' => 'form-control',
+                                  'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                              </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                {!! Form::select('major',$spacializations, null, ['class' => 'form-control', 'placeholder' =>  __('essentials::lang.major'), 'required']) !!}
+                                {!! Form::select('major',$spacializations, null, ['class' => 'form-control','style'=>'height:40px',
+                                     'placeholder' =>  __('essentials::lang.major'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
@@ -118,11 +120,12 @@
                             
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
-                                {!! Form::select('graduation_country',$countries, null, ['class' => 'form-control', 'placeholder' =>  __('essentials::lang.select_country'), 'required']) !!}
+                                {!! Form::select('graduation_country',$countries, null, ['class' => 'form-control','style'=>'height:40px',
+                                     'placeholder' =>  __('essentials::lang.select_country'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-                                {!! Form::number('degree', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'required']) !!}
+                                {!! Form::number('degree', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'required', 'step' => 'any']) !!}
                             </div>
                             
                         </div>
@@ -136,6 +139,8 @@
                 </div>
             </div>
         </div>
+       
+        @include('essentials::employee_affairs.employees_qualifications.edit_modal')
     </div>
 </section>
 @endsection
@@ -257,10 +262,86 @@
 
 
 
+            $('body').on('click', '.open-edit-modal', function() {
+        var qualificationId = $(this).data('id');
+        $('#qualificationIdInput').val(qualificationId);
+
+        var editUrl = '{{ route("qualification.edit", ":qualificationId") }}'
+        editUrl = editUrl.replace(':qualificationId', qualificationId);
+        console.log(editUrl);
+
+        $.ajax({
+            url: editUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                var data = response.data;
+
+                $('#editQualificationModal select[name="employee"]').val(data.employee).trigger('change');
+                $('#editQualificationModal select[name="qualification_type"]').val(data.qualification_type).trigger('change');
+                $('#editQualificationModal select[name="major"]').val(data.major).trigger('change');
+                $('#editQualificationModal input[name="graduation_year"]').val(data.graduation_year);
+                $('#editQualificationModal input[name="graduation_institution"]').val(data.graduation_institution);
+                $('#editQualificationModal select[name="graduation_country"]').val(data.graduation_country).trigger('change');
+                $('#editQualificationModal input[name="degree"]').val(data.degree);
+
+                $('#editQualificationModal').modal('show');
+            },
+            error: function(error) {
+                console.error('Error fetching user data:', error);
+            }
+        });
+    });
+
+    $('body').on('submit', '#editQualificationModal form', function (e) {
+    e.preventDefault();
+
+    var qualificationId = $('#qualificationIdInput').val(); // Retrieve qualificationId from the hidden input
+    console.log(qualificationId);
+
+    var urlWithId = '{{ route("updateQualification", ":qualificationId") }}';
+    urlWithId = urlWithId.replace(':qualificationId', qualificationId);
+    console.log(urlWithId);
+
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            if (response.success) {
+                console.log(response);
+                toastr.success(response.msg, 'Success');
+                $('#editQualificationModal').modal('hide');
+            } else {
+                toastr.error(response.msg);
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            // Show a generic error message
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
+
+// Trigger DataTable reload after modal is completely hidden
+$('#editQualificationModal').on('hidden.bs.modal', function () {
+    qualifications_table.ajax.reload();
+});
+
+
+
         });
 
      
     
     </script>
+
+
+
+
 @endsection
 

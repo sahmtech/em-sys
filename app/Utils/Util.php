@@ -1686,7 +1686,7 @@ class Util
 
 
 
-        //Create the user
+      
         $user = User::create($user_details);
 
         if (!empty($user_details['expiration_date'])) {

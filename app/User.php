@@ -22,6 +22,7 @@ use Modules\HousingMovements\Entities\Car;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\HousingMovements\Entities\HtrRoom;
 
 class User extends Authenticatable
 {
@@ -381,14 +382,33 @@ class User extends Authenticatable
         return $this->belongsToMany(EssentialsAllowanceAndDeduction::class, 'essentials_user_allowance_and_deductions', 'user_id', 'allowance_deduction_id');
     }
 
-    // public function UserallowancesAndDeductions()
-    // {
-    //     return $this->belongsToMany(EssentialsUserAllowancesAndDeduction::class, 'user_id');
-    // }
+
 
     public function assignedTo()
     {
         return $this->belongsTo(SalesProject::class, 'assigned_to');
+    }
+
+
+    
+    public function rooms()
+    {
+        return $this->belongsTo(HtrRoom::class, 'room_id');
+    }
+    
+
+    public function calculateTotalSalary()
+    {
+        $allowances = $this->UserallowancesAndDeductions;
+    
+      
+        $totalSalary = $this->essentials_salary;
+    
+        foreach ($allowances as $allowance) {
+            $totalSalary += $allowance->allowancedescription->amount;
+        }
+    
+        return $totalSalary;
     }
 
     public function UserallowancesAndDeductions()

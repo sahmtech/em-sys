@@ -49,23 +49,28 @@ class ProjectWorkersController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        // $contacts = Contact::whereIn('type', ['customer', 'lead'])->pluck('name', 'id');
+       
         $contacts = SalesProject::all()->pluck('name', 'id');
-
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $users = User::where('user_type', 'worker')
 
+        $users = User::with(['rooms'])
+             ->where('user_type', 'worker')
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+       
         $users->select(
             'users.*',
+            'users.room_id',
             'users.id_proof_number',
             'users.nationality_id',
             'users.essentials_salary',
-            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'contact_locations.name as contact_name'
         );
+
+        //dd($users->find(5858));
+        
         if (request()->ajax()) {
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -98,6 +103,20 @@ class ProjectWorkersController extends Controller
                 ->addColumn('contact_name', function ($user) {
                     return $user->assignedTo?->name;
                 })
+
+                
+                ->addColumn('building', function ($user) {
+                    return $user->rooms?->building->name;
+                })
+
+                ->addColumn('building_address', function ($user) {
+                    return $user->rooms?->building->address;
+                })
+
+                ->addColumn('room_number', function ($user) {
+                    return $user->rooms?->room_number;
+                })
+
 
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
@@ -152,7 +171,107 @@ class ProjectWorkersController extends Controller
      */
     public function show($id)
     {
-        return view('housingmovements::show');
+        if (!auth()->user()->can('user.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $user = User::with(['contactAccess','assignedTo','OfficialDocument','proposal_worker'])
+            ->find($id);
+
+
+
+            $documents = null;
+
+            if ($user->user_type == 'employee') {
+               
+                $documents = $user->OfficialDocument;
+            } 
+
+            else if ($user->user_type == 'worker') {
+               
+                if (!empty($user->proposal_worker_id)) {
+                  
+                    $officialDocuments = $user->OfficialDocument;
+                    $workerDocuments = $user->proposal_worker?->worker_documents;
+                    $documents = $officialDocuments->merge($workerDocuments);
+                } 
+                else {
+                    $documents = $user->OfficialDocument;
+                }
+            }
+            
+        
+    
+
+        $dataArray = [];
+        if (!empty($user->bank_details)) {
+            $dataArray = json_decode($user->bank_details, true)['bank_name'];
+        }
+
+
+        $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
+        $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
+        $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
+        $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+       
+
+        $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+
+        if ($professionId !== null) {
+            $profession = EssentialsProfession::find($professionId)->name;
+        } else {
+            $profession = "";
+        }
+
+        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+        if ($specializationId !== null) {
+            $specialization = EssentialsSpecialization::find($specializationId)->name;
+        } else {
+            $specialization = "";
+        }
+
+
+        $user->profession = $profession;
+        $user->specialization = $specialization;
+
+
+        $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
+
+        $users = User::forDropdown($business_id, false);
+
+        $activities = Activity::forSubject($user)
+            ->with(['causer', 'subject'])
+            ->latest()
+            ->get();
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $nationality_id = $user->nationality_id;
+        $nationality = "";
+       
+        if (!empty($nationality_id)) {
+            $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
+        }
+
+
+
+
+        return view('housingmovements::projects_workers.show')->with(compact(
+            'user',
+            'view_partials',
+            'users',
+            'activities',
+            'bank_name',
+            'admissions_to_work',
+            'Qualification',
+            'Contract',
+            'nationalities',
+            'nationality',
+            'documents',
+        ));
+
+       
     }
 
     /**

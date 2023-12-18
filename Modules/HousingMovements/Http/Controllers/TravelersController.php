@@ -82,6 +82,7 @@ class TravelersController extends Controller
             ->select([
                 'ir_proposed_labors.id',
                 'passport_number',
+                'medical_examination',
                 'transaction_sell_line_id', 
                 'visa_id',
                 'arrival_date',
@@ -162,8 +163,11 @@ class TravelersController extends Controller
             
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
         $salesProjects = SalesProject::all()->pluck('name', 'id');
-    
-        return view('housingmovements::travelers.index')->with(compact('salesProjects','buildings'));
+        $roomStatusOptions = [
+            'busy' => __('housingmovements::lang.busy_rooms'),
+            'available' => __('housingmovements::lang.available_rooms'),
+        ];
+        return view('housingmovements::travelers.index')->with(compact('salesProjects','buildings','roomStatusOptions'));
     }
 
     public function getSelectedRowsData(Request $request)
@@ -289,12 +293,56 @@ class TravelersController extends Controller
 
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
         $salesProjects = SalesProject::all()->pluck('name', 'id');
-
-        return view('housingmovements::travelers.partials.housed_workers')->with(compact('salesProjects','buildings'));
+        $roomStatusOptions = [
+            'busy' => __('housingmovements::lang.busy_rooms'),
+            'available' => __('housingmovements::lang.available_rooms'),
+        ];
+        return view('housingmovements::travelers.partials.housed_workers')->with(compact('salesProjects','buildings','roomStatusOptions'));
     }
 
    
-   
+   public function getRoomNumberOnStatus(Request $request)
+   {
+                $input = $request->input('option');
+                $input_building=$request->input('htr_building');
+                $roomNumbers = [];
+                if($input == "busy")
+                {
+                 
+                    $rooms = DB::table('htr_rooms')
+                    ->where('htr_building_id', $input_building)
+                    ->where('beds_count', '=', 0)
+                    ->get(['id', 'room_number', 'beds_count']);
+
+                    foreach ($rooms as $room) {
+                        $roomNumbers[] = [
+                            'id' => $room->id,
+                            'text' => $room->room_number,
+                            'beds_count' => $room->beds_count,
+                        ];}
+       
+                }
+                else if($input == "available")
+                {
+                    $rooms = DB::table('htr_rooms')
+                    ->where('htr_building_id', $input_building)
+                    ->where('beds_count', '>', 0)
+                    ->get(['id', 'room_number', 'beds_count']);
+        
+                        foreach ($rooms as $room) {
+                            $roomNumbers[] = [
+                                'id' => $room->id,
+                                'text' => $room->room_number,
+                                'beds_count' => $room->beds_count,
+                            ];
+                        }
+                }
+
+                return response()->json($roomNumbers);
+              
+   }
+
+
     public function housed_data(Request $request)
     {
         try {
@@ -324,7 +372,7 @@ class TravelersController extends Controller
                 DB::beginTransaction();
     
                 foreach ($selectedData as $data) {
-                    // Check if there are available beds in the room
+                   
                     $room = DB::table('htr_rooms')
                         ->where('id', $data['room_number'])
                         ->where('beds_count', '>', 0)
@@ -332,13 +380,13 @@ class TravelersController extends Controller
                         ->first();
     
                     if ($room) {
-                        // Update the user's room
+                     
                         User::where('proposal_worker_id', $data['worker_id'])
                             ->update([
                                 'room_id' => $room->id,
                             ]);
     
-                        // Decrement bed_count
+                       
                         DB::table('htr_rooms')
                             ->where('id', $room->id)
                             ->decrement('beds_count');
@@ -352,14 +400,14 @@ class TravelersController extends Controller
                             'essentials_shift_id' => $data['shift_id'],
                         ]);
                     } else {
-                        // If no available beds, roll back transaction and return message
+                        
                         DB::rollBack();
                         $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
                         return response()->json($output);
                     }
                 }
     
-                // If the loop completes, commit the transaction
+            
                 DB::commit();
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {
@@ -392,6 +440,8 @@ class TravelersController extends Controller
        
         return response()->json(['roomNumber' => $roomNumbers]);
     }
+
+    
     public function getShifts($projectId)
         {
             $shifts = DB::table('essentials_shifts')->where('project_id', $projectId)->pluck('name', 'id');
