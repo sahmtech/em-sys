@@ -145,7 +145,7 @@ class TravelersController extends Controller
 
                 ->addColumn('action', function ($row) {
                   $html='';
-                   // $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                   
                     return $html;
                 })
                 ->filter(function ($query) use ($request) {
@@ -275,7 +275,7 @@ class TravelersController extends Controller
 
                 ->addColumn('action', function ($row) {
                   $html='';
-                   // $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                   
                     return $html;
                 })
                 ->filter(function ($query) use ($request) {

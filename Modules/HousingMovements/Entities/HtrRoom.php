@@ -13,6 +13,8 @@ class HtrRoom extends Model
     public $table='htr_rooms';
     protected $guarded = ['id'];
 
+
+    
     public function building()
     {
         return $this->belongsTo(HtrBuilding::class, 'htr_building_id');

@@ -375,15 +375,15 @@
 
     <script>
         $(document).ready(function() {
-            // Initial check when the page loads
+            
             toggleBorderNoVisibility();
 
-            // Event listener for the dropdown change
+            
             $('#id_proof_name').on('change', function() {
                 toggleBorderNoVisibility();
             });
 
-            // Function to toggle visibility based on the selected option
+            
             function toggleBorderNoVisibility() {
                 var idProofName = $('#id_proof_name').val();
                 if (idProofName === 'eqama') {
@@ -506,7 +506,7 @@
                     document.getElementById('bankCodeError').innerText = 'رقم البنك يجب أن يبدأ بـ SA';
                 }
 
-                // Trim the input if it's longer than 24 characters
+                
                 if (bankCode.length > 24) {
                     input.value = bankCode.substr(0, 24);
                 }
