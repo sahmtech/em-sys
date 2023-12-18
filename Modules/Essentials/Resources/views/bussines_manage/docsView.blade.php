@@ -99,7 +99,7 @@
     
                         <div class="form-group col-md-6">
                             {!! Form::label('renew_date', __('essentials::lang.renew_date') . ':*') !!}
-                            {!! Form::date('renew_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.renew_date'), 'required']) !!}
+                            {!! Form::date('renew_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.renew_date')]) !!}
                         </div>
     
                         <div class="form-group col-md-6">
