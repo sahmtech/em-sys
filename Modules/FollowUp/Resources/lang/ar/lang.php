@@ -256,6 +256,7 @@ return [
 
     'document_delivery' => 'سندات التسليم',
     'nots' => 'الملاحظات',
+    'no_document_delivery_to_show' => 'لا يوجد سندات',
 
 
 

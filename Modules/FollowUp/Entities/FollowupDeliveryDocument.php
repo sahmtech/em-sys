@@ -10,7 +10,7 @@ class followupDeliveryDocument extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['worker_id', 'document_id', 'file_path', 'nots'];
+    protected $fillable = ['user_id', 'document_id', 'file_path', 'nots'];
 
 
     public function document()
@@ -20,6 +20,6 @@ class followupDeliveryDocument extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'worker_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

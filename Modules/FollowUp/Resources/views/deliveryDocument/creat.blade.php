@@ -23,7 +23,7 @@
                             <div class="col-sm-6" style="margin-top: 0px;">
                                 {!! Form::label('worker', __('followup::lang.worker')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control " required name="worker_id" id="worker__select"
+                                <select class="form-control " required name="user_id" id="worker__select"
                                     style="padding: 2px;">
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}">

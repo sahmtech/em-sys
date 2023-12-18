@@ -26,11 +26,11 @@
                             <div class="col-sm-6" style="margin-top: 0px;">
                                 {!! Form::label('worker', __('followup::lang.worker')) !!}<span style="color: red; font-size:10px"> *</span>
 
-                                <select class="form-control " name="worker_id" id="worker__select"
+                                <select class="form-control " name="user_id" id="worker__select"
                                     style="padding: 2px;">
                                     @foreach ($workers as $worker)
                                         <option value="{{ $worker->id }}"
-                                            @if ($worker->id == $document_delivery->worker_id) selected @endif>
+                                            @if ($worker->id == $document_delivery->user_id) selected @endif>
                                             {{ $worker->id_proof_number . ' - ' . $worker->first_name . ' ' . $worker->last_name }}
                                         </option>
                                     @endforeach

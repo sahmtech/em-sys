@@ -105,7 +105,7 @@ class FollowupDeliveryDocumentController extends Controller
             $filePath = $file->store('/documents');
         }
         followupDeliveryDocument::create([
-            'worker_id' => $request->input('worker_id'),
+            'user_id' => $request->input('user_id'),
             'document_id' => $request->input('document_id'),
             'file_path' => $filePath,
             'nots' => $request->input('nots'),
@@ -158,7 +158,7 @@ class FollowupDeliveryDocumentController extends Controller
                 $update_data['file_path']= $file->store('/documents');
             }
     
-            $update_data['worker_id'] = $request->input('worker_id');
+            $update_data['user_id'] = $request->input('user_id');
             $update_data['document_id'] = $request->input('document_id');
             $update_data['nots'] = $request->input('nots');
             
