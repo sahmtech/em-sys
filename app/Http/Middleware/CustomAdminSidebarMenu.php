@@ -354,7 +354,7 @@ class CustomAdminSidebarMenu
                     __('essentials::lang.work_cards'),
                     function ($sub) use ($enabled_modules) {
                        
-                            $suburl(
+                            $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
                                 __('essentials::lang.renewal_residence'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
