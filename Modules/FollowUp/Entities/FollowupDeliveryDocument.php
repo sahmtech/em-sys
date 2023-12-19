@@ -15,7 +15,7 @@ class followupDeliveryDocument extends Model
 
     public function document()
     {
-        return $this->belongsTo(followupDocument::class, 'document_id');
+        return $this->belongsTo(FollowupDocument::class, 'document_id');
     }
 
     public function user()

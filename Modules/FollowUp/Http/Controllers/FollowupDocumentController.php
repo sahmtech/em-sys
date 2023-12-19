@@ -7,7 +7,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\FollowUp\Entities\followupDocument;
+use Modules\FollowUp\Entities\FollowupDocument;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowupDocumentController extends Controller
@@ -18,7 +18,7 @@ class FollowupDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $documents = followupDocument::all();
+        $documents = FollowupDocument::all();
         if (request()->ajax()) {
 
             // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
@@ -88,7 +88,7 @@ class FollowupDocumentController extends Controller
         DB::beginTransaction();
         try {
 
-            followupDocument::create(
+            FollowupDocument::create(
                 [
                     'name_ar' => $request->input('name_ar'),
                     'name_en' => $request->input('name_en'),
@@ -120,7 +120,7 @@ class FollowupDocumentController extends Controller
      */
     public function edit($id)
     {
-        $document = followupDocument::find($id);
+        $document = FollowupDocument::find($id);
         return view('followup::document.edit', compact('document'));
     }
 
@@ -135,7 +135,7 @@ class FollowupDocumentController extends Controller
         DB::beginTransaction();
         try {
 
-            $document = followupDocument::find($id);
+            $document = FollowupDocument::find($id);
             $document->update(
                 [
                     'name_ar' => $request->input('name_ar'),
@@ -160,7 +160,7 @@ class FollowupDocumentController extends Controller
     {
         if (request()->ajax()) {
             try {
-                followupDocument::find($id)->delete();
+                FollowupDocument::find($id)->delete();
                 $output = [
                     'success' => true,
                     'msg' => 'تم حذف السند بنجاح',

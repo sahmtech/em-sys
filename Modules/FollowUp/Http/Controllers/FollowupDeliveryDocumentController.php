@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\FollowUp\Entities\followupDeliveryDocument;
-use Modules\FollowUp\Entities\followupDocument;
+use Modules\FollowUp\Entities\FollowupDocument;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowupDeliveryDocumentController extends Controller
@@ -87,7 +87,7 @@ class FollowupDeliveryDocumentController extends Controller
     public function create()
     {
         $workers = User::where('user_type', 'worker')->get();
-        $documents = followupDocument::all();
+        $documents = FollowupDocument::all();
         return view('followup::deliveryDocument.creat', compact('workers', 'documents'));
     }
 
@@ -136,7 +136,7 @@ class FollowupDeliveryDocumentController extends Controller
     public function edit($id)
     {
         $workers = User::where('user_type', 'worker')->get();
-        $documents = followupDocument::all();
+        $documents = FollowupDocument::all();
         $document_delivery = followupDeliveryDocument::find($id);
 
         return view('followup::deliveryDocument.edit', compact('workers', 'documents', 'document_delivery'));
