@@ -197,6 +197,27 @@ class EssentialsCardsController extends Controller
         return view('essentials::cards.index')->with(compact('sales_projects','proof_numbers'));
     }
 
+    public function residencyreports(Request $request)
+    {
+        $sales_projects = SalesProject::pluck('name', 'id');
+        
+        $proof_numbers = User::where('users.user_type', 'worker')
+            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+            ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')
+            ->get();
+    
+        $report = EssentialsResidencyHistory::with(['worker'])->select('*');
+    
+        if ($request->ajax()) {
+            return Datatables::of($report)
+                ->editColumn('user', function ($row) {
+                    return $row->worker->first_name . ' ' . $row->worker->mid_name . ' ' . $row->worker->last_name ?? '';
+                })
+                ->make(true);
+        }
+    
+        return view('essentials::cards.reports.residenceReport')->with(compact('sales_projects', 'proof_numbers'));
+    }
     public function postRenewData(Request $request)
     {
         try {
@@ -243,22 +264,31 @@ class EssentialsCardsController extends Controller
             
          
             if ($card) {
-                $residencyHistory = EssentialsResidencyHistory::firstOrNew(['worker_id' => $data['employee_id']]);
-                
-                $residencyHistory->fill([
+
+                EssentialsResidencyHistory::create([
+                    'worker_id' => $data['employee_id'],
                     'renew_start_date' => $data['expiration_date'],
                     'residency_number' => $data['number'],
                     'duration' => $data['renew_duration'],
                     'renew_end_date' => $renewEndDate,
                 ]);
+
+                // $residencyHistory = EssentialsResidencyHistory::firstOrNew(['worker_id' => $data['employee_id']]);
+                
+                // $residencyHistory->fill([
+                //     'renew_start_date' => $data['expiration_date'],
+                //     'residency_number' => $data['number'],
+                //     'duration' => $data['renew_duration'],
+                //     'renew_end_date' => $renewEndDate,
+                // ]);
         
-                $residencyHistory->save();
+                // $residencyHistory->save();
 
-                $card->update(['duration' => $data['renew_duration']]);
+                // $card->update(['duration' => $data['renew_duration']]);
               
-                $card->update(['fees' => $data['fees']]);
+                // $card->update(['fees' => $data['fees']]);
 
-                $card->update(['Payment_number' => $data['Payment_number']]);
+                // $card->update(['Payment_number' => $data['Payment_number']]);
 
               
                $document=EssentialsOfficialDocument::where('type', 'residence_permit')
@@ -287,6 +317,8 @@ class EssentialsCardsController extends Controller
     // return $output;
     }
 
+
+   
     public function getSelectedRowsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');

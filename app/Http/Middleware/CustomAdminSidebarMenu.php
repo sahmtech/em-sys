@@ -359,6 +359,12 @@ class CustomAdminSidebarMenu
                                 __('essentials::lang.renewal_residence'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                             )->order(1);
+
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+                                __('essentials::lang.residencyreports'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                            )->order(1);
                         
                     },
                     ['icon' => 'fa fas fa-plus-circle']

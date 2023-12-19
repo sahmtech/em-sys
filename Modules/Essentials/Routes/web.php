@@ -102,7 +102,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get-responsible-data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'get_responsible_data'])->name('get_responsible_data');
         Route::post('/post_renew_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postRenewData'])->name('postRenewData');
         Route::post('/get_selected_workcards_data', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'getSelectedRowsData'])->name('getSelectedworkcardData');
-
+        Route::get('/get_residency_report',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports'])->name('getResidencyreport');
+      
         Route::get('/cities', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'index'])->name('cities');
         Route::get('/createCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'create'])->name('createCity');
         Route::post('/storeCity', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'store'])->name('storeCity');
