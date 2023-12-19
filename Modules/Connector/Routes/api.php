@@ -97,6 +97,8 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
     Route::get('logout', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'logout']);
     Route::get('terms_privacy', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'terms_privacy']);
     Route::get('readAllNotifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'readAllNotifications']);
+   // Route::get('removeNotification/{id}', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'removeNotification']);
+  //  Route::get('notifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'getNotifications']);
 });
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {

@@ -22,4 +22,8 @@ class EssentialsAttendance extends Model
     {
         return $this->belongsTo(\Modules\Essentials\Entities\Shift::class, 'essentials_shift_id');
     }
+    public function attendanceStatus()
+    {
+        return $this->belongsTo(\Modules\Essentials\Entities\EssentialsAttendanceStatus::class, 'status_id');
+    }
 }
