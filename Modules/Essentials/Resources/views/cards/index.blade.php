@@ -33,7 +33,7 @@
             'class' => 'form-control select2',
             'multiple'=>'multiple',
             'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
+           
             'name'=>'proof_numbers_select[]',
             'id' => 'proof_numbers_select'
         ]) !!}

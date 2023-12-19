@@ -86,11 +86,11 @@ class EssentialsCardsController extends Controller
         });
     }
 
-    // if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
-    //     $card->whereHas('user', function ($query) use ($request) {
-    //         $query->whereIn('id', $request->input('proof_numbers'));
-    //     });
-    // }
+    if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
+        $card->whereHas('user', function ($query) use ($request) {
+            $query->whereIn('id', $request->input('proof_numbers'));
+        });
+    }
 
 
    
@@ -207,7 +207,11 @@ class EssentialsCardsController extends Controller
             ->get();
     
         $report = EssentialsResidencyHistory::with(['worker'])->select('*');
-    
+        if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
+            $report->whereHas('worker', function ($query) use ($request) {
+                $query->whereIn('id', $request->input('proof_numbers'));
+            });
+        }
         if ($request->ajax()) {
             return Datatables::of($report)
                 ->editColumn('user', function ($row) {
