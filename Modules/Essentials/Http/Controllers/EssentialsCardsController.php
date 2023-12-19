@@ -232,13 +232,13 @@ class EssentialsCardsController extends Controller
         DB::beginTransaction();
         foreach ($selectedData as $data) {
          
-            $worker = EssentialsWorkCard::find($data['id']);
-          
+            $card = EssentialsWorkCard::find($data['id']);
+            
             $renewStartDate = Carbon::parse($data['expiration_date']);
             $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
             
          
-            if ($worker) {
+            if ($card) {
                 EssentialsResidencyHistory::create([
                     'worker_id' =>  $data['employee_id'],
                     'renew_start_date' =>  $data['expiration_date'],
@@ -248,6 +248,7 @@ class EssentialsCardsController extends Controller
 
 
                 ]);
+                $card->update(['expiration_date' => $renewEndDate]);
               
             }
            
