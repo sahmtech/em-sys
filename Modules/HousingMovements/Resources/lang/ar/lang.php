@@ -44,7 +44,7 @@ return [
     'medical_examination_not_done'=>'لم تتم ',
     'driverName' => 'اسم السائق',
     'busy_rooms'=>'الغرف الشاغرة',
-      'available_rooms'=>'الغرف المتاحة ',
+    'available_rooms'=>'الغرف المتاحة ',
     'room_status'=>'حالة الغرفة',
     'search' => 'بحث',
     'viewAll' => 'عرض الكل',
