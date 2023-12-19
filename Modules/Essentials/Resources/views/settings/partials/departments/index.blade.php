@@ -39,7 +39,9 @@
                     </thead>
                 </table>
             </div>
-            <div class="modal fade" id="addAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+
+            
+        <div class="modal fade" id="addAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <form action="{{ route('storeManager', ':id') }}" method="POST" id="appointmentForm">

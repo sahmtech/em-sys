@@ -35,6 +35,7 @@
                  
                     {!! Form::hidden('selected_rows', null, ['id' => 'selected_rows']); !!}
                     @include('housingmovements::travelers.partials.border_arrival_modal')
+                  
                     {!! Form::submit(__('housingmovements::lang.arrived'),
                          array('class' => 'btn btn-xs btn-success', 'id' => 'arraived-selected')) !!}
 

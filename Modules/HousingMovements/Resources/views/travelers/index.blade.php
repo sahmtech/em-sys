@@ -181,7 +181,7 @@
             getCheckRecords();
         });
 
-    $('#arraived-selected').on('click', function (e) {
+$('#arraived-selected').on('click', function (e) {
         e.preventDefault();
 
         var selectedRows = getCheckRecords();
@@ -275,7 +275,7 @@
 
 
 
-        $('#edit-selected').on('click', function (e) {
+    $('#edit-selected').on('click', function (e) {
             e.preventDefault();
 
             var selectedRows =  getCheckRecords();
