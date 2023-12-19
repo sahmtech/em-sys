@@ -206,7 +206,17 @@
                         </div>
 
                         <div class="row">
-
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('expiry_date', __('housingmovements::lang.expiry_date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::date('expiry_date', '', [
+                                        'class' => 'form-control',
+                                        'required',
+                                        'placeholder' => __('housingmovements::lang.expiry_date'),
+                                        'id' => 'expiry_date',
+                                    ]) !!}
+                                </div>
+                            </div>
 
                             <div class="col-sm-6">
                                 <div class="form-group">

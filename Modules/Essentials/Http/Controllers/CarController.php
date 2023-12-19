@@ -68,7 +68,10 @@ class CarController extends Controller
                 })
                 ->editColumn('vehicle_status', function ($row) {
                     return $row->vehicle_status ?? '';
-                })
+                })  
+                ->editColumn('expiry_date', function ($row) {
+                    return $row->expiry_date ?? '';
+                })  
                 ->editColumn('test_end_date', function ($row) {
                     return $row->test_end_date ?? '';
                 })
@@ -160,7 +163,7 @@ class CarController extends Controller
                 'serial_number' => $request->input('serial_number'),
                 'structure_no' => $request->input('structure_no'),
                 'vehicle_status' => $request->input('vehicle_status'),
-                // 'expiry_date' => $request->input('expiry_date'),
+                'expiry_date' => $request->input('expiry_date'),
                 'test_end_date' => $request->input('test_end_date'),
                 'examination_status' => $request->input('examination_status'),
                 'insurance_status' => $request->input('insurance_status'),
@@ -229,7 +232,7 @@ class CarController extends Controller
                 'serial_number' => $request->input('serial_number'),
                 'structure_no' => $request->input('structure_no'),
                 'vehicle_status' => $request->input('vehicle_status'),
-                // 'expiry_date' => $request->input('expiry_date'),
+                'expiry_date' => $request->input('expiry_date'),
                 'test_end_date' => $request->input('test_end_date'),
                 'examination_status' => $request->input('examination_status'),
                 'insurance_status' => $request->input('insurance_status'),

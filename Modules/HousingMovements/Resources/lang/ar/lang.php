@@ -86,6 +86,7 @@ return [
     'private_transfer'=>'نقل خاص',
     'private'=>'خاص',
     'motorcycle'=>'دراجة نارية',
+    'expiry_date'=>'تاريخ انتهاء الاستمارة',
 
 
 

@@ -69,6 +69,7 @@
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.structure_no')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.manufacturing_year')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.vehicle_status')</th>
+                                    <th style="width: 100px !important;">@lang('housingmovements::lang.expiry_date')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.test_end_date')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.examination_status')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.number_seats')</th>
@@ -149,6 +150,9 @@
                     },
                     {
                         "data": "vehicle_status"
+                    },
+                    {
+                        "data": "expiry_date"
                     },
                     {
                         "data": "test_end_date"
