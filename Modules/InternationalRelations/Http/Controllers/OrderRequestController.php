@@ -145,13 +145,13 @@ class OrderRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $query = Transaction::where('business_id', $business_id)
-            ->where('id', $operation->salesContract->transaction->id)->with(['sale_project:id,name,phone_in_charge', 'sell_lines', 'sell_lines.service'])
+            ->where('id', $operation->salesContract->transaction->id)->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
             ->select(
                 'id',
                 'business_id',
                 'location_id',
                 'status',
-                'sales_project_id',
+                'contact_id',
                 'ref_no',
                 'final_total',
                 'down_payment',

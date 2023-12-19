@@ -20,7 +20,6 @@
                     <div>
                         <b>{{ __('sales::lang.operation_order_number') }} :</b></b> {{ $operations->operation_order_no }}<br>
                         <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $operations->contact->supplier_business_name }}<br>
-                        <b>{{ __('sales::lang.project_name') }} :</b></b> {{ $operations->project->name }}<br>
                         <b>{{ __('sales::lang.contact_email') }} :</b></b> {{ $operations->contact->email }}<br>
                        
 
