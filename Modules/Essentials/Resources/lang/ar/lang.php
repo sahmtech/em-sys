@@ -615,6 +615,11 @@ return[
     'employee_number'=>'رقم الموظف',
     'location'=>'الفرع',
     'superior'=>'الرئيس المباشر',
+    
+    'renew_duration'=>'مدة التجديد',
+    'renew_start_date'=>'تاريخ بداية التجديد',
+    'renew_end_date'=>'تاريخ نهاية التجديد',
+
     'employee_status'=>'حالة الموظف',
     'employees_appointments'=>'تعيينات الموظفين',
     'add_Appointment'=>'تعيين موظف',
@@ -934,7 +939,8 @@ return[
     'fees'=>'رسوم  الجوازات ',
     'nationality'=>'الجنسية ',
     'all'=>'الكل',
-    'fixed_no'=>'رقم ثابت',
+   'residencyreports'=>'تقرير تكاليف الإقامات',
+
     'company_name'=>'اسم الشركة',
     'create_work_cards'=>'إضافة كرت عمل',
     'select_altemployee'=>'اختر البديل',
