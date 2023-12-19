@@ -207,8 +207,10 @@ class User extends Authenticatable
         }
 
         $all_users =
-            $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
+        
 
         //Prepend none
         if ($prepend_none) {
@@ -234,8 +236,9 @@ class User extends Authenticatable
     {
         $all_cmmsn_agnts = User::where('business_id', $business_id)
             ->where('is_cmmsn_agnt', 1)
-            ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"));
-
+            ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"));
+            
         $users = $all_cmmsn_agnts->pluck('full_name', 'id');
 
         //Prepend none
@@ -257,7 +260,8 @@ class User extends Authenticatable
     public static function allUsersDropdown($business_id, $prepend_none = true, $prepend_all = false)
     {
         $all_users = User::where('business_id', $business_id)
-            ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"));
+            ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"));
 
         $users = $all_users->pluck('full_name', 'id');
 
@@ -420,6 +424,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id');
     }
+
+    public function essentialsEmployeeAppointmets()
+    {
+        return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
+    }
     public function essentialsworkCard()
     {
         return $this->hasOne(EssentialsWorkCard::class, 'employee_id');
@@ -430,7 +439,8 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class, 'notifiable_id');
     }
 
-    public function Car(){
+    public function Car()
+    {
         return $this->belongsTo(Car::class);
     }
 }

@@ -344,4 +344,3 @@ $('#editQualificationModal').on('hidden.bs.modal', function () {
 
 
 @endsection
-

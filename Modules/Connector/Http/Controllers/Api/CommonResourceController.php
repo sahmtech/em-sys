@@ -4,6 +4,7 @@ namespace Modules\Connector\Http\Controllers\Api;
 
 use App\Account;
 use App\Business;
+use App\User;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
@@ -600,7 +601,7 @@ class CommonResourceController extends ApiController
         $notifications = $user->notifications()->orderBy('created_at', 'DESC')->get();
 
         $notifications_data = $this->commonUtil->parseNotifications($notifications);
-
+       // return User::where('id',$user->id)->first()->allNotifications;
         return new CommonResource($notifications_data);
     }
 

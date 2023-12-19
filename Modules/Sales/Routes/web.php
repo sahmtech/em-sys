@@ -20,7 +20,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/', [\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->name('sales_landing');
-
+        Route::get('/getOperationAvailableContracts', [\Modules\Sales\Http\Controllers\SalesController::class, 'getOperationAvailableContracts'])->name('getOperationAvailableContracts');
         Route::get('/sales_sources', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index'])->name('sales_sources');
         Route::post('/store_source', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'store'])->name('store_source');
         Route::DELETE('/source/delete/{id}', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'destroy'])->name('sale_source_destroy');
@@ -94,7 +94,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //Route::post('/storeSaleOperation', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.storeSaleOperation');
 
 
-        
+
         Route::prefix('saleProjects')->group(function () {
             Route::get('/', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'index'])->name('sale.saleProjects');
             Route::post('/addSaleProject', [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'store'])->name('sale.storeSaleProject');

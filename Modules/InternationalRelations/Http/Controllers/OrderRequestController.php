@@ -11,6 +11,7 @@ use App\Utils\ModuleUtil;
 use App\Contact;
 use App\Transaction;
 use App\User;
+use App\TransactionSellLine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -188,16 +189,17 @@ class OrderRequestController extends Controller
 
         $sellLineIds = $query->pluck('sell_lines.*.id')->flatten()->toArray();
 
-        $irDelegations = IrDelegation::with('agency','transactionSellLine.service.profession')->whereIn('transaction_sell_line_id', $sellLineIds)->get();
+        $irDelegations = IrDelegation::with('agency', 'transactionSellLine.service.profession')->whereIn('transaction_sell_line_id', $sellLineIds)->get();
 
         return view('internationalrelations::orderRequest.viewDelegation')->with(compact('irDelegations'));
     }
     public function saveRequest(Request $request)
     {
 
+      
         try {
 
-    
+
             $order_id = isset($request->order_id) ? $request->order_id : null;
             $order = SalesOrdersOperation::find($order_id);
 
@@ -211,7 +213,6 @@ class OrderRequestController extends Controller
             foreach ($data_array as $item) {
 
                 $sumTargetQuantity += $item['target_quantity'];
-             
             }
 
             if ($sumTargetQuantity > $order->orderQuantity - $order->DelegatedQuantity) {
@@ -222,40 +223,49 @@ class OrderRequestController extends Controller
                 $order->Status = 'under_process';
                 $order->save();
             }
-
+         
             foreach ($data_array as $index => $item) {
                 if (isset($item['target_quantity'])) {
                     $filePath = null;
+                   
 
                     if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
-                     
+
                         $file = $request->file('attachments')[$index];
                         $filePath = $file->store('/delegations_validation_files');
-                       
-                    } 
+                    }
+                    $sellLine=TransactionSellLine::where('service_id', $item['product_id'])->first();
 
-                    $delegation = DB::table('ir_delegations')
-                        ->where('transaction_sell_line_id', $item['product_id'])
+                    $delegation = IrDelegation::where('transaction_sell_line_id', $sellLine->id)
                         ->where('agency_id', $item['agency_name'])
                         ->first();
 
-                        if ($delegation) {
-                            DB::table('ir_delegations')
-                                ->where('transaction_sell_line_id', $item['product_id'])
-                                ->where('agency_id', $item['agency_name'])
-                                ->update([
-                                    'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
-                                    'validationFile' => $filePath ?? null
-                                ]);
-                        } else {
-
+                    if ($delegation) {
+                        IrDelegation::where('transaction_sell_line_id', $sellLine->id)
+                            ->where('agency_id', $item['agency_name'])
+                            ->update([
+                                'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
+                                'validationFile' => $filePath ?? null
+                            ]);
+                            
+                        TransactionSellLine::where('id', $sellLine->id)->update([
+                            'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
                        
+                        ]);
 
-                        DB::table('ir_delegations')->insert([
-                            'transaction_sell_line_id' => $item['product_id'],
+                    } else {
+
+
+                        IrDelegation::create([
+                            'transaction_sell_line_id' =>  $sellLine->id,
                             'agency_id' => $item['agency_name'],
                             'targeted_quantity' => $item['target_quantity'],
-                            'validationFile' => $filePath ?? null
+                            'validationFile' => $filePath ?? null,
+                        ]);
+
+                        TransactionSellLine::where('id', $sellLine->id)->update([
+                                'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
+                           
                         ]);
                     }
                 }
@@ -271,18 +281,15 @@ class OrderRequestController extends Controller
             return response()->json(['success' => true, 'message' =>  __('lang_v1.saved_successfully')]);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
-            ]; 
+            ];
             return redirect()->route('order_request')->with($output);
         }
-    
-      
-       
     }
-  
+
     public function store(Request $request)
     {
     }
@@ -299,10 +306,42 @@ class OrderRequestController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+
+    public function getNationalities(Request $request)
     {
-        return view('internationalrelations::edit');
+        $orderId = $request->input('orderId');
+
+        $operation = SalesOrdersOperation::with('salesContract.transaction')
+            ->where('id', $orderId)
+            ->first();
+
+        $businessId = request()->session()->get('user.business_id');
+        $transactionId = $operation->salesContract->transaction->id;
+
+
+        $transaction = Transaction::where('business_id', $businessId)
+            ->where('id', $transactionId)
+            ->with([
+                'sell_lines' => function ($query) {
+                    $query->with([
+                        'service' => function ($query) {
+                            $query->with('nationality'); 
+                        }
+                    ]);
+                }
+            ])
+            ->first();
+
+     
+        $nationalities = collect($transaction->sell_lines)
+            ->pluck('service.nationality')
+            ->unique()
+            ->values()
+            ->all();
+        
+        return response()->json(['success' => true, 'data' => ['nationalities' => $nationalities]]);
     }
+
 
     /**
      * Update the specified resource in storage.

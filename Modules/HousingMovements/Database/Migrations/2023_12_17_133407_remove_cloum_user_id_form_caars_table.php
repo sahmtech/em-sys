@@ -13,7 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('essentials_residency_history');
+        Schema::table('housing_movements_cars', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+        });
     }
 
     /**
@@ -23,10 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::create('essentials_residency_history', function (Blueprint $table) {
-            $table->bigIncrements('id');
-
-            $table->timestamps();
+        Schema::table('housing_movements_cars', function (Blueprint $table) {
+            $table->string('user_id');
         });
     }
 };

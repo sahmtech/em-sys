@@ -89,7 +89,8 @@ class BusinessLocationController extends Controller
                 
                 ->addColumn(
                     'action',
-                    '<button type="button" data-href="{{action(\'App\Http\Controllers\BusinessLocationController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".location_edit_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
+                    '<a href="{{route(\'location.map\', [$id])}}" class="btn btn-success btn-xs"><i class="fa fa-map-marked-alt"></i> @lang("business.coordinates")</a>
+                    <button type="button" data-href="{{action(\'App\Http\Controllers\BusinessLocationController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".location_edit_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
                     <a href="{{route(\'location.settings\', [$id])}}" class="btn btn-success btn-xs"><i class="fa fa-wrench"></i> @lang("messages.settings")</a>
 
                     <button type="button" data-href="{{action(\'App\Http\Controllers\BusinessLocationController@activateDeactivateLocation\', [$id])}}" class="btn btn-xs activate-deactivate-location @if($is_active) btn-danger @else btn-success @endif"><i class="fa fa-power-off"></i> @if($is_active) @lang("lang_v1.deactivate_location") @else @lang("lang_v1.activate_location") @endif </button>

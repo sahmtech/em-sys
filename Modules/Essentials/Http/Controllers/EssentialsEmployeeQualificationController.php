@@ -21,7 +21,7 @@ class EssentialsEmployeeQualificationController extends Controller
     {
         $this->moduleUtil = $moduleUtil;
     }
-    
+
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
@@ -30,14 +30,13 @@ class EssentialsEmployeeQualificationController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $can_crud_employee_qualifications = auth()->user()->can('essentials.crud_employee_qualifications');
-        if (! $can_crud_employee_qualifications) {
+        if (!$can_crud_employee_qualifications) {
             abort(403, 'Unauthorized action.');
         }
-        $spacializations=EssentialsSpecialization::all()->pluck('name','id');
-        $countries= $countries = EssentialsCountry::forDropdown();
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $countries = $countries = EssentialsCountry::forDropdown();
         if (request()->ajax()) {
-            $employees_qualifications = EssentialsEmployeesQualification::
-                join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
+            $employees_qualifications = EssentialsEmployeesQualification::join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
                 ->where('u.business_id', $business_id)
                 ->select([
                     'essentials_employees_qualifications.id',
@@ -48,7 +47,7 @@ class EssentialsEmployeeQualificationController extends Controller
                     'essentials_employees_qualifications.graduation_institution',
                     'essentials_employees_qualifications.graduation_country',
                     'essentials_employees_qualifications.degree',
-        
+
                 ]);
 
             if (!empty(request()->input('qualification_type')) && request()->input('qualification_type') !== 'all') {
@@ -61,13 +60,13 @@ class EssentialsEmployeeQualificationController extends Controller
 
 
             return Datatables::of($employees_qualifications)
-            ->editColumn('graduation_country',function($row)use($countries){
-                $item = $countries[$row->graduation_country]??'';
+                ->editColumn('graduation_country', function ($row) use ($countries) {
+                    $item = $countries[$row->graduation_country] ?? '';
 
-                return $item;
-            })
-            ->editColumn('major',function($row)use($spacializations){
-                $item = $spacializations[$row->major]??'';
+                    return $item;
+                })
+                ->editColumn('major', function ($row) use ($spacializations) {
+                    $item = $spacializations[$row->major] ?? '';
 
                 return $item;
             })
@@ -88,29 +87,31 @@ class EssentialsEmployeeQualificationController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-                $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
-                $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-                $users = $all_users->pluck('full_name', 'id');
-                $countries = EssentialsCountry::forDropdown();
+        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+                ' - ',COALESCE(id_proof_number,'')) as 
+         full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        $countries = EssentialsCountry::forDropdown();
 
         return view('essentials::employee_affairs.employees_qualifications.index')
-        ->with(compact('users','countries','spacializations'));
+            ->with(compact('users', 'countries', 'spacializations'));
     }
-   
+
 
     public function store(Request $request)
     {
-       
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
- 
+
         try {
-            $input = $request->only(['employee', 'qualification_type', 'major', 'graduation_year', 'graduation_institution', 'graduation_country','degree']);
-          
+            $input = $request->only(['employee', 'qualification_type', 'major', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree']);
+
 
             $input2['qualification_type'] = $input['qualification_type'];
             $input2['major'] = $input['major'];
@@ -119,28 +120,31 @@ class EssentialsEmployeeQualificationController extends Controller
             $input2['employee_id'] = $input['employee'];
             $input2['graduation_country'] = $input['graduation_country'];
             $input2['degree'] = $input['degree'];
-        
-            
+
+
             EssentialsEmployeesQualification::create($input2);
-            
- 
-            $output = ['success' => true,
+
+
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
 
-        $query = User::where('business_id', $business_id)->where('users.user_type','!=' ,'admin');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $countries = EssentialsCountry::forDropdown();
-    
-       return redirect()->route('qualifications')->with(compact('users','countries'));
+
+        return redirect()->route('qualifications')->with(compact('users', 'countries'));
     }
 
     public function show($id)
@@ -249,27 +253,27 @@ class EssentialsEmployeeQualificationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             EssentialsEmployeesQualification::where('id', $id)
-                        ->delete();
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
-       return $output;
 
+        return $output;
     }
 }

@@ -334,6 +334,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', [LocationSettingsController::class, 'index'])->name('settings');
         Route::post('settings', [LocationSettingsController::class, 'updateSettings'])->name('settings_update');
+        Route::get('map', [LocationSettingsController::class, 'map'])->name('map');
+        Route::post('save_polygon', [LocationSettingsController::class, 'savePolygon'])->name('save_polygon');
     });
 
     //Business Locations...

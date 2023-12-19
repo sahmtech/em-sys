@@ -3,11 +3,14 @@
 namespace Modules\HousingMovements\Http\Controllers;
 
 use App\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
@@ -21,31 +24,23 @@ class CarController extends Controller
      */
     public function index(Request $request)
     {
+
         $Cars = Car::all();
         $carTypes = CarModel::all();
-        $after_serch = false;
-        $drivers = User::where('user_type', 'worker')->get();
+
+
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-                // $CarModel = CarType::find()->CarModel;
+
 
                 $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
-                // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
             }
 
-            if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
 
-                $Cars = $Cars->where('user_id', request()->input('driver_select'));
-            }
 
             return DataTables::of($Cars)
 
-
-
-                ->editColumn('driver', function ($row) {
-                    return $row->User->id_proof_number . ' - ' . $row->User->first_name . ' ' . $row->User->last_name  ?? '';
-                })
 
                 ->editColumn('car_typeModel', function ($row) {
                     return $row->CarModel->CarType->name_ar . ' - ' . $row->CarModel->name_ar ?? '';
@@ -54,6 +49,36 @@ class CarController extends Controller
                 ->editColumn('plate_number', function ($row) {
                     return $row->plate_number ?? '';
                 })
+                ->editColumn('plate_registration_type', function ($row) {
+                    return __('housingmovements::lang.' . $row->plate_registration_type) ?? '';
+                })
+                ->editColumn('serial_number', function ($row) {
+                    return $row->serial_number ?? '';
+                })
+                ->editColumn('structure_no', function ($row) {
+                    return $row->structure_no ?? '';
+                })
+                ->editColumn('manufacturing_year', function ($row) {
+                    $manufacturingYear = $row->manufacturing_year ?? '';
+                    $year = '';
+                    if (!empty($manufacturingYear)) {
+                        $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $manufacturingYear);
+                        $year = $carbonDate->year;
+                    }
+                    return $year;
+                })
+                ->editColumn('vehicle_status', function ($row) {
+                    return $row->vehicle_status ?? '';
+                })
+                ->editColumn('expiry_date', function ($row) {
+                    return $row->expiry_date ?? '';
+                })  
+                ->editColumn('test_end_date', function ($row) {
+                    return $row->test_end_date ?? '';
+                })
+                ->editColumn('examination_status', function ($row) {
+                    return __('housingmovements::lang.' . $row->examination_status) ?? '';
+                })
 
                 ->editColumn('number_seats', function ($row) {
                     return  $row->number_seats ?? '';
@@ -61,43 +86,29 @@ class CarController extends Controller
                 ->editColumn('color', function ($row) {
                     return $row->color ?? '';
                 })
-
-                ->addColumn('action', function ($row) {
-                    $html = '';
-                    $html = '<div class="btn-group" role="group">
-                    <button id="btnGroupDrop1" type="button"
-                        style="background-color: transparent;
-                    font-size: x-large;
-                    padding: 0px 20px;"
-                        class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-cog" aria-hidden="true"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item btn-modal" style="margin: 2px;"
-                            title="تعديل"
-                            href="' . route('car.edit', ['id' => $row->id]) . ' "
-                            data-href="' . route('car.edit', ['id' => $row->id]) . ' "
-                            data-container="#edit_car_model">
-
-                            <i class="fas fa-edit cursor-pointer"
-                                style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                            تعديل </a>
-
-                        <a class="dropdown-item" style="margin: 2px;" 
-                            href=" ' . route('car.delete', ['id' => $row->id]) . ' "
-                            data-href="' . route('car.delete', ['id' => $row->id]) . '"
-                            {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
-
-                            <i class="fa fa-trash cursor-pointer"
-                                style="padding: 2px;color:red;"></i>
-                            حذف
-
-                        </a>
-                    </div>
-                </div>';
-                    return $html;
+                ->editColumn('insurance_status', function ($row) {
+                    return __('housingmovements::lang.' . $row->insurance_status) ?? '';
                 })
+                ->addColumn(
+                    'action',
+                    function ($row) {
+
+                        $html = '';
+
+                        $html .= '
+                        <a href="' . route('car.edit', ['id' => $row->id])  . '"
+                        data-href="' . route('car.edit', ['id' => $row->id])  . ' "
+                         class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_car_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
+                    ';
+                        $html .= '
+                    <button data-href="' .  route('car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                ';
+
+
+                        return $html;
+                    }
+                )
+
                 ->filter(function ($query) use ($request) {
 
                     // if (!empty($request->input('full_name'))) {
@@ -105,10 +116,10 @@ class CarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'number_seats', 'color'])
+                ->rawColumns(['action', 'car_typeModel', 'plate_number', 'number_seats', 'color'])
                 ->make(true);
         }
-        return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'after_serch', 'drivers', 'Cars'));
+        return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'Cars'));
     }
 
     /**
@@ -117,11 +128,14 @@ class CarController extends Controller
      */
     public function create()
     {
+
+
         $carTypes = CarType::all();
-        $workers = User::where('user_type', 'worker')->get();
-        return view('housingmovements::movementMangment.cars.create', compact('carTypes', 'workers'));
+
+        return view('housingmovements::movementMangment.cars.create', compact('carTypes'));
     }
 
+    // 	
     public function getCarModelByCarType_id($carType_id)
     {
         if (request()->ajax()) {
@@ -142,9 +156,19 @@ class CarController extends Controller
             Car::create([
                 'plate_number' => $request->input('plate_number'),
                 'color' => $request->input('color'),
-                'user_id' => $request->input('user_id'),
+                // 'user_id' => $request->input('user_id'),
                 'car_model_id' => $request->input('car_model_id'),
                 'number_seats' => $request->input('number_seats'),
+                'plate_registration_type' => $request->input('plate_registration_type'),
+                'manufacturing_year' => Carbon::createFromDate($request->input('manufacturing_year'), 1, 1),
+                'serial_number' => $request->input('serial_number'),
+                'structure_no' => $request->input('structure_no'),
+                'vehicle_status' => $request->input('vehicle_status'),
+                'expiry_date' => $request->input('expiry_date'),
+                'test_end_date' => $request->input('test_end_date'),
+                'examination_status' => $request->input('examination_status'),
+                'insurance_status' => $request->input('insurance_status'),
+
 
             ]);
 
@@ -182,10 +206,9 @@ class CarController extends Controller
             $carModel = CarModel::find($car->car_model_id);
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
-            $workers = User::where('user_type', 'worker')->get();
         }
 
-        return view('housingmovements::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes', 'workers'));
+        return view('housingmovements::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes'));
     }
 
     /**
@@ -202,9 +225,18 @@ class CarController extends Controller
             $car->update([
                 'plate_number' => $request->input('plate_number'),
                 'color' => $request->input('color'),
-                'user_id' => $request->input('user_id'),
+                // 'user_id' => $request->input('user_id'),
                 'car_model_id' => $request->input('car_model_id'),
                 'number_seats' => $request->input('number_seats'),
+                'plate_registration_type' => $request->input('plate_registration_type'),
+                'manufacturing_year' => Carbon::createFromDate($request->input('manufacturing_year'), 1, 1),
+                'serial_number' => $request->input('serial_number'),
+                'structure_no' => $request->input('structure_no'),
+                'vehicle_status' => $request->input('vehicle_status'),
+                'expiry_date' => $request->input('expiry_date'),
+                'test_end_date' => $request->input('test_end_date'),
+                'examination_status' => $request->input('examination_status'),
+                'insurance_status' => $request->input('insurance_status'),
             ]);
 
             $output = [
@@ -226,11 +258,18 @@ class CarController extends Controller
      */
     public function destroy($id)
     {
-        try {
-            Car::find($id)->delete();
-            return redirect()->back();
-        } catch (Exception $e) {
-            return redirect()->back();
+
+        if (request()->ajax()) {
+            try {
+                Car::find($id)->delete();
+                $output = [
+                    'success' => true,
+                    'msg' => 'تم حذف السيارة بنجاح',
+                ];
+            } catch (Exception $e) {
+                return redirect()->back();
+            }
+            return $output;
         }
     }
 
@@ -267,17 +306,6 @@ class CarController extends Controller
 
         $Cars = $query->paginate(5);
 
-        // return  $users_ids = User::where('user_type', 'worker')
-        //     ->pluck('id');
-
-        // if ($request->search == null) {
-        //     $Cars = Car::whereIn('car_model_id', $carModels_ids)
-        //         ->orWhereIn('user_id', $users_ids)->paginate(5);
-        // } else {
-        //     $Cars = Car::where('plate_number', 'like', "%{$request->search}%")
-        //         ->orWhereIn('car_model_id', $carModels_ids)
-        //         ->orWhereIn('user_id', $users_ids)->paginate(5);
-        // }
 
         $carTypes = CarType::all();
         $after_serch = true;

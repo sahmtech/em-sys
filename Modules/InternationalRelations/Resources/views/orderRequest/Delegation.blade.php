@@ -53,6 +53,7 @@
 
                                 <th>#</th>
                                 <th>{{ __('sales::lang.quantity') }}</th>
+                                <th>{{ __('sales::lang.operation_remaining_quantity') }}</th>
                                 <th>{{ __('sales::lang.profession_name') }}</th>
                                 <th>{{ __('sales::lang.specialization_name') }}</th>
                                 <th>{{ __('sales::lang.nationality_name') }}</th>
@@ -72,6 +73,7 @@
                                         <input type="hidden" name="product_id" value="{{ $sell_line->service_id }}">
                                     </td>
                                     <td>{{ $sell_line->quantity }}</td>
+                                    <td>{{ $sell_line->operation_remaining_quantity }}</td>
                                     <td>{{ $sell_line['service']['profession']['name'] }}</td>
                                     <td>{{ $sell_line['service']['specialization']['name'] }}</td>
                                     <td>{{ $sell_line['service']['nationality']['nationality'] }}</td>
@@ -177,7 +179,9 @@
                 formData.append('data_array[' + index + '][attachment]', formData.getAll(
                     'attachments[]')[index]);
             });
-
+            if (!validateTargetQuantities()) {
+                return false;
+            }
             $.ajax({
                 url: '{{ route('save-data') }}',
                 type: 'POST',
@@ -203,29 +207,64 @@
 
 
 
-            $('#saveButton').on('click', saveData);
+        $('#saveButton').on('click', saveData);
 
-            function addRow() {
+        function addRow() {
 
-                var clonedRow = $(this).closest('tr').clone();
-                clonedRow.find('input:text').val('');
-                clonedRow.find('select').val('');
+            var clonedRow = $(this).closest('tr').clone();
+            clonedRow.find('input:text').val('');
+            clonedRow.find('select').val('');
 
-                clonedRow.find('.add_row').removeClass('add_row btn-success').addClass('remove_row btn-danger')
-                    .text('Remove');
-                $('#products_table tbody').append(clonedRow);
+            clonedRow.find('.add_row').removeClass('add_row btn-success').addClass('remove_row btn-danger')
+                .text('Remove');
+            $('#products_table tbody').append(clonedRow);
+        }
+
+        function removeRow() {
+            $(this).closest('tr').remove();
+        }
+
+        $('.add_row').on('click', addRow);
+
+        $(document).on('click', '.remove_row', removeRow);
+
+        function validateTargetQuantities() {
+            var quantityMap = {};
+
+
+            $('#products_table tbody tr').each(function() {
+                var quantity = $(this).find('td:nth-child(3)').text();
+                var serviceId = $(this).find('input[name="product_id"]').val();
+                var targetQuantity = parseFloat($(this).find('input[name="target_quantity[]"]')
+                .val()) || 0;
+
+                var key = serviceId + '_' + quantity;
+
+                if (!quantityMap.hasOwnProperty(key)) {
+                    quantityMap[key] = 0;
+                }
+
+                quantityMap[key] += targetQuantity;
+                console.log(quantityMap);
+            });
+
+
+            for (var key in quantityMap) {
+                if (quantityMap.hasOwnProperty(key)) {
+                    var parts = key.split('_');
+                    var serviceId = parts[0];
+                    var quantity = parts[1];
+
+                    if (quantityMap[key] > quantity) {
+                        alert('{{ __("internationalrelations::lang.Target_quantity_should_be_equal_to_or_less_than")}}' +' '+
+                            quantity);
+              
+                        return false;
+                    }
+                }
             }
 
-            function removeRow() {
-                $(this).closest('tr').remove();
-            }
-
-            $('.add_row').on('click', addRow);
-
-            $(document).on('click', '.remove_row', removeRow);
-
-
-        });
-
-  
+            return true;
+        }
+    });
 </script>

@@ -433,6 +433,7 @@ class OfferPriceController extends Controller
                     $transactionSellLine->additional_allwances= json_encode($data);
                     $transactionSellLine->service_id = $productId;
                     $transactionSellLine->quantity = $quantity;
+                    $transactionSellLine->operation_remaining_quantity = $quantity;
                     // $transactionSellLine->total = $request->input('final_total');;
                     $transactionSellLine->transaction_id = $client->id;
 

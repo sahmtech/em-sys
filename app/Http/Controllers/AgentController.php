@@ -114,7 +114,7 @@ class AgentController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $workers = User::whereIn('assigned_to', $projectsIds);
+        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds);
         $workers_count = $workers->count();
         $active_workers_count = $workers->where('status', 'active')->count();
         $inactive_workers_count = $workers->whereNot('status', 'active')->count();
@@ -159,7 +159,9 @@ class AgentController extends Controller
         $SalesProjects = SalesProject::where('contact_id', $contact_id);
         $cities = EssentialsCity::forDropdown();
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as 
+ full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         if (request()->ajax()) {
 

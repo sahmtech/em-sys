@@ -231,6 +231,25 @@ return [
     'edit_source'=>'تعديل المصدر',
     'location_name'=>' الفرع',
     'workers'=>'العمال',
-    'uploade_file_for'=>'إرفاق الملف لـ'
-   
+    'uploade_file_for'=>'إرفاق الملف لـ',
+    'operation_remaining_quantity'=>'الكمية المتبقية للتفويض',
+    'contact_locations_edit' => 'تعديل المشروع',
+    'sale_sources' => 'مصادر العملاء',
+    'source' => 'المصدر',
+    'add_source' => 'إضافة مصدر',
+    'edit_source' => 'تعديل المصدر',
+    'location_name' => ' الفرع',
+    'workers' => 'العمال',
+    'uploade_file_for' => 'إرفاق الملف لـ',
+    'workers_count' => 'عدد العمال',
+    'active_workers_count' => 'عدد العمال النشطة',
+    'inactive_workers_count' => 'عدد العمال الغير نشطة',
+    'under_study_price_offers' => 'عدد عروض الأسعار قيد الدراسة',
+    'remaning_quantity' => 'الكمية المتبقية',
+    'operation_available_contracts' => 'العقود المتاحة للتشغيل',
+    'offer_price_number' => 'رقم عرض السعر',
+
+
+
+
 ];

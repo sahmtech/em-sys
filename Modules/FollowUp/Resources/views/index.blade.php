@@ -9,8 +9,11 @@
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
+
+
                 <a href="{{ route('filteredRequests', ['filter' => 'new']) }}">
-                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
+                    <div class="col-md-3">
+                    <div class="custom_card">
 
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -27,12 +30,12 @@
                             </div>
 
                         </div>
-
+ </div>
                     </div>
                 </a>
                 <a href="{{ route('filteredRequests', ['filter' => 'under_process']) }}">
-                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
+                    <div class="col-md-3">
+                        <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
                                 <div class="w-title">
@@ -48,12 +51,12 @@
                             </div>
 
                         </div>
-
+</div>
                     </div>
                 </a>
                 <a href="{{ route('filteredRequests', ['filter' => 'finished']) }}">
-                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
+                    <div class="col-md-3">
+                        <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
                                 <div class="w-title">
@@ -69,12 +72,12 @@
                             </div>
 
                         </div>
-
+ </div>
                     </div>
                 </a>
                 <a href="{{ action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']) }}">
-                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
+                    <div class="col-md-3">
+                        <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
                                 <div class="w-title">
@@ -90,7 +93,7 @@
                             </div>
 
                         </div>
-
+ </div>
                     </div>
                 </a>
 
