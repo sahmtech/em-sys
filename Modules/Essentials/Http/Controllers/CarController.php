@@ -16,7 +16,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CarController extends Controller
 {
-    
+
     /**
      * Display a listing of the resource.
      * @return Renderable
@@ -49,7 +49,7 @@ class CarController extends Controller
                     return $row->plate_number ?? '';
                 })
                 ->editColumn('plate_registration_type', function ($row) {
-                    return __('essentials::lang.' . $row->plate_registration_type) ?? '';
+                    return __('housingmovements::lang.' . $row->plate_registration_type) ?? '';
                 })
                 ->editColumn('serial_number', function ($row) {
                     return $row->serial_number ?? '';
@@ -73,7 +73,7 @@ class CarController extends Controller
                     return $row->test_end_date ?? '';
                 })
                 ->editColumn('examination_status', function ($row) {
-                    return __('essentials::lang.' . $row->examination_status) ?? '';
+                    return __('housingmovements::lang.' . $row->examination_status) ?? '';
                 })
 
                 ->editColumn('number_seats', function ($row) {
@@ -83,7 +83,7 @@ class CarController extends Controller
                     return $row->color ?? '';
                 })
                 ->editColumn('insurance_status', function ($row) {
-                    return __('essentials::lang.' . $row->insurance_status) ?? '';
+                    return __('housingmovements::lang.' . $row->insurance_status) ?? '';
                 })
                 ->addColumn(
                     'action',
@@ -268,5 +268,4 @@ class CarController extends Controller
             return $output;
         }
     }
-
 }

@@ -34,10 +34,10 @@
                         </div>
 
                         <div class="col-sm-4" style="margin-top: 0px;">
-                         
+
                         </div>
                     </div>
-                
+
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -222,7 +222,7 @@
             $(document).on('change', '#car_type_id', function() {
                 if ($(this).val() !== '') {
                     $.ajax({
-                        url: '/essentials/carModel-by-carType_id/' + $(this).val(),
+                        url: '/hrm/carModel-by-carType_id/' + $(this).val(),
                         dataType: 'json',
                         success: function(result) {
                             console.log(result);
