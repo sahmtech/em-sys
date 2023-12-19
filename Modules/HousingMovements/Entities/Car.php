@@ -14,7 +14,7 @@ class Car extends Model
     protected $fillable = [
         'plate_number', 'color', 'car_model_id', 'number_seats',
         'plate_registration_type', 'manufacturing_year', 'serial_number', 'structure_no',
-        'vehicle_status', 'expiry_date', 'test_end_date', 'examination_status', 'insurance_status',
+        'vehicle_status', 'expiry_date', 'test_end_date', 'examination_status', 'insurance_status','expiry_date'
 
     ];
 

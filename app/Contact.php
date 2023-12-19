@@ -406,4 +406,9 @@ class Contact extends Authenticatable
     {
         return $this->hasMany(IrProposedLabor::class);
     }
+
+    public function responsibleClients()
+    {
+        return $this->belongsTo(\App\User::class ,'responsible_user_id');
+    }
 }

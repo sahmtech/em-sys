@@ -511,7 +511,7 @@ return [
   'official_documents' => 'الوثائق الرسمية',
   'add_official_documents' => 'إضافة وثيقة موظف ',
   'edit_official_documents' => 'تعديل وثيقة موظف ',
-  'fixed' => 'ثابت',
+  'fixed' => 'رقم 700',
   'percent' => 'نسبة',
   'crud_Organizational_Chart' => 'إضافة / تعديل / عرض / حذف الهيكل التنظيمي',
 
@@ -615,6 +615,11 @@ return [
   'employee_number' => 'رقم الموظف',
   'location' => 'الفرع',
   'superior' => 'الرئيس المباشر',
+
+  'renew_duration' => 'مدة التجديد',
+  'renew_start_date' => 'تاريخ بداية التجديد',
+  'renew_end_date' => 'تاريخ نهاية التجديد',
+
   'employee_status' => 'حالة الموظف',
   'employees_appointments' => 'تعيينات الموظفين',
   'add_Appointment' => 'تعيين موظف',
@@ -929,9 +934,13 @@ return [
   'Residency_end_date' => 'تاريخ انتهاء الاقامة  ',
   'project' => 'المشروع',
   'work_card_duration' => 'مدة كرت العمل',
+  'renew_duration' => 'مدة التجديد',
   'pay_number' => ' رقم السداد',
-  'fees' => ' الرسوم ',
-  'fixed_no' => 'رقم ثابت',
+  'fees' => 'رسوم  الجوازات ',
+  'nationality' => 'الجنسية ',
+  'all' => 'الكل',
+  'residencyreports' => 'تقرير تكاليف الإقامات',
+
   'company_name' => 'اسم الشركة',
   'create_work_cards' => 'إضافة كرت عمل',
   'select_altemployee' => 'اختر البديل',
@@ -972,10 +981,10 @@ return [
   'crud_all_procedures' => 'إضافة/حذف/تعديل إجراءات سير العمل',
 
 
-  'national_id' => 'هوية وطنية',
-
   'dep_type' => 'نوع الادارة',
   'id' => 'الرقم',
+  'renew' => 'تجديد',
+  'proof_numbers' => 'رقم الإقامة ',
   'select_responsible_users' => 'العميل(المشروع)',
   'responsible_client' => 'المسؤول عن العميل',
   'card_no' => 'رقم كرت العمل',
@@ -1075,10 +1084,10 @@ return [
   'view_wish_file' => 'عرض ملف المرفق للرغبة',
   'passport_number' => 'جواز السفر',
   'single' => 'عازب',
+  'english_name_for_city' => 'اسم المدينة بالانكليزية',
   'crud_attendance_status' => 'إدارة حالات الحضور والانصراف',
   'attendance_status' => 'حالات الحضور والانصراف',
-  'add_attendance_status'=>'إضافة حالة',
-
+  'add_attendance_status' => 'إضافة حالة',
 
 
 

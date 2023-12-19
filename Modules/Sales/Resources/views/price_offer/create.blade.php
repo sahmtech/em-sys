@@ -27,7 +27,7 @@
 					<i class="fa fa-map-marker"></i>
 				</span>
 					{!! Form::select('select_location_id', $business_locations, $default_location->id ?? null, ['class' => 'form-control input-sm',
-					'id' => 'select_location_id', 
+					'id' => 'select_location_id','style' => 'height:36px;', 
 					'required', 'autofocus'], $bl_attributes); !!}
 						
 					<span class="input-group-addon">

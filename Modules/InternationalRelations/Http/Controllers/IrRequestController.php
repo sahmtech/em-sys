@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\User;
-
+use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +71,7 @@ class IrRequestController extends Controller
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%دولي%')

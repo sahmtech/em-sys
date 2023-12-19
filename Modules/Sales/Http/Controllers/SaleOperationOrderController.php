@@ -40,13 +40,8 @@ class SaleOperationOrderController extends Controller
      * @param  Util  $commonUtil
      * @return void
      */
-    public function __construct(
-        Util $commonUtil,
-        ModuleUtil $moduleUtil,
-        TransactionUtil $transactionUtil,
-        NotificationUtil $notificationUtil,
-        ContactUtil $contactUtil
-    ) {
+    public function __construct(Util $commonUtil,  ModuleUtil $moduleUtil, TransactionUtil $transactionUtil,  NotificationUtil $notificationUtil,
+        ContactUtil $contactUtil) {
         $this->commonUtil = $commonUtil;
         $this->contactUtil = $contactUtil;
         $this->moduleUtil = $moduleUtil;
@@ -70,18 +65,14 @@ class SaleOperationOrderController extends Controller
             ->select('sales_contracts.number_of_contract as contract_number')
             ->get();
 
-
-
-
-
         $operations = DB::table('sales_orders_operations')
-            ->join('sales_projects', 'sales_orders_operations.sales_project_id', '=', 'sales_projects.id')
+            ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
             ->select(
                 'sales_orders_operations.id as id',
                 'sales_orders_operations.operation_order_no as operation_order_no',
                 'sales_orders_operations.orderQuantity as orderQuantity',
-                'sales_projects.name as contact_name',
+                'contacts.supplier_business_name as contact_name',
                 'sales_contracts.number_of_contract as contract_number',
                 DB::raw("CASE 
                 WHEN sales_orders_operations.operation_order_type = 'external' THEN '" . __('sales::lang.external') . "'
@@ -118,12 +109,7 @@ class SaleOperationOrderController extends Controller
                     $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
                     return $html;
                 })
-                // ->addColumn('action', function ($row) {
-                //     $html = '';
-                //     $html .= '<a href="#" class="btn-modal" data-toggle="modal" data-target="#edit_order" data-row-id="' . $row->id . '"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.edit_order') . '</a>';
-                //     return $html;
-                // })
-
+          
                 ->rawColumns(['show_operation', 'action'])
                 ->removeColumn('id')
                 ->make(true);
@@ -135,7 +121,7 @@ class SaleOperationOrderController extends Controller
             'not_started' => __('sales::lang.not_started'),
 
         ];
-        $leads = SalesProject::pluck('name', 'id');
+        $leads = Contact::where('type','converted')->pluck('supplier_business_name', 'id');
 
         $agencies = Contact::where('type', 'agency')
             ->where('business_id', $business_id)
@@ -156,7 +142,7 @@ class SaleOperationOrderController extends Controller
         $customerId = $request->input('customer_id');
         $business_id = $request->session()->get('user.business_id');
 
-        $offer_prices = Transaction::where('sales_project_id', $customerId)
+        $offer_prices = Transaction::where('contact_id', $customerId)
             ->where('business_id', $business_id)
             ->pluck('id');
         
@@ -252,9 +238,8 @@ class SaleOperationOrderController extends Controller
                 }
 
                 $operation_details['orderQuantity'] = $request->input('quantity');
-                $operation_details['sales_project_id'] = $request->input('contact_id');
-                $contact=SalesProject::whereId($request->input('contact_id'))->first()->contact_id;
-                $operation_details['contact_id'] = $contact;
+                $operation_details['contact_id'] = $request->input('contact_id');
+              
 
 
                 $operation = SalesOrdersOperation::create($operation_details);
@@ -289,7 +274,7 @@ class SaleOperationOrderController extends Controller
     public function show($id)
     {
         try {
-            $operations = SalesOrdersOperation::with('contact','project', 'salesContract.transaction.sell_lines.service')
+            $operations = SalesOrdersOperation::with('contact','salesContract.transaction.sell_lines.service')
                 ->where('id', $id)
                 ->first();
 

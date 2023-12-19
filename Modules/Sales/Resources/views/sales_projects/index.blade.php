@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-solid'])
-                    @slot('tool')
+                    {{-- @slot('tool')
                         <div class="box-tools">
 
                             <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
@@ -24,7 +24,7 @@
                                 <i class="fa fa-plus"></i> @lang('messages.add')
                             </button>
                         </div>
-                    @endslot
+                    @endslot --}}
 
 
                     <div class="table-responsive">
@@ -34,10 +34,8 @@
                                     <th>#</th>
                                     <th>@lang('sales::lang.contact_name')</th>
                                     <th>@lang('sales::lang.contact_location_name')</th>
-                                    <th>@lang('sales::lang.contact_location_city')</th>
                                     <th>@lang('sales::lang.contact_location_name_in_charge')</th>
-                                    <th>@lang('sales::lang.contact_location_phone_in_charge')</th>
-                                    <th>@lang('sales::lang.contact_location_email_in_charge')</th>
+                             
                                     <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -167,7 +165,9 @@
                 serverSide: true,
                 ajax: {
                     url: "{{ route('sale.saleProjects') }}",
-
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
                 },
 
                 columns: [{
@@ -180,17 +180,9 @@
                         data: 'contact_location_name'
                     },
                     {
-                        data: 'contact_location_city'
+                        data: 'assigned_to'
                     },
-                    {
-                        data: 'contact_location_name_in_charge'
-                    },
-                    {
-                        data: 'contact_location_phone_in_charge'
-                    },
-                    {
-                        data: 'contact_location_email_in_charge'
-                    },
+               
                     {
                         data: 'action'
                     },
