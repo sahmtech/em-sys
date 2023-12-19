@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\FollowUp\Entities\followupDeliveryDocument;
+use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\FollowUp\Entities\FollowupDocument;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -20,7 +20,7 @@ class FollowupDeliveryDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $delivery_documents = followupDeliveryDocument::all();
+        $delivery_documents = FollowupDeliveryDocument::all();
         if (request()->ajax()) {
 
             // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
@@ -104,7 +104,7 @@ class FollowupDeliveryDocumentController extends Controller
             $file = $request->file('document');
             $filePath = $file->store('/documents');
         }
-        followupDeliveryDocument::create([
+        FollowupDeliveryDocument::create([
             'user_id' => $request->input('user_id'),
             'document_id' => $request->input('document_id'),
             'file_path' => $filePath,
@@ -137,7 +137,7 @@ class FollowupDeliveryDocumentController extends Controller
     {
         $workers = User::where('user_type', 'worker')->get();
         $documents = FollowupDocument::all();
-        $document_delivery = followupDeliveryDocument::find($id);
+        $document_delivery = FollowupDeliveryDocument::find($id);
 
         return view('followup::deliveryDocument.edit', compact('workers', 'documents', 'document_delivery'));
     }
@@ -162,7 +162,7 @@ class FollowupDeliveryDocumentController extends Controller
             $update_data['document_id'] = $request->input('document_id');
             $update_data['nots'] = $request->input('nots');
             
-            $document_delivery = followupDeliveryDocument::find($id);
+            $document_delivery = FollowupDeliveryDocument::find($id);
             $document_delivery->update($update_data);
            
             DB::commit();
@@ -182,7 +182,7 @@ class FollowupDeliveryDocumentController extends Controller
     {
         if (request()->ajax()) {
             try {
-                followupDeliveryDocument::find($id)->delete();
+                FollowupDeliveryDocument::find($id)->delete();
                 $output = [
                     'success' => true,
                     'msg' => 'تم حذف السند بنجاح',

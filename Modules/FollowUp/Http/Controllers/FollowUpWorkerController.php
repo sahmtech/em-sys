@@ -28,7 +28,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\FollowUp\Entities\followupDeliveryDocument;
+use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
 
 class FollowUpWorkerController extends Controller
@@ -246,7 +246,7 @@ class FollowUpWorkerController extends Controller
                 $documents = $user->OfficialDocument;
             }
 
-            $document_delivery = followupDeliveryDocument::where('user_id', $user->id)->get();
+            $document_delivery = FollowupDeliveryDocument::where('user_id', $user->id)->get();
         }
 
 
