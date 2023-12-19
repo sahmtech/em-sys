@@ -284,11 +284,11 @@ class EssentialsCardsController extends Controller
         
                 // $residencyHistory->save();
 
-                // $card->update(['duration' => $data['renew_duration']]);
+                $card->update(['duration' => $data['renew_duration']]);
               
-                // $card->update(['fees' => $data['fees']]);
+                $card->update(['fees' => $data['fees']]);
 
-                // $card->update(['Payment_number' => $data['Payment_number']]);
+                $card->update(['Payment_number' => $data['Payment_number']]);
 
               
                $document=EssentialsOfficialDocument::where('type', 'residence_permit')
