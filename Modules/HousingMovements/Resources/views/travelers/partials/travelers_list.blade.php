@@ -14,11 +14,12 @@
                     <th>@lang('housingmovements::lang.worker_name')</th>  
                     <th>@lang('housingmovements::lang.project')</th> 
                     <th>@lang('housingmovements::lang.location')</th> 
+                    <th>@lang('housingmovements::lang.medical_examination')</th> 
                     <th>@lang('housingmovements::lang.arrival_date')</th> 
-                <th>@lang('housingmovements::lang.passport_number')</th>          
-                <th>@lang('housingmovements::lang.profession')</th>
-                <th>@lang('housingmovements::lang.nationality')</th>
-                <th>@lang('messages.action')</th>
+                    <th>@lang('housingmovements::lang.passport_number')</th>          
+                    <th>@lang('housingmovements::lang.profession')</th>
+                    <th>@lang('housingmovements::lang.nationality')</th>
+                    <th>@lang('messages.action')</th>
            
         </tr>
     </thead>
@@ -34,6 +35,7 @@
                  
                     {!! Form::hidden('selected_rows', null, ['id' => 'selected_rows']); !!}
                     @include('housingmovements::travelers.partials.border_arrival_modal')
+                  
                     {!! Form::submit(__('housingmovements::lang.arrived'),
                          array('class' => 'btn btn-xs btn-success', 'id' => 'arraived-selected')) !!}
 

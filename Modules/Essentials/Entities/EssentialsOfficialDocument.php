@@ -11,5 +11,11 @@ class EssentialsOfficialDocument extends Model
     {
         return $this->belongsTo(User::class, 'employee_id', 'id');
     }
+
+    public function updateExpirationDate($newExpirationDate)
+    {
+        $this->expiration_date = $newExpirationDate;
+        $this->save();
+    }
    
 }

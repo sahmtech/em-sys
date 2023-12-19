@@ -51,7 +51,7 @@
         @endcan
     @endcomponent
 
-    <div class="modal fade business_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+<div class="modal fade business_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
     <div class="modal fade" id="addBusinessDocModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         <div class="modal-dialog" role="document">
@@ -77,7 +77,12 @@
                                 'saudizationCertificate'=> __('essentials::lang.saudizationCertificate'),
                                 'VAT'=> __('essentials::lang.VAT'),
 
-                            ], null, ['class' => 'form-control', 'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
+                                'memorandum_of_association'=> __('essentials::lang.memorandum_of_association'),
+                                'national_address'=> __('essentials::lang.national_address'),
+                                'activity'=> __('essentials::lang.activity'),
+
+                            ], null, ['class' => 'form-control','style'=>'height:40px',
+                             'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
                         </div>
                         <div class="form-group col-md-6" id="unified_number" style="display: none;">
                             {!! Form::label('unified_number', __('essentials::lang.unified_number') . ':*') !!}
@@ -95,7 +100,7 @@
     
                         <div class="form-group col-md-6">
                             {!! Form::label('renew_date', __('essentials::lang.renew_date') . ':*') !!}
-                            {!! Form::date('renew_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.renew_date'), 'required']) !!}
+                            {!! Form::date('renew_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.renew_date')]) !!}
                         </div>
     
                         <div class="form-group col-md-6">
@@ -168,6 +173,15 @@
                                 }
                                 else if (data === 'VAT'){
                                     return  '@lang('essentials::lang.VAT')';
+                                }
+                                else if (data === 'memorandum_of_association'){
+                                    return  '@lang('essentials::lang.memorandum_of_association')';
+                                }
+                                else if (data === 'national_address'){
+                                    return  '@lang('essentials::lang.national_address')';
+                                }
+                                else if (data === 'activity'){
+                                    return  '@lang('essentials::lang.activity')';
                                 }
                                 else {
                                     return  data;

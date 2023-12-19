@@ -36,43 +36,113 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.widget', ['class' => 'box-solid'])
-                    @slot('tool')
-                        <div class="box-tools">
+    </div>
 
-                            <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                                data-target="#addContractModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
-                        </div>
-                    @endslot
+    <div class="row">
+        <div class="col-md-12">
+            @component('components.widget', ['class' => 'box-solid'])
+           
+                @slot('tool')
+                <div class="box-tools">
+                    
+                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal" data-target="#addContractModal">
+                        <i class="fa fa-plus"></i> @lang('messages.add')
+                    </button>
+                </div>
+                @endslot
+            
+            
+            <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="contracts_table">
+                        <thead>
+                            <tr>
+                                <th>@lang('sales::lang.id' )</th>
+                                <th>@lang('sales::lang.number_of_contract' )</th>
+                                <th>@lang('sales::lang.customer_name' )</th>
+                                <th>@lang('sales::lang.contract_status' )</th>
+                             
+                                <th>@lang('sales::lang.start_date' )</th>
+                                <th>@lang('sales::lang.contract_duration' )</th>
+                                <th>@lang('sales::lang.end_date' )</th>
+                                <th>@lang('sales::lang.contract_form' )</th>
+                            
+                                <th>@lang('messages.action' )</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            @endcomponent
+        </div>
+        <div class="modal fade" id="addContractModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
 
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="contracts_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('sales::lang.id')</th>
-                                    <th>@lang('sales::lang.number_of_contract')</th>
-                                    <th>@lang('sales::lang.customer_name')</th>
-                                    <th>@lang('sales::lang.contract_status')</th>
-                                    <th>@lang('sales::lang.start_date')</th>
-                                    <th>@lang('sales::lang.end_date')</th>
-                                    <th>@lang('sales::lang.contract_form')</th>
-
-                                    <th>@lang('messages.action')</th>
-                                </tr>
-                            </thead>
-                        </table>
+                    {!! Form::open(['route' => 'storeContract' , 'enctype' => 'multipart/form-data']) !!}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('essentials::lang.add_contract')</h4>
                     </div>
-                @endcomponent
-            </div>
-            <div class="modal fade" id="addContractModal" tabindex="-1" role="dialog"
-                aria-labelledby="gridSystemModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
+        
+                    <div class="modal-body">
+    
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
+                                {!! Form::select('offer_price',$offer_prices, null, ['class' => 'form-control','id'=>'offer_price', 'placeholder' => __('sales::lang.select_offer_price'), 'required']) !!}
+                            </div>
+                        
+                            <div class="form-group col-md-6">
+                                {!! Form::label('contract_signer', __('sales::lang.contract_signer') . ':*') !!}
+                                {!! Form::text('contract_signer', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.contract_signer'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {!! Form::label('contract_follower', __('sales::lang.contract_follower') . ':*') !!}
+                                {!! Form::text('contract_follower', null, ['class' => 'form-control', 'placeholder' => __('sales::lang.contract_follower'), 'required']) !!}
+                            </div>
+                            
+                            <div class="form-group col-md-6">
+                            {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
+                            {!! Form::date('start_date', !empty($contract->start_date) ? $contract->start_date : null,
+                                 ['class' => 'form-control', 'style' => 'height:36px', 'id' => 'start_date', 'placeholder' => __('essentials::lang.start_date')]); !!}
+                           </div>
+                            <div class="form-group col-md-8">
+                                {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
+                                <div class="form-group">
+                                    <div class="multi-input">
+                                        <div class="input-group">
+                                            {!! Form::number('contract_duration', !empty($contract->contract_duration) ? $contract->contract_duration : null,
+                                                 ['class' => 'form-control width-40 pull-left', 'style' => 'height:36px', 'id' => 'contract_duration', 'placeholder' => __('essentials::lang.contract_duration')]); !!}
+                                            {!! Form::select('contract_duration_unit',
+                                                ['years' => __('essentials::lang.years'),
+                                                'months' => __('essentials::lang.months')], 
+                                                !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
+                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:36px;', 'id' => 'contract_duration_unit']); !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':') !!}
+                                {!! Form::date('end_date', !empty($contract->end_date) ? $contract->end_date : null, 
+                                    ['class' => 'form-control', 'style' => 'height:36px',
+                                     'id' => 'end_date', 'placeholder' => __('essentials::lang.end_date')]); !!}
+                            </div>
+
+                             <div class="form-group col-md-6">
+                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
+                                {!! Form::select('status', ['valid' => __('sales::lang.valid'), 'finished' => __('sales::lang.finished')] ,null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.status'), 'required']) !!}
+                            </div>
+                            <div class="form-group col-md-8">
+                                {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
+                                {!! Form::select('contract_items[]', $items, null, [
+                                    'class' => 'form-control select2', // Add the 'select2' class for styling
+                                    'multiple' => 'multiple', // Enable multiselect
+                                    'placeholder' => __('sales::lang.select_contract_items'),
+                                    'required'
+                                ]) !!}
+                            </div>
+
 
                         {!! Form::open(['route' => 'storeContract', 'enctype' => 'multipart/form-data']) !!}
                         <div class="modal-header">
@@ -225,7 +295,79 @@
     </section>
 @endsection
 @section('javascript')
-    <script type="text/javascript">
+
+<script>
+    $(document).ready(function () {
+        // Event listener for changes in start_date and end_date
+        $('#start_date, #end_date').change(function () {
+            updateContractDuration();
+        });
+
+        // Event listeners for changes in duration and duration unit
+        $('#contract_duration, #contract_duration_unit').change(function () {
+            updateEndDate();
+        });
+
+        function updateContractDuration() {
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
+
+            if (startDate && endDate) {
+                var durationObj = calculateDuration(startDate, endDate);
+                $('#contract_duration').val(durationObj.value);
+                $('#contract_duration_unit').val(durationObj.unit);
+            }
+        }
+
+        function updateEndDate() {
+            var startDate = $('#start_date').val();
+            var duration = $('#contract_duration').val();
+            var unit = $('#contract_duration_unit').val();
+
+            if (startDate && !duration && !unit) {
+                var endDate = $('#end_date').val();
+                if (endDate) {
+                    var durationObj = calculateDuration(startDate, endDate);
+                    $('#contract_duration').val(durationObj.value);
+                    $('#contract_duration_unit').val(durationObj.unit);
+                }
+            } else if (startDate && duration && unit) {
+                var newEndDate = calculateEndDate(startDate, duration, unit);
+                $('#end_date').val(newEndDate);
+            }
+        }
+
+        function calculateDuration(startDate, endDate) {
+            var startDateObj = new Date(startDate);
+            var endDateObj = new Date(endDate);
+            var diffInMonths = (endDateObj.getFullYear() - startDateObj.getFullYear()) * 12 + endDateObj.getMonth() - startDateObj.getMonth();
+            var diffInYears = diffInMonths / 12;
+
+            if (Number.isInteger(diffInYears)) {
+                return { value: diffInYears, unit: 'years' };
+            } else {
+                return { value: diffInMonths, unit: 'months' };
+            }
+        }
+
+        function calculateEndDate(startDate, duration, unit) {
+            var startDateObj = new Date(startDate);
+            var endDateObj = new Date(startDateObj);
+
+            if (unit === 'years') {
+                endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
+            } else if (unit === 'months') {
+                endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
+            }
+
+            return endDateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+    });
+</script>
+
+
+
+<script type="text/javascript">
         $(document).ready(function() {
             var contracts_table;
             var newContractFields = document.getElementById('new-contract-fields');
@@ -250,25 +392,51 @@
                    
                 },
 
+                
 
-                columns: [{
-                        data: 'id'
-                    },
-                    {
-                        data: 'number_of_contract'
-                    },
-                    {
-                        data: 'sales_project_id'
-                    },
+                columns: [
+                        { data: 'id' },
+                        { data: 'number_of_contract' },
+                        { data: 'sales_project_id' },
+                        
+                        { data: 'status',render: function (data, type, row) {
+                                if (data === 'valid') {
+                                    return  '@lang('sales::lang.valid')';
+                                    
+                                } else {
+                                    return  '@lang('sales::lang.finished')';
+                                }
+                            } 
+                        },
 
-                    {
-                        data: 'status',
-                        render: function(data, type, row) {
-                            if (data === 'valid') {
-                                return '@lang('sales::lang.valid')';
 
-                            } else {
-                                return '@lang('sales::lang.finished')';
+                        { data: 'start_date' },
+                        {
+                            data: 'contract_duration',
+                            render: function(data, type, row) {
+                                var unit = row.contract_per_period; 
+                                if (data !== null && data !== undefined) {
+                                    var translatedUnit = (unit === 'years') ? '@lang('sales::lang.years')' : '@lang('sales::lang.months')';
+                                    return data + ' ' + translatedUnit;
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
+                        { data: 'end_date' },
+                       
+                        {
+                            data: 'contract_form',
+                            render: function (data, type, row) {
+                                if (data === 'monthly_cost') {
+                                    return  '@lang('sales::lang.monthly_cost')';
+                                    
+                                } else if (data === 'operating_fees') {
+                                    return  '@lang('sales::lang.operating_fees')';
+                                } else {
+                                    return  ' ';
+                                }
+
                             }
                         }
                     },

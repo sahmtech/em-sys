@@ -77,6 +77,7 @@ class ClientsController extends Controller
         $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
 
+
             return Datatables::of($contacts)
 
                 ->addColumn('action', function ($row) {
@@ -87,6 +88,7 @@ class ClientsController extends Controller
                     return $html;
                 })
               
+
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
@@ -200,6 +202,7 @@ class ClientsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
+
         if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
@@ -207,6 +210,7 @@ class ClientsController extends Controller
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
             abort(403, 'Unauthorized action.');
+
         }
 
 
@@ -399,8 +403,10 @@ class ClientsController extends Controller
             $errors = $e->errors();
             return response()->json(['success' => false, 'errors' => $errors], 422);
         }
+
        
         return redirect()->route('lead_contacts');
+
     }
 
     public function changeStatus(Request $request)
@@ -474,7 +480,6 @@ class ClientsController extends Controller
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
-       
         $view_type = request()->get('view');
         if (is_null($view_type)) {
             $view_type = 'ledger';
@@ -557,7 +562,7 @@ class ClientsController extends Controller
             ->select('users.*')
             ->first();
 
-      
+
 
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -691,7 +696,7 @@ class ClientsController extends Controller
                     $contract_follower = User::create($contract_follower_input);
                 }
             }
-            //  dd( $contactFollower);
+            
             DB::commit();
 
 
@@ -711,7 +716,7 @@ class ClientsController extends Controller
                 'msg' => $e->getMessage(),
             ];
         }
-        //return $output;
+        
         return redirect()->route('sale.clients');
     }
 
@@ -760,7 +765,7 @@ class ClientsController extends Controller
         try {
             $contact = Contact::findOrFail($id);
             User::where('crm_contact_id', $contact->id)->delete();
-            // dd($contact);
+            
             $contact->delete();
 
             return response()->json([

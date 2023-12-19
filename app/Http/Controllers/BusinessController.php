@@ -368,6 +368,10 @@ class BusinessController extends Controller
             'Balady',
             'saudizationCertificate',
             'VAT',
+            'memorandum_of_association',
+            'national_address',
+            'activity',
+
         ];
         if (request()->ajax()) {
             $business = DB::table('business')->select(['business.id', 'business.name', 'business.en_name', 'business.start_date', 'business.tax_label_1', 'business.tax_number_1']);

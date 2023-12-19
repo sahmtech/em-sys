@@ -104,5 +104,24 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/shifts-update/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'update'])->name('shifts-update');
         Route::get('/shifts-delete/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'destroy'])->name('shifts-delete');
         Route::get('/projects-by-contacts/{id}', [\Modules\FollowUp\Http\Controllers\ShiftController::class, 'ProjectsByContacts'])->name('ProjectsByContacts');
+
+
+        // Documents
+        Route::get('/documents', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index'])->name('documents');
+        Route::get('/documents-create', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'create'])->name('documents-create');
+        Route::get('/documents-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'edit'])->name('documents-edit');
+        Route::post('/documents-store', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'store'])->name('documents-store');
+        Route::put('/documents-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'update'])->name('documents-update');
+        Route::delete('/documents-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'destroy'])->name('documents-delete');
+ 
+ 
+        Route::get('/documents-delivery', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index'])->name('documents-delivery');
+        Route::get('/documents-delivery-create', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'create'])->name('documents-delivery-create');
+        Route::get('/documents-delivery-edit/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'edit'])->name('documents-delivery-edit');
+        Route::post('/documents-delivery-store', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'store'])->name('documents-delivery-store');
+        Route::put('/documents-delivery-update/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'update'])->name('documents-delivery-update');
+        Route::delete('/documents-delivery-delete/{id}', [\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'destroy'])->name('documents-delivery-delete');
+ 
+ 
     });
 });

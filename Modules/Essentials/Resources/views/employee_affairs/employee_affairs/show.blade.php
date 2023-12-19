@@ -154,35 +154,7 @@
                         <div class="tab-pane active" id="user_info_tab">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="col-md-6">
-                                            <p><strong>@lang( 'lang_v1.cmmsn_percent' ): </strong> {{$user->cmmsn_percent}}%</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        @php
-                                            $selected_contacts = ''
-                                        @endphp
-                                        @if(count($user->contactAccess)) 
-                                            @php
-                                                $selected_contacts_array = [];
-                                            @endphp
-                                            @foreach($user->contactAccess as $contact) 
-                                                @php
-                                                    $selected_contacts_array[] = $contact->name; 
-                                                @endphp
-                                            @endforeach 
-                                            @php
-                                                $selected_contacts = implode(', ', $selected_contacts_array);
-                                            @endphp
-                                        @else 
-                                            @php
-                                                $selected_contacts = __('lang_v1.all'); 
-                                            @endphp
-                                        @endif
-                                        <p>
-                                            <strong>@lang( 'lang_v1.allowed_contacts' ): </strong>
-                                                {{$selected_contacts}}
-                                        </p>
-                                    </div>
+                                 
                                 </div>
                             </div>
                             @include('user.show_details')

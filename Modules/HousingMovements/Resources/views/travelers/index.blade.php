@@ -65,6 +65,19 @@
         product_table.ajax.reload();
     }
 
+    function formatDate(date) {
+            var day = date.getDate();
+            var month = date.getMonth() + 1; 
+            var year = date.getFullYear();
+
+          
+            day = day < 10 ? '0' + day : day;
+            month = month < 10 ? '0' + month : month;
+
+            return day + '/' + month + '/' + year;
+        }
+
+
     $(document).ready(function () {
         product_table = $('#product_table').DataTable({
             processing: true,
@@ -86,6 +99,17 @@
                         d.filter_end_date = end;
                         d.date_filter = date_filter;
                     }
+
+                }
+            },
+            rowCallback: function (row, data) {
+                var arrivalDate = moment(data.arrival_date, 'YYYY-MM-DD HH:mm:ss');
+                var threeDaysAgo = moment().subtract(3, 'days');
+
+                if (arrivalDate < moment() && arrivalDate >= threeDaysAgo) {
+                    $('td:eq(5)', row).css('background-color', 'rgba(255, 0, 0, 0.2)'); 
+                } else {
+                    $('td:eq(5)', row).css('background-color', '');
                 }
             },
             columns: [
@@ -93,7 +117,18 @@
                 { "data": "full_name" },
                 { "data": "project" },
                 { "data": "location" },
-                { "data": "arrival_date" },
+                {
+                    "data": "medical_examination",
+                    "render": function (data, type, row) {
+                        var text = data === 1 ? '@lang('housingmovements::lang.medical_examination_done')' : '@lang('housingmovements::lang.medical_examination_not_done')';
+                        var color = data === 1 ? 'green' : 'red';
+                        return '<span style="color: ' + color + ';">' + text + '</span>';
+                    }
+                },
+                {
+                    "data": "arrival_date",
+                   
+                },
                 { "data": "passport_number" },
                 { "data": "profession" },
                 { "data": "nationality" },
@@ -146,7 +181,7 @@
             getCheckRecords();
         });
 
-    $('#arraived-selected').on('click', function (e) {
+$('#arraived-selected').on('click', function (e) {
         e.preventDefault();
 
         var selectedRows = getCheckRecords();
@@ -160,15 +195,15 @@
                 type: 'post',
                 data: { selectedRows: selectedRows },
                 success: function (data) {
-                    // Clear existing inputs in the modal body
+                  
                     $('.modal-body').find('input').remove();
 
-                    // Get the common style classes from existing inputs
+           
                     var inputClasses = 'form-group col-md-4 ';
 
-                    // Loop through each row in the data
+                  
                     $.each(data, function (index, row) {
-                        // Create input fields dynamically and append them to the modal body
+                        
                         var workerIDInput = $('<input>', {
                             type: 'hidden',
                             name: 'worker_id[]',
@@ -204,23 +239,23 @@
                             required: true
                         });
 
-                        // Append the input fields to the modal body
+                        
                         $('.modal-body').append(workerIDInput,workerNameInput, passportNumberInput, borderNoInput);
                     });
                 }
             });
 
             $('#submitArrived').click(function () {
-                // Additional AJAX call to submit the form inside the modal
+                
                 $.ajax({
                     url: $('#arrived_form').attr('action'),
                     type: 'post',
                     data: $('#arrived_form').serialize(),
                     success: function (response) {
 
-                        // Handle the response if needed
+                        
                         console.log(response);
-                        // Close the modal after successful submission
+                        
                         $('#arrivedModal').modal('hide');
                         reloadDataTable();
                     }
@@ -240,7 +275,7 @@
 
 
 
-        $('#edit-selected').on('click', function (e) {
+    $('#edit-selected').on('click', function (e) {
             e.preventDefault();
 
             var selectedRows =  getCheckRecords();

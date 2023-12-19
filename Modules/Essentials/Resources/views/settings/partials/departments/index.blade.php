@@ -26,6 +26,7 @@
                 <table class="table table-bordered table-striped" id="departments_table">
                     <thead>
                         <tr>
+                            <th>@lang('essentials::lang.id')</th> 
                             <th>@lang('essentials::lang.name')</th>                      
                             <th>@lang('essentials::lang.is_main_dep')</th>
                             <th>@lang('essentials::lang.parent_department_id')</th>  
@@ -38,7 +39,9 @@
                     </thead>
                 </table>
             </div>
-            <div class="modal fade" id="addAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+
+            
+        <div class="modal fade" id="addAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <form action="{{ route('storeManager', ':id') }}" method="POST" id="appointmentForm">
@@ -423,6 +426,7 @@ $(document).ready(function () {
             serverSide: true,
             ajax: '{{ route("departments") }}', 
             columns: [
+                { data: 'id'},
                 { data: 'name'},
               
                 { 

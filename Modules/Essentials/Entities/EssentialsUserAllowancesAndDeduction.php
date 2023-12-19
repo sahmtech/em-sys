@@ -20,6 +20,7 @@ class EssentialsUserAllowancesAndDeduction extends Model
      * @var string
      */
     protected $table = 'essentials_user_allowance_and_deductions';
+    
     public function allowanceType()
     {
       

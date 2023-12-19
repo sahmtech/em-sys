@@ -97,7 +97,7 @@
                             {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
                             {!! Form::date('contract_start_date', !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
                                  ['class' => 'form-control', 'style' => 'height:36px', 'id' => 'contract_start_date', 'placeholder' => __('essentials::lang.contract_start_date')]); !!}
-                        </div>
+                           </div>
                             <div class="form-group col-md-8">
                                 {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
                                 <div class="form-group">
@@ -206,33 +206,55 @@
 
 <script>
     $(document).ready(function () {
-        $('#contract_start_date, #contract_duration, #contract_duration_unit').change(function () {
-            updateContractEndDate();
+        // Event listener for changes in contract_start_date and contract_end_date
+        $('#contract_start_date, #contract_end_date').change(function () {
+            updateContractDuration();
         });
 
-        $('#contract_end_date').change(function () {
-            validateAndUpdateDuration();
+        // Event listeners for changes in duration and duration unit
+        $('#contract_duration, #contract_duration_unit').change(function () {
+            updateEndDate();
         });
 
-        function updateContractEndDate() {
+        function updateContractDuration() {
+            var startDate = $('#contract_start_date').val();
+            var endDate = $('#contract_end_date').val();
+
+            if (startDate && endDate) {
+                var durationObj = calculateDuration(startDate, endDate);
+                $('#contract_duration').val(durationObj.value);
+                $('#contract_duration_unit').val(durationObj.unit);
+            }
+        }
+
+        function updateEndDate() {
             var startDate = $('#contract_start_date').val();
             var duration = $('#contract_duration').val();
             var unit = $('#contract_duration_unit').val();
 
-            if (startDate && duration && unit) {
+            if (startDate && !duration && !unit) {
+                var endDate = $('#contract_end_date').val();
+                if (endDate) {
+                    var durationObj = calculateDuration(startDate, endDate);
+                    $('#contract_duration').val(durationObj.value);
+                    $('#contract_duration_unit').val(durationObj.unit);
+                }
+            } else if (startDate && duration && unit) {
                 var newEndDate = calculateEndDate(startDate, duration, unit);
                 $('#contract_end_date').val(newEndDate);
             }
         }
 
-        function validateAndUpdateDuration() {
-            var startDate = $('#contract_start_date').val();
-            var endDate = $('#contract_end_date').val();
-            var unit = $('#contract_duration_unit').val();
+        function calculateDuration(startDate, endDate) {
+            var startDateObj = new Date(startDate);
+            var endDateObj = new Date(endDate);
+            var diffInMonths = (endDateObj.getFullYear() - startDateObj.getFullYear()) * 12 + endDateObj.getMonth() - startDateObj.getMonth();
+            var diffInYears = diffInMonths / 12;
 
-            if (startDate && endDate && unit) {
-                var calculatedDuration = calculateDuration(startDate, endDate, unit);
-                $('#contract_duration').val(calculatedDuration);
+            if (Number.isInteger(diffInYears)) {
+                return { value: diffInYears, unit: 'years' };
+            } else {
+                return { value: diffInMonths, unit: 'months' };
             }
         }
 
@@ -247,20 +269,6 @@
             }
 
             return endDateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        }
-
-        function calculateDuration(startDate, endDate, unit) {
-            var startDateObj = new Date(startDate);
-            var endDateObj = new Date(endDate);
-            var diff;
-
-            if (unit === 'years') {
-                diff = endDateObj.getFullYear() - startDateObj.getFullYear();
-            } else if (unit === 'months') {
-                diff = (endDateObj.getFullYear() - startDateObj.getFullYear()) * 12 + endDateObj.getMonth() - startDateObj.getMonth();
-            }
-
-            return diff;
         }
     });
 </script>
@@ -290,8 +298,8 @@
                         if ($('#doc_filter_date_range').val()) {
                             var start = $('#doc_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
                             var end = $('#doc_filter_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
-                            d.start_date = start;
-                            d.end_date = end;
+                            d.contract_start_date = start;
+                            d.contract_end_date = end;
                         }
                       
                     }
@@ -303,12 +311,17 @@
                         { data: 'contract_start_date' },
                         { data: 'contract_end_date' },
                         {
-                             "data": 'contract_duration',
-                            "render": function (data, type, row) {
-                            return data ;
-                             
-                                 }
-                         },
+                            data: 'contract_duration',
+                            render: function(data, type, row) {
+                                var unit = row.contract_per_period; 
+                                if (data !== null && data !== undefined) {
+                                    var translatedUnit = (unit === 'years') ? '@lang('sales::lang.years')' : '@lang('sales::lang.months')';
+                                    return data + ' ' + translatedUnit;
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
                          {
                              "data": 'probation_period',
                             "render": function (data, type, row) {

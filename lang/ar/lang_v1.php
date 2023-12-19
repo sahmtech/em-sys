@@ -7,6 +7,8 @@ return [
     "logged_in_user" => "المستخدم المتصل",
     'are_you_sure_submit'=>'هل أنت متاكد ؟',
     'confirm'=>'نعم',
+    'hijri_dob'=>'تاريخ الميلادي الهجري',
+    'add_qualification'=>'إضافة مؤهل',
     'cancel'=>'إلغاء',
     "select_from_users_list" => "اختر من قائمة المستخدمين",
     "select_from_commisssion_agents_list" => "اختر من قائمة المناديب",

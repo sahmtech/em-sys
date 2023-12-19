@@ -104,13 +104,6 @@
 @endsection
 @section('javascript')
 
-<script>
-    $(document).ready(function() {
-        console.log( $('#project_name2').select2(););
-        $('#project_name2').select2();
-    });
-</script>
-
 <script type="text/javascript">
    
     var product_table2;
@@ -140,6 +133,16 @@
                         d.filter_end_date = end;
                         d.date_filter = d.date_filter;
                     }
+                }
+            },
+            rowCallback: function (row, data) {
+                var arrivalDate = moment(data.arrival_date, 'YYYY-MM-DD HH:mm:ss');
+                var threeDaysAgo = moment().subtract(3, 'days');
+
+                if (arrivalDate < moment() && arrivalDate >= threeDaysAgo) {
+                    $('td:eq(4)', row).css('background-color', 'rgba(255, 0, 0, 0.2)'); 
+                } else {
+                    $('td:eq(4)', row).css('background-color', '');
                 }
             },
             columns: [
@@ -200,7 +203,7 @@
             getCheckRecords();
         });
 
-    $('#arraived-selected').on('click', function (e) {
+$('#arraived-selected').on('click', function (e) {
         e.preventDefault();
 
         var selectedRows = getCheckRecords();
@@ -214,15 +217,15 @@
                 type: 'post',
                 data: { selectedRows: selectedRows },
                 success: function (data) {
-                    // Clear existing inputs in the modal body
+                 
                     $('.modal-body').find('input').remove();
 
-                    // Get the common style classes from existing inputs
+               
                     var inputClasses = 'form-group col-md-4 ';
 
-                    // Loop through each row in the data
+              
                     $.each(data, function (index, row) {
-                        // Create input fields dynamically and append them to the modal body
+                       
                         var workerIDInput = $('<input>', {
                             type: 'hidden',
                             name: 'worker_id[]',
@@ -258,23 +261,23 @@
                             required: true
                         });
 
-                        // Append the input fields to the modal body
+                     
                         $('.modal-body').append(workerIDInput,workerNameInput, passportNumberInput, borderNoInput);
                     });
                 }
             });
 
             $('#submitArrived').click(function () {
-                // Additional AJAX call to submit the form inside the modal
+              
                 $.ajax({
                     url: $('#arrived_form').attr('action'),
                     type: 'post',
                     data: $('#arrived_form').serialize(),
                     success: function (response) {
 
-                        // Handle the response if needed
+                 
                         console.log(response);
-                        // Close the modal after successful submission
+                      
                         $('#arrivedModal').modal('hide');
                         reloadDataTable();
                     }
@@ -294,7 +297,7 @@
 
 
 
-    $('#edit-selected').on('click', function (e) {
+$('#edit-selected').on('click', function (e) {
     e.preventDefault();
 
     var selectedRows = getCheckRecords();
@@ -345,7 +348,38 @@ $('#bulk_edit_form').submit(function (e) {
 });
 
 
- 
+$('#room_status').change(function(){
+        var htr_building = $('#htr_building_select').val();
+        console.log($(this).val());
+        $.getJSON("{{  url('housingmovements/room_status')}}", 
+        { option: $(this).val()
+        ,htr_building: htr_building }, 
+        
+        function (data) {
+            var model = $('#room_number');
+
+            $('#room_number').empty();
+            $('#beds_count').val(''); 
+
+            $.each(data, function (index, room) {
+                $('#room_number').append($('<option>', {
+                    value: room.id,
+                    text: room.text
+                }));
+            });
+
+            if (data.length > 0) {
+                
+                $('#beds_count').val(data[0].beds_count);
+            }
+        });
+       
+});
+
+
+
+
+
 
     });
 
@@ -372,6 +406,7 @@ $('#bulk_edit_form').submit(function (e) {
     $(document).ready(function () {
         $('#htr_building_select').on('change', function () {
             var buildingId = $(this).val();
+            $('#building_htr').val(buildingId);
 
             $.ajax({
                 url: '{{ route("getRoomNumbers", ["buildingId" => ":buildingId"]) }}'.replace(':buildingId', buildingId),
@@ -387,7 +422,6 @@ $('#bulk_edit_form').submit(function (e) {
                         }));
                     });
 
-                    // Trigger change event to update beds count for the initial room number
                     $('#room_number').trigger('change');
                 },
                 error: function (xhr, status, error) {
@@ -396,26 +430,30 @@ $('#bulk_edit_form').submit(function (e) {
             });
         });
 
-        $('#room_number').on('change', function () {
-    var roomId = $(this).val();
+        
+        $('#room_number').change(function(){
+                var htr_building = $('#htr_building_select').val();
+                var roomId=$(this).val();
+                console.log($(this).val());
 
-    // Fetch beds_count for the selected room
-    $.ajax({
-        url: '{{ route("getBedsCount", ["roomId" => ":roomId"]) }}'.replace(':roomId', roomId),
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            // Access the bedsCount property correctly
-            var bedsCount = data.roomNumber[roomId]; // Assuming bedsCount is a property of the selected room
+                $.ajax({
+                url: '{{ route("getBedsCount", ["roomId" => ":roomId"]) }}'.replace(':roomId', roomId),
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                
+                    var bedsCount = data.roomNumber[roomId]; 
+                
+                    $('#beds_count').val(bedsCount);
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+  
+  
 
-            // Set the value of beds_count
-            $('#beds_count').val(bedsCount);
-        },
-        error: function (xhr, status, error) {
-            console.error(xhr.responseText);
-        }
-    });
-});
     });
 </script>
 

@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-        </ol> -->
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -109,10 +109,13 @@
                             <tr>
 
                                 <th>@lang('essentials::lang.employee_number')</th>
+                                <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_name')</th>
+                                <th>business_id</th>
+                                <th>user_type</th>
                                 <th>@lang('essentials::lang.Identity_proof_id')</th>
                                 <th>@lang('essentials::lang.contry_nationality')</th>
-
+                                <th>@lang('essentials::lang.total_salary')</th>
                                 <th>@lang('essentials::lang.admissions_date')</th>
                                 <th>@lang('essentials::lang.contract_end_date')</th>
 
@@ -251,7 +254,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.select_employee'),
                                     'required',
-                                    'style'=>'height:40px',
+                                    'style' => 'height:40px',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -268,9 +271,12 @@
                                         'Iban' => __('essentials::lang.Iban'),
                                     ],
                                     null,
-                                    ['class' => 'form-control',
-                                    'style'=>'height:40px', 
-                                    'placeholder' => __('essentials::lang.select_type'), 'required'],
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'required',
+                                    ],
                                 ) !!}
                             </div>
 
@@ -280,7 +286,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.doc_number'),
                                     'required',
-                                    'style'=>'height:40px',
+                                    'style' => 'height:40px',
                                 ]) !!}
                             </div>
 
@@ -290,7 +296,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.issue_date'),
                                     'required',
-                                    'style'=>'height:40px',
+                                    'style' => 'height:40px',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -299,7 +305,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.issue_place'),
                                     'required',
-                                    'style'=>'height:40px',
+                                    'style' => 'height:40px',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -311,9 +317,12 @@
                                         'expired' => __('essentials::lang.expired'),
                                     ],
                                     null,
-                                    ['class' => 'form-control',
-                                    'style'=>'height:40px',
-                                     'placeholder' => __('essentials::lang.select_status'), 'required'],
+                                    [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                        'placeholder' => __('essentials::lang.select_status'),
+                                        'required',
+                                    ],
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -322,7 +331,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.expiration_date'),
                                     'required',
-                                    'style'=>'height:40px',
+                                    'style' => 'height:40px',
                                 ]) !!}
                             </div>
 
@@ -332,7 +341,7 @@
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.file'),
                                     'required',
-                                    'style'=>'height:40px',
+                                    'style' => 'height:40px',
                                 ]) !!}
                             </div>
                         </div>
@@ -514,15 +523,33 @@
                         "data": "emp_number"
                     },
                     {
+                        "data": "profile_image",
+                        "render": function(data, type, row) {
+                            if (data) {
+                             
+                                var imageUrl = '/uploads/' + data;
+                                return '<img src="' + imageUrl + '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                            } else {
+                                return '@lang('essentials::lang.no_image')';
+                            }
+                        }
+                    },
+                    {
                         "data": "full_name"
                     },
-
+                    {
+                        "data": "business_id"
+                    },
+ {
+                        "data": "user_type"
+                    },
                     {
                         "data": "id_proof_number"
                     },
                     {
                         "data": "nationality"
                     },
+                    {"data": "total_salary"},
                     {
                         "data": "admissions_date"
                     },
@@ -582,7 +609,7 @@
                             $('td', row).eq(5).addClass('text-danger'); // Contract expired, colored red
                         } else if (daysRemaining <= 25) {
                             $('td', row).eq(5).addClass(
-                            'text-warning'); // Contract expires within 25 days, colored yellow
+                                'text-warning'); // Contract expires within 25 days, colored yellow
                         }
                     }
                 }
@@ -593,14 +620,14 @@
 
 
             $('#specializations-select, #professions-select, #status-select, #select_location_id').change(
-        function() {
-                console.log('Specialization selected: ' + $(this).val());
-                console.log('Profession selected: ' + $('#professions-select').val());
-                console.log('Status selected: ' + $('#status_filter').val());
-                console.log('loc selected: ' + $('#select_location_id').val());
-                users_table.ajax.reload();
+                function() {
+                    console.log('Specialization selected: ' + $(this).val());
+                    console.log('Profession selected: ' + $('#professions-select').val());
+                    console.log('Status selected: ' + $('#status_filter').val());
+                    console.log('loc selected: ' + $('#select_location_id').val());
+                    users_table.ajax.reload();
 
-            });
+                });
 
 
 

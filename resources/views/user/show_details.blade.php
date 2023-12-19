@@ -4,7 +4,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="col-md-12">
-			<h4>@lang('lang_v1.more_info')</h4>
+		
 		</div>
 		<div class="col-md-4">
 	     	<p><strong>@lang( 'lang_v1.admission_date' ):</strong> @if(!empty($admissions_to_work->admissions_date)) {{@format_date($admissions_to_work->admissions_date)}} @endif</p>
@@ -66,6 +66,10 @@
 		<div class="clearfix"></div>
 		<hr>
 	
+		<div class="col-md-4">
+			<p><strong>@lang('lang_v1.location_ins1'):</strong>
+			{{$user->business?->name ?? ''}}</p>
+		</div>
 
 		<div class="col-md-4">
 			<p><strong>@lang('followup::lang.project'):</strong>

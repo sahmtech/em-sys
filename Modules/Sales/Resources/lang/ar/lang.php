@@ -11,8 +11,13 @@ return [
     'supplier_business_name' => 'اسم الشركة',
     'date' => 'التاريخ',
     'value' => 'القيمة',
+
     'lead' => 'عميل محتمل',
     'customer' => 'عميل',
+
+    'contract_duration'=>'مدة العقد',
+
+
     'offer_type' => 'نوع العرض',
     'offer_status' => 'حالة العرض',
     'action' => 'العمليات',

@@ -49,7 +49,7 @@ class FollowUpContractsWishesController extends Controller
          ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
          ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
          ->where('users.user_type', 'worker')
-         ->whereNotNull('essentials_employees_contracts.wish_id') // Add this line
+         ->whereNotNull('essentials_employees_contracts.wish_id') 
          ->select(
              'users.id',
              'users.emp_number as emp_number',
@@ -126,6 +126,7 @@ class FollowUpContractsWishesController extends Controller
              ->where('users.user_type', 'worker')
              ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
              ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id',)->get();
+             
              return view('followup::contracts_wishes.index', compact('projects', 'wishes','employees'));
      }
      
@@ -260,7 +261,7 @@ class FollowUpContractsWishesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -291,7 +292,7 @@ class FollowUpContractsWishesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -301,6 +302,6 @@ class FollowUpContractsWishesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }

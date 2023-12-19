@@ -11,11 +11,14 @@
 
     <!-- Main content -->
     <section class="content">
-        {!! Form::open(['route' => 'storeEmployee', 'enctype' => 'multipart/form-data']) !!}
+        {!! Form::open(['route' => 'storeEmployee', 'enctype' => 'multipart/form-data',]) !!}
         <div class="row">
             <div class="col-md-12">
-                @component('components.widget')
 
+            @component('components.widget')
+                <div  class="col-md-12" id="section1">
+                <hr>
+                 <h4>@lang('essentials::lang.basic_info'):</h4>
                     <div class="col-md-5">
                         <div class="form-group">
                             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
@@ -87,25 +90,20 @@
                             ]) !!}
                         </div>
                     </div>
-                    {{-- <div class="clearfix"></div>
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('email', __( 'business.email' ) . ':*') !!}
-                {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.email' ) ]); !!}
-            </div>
-          </div> --}}
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                        <button onclick="submitSection('section1')" class="btn btn-primary btn-big">@lang('messages.save')</button>
+                        </div>
+                    </div>
 
-                    {{-- <div class="col-md-4">
-            <div class="form-group">
-              <div class="checkbox">
-                <br/>
-                <label>
-                    {!! Form::checkbox('is_active', 'active', true, ['class' => 'input-icheck status']); !!} {{ __('lang_v1.status_for_user') }}
-                </label>
-                @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
-              </div>
-            </div>
-          </div> --}}
+                   
+                </div>
+
+
+
+
+
                     @include('user.edit_profile_form_part')
 
                     @if (!empty($form_partials))
@@ -113,12 +111,17 @@
                             {!! $partial !!}
                         @endforeach
                     @endif
+
+
+               
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <button type="submit" class="btn btn-primary btn-big"
                                 id="submit_user_button">@lang('messages.save')</button>
                         </div>
                     </div>
+                    
+                   
 
                 @endcomponent
             </div>
@@ -244,7 +247,9 @@
         </div>
         {!! Form::close() !!}
     @stop
-    @section('javascript')
+@section('javascript')
+
+
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#userTypeSelect').on('change', function() {
@@ -351,6 +356,5 @@
 
 
             });
-        
         </script>
     @endsection

@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-
+use App\BusinessDocument;
 use Illuminate\Database\Eloquent\Model;
 
 class Business extends Model
@@ -140,5 +140,10 @@ class Business extends Model
             ', ' . $location->state . '<br>' . $location->country . ', ' . $location->zip_code;
 
         return $address;
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(BusinessDocument::class ,'business_id');
     }
 }

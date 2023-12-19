@@ -20,7 +20,7 @@
                         'id' => 'carType_search',
                     ]) !!}
                     <div class="row">
-                        {{-- <div class="col-sm-4">
+                        <div class="col-sm-4">
                             {!! Form::label('carType_label', __('housingmovements::lang.carModel')) !!}
 
                             <select class="form-control" name="car_type_id" id='carTypeSelect' style="padding: 2px;">
@@ -31,57 +31,23 @@
                                 @endforeach
                             </select>
 
-                        </div> --}}
+                        </div>
 
                         <div class="col-sm-4" style="margin-top: 0px;">
-                            {{-- {!! Form::label('driver', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
+                            {!! Form::label('driver', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
 
                             <select class="form-control " name="driver" id="driver_select" style="padding: 2px;">
                                 <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($drivers as $driver)
-                                    <option value="{{ $driver->id }}">
-                                        {{ $driver->id_proof_number . ' - ' . $driver->first_name . ' ' . $driver->last_name }}
+                                @foreach ($car_Drivers as $driver)
+                                    <option value="{{ $driver->user_id }}">
+                                        {{ $driver->user->id_proof_number . ' - ' . $driver->user->first_name . ' ' . $driver->user->last_name }}
                                     </option>
                                 @endforeach
-                            </select> --}}
-                            {{-- <input type="text" id="searchWorkerInput" placeholder="Search Worker"
-                                style="margin-top: 5px;"> --}}
+                            </select>
+                         
                         </div>
                     </div>
-                    {{-- <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group ">
-                                {!! Form::label('search_lable', __('housingmovements::lang.driverName') . '  ') !!}
-                                {!! Form::text('search', '', [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.driverName'),
-                                    'id' => 'search',
-                                ]) !!}
-
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group ">
-                                {!! Form::label('search_lable', __('housingmovements::lang.plate_number') . '  ') !!}
-                                {!! Form::text('search_plate_number', '', [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('housingmovements::lang.plate_number'),
-                                    'id' => 'search_plate_number',
-                                ]) !!}
-
-                            </div>
-                        </div>
-                    </div> --}}
-                    {{-- <div class="col-md-12">
-                        <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            @lang('housingmovements::lang.search')</button>
-                        @if ($after_serch)
-                            <a class="btn btn-primary pull-right m-5 "
-                                href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@index') }}"
-                                data-href="{{ action('Modules\HousingMovements\Http\Controllers\DriverCarController@index') }}">
-                                @lang('housingmovements::lang.viewAll')</a>
-                        @endif
-                    </div> --}}
+             
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -141,6 +107,7 @@
 
 
             $('#carTypeSelect').select2();
+            $('#driver_select').select2();
 
 
             carDrivers_table = $('#carDrivers_table').DataTable({
@@ -181,13 +148,57 @@
                     }
                 ]
             });
+            $(document).on('click', 'button.delete_user_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "DELETE",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            carDrivers_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $(document).on('click', 'button.edit_user_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
 
 
             $('#carTypeSelect,#driver_select').on('change',
                 function() {
-                    cars_table.ajax.reload();
+                    carDrivers_table.ajax.reload();
                 });
-          
+
         });
     </script>
 @endsection

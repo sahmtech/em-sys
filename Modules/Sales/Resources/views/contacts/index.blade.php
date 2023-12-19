@@ -564,13 +564,13 @@
             $('input[name="mobile"]').on('input', function() {
                 let mobileNumber = $(this).val();
 
-                // Ensure the length does not exceed 10
+                
                 if (mobileNumber.length > 10) {
                     mobileNumber = mobileNumber.slice(0, 10);
                     $(this).val(mobileNumber);
                 }
 
-                // Ensure it starts with '05'
+                
                 if (!mobileNumber.startsWith('05')) {
                     if (mobileNumber.length >= 2) {
                         mobileNumber = '05' + mobileNumber.slice(2);
@@ -583,17 +583,17 @@
 
     <script>
         $(document).ready(function() {
-            // Initially hide the business-related fields
+            
             $('.customer').hide();
 
-            // Listen for changes in the radio button selection
+            
             $('input[type="radio"]').change(function() {
-                // If the customer radio button is selected, show customer-related fields and hide business-related fields
+                
                 if ($(this).val() === 'customer') {
                     $('.business').hide();
                     $('.customer').show();
                 } else {
-                    // If the business radio button is selected, show business-related fields and hide customer-related fields
+                    
                     $('.customer').hide();
                     $('.business').show();
                 }
@@ -602,16 +602,15 @@
     </script>
 
 
-    <script type="text/javascript">
-        // Countries table
+<script type="text/javascript">
+     
         $(document).ready(function() {
             var customers_table = $('#cust_table').DataTable({
-                ajax: '',
+                ajax: '{{route('clients')}}',
                 processing: true,
                 serverSide: true,
 
-
-
+            
                 columns: [
 
                     {
@@ -683,7 +682,7 @@
                         success: function(data) {
                             if (typeof cust_table !== 'undefined') {
                                 window.location.reload();
-                                //  cust_table.ajax.reload();
+                                
                             } else {
                                 console.log('cust_table is not defined.');
                             }
@@ -691,14 +690,14 @@
                         error: function(data) {
                             console.log('Error:', data);
                         }
-                        // success: function (result) {
-                        //     if (result.success == true) {
-                        //         toastr.success(result.msg);
-                        //         countries_table.ajax.reload();
-                        //     } else {
-                        //         toastr.error(result.msg);
-                        //     }
-                        // }
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     });
                 }
             });

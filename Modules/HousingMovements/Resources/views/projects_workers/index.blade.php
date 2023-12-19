@@ -58,6 +58,9 @@
                             <th>@lang('followup::lang.name')</th>
                             <th>@lang('followup::lang.eqama')</th>
                             <th>@lang('followup::lang.project_name')</th>
+                            <th>@lang('housingmovements::lang.building_name')</th>
+                            <th>@lang('housingmovements::lang.building_address')</th>
+                            <th>@lang('housingmovements::lang.room_number')</th>
                             <th>@lang('followup::lang.essentials_salary')</th>
 
                             <th>@lang('followup::lang.nationality')</th>
@@ -75,7 +78,7 @@
 
 
     </section>
-    <!-- /.content -->
+  
 
 @endsection
 
@@ -87,7 +90,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('workers') }}",
+                    url: "{{ route('workers.index') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -109,7 +112,7 @@
                 columns: [{
                         data: 'worker',
                         render: function(data, type, row) {
-                            var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
+                            var link = '<a href="' + '{{ route('htr.show.workers', ['id' => ':id']) }}'
                                 .replace(':id', row.id) + '">' + data + '</a>';
                             return link;
                         }
@@ -120,7 +123,17 @@
                     {
                         data: 'contact_name'
                     },
+
                     {
+                        data: 'building'
+                    },
+                    {
+                        data: 'building_address'
+                    },
+
+                    {
+                        data: 'room_number'
+                    },                    {
                         data: 'essentials_salary',
                         render: function(data, type, row) {
                             return Math.floor(data);

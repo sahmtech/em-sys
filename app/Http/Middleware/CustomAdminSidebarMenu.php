@@ -327,13 +327,12 @@ class CustomAdminSidebarMenu
                 $menu->dropdown(
                     __('essentials::lang.reports'),
                     function ($sub) use ($enabled_modules) {
-                        if (auth()->user()->can('')) {
-                            $sub->url(
-                                action([\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index']),
-                                __('essentials::lang.employees_information_report'),
-                                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'emp_info_report']
-                            );
-                        }
+
+                        $sub->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index']),
+                            __('essentials::lang.employees_information_report'),
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'emp_info_report']
+                        );
                     },
                     ['icon' => 'fa fas fa-plus-circle']
 
@@ -349,10 +348,57 @@ class CustomAdminSidebarMenu
                 )->order(6);
             }
             if ($isSuperAdmin || auth()->user()->can('essentials.view_work_cards') || true) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+
+                $menu->dropdown(
                     __('essentials::lang.work_cards'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                    function ($sub) use ($enabled_modules) {
+
+
+                        $sub->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+                            __('essentials::lang.renewal_residence'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                        )->order(1);
+                       $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+                                __('essentials::lang.residencyreports'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                            )->order(1);
+                        $sub->dropdown(
+                            __('housingmovements::lang.movement_management'),
+                            function ($movement_management_SubMenu) {
+                                $movement_management_SubMenu->url(
+                                    action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
+                                    __('housingmovements::lang.carTypes'),
+                                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
+                                )->order(7);
+
+                                $movement_management_SubMenu->url(
+                                    action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
+                                    __('housingmovements::lang.carModels'),
+                                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
+                                )->order(8);
+
+                                $movement_management_SubMenu->url(
+                                    action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
+                                    __('housingmovements::lang.cars'),
+                                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
+                                )->order(9);
+
+                                $movement_management_SubMenu->url(
+                                    action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
+                                    __('housingmovements::lang.car_drivers'),
+                                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
+                                )->order(9);
+                            },
+                            ['icon' => 'fa fas fa-plus-circle',],
+                            // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+
+                        )->order(2);
+
+                    },
+                    ['icon' => 'fa fas fa-plus-circle']
+
                 )->order(7);
             }
 
@@ -497,6 +543,8 @@ class CustomAdminSidebarMenu
 
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'allRequests']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index']), __('followup::lang.recruitmentRequests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'recruitmentRequests']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index']), __('followup::lang.documents'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index']), __('followup::lang.document_delivery'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents-delivery']);
 
 
             $menu->dropdown(
@@ -506,7 +554,7 @@ class CustomAdminSidebarMenu
                         $sub->url(
                             action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
                             __('followup::lang.reports.projects'),
-                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(3) == 'projects']
                         );
                     }
 
@@ -514,7 +562,7 @@ class CustomAdminSidebarMenu
                         $sub->url(
                             action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
                             __('followup::lang.reports.projectWorkers'),
-                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'createRequest']
+                            ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(3) == 'project-workers']
                         );
                     }
                 },
@@ -532,7 +580,7 @@ class CustomAdminSidebarMenu
                 __('housingmovements::lang.shifts'),
                 [
                     'icon' => 'fa fas fa-meteor',
-                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'shifts'
+                    'active' => request()->segment(2) == 'shifts'
                 ],
 
             )->order(4);
@@ -711,25 +759,25 @@ class CustomAdminSidebarMenu
                     $movement_management_SubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index']),
                         __('housingmovements::lang.carTypes'),
-                        ['icon' => 'fa fas fa-plus-circle',  request()->segment(2) == 'carTypes']
+                        ['icon' => 'fa fas fa-plus-circle',  'active' =>  request()->segment(2) == 'cars-type']
                     )->order(7);
 
                     $movement_management_SubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index']),
                         __('housingmovements::lang.carModels'),
-                        ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'carModels']
+                        ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
                     )->order(8);
 
                     $movement_management_SubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\CarController::class, 'index']),
                         __('housingmovements::lang.cars'),
-                        ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'cars']
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
                     )->order(9);
 
                     $movement_management_SubMenu->url(
                         action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index']),
                         __('housingmovements::lang.car_drivers'),
-                        ['icon' => 'fa fas fa-plus-circle', request()->segment(2) == 'car_driver']
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
                     )->order(9);
                 },
                 ['icon' => 'fa fas fa-plus-circle',],
