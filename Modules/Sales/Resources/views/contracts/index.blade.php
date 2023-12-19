@@ -437,7 +437,8 @@
 
 
 
-                columns: [{
+                columns: [
+                    {
                         data: 'id'
                     },
                     {
@@ -495,28 +496,6 @@
                         }
                     }
 
-
-
-                    {
-                        data: 'start_date'
-                    },
-                    {
-                        data: 'end_date'
-                    },
-
-                    {
-                        data: 'contract_form',
-                        render: function(data, type, row) {
-                            if (data === 'monthly_cost') {
-                                return '@lang('sales::lang.monthly_cost')';
-
-                            } else if (data === 'operating_fees') {
-                                return '@lang('sales::lang.operating_fees')';
-                            } else {
-                                return ' ';
-                            }
-                        }
-                    },
 
                     {
                         data: 'action'
