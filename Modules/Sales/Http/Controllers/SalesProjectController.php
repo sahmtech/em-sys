@@ -35,7 +35,6 @@ class SalesProjectController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $SalesProjects = SalesProject::with(['contact']);
-      
         $cities = EssentialsCity::forDropdown();
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
@@ -53,7 +52,7 @@ class SalesProjectController extends Controller
                 ->addColumn(
                     'contact_name',
                     function ($row) {
-                        return $row->contact->supplier_business_name;
+                        return $row->contact->supplier_business_name ?? null;
                     }
                 )
                 ->addColumn(
@@ -63,34 +62,28 @@ class SalesProjectController extends Controller
                     }
                 )
                 ->addColumn(
-                    'contact_location_city',
-                    function ($row) use ($cities) {
-                        if ($row->city) {
-                            return  $cities[$row->city];
-                        } else return null;
-                    }
-                )
-                ->addColumn(
-                    'contact_location_name_in_charge',
+                    'assigned_to',
                     function ($row) use ($name_in_charge_choices) {
-                      
-                        if ($row->name_in_charge) {
-                            return $name_in_charge_choices[$row->name_in_charge];
-                        } else return null;
+                        $names = "";
+                        $userIds = json_decode($row->assigned_to, true);
+                
+                        if ($userIds) {
+                            $lastUserId = end($userIds);
+                
+                            foreach ($userIds as $user_id) {
+                                $names .= $name_in_charge_choices[$user_id];
+                
+                                if ($user_id !== $lastUserId) {
+                                    $names .= ', ';
+                                }
+                            }
+                        }
+                
+                        return $names;
                     }
                 )
-                ->addColumn(
-                    'contact_location_phone_in_charge',
-                    function ($row) {
-                        return  $row->phone_in_charge;
-                    }
-                )
-                ->addColumn(
-                    'contact_location_email_in_charge',
-                    function ($row) {
-                        return $row->email_in_charge;
-                    }
-                )
+                
+           
 
                 ->addColumn(
                     'action',
@@ -117,7 +110,7 @@ class SalesProjectController extends Controller
                 })
 
 
-                ->rawColumns(['id', 'contact_location_email_in_charge', 'contact_location_phone_in_charge', 'contact_location_name_in_charge', 'contact_location_city', 'contact_location_name', 'contact_name', 'contact_id', 'action'])
+                ->rawColumns(['id','assigned_to', 'contact_name', 'action'])
                 ->make(true);
         }
       

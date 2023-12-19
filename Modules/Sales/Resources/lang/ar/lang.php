@@ -11,7 +11,7 @@ return [
     'supplier_business_name' => 'اسم الشركة',
     'date' => 'التاريخ',
     'value' => 'القيمة',
-    'lead' => 'العميل المحتمل',
+    'lead' => 'عميل محتمل',
     'customer' => 'عميل',
     'offer_type' => 'نوع العرض',
     'offer_status' => 'حالة العرض',
@@ -247,6 +247,44 @@ return [
     'remaning_quantity' => 'الكمية المتبقية',
     'operation_available_contracts' => 'العقود المتاحة للتشغيل',
     'offer_price_number' => 'رقم عرض السعر',
+    'lead_contacts' => 'العملاء المحتملون',
+    'qualified_contacts' => 'العملاء المؤهلون',
+    'unqualified_contacts' => 'العملاء الغير مؤهلون',
+    'converted_contacts' => 'العملاء المحولون',
+    'change_contact_status'=>'تغيير حالة العميل',
+    'qualified'=>'مؤهل',
+    'unqualified'=>'غير مؤهل',
+    'change_to_converted_client'=>'تغيير حالة العميل إلى محوّل',
+    'sales_settings'=>'إعدادات المبيعات',
+    'sales_costs'=>'التكاليف',
+    'sales_templates'=>'قوالب المبيعات',
+    'first_choice_offer_price'=>' عرض السعر الخيار الأول',
+    'second_choice_offer_price'=>' عرض السعر الخيار الثاني',
+    'first_choice_sales_contract'=>' العقد الخيار الأول',
+    'second_choice_sales_contract'=>' العقد الخيار الثاني',
+
+    'first_choice_offer_price_template'=>'قالب عرض السعر الخيار الأول',
+    'second_choice_offer_price_template'=>'قالب عرض السعر الخيار الثاني',
+    'first_choice_sales_contract_template'=>'قالب العقد الخيار الأول',
+    'second_choice_sales_contract_template'=>'قالب العقد الخيار الثاني',
+
+    'comma_separated_email'=>'قيم البريد الإلكتروني المدخلة بفاصلة بين كل بريد وآخر',
+    'email_body' => 'هيئة البريد الإلكتروني',
+    'send_notification' => 'إرسال إشعار',
+    'send' => 'إرسال',
+    'subject' => 'موضوع',
+    'please_add_template'=>'من فضلك قم بإضافة نموذج اقتراح',
+    'not_exists'=>'لا يوجد',
+    'new_contract'=>'عقد جديد',
+    'appendix_contract'=>'ملحق عقد ',
+    'project_follower'=>'متابع المشروع',
+    
+
+
+
+
+
+
 
 
 

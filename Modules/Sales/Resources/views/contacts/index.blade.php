@@ -2,7 +2,7 @@
 @section('title', __('sales::lang.sales'))
 
 @section('content')
-
+{{-- @include('sales::layouts.nav_contact') --}}
 
     <section class="content-header">
         <h1>
@@ -13,8 +13,7 @@
 
     <!-- Main content -->
     <section class="content">
-        @component('components.filters', ['title' => __('report.filters')])
-        @endcomponent
+      
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')

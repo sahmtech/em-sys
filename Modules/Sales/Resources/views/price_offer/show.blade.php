@@ -14,8 +14,8 @@
                 <div class="col-sm-3 col-sm-4">
                     <b>{{ __('sales::lang.transaction_number') }} :</b></b> {{ $query->ref_no }}<br>
                     <b>{{ __('sales::lang.transaction_date') }} :</b></b> {{ $query->transaction_date }}<br>
-                    <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->sale_project->name }}<br>
-                    <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->sale_project->phone_in_charge }}<br>
+                    <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->contact->supplier_business_name }}<br>
+                    <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->contact->mobile }}<br>
                 </div>
 
                 <div class="col-sm-2 col-sm-4">
@@ -23,29 +23,11 @@
                     <b>{{ __('sales::lang.Status') }} :</b>
                     {{ __('sales::lang.' . $query->status) }}
                     <br>
-                    {{-- <b>{{ __('sales::lang.Status') }} :</b>
-                  @if ($query->status === 'approved')
-                     ('sales::lang.' . $query->status)
-                  @elseif ($query->status === 'cancelled')
-                      ملغي
-                  @elseif ($query->status === 'transfared')
-                      محوّل
-                  @elseif ($query->status === 'under_study')
-                      قيد الدراسة
-                  @else
-                      {{ $query->status }}
-                  @endif
-                  <br> --}}
+               
                     <b>{{ __('sales::lang.down_payment') }} :</b></b> {{ $query->down_payment }}<br>
                     <b>{{ __('sales::lang.contract_form') }} :</b></b>
                     {{ __('sales::lang.' . $query->contract_form) }} <br>
-                    {{-- @if ($query->contract_form === 'monthly_cost')
-            تكلفة شهرية
-             @elseif ($query->contract_form === 'operating_fees')
-            رسوم التشغيل
-            @else
-                      {{ $query->contract_form }}
-            @endif --}}
+                  
                 </div>
 
             </div>
@@ -75,9 +57,9 @@
                             @foreach ($query->sell_lines as $sell_line)
                                 <tr>
                                     <td>{{ $sell_line->quantity }}</td>
-                                    {{-- <td>{{ $sell_line->additional_allwances }}</td> --}}
+                                 
                                     <td>
-                                        @if (!empty($sell_line->additional_allwances))
+                                        @if (!empty($sell_line->additional_allwances) &&  !empty($allwance->salaryType))
                                             <ul>
                                                 @foreach (json_decode($sell_line->additional_allwances) as $allwance)
                                                     @if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount'))
@@ -89,6 +71,9 @@
                                                     @endif
                                                 @endforeach
                                             </ul>
+                                       
+                                        @else 
+                                        {{ __('sales::lang.not_exists') }}
                                         @endif
 
 

@@ -91,13 +91,13 @@
                             'method' => 'post',
                             'id' => 'change_status_form',
                         ]) !!}
-            
+
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title">@lang('essentials::lang.change_status')</h4>
                         </div>
-            
+
                         <div class="modal-body">
                             <div class="form-group">
                                 <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
@@ -118,19 +118,18 @@
                                 ]) !!}
                             </div>
                         </div>
-            
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" id="submitFilesBtn">@lang('messages.save')</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
                         </div>
-            
+
                         {!! Form::close() !!}
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
             </div>
-            
         @endcomponent
-        
+
 
 
 
@@ -240,7 +239,7 @@
                 });
             });
 
-          
+
 
             $('#requests_table').on('click', '.btn-return', function() {
                 var requestId = $(this).data('request-id');
@@ -258,41 +257,41 @@
             });
 
             $('#change-status-selected').click(function() {
-    var selectedRows = $('.select-row:checked').map(function() {
-        return {
-            id: $(this).data('id'),
-            full_name: $(this).data('full_name'),
-        };
-    }).get();
+                var selectedRows = $('.select-row:checked').map(function() {
+                    return {
+                        id: $(this).data('id'),
+                        full_name: $(this).data('full_name'),
+                    };
+                }).get();
 
-    $('#selectedRowsData').val(JSON.stringify(selectedRows));
-    $('#changeStatusModal').modal('show');
-});
+                $('#selectedRowsData').val(JSON.stringify(selectedRows));
+                $('#changeStatusModal').modal('show');
+            });
 
-$('#submitFilesBtn').click(function() {
-    var formData = new FormData($('#change_status_form')[0]);
+            $('#submitFilesBtn').click(function() {
+                var formData = new FormData($('#change_status_form')[0]);
 
-    $.ajax({
-        type: 'POST',
-        url: $('#change_status_form').attr('action'), // Use the form action URL
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(result) {
-            if (result.success == true) {
-                toastr.success(result.msg);
-                users_table.ajax.reload();
-            } else {
-                toastr.error(result.msg);
-            }
-        },
-        error: function(error) {
-            // Handle error
-        }
-    });
+                $.ajax({
+                    type: 'POST',
+                    url: $('#change_status_form').attr('action'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            users_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(error) {
 
-    $('#changeStatusModal').modal('hide');
-});
+                    }
+                });
+
+                $('#changeStatusModal').modal('hide');
+            });
 
 
         });

@@ -5,6 +5,7 @@ namespace Modules\Sales\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Essentials\Entities\EssentialsCity;
 use App\User;
 use App\Business;
 use App\BusinessLocation;
@@ -25,40 +26,32 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientsController extends Controller
 {
-    protected $commonUtil;
+    
+    protected $moduleUtil;
+    protected $statuses;
 
     protected $contactUtil;
 
-    protected $transactionUtil;
+    public function __construct(ModuleUtil $moduleUtil,  ContactUtil $contactUtil)
+    {
 
-    protected $moduleUtil;
-
-    protected $notificationUtil;
-
-    /**
-     * Constructor
-     *
-     * @param  Util  $commonUtil
-     * @return void
-     */
-    public function __construct(
-        Util $commonUtil,
-        ModuleUtil $moduleUtil,
-        TransactionUtil $transactionUtil,
-        NotificationUtil $notificationUtil,
-        ContactUtil $contactUtil
-    ) {
-        $this->commonUtil = $commonUtil;
-        $this->contactUtil = $contactUtil;
         $this->moduleUtil = $moduleUtil;
-        $this->transactionUtil = $transactionUtil;
-        $this->notificationUtil = $notificationUtil;
+        $this->contactUtil = $contactUtil;
+        $this->statuses = [
+            'qualified' => [
+                'name' => __('sales::lang.qualified'),
+                'class' => 'bg-green',
+            ],
+            'unqualified' => [
+                'name' => __('sales::lang.unqualified'),
+                'class' => 'bg-red',
+            ],
+            
+        ];
     }
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index(Request $request)
+  
+  
+    public function lead_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -75,47 +68,25 @@ class ClientsController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        $contacts = DB::table('contacts')
+            ->select([
+                'id', 'supplier_business_name', 'type', 'contact_id',
+                'commercial_register_no', 'mobile', 'email', 'city'
 
+            ])->where('business_id', $business_id)->where('type','lead');
+        $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
-            $contacts = DB::table('contacts')
-                ->select([
-                    'id',
-                    'supplier_business_name',
-                    'type',
-                    'contact_id',
-                    'commercial_register_no',
-                    'mobile',
-                    'email',
-                    'city'
-                    // <<<<<<< Rahaf
-                ])->where('business_id', $business_id)->whereIn('type', ['customer', 'lead'])->orderby('id', 'desc');
 
-            // =======
-            //             ])
-            //             //->where('business_id',$business_id)
-            //             ->whereIn('type',['customer','lead'])->orderby('id','desc');
-            //             //dd($contacts);
-            // >>>>>>> Development
             return Datatables::of($contacts)
-                // ->addColumn('nameAr', function ($row) {
-                //     $name = json_decode($row->name, true);
-                //     return $name['ar'] ?? '';
-                // })
-                // ->addColumn('nameEn', function ($row) {
-                //     $name = json_decode($row->name, true);
-                //     return $name['en'] ?? '';
-                // })
+
                 ->addColumn('action', function ($row) {
 
                     $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                    // $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('sale.deleteCustomer', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     return $html;
                 })
-                ->editColumn('type', function ($row) {
-                    // Translate the status here
-                    return __('sales::lang.' . $row->type);
-                })
+              
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
@@ -123,171 +94,303 @@ class ClientsController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $types = [];
 
-        if (auth()->user()->can('customer.create') || auth()->user()->can('customer.view_own')) {
-            $types['lead'] = __('report.customer');
-        }
-
+        $status = $this->statuses;
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        return view('sales::contacts.index')->with(compact('types', 'users', 'nationalities'));
+        return view('sales::contacts.lead_contacts')->with(compact('users','status', 'cities', 'nationalities'));
     }
 
-
-
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+    public function qualified_contacts(Request $request)
     {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!auth()->user()->can('supplier.create') && !auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own') && !auth()->user()->can('supplier.view_own')) {
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
-        $business_id = request()->session()->get('user.business_id');
-
-        //Check if subscribed or not
-        if (!$this->moduleUtil->isSubscribed($business_id)) {
-            return $this->moduleUtil->expiredResponse();
+        $can_crud_customers = auth()->user()->can('sales.crud_customers');
+        if (!$can_crud_customers) {
+            abort(403, 'Unauthorized action.');
         }
 
+
+        if (request()->ajax()) {
+            $contacts = DB::table('contacts')
+            ->select([
+                'id', 'supplier_business_name', 'type', 'contact_id',
+                'commercial_register_no', 'mobile', 'email', 'city'
+
+            ])->where('business_id', $business_id)->where('type','qualified');
+            
+            return Datatables::of($contacts)
+
+                ->addColumn('action', function ($row) {
+
+                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+
+                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    return $html;
+                })
+              
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+   
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        return view('sales::contacts.create')->with(compact('types', 'nationalities'));
+
+        return view('sales::contacts.qualified_contacts')->with(compact('nationalities'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
+
+    public function unqualified_contacts(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+       
+        $can_crud_customers = auth()->user()->can('sales.crud_customers');
+        if (!$can_crud_customers) {
+            abort(403, 'Unauthorized action.');
+        }
+
+
+        if (request()->ajax()) {
+            $contacts = DB::table('contacts')
+                ->select([
+                    'id', 'supplier_business_name', 'type', 'contact_id',
+                    'commercial_register_no', 'mobile', 'email', 'city'
+    
+                ])->where('business_id', $business_id)->where('type','unqualified');
+
+               
+            return Datatables::of($contacts)
+
+                ->addColumn('action', function ($row) {
+
+                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+
+                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    return $html;
+                })
+              
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+       
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        return view('sales::contacts.unqualified_contacts')->with(compact( 'nationalities'));
+    }
+
+    public function converted_contacts(Request $request)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+      
+        $can_crud_customers = auth()->user()->can('sales.crud_customers');
+        if (!$can_crud_customers) {
+            abort(403, 'Unauthorized action.');
+        }
+
+
+        if (request()->ajax()) {
+            $contacts = DB::table('contacts')
+            ->select([
+                'id', 'supplier_business_name', 'type', 'contact_id',
+                'commercial_register_no', 'mobile', 'email', 'city'
+
+            ])->where('business_id', $business_id)->where('type','converted');
+
+            return Datatables::of($contacts)
+               
+                ->addColumn('action', function ($row) {
+
+                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    return $html;
+                })
+              
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+      
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        return view('sales::contacts.converted_contacts')->with(compact('nationalities'));
+    }
+    public function getEnglishNameForCity(Request $request)
+    {
+
+        $selectedCity = $request->input('city');
+        $city = EssentialsCity::find($selectedCity);
+
+
+        $decodedName = json_decode($city->name, true);
+
+        $englishName = isset($decodedName['en']) ? $decodedName['en'] : null;
+
+        return response()->json(['relatedData' => $englishName]);
+    }
+
+
     public function store(Request $request)
     {
+       
         if (!auth()->user()->can('user.create') && !auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
             abort(403, 'Unauthorized action.');
         }
         try {
-            $business_id = $request->session()->get('user.business_id');
+           
+            $business_id = session()->get('user.business_id');
 
             if (!$this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse();
             }
-
+           
             $input = $request->only([
-                'type', 'contact_id', 'name_en', 'first_name', 'last_name',
-                'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
-                'last_name_cs', 'first_name_cs', 'english_name_cs', 'capacity_cs', 'nationality_cs',
-                'email_cs', 'identityNO_cs', 'mobile_cs', 'allow_login_cs', 'username_cs', 'password_cs',
+                'contact_name', 'name_en','city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
+
+                'last_name_cs', 'first_name_cs', 'english_name_cs','nationality_cs','email_cs', 'identityNO_cs', 'mobile_cs', 'allow_login_cs', 'username_cs', 'password_cs',
+             
                 'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'allow_login_cf', 'username_cf', 'password_cf'
             ]);
 
             $input['allow_login_cs'] = $request->filled('allow_login_cs');
             $input['allow_login_cf'] = $request->filled('allow_login_cf');
-
-            $name_array = [];
-
-
-            if (!empty($input['first_name'])) {
-                $name_array[] = $input['first_name'];
+            $latestRecord = Contact::whereIn('type',['lead','qualified','unqualified','converted'])->orderBy('ref_no', 'desc')->first();
+    
+            
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->ref_no;
+                $numericPart = (int)substr($latestRefNo, 5); 
+                $numericPart++;
+                $contact_input['ref_no'] = 'L' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
+            } else {
+           
+                $contact_input['ref_no'] = 'L0005000';
             }
+            
+         
+            //store contact
+            // $contact_input['name'] =  $request->input('contact_name');
+            $contact_input['supplier_business_name'] = $request->input('contact_name');
+            $contact_input['english_name'] = $request->input('name_en');
+            $contact_input['commercial_register_no'] = $request->input('commercial_register_no');
+            $contact_input['mobile'] = $request->input('mobile');
+            $contact_input['alternate_number'] = $request->input('alternate_number');
+            $contact_input['email'] = $request->input('email');
+            $contact_input['business_id'] = $business_id;
+            $contact_input['created_by'] = $request->session()->get('user.id');
+            $contact_input['type'] = "lead";
+           
 
-            if (!empty($input['last_name'])) {
-                $name_array[] = $input['last_name'];
-            }
-
-            $userInfo['user_type'] = 'customer';
-            $userInfo['first_name'] = $request->supplier_business_name;
-            $userInfo['allow_login'] = 0;
-            $userInfo['business_id'] =  $business_id;
-            $user = User::create($userInfo);
-
-            $input['name'] = trim(implode(' ', $name_array));
-
-            $input['english_name'] = $request->input('name_en');
-            $input['business_id'] = $business_id;
-            $input['created_by'] = $request->session()->get('user.id');
-            $input['responsible_user_id'] = $input['selected_user_id'];
-            $input['type'] = 'lead';
-            $input['user_id'] = $user->id;
-
-            DB::beginTransaction();
-            $output = $this->contactUtil->createNewContact($input);
+            $output = $this->contactUtil->createNewContact($contact_input);
             $responseData = $output['data'];
             $contactId = $responseData->id;
-            
-            $user->update(['crm_contact_id' => $contactId]);
+            if ($contactId){
+           
+            //add contact as user can't log in
+                    $userInfo['user_type'] = 'customer';
+                    $userInfo['first_name'] = $request->supplier_business_name;
+                    $userInfo['allow_login'] = 0;
+                    $userInfo['business_id'] =  $business_id;
+                    $userInfo['crm_contact_id'] =  $contactId;
+                    User::create($userInfo);
+            }
 
-            event(new ContactCreatedOrModified($input, 'added'));
+         
+
+            event(new ContactCreatedOrModified($contact_input, 'added'));
 
             $this->moduleUtil->getModuleData('after_contact_saved', ['contact' => $output['data'], 'input' => $request->input()]);
 
             $this->contactUtil->activityLog($output['data'], 'added');
+            
 
-
-
-
-            $contract_signer_input['crm_contact_id'] = $contactId;
-            $contract_signer_input['first_name'] = $request->input('first_name_cs');
-            $contract_signer_input['last_name'] = $request->input('last_name_cs');
-            $contract_signer_input['english_name'] = $request->input('english_name_cs');
-            $contract_signer_input['capacity_cs'] = $request->input('capacity_cs');
-            $contract_signer_input['nationality_id'] = $request->input('nationality_cs');
-            $contract_signer_input['email'] = $request->input('email_cs');
-            $contract_signer_input['id_proof_number'] = $request->input('identityNO_cs');
-            $contract_signer_input['contact_number'] = $request->input('mobile_cs');
-            $contract_signer_input['business_id'] = $request->session()->get('user.id');
+            //store contact signer
+            $contact_signer_input['crm_contact_id'] = $contactId;
+            $contact_signer_input['first_name'] = $request->input('first_name_cs');
+            $contact_signer_input['last_name'] = $request->input('last_name_cs');
+            $contact_signer_input['english_name'] = $request->input('english_name_cs');
+            $contact_signer_input['nationality_id'] = $request->input('nationality_cs');
+            $contact_signer_input['email'] = $request->input('email_cs');
+            $contact_signer_input['id_proof_number'] = $request->input('identityNO_cs');
+            $contact_signer_input['contact_number'] = $request->input('mobile_cs');
+            $contact_signer_input['business_id'] = $business_id;
 
             if ($input['allow_login_cs'] == true) {
-                $contract_signer_input['user_type'] = 'customer_user';
-                $contract_signer_input['username'] = $request->input('username_cs');
+                $contact_signer_input['user_type'] = 'customer_user';
+                $contact_signer_input['username'] = $request->input('username_cs');
                 if (!empty($input['password_cs'])) {
-                    $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
+                    $contact_signer_input['password'] = Hash::make($request->input('password_cs'));
                 }
             } else {
-                $contract_signer_input['user_type'] = 'customer_user';
-                $contract_signer_input['username'] = null;
-                $contract_signer_input['password'] = null;
+                $contact_signer_input['user_type'] = 'customer_user';
+                $contact_signer_input['username'] = null;
+                $contact_signer_input['password'] = null;
             }
 
-            $contract_signer_input['allow_login'] = $input['allow_login_cs'];
-            $contract_signer_input['contact_user_type'] = 'contact_signer';
+            $contact_signer_input['allow_login'] = $input['allow_login_cs'];
+            $contact_signer_input['contact_user_type'] = 'contact_signer';
+            if ($request->input('first_name_cs')){
+                User::create($contact_signer_input);
+            }
 
-            $contract_signer = User::create($contract_signer_input);
 
-
-            $contract_follower_input['crm_contact_id'] = $contactId;
-            $contract_follower_input['first_name'] = $input['first_name_cf'];
-            $contract_follower_input['last_name'] = $input['last_name_cf'];
-            $contract_follower_input['english_name'] = $input['english_name_cf'];
-            $contract_follower_input['email'] = $input['email_cf'];
-            $contract_follower_input['contact_number'] = $input['mobile_cf'];
-            $contract_follower_input['business_id'] = $request->session()->get('user.id');
+            $contact_follower_input['crm_contact_id'] = $contactId;
+            $contact_follower_input['first_name'] = $input['first_name_cf'];
+            $contact_follower_input['last_name'] = $input['last_name_cf'];
+            $contact_follower_input['english_name'] = $input['english_name_cf'];
+            $contact_follower_input['email'] = $input['email_cf'];
+            $contact_follower_input['contact_number'] = $input['mobile_cf'];
+            $contact_follower_input['business_id'] = $business_id;
 
             if ($input['allow_login_cf'] == true) {
-                $contract_follower_input['user_type'] = "customer_user";
-                $contract_follower_input['username'] = $input['username_cf'];
+                $contact_follower_input['user_type'] = "customer_user";
+                $contact_follower_input['username'] = $input['username_cf'];
 
                 if (!empty($input['password_cf'])) {
-                    $contract_follower_input['password'] = Hash::make($input['password_cf']);
+                    $contact_follower_input['password'] = Hash::make($input['password_cf']);
                 }
             } else {
-                $contract_follower_input['user_type'] = "customer_user";
-                $contract_follower_input['username'] = null;
-                $contract_follower_input['password'] = null;
+
+                $contact_follower_input['user_type'] = "customer_user";
+                $contact_follower_input['username'] = null;
+                $contact_follower_input['password'] = null;
             }
-            $contract_follower_input['allow_login'] = $input['allow_login_cf'];
+         
+            $contact_follower_input['allow_login'] = $input['allow_login_cf'];
+            $contact_follower_input['contact_user_type'] = 'contract_follower';
 
-
-            $contract_follower_input['contact_user_type'] = 'contract_follower';
-
-            $contract_follower = User::create($contract_follower_input);
-
-            DB::commit();
+            User::create($contact_follower_input);
+            $output = ['success' => true,
+            'msg' => __('lang_v1.added_success'),
+                 ];
+            
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
                 'msg' => $e->getMessage(),
@@ -296,15 +399,53 @@ class ClientsController extends Controller
             $errors = $e->errors();
             return response()->json(['success' => false, 'errors' => $errors], 422);
         }
-        // return $output;
-        return redirect()->route('sale.clients');
+       
+        return redirect()->route('lead_contacts');
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
+    public function changeStatus(Request $request)
+    {
+        $user = auth()->user();
+        $isSuperAdmin = $user->user_type == 'superadmin';
+        $businessId = $request->session()->get('user.business_id');
+    
+     
+        if (!($isSuperAdmin || $user->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($businessId, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $selectedRowsData = json_decode($request->input('selectedRowsData'));
+    
+            foreach ($selectedRowsData as $row) {
+                $contact = Contact::find($row->id);
+    
+                if (!$contact) {
+                    
+                    continue;
+                }
+    
+                $contact->type = $request->status;
+               
+             
+                $contact->save();
+            }
+    
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+    
+        return $output;
+    }
     public function show($id)
     {
         if (!auth()->user()->can('customer.view') && !auth()->user()->can('customer.view_own')) {
@@ -327,13 +468,13 @@ class ClientsController extends Controller
             }
         }
 
-        //$reward_enabled = (request()->session()->get('business.enable_rp') == 1 && in_array($contact->type, ['customer', 'both'])) ? true : false;
+        
 
         $contact_dropdown = Contact::contactDropdown($business_id, false, false);
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
 
-        //get contact view type : ledger, notes etc.
+       
         $view_type = request()->get('view');
         if (is_null($view_type)) {
             $view_type = 'ledger';
@@ -416,7 +557,7 @@ class ClientsController extends Controller
             ->select('users.*')
             ->first();
 
-        //dd( $contactFollower);
+      
 
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -635,5 +776,36 @@ class ClientsController extends Controller
             ]);
         }
         return redirect()->route('sale.clients');
+    }
+
+
+    public function change_to_converted_client(Request $request)
+    {
+        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
+        $business_id = request()->session()->get('user.business_id');
+        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+      
+        try {
+            $selectedRows = $request->input('selectedRows');
+
+            Contact::whereIn('id', $selectedRows)->update(['type' => 'converted']);
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.send_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
     }
 }

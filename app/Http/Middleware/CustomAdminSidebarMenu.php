@@ -555,46 +555,31 @@ class CustomAdminSidebarMenu
             $menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->url(
-                action([\Modules\Sales\Http\Controllers\ClientsController::class, 'index']),
+                action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
                 __('sales::lang.customers'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'clients'],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'lead_contacts'],
             );
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\SalesScheduleController::class, 'index']),
+                __('crm::lang.follow_ups'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_follow-ups'],
+            );
+
             $menu->url(
                 route('sale.saleProjects'),
                 __('sales::lang.sales_projects'),
                 ['icon' => 'fa fas fa-plus-circle'],
             );
-
-
-            // $menu->url(
-            //     action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-            //     __('sales::lang.add_offer_price'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-            // );
-
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                 __('sales::lang.offer_price'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
 
             );
-
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
                 __('sales::lang.contracts'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
-            );
-
-            $menu->url(
-                action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
-                __('sales::lang.contract_itmes'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
-            );
-
-            $menu->url(
-                action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
-                __('sales::lang.contract_appendics'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
             );
             $menu->url(
                 action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
@@ -602,10 +587,41 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
             );
 
-            $menu->url(
-                action([\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index']),
-                __('sales::lang.sale_sources'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'salesources'],
+            $menu->dropdown(
+                __('sales::lang.sales_settings'),
+                function ($sub) {
+
+                    $sub->url(
+                        action([\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index']),
+                        __('sales::lang.sale_sources'),
+                        ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_sources']
+                    );
+                    $sub->url(
+                        action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
+                        __('sales::lang.contract_itmes'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
+                    );
+                    $sub->url(
+                        action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
+                        __('sales::lang.contract_appendics'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
+                    );
+                 
+                    $sub->url(
+                        action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
+                        __('sales::lang.sales_templates'),
+                        ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'first_choice_offer_price_template']
+                    );
+                    $sub->url(
+                        action([\Modules\Sales\Http\Controllers\SalesCostController::class, 'index']),
+                        __('sales::lang.sales_costs'),
+                        ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_costs']
+                    );
+
+                    
+                },
+                ['icon' => 'fa fas fa-plus-circle'],
+
             );
         });
     }

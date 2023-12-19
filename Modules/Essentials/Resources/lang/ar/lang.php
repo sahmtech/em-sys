@@ -1065,7 +1065,8 @@ return[
 'no_wish_file_to_show'=>'لايوجد مرفق للرغبة ',
 'view_wish_file'=>'عرض ملف المرفق للرغبة',
 'passport_number'=>'جواز السفر',
-'single'=>'عازب'
+'single'=>'عازب',
+'english_name_for_city'=>'اسم المدينة بالانكليزية'
 
 
 

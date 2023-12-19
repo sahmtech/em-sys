@@ -67,7 +67,7 @@ class ProposalTemplateController extends Controller
                 ]);
         }
 
-        return view('crm::proposal_template.create');
+        return view('sales::templates.create');
     }
 
     /**
