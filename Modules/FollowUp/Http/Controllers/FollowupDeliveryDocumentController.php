@@ -23,11 +23,17 @@ class FollowupDeliveryDocumentController extends Controller
         $delivery_documents = FollowupDeliveryDocument::all();
         if (request()->ajax()) {
 
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+            if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
 
 
-            //     $documents = $documents->where('car_model_id', request()->input('carTypeSelect'));
-            // }
+                $delivery_documents = $delivery_documents->where('user_id', request()->input('worker_id'));
+            }
+
+            if (!empty(request()->input('document_id')) && request()->input('document_id') !== 'all') {
+
+
+                $delivery_documents = $delivery_documents->where('document_id', request()->input('document_id'));
+            }
 
 
 
@@ -77,7 +83,9 @@ class FollowupDeliveryDocumentController extends Controller
                 ->rawColumns(['action', 'worker', 'doc_name'])
                 ->make(true);
         }
-        return view('followup::deliveryDocument.index');
+        $workers = User::where('user_type', 'worker')->get();
+        $documents = FollowupDocument::all();
+        return view('followup::deliveryDocument.index',compact('workers','documents'));
     }
 
     /**
