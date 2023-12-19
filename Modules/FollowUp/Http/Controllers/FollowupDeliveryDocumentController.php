@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\FollowUp\Entities\followupDeliveryDocument;
+use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\FollowUp\Entities\FollowupDocument;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -20,14 +20,20 @@ class FollowupDeliveryDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $delivery_documents = followupDeliveryDocument::all();
+        $delivery_documents = FollowupDeliveryDocument::all();
         if (request()->ajax()) {
 
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+            if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
 
 
-            //     $documents = $documents->where('car_model_id', request()->input('carTypeSelect'));
-            // }
+                $delivery_documents = $delivery_documents->where('user_id', request()->input('worker_id'));
+            }
+
+            if (!empty(request()->input('document_id')) && request()->input('document_id') !== 'all') {
+
+
+                $delivery_documents = $delivery_documents->where('document_id', request()->input('document_id'));
+            }
 
 
 
@@ -77,7 +83,9 @@ class FollowupDeliveryDocumentController extends Controller
                 ->rawColumns(['action', 'worker', 'doc_name'])
                 ->make(true);
         }
-        return view('followup::deliveryDocument.index');
+        $workers = User::where('user_type', 'worker')->get();
+        $documents = FollowupDocument::all();
+        return view('followup::deliveryDocument.index',compact('workers','documents'));
     }
 
     /**
@@ -137,7 +145,7 @@ class FollowupDeliveryDocumentController extends Controller
     {
         $workers = User::where('user_type', 'worker')->get();
         $documents = FollowupDocument::all();
-        $document_delivery = followupDeliveryDocument::find($id);
+        $document_delivery = FollowupDeliveryDocument::find($id);
 
         return view('followup::deliveryDocument.edit', compact('workers', 'documents', 'document_delivery'));
     }

@@ -6,7 +6,7 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class followupDeliveryDocument extends Model
+class FollowupDeliveryDocument extends Model
 {
     use HasFactory;
 
