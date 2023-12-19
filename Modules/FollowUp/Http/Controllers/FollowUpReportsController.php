@@ -156,103 +156,87 @@ class FollowUpReportsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $can_crud_projects = auth()->user()->can('followup.crud_projects');
-        if (!$can_crud_projects) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
-
-
-        $contacts = Contact::whereIn('type', ['customer', 'lead'])
-
-            ->with([
-                'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
-                'transactions.salesContract.salesOrderOperation'
-
-            ]);
-
-
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
+        $SalesProjects = SalesProject::with(['contact']);
         if (request()->ajax()) {
-            $contracts = salesContract::with([
-                'transaction.contact.user',
-                'salesOrderOperation',
-            ]);
-
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-                $contacts->where('id', request()->input('project_name'));
+
+                $SalesProjects = $SalesProjects->where('contact_id', request()->input('project_name'));
             }
 
-            return Datatables::of($contacts)
-                ->addColumn('contact_name', function ($contact) {
-                    return $contact->supplier_business_name ?? null;
-                })
-                ->addColumn('project', function ($contact) {
-                    return $contact->name ?? null;
-                })
-                ->addColumn('number_of_contract', function ($contact) {
-                    return $contact->transactions?->salesContract?->number_of_contract ?? null;
-                })
-                ->addColumn('start_date', function ($contact) {
-                    return $contact->transactions?->salesContract?->start_date ?? null;
-                })
-                ->addColumn('end_date', function ($contact) {
-                    return $contact->transactions?->salesContract?->end_date ?? null;
-                })
-                ->addColumn('active_worker_count', function ($contact) {
-                    return optional($contact->contactLocation)->sum(function ($location) {
-                        return $location->assignedTo
-                            ->where('user_type', 'worker')
-                            ->where('status', 'active')
-                            ->count();
-                    }) ?? 0;
-                })
-                ->addColumn('worker_count', function ($contact) {
-                    return optional($contact->contactLocation)->sum(function ($location) {
-                        return $location->assignedTo
-                            ->where('user_type', 'worker')
-
-                            ->count();
-                    }) ?? 0;
-                })->addColumn('duration', function ($contact) {
-                    $startDate = $contact->transactions?->salesContract?->start_date ?? null;
-                    $endDate = $contact->transactions?->salesContract?->end_date ?? null;
-
-                    if ($startDate && $endDate) {
-                        $startDate = \Carbon\Carbon::parse($startDate);
-                        $endDate = \Carbon\Carbon::parse($endDate);
-
-                        $duration = $startDate->diff($endDate);
-
-                        $years = $duration->y > 0 ? ($duration->y == 1 ? $duration->y . ' ' . trans('sales::lang.year') : $duration->y . ' ' . trans_choice('sales::lang.years', $duration->y)) : '';
-                        $months = $duration->m > 0 ? ($duration->m == 1 ? $duration->m . ' ' . trans('sales::lang.month') : $duration->m . ' ' . trans_choice('sales::lang.months', $duration->m)) : '';
-                        $days = $duration->d > 0 ? ($duration->d == 1 ? $duration->d . ' ' . trans('sales::lang.day') : $duration->d . ' ' . trans_choice('sales::lang.days', $duration->d)) : '';
-
-                        $durationString = implode(', ', array_filter([$years, $months, $days]));
-
-                        return $durationString;
+            return Datatables::of($SalesProjects)
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
                     }
+                )
+                ->addColumn(
+                    'contact_name',
+                    function ($row) {
+                        return $row->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_name',
+                    function ($row) {
+                        return  $row->name;
+                    }
+                )
+                ->addColumn('number_of_contract', function ($row) {
+                    return $row->salesContract?->number_of_contract ?? null;
+                })
+                ->addColumn('start_date', function ($row) {
+                    return $row->salesContract?->start_date ?? null;
+                })
+                ->addColumn('end_date', function ($row) {
+                    return $row->salesContract?->end_date ?? null;
+                })
+                ->addColumn('active_worker_count', function ($row) {
 
-                    return null;
-                })->filterColumn('project', function ($query, $keyword) {
+                    return $row->users
+                        ->where('user_type', 'worker')
+                        ->where('status', 'active')
+                        ->count();
+                })
+                ->addColumn('worker_count', function ($row) {
+
+                    return $row->users
+                        ->where('user_type', 'worker')
+
+                        ->count();
+                })
+                ->addColumn('duration', function ($row) {
+                    return $row->contract_duration    ?? null;
+                })
+
+                ->addColumn('status', function ($row) {
+                    return $row->salesOrdersOperations?->status     ?? null;;
+                })
+                ->addColumn('type', function ($row) {
+                    return $row->salesOrdersOperations?->operation_order_type ?? null;;
+                })
+
+                ->filterColumn('contact_name', function ($query, $keyword) {
+
+                    $query->whereHas('contact', function ($qu) use ($keyword) {
+                        $qu->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('contact_location_name', function ($query, $keyword) {
+
                     $query->where('name', 'like', "%{$keyword}%");
                 })
 
 
-                ->rawColumns([
-                    'contact_name', 'number_of_contract', 'start_date', 'end_date', 'duration',
-                    'active_worker_count', 'worker_count'
-
-                ])
-
-                ->make(true);;
+                ->rawColumns(['id', 'contact_location_name', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
+                ->make(true);
         }
-
+        $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
         return view('followup::reports.projects')->with(compact('contacts_fillter'));
     }
 

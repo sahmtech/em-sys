@@ -22,54 +22,33 @@
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%;padding:2px;',
                                 'placeholder' => __('lang_v1.all'),
-                                'id' => 'project_name_filter_select',
+                                'id' => 'project_name_filter',
                             ]) !!}
 
                         </div>
                     </div>
-                    {{-- <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="offer_status_filter">@lang('followup::lang.project_status'):</label>
-                        <select class="form-control select2" name="offer_status_filter" required id="offer_status_filter" style="width: 100%;">
-                            <option value="all">@lang('lang_v1.all')</option>
-                            <option value="not_started">@lang('followup::lang.not_started')</option>
-                            <option value="under_process">@lang('followup::lang.under_process')</option>
-                            <option value="done">@lang('followup::lang.done')</option>
-
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="type_filter">@lang('followup::lang.project_type'):</label>
-                        <select class="form-control select2" name="type_filter" required id="type_filter" style="width: 100%;">
-                            <option value="all">@lang('lang_v1.all')</option>
-                            <option value="External">@lang('followup::lang.external')</option>
-                            <option value="Internal">@lang('followup::lang.internal')</option>
-                         
-
-                        </select>
-                    </div>
-                </div> --}}
+ 
                 @endcomponent
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="projects_table">
+                <table class="table table-bordered table-striped" id="projects_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            <th>@lang('sales::lang.project_name')</th>
-                            <th>@lang('sales::lang.contract_number')</th>
-                            <th>@lang('sales::lang.start_date')</th>
-                            <th>@lang('sales::lang.end_date')</th>
-                            <th>@lang('sales::lang.active_worker_count')</th>
-                            <th>@lang('sales::lang.worker_count')</th>
-                            <th>@lang('sales::lang.contractDuration')</th>
-                            <th>@lang('sales::lang.contract_form')</th>
-                            <th>@lang('followup::lang.project_status')</th>
-                            <th>@lang('followup::lang.project_type')</th>
-                            <th>@lang('sales::lang.action')</th>
+                            <th>#</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.contact_name')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.contact_location_name')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.contract_number')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.start_date')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.end_date')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.active_worker_count')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.worker_count')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.contractDuration')</th>
+                            {{-- <th>@lang('sales::lang.contract_form')</th> --}}
+                            <th style="width: 100px !important;">@lang('followup::lang.project_status')</th>
+                            <th style="width: 100px !important;">@lang('followup::lang.project_type')</th>
+                            <th style="width: 100px !important;">@lang('sales::lang.action')</th>
 
 
                         </tr>
@@ -104,7 +83,13 @@
                     }
                 },
                 columns: [{
+                        data: 'id'
+                    },
+                    {
                         data: 'contact_name'
+                    },
+                    {
+                        data: 'contact_location_name'
                     },
                     {
                         data: 'number_of_contract'
@@ -124,20 +109,20 @@
                     {
                         data: 'duration'
                     },
-                    {
-                        data: 'contract_form',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-                                case 'monthly_cost':
-                                    return '{{ trans('sales::lang.monthly_cost') }}';
-                                case 'operating_fees':
-                                    return '{{ trans('sales::lang.operating_fees') }}';
+                    // {
+                    //     data: 'contract_form',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
+                    //             case 'monthly_cost':
+                    //                 return '{{ trans('sales::lang.monthly_cost') }}';
+                    //             case 'operating_fees':
+                    //                 return '{{ trans('sales::lang.operating_fees') }}';
 
-                                default:
-                                    return data;
-                            }
-                        }
-                    },
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
 
                     {
                         data: 'status',
