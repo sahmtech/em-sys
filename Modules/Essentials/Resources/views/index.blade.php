@@ -10,83 +10,83 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('essentials::lang.number_employees_staff') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $num_employee_staff }}</h4>
+                <div class="col-md-3">
+                    <div class="custom_card">
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.number_employees_staff') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $num_employee_staff }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
-
                     </div>
-
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('essentials::lang.number_employees') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $num_employees }}</h4>
+                <div class="col-md-3">
+                    <div class="custom_card">
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.number_employees') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $num_employees }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
-
                     </div>
-
                 </div>
 
 
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('essentials::lang.number_workers') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $num_workers }}</h4>
+                <div class="col-md-3">
+                    <div class="custom_card">
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.number_workers') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $num_workers }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
-
                     </div>
-
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing custom_card">
-
-                    <div class="widget widget-one_hybrid widget-engagement">
-                        <div class="widget-heading">
-                            <div class="w-title">
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h5 style="color:#fff">{{ __('essentials::lang.number_managers') }}</h5>
-                                </div>
-                                <div>
-                                    <p class="w-value"></p>
-                                    <h4 style="color:#fff">{{ $num_managers }}</h4>
+                <div class="col-md-3">
+                    <div class="custom_card">
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.number_managers') }}</h5>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{ $num_managers }}</h4>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
-
                     </div>
-
                 </div>
 
 

@@ -144,7 +144,9 @@ class EssentialsRequestController extends Controller
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as 
+ full_name"))->get();
         $workers = $all_users->pluck('full_name', 'id');
         return view('essentials::requests.create')->with(compact('workers', 'leaveTypes'));
     }
@@ -455,7 +457,7 @@ class EssentialsRequestController extends Controller
                 
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
+                            . __($this->statuses[$row->status]['name']) . '</span>';
                         
                         if (auth()->user()->can('crudExitRequests')) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';

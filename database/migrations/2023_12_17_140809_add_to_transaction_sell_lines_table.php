@@ -13,7 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+                Schema::table('transaction_sell_lines', function (Blueprint $table) {
+                    $table->integer('operation_remaining_quantity')->after('quantity')->nullable();
+             
+        });
     }
 
     /**
@@ -23,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('transaction_sell_lines', function (Blueprint $table) {
+            //
+        });
     }
 };

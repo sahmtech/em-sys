@@ -100,7 +100,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
 });
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {
-
+    Route::post('/checkPointInPolygon', [Modules\Connector\Http\Controllers\Api\ApiAttendanceController::class, 'checkPointInPolygon']);
     Route::get('getLeaveTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getLeaveTypes']);
     Route::get('getMyRequests', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyRequests']);
     Route::get('getMyToDo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getMyToDo']);

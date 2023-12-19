@@ -58,22 +58,15 @@
                         </button>
                         <h4 class="modal-title">@lang('internationalrelations::lang.addvisa')</h4>
                     </div>
-        
+
                     <div class="modal-body">
                         <div class="row">
                             @csrf
                             <input type="hidden" name="id" id="visaOrderId" value="">
-                            <div class="form-group col-md-6">
-                                {!! Form::label('visa_number', __('internationalrelations::lang.visa_number') . ':*') !!}
-                                {!! Form::number('visa_number', null, ['class' => 'form-control', 'placeholder' => __('internationalrelations::lang.visa_number'), 'required']) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('file', __('internationalrelations::lang.attachments') . ':*') !!}
-                                {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
-                            </div>
+                            <div  class="col-md-10" id="nationalityInputsContainer"></div>
                         </div>
                     </div>
-        
+
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
@@ -82,7 +75,8 @@
                 </div>
             </div>
         </div>
-        
+
+
     </section>
     <!-- /.content -->
 
@@ -90,7 +84,6 @@
 
 @section('javascript')
     <script type="text/javascript">
-
         $(document).ready(function() {
             var customers_table = $('#operation_table').DataTable({
 
@@ -132,31 +125,98 @@
                         data: 'Status',
                         name: 'Status'
                     },
-               
+
                     {
                         data: 'Delegation',
                         name: 'Delegation',
-                      
+
                     },
 
 
                 ]
             });
-
-            $(document).on('click', '.btn-add-visa', function () {
+         
+            $(document).on('click', '.btn-add-visa', function() {
                 var orderId = $(this).data('id');
-             
-                $('#visaOrderId').val(orderId);
-                $('#addVisaModal').modal('show');
+                var modal = $('#addVisaModal');
+
+            
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ route('get_order_nationlities') }}',
+                    data: {
+                        orderId: orderId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.data && response.data.nationalities) {
+                            var nationalities = response.data.nationalities;
+
+                         
+                            var nationalityInputsContainer = modal.find(
+                                '#nationalityInputsContainer');
+                            nationalityInputsContainer.html(''); 
+
+                      
+                            $.each(nationalities, function(index, nationality) {
+                             
+                                var rowHtml = '<div class="row">' +
+                                    '<div class="col-md-12">' +
+                                    '<h4>' + nationality.nationality+ '</h4>' +
+                                    '</div>' +
+                                    '</div>';
+
+                            
+                                nationalityInputsContainer.append(rowHtml);
+
+                                
+                                var visaNumberInput =
+                                    '<div class="form-group col-md-6">' +
+                                    '<label for="visa_number_' + nationality.id + '">' +
+                                    '{{ __('internationalrelations::lang.visa_number') }}*' +
+                                    '</label>' +
+                                    '<input type="number" name="visa_number[' +
+                                    nationality.id +
+                                    ']" class="form-control" required>' +
+                                    '</div>';
+                                nationalityInputsContainer.append(visaNumberInput);
+
+                           
+                                var fileInput = '<div class="form-group col-md-6">' +
+                                    '<label for="file_' + nationality.id + '">' +
+                                    '{{ __('internationalrelations::lang.attachments') }}*' +
+                                    '</label>' +
+                                    '<input type="file" name="file[' + nationality.id +
+                                    ']" class="form-control" required>' +
+                                    '</div>';
+                                nationalityInputsContainer.append(fileInput);
+                            });
+
+                         
+                            modal.find('#visaOrderId').val(orderId);
+
+                           
+                            modal.modal('show');
+                        } else {
+                       
+                            console.error('Error fetching nationalities');
+                        }
+                    },
+                    error: function(error) {
+                 
+                        console.error('AJAX request failed', error);
+                    }
+                });
             });
+
 
 
             $('#contract-select, #status_filter').change(function() {
                 customers_table.ajax.reload();
             });
-            
-          
-                });
+
+
+        });
     </script>
 
 

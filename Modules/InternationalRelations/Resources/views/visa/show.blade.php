@@ -57,9 +57,7 @@
                     <button type="button" class="btn btn-warning btn-sm custom-btn" id="fingerprinting-selected">
                         @lang('internationalrelations::lang.fingerprinting')
                     </button>
-                    <button type="button" class="btn btn-primary btn-sm custom-btn" id="worker_visa-selected">
-                        @lang('internationalrelations::lang.worker_visa')
-                    </button>
+                   
                     <button type="button" class="btn btn-danger btn-sm custom-btn" id="passport_stamped-selected">
                         @lang('internationalrelations::lang.passport_stamped')
                     </button>
@@ -68,38 +66,7 @@
 
             </div>
 
-            <div class="modal fade" id="uploadFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadFilesModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="uploadFilesModalLabel">Upload Files for Selected Rows</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-
-                            <form id="uploadFilesForm">
-
-                                <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
-
-                                <div id="fileInputsContainer"></div>
-
-
-
-                                {{ csrf_field() }}
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-
-                            <button type="button" class="btn btn-primary" id="submitFilesBtn">@lang('messages.save')</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+       
             <div class="modal fade" id="passportModal" tabindex="-1" role="dialog" aria-labelledby="passportModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -112,8 +79,23 @@
                         </div>
                         <div class="modal-body">
                             <form id="updateArrivalDatesForm">
-                                <input type="hidden" name="selectedRowsData" id="selectedRowsData2" />
-                                <div  id="arrivalDatesInputsContainer"></div>
+                                <input type="hidden" name="selectedRowsData2" id="selectedRowsData2" />
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('arrival_date', __('internationalrelations::lang.arrival_date') . ':') !!}
+                                    {!! Form::date('arrival_date', null, [
+                                        'class' => 'form-control',
+                                        'style' => ' height: 40px',
+                                        'placeholder' => __('internationalrelations::lang.arrival_date'),
+                                      
+                                    ]) !!}
+                                </div>
+                                <div class="form-group col-md-6">
+                                    {!! Form::label('file', __('internationalrelations::lang.addvisa') . ':') !!}
+                                    <br>
+                                    
+                                    {!! Form::file('file', ['class' => 'form-control','style' => ' height: 40px', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                                </div>
+
                                 {{ csrf_field() }}
                             </form>
                         </div>
@@ -194,7 +176,7 @@
                         render: function(data, type, row, meta) {
                             return '<input type="checkbox" class="select-row" data-id="' + row.id +
                                 '" data-full_name="' + row.full_name +
-                                '">';
+                                '" data-is_passport_stamped="' + row.is_passport_stamped  + '">';
                         },
                         orderable: false,
                         searchable: false,
@@ -233,8 +215,20 @@
                     },
 
                     {
-                        "data": "is_passport_stamped"
-                    }
+                        "data": "is_passport_stamped",
+                        "render": function(data, type, row) {
+                            var is_passport_stamped = row.is_passport_stamped || 0;
+                            var text = is_passport_stamped == 1 ?
+                                '{{ __('lang_v1.send') }}' :
+                                '{{ __('lang_v1.not_sent_yet') }}';
+
+                            var color = is_passport_stamped == 1 ?
+                                'green' :
+                                'red';
+
+                            return '<span style="color: ' + color + ';">' + text + '</span>';
+                        }
+                    },
                 ],
 
             });
@@ -306,97 +300,29 @@
                 });
             });
 
-
-            $('#worker_visa-selected').click(function() {
-                var selectedRows = $('.select-row:checked').map(function() {
-                    return {
-                        id: $(this).data('id'),
-                        full_name: $(this).data('full_name'),
-
-                    };
-                }).get();
-
-
-                $('#selectedRowsData').val(JSON.stringify(selectedRows));
-                var modalTitle = '{{ __('internationalrelations::lang.worker_visa') }}';
-
-
-                $('#uploadFilesModalLabel').text(modalTitle);
-
-                $('#fileInputsContainer').empty();
-                var selectFileLabel = '{{ __('sales::lang.uploade_file_for') }}';
-
-                selectedRows.forEach(function(row) {
-
-                    var fileInputHtml = '<div class="form-group">' +
-                        '<label for="fileInput' + row.id + '">' + selectFileLabel + ' ' + row
-                        .full_name +
-                        '</label>' +
-                        '<input type="file" class="form-control file-input" name="files[' + row
-                        .id +
-                        '][]" id="fileInput' + row.id + '" multiple />' +
-                        '</div>';
-                    $('#fileInputsContainer').append(fileInputHtml);
-
-                });
-
-                $('#uploadFilesModal').modal('show');
-            });
-
-            $('#submitFilesBtn').click(function() {
-                var formData = new FormData($('#uploadFilesForm')[0]);
-
-
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('add_worker_visa') }}',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(result) {
-                        if (result.success == true) {
-                            toastr.success(result.msg);
-                            users_table.ajax.reload();
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                    error: function(error) {
-
-                    }
-                });
-
-
-                $('#uploadFilesModal').modal('hide');
-            });
+         
 
             $('#passport_stamped-selected').click(function() {
                 var selectedRows = $('.select-row:checked').map(function() {
                     return {
                         id: $(this).data('id'),
                         full_name: $(this).data('full_name'),
+                        is_passport_stamped: $(this).data('is_passport_stamped')
                    
                     };
                 }).get();
+               
 
                 $('#selectedRowsData2').val(JSON.stringify(selectedRows));
-
                 var modalTitle = '{{ __('internationalrelations::lang.passport_stamped') }}';
+
                 $('#passportModalLabel').text(modalTitle);
-                var selectFileLabel = '{{ __('internationalrelations::lang.arrival_date') }}';
+                var selectFileLabel1 = '{{ __('internationalrelations::lang.arrival_date') }}';
+
+                var selectFileLabel2 = '{{ __('sales::lang.uploade_file_for') }}'
                 $('#arrivalDatesInputsContainer').empty();
 
-                selectedRows.forEach(function(row) {
-                    var arrivalDateInput = '<div class="form-group">' +
-                        '<label for="arrivalDateInput' + row.id + '">' + selectFileLabel + ' ' + row
-                        .full_name + '</label>' +
-                        '<input type="date" class="form-control" name="arrival_dates[' + row.id +
-                        ']" id="arrivalDateInput' + row.id + '" value="' + row.arrival_date +
-                        '" />' +
-                        '</div>';
-                    $('#arrivalDatesInputsContainer').append(arrivalDateInput);
-                });
-
+        
                 $('#passportModal').modal('show');
             });
 

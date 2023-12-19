@@ -154,14 +154,11 @@ class ApiEssentialsController extends ApiController
         try {
             $user = Auth::user();
             $business_id = $user->business_id;
-            $business = Business::where('id', $business_id)->first();
-            $year = request()->year;
-            $month = request()->month;
+
+           
 
             $payrolls = Transaction::where('transactions.business_id', $business_id)
                 ->where('type', 'payroll')->where('transactions.expense_for', $user->id)
-                ->whereYear('transaction_date', $year)
-                ->whereMonth('transaction_date', $month)
                 ->join('users as u', 'u.id', '=', 'transactions.expense_for')
                 ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
                 ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
@@ -177,10 +174,10 @@ class ApiEssentialsController extends ApiController
                     'dept.name as department',
                     'dsgn.name as designation',
                     'epgt.payroll_group_id',
-                ])->first();
-
-            if ($payrolls) {
-                $payrollId = $payrolls->id;
+                ])->get();
+                $res=[];
+           foreach ($payrolls as $payroll) {
+                $payrollId = $payroll->id;
                 $query = Transaction::where('business_id', $business_id)
                     ->with(['transaction_for', 'payment_lines']);
 
@@ -241,7 +238,7 @@ class ApiEssentialsController extends ApiController
                     $end_of_month->format('Y-m-d')
                 );
 
-                $res = [
+                $res[] = [
                     'payroll' => $payroll,
                     'month_name' => $month_name,
                     'allowances' => $allowances,
@@ -258,10 +255,9 @@ class ApiEssentialsController extends ApiController
                     'location' => $location,
                     'total_days_present' => $total_days_present
                 ];
-                return new CommonResource($res);
-            } else {
-                throw new \Exception("المرتب لم يجهز بعد");
-            }
+              
+            }  
+             return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 

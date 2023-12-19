@@ -1178,7 +1178,9 @@ class PayrollController extends Controller
             $query->whereNull('location_id');
         }
 
-        $users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as 
+ full_name"))->get();
 
         $employees = $users->pluck('full_name', 'id')->toArray();
 
