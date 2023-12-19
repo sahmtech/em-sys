@@ -21,13 +21,14 @@
             'class' => 'form-control select2',
             'multiple'=>'multiple',
             'style' => 'height:36px',
-            'placeholder' => __('lang_v1.all'),
+           
             'name'=>'proof_numbers_select[]',
             'id' => 'proof_numbers_select'
         ]) !!}
     </div>
 </div>
      
+
 
      
 
@@ -88,8 +89,14 @@
 			processing: true,
             ajax: {
                     url: "{{ route('getResidencyreport') }}",
-                 
-                      
+                    data: function (d) {
+                  //  d.project = $('#contact-select').val();
+                    
+                    d.proof_numbers = $('#proof_numbers_select').val();
+                    console.log(d);
+
+
+                       },
                 },
 			
             columns: [
@@ -110,7 +117,10 @@
                 { data: 'renew_end_date', name: 'renew_end_date' },
 					]
 		});
-		
+		$('#proof_numbers_select').on('change', function () {
+    console.log($('#proof_numbers_select').val());
+    documents.ajax.reload();
+});
 
 
 	});
