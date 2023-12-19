@@ -9,4 +9,10 @@ class BusinessDocument extends Model
 {
     use HasFactory;
     protected $guarded = ['id' ];
+
+    
+    public function business()
+    {
+        return $this->belongTo(App\Business::class ,'business_id');
+    }
 }

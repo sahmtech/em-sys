@@ -13,6 +13,7 @@ use Modules\Essentials\Entities\EssentialsCity;
 class SalesProject extends Model
 {
     protected $guarded = ['id'];
+   
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'contact_id');
