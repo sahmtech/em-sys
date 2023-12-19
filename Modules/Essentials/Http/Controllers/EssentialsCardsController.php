@@ -74,7 +74,7 @@ class EssentialsCardsController extends Controller
         $responsible_client = null;
 
         $card = EssentialsWorkCard::with([ 'user',
-         'user.assignedTo.contact.responsibleClients',
+        // 'user.assignedTo.contact.responsibleClients',
           'user.OfficialDocument'])
         ->select('id', 'employee_id', 'work_card_no as card_no', 'fees as fees', 'Payment_number as Payment_number');
     
@@ -128,23 +128,23 @@ class EssentialsCardsController extends Controller
             return $row->user->assignedTo?->name ?? '';
             })
             
-            ->editColumn('responsible_client', function ($row) {
-                $user = $row->user;
+            // ->editColumn('responsible_client', function ($row) {
+            //     $user = $row->user;
             
-                if ($user && $user->assignedTo) {
-                    $assignedToFirst = $user->assignedTo->first();
+            //     if ($user && $user->assignedTo) {
+            //         $assignedToFirst = $user->assignedTo->first();
             
-                    if ($assignedToFirst && $assignedToFirst->contact) {
-                        $responsibleClients = $assignedToFirst->contact->responsibleClients;
+            //         if ($assignedToFirst && $assignedToFirst->contact) {
+            //             $responsibleClients = $assignedToFirst->contact->responsibleClients;
             
-                        if (! empty($responsibleClients)) {
-                            return $responsibleClients->first_name;
-                        }
-                    }
-                }
+            //             if (! empty($responsibleClients)) {
+            //                 return $responsibleClients->first_name;
+            //             }
+            //         }
+            //     }
             
-                return '';
-            })
+            //     return '';
+            // })
 
 
             ->editColumn('proof_number', function ($row) {
@@ -206,6 +206,8 @@ class EssentialsCardsController extends Controller
         'number',
         'expiration_date',
         'renew_duration',
+        'fees',
+        'Payment_number',
         
     ]);
 
@@ -218,6 +220,8 @@ class EssentialsCardsController extends Controller
             'number' => $requestData['number'][$index],
             'expiration_date' => $requestData['expiration_date'][$index],
             'renew_duration' => $requestData['renew_duration'][$index],
+            'fees' => $requestData['fees'][$index],
+            'Payment_number'=>$requestData['Payment_number'][$index],
         ];
     
         $jsonData[] = $jsonObject;
@@ -232,24 +236,36 @@ class EssentialsCardsController extends Controller
         DB::beginTransaction();
         foreach ($selectedData as $data) {
          
-            $card = EssentialsWorkCard::find($data['id']);
+            $card = EssentialsWorkCard::with(['user.OfficialDocument'])->find($data['id']);
             
             $renewStartDate = Carbon::parse($data['expiration_date']);
             $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
             
          
             if ($card) {
-                EssentialsResidencyHistory::create([
-                    'worker_id' =>  $data['employee_id'],
-                    'renew_start_date' =>  $data['expiration_date'],
-                    'residency_number' =>  $data['number'],
+                $residencyHistory = EssentialsResidencyHistory::firstOrNew(['worker_id' => $data['employee_id']]);
+                
+                $residencyHistory->fill([
+                    'renew_start_date' => $data['expiration_date'],
+                    'residency_number' => $data['number'],
                     'duration' => $data['renew_duration'],
-                    'renew_end_date' => $renewEndDate ,
-
-
+                    'renew_end_date' => $renewEndDate,
                 ]);
-                $card->update(['expiration_date' => $renewEndDate]);
+        
+                $residencyHistory->save();
+
+                $card->update(['duration' => $data['renew_duration']]);
               
+                $card->update(['fees' => $data['fees']]);
+
+                $card->update(['Payment_number' => $data['Payment_number']]);
+
+              
+               $document=EssentialsOfficialDocument::where('type', 'residence_permit')
+               ->where('employee_id', $data['employee_id'])
+               ->first();
+                
+               $document->update(['expiration_date' => $renewEndDate]);
             }
            
         }
@@ -268,6 +284,7 @@ class EssentialsCardsController extends Controller
         }
     
         return redirect()->back()->with(['status' => $output]);
+    // return $output;
     }
 
     public function getSelectedRowsData(Request $request)
@@ -339,18 +356,18 @@ class EssentialsCardsController extends Controller
          if ($userType !== 'worker') {
              $professionId = 56;
              
-             $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
-                     $query->where('profession_id', $professionId);
-                 })
-                 ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-                 ->get();
+            //  $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
+            //          $query->where('profession_id', $professionId);
+            //      })
+            //      ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+            //      ->get();
      
              return response()->json([
                  'all_responsible_users' => [
                      'id' => null,
                      'name' => trans('essentials::lang.management'),
                  ],
-                 'responsible_client' => $responsible_clients,
+                // 'responsible_client' => $responsible_clients,
              ]);
          } else 
          {
@@ -371,15 +388,15 @@ class EssentialsCardsController extends Controller
                  return response()->json(['error' => 'No responsible users found for the given employee ID']);
              }
      
-             $assignedresponibleClient =$projects->first()->contact?->responsibleClients;
-            // dd( $projects->assignedTo->first()->contact->responsibleClients->id);
-             $assignedresponibleClientName = $projects->assignedTo->first()->contact->responsibleClients->first_name ?? '';
-             $assignedresponibleClientId = $projects->assignedTo->first()->contact->responsibleClients->id ?? '';
+            //  $assignedresponibleClient =$projects->first()->contact?->responsibleClients;
+            // // dd( $projects->assignedTo->first()->contact->responsibleClients->id);
+            //  $assignedresponibleClientName = $projects->assignedTo->first()->contact->responsibleClients->first_name ?? '';
+            //  $assignedresponibleClientId = $projects->assignedTo->first()->contact->responsibleClients->id ?? '';
 
-             $responsible_clients = [
-                'id' => $assignedresponibleClientId,
-                'name' => $assignedresponibleClientName,
-            ];
+            //  $responsible_clients = [
+            //     'id' => $assignedresponibleClientId,
+            //     'name' => $assignedresponibleClientName,
+            // ];
             // dd( $responsible_clients);
 
             $b_id=user::where('id', $employeeId)->select('business_id')->get();
@@ -388,7 +405,7 @@ class EssentialsCardsController extends Controller
             return response()->json([
                  'all_responsible_users' => $all_responsible_users,
                  
-                 'responsible_client' => [$responsible_clients],
+               //  'responsible_client' => [$responsible_clients],
                  'business' => $business,
              ]);
          }
@@ -420,10 +437,10 @@ class EssentialsCardsController extends Controller
  
 
             
-        $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
-        ->where('users.id','=', $employeeId)
-        ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
-        ->get();
+        // $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
+        // ->where('users.id','=', $employeeId)
+        // ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
+        // ->get();
 
     
         $employees = $all_users->pluck('full_name', 'id');
@@ -446,7 +463,7 @@ class EssentialsCardsController extends Controller
             ->with(compact(
             'employees',
             'all_responsible_users',
-            'responsible_client',
+         //  'responsible_client',
             'business',
             'employee',
             'durationOptions'));

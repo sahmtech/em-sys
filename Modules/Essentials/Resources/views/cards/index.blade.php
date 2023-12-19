@@ -74,7 +74,7 @@
                     <th>@lang('essentials::lang.Residency_no')</th>
                     <th>@lang('essentials::lang.Residency_end_date')</th>
                     <th>@lang('essentials::lang.project')</th>
-                    <th>@lang('essentials::lang.responsible_client')</th>
+                 {{-- <th>@lang('essentials::lang.responsible_client')</th>--}}   
               
                  
                     <th>@lang('essentials::lang.pay_number')</th>
@@ -155,10 +155,10 @@ $(document).ready(function () {
                 var threeDaysAgo = moment().subtract(3, 'days');
 
                 if (expiration_date < moment() ) {
-                    $('td:eq(5)', row).css('background-color', 'rgba(255, 0, 0, 0.2)'); 
+                    $('td:eq(6)', row).css('background-color', 'rgba(255, 0, 0, 0.2)'); 
                     console.log(expiration_date);
                 } else {
-                    $('td:eq(5)', row).css('background-color', '');
+                    $('td:eq()', row).css('background-color', '');
                 }
             }
 
@@ -182,7 +182,7 @@ $(document).ready(function () {
             { data: 'proof_number', name: 'proof_number' },
             { data: 'expiration_date', name: 'expiration_date' },
             { data: 'project', name: 'project' },
-             {data: 'responsible_client' ,name:'responsible_client'},
+            // {data: 'responsible_client' ,name:'responsible_client'},
         
             {data: 'Payment_number' ,name:'Payment_number'},
             {data: 'fixnumber' ,name:'fixnumber'},
