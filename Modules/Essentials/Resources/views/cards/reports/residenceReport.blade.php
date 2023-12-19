@@ -89,8 +89,14 @@
 			processing: true,
             ajax: {
                     url: "{{ route('getResidencyreport') }}",
+                    data: function (d) {
+                  //  d.project = $('#contact-select').val();
+                    
                     d.proof_numbers = $('#proof_numbers_select').val();
-                      
+                    console.log(d);
+
+
+                       },
                 },
 			
             columns: [
@@ -113,7 +119,7 @@
 		});
 		$('#proof_numbers_select').on('change', function () {
     console.log($('#proof_numbers_select').val());
-        customers_table.ajax.reload();
+    documents.ajax.reload();
 });
 
 
