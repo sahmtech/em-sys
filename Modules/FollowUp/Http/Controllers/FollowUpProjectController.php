@@ -15,6 +15,8 @@ use Illuminate\Routing\Controller;
 use Modules\Sales\Entities\salesContract;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Http\Controllers\SalesController;
 
@@ -29,18 +31,13 @@ class FollowUpProjectController extends Controller
     }
     public function index()
     {
-
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
-        $can_crud_projects = auth()->user()->can('followup.crud_projects');
-        if (!$can_crud_projects) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+
+        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
@@ -49,6 +46,7 @@ class FollowUpProjectController extends Controller
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
+        $salesProjects = SalesProject::with(['contact']);
 
         if (!$is_admin) {
             $userProjects = [];
@@ -61,77 +59,72 @@ class FollowUpProjectController extends Controller
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
             $userProjects = array_unique($userProjects);
-            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
-            $contacts = $contacts->whereIn('id', $contactIds);
+            $salesProjects = $salesProjects->whereIn('id', $userProjects);
+            // $contacts = $contacts->whereIn('id', $contactIds);
+            if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+                abort(403, 'Unauthorized action.');
+            }
         }
-
-
-
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
-                $contacts->where('id', request()->input('project_name'));
+                $salesProjects = $salesProjects->where('contact_id', request()->input('project_name'));
             }
 
-
-            return Datatables::of($contacts)
-                ->addColumn('contact_name', function ($contact) {
-                    return $contact->supplier_business_name ?? null;
-                })
-                ->addColumn('number_of_contract', function ($contact) {
-                    return $contact->transactions?->salesContract?->number_of_contract ?? null;
-                })
-                ->addColumn('start_date', function ($contact) {
-                    return $contact->transactions?->salesContract?->start_date ?? null;
-                })
-                ->addColumn('end_date', function ($contact) {
-                    return $contact->transactions?->salesContract?->end_date ?? null;
-                })
-                ->addColumn('active_worker_count', function ($contact) {
-                    return optional($contact->salesProject)->sum(function ($location) {
-                        return $location->users
-                            ->where('user_type', 'worker')
-                            ->where('status', 'active')
-                            ->count();
-                    }) ?? 0;
-                })
-                ->addColumn('worker_count', function ($contact) {
-                    return optional($contact->salesProject)->sum(function ($location) {
-                        return $location->users
-                            ->where('user_type', 'worker')
-
-                            ->count();
-                    }) ?? 0;
-                })
-                ->addColumn('duration', function ($contact) {
-                    $startDate = $contact->transactions?->salesContract?->start_date ?? null;
-                    $endDate = $contact->transactions?->salesContract?->end_date ?? null;
-
-                    if ($startDate && $endDate) {
-                        $startDate = \Carbon\Carbon::parse($startDate);
-                        $endDate = \Carbon\Carbon::parse($endDate);
-
-                        $duration = $startDate->diff($endDate);
-
-                        $years = $duration->y > 0 ? ($duration->y == 1 ? $duration->y . ' ' . trans('sales::lang.year') : $duration->y . ' ' . trans_choice('sales::lang.years', $duration->y)) : '';
-                        $months = $duration->m > 0 ? ($duration->m == 1 ? $duration->m . ' ' . trans('sales::lang.month') : $duration->m . ' ' . trans_choice('sales::lang.months', $duration->m)) : '';
-                        $days = $duration->d > 0 ? ($duration->d == 1 ? $duration->d . ' ' . trans('sales::lang.day') : $duration->d . ' ' . trans_choice('sales::lang.days', $duration->d)) : '';
-
-                        $durationString = implode(', ', array_filter([$years, $months, $days]));
-
-                        return $durationString;
+            return Datatables::of($salesProjects)
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
                     }
+                )
+                ->addColumn(
+                    'contact_name',
+                    function ($row) {
+                        return $row->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'contact_location_name',
+                    function ($row) {
+                        return  $row->name;
+                    }
+                )
+                ->addColumn('number_of_contract', function ($row) {
+                    return $row->salesContract?->number_of_contract ?? null;
+                })
+                ->addColumn('start_date', function ($row) {
+                    return $row->salesContract?->start_date ?? null;
+                })
+                ->addColumn('end_date', function ($row) {
+                    return $row->salesContract?->end_date ?? null;
+                })
+                ->addColumn('active_worker_count', function ($row) {
 
-                    return null;
+                    return $row->users
+                        ->where('user_type', 'worker')
+                        ->where('status', 'active')
+                        ->count();
                 })
-                ->addColumn('contract_form', function ($contact) {
-                    return $contact->transactions?->contract_form ?? null;;
+                ->addColumn('worker_count', function ($row) {
+
+                    return $row->users
+                        ->where('user_type', 'worker')
+
+                        ->count();
                 })
-                ->addColumn('status', function ($contact) {
-                    return $contact->transactions?->contract?->salesOrderOperation?->Status ?? null;;
+                ->addColumn('duration', function ($row) {
+                    return $row->contract_duration    ?? null;
                 })
-                ->addColumn('type', function ($contact) {
-                    return $contact->transactions?->contract?->salesOrderOperation?->operation_order_type ?? null;;
+                ->addColumn('contract_form', function ($row) {
+                    return $row->salesContract?->transaction->contract_form ?? null;;
+                })
+
+                ->addColumn('status', function ($row) {
+                    return $row->salesContract?->status     ?? null;;
+                })
+                ->addColumn('type', function ($row) {
+                    return $row->salesContract->salesOrderOperation?->operation_order_type ?? null;;
                 })
                 ->addColumn('action', function ($row) use ($is_admin) {
                     $html = '';
@@ -142,21 +135,22 @@ class FollowUpProjectController extends Controller
 
                     return $html;
                 })
+
                 ->filterColumn('contact_name', function ($query, $keyword) {
-                    $query->where('supplier_business_name', 'like', "%{$keyword}%");
+
+                    $query->whereHas('contact', function ($qu) use ($keyword) {
+                        $qu->where('supplier_business_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('contact_location_name', function ($query, $keyword) {
+
+                    $query->where('name', 'like', "%{$keyword}%");
                 })
 
-                ->rawColumns([
-                    'contact_name', 'number_of_contract', 'start_date', 'end_date',
-                    // 'active_worker_count', 'worker_count',
-                    'duration', 'contract_form',
-                    'status', 'type', 'action'
-                ])
 
+                ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
-
-
 
         $contacts2 = Contact::all()->pluck('supplier_business_name', 'id');
         return view('followup::projects.index')->with(compact('contacts2'));
@@ -188,9 +182,8 @@ class FollowUpProjectController extends Controller
      */
     public function show($id)
     {
-        $contact = Contact::findOrFail($id);
-        $locationIds = $contact->salesProject->pluck('id');
-        $users = User::whereIn('assigned_to', $locationIds)
+
+        $users = User::where('assigned_to', $id)
 
 
             ->with([

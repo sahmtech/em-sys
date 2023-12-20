@@ -359,11 +359,11 @@ class CustomAdminSidebarMenu
                             __('essentials::lang.renewal_residence'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                         )->order(1);
-                       $sub->url(
-                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
-                                __('essentials::lang.residencyreports'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
-                            )->order(1);
+                        $sub->url(
+                            action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+                            __('essentials::lang.residencyreports'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                        )->order(1);
                         $sub->dropdown(
                             __('housingmovements::lang.movement_management'),
                             function ($movement_management_SubMenu) {
@@ -395,7 +395,6 @@ class CustomAdminSidebarMenu
                             // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
 
                         )->order(2);
-
                     },
                     ['icon' => 'fa fas fa-plus-circle']
 
@@ -537,8 +536,8 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor'],
             );
 
-            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'projects2']);
-            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'projects2']);
+            $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'workers']);
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'operation_orders']);
 
             $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'allRequests']);
@@ -654,7 +653,7 @@ class CustomAdminSidebarMenu
                         __('sales::lang.contract_appendics'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                     );
-                 
+
                     $sub->url(
                         action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
                         __('sales::lang.sales_templates'),
@@ -665,8 +664,6 @@ class CustomAdminSidebarMenu
                         __('sales::lang.sales_costs'),
                         ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_costs']
                     );
-
-                    
                 },
                 ['icon' => 'fa fas fa-plus-circle'],
 
