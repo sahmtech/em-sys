@@ -84,41 +84,75 @@
                             ], null, ['class' => 'form-control','style'=>'height:40px',
                              'id' => 'licence_type','placeholder' => __('essentials::lang.select_licence_type'), 'required']) !!}
                         </div>
+
+
                         <div class="form-group col-md-6" id="unified_number" style="display: none;">
                             {!! Form::label('unified_number', __('essentials::lang.unified_number') . ':*') !!}
-                            {!! Form::number('unified_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.unified_number')]) !!}
+                            {!! Form::number('unified_number', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.unified_number')]) !!}
                         </div>
-                        <div class="form-group col-md-6">
+
+                        <div class="form-group col-md-6" id="national_address"  style="display: none;">
+                            {!! Form::label('national_address', __('essentials::lang.national_address') . ':*') !!}
+                            {!! Form::text('national_address', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.national_address')]) !!}
+                        </div>
+
+                        <div class="form-group col-md-6" id="capital"  style="display: none;">
+                            {!! Form::label('capital', __('essentials::lang.capital') . ':*') !!}
+                            {!! Form::text('capital', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.capital')]) !!}
+                        </div>
+
+                        <div class="form-group col-md-6" id="register_number"  style="display: none;">
+                            {!! Form::label('register_number', __('essentials::lang.register_number') . ':*') !!}
+                            {!! Form::number('register_number', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.register_number')]) !!}
+                        </div>
+
+
+
+                        <div class="form-group col-md-8" id ="licence_number">
                             {!! Form::label('licence_number', __('essentials::lang.licence_number') . ':*') !!}
-                            {!! Form::text('licence_number', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.licence_number'), 'required']) !!}
+                            {!! Form::text('licence_number', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.licence_number')]) !!}
                         </div>
     
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-8" id="licence_date">
                             {!! Form::label('licence_date', __('essentials::lang.licence_date') . ':*') !!}
-                            {!! Form::date('licence_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.licence_date'), 'required']) !!}
+                            {!! Form::date('licence_date', null,
+                                 ['class' => 'form-control',
+                                  'placeholder' => __('essentials::lang.licence_date')]) !!}
                         </div>
     
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-6" id="renew_date">
                             {!! Form::label('renew_date', __('essentials::lang.renew_date') . ':*') !!}
-                            {!! Form::date('renew_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.renew_date')]) !!}
+                            {!! Form::date('renew_date', null,
+                                 ['class' => 'form-control',
+                                  'placeholder' => __('essentials::lang.renew_date')]) !!}
                         </div>
     
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-6" id="expiration_date">
                             {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
-                            {!! Form::date('expiration_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.expiration_date'), 'requires']) !!}
+                            {!! Form::date('expiration_date', null, ['class' => 'form-control'
+                                , 'placeholder' => __('essentials::lang.expiration_date'), ]) !!}
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-6" id="issuing_location">
                             {!! Form::label('issuing_location', __('essentials::lang.issuing_location') . ':') !!}
-                            {!! Form::text('issuing_location', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.issuing_location'), 'required']) !!}
+                            {!! Form::text('issuing_location', null, ['class' => 'form-control',
+                                 'placeholder' => __('essentials::lang.issuing_location'), ]) !!}
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="clearfix"></div>
+                        <div class="form-group col-md-6" id="#details">
                             {!! Form::label('details', __('essentials::lang.contry_details') . ':*') !!}
                             {!! Form::textarea('details', null, ['class' => 'form-control','required',
                                  'placeholder' => __('essentials::lang.contry_details'), 'rows' => 2]) !!}
                         </div>
-                        <div class="form-group col-md-6">
-                            {!! Form::label('file', __('essentials::lang.file') . ':') !!}
-                            {!! Form::file('file', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.file'), 'required']) !!}
+                        <div class="form-group col-md-6" id="file">
+                            {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
+                            {!! Form::file('file', null,
+                                 ['class' => 'form-control','required',
+                                  'placeholder' => __('essentials::lang.file'), ]) !!}
                         </div>
                     </div>
                 </div>
@@ -227,16 +261,92 @@
                 }
             });
         });
-        $('#licence_type').change(function() {
-            if (this.value === 'COMMERCIALREGISTER') {
-                $('#unified_number').show();
-            } else {
-                $('#unified_number').hide();
-            }
-        });
+       
 
      
     });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#licence_type').on('change', function() {
+            
+            if ( this.value == 'activity')
+            {
+                $("#unified_number").show();     
+                $("#register_number").show();
+                $("#expiration_date").show(); 
+                $("#licence_date").show();
+                $('#unified_number').show();
+               
+                $("#renew_date").hide();
+                $("#licence_number").hide();
+                $("#capital").hide();
+                $("#national_address").hide();
+               
+                
+                
+            }
+            
+           else if ( this.value == 'national_address')
+            {
+                $("#expiration_date").show();     
+                $("#register_number").show();
+                $("#licence_date").show();
+
+                
+                $("#renew_date").hide();
+                $("#licence_number").hide();
+                $("#issuing_location").hide();
+                $("#capital").hide();
+                $("#national_address").hide();
+                $('#unified_number').hide();
+
+            }
+
+            else if ( this.value == 'memorandum_of_association')
+            {
+                  
+                $("#licence_number").show();
+                $("#licence_date").show();
+                $("#capital").show();
+                $("#national_address").show();
+                
+                $("#renew_date").hide();
+                $("#expiration_date").hide();  
+                $("#issuing_location").hide();
+                $('#unified_number').hide();
+
+            }
+
+            else if ( this.value == 'COMMERCIALREGISTER')
+            {
+                  
+                $('#unified_number').show();
+                $("#licence_number").show();
+                $("#licence_date").show();
+                $("#expiration_date").show(); 
+                $("#issuing_location").hide();
+               
+                $("#capital").hide();
+                $("#register_number").hide();
+                $("#national_address").hide();
+
+            }
+            else
+            {
+                $("#capital").hide();
+                $("#register_number").hide();
+                $('#unified_number').hide();
+                $("#national_address").hide();
+            }
+ 
+
+
+               
+           
+            }).trigger("change");
+                
+                });
 </script>
 
 @endsection

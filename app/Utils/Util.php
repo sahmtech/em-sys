@@ -1606,7 +1606,9 @@ class Util
             'custom_field_2', 'custom_field_3', 'eqama_end_date',
             'custom_field_4', 'guardian_name', 'assigned_to',
             'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
-            'current_address', 'bank_details', 'selected_contacts', 'emp_number',
+            'current_address', 'bank_details', 'selected_contacts', 'emp_number','total_salary'
+
+            
         ]);
 
         if ($request->input('border_no') == 3) {

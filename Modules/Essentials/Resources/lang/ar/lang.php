@@ -617,6 +617,13 @@ return [
   'superior' => 'الرئيس المباشر',
 
   'renew_duration' => 'مدة التجديد',
+  'register_number' => 'رقم السجل',
+  'renew_start_date' => 'تاريخ بداية التجديد',
+  'renew_end_date' => 'تاريخ نهاية التجديد',
+  'capital' => 'راس المال',
+  'national_address' => 'العنوان الوطني',
+
+  'renew_duration' => 'مدة التجديد',
   'renew_start_date' => 'تاريخ بداية التجديد',
   'renew_end_date' => 'تاريخ نهاية التجديد',
 

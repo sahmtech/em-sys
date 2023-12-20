@@ -757,8 +757,8 @@ class EssentialsManageEmployeeController extends Controller
         $user = User::with(['contactAccess', 'assignedTo'])
             ->findOrFail($id);
 
-     
-        
+        $contacts = SalesProject::pluck('name', 'id');
+        $countries = EssentialsCountry::forDropdown();
         $projects = SalesProject::pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::select([
 
@@ -793,6 +793,7 @@ class EssentialsManageEmployeeController extends Controller
         $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->select('*')->get();
 
         $specializations = EssentialsSpecialization::all()->pluck('id', 'name');
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('id', 'name');
         if ($user->status == 'active') {
             $is_checked_checkbox = true;
@@ -809,11 +810,13 @@ class EssentialsManageEmployeeController extends Controller
         
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
 
-
+        $qualification = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+        
         $resident_doc = EssentialsOfficialDocument::select(['expiration_date', 'number'])->where('employee_id', $id)
             ->first();
         return view('essentials::employee_affairs.employee_affairs.edit')
-            ->with(compact('projects', 'resident_doc', 'roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
+            ->with(compact('projects','contacts','spacializations','qualification',
+            'resident_doc','countries', 'roles', 'banks', 'idProofName', 'user', 'blood_types', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'appointments', 'username_ext', 'contract_types', 'nationalities', 'specializations', 'professions'));
     }
 
     /**
