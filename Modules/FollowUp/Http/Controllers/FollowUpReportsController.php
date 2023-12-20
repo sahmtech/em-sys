@@ -170,6 +170,8 @@ class FollowUpReportsController extends Controller
                 'transactions.salesContract.salesOrderOperation'
 
             ]);
+        $salesProjects = SalesProject::with(['contact']);
+
 
         if (!$is_admin) {
             $userProjects = [];
@@ -182,14 +184,13 @@ class FollowUpReportsController extends Controller
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
             $userProjects = array_unique($userProjects);
-            $salesProjects = SalesProject::whereIn('id', $userProjects)->with(['contact'])->unique()->toArray();
+            $salesProjects = $salesProjects->whereIn('id', $userProjects)->unique()->toArray();
             // $contacts = $contacts->whereIn('id', $contactIds);
             if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
                 abort(403, 'Unauthorized action.');
             }
-        } else {
-            $salesProjects = SalesProject::with(['contact']);
         }
+
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
