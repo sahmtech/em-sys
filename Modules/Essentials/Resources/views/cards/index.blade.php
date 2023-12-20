@@ -74,7 +74,7 @@
                     <th>@lang('essentials::lang.Residency_no')</th>
                     <th>@lang('essentials::lang.Residency_end_date')</th>
                     <th>@lang('essentials::lang.project')</th>
-                 {{-- <th>@lang('essentials::lang.responsible_client')</th>--}}   
+                 <th>@lang('essentials::lang.responsible_client')</th>   
               
                  
                     <th>@lang('essentials::lang.pay_number')</th>
@@ -182,7 +182,7 @@ $(document).ready(function () {
             { data: 'proof_number', name: 'proof_number' },
             { data: 'expiration_date', name: 'expiration_date' },
             { data: 'project', name: 'project' },
-            // {data: 'responsible_client' ,name:'responsible_client'},
+            {data: 'responsible_client' ,name:'responsible_client'},
         
             {data: 'Payment_number' ,name:'Payment_number'},
             {data: 'fixnumber' ,name:'fixnumber'},
@@ -352,10 +352,10 @@ $('#renew-selected').on('click', function (e) {
     }));
 });
 
-// Set the selected value after all options have been appended
+
 renewDurationInput.val(row.workcard_duration);
 
-// Attach change event handler
+
 renewDurationInput.on('change', function () {
     var selectedValue = $(this).val();
     var feesInput = $(this).closest('.row').find('input[name="fees[]"]');

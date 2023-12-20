@@ -78,7 +78,7 @@ class EssentialsCardsController extends Controller
           'user.OfficialDocument'])
         ->select('id', 'employee_id', 'work_card_no as card_no', 'fees as fees', 'Payment_number as Payment_number');
     
-   //dd($card->first()->user->business->documents->where('licence_type','COMMERCIALREGISTER')->unified_number);
+   //dd($card->first()->user->assignedTo);
 
     if (!empty($request->input('project'))) {
         $card->whereHas('user.assignedTo', function ($query) use ($request) {
@@ -128,23 +128,27 @@ class EssentialsCardsController extends Controller
             return $row->user->assignedTo?->name ?? '';
             })
             
-            // ->editColumn('responsible_client', function ($row) {
-            //     $user = $row->user;
+            ->editColumn('responsible_client', function ($row) {
+                $user = $row->user;
             
-            //     if ($user && $user->assignedTo) {
-            //         $assignedToFirst = $user->assignedTo->first();
+                if ($user && $user->assignedTo) {
+                    $assignedToFirst = $user->assignedTo->first();
             
-            //         if ($assignedToFirst && $assignedToFirst->contact) {
-            //             $responsibleClients = $assignedToFirst->contact->responsibleClients;
+                    if ($assignedToFirst) {
+                        $responsibleClients = $assignedToFirst->users;
             
-            //             if (! empty($responsibleClients)) {
-            //                 return $responsibleClients->first_name;
-            //             }
-            //         }
-            //     }
+                        if ($responsibleClients != null) {
+                           
+                            $userNames = $responsibleClients->pluck('first_name')->implode(', ');
             
-            //     return '';
-            // })
+                            return $userNames;
+                        }
+                    }
+                }
+            
+                return '';
+            })
+            
 
 
             ->editColumn('proof_number', function ($row) {

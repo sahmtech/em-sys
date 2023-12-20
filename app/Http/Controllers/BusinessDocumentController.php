@@ -36,9 +36,13 @@ class BusinessDocumentController extends Controller
                     $html = '';
                     if ($is_admin)
                     {
-                    if (!empty($row->path_file)) { 
-                        $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->path_file . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.doc_view') . '</a>
-                        &nbsp;';
+                    // if (!empty($row->path_file)) { 
+                    //     $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->path_file . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.doc_view') . '</a>
+                    //     &nbsp;';
+                    // }
+
+                    if (!empty($row->path_file)) {
+                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->path_file . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.doc_view') . '</button>';
                     }
                     else 
                     {
