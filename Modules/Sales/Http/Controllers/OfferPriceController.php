@@ -426,6 +426,8 @@ class OfferPriceController extends Controller
                     SalesOfferPricesCost::create([
                         'cost_id' => $data['id'],
                         'amount' => $data['amount'],
+                        'duration_by_month' => $data['duration_by_month'],
+                        'monthly_cost' => $data['amount'] / $data['duration_by_month'],
                         'offer_price_id' => $client->id,
 
                     ]);
