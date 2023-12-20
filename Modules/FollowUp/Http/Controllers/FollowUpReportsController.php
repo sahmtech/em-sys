@@ -165,11 +165,11 @@ class FollowUpReportsController extends Controller
         }
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
-        ->with([
-            'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
-            'transactions.salesContract.salesOrderOperation'
+            ->with([
+                'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
+                'transactions.salesContract.salesOrderOperation'
 
-        ]);
+            ]);
 
         if (!$is_admin) {
             $userProjects = [];
@@ -182,20 +182,21 @@ class FollowUpReportsController extends Controller
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
             $userProjects = array_unique($userProjects);
-            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
-            $contacts = $contacts->whereIn('id', $contactIds);
+            $salesProjects = SalesProject::whereIn('id', $userProjects)->with(['contact'])->unique()->toArray();
+            // $contacts = $contacts->whereIn('id', $contactIds);
             if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
                 abort(403, 'Unauthorized action.');
             }
+        } else {
+            $salesProjects = SalesProject::with(['contact']);
         }
-        $SalesProjects = SalesProject::with(['contact']);
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
-                $SalesProjects = $SalesProjects->where('contact_id', request()->input('project_name'));
+                $salesProjects = $salesProjects->where('contact_id', request()->input('project_name'));
             }
 
-            return Datatables::of($SalesProjects)
+            return Datatables::of($salesProjects)
                 ->addColumn(
                     'id',
                     function ($row) {
