@@ -209,6 +209,14 @@
 
                                             </tr>
                                         </thead>
+                                        <tfoot>
+                                            <tr style="background-color: rgb(185, 182, 182);">
+                                                <td colspan="2" style="text-align: right;">
+                                                    <strong><span style="color: black; font-weight: bold;">@lang('sales::lang.total')</span></strong>
+                                                </td>
+                                                <td><span id="total_amount" style="color: black; font-weight: bold;">0</span></td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -526,7 +534,8 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-
+            console.log("Document ready");
+            updateTotalAmount();
             $('#status').change(function() {
                 if ($(this).val() == 'final') {
                     $('#payment_rows_div').removeClass('hide');
@@ -603,6 +612,7 @@
 
                     $('#costs_table_id').show();
                     $('#costs_tablet-id').show();
+                    updateTotalAmount();
                 } else {
 
                     $('#costs_table_id').hide();
@@ -610,7 +620,7 @@
                 }
             });
 
-
+           
             var costs_table = $('#costs_table').DataTable({
                 processing: false,
                 serverSide: false,
@@ -678,11 +688,21 @@
             $('#costs_table').on('blur', '.editable-amount', function() {
                 var rowId = $(this).data('row-id');
                 var amount = $(this).text();
-
-                console.log('Row ID:', rowId);
-                console.log('Amount:', amount);
+                console.log("Blur event triggered");
+                updateTotalAmount();
 
             });
+
+            function updateTotalAmount() {
+                var totalAmount = 0;
+                $('#costs_table tbody tr').each(function() {
+                    var amount = parseFloat($(this).find('.editable-amount').text()) || 0;
+                    totalAmount += amount;
+                });
+                console.log("Total Amount:", totalAmount);
+                $('#total_amount').text(totalAmount);
+            }
+
 
 
         });
