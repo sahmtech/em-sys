@@ -26,6 +26,8 @@ use App\TransactionSellLine;
 use App\TypesOfService;
 use Carbon\Carbon;
 use Modules\Sales\Entities\SalesProject;
+use Modules\Sales\Entities\salesOfferPricesCost;
+
 
 
 class OfferPriceController extends Controller
@@ -124,11 +126,11 @@ class OfferPriceController extends Controller
 
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
-                    if($row->status == 'under_study'){
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                    }else{
+                    if ($row->status == 'under_study') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+                        $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                    } else {
                         $status = trans('sales::lang.' . $row->status);
                     }
                     return $status;
@@ -352,12 +354,33 @@ class OfferPriceController extends Controller
         return view('sales::price_offer.create')
             ->with(compact(
 
-                'business_details','taxes', 'leads','walk_in_customer','business_locations',
-                'bl_attributes','default_location','commission_agent','types','customer_groups','payment_line',
-                'payment_types','price_groups','default_datetime','pos_settings','invoice_schemes',
-                'default_invoice_schemes','types_of_service', 'accounts', 'shipping_statuses',
-                'status', 'sale_type','statuses','is_order_request_enabled','users',
-                'default_price_group_id','change_return'
+                'business_details',
+                'taxes',
+                'leads',
+                'walk_in_customer',
+                'business_locations',
+                'bl_attributes',
+                'default_location',
+                'commission_agent',
+                'types',
+                'customer_groups',
+                'payment_line',
+                'payment_types',
+                'price_groups',
+                'default_datetime',
+                'pos_settings',
+                'invoice_schemes',
+                'default_invoice_schemes',
+                'types_of_service',
+                'accounts',
+                'shipping_statuses',
+                'status',
+                'sale_type',
+                'statuses',
+                'is_order_request_enabled',
+                'users',
+                'default_price_group_id',
+                'change_return'
             ));
     }
     /**
@@ -367,6 +390,7 @@ class OfferPriceController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
             $business_id = $request->session()->get('user.business_id');
             $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
@@ -396,6 +420,17 @@ class OfferPriceController extends Controller
 
 
             $client = Transaction::create($offer_details);
+            if ($request->contract_form == "monthly_cost") {
+                $updatedData = json_decode($request->input('updated_data'), true);
+                foreach ($updatedData as $data) {
+                    SalesOfferPricesCost::create([
+                        'cost_id' => $data['id'],
+                        'amount' => $data['amount'],
+                        'offer_price_id' => $client->id,
+
+                    ]);
+                }
+            }
             if ($request->input('status') == "approved") {
                 Contact::where('id', $request->contact_id)->update(['type' => 'converted']);
             }
@@ -415,7 +450,6 @@ class OfferPriceController extends Controller
                     $transactionSellLine->service_id = $productId;
                     $transactionSellLine->quantity = $quantity;
                     $transactionSellLine->operation_remaining_quantity = $quantity;
-                    // $transactionSellLine->total = $request->input('final_total');;
                     $transactionSellLine->transaction_id = $client->id;
 
                     $transactionSellLine->save();
@@ -454,8 +488,17 @@ class OfferPriceController extends Controller
             ->where('id', $id)
             ->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
 
-            ->select('id', 'business_id','location_id', 'status','contact_id',
-                'ref_no','final_total', 'down_payment','contract_form', 'transaction_date'
+            ->select(
+                'id',
+                'business_id',
+                'location_id',
+                'status',
+                'contact_id',
+                'ref_no',
+                'final_total',
+                'down_payment',
+                'contract_form',
+                'transaction_date'
 
             )->get()[0];
 
@@ -477,7 +520,7 @@ class OfferPriceController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $offer_price = Transaction::find($id);
         $business_locations = BusinessLocation::forDropdown($business_id, false);
-        $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name','id');
+        $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name', 'id');
         return view('sales::price_offer.edit')->with(compact('offer_price', 'business_locations', 'leads'));
     }
 

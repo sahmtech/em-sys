@@ -42,17 +42,17 @@
               </div>
           </div>
         
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="multi-input">
-                        {!! Form::label('essentials_salary', __('essentials::lang.salary') . ':') !!}
-                        <br/>
-                        {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, ['class' => 'form-control width-40 pull-left','style'=>'height:40px', 'placeholder' => __('essentials::lang.salary'), 'id' => 'essentials_salary']); !!}
-
-                        {!! Form::select('essentials_pay_period', ['month' => __('essentials::lang.per'). ' '.__('lang_v1.month'), 'week' => __('essentials::lang.per'). ' '.__('essentials::lang.week'), 'day' => __('essentials::lang.per'). ' '.__('lang_v1.day')], !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null, ['class' => 'form-control width-60 pull-left','style'=>'height:40px',]); !!}
-                    </div>
-                </div>
+          <div class="col-md-4">
+            <div class="form-group">
+                {!! Form::label('essentials_salary', __('essentials::lang.salary') . ':') !!}
+                {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, [
+                    'class' => 'form-control','style'=>'height:40px',
+                    'placeholder' => __('essentials::lang.salary'),
+                    'id' => 'essentials_salary'
+                ]); !!}
             </div>
+        </div>
+        
             <input type="hidden" id="selectedData" name="selectedData" value="">
             <br>
             <div class="col-md-12">

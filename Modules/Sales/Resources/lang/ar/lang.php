@@ -283,7 +283,16 @@ return [
     'new_contract'=>'عقد جديد',
     'appendix_contract'=>'ملحق عقد ',
     'project_follower'=>'متابع المشروع',
-    
+    'description'=>'البيان',
+    'amount'=>'القيمة',
+    'duration_by_month'=>'المدة بالأشهر',
+   'edit_cost'=>'تعديل تكلفة',
+    'add_cost'=>'إضافة تكلفة',
+    'fixed_costs'=>'التكاليف (المصاريف) الثابتة',
+    'variable_costs'=>'التكاليف المتغيرة',
+    'add_element'=>'إضافة عنصر',
+    'chang_the_amount_if_needed'=>'قم بتغيير القيمة إذا أردت'
+
 
 
 
