@@ -240,6 +240,7 @@ function calculateFees(selectedValue) {
             return 0; 
     }
 }
+
 $('#renew-selected').on('click', function (e) {
         e.preventDefault();
 
@@ -260,6 +261,7 @@ $('#renew-selected').on('click', function (e) {
                     console.log(data);
                     var inputClasses = 'form-group';
                     var renewDurationInputs = $('select[name="renew_duration[]"]');
+                   
                     renewDurationInputs.on('change', function () {
                         var selectedValue = $(this).val();
                         var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
@@ -334,10 +336,9 @@ $('#renew-selected').on('click', function (e) {
                             style: 'height: 40px ; width:150px',
                             required: true,
                         });
-                        renewDurationInput.append($('<option>', {
-                            value: 'all',
-                            text: '{{ __('essentials::lang.all') }}',
-                        }));
+                       
+
+                     
 
     $.each({
     
@@ -353,9 +354,8 @@ $('#renew-selected').on('click', function (e) {
         }));
     });
 
-
-                       
-    renewDurationInput.val(row.renew_duration);
+    renewDurationInput.find('option[value="' + row.workcard_duration + '"]').prop('selected', true);
+  
     renewDurationInput.on('change', function () {
         var selectedValue = $(this).val();
         var feesInput = $(this).closest('.row').find('input[name="fees[]"]');

@@ -34,6 +34,28 @@
                 </div>
             </div>
 
+            <div class="col-md-5">
+                        <div class="form-group">
+                            {!! Form::label('user_type', __('user.user_type') . ':*') !!}
+                            {!! Form::select(
+                                'user_type',
+                                [
+                                    'manager' => __('user.manager'),
+                                    'employee' => __('user.employee'),
+                                    'worker' => __('user.worker'),
+                                ],
+                                $user->user_type, 
+                                [
+                                    'class' => 'form-control',
+                                    'style' => 'height:40px',
+                                    'required',
+                                    'id' => 'userTypeSelect',
+                                    'placeholder' => __('user.user_type'),
+                                ],
+                            ) !!}
+                        </div>
+                    </div>
+
             @if($user->user_type == 'worker' && !empty($user->assigned_to) )
                   <div class="form-group">
                   <div class="col-md-6">

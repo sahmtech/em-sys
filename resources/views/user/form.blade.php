@@ -247,7 +247,7 @@
                                                     'PhD' =>__('essentials::lang.PhD'),
                                                     'diploma' =>__('essentials::lang.diploma'),
                                             
-                                                ], null, ['class' => 'form-control',
+                                                ], !empty($qualification->qualification_type) ? $qualification->qualification_type : null, ['class' => 'form-control',
                                                 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                         </div>
 

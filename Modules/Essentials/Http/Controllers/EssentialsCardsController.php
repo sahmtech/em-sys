@@ -277,18 +277,10 @@ class EssentialsCardsController extends Controller
                     'renew_end_date' => $renewEndDate,
                 ]);
 
-                // $residencyHistory = EssentialsResidencyHistory::firstOrNew(['worker_id' => $data['employee_id']]);
-                
-                // $residencyHistory->fill([
-                //     'renew_start_date' => $data['expiration_date'],
-                //     'residency_number' => $data['number'],
-                //     'duration' => $data['renew_duration'],
-                //     'renew_end_date' => $renewEndDate,
-                // ]);
-        
-                // $residencyHistory->save();
-
-                $card->update(['duration' => $data['renew_duration']]);
+                $newDuration = $card->workcard_duration + $data['renew_duration'];
+               
+                $card->update(['workcard_duration' => $newDuration]);
+              
               
                 $card->update(['fees' => $data['fees']]);
 
@@ -337,6 +329,7 @@ class EssentialsCardsController extends Controller
         'employee_id',
         'work_card_no as card_no',
         'fees as fees',
+         'workcard_duration',
         'Payment_number as Payment_number',
         'fixnumber as fixnumber')->get();
    
@@ -345,6 +338,7 @@ class EssentialsCardsController extends Controller
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
+            $data->pluck('workcard_duration')->unique()->first() => __('essentials::lang.workcard_duration'),
         ];
         foreach ($data as $row) {
             $doc = $row->user->OfficialDocument

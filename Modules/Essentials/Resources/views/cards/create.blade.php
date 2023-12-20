@@ -165,13 +165,13 @@
                 <i class="fa fa-id-badge"></i>
             </span>
             {!! Form::select('workcard_duration',
-                 array_combine($durationOptions, $durationOptions), null, ['class' => 'form-control',
-                 'style'=>'height:40px',
+                 $durationOptions, null, ['class' => 'form-control',
+                 'style'=>'height:40px','id'=>'workcard_duration',
                   'placeholder' => __('essentials::lang.work_card_duration')]); !!}
         </div>
     </div>
 </div>
-		
+
 <div class="col-md-9">
     <div class="form-group">
         {!! Form::label('pay_number', __('essentials::lang.pay_number') . ':') !!}
@@ -191,15 +191,12 @@
             <span class="input-group-addon">
                 <i class="fa fa-id-badge"></i>
             </span>
-            {!! Form::text('fees', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.fees')]); !!}
+            {!! Form::text('fees', null,
+                 ['class' => 'form-control','id'=>'fees',
+                  'placeholder' => __('essentials::lang.fees')]); !!}
         </div>
     </div>
 </div>
-
-
-
-
-
 		
 @endcomponent
 
@@ -219,6 +216,29 @@
 
 @endsection
 @section('javascript')
+
+
+<script>
+        $(document).ready(function() {
+            $('#workcard_duration').on('change', function() {
+                var selectedDuration = $(this).find(':selected').attr('value');
+                 console.log(selectedDuration);
+                var feesInput = $('#fees');
+                console.log(feesInput);
+                
+                var feesMapping = {
+                    '3': 2425,
+                    '6': 4850,
+                    '9': 7275,
+                    '12': 9700,
+                };
+                console.log(feesMapping[selectedDuration]);
+
+                $('#fees').val(feesMapping[selectedDuration]);
+            });
+        });
+ </script>
+
 
 <script>
     function getData(employeeId) {
