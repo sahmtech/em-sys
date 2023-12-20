@@ -340,30 +340,29 @@ $('#renew-selected').on('click', function (e) {
 
                      
 
-    $.each({
-    
-        '3': '{{ __('essentials::lang.3_months') }}',
-        '6': '{{ __('essentials::lang.6_months') }}',
-        '9': '{{ __('essentials::lang.9_months') }}',
-        '12': '{{ __('essentials::lang.12_months') }}',
-    },
-     function (value, text) {
-        renewDurationInput.append($('<option>', {
-            value: value,
-            text: text,
-        }));
-    });
+ $.each({
+    '3': '{{ __('essentials::lang.3_months') }}',
+    '6': '{{ __('essentials::lang.6_months') }}',
+    '9': '{{ __('essentials::lang.9_months') }}',
+    '12': '{{ __('essentials::lang.12_months') }}',
+}, function (value, text) {
+    renewDurationInput.append($('<option>', {
+        value: value,
+        text: text,
+    }));
+});
 
-    renewDurationInput.find('option[value="' + row.workcard_duration + '"]').prop('selected', true);
-  
-    renewDurationInput.on('change', function () {
-        var selectedValue = $(this).val();
-        var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
-        var fees = calculateFees(selectedValue);
-        console.log(fees);
-        feesInput.val(fees);
-    });
+// Set the selected value after all options have been appended
+renewDurationInput.val(row.workcard_duration);
 
+// Attach change event handler
+renewDurationInput.on('change', function () {
+    var selectedValue = $(this).val();
+    var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
+    var fees = calculateFees(selectedValue);
+    console.log(fees);
+    feesInput.val(fees);
+});
     rowDiv.append(renewDurationInput);
 
     var feesInput = $('<input>', {
