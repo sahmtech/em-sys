@@ -229,6 +229,14 @@ class ApiEssentialsRequestsController extends ApiController
             'atmCard' => 'atm',
             'residenceCard' => 'res',
             'workerTransfer' => 'wT',
+            'workInjuriesRequest' => 'wIng',
+            'residenceEditRequest' => 'resEd',
+            'baladyCardRequest' => 'bal',
+            'insuranceUpgradeRequest' => 'insUp',
+            'mofaRequest' => 'mofa',
+            'chamberRequest' => 'ch',
+            'cancleContractRequest' => 'con',
+            'WarningRequest' => 'WR'
 
         ];
 
