@@ -807,11 +807,6 @@ class DataController extends Controller
             $user->save();
 
 
-
-        
-
-
-
             if (request()->input('contract_number') != null ||request()->input('contract_type') != null
             ||request()->input('contract_start_date') != null ||request()->input('contract_end_date') != null)
                 {
@@ -852,6 +847,53 @@ class DataController extends Controller
                 }
                 $contract->save();
                 }
+
+
+            
+        
+              
+              if( request()->input('qualification_type'))
+              {
+                $qualification2 = new EssentialsEmployeesQualification();
+                
+                $qualification2->qualification_type= request()->input('qualification_type');
+                $qualification2->major = request()->input('major');
+                $qualification2->graduation_year =  request()->input('graduation_year');
+                $qualification2->graduation_institution =  request()->input('graduation_institution');
+                $qualification2->employee_id = $user->id;
+                $qualification2->graduation_country = request()->input('graduation_country');
+                $qualification2->degree =  request()->input('degree');
+               
+                $qualification2->save();
+
+              }
+
+
+            
+           
+            if(request()->input('document_type')) 
+              {
+                $document2 = new EssentialsOfficialDocument();
+                $document2->type = request()->input('document_type');
+                $document2->employee_id =   $user->id;
+                $document2->status = 'valid';
+              
+                if (request()->hasFile('document_file')) {
+                    $file = request()->file('document_file');
+                    $filePath = $file->store('/officialDocuments');
+    
+                    $document2->file_path= $filePath;
+                }
+
+                $document2->save();
+          
+    
+              }
+           
+
+  
+  
+
 
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
                 $travel_ticket_categorie = new EssentialsEmployeeTravelCategorie();
@@ -902,28 +944,18 @@ class DataController extends Controller
         
             }
 
-            //   //  EssentialsUserAllowancesAndDeduction
-
-            //     $non_deleteable_pc_ids = $this->getNonDeletablePayComponents($user->business_id, $user->id);
-
-            //     //delete  existing pay component
-            //     EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-            //         ->whereNotIn('allowance_deduction_id', $non_deleteable_pc_ids)
-            //         ->delete();
-
-            //if pay component exist add to db
-            // if (!empty(request()->input('pay_components'))) {
-            //     $pay_components = request()->input('pay_components');
-            //     foreach ($pay_components as $key => $pay_component) {
-            //         EssentialsUserAllowancesAndDeduction::insert(['user_id' => $user->id, 'allowance_deduction_id' => $pay_component]);
-            //     }
-            // }
+           
         }
+
+
+
+        //update
         if ($data['event'] == 'user_updated')
         {
            
 
             $user = $data['model_instance'];
+
             $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
@@ -947,7 +979,7 @@ class DataController extends Controller
 
 
 
-            //update  resicency information
+         
         if(!empty(request()->input('expiration_date')))
         { 
           $id=$data['model_instance']['id'];
@@ -978,6 +1010,78 @@ class DataController extends Controller
          
         }
 
+        $id=$data['model_instance']['id'];
+        if( request()->input('qualification_type') != null)
+        {
+          
+          $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+          if( $qualification2)
+          {
+            $qualification2->qualification_type= request()->input('qualification_type');
+            $qualification2->major = request()->input('major');
+            $qualification2->graduation_year =  request()->input('graduation_year');
+            $qualification2->graduation_institution =  request()->input('graduation_institution');
+            $qualification2->employee_id = $user->id;
+            $qualification2->graduation_country = request()->input('graduation_country');
+            $qualification2->degree =  request()->input('degree');
+           
+            $qualification2->save();
+          }
+          else{
+            $qualification2 = new EssentialsEmployeesQualification();
+                
+                $qualification2->qualification_type= request()->input('qualification_type');
+                $qualification2->major = request()->input('major');
+                $qualification2->graduation_year =  request()->input('graduation_year');
+                $qualification2->graduation_institution =  request()->input('graduation_institution');
+                $qualification2->employee_id = $user->id;
+                $qualification2->graduation_country = request()->input('graduation_country');
+                $qualification2->degree =  request()->input('degree');
+                $qualification2->save();
+          }
+         
+
+        }
+
+         
+        if(request()->input('document_type')) 
+        {
+            $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();
+            if( $document2)
+            {
+                
+                $document2->type = request()->input('document_type');
+                $document2->employee_id =   $user->id;
+                $document2->status = 'valid';
+              
+                if (request()->hasFile('document_file')) {
+                    $file = request()->file('document_file');
+                    $filePath = $file->store('/officialDocuments');
+      
+                    $document2->file_path= $filePath;
+                }
+      
+                $document2->save();
+            }
+            else{
+                $document2 = new EssentialsOfficialDocument();
+                $document2->type = request()->input('document_type');
+                $document2->employee_id =   $user->id;
+                $document2->status = 'valid';
+              
+                if (request()->hasFile('document_file')) {
+                    $file = request()->file('document_file');
+                    $filePath = $file->store('/officialDocuments');
+      
+                    $document2->file_path= $filePath;
+                }
+      
+                $document2->save();
+          
+            }
+
+
+        }
 
             $id=$data['model_instance']['id'];
             if (request()->input('contract_number') != null ||request()->input('contract_type') != null

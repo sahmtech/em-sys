@@ -16,9 +16,7 @@
             <div class="col-md-12">
 
             @component('components.widget')
-                <div  class="col-md-12" id="section1">
-                <hr>
-                 <h4>@lang('essentials::lang.basic_info'):</h4>
+            <h4>@lang('essentials::lang.basic_info'):</h4>
                     <div class="col-md-5">
                         <div class="form-group">
                             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
@@ -90,22 +88,12 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="clearfix"></div>
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                        <button onclick="submitSection('section1')" class="btn btn-primary btn-big">@lang('messages.save')</button>
-                        </div>
-                    </div>
 
-                   
-                </div>
-
-
-
-
+<div class="clearfix"></div>
 
                     @include('user.edit_profile_form_part')
 
+                   
                     @if (!empty($form_partials))
                         @foreach ($form_partials as $partial)
                             {!! $partial !!}
@@ -249,6 +237,27 @@
     @stop
 @section('javascript')
 
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.hijri-date-picker').on('change', function() {
+            var hijriDate = $(this).val();
+            
+            
+            if (hijriDate) {
+                
+                var gregorianDate = HijriDate.toGregorian(hijriDate, 'YYYY-MM-DD');
+                
+                
+                $('#user_dob').val(gregorianDate);
+            } else {
+                
+                $('#user_dob').val('');
+            }
+        });
+    });
+</script>
+
+
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -286,7 +295,7 @@
                         delay: 250,
                         data: function(params) {
                             return {
-                                q: params.term, // search term
+                                q: params.term, 
                                 page: params.page,
                                 all_contact: true
                             };

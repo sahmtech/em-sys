@@ -51,11 +51,13 @@
 <div class="col-md-12" id="section5">
             <hr>
             <h4>@lang('essentials::lang.contract_details'):</h4>
-            
-        <div class="form-group col-md-3">
+            {{-- 
+                <div class="form-group col-md-3">
             {!! Form::label('contract_number', __( 'essentials::lang.contract_number') . ':') !!}
             {!! Form::text('contract_number',  !empty($contract->contract_number) ? $contract->contract_number : null , ['class' => 'form-control','style'=>'height:40px',  'placeholder' => __( 'essentials::lang.contract_number') ]); !!}
         </div>
+                --}}
+      
 
         <div class="col-md-3">
             <div class="form-group">
@@ -70,7 +72,7 @@
                 'placeholder' => __('essentials::lang.contract_start_date')]); !!}
         </div>
 
-<div class="form-group col-md-3">
+<div class="form-group col-md-4">
     {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
     <div class="form-group">
         <div class="multi-input">

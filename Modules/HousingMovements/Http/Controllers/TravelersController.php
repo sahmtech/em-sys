@@ -63,9 +63,9 @@ class TravelersController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -192,9 +192,9 @@ class TravelersController extends Controller
     public function  housed_workers_index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
