@@ -153,6 +153,7 @@
                                         <tr>
                                             <th>@lang('lang_v1.date')</th>
                                             <th>@lang('essentials::lang.employee')</th>
+                                            <th>@lang('essentials::lang.status')</th>
                                             <th>@lang('essentials::lang.clock_in')</th>
                                             <th>@lang('essentials::lang.clock_out')</th>
                                             <th>@lang('essentials::lang.work_duration')</th>
@@ -228,6 +229,10 @@
                     {
                         data: 'user',
                         name: 'user'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
                     },
                     {
                         data: 'clock_in',
@@ -392,11 +397,11 @@
                 });
 
                 $('#shift_modal #auto_clockout_time, #edit_shift_modal #auto_clockout_time')
-            .datetimepicker({
-                    format: moment_time_format,
-                    stepping: 30,
-                    ignoreReadonly: true,
-                });
+                    .datetimepicker({
+                        format: moment_time_format,
+                        stepping: 30,
+                        ignoreReadonly: true,
+                    });
             });
             $('#shift_modal, #edit_shift_modal').on('hidden.bs.modal', function(e) {
                 $('#shift_modal #start_time').data("DateTimePicker").destroy();

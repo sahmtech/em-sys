@@ -54,8 +54,6 @@ class AttendanceStatusController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '';
                         if ($is_admin) {
-                            $html .= '<a href="' . route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
-                        &nbsp;';
                             $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('attendanceStatus.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
@@ -105,66 +103,51 @@ class AttendanceStatusController extends Controller
         }
     }
 
-    public function show($id)
-    {
-        return view('essentials::show');
-    }
+    // public function show($id)
+    // {
+    //     return view('essentials::show');
+    // }
 
 
-    public function edit($id)
-    {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+    // public function update(Request $request, $id)
+    // {
 
-        $country = AttendanceStatus::findOrFail($id);
+    //     $business_id = $request->session()->get('user.business_id');
+    //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
+    //     if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
+    //         abort(403, 'Unauthorized action.');
+    //     }
 
-        return view('essentials::settings.partials.countries.edit')->with(compact('country'));
-    }
+    //     try {
+    //         $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
 
+    //         $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
 
-    public function update(Request $request, $id)
-    {
+    //         $input2['nationality'] = $input['nationality'];
 
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+    //         $input2['details'] = $input['details'];
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+    //         $input2['is_active'] = $input['is_active'];
 
-        try {
-            $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
+    //         AttendanceStatus::where('id', $id)->update($input2);
+    //         $output = [
+    //             'success' => true,
+    //             'msg' => __('lang_v1.updated_success'),
+    //         ];
+    //     } catch (\Exception $e) {
+    //         \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $input2['name'] = json_encode(['ar' => $input['arabic_name'], 'en' => $input['english_name']]);
-
-            $input2['nationality'] = $input['nationality'];
-
-            $input2['details'] = $input['details'];
-
-            $input2['is_active'] = $input['is_active'];
-
-            AttendanceStatus::where('id', $id)->update($input2);
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ];
-        } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
-        }
+    //         $output = [
+    //             'success' => false,
+    //             'msg' => __('messages.something_went_wrong'),
+    //         ];
+    //     }
 
 
-        return redirect()->route('countries');
-    }
+    //     return redirect()->route('countries');
+    // }
 
     public function destroy($id)
     {
@@ -176,7 +159,7 @@ class AttendanceStatusController extends Controller
         }
 
         try {
-            AttendanceStatus::where('id', $id)
+            EssentialsAttendanceStatus::where('id', $id)
                 ->delete();
 
             $output = [

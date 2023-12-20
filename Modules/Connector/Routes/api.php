@@ -61,7 +61,7 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
     Route::get('packages', [Modules\Connector\Http\Controllers\Api\SuperadminController::class, 'getPackages']);
 
     Route::get('get-attendance/{user_id}', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'getAttendance']);
-    Route::post('clock-in', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'clockin']);
+    // Route::post('clock-in', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'clockin']);
     Route::post('clock-out', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'clockout']);
     Route::get('holidays', [Modules\Connector\Http\Controllers\Api\AttendanceController::class, 'getHolidays']);
     Route::post('update-password', [Modules\Connector\Http\Controllers\Api\UserController::class, 'updatePassword']);
@@ -97,12 +97,12 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api')->group(functi
     Route::get('logout', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'logout']);
     Route::get('terms_privacy', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'terms_privacy']);
     Route::get('readAllNotifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'readAllNotifications']);
-   // Route::get('removeNotification/{id}', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'removeNotification']);
-  //  Route::get('notifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'getNotifications']);
+    // Route::get('removeNotification/{id}', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'removeNotification']);
+    //  Route::get('notifications', [Modules\Connector\Http\Controllers\Api\HomeController::class, 'getNotifications']);
 });
 
 Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->group(function () {
-    Route::post('/checkPointInPolygon', [Modules\Connector\Http\Controllers\Api\ApiAttendanceController::class, 'checkPointInPolygon']);
+    // Route::post('/checkPointInPolygon', [Modules\Connector\Http\Controllers\Api\ApiAttendanceController::class, 'checkPointInPolygon']);
     Route::get('getLeaveTypes', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getLeaveTypes']);
     Route::get('getMyRequests', [Modules\FollowUp\Http\Controllers\Api\ApiFollowUpRequestController::class, 'getMyRequests']);
     Route::get('getMyToDo', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsLeaveTypeController::class, 'getMyToDo']);
@@ -113,4 +113,5 @@ Route::middleware('auth:api', 'timezone')->prefix('connector/api/essentials')->g
     Route::post('resetPassword', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'resetPassword']);
     Route::post('changeToDoStatus/{id}', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'changeToDoStatus']);
     Route::get('getPayrollDetails', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'getPayrollDetails']);
+    Route::post('clock-in', [Modules\Essentials\Http\Controllers\Api\ApiEssentialsController::class, 'clockin']);
 });
