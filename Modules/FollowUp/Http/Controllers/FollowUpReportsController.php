@@ -2,6 +2,8 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleProject;
 use App\Category;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -160,6 +162,31 @@ class FollowUpReportsController extends Controller
 
         if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
             abort(403, 'Unauthorized action.');
+        }
+        $contacts = Contact::whereIn('type', ['customer', 'lead'])
+
+        ->with([
+            'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
+            'transactions.salesContract.salesOrderOperation'
+
+        ]);
+
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
+            $contacts = $contacts->whereIn('id', $contactIds);
+            if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
+                abort(403, 'Unauthorized action.');
+            }
         }
         $SalesProjects = SalesProject::with(['contact']);
         if (request()->ajax()) {
