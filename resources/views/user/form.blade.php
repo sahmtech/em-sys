@@ -232,9 +232,8 @@
 
 
 
-    <div class="col-md-12" id="section3">
-        <hr>
-        <h4>@lang('lang_v1.add_qualification'):</h4>
+<div class="col-md-12" id="section3">
+      
 
         <div class="form-group col-md-6">
             {!! Form::label('permanent_address', __('lang_v1.permanent_address') . ':') !!}
@@ -314,7 +313,7 @@
                 'class' => 'form-control select2 nationality-option',
                 'id' => 'nationalities_select',
                 'style' => 'height:40px',
-                'required',
+               
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
@@ -323,17 +322,14 @@
 
 
 
-        {{-- <div class="form-group col-md-3">
-    {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
-    {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
-</div> --}}
-        {{-- <div class="form-group col-md-3">
-    {!! Form::label('twitter_link', __( 'lang_v1.twitter_link' ) . ':') !!}
-    {!! Form::text('twitter_link', !empty($user->twitter_link) ? $user->twitter_link : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.twitter_link') ]); !!}
-</div> --}}
-        {{-- <div class="form-group col-md-3">
-    {!! Form::label('social_media_1', __( 'lang_v1.social_media', ['number' => 1] ) . ':') !!}
-    {!! Form::text('social_media_1', !empty($user->social_media_1) ? $user->social_media_1 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.social_media', ['number' => 1] ) ]); !!}
+               
+</div>
+
+<div class="col-md-12">
+<hr>
+        <h4>@lang('lang_v1.add_qualification'):</h4>
+<div class="form-group col-md-3">
+
                                 {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
                                 {!! Form::select('qualification_type', [
                                     'bachelors'=>__('essentials::lang.bachelors'),
@@ -371,7 +367,6 @@
                                 {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
                                 {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null,['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'step' => 'any']) !!}
                             </div>
-                            
 </div>
 <div class="col-md-12" id="section3">
         <hr>
