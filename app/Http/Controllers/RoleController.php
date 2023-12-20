@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\AccessRole;
+use App\AccessRoleBusiness;
 use App\AccessRoleProject;
+use App\Business;
 use App\Contact;
 use App\SellingPriceGroup;
 use App\User;
@@ -101,19 +103,33 @@ class RoleController extends Controller
             $accessRole->save();
         }
         $accessRoleProjects = AccessRoleProject::where('access_role_id',  $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        $contacts = Contact::with('salesProject')->select(['id', 'supplier_business_name'])->get();
+        $accessRoleBusinesses = AccessRoleBusiness::where('access_role_id',  $accessRole->id)->pluck('business_id')->unique()->toArray();
+        //$contacts = Contact::with('salesProject')->select(['id', 'supplier_business_name'])->get();
+        $businesses = Business::with('contacts.salesProjects')->get();
         return view('role.edit_create_access_role')
-            ->with(compact('accessRole', 'contacts', 'accessRoleProjects'));
+            ->with(compact('accessRole', 'accessRoleProjects', 'accessRoleBusinesses', 'businesses'));
     }
     public function updateAccessRole(Request $request, $roleId)
     {
         $projectsIds = $request->projects ?? [];
+        AccessRoleBusiness::where('access_role_id', $roleId)->delete();
         if (!empty($projectsIds)) {
-            AccessRoleProject::where('access_role_id', $roleId)->delete();
+            AccessRoleBusiness::where('access_role_id', $roleId)->delete();
             foreach ($projectsIds as $projectsId) {
                 AccessRoleProject::create([
                     'access_role_id' =>  $roleId,
                     'sales_project_id' => $projectsId,
+                ]);
+            }
+        }
+        $businessIds = $request->businesses ?? [];
+        AccessRoleBusiness::where('access_role_id', $roleId)->delete();
+        if (!empty($businessIds)) {
+
+            foreach ($businessIds as $businessId) {
+                AccessRoleBusiness::create([
+                    'access_role_id' =>  $roleId,
+                    'business_id' => $businessId,
                 ]);
             }
         }

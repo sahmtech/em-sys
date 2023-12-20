@@ -1095,4 +1095,6 @@ return [
   'crud_attendance_status' => 'إدارة حالات الحضور والانصراف',
   'attendance_status' => 'حالات الحضور والانصراف',
   'add_attendance_status' => 'إضافة حالة',
+  'business_single'=>'الشركة',
+  'nationalities'
 ];
