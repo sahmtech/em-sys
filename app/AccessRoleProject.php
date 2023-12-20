@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Entities\SalesProject;
 
 class AccessRoleProject extends Model
 {
@@ -16,6 +17,6 @@ class AccessRoleProject extends Model
     }
     public function saleProject()
     {
-        return $this->belongsTo(saleProject::class, 'sales_project_id');
+        return $this->belongsTo(SalesProject::class, 'sales_project_id');
     }
 }

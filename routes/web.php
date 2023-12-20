@@ -86,7 +86,7 @@ include_once 'install_r.php';
 // });
 
 Route::get('/userFromContact', function () {
-    $contacts = Contact::all();
+    $contacts = Contact::where('type', 'lead')->get();
     foreach ($contacts as $contact) {
         $temp = User::where('first_name', $contact->supplier_business_name)->first();
         if (!($temp  && $temp->user_type == 'customer')) {

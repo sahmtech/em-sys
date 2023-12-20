@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+
 use App\BusinessDocument;
 use Illuminate\Database\Eloquent\Model;
 
@@ -144,6 +145,11 @@ class Business extends Model
 
     public function documents()
     {
-        return $this->hasMany(BusinessDocument::class ,'business_id');
+        return $this->hasMany(BusinessDocument::class, 'business_id');
+    }
+
+    public function contacts()
+    {
+        return $this->hasMany(\App\Contact::class, 'business_id');
     }
 }

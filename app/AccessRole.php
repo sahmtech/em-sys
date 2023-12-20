@@ -19,4 +19,8 @@ class AccessRole extends Model
     {
         return $this->hasMany(AccessRoleProject::class, 'access_role_id');
     }
+    public function accessRoleBusinesses()
+    {
+        return $this->hasMany(AccessRoleBusiness::class, 'access_role_id');
+    }
 }
