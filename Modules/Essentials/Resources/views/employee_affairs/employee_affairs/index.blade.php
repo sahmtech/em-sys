@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol> -->
+                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                    <li class="active">Here</li>
+                                </ol> -->
     </section>
 
     <!-- Main content -->
@@ -19,10 +19,29 @@
         @component('components.filters', ['title' => __('report.filters')])
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="specializations_filter">@lang('essentials::lang.specializations'):</label>
+                    <label for="business_filter">@lang('essentials::lang.business_single'):</label>
+                    {!! Form::select(
+                        'select_business_id',
+                        $businesses,
+                        null,
+                        [
+                            'class' => 'form-control select2',
+                            'id' => 'select_business_id',
+                            'style' => 'height:36px; width:100%',
+                            'placeholder' => __('lang_v1.all'),
+                            'required',
+                            'autofocus',
+                        ],
+                        // $bl_attributes,
+                    ) !!}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="specializations_filter">@lang('essentials::lang.major'):</label>
                     {!! Form::select('specializations-select', $specializations, request('specializations-select'), [
                         'class' => 'form-control select2',
-                        'style' => 'height:36px',
+                        'style' => 'height:36px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                         'id' => 'specializations-select',
                     ]) !!}
@@ -31,20 +50,21 @@
 
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="professions_filter">@lang('essentials::lang.professions'):</label>
-                    {!! Form::select('professions-select', $professions, request('professions-select'), [
+                    <label for="nationalities_filter">@lang('essentials::lang.nationality'):</label>
+                    {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
                         'class' => 'form-control select2', // Add the select2 class
-                        'style' => 'height:36px',
                         'placeholder' => __('lang_v1.all'),
-                        'id' => 'professions-select',
+                        'style' => 'height:36px; width:100%',
+                        'id' => 'nationalities_select',
                     ]) !!}
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="professions_filter">@lang('essentials::lang.status'):</label>
-                    <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
+                    <label for="status_filter">@lang('essentials::lang.status'):</label>
+                    <select class="form-control select2" name="status_filter" required id="status_filter"
+                        style="height:36px; width:100%;">
                         <option value="all">@lang('lang_v1.all')</option>
                         <option value="active">@lang('sales::lang.active')</option>
                         <option value="inactive">@lang('sales::lang.inactive')</option>
@@ -70,35 +90,7 @@
                     @endcan
                 </div>
 
-                @if (count($business_locations) > 0)
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="fa fa-map-marker"></i>
-                                </span>
-                                {!! Form::select(
-                                    'select_location_id',
-                                    $business_locations,
-                                    null,
-                                    [
-                                        'class' => 'form-control input-sm',
-                                        'id' => 'select_location_id',
-                                        'style' => 'height:36px; width:100%',
-                                        'placeholder' => __('lang_v1.all'),
-                                        'required',
-                                        'autofocus',
-                                    ],
-                                    $bl_attributes,
-                                ) !!}
 
-                                <span class="input-group-addon">
-                                    @show_tooltip(__('tooltip.sale_location'))
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                @endif
             </div>
 
 
@@ -510,9 +502,9 @@
                     url: "{{ route('employees') }}",
                     data: function(d) {
                         d.specialization = $('#specializations-select').val();
-                        d.profession = $('#professions-select').val();
+                        d.nationality = $('#nationalities_select').val();
                         d.status = $('#status_filter').val();
-                        d.location = $('#select_location_id').val();
+                        d.business = $('#select_business_id').val();
 
                         console.log(d);
                     },
@@ -526,9 +518,10 @@
                         "data": "profile_image",
                         "render": function(data, type, row) {
                             if (data) {
-                             
+
                                 var imageUrl = '/uploads/' + data;
-                                return '<img src="' + imageUrl + '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
+                                return '<img src="' + imageUrl +
+                                    '" alt="Profile Image" class="img-thumbnail" width="50" height="50" style=" border-radius: 50%;">';
                             } else {
                                 return '@lang('essentials::lang.no_image')';
                             }
@@ -540,7 +533,7 @@
                     {
                         "data": "business_id"
                     },
- {
+                    {
                         "data": "user_type"
                     },
                     {
@@ -549,7 +542,9 @@
                     {
                         "data": "nationality"
                     },
-                    {"data": "total_salary"},
+                    {
+                        "data": "total_salary"
+                    },
                     {
                         "data": "admissions_date"
                     },
@@ -619,12 +614,12 @@
 
 
 
-            $('#specializations-select, #professions-select, #status-select, #select_location_id').change(
+            $('#specializations-select, #nationalities_select, #status-select, #select_business_id').change(
                 function() {
                     console.log('Specialization selected: ' + $(this).val());
-                    console.log('Profession selected: ' + $('#professions-select').val());
+                    console.log('Nationality selected: ' + $('#nationalities_select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_location_id').val());
+                    console.log('loc selected: ' + $('#select_business_id').val());
                     users_table.ajax.reload();
 
                 });

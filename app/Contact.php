@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\InternationalRelations\Entities\IrDelegation;
+use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 
 class Contact extends Authenticatable
@@ -35,7 +36,7 @@ class Contact extends Authenticatable
      */
     public function business()
     {
-        return $this->belongsTo(\App\Business::class);
+        return $this->belongsTo(\App\Business::class, 'business_id');
     }
 
     public function scopeActive($query)
@@ -398,7 +399,7 @@ class Contact extends Authenticatable
     {
         return $this->hasOne(Transaction::class, 'contact_id');
     }
-    public function salesProject()
+    public function salesProjects()
     {
         return $this->hasMany(SalesProject::class, 'contact_id');
     }
@@ -409,6 +410,6 @@ class Contact extends Authenticatable
 
     public function responsibleClients()
     {
-        return $this->belongsTo(\App\User::class ,'responsible_user_id');
+        return $this->belongsTo(\App\User::class, 'responsible_user_id');
     }
 }

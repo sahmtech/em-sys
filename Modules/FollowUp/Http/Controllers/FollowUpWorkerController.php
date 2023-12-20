@@ -84,6 +84,20 @@ class FollowUpWorkerController extends Controller
             'sales_projects.name as contact_name'
         );
 
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+            }
+            $userProjects = array_unique($userProjects);
+            $users = $users->where÷ى('users.assigned_to',   $userProjects);
+        }
+
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
