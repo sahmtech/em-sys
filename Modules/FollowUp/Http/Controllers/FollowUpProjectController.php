@@ -90,12 +90,15 @@ class FollowUpProjectController extends Controller
                 ->addColumn('duration', function ($row) {
                     return $row->contract_duration    ?? null;
                 })
+                ->addColumn('contract_form', function ($row) {
+                    return $row->salesContract?->transaction->contract_form ?? null;;
+                })
 
                 ->addColumn('status', function ($row) {
-                    return $row->salesOrdersOperations?->status     ?? null;;
+                    return $row->salesContract?->status     ?? null;;
                 })
                 ->addColumn('type', function ($row) {
-                    return $row->salesOrdersOperations?->operation_order_type ?? null;;
+                    return $row->salesContract->salesOrderOperation?->operation_order_type ?? null;;
                 })
                 ->addColumn('action', function ($row) use ($is_admin) {
                     $html = '';
@@ -119,7 +122,7 @@ class FollowUpProjectController extends Controller
                 })
 
 
-                ->rawColumns(['id', 'contact_location_name', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
+                ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
 
@@ -153,7 +156,7 @@ class FollowUpProjectController extends Controller
      */
     public function show($id)
     {
-       
+
         $users = User::where('assigned_to', $id)
 
 

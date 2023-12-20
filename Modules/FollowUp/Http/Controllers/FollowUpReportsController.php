@@ -214,13 +214,16 @@ class FollowUpReportsController extends Controller
                     return $row->contract_duration    ?? null;
                 })
 
-                ->addColumn('status', function ($row) {
-                    return $row->salesOrdersOperations?->status     ?? null;;
-                })
-                ->addColumn('type', function ($row) {
-                    return $row->salesOrdersOperations?->operation_order_type ?? null;;
+                ->addColumn('contract_form', function ($row) {
+                    return $row->salesContract?->transaction->contract_form ?? null;;
                 })
 
+                ->addColumn('status', function ($row) {
+                    return $row->salesContract?->status     ?? null;;
+                })
+                ->addColumn('type', function ($row) {
+                    return $row->salesContract->salesOrderOperation?->operation_order_type ?? null;;
+                })
                 ->filterColumn('contact_name', function ($query, $keyword) {
 
                     $query->whereHas('contact', function ($qu) use ($keyword) {
@@ -233,7 +236,7 @@ class FollowUpReportsController extends Controller
                 })
 
 
-                ->rawColumns(['id', 'contact_location_name', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
+                ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
         $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');

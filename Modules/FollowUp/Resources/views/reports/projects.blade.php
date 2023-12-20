@@ -43,7 +43,7 @@
                             <th style="width: 100px !important;">@lang('sales::lang.active_worker_count')</th>
                             <th style="width: 100px !important;">@lang('sales::lang.worker_count')</th>
                             <th style="width: 100px !important;">@lang('sales::lang.contractDuration')</th>
-                            {{-- <th>@lang('sales::lang.contract_form')</th> --}}
+                            <th style="width: 100px !important;">@lang('sales::lang.contract_form')</th>
                             <th style="width: 100px !important;">@lang('followup::lang.project_status')</th>
                             <th style="width: 100px !important;">@lang('followup::lang.project_type')</th>
 
@@ -110,20 +110,20 @@
                     {
                         data: 'duration'
                     },
-                    // {
-                    //     data: 'contract_form',
-                    //     render: function(data, type, full, meta) {
-                    //         switch (data) {
-                    //             case 'monthly_cost':
-                    //                 return '{{ trans('sales::lang.monthly_cost') }}';
-                    //             case 'operating_fees':
-                    //                 return '{{ trans('sales::lang.operating_fees') }}';
+                    {
+                        data: 'contract_form',
+                        render: function(data, type, full, meta) {
+                            switch (data) {
+                                case 'monthly_cost':
+                                    return '{{ trans('sales::lang.monthly_cost') }}';
+                                case 'operating_fees':
+                                    return '{{ trans('sales::lang.operating_fees') }}';
 
-                    //             default:
-                    //                 return data;
-                    //         }
-                    //     }
-                    // },
+                                default:
+                                    return data;
+                            }
+                        }
+                    },
 
                     {
                         data: 'status',

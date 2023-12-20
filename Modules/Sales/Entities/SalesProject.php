@@ -38,8 +38,5 @@ class SalesProject extends Model
         return $this->hasOne(salesContract::class, 'sales_project_id');
     }
 
-    public function salesOrdersOperations()
-    {
-        return $this->hasOne(SalesOrdersOperation::class, 'sales_project_id');
-    }
+
 }
