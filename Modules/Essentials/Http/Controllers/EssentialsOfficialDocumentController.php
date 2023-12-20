@@ -33,18 +33,22 @@ class EssentialsOfficialDocumentController extends Controller
         //     error_log("2222");
         //     abort(403, 'Unauthorized action.');
         // }
-        if (request()->ajax()) {
-            $official_documents = EssentialsOfficialDocument::join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
-                ->where('u.business_id', $business_id)
+        $official_documents = EssentialsOfficialDocument::
+        join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
+            
 
-                ->select([
-                    'essentials_official_documents.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'essentials_official_documents.type',
-                    'essentials_official_documents.status',
-                    'essentials_official_documents.number',
-                    'essentials_official_documents.expiration_date',
-                ]);
+            ->select([
+                'essentials_official_documents.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_official_documents.type',
+                'essentials_official_documents.status',
+                'essentials_official_documents.number',
+                'essentials_official_documents.expiration_date',
+            ])->orderby('id','desc');
+
+           // dd(  $official_documents->where('employee_id',5914)->get() );
+        if (request()->ajax()) {
+       
 
             if (!empty(request()->input('user_id')) && request()->input('user_id') !== 'all') {
                 $official_documents->where('essentials_official_documents.employee_id', request()->input('user_id'));

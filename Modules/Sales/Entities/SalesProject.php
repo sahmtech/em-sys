@@ -13,7 +13,7 @@ use Modules\Essentials\Entities\EssentialsCity;
 class SalesProject extends Model
 {
     protected $guarded = ['id'];
-   
+
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'contact_id');
@@ -33,4 +33,10 @@ class SalesProject extends Model
     {
         return $this->hasMany(Shift::class, 'project_id');
     }
+    public function salesContract()
+    {
+        return $this->hasOne(salesContract::class, 'sales_project_id');
+    }
+
+
 }

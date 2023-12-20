@@ -6,6 +6,7 @@ use App\Business;
 use App\Notification;
 use App\User;
 use App\Utils\ModuleUtil;
+use App\Utils\Util;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -26,19 +27,22 @@ use Modules\FollowUp\Entities\FollowupWorkerRequest;
  */
 class HomeController extends ApiController
 {
+
     /**
      * All Utils instance.
      */
     protected $moduleUtil;
+    protected $commonUtil;
 
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil)
+    public function __construct(ModuleUtil $moduleUtil, Util $commonUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->commonUtil = $commonUtil;
     }
 
     /**
@@ -137,6 +141,34 @@ class HomeController extends ApiController
 
 
             return new CommonResource($res);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
+
+    // public function getNotifications()
+    // {
+    //     $user = Auth::user();
+    //     $notifications = $user->notifications()->where('is_deleted', 0)->orderBy('created_at', 'DESC')->get();
+
+    //     $notifications_data = $this->commonUtil->parseNotifications($notifications);
+    //     // return User::where('id',$user->id)->first()->allNotifications;
+    //     return new CommonResource($notifications_data);
+    // }
+
+    public function removeNotification($id)
+    {
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $user = Auth::user();
+            $user = User::where('id', $user->id)->first();
+            Notification::where('id', $id)->update(['is_deleted' => 1]);
+            return new CommonResource(['msg' => 'تم حذف الاشعار بنجاح']);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 

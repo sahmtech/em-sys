@@ -47,6 +47,20 @@
                   </div>
               @endif
 
+              
+            @include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
+
+@if(!empty($form_partials))
+  @foreach($form_partials as $partial)
+    {!! $partial !!}
+  @endforeach
+@endif
+
+<div class="row">
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary btn-big" id="submit_user_button">@lang( 'messages.update' )</button>
+            </div>
+        </div>
 
             {{-- <div class="clearfix"></div>
                 <div class="col-md-4">
@@ -67,8 +81,12 @@
                       </div>
                     </div>
                 </div> --}}
+
+
         @endcomponent
         </div>
+
+
         {{-- <div class="col-md-12">
         @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
             <div class="col-md-4">
@@ -148,6 +166,8 @@
               @endforeach
             </div>
 
+
+
         @endcomponent
         </div> --}}
 
@@ -197,14 +217,9 @@
             @endcomponent
         </div> --}}
     </div>
-    @include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
-
-    @if(!empty($form_partials))
-      @foreach($form_partials as $partial)
-        {!! $partial !!}
-      @endforeach
-    @endif
-
+  
+  
+  {{--
     @component('components.widget')
     <div class="row">
             <div class="col-md-12 text-center">
@@ -212,6 +227,8 @@
             </div>
         </div>
     @endcomponent
+    --}}
+
     {!! Form::close() !!}
   @stop
 @section('javascript')

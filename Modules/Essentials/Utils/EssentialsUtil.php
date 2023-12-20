@@ -2,9 +2,12 @@
 
 namespace Modules\Essentials\Utils;
 
+use App\BusinessLocationPolygonMarker;
 use App\Transaction;
+use App\User;
 use App\Utils\Util;
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsAttendance;
@@ -33,16 +36,16 @@ class EssentialsUtil extends Util
         $total_work_duration = 0;
         if ($unit == 'hour') {
             $query = EssentialsAttendance::where('business_id', $business_id)
-                                        ->where('user_id', $user_id)
-                                        ->whereNotNull('clock_out_time');
+                ->where('user_id', $user_id)
+                ->whereNotNull('clock_out_time');
 
-            if (! empty($start_date) && ! empty($end_date)) {
+            if (!empty($start_date) && !empty($end_date)) {
                 $query->whereDate('clock_in_time', '>=', $start_date)
-                            ->whereDate('clock_in_time', '<=', $end_date);
+                    ->whereDate('clock_in_time', '<=', $end_date);
             }
 
             $minutes_sum = $query->select(DB::raw('SUM(TIMESTAMPDIFF(MINUTE, clock_in_time, clock_out_time)) as total_minutes'))->first();
-            $total_work_duration = ! empty($minutes_sum->total_minutes) ? $minutes_sum->total_minutes / 60 : 0;
+            $total_work_duration = !empty($minutes_sum->total_minutes) ? $minutes_sum->total_minutes / 60 : 0;
         }
 
         return number_format($total_work_duration, 2);
@@ -59,7 +62,7 @@ class EssentialsUtil extends Util
         $month = $month_year_arr[0];
         $year = $month_year_arr[1];
 
-        $transaction_date = $year.'-'.$month.'-01';
+        $transaction_date = $year . '-' . $month . '-01';
 
         return $transaction_date;
     }
@@ -75,11 +78,11 @@ class EssentialsUtil extends Util
     public function getEmployeeAllowancesAndDeductions($business_id, $user_id, $start_date = null, $end_date = null)
     {
         $query = EssentialsAllowanceAndDeduction::join('essentials_user_allowance_and_deductions as euad', 'euad.allowance_deduction_id', '=', 'essentials_allowances_and_deductions.id')
-                ->where('business_id', $business_id)
-                ->where('euad.user_id', $user_id);
+            ->where('business_id', $business_id)
+            ->where('euad.user_id', $user_id);
 
         //Filter if applicable one
-        if (! empty($start_date) && ! empty($end_date)) {
+        if (!empty($start_date) && !empty($end_date)) {
             $query->where(function ($q) use ($start_date, $end_date) {
                 $q->whereNull('applicable_date')
                     ->orWhereBetween('applicable_date', [$start_date, $end_date]);
@@ -96,34 +99,37 @@ class EssentialsUtil extends Util
     public function checkUserShift($user_id, $settings, $clock_in_time = null)
     {
         $shift_id = null;
-        $shift_date = ! empty($clock_in_time) ? \Carbon::parse($clock_in_time) : \Carbon::now();
+        $shift_date = !empty($clock_in_time) ? \Carbon::parse($clock_in_time) : \Carbon::now();
         $shift_datetime = $shift_date->format('Y-m-d');
         $day_string = strtolower($shift_date->format('l'));
-        $grace_before_checkin = ! empty($settings['grace_before_checkin']) ? (int) $settings['grace_before_checkin'] : 0;
-        $grace_after_checkin = ! empty($settings['grace_after_checkin']) ? (int) $settings['grace_after_checkin'] : 0;
-        $clock_in_start = ! empty($clock_in_time) ? \Carbon::parse($clock_in_time)->subMinutes($grace_before_checkin) : \Carbon::now()->subMinutes($grace_before_checkin);
-        $clock_in_end = ! empty($clock_in_time) ? \Carbon::parse($clock_in_time)->addMinutes($grace_after_checkin) : \Carbon::now()->addMinutes($grace_after_checkin);
+        $grace_before_checkin = !empty($settings['grace_before_checkin']) ? (int) $settings['grace_before_checkin'] : 0;
+        $grace_after_checkout = !empty($settings['grace_after_checkout']) ? (int) $settings['grace_after_checkout'] : 0;
 
         $user_shifts = EssentialsUserShift::join('essentials_shifts as s', 's.id', '=', 'essentials_user_shifts.essentials_shift_id')
-                    ->where('user_id', $user_id)
-                    ->where('start_date', '<=', $shift_datetime)
-                    ->where(function ($q) use ($shift_datetime) {
-                        $q->whereNull('end_date')
-                        ->orWhere('end_date', '>=', $shift_datetime);
-                    })
-                    ->select('essentials_user_shifts.*', 's.holidays', 's.start_time', 's.end_time', 's.type')
-                    ->get();
-
+            ->where('user_id', $user_id)
+            ->where('start_date', '<=', $shift_datetime)
+            ->where(function ($q) use ($shift_datetime) {
+                $q->whereNull('end_date')
+                    ->orWhere('end_date', '>=', $shift_datetime);
+            })
+            ->select('essentials_user_shifts.*', 's.holidays', 's.start_time', 's.end_time', 's.type')
+            ->get();
         foreach ($user_shifts as $shift) {
-            $holidays = json_decode($shift->holidays, true);
-            //check if holiday
-            if (is_array($holidays) && in_array($day_string, $holidays)) {
-                continue;
-            }
+            error_log($shift);
+            error_log("************************");
+            if (!empty($shift->start_time)) {
+                $clock_in_start =  \Carbon::parse($shift->start_time)->subMinutes($grace_before_checkin);
+                $clock_out_end =  \Carbon::parse($shift->end_time)->addMinutes($grace_after_checkout);
+                $holidays = json_decode($shift->holidays, true);
+                //check if holiday
+                if (is_array($holidays) && in_array($day_string, $holidays)) {
+                    continue;
+                }
 
-            //Check allocated shift time
-            if ((! empty($shift->start_time) && \Carbon::parse($shift->start_time)->between($clock_in_start, $clock_in_end)) || $shift->type == 'flexible_shift') {
-                return $shift->essentials_shift_id;
+                //Check allocated shift time
+                if ((\Carbon::parse($clock_in_time)->between($clock_in_start, $clock_out_end)) || $shift->type == 'flexible_shift') {
+                    return $shift->essentials_shift_id;
+                }
             }
         }
 
@@ -140,8 +146,8 @@ class EssentialsUtil extends Util
             return true;
         }
 
-        $grace_before_checkout = ! empty($settings['grace_before_checkout']) ? (int) $settings['grace_before_checkout'] : 0;
-        $grace_after_checkout = ! empty($settings['grace_after_checkout']) ? (int) $settings['grace_after_checkout'] : 0;
+        $grace_before_checkout = !empty($settings['grace_before_checkout']) ? (int) $settings['grace_before_checkout'] : 0;
+        $grace_after_checkout = !empty($settings['grace_after_checkout']) ? (int) $settings['grace_after_checkout'] : 0;
         $clock_out_start = empty($clock_out_time) ? \Carbon::now()->subMinutes($grace_before_checkout) : \Carbon::parse($clock_out_time)->subMinutes($grace_before_checkout);
 
         $clock_out_end = empty($clock_out_time) ? \Carbon::now()->addMinutes($grace_after_checkout) : \Carbon::parse($clock_out_time)->addMinutes($grace_after_checkout);
@@ -153,21 +159,86 @@ class EssentialsUtil extends Util
         }
     }
 
+
+    public function checkPointInPolygon($lat, $lng)
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        $location_id = $user->location_id;
+        $isInsidePolygon = false;
+
+
+        $polygonMarkers = BusinessLocationPolygonMarker::where('business_location_id', $location_id)->get();
+
+        $polygon = [];
+        foreach ($polygonMarkers as $marker) {
+
+            $polygon[] = $marker->lat . ' ' . $marker->lng;
+        }
+
+        $point = ['x' => $lat, 'y' => $lng];
+        $vertices = array_map(function ($vertex) {
+            $coordinates = explode(" ", $vertex);
+            return ['x' => $coordinates[0], 'y' => $coordinates[1]];
+        }, $polygon);
+
+        if (in_array($point, $vertices, true)) {
+            $isInsidePolygon = true;
+        }
+
+        $intersections = 0;
+        $vertices_count = count($vertices);
+
+        for ($i = 1; $i < $vertices_count; $i++) {
+            $vertex1 = $vertices[$i - 1];
+            $vertex2 = $vertices[$i];
+
+            if ($vertex1['y'] == $vertex2['y'] && $vertex1['y'] == $point['y'] && $point['x'] > min($vertex1['x'], $vertex2['x']) && $point['x'] < max($vertex1['x'], $vertex2['x'])) {
+                $isInsidePolygon = true;
+            }
+
+            if (
+                $point['y'] > min($vertex1['y'], $vertex2['y']) &&
+                $point['y'] <= max($vertex1['y'], $vertex2['y']) &&
+                $point['x'] <= max($vertex1['x'], $vertex2['x']) &&
+                $vertex1['y'] != $vertex2['y'] &&
+                ($vertex1['x'] == $vertex2['x'] || $point['x'] <= ($point['y'] - $vertex1['y']) * ($vertex2['x'] - $vertex1['x']) / ($vertex2['y'] - $vertex1['y']) + $vertex1['x'])
+            ) {
+
+                $intersections++;
+            }
+        }
+        if ($intersections % 2 != 0 ||    $isInsidePolygon) {
+            $isInsidePolygon = true;
+        } else {
+            $isInsidePolygon = false;
+            error_log($intersections);
+        }
+        return    $isInsidePolygon;
+
+        // if ($isInsidePolygon) {
+        //     return response()->json(['status' => 'success', 'message' => 'Point is inside the polygon']);
+        // } else {
+        //     return response()->json(['status' => 'error', 'message' => 'Point is outside the polygon']);
+        // }
+    }
+
+
+
     public function clockin($data, $essentials_settings)
     {
         //Check user can clockin
         $clock_in_time = is_object($data['clock_in_time']) ? $data['clock_in_time']->toDateTimeString() : $data['clock_in_time'];
 
         $shift = $this->checkUserShift($data['user_id'], $essentials_settings, $clock_in_time);
-
         if (empty($shift)) {
             $available_shifts = $this->getAllAvailableShiftsForGivenUser($data['business_id'], $data['user_id']);
 
             $available_shifts_html = view('essentials::attendance.avail_shifts')
-                                        ->with(compact('available_shifts'))
-                                        ->render();
+                ->with(compact('available_shifts'))
+                ->render();
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('essentials::lang.shift_not_allocated'),
                 'type' => 'clock_in',
                 'shift_details' => $available_shifts_html,
@@ -175,29 +246,55 @@ class EssentialsUtil extends Util
 
             return $output;
         }
-
         $data['essentials_shift_id'] = $shift;
 
         //Check if already clocked in
         $count = EssentialsAttendance::where('business_id', $data['business_id'])
-                                ->where('user_id', $data['user_id'])
-                                ->whereNull('clock_out_time')
-                                ->count();
+            ->where('user_id', $data['user_id'])
+            ->whereNull('clock_out_time')
+            ->count();
         if ($count == 0) {
+            //1 attended 
+            //2 late
+            //3 out of work site 
+            $status = null;
+            $shift = Shift::where('id', $shift)->first();
+            $grace_before_checkin = !empty($settings['grace_before_checkin']) ? (int) $settings['grace_before_checkin'] : 0;
+            $grace_after_checkin = !empty($settings['grace_after_checkin']) ? (int) $settings['grace_after_checkin'] : 0;
+            $clock_in_start =  \Carbon::parse($shift->start_time)->subMinutes($grace_before_checkin);
+            $clock_in_end =  \Carbon::parse($shift->start_time)->addMinutes($grace_after_checkin);
+            $between = $data['clock_in_time']->between($clock_in_start, $clock_in_end);
+            $after_start = $data['clock_in_time']->greaterThan($clock_in_end);
+            $differenceInMinutes = $data['clock_in_time']->diffInMinutes($clock_in_end);
+
+            $is_on_site = $this->checkPointInPolygon($data['clock_in_lat'], $data['clock_in_lng']);
+            if ($between &&  $is_on_site) {
+                $status = 1;
+            } else if ($after_start &&  $is_on_site) {
+                $status = 2;
+            } else if (!$is_on_site) {
+                $status = 3;
+            }
+            error_log("status is");
+            error_log($status);
+            $data['status_id'] = $status;
+
             EssentialsAttendance::create($data);
 
-            $shift_info = Shift::getGivenShiftInfo($data['business_id'], $shift);
+            $shift_info = Shift::getGivenShiftInfo($data['business_id'], $shift->id);
             $current_shift_html = view('essentials::attendance.current_shift')
-                                    ->with(compact('shift_info'))
-                                    ->render();
+                ->with(compact('shift_info'))
+                ->render();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('essentials::lang.clock_in_success'),
                 'type' => 'clock_in',
                 'current_shift' => $current_shift_html,
             ];
         } else {
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('essentials::lang.already_clocked_in'),
                 'type' => 'clock_in',
             ];
@@ -211,15 +308,16 @@ class EssentialsUtil extends Util
 
         //Get clock in
         $clock_in = EssentialsAttendance::where('business_id', $data['business_id'])
-                                ->where('user_id', $data['user_id'])
-                                ->whereNull('clock_out_time')
-                                ->first();
+            ->where('user_id', $data['user_id'])
+            ->whereNull('clock_out_time')
+            ->first();
         $clock_out_time = is_object($data['clock_out_time']) ? $data['clock_out_time']->toDateTimeString() : $data['clock_out_time'];
 
-        if (! empty($clock_in)) {
+        if (!empty($clock_in)) {
             $can_clockout = $this->canClockOut($clock_in, $essentials_settings, $clock_out_time);
-            if (! $can_clockout) {
-                $output = ['success' => false,
+            if (!$can_clockout) {
+                $output = [
+                    'success' => false,
                     'msg' => __('essentials::lang.shift_not_over'),
                     'type' => 'clock_out',
                 ];
@@ -232,12 +330,14 @@ class EssentialsUtil extends Util
             $clock_in->clock_out_location = $data['clock_out_location'] ?? '';
             $clock_in->save();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('essentials::lang.clock_out_success'),
                 'type' => 'clock_out',
             ];
         } else {
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('essentials::lang.not_clocked_in'),
                 'type' => 'clock_out',
             ];
@@ -248,15 +348,26 @@ class EssentialsUtil extends Util
 
     public function getAllAvailableShiftsForGivenUser($business_id, $user_id)
     {
-        $available_user_shifts = EssentialsUserShift::join('essentials_shifts as s', 's.id', '=',
-                                    'essentials_user_shifts.essentials_shift_id')
-                                    ->where('user_id', $user_id)
-                                    ->where('s.business_id', $business_id)
-                                    ->whereDate('start_date', '<=', \Carbon::today())
-                                    ->whereDate('end_date', '>=', \Carbon::today())
-                                    ->select('essentials_user_shifts.start_date', 'essentials_user_shifts.end_date',
-                                        's.name', 's.type', 's.start_time', 's.end_time', 's.holidays')
-                                    ->get();
+        $available_user_shifts = EssentialsUserShift::join(
+            'essentials_shifts as s',
+            's.id',
+            '=',
+            'essentials_user_shifts.essentials_shift_id'
+        )
+            ->where('user_id', $user_id)
+            ->where('s.business_id', $business_id)
+            ->whereDate('start_date', '<=', \Carbon::today())
+            ->whereDate('end_date', '>=', \Carbon::today())
+            ->select(
+                'essentials_user_shifts.start_date',
+                'essentials_user_shifts.end_date',
+                's.name',
+                's.type',
+                's.start_time',
+                's.end_time',
+                's.holidays'
+            )
+            ->get();
 
         return $available_user_shifts;
     }
@@ -272,10 +383,10 @@ class EssentialsUtil extends Util
     public function getTotalLeavesForGivenDateOfAnEmployee($business_id, $employee_id, $start_date, $end_date)
     {
         $leaves = EssentialsLeave::where('business_id', $business_id)
-                        ->where('user_id', $employee_id)
-                        ->whereDate('start_date', '>=', $start_date)
-                        ->whereDate('end_date', '<=', $end_date)
-                        ->get();
+            ->where('user_id', $employee_id)
+            ->whereDate('start_date', '>=', $start_date)
+            ->whereDate('end_date', '<=', $end_date)
+            ->get();
 
         $total_leaves = 0;
         foreach ($leaves as $key => $leave) {
@@ -293,14 +404,14 @@ class EssentialsUtil extends Util
     public function getTotalDaysWorkedForGivenDateOfAnEmployee($business_id, $employee_id, $start_date, $end_date)
     {
         $attendances = EssentialsAttendance::where('business_id', $business_id)
-                        ->where('user_id', $employee_id)
-                        ->whereNotNull('clock_out_time')
-                        ->whereDate('clock_in_time', '>=', $start_date)
-                        ->whereDate('clock_in_time', '<=', $end_date)
-                        ->get()
-                        ->groupBy(function ($attendance, $key) {
-                            return \Carbon::parse($attendance->clock_in_time)->format('Y-m-d');
-                        });
+            ->where('user_id', $employee_id)
+            ->whereNotNull('clock_out_time')
+            ->whereDate('clock_in_time', '>=', $start_date)
+            ->whereDate('clock_in_time', '<=', $end_date)
+            ->get()
+            ->groupBy(function ($attendance, $key) {
+                return \Carbon::parse($attendance->clock_in_time)->format('Y-m-d');
+            });
 
         return count($attendances);
     }
@@ -308,23 +419,23 @@ class EssentialsUtil extends Util
     public function getPayrollQuery($business_id)
     {
         $payrolls = Transaction::where('transactions.business_id', $business_id)
-                    ->where('type', 'payroll')
-                    ->join('users as u', 'u.id', '=', 'transactions.expense_for')
-                    ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
-                    ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
-                    ->leftJoin('essentials_payroll_group_transactions as epgt', 'transactions.id', '=', 'epgt.transaction_id')
-                    ->leftJoin('essentials_payroll_groups as epg', 'epgt.payroll_group_id', '=', 'epg.id')
-                    ->select([
-                        'transactions.id',
-                        DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                        'final_total',
-                        'transaction_date',
-                        'ref_no',
-                        'transactions.payment_status',
-                        'dept.name as department',
-                        'dsgn.name as designation',
-                        'epgt.payroll_group_id',
-                    ]);
+            ->where('type', 'payroll')
+            ->join('users as u', 'u.id', '=', 'transactions.expense_for')
+            ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
+            ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
+            ->leftJoin('essentials_payroll_group_transactions as epgt', 'transactions.id', '=', 'epgt.transaction_id')
+            ->leftJoin('essentials_payroll_groups as epg', 'epgt.payroll_group_id', '=', 'epg.id')
+            ->select([
+                'transactions.id',
+                DB::raw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'final_total',
+                'transaction_date',
+                'ref_no',
+                'transactions.payment_status',
+                'dept.name as department',
+                'dsgn.name as designation',
+                'epgt.payroll_group_id',
+            ]);
 
         return $payrolls;
     }
@@ -332,7 +443,7 @@ class EssentialsUtil extends Util
     public function getEssentialsSettings()
     {
         $settings = request()->session()->get('business.essentials_settings');
-        $settings = ! empty($settings) ? json_decode($settings, true) : [];
+        $settings = !empty($settings) ? json_decode($settings, true) : [];
 
         return $settings;
     }

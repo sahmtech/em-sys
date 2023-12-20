@@ -84,6 +84,11 @@ class BusinessDocumentController extends Controller
         $businessDocument->expiration_date = $request->expiration_date;
         $businessDocument->issuing_location = $request->issuing_location;
         $businessDocument->details = $request->details;
+        
+        $businessDocument->capital = $request->capital;
+        $businessDocument->national_address = $request->national_address;
+        $businessDocument->register_number = $request->register_number;
+       
         if ($request->input('licence_type') === 'COMMERCIALREGISTER') {
             $businessDocument->unified_number = $request->unified_number;
         }
@@ -103,6 +108,8 @@ class BusinessDocumentController extends Controller
         return redirect()->route('business_documents.view', ['id' => $request->business_id])->with('success', 'Business document added successfully');
 
     }
+
+    
     public function destroy($id)
     {
         if (! auth()->user()->can('business_documents.destroy') ) {
