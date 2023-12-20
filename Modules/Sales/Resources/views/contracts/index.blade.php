@@ -101,7 +101,7 @@
                                         {!! Form::text('contract_signer', null, [
                                             'class' => 'form-control',
                                             'placeholder' => __('sales::lang.contract_signer'),
-                                            'required',
+                                          
                                         ]) !!}
                                     </div>
                                     <div class="form-group col-md-6">
@@ -109,7 +109,7 @@
                                         {!! Form::text('contract_follower', null, [
                                             'class' => 'form-control',
                                             'placeholder' => __('sales::lang.contract_follower'),
-                                            'required',
+                                          
                                         ]) !!}
                                     </div>
 
