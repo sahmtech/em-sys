@@ -14,10 +14,9 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-              
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
+                            {!! Form::label('project_name_filter', __('sales::lang.contact_name') . ':') !!}
                             {!! Form::select('project_name_filter', $contacts_fillter, null, [
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%;padding:2px;',
@@ -79,7 +78,7 @@
                         if ($('#customer_name_filter').val()) {
                             d.customer_name = $('#customer_name_filter').val();
                         }
-                     
+
 
                     }
                 },
