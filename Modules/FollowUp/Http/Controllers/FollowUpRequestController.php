@@ -3,6 +3,7 @@
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\AccessRole;
+use App\AccessRoleBusiness;
 use App\AccessRoleProject;
 use App\Business;
 use App\User;
@@ -393,52 +394,51 @@ class FollowUpRequestController extends Controller
                 ->where('department_id', $department);
         }
 
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {
             $userProjects = [];
+            $userBusinesses = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
 
                 $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
+                $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
             }
-            $userProjects = array_unique($userProjects);
-            $requestsProcess = $requestsProcess->whereIn('users.assigned_to', $userProjects);
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+            $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                $query->where(function ($query2) use ($user_businesses_ids) {
+                    $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
+                })->orWhere(function ($query3) use ($user_projects_ids) {
+                    $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                });
+            });
         }
 
-
         if (request()->ajax()) {
-
-
             return DataTables::of($requestsProcess ?? [])
-
                 ->editColumn('created_at', function ($row) {
-
-
                     return Carbon::parse($row->created_at);
                 })
                 ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
                     $item = $ContactsLocation[$row->assigned_to] ?? '';
-
                     return $item;
                 })
-
-
-
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
-        //  $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-        $all_users = $query->select(
+
+        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
          ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->get();
-
-        $workers = $all_users->pluck('full_name', 'id');
-
+        )->pluck('full_name', 'id');
 
         return view('followup::requests.allRequest')->with(compact('workers', 'main_reasons', 'classes', 'leaveTypes'));
     }

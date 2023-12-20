@@ -137,7 +137,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
         $users = User::with(['UserallowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-            $query->where(function ($query2) use ($user_businesses_ids, $user_projects_ids) {
+            $query->where(function ($query2) use ($user_businesses_ids) {
                 $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
             })->orWhere(function ($query3) use ($user_projects_ids) {
                 $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);

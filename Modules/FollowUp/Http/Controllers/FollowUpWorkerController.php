@@ -95,7 +95,7 @@ class FollowUpWorkerController extends Controller
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
             $userProjects = array_unique($userProjects);
-            $users = $users->where('users.assigned_to',   $userProjects);
+            $users = $users->whereIn('users.assigned_to',   $userProjects);
         }
 
         if (request()->ajax()) {

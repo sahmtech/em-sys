@@ -2,6 +2,10 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleBusiness;
+use App\AccessRoleProject;
+use App\Business;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -19,6 +23,7 @@ use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Sales\Entities\SalesProject;
 
 class EssentialsRequestController extends Controller
 {
@@ -66,13 +71,13 @@ class EssentialsRequestController extends Controller
 
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
-            
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->first();
+
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
             error_log($requestProcess->procedure_id);
-            $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
-           error_log($procedure);
-          
-            if($procedure == 0 && $input['status']=='rejected'){
+            $procedure = EssentialsWkProcedure::where('id', $requestProcess->procedure_id)->first()->can_reject;
+            error_log($procedure);
+
+            if ($procedure == 0 && $input['status'] == 'rejected') {
                 $output = [
                     'success' => false,
                     'msg' => __('lang_v1.this_department_cant_reject_this_request'),
@@ -82,7 +87,7 @@ class EssentialsRequestController extends Controller
 
 
             $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
-           
+
 
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
@@ -260,13 +265,12 @@ class EssentialsRequestController extends Controller
                     if (!$process) {
 
                         $workerRequest->delete();
-                        
+
                         $success = 0;
                     }
                 } else {
 
                     $success = 0;
-                  
                 }
             }
         }
@@ -379,9 +383,9 @@ class EssentialsRequestController extends Controller
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-    
 
-        return view('essentials::requests.allRequest')->with(compact( 'main_reasons', 'classes', 'leaveTypes'));
+
+        return view('essentials::requests.allRequest')->with(compact('main_reasons', 'classes', 'leaveTypes'));
     }
 
     public function requests()
@@ -398,7 +402,6 @@ class EssentialsRequestController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -416,7 +419,25 @@ class EssentialsRequestController extends Controller
 
             if ($department) {
                 $department = $department->id;
+                $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+                $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+                if (!$is_admin) {
+                    $userProjects = [];
+                    $userBusinesses = [];
+                    $roles = auth()->user()->roles;
+                    foreach ($roles as $role) {
 
+                        $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                        $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                        $userProjects = array_merge($userProjects, $userProjectsForRole);
+                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    }
+                    $user_projects_ids = array_unique($userProjects);
+                    $user_businesses_ids = array_unique($userBusinesses);
+                }
                 $requestsProcess = FollowupWorkerRequest::select([
                     'followup_worker_requests.request_no',
                     'followup_worker_requests_process.id as process_id',
@@ -436,7 +457,13 @@ class EssentialsRequestController extends Controller
                     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                     ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department);
+                    ->where('department_id', $department)->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                        $query->where(function ($query2) use ($user_businesses_ids) {
+                            $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
+                        })->orWhere(function ($query3) use ($user_projects_ids) {
+                            $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                        });
+                    });
             }
 
             return DataTables::of($requestsProcess ?? [])
@@ -453,18 +480,18 @@ class EssentialsRequestController extends Controller
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . __($this->statuses[$row->status]['name']) . '</span>';
-                        
+
                         if (auth()->user()->can('crudExitRequests')) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                         }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -480,12 +507,12 @@ class EssentialsRequestController extends Controller
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
          ' - ',COALESCE(id_proof_number,'')) as full_name")
         )
-        ->get();
+            ->get();
 
         $workers = $all_users->pluck('full_name', 'id');
 
         $statuses = $this->statuses;
-       
+
 
         return view('essentials::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
@@ -542,7 +569,7 @@ class EssentialsRequestController extends Controller
         return $typePrefixMap[$type];
     }
 
-  
+
 
     public function returnReq(Request $request)
     {
@@ -603,23 +630,22 @@ class EssentialsRequestController extends Controller
         return $output;
     }
     public function saveAttachment(Request $request, $requestId)
-        {
-          
-            $request->validate([
-                'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
-            ]);
+    {
 
-            $attachment = $request->file('attachment');
-            $attachmentPath = $attachment->store('/requests_attachments');
-    
-          
-            FollowupRequestsAttachment::create([
-                'request_id' => $requestId,
-                'file_path' => $attachmentPath,
-              
-            ]);
-    
-            return redirect()->back()->with('success', trans('messages.saved_successfully'));
-        
+        $request->validate([
+            'attachment' => 'required|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        $attachment = $request->file('attachment');
+        $attachmentPath = $attachment->store('/requests_attachments');
+
+
+        FollowupRequestsAttachment::create([
+            'request_id' => $requestId,
+            'file_path' => $attachmentPath,
+
+        ]);
+
+        return redirect()->back()->with('success', trans('messages.saved_successfully'));
     }
 }
