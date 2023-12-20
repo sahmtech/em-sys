@@ -184,7 +184,7 @@ class FollowUpReportsController extends Controller
                 $userProjects = array_merge($userProjects, $userProjectsForRole);
             }
             $userProjects = array_unique($userProjects);
-            $salesProjects = $salesProjects->whereIn('id', $userProjects)->unique()->toArray();
+            $salesProjects = $salesProjects->whereIn('id', $userProjects);
             // $contacts = $contacts->whereIn('id', $contactIds);
             if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
                 abort(403, 'Unauthorized action.');
