@@ -97,7 +97,7 @@ class TravelersController extends Controller
      
         
             if (!empty($request->input('project_name_filter'))) {
-                $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject', function ($query) use ($request) {
+                $workers->whereHas('transactionSellLine.transaction.salesContract.projectt', function ($query) use ($request) {
                     $query->where('id', '=', $request->input('project_name_filter'));
                 });
             }
@@ -125,11 +125,11 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->project?->name ?? '';
+                    return $row->transactionSellLine?->transaction?->salesContract?->project?->name ?? '';
                 })
 
                 ->editColumn('location', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->Location ?? '';
+                    return $row->transactionSellLine?->transaction?->salesContract?->project?->Location ?? '';
                 })
 
                 ->editColumn('arrival_date', function ($row) {
@@ -204,7 +204,7 @@ class TravelersController extends Controller
                 'transactionSellLine.service.profession',
                 'transactionSellLine.service.nationality',
                 'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
-                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject',
+                'transactionSellLine.transaction.salesContract.project',
                 'visa',
                 'agency'
             ])
@@ -227,7 +227,7 @@ class TravelersController extends Controller
          
         
             if (!empty($request->input('project_name_filter'))) {
-                $workers->whereHas('transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject', function ($query) use ($request) {
+                $workers->whereHas('transactionSellLine.transaction.salesContract.project', function ($query) use ($request) {
                     $query->where('id', '=', $request->input('project_name_filter'));
                 });
             }
@@ -255,7 +255,7 @@ class TravelersController extends Controller
                 })
 
                 ->editColumn('project', function ($row) {
-                    return $row->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->project?->name ?? '';
+                    return $row->transactionSellLine?->transaction?->salesContract?->project?->name ?? '';
                 })
 
                 ->editColumn('location', function ($row) {
@@ -497,7 +497,7 @@ class TravelersController extends Controller
                         'dob' => $worker->dob,
                         'marital_status' => $worker->marital_status,
                         'blood_group' => $worker->blood_group,
-                        'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->salesOrderOperation?->project?->id ,
+                        'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->projects?->id ,
                         'contact_number' => $worker->contact_number,
                         'permanent_address' => $worker->permanent_address,
                         'current_address' => $worker->current_address,

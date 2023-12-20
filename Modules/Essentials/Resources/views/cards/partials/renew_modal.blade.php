@@ -25,6 +25,7 @@
                             {!! Form::label('expiration_date', __('essentials::lang.Residency_end_date') . ':*') !!}
                             {!! Form::text('expiration_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.Residency_end_date'), 'required']) !!}
                         </div>
+                    
 
                         <div class="form-group col-md-2">
                             {!! Form::label('workcard_duration', __('essentials::lang.renew_duration') . ':*') !!}
