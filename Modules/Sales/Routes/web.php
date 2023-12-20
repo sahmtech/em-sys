@@ -119,6 +119,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('sales_costs', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'index'])->name('sales_costs');
+        Route::post('/store_cost', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'store'])->name('store_cost');
+        Route::DELETE('/sales_costs/delete/{id}', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'destroy'])->name('sales_costs_destroy');
+        Route::post('/sales_costs/update', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'update'])->name('cost.update');
 
 
         // Route::get('sales_templates', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'index'])->name('sales_templates');
