@@ -92,6 +92,7 @@ class AttendanceController extends ApiController
         $grace_after_checkout = $essentials_settings['grace_after_checkout'];
         $firstDayOfMonth = Carbon::createFromDate($year, $month, 1);
         $lastDayOfMonth = $firstDayOfMonth->copy()->endOfMonth();
+        $month_name = Carbon::monthName($month);
 
 
         //days before
@@ -145,7 +146,7 @@ class AttendanceController extends ApiController
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 8,
                 'month' => $month == 1 ? 12 : $month - 1,
-                'year' => $year,
+                'year' =>  $month == 1 ? $year - 1 : $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
@@ -153,6 +154,65 @@ class AttendanceController extends ApiController
             ];
             $day->addDay();
         }
+
+                //days
+                $days = [];
+                $attended_in_this_month = 0;
+                $late_in_this_month = 0;
+                $absent_in_this_month = 0;
+                for ($day = $firstDayOfMonth; $day->lte($lastDayOfMonth); $day->addDay()) {
+                    $clock_in_time = null;
+                    $clock_out_time = null;
+                    if ($day->isFuture()) {
+                        $status = 0;
+                    } else {
+                        $status = 4;
+        
+                        foreach ($attendanceList as $attendance) {
+                            $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
+                            $clock_in_time = null;
+                            $clock_out_time = null;
+                            if ($day->toDateString() == $attendanceDate) {
+                                // $start_time = Carbon::parse($attendance->shift->start_time);
+                                // $clock_in_time = Carbon::parse($attendance->clock_in_time);
+                                // $clock_out_time = Carbon::parse($attendance->clock_out_time);
+                                // $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
+                                // $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
+        
+                                // if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
+                                //     $status = 1;
+                                // } elseif ($clock_in_time->gt($checkin_end_range)) {
+                                //     $status = 2;
+                                // }
+                                if ($attendance->status_id == 1) {
+                                    $status = 1;
+                                } else if ($attendance->status_id == 2 || $attendance->status_id == 3) {
+                                    $status = 2;
+                                }
+                                break;
+                                break;
+                            }
+                        }
+                        if ($status == 1) {
+                            $attended_in_this_month += 1;
+                        } elseif ($status == 2 || $status == 3) {
+                            $late_in_this_month += 1;
+                        } elseif ($status == 4) {
+                            $absent_in_this_month += 1;
+                        }
+                    }
+        
+                    $days[] = [
+                        'number_in_month' => $day->day,
+                        'number_in_week' => ($day->dayOfWeek + 1) % 8,
+                        'month' => (int)$month,
+                        'year' => $year,
+                        'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
+                        'status' => $status,
+                        'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
+                        'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
+                    ];
+                }
 
 
         //days after
@@ -206,7 +266,7 @@ class AttendanceController extends ApiController
                 'number_in_month' => $day->day,
                 'number_in_week' => ($day->dayOfWeek + 1) % 8,
                 'month' => $month == 12 ? 1 : $month + 1,
-                'year' => $year,
+                'year' => $month == 12 ? $year + 1 : $year,
                 'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
                 'status' => $status,
                 'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
@@ -215,70 +275,14 @@ class AttendanceController extends ApiController
             $day->addDay();
         }
 
-        //days
-        $days = [];
-        $attended = 0;
-        $late = 0;
-        $absent = 0;
-        for ($day = $firstDayOfMonth; $day->lte($lastDayOfMonth); $day->addDay()) {
-            $clock_in_time = null;
-            $clock_out_time = null;
-            if ($day->isFuture()) {
-                $status = 0;
-            } else {
-                $status = 4;
 
-                foreach ($attendanceList as $attendance) {
-                    $attendanceDate = Carbon::parse($attendance->clock_in_time)->toDateString();
-                    $clock_in_time = null;
-                    $clock_out_time = null;
-                    if ($day->toDateString() == $attendanceDate) {
-                        // $start_time = Carbon::parse($attendance->shift->start_time);
-                        // $clock_in_time = Carbon::parse($attendance->clock_in_time);
-                        // $clock_out_time = Carbon::parse($attendance->clock_out_time);
-                        // $checkin_start_range = $start_time->copy()->subMinutes($grace_before_checkin);
-                        // $checkin_end_range = $start_time->copy()->addMinutes($grace_after_checkin);
-
-                        // if ($clock_in_time->between($checkin_start_range, $checkin_end_range)) {
-                        //     $status = 1;
-                        // } elseif ($clock_in_time->gt($checkin_end_range)) {
-                        //     $status = 2;
-                        // }
-                        if ($attendance->status_id == 1) {
-                            $status = 1;
-                        } else if ($attendance->status_id == 2 || $attendance->status_id == 3) {
-                            $status = 2;
-                        }
-                        break;
-                        break;
-                    }
-                }
-                if ($status == 1) {
-                    $attended += 1;
-                } elseif ($status == 2 || $status == 3) {
-                    $late += 1;
-                } elseif ($status == 4) {
-                    $absent += 1;
-                }
-            }
-
-            $days[] = [
-                'number_in_month' => $day->day,
-                'number_in_week' => ($day->dayOfWeek + 1) % 8,
-                'month' => (int)$month,
-                'year' => $year,
-                'name' => $day->format('l'), // Full day name (Sunday, Monday, ...)
-                'status' => $status,
-                'start_time' => $clock_in_time ? Carbon::parse($clock_in_time)->format('h:i A') : null,
-                'end_time' => $clock_out_time ? Carbon::parse($clock_out_time)->format('h:i A') : null,
-            ];
-        }
 
 
         $res = [
-            'attended' => $attended,
-            'late' => $late,
-            'absent' => $absent,
+            'attended' => $attended_in_this_month,
+            'late' => $late_in_this_month,
+            'absent' => $absent_in_this_month,
+            'month_name' => $month_name,
             'days_before' => $daysBefore,
             'days' => $days,
             'days_after' => $daysAfter,
