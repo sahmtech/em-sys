@@ -194,7 +194,7 @@
                         <div id="costs_table_id" style="display: none;">
                             <div class="form-group">
                                 <h4 style="display: inline-block; margin-right: 10px;">@lang('sales::lang.fixed_costs')</h4>
-                                <h5 style="display: inline-block;">(<span style="color: red;">@lang('sales::lang.chang_the_amount_if_needed')</span>)</h5>
+                                <h5 style="display: inline-block;">(<span style="color: red;">@lang('sales::lang.chang_the_amount_or_duration_if_needed')</span>)</h5>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
@@ -204,7 +204,7 @@
                                                 <th>#</th>
                                                 <th>@lang('sales::lang.description')</th>
                                                 <th style="color: red;">@lang('sales::lang.amount')</th>
-                                                <th>@lang('sales::lang.duration_by_month')</th>
+                                                <th style="color: red;">@lang('sales::lang.duration_by_month')</th>
                                                 <th>@lang('sales::lang.monthly_cost')</th>
 
                                             </tr>
@@ -212,9 +212,11 @@
                                         <tfoot>
                                             <tr style="background-color: rgb(185, 182, 182);">
                                                 <td colspan="2" style="text-align: right;">
-                                                    <strong><span style="color: black; font-weight: bold;">@lang('sales::lang.total')</span></strong>
+                                                    <strong><span
+                                                            style="color: black; font-weight: bold;">@lang('sales::lang.total')</span></strong>
                                                 </td>
-                                                <td><span id="total_amount" style="color: black; font-weight: bold;">0</span></td>
+                                                <td><span id="total_amount" style="color: black; font-weight: bold;">0</span>
+                                                </td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -620,7 +622,7 @@
                 }
             });
 
-           
+
             var costs_table = $('#costs_table').DataTable({
                 processing: false,
                 serverSide: false,
@@ -653,19 +655,23 @@
                     },
                     {
                         data: 'duration_by_month',
-                        name: 'duration_by_month'
-
+                        name: 'duration_by_month',
+                        render: function(data, type, row) {
+                            return '<div contenteditable="true" class="editable-duration" data-row-id="' +
+                                row.id + '">' + data + '</div>';
+                        }
                     },
                     {
                         data: 'monthly_cost',
-                        name: 'monthly_cost'
-
+                        name: 'monthly_cost',
+                        render: function(data, type, row) {
+                            return '<div contenteditable="true" class="editable-monthly-cost" data-row-id="' +
+                                row.id + '">' + data + '</div>';
+                        }
                     },
-
                 ],
 
             });
-
 
             $('#submit-sell').on('click', function() {
                 var updatedData = [];
@@ -675,6 +681,7 @@
                     var rowId = $(this).find('.editable-amount').data('row-id');
                     row['id'] = rowId;
                     row['amount'] = $(this).find('.editable-amount').text();
+                    row['duration_by_month'] = $(this).find('.editable-duration').text();
                     updatedData.push(row);
                 });
 
@@ -685,13 +692,12 @@
 
 
 
-            $('#costs_table').on('blur', '.editable-amount', function() {
-                var rowId = $(this).data('row-id');
-                var amount = $(this).text();
-                console.log("Blur event triggered");
-                updateTotalAmount();
+            $('#costs_table').on('blur', '.editable-amount, .editable-duration', function() {
+    var rowId = $(this).data('row-id');
+    updateMonthlyCost(rowId);
+    updateTotalAmount();
+});
 
-            });
 
             function updateTotalAmount() {
                 var totalAmount = 0;
@@ -703,7 +709,14 @@
                 $('#total_amount').text(totalAmount);
             }
 
-
+            function updateMonthlyCost(rowId) {
+                var amount = parseFloat($('#costs_table').find('.editable-amount[data-row-id="' + rowId + '"]')
+                    .text()) || 0;
+                var duration = parseFloat($('#costs_table').find('.editable-duration[data-row-id="' + rowId + '"]')
+                    .text()) || 1;
+                var monthlyCost = (amount / duration).toFixed(2);
+                $('#costs_table').find('.editable-monthly-cost[data-row-id="' + rowId + '"]').text(monthlyCost);
+            }
 
         });
     </script>

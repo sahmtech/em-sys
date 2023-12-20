@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('amount', __('sales::lang.amount') . ':*') !!}
-                                    {!! Form::number('amount', null, ['class' => 'form-control', 'required']) !!}
+                                    {!! Form::text('amount', null, ['class' => 'form-control', 'required']) !!}
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('duration_by_month', __('sales::lang.duration_by_month') . ':*') !!}
@@ -68,7 +68,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {!! Form::label('monthly_cost', __('sales::lang.monthly_cost') . ':*') !!}
-                                    {!! Form::number('monthly_cost', null, ['class' => 'form-control', 'required']) !!}
+                                    {!! Form::text('monthly_cost', null, ['class' => 'form-control', 'required']) !!}
                                 </div>
                             </div>
                         </div>
