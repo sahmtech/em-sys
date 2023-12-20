@@ -261,7 +261,7 @@ $('#renew-selected').on('click', function (e) {
                     console.log(data);
                     var inputClasses = 'form-group';
                     var renewDurationInputs = $('select[name="renew_duration[]"]');
-                   
+                  
                     renewDurationInputs.on('change', function () {
                         var selectedValue = $(this).val();
                         var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
@@ -330,6 +330,8 @@ $('#renew-selected').on('click', function (e) {
                         });
                         rowDiv.append(expiration_dateInput);
 
+                       
+
                         var renewDurationInput = $('<select>', {
                             name: 'renew_duration[]',
                             class: 'form-control ' + inputClasses + 'col-md-2',
@@ -340,21 +342,22 @@ $('#renew-selected').on('click', function (e) {
 
                      
 
- $.each({
+$.each({
     '3': '{{ __('essentials::lang.3_months') }}',
     '6': '{{ __('essentials::lang.6_months') }}',
     '9': '{{ __('essentials::lang.9_months') }}',
     '12': '{{ __('essentials::lang.12_months') }}',
 }, function (value, text) {
-    renewDurationInput.append($('<option>', {
+    
+    var option = $('<option>', {
         value: value,
         text: text,
-    }));
+    });
+
+    renewDurationInput.append(option);
 });
-
-
-renewDurationInput.val(row.workcard_duration);
-
+renewDurationInput.val(1);
+console.log(renewDurationInput.val(1));
 
 renewDurationInput.on('change', function () {
     var selectedValue = $(this).val();

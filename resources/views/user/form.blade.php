@@ -14,24 +14,6 @@
         $user_custom_field4 = !empty($custom_labels['user']['custom_field_4']) ? $custom_labels['user']['custom_field_4'] : __('lang_v1.user_custom_field4');
     @endphp
 
-<div class="col-md-12" id="section2">
-<hr>
-
-
-
-<div class="form-group col-md-3">
-            {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
-            {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
-                'class' => 'form-control hijri-date-picker',
-                'style' => 'height:36px',
-                'placeholder' => __('lang_v1.hijri_dob'),
-                'readonly',
-                'id' => 'user_hijri_dob',
-            ]) !!}
-</div>
-<div class="col-md-12" id="section2">
-<hr>
-
 
 
 <div class="form-group col-md-3">
@@ -248,7 +230,6 @@
                         </div>
             </div> --}}
 
-    </div>
 
 
     <div class="col-md-12" id="section3">

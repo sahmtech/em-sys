@@ -107,9 +107,9 @@
                     <table class="table table-bordered table-striped" id="employees">
                         <thead>
                             <tr>
-
+                            <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_number')</th>
-                                <th>@lang('essentials::lang.profile_image')</th>
+                               
                                 <th>@lang('essentials::lang.employee_name')</th>
                                 <th>business_id</th>
                                 <th>user_type</th>
@@ -519,9 +519,7 @@
                 },
 
 
-                "columns": [{
-                        "data": "emp_number"
-                    },
+                "columns": [
                     {
                         "data": "profile_image",
                         "render": function(data, type, row) {
@@ -534,6 +532,10 @@
                             }
                         }
                     },
+                    {
+                        "data": "emp_number"
+                    },
+
                     {
                         "data": "full_name"
                     },
@@ -606,9 +608,9 @@
                         var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
 
                         if (daysRemaining <= 0) {
-                            $('td', row).eq(5).addClass('text-danger'); // Contract expired, colored red
+                            $('td', row).eq(9).addClass('text-danger'); // Contract expired, colored red
                         } else if (daysRemaining <= 25) {
-                            $('td', row).eq(5).addClass(
+                            $('td', row).eq(9).addClass(
                                 'text-warning'); // Contract expires within 25 days, colored yellow
                         }
                     }

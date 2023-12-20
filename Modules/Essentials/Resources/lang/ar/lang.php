@@ -1021,6 +1021,7 @@ return [
   'escape_date' => 'تاريخ الهروب',
   'years' => 'سنة',
   'months' => 'شهر',
+  'workcard_duration'=>'مدة كرت العمل',
   'management' => 'إدارة',
   'select_company' => 'اختر شركة ',
   '3_months' => ' 3 أشهر',

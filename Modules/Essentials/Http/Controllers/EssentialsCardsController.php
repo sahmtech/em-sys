@@ -93,7 +93,9 @@ class EssentialsCardsController extends Controller
     }
 
 
-   
+    $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+    $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+    $name_in_charge_choices = $all_users->pluck('full_name', 'id');
       
        if (request()->ajax()) 
        {
@@ -128,26 +130,48 @@ class EssentialsCardsController extends Controller
             return $row->user->assignedTo?->name ?? '';
             })
             
-            ->editColumn('responsible_client', function ($row) {
-                $user = $row->user;
+            ->addColumn(
+                'responsible_client',
+                function ($row) use ($name_in_charge_choices) {
+                    $names = "";
+                    
+                    $userIds = json_decode($row->user->assignedTo->assigned_to, true);
             
-                if ($user && $user->assignedTo) {
-                    $assignedToFirst = $user->assignedTo->first();
+                    if ($userIds) {
+                        $lastUserId = end($userIds);
             
-                    if ($assignedToFirst) {
-                        $responsibleClients = $assignedToFirst->users;
+                        foreach ($userIds as $user_id) {
+                            $names .= $name_in_charge_choices[$user_id];
             
-                        if ($responsibleClients != null) {
-                           
-                            $userNames = $responsibleClients->pluck('first_name')->implode(', ');
-            
-                            return $userNames;
+                            if ($user_id !== $lastUserId) {
+                                $names .= ', ';
+                            }
                         }
                     }
-                }
             
-                return '';
-            })
+                    return $names;
+                }
+            )
+            // ->editColumn('responsible_client', function ($row) {
+            //     $user = $row->user;
+            
+            //     if ($user && $user->assignedTo) {
+            //         $assignedToFirst = $user->assignedTo->first();
+            
+            //         if ($assignedToFirst) {
+            //             $responsibleClients = $assignedToFirst->users;
+            
+            //             if ($responsibleClients != null) {
+                           
+            //                 $userNames = $responsibleClients->pluck('first_name')->implode(', ');
+            
+            //                 return $userNames;
+            //             }
+            //         }
+            //     }
+            
+            //     return '';
+            // })
             
 
 
@@ -390,56 +414,63 @@ class EssentialsCardsController extends Controller
          if ($userType !== 'worker') {
              $professionId = 56;
              
-            //  $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
-            //          $query->where('profession_id', $professionId);
-            //      })
-            //      ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-            //      ->get();
+             $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
+                     $query->where('profession_id', $professionId);
+                 })
+                 ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                 ->get();
      
              return response()->json([
                  'all_responsible_users' => [
                      'id' => null,
                      'name' => trans('essentials::lang.management'),
                  ],
-                // 'responsible_client' => $responsible_clients,
+                 'responsible_client' => $responsible_clients,
              ]);
          } else 
          {
           
-            $projects = User::with(['assignedTo:id,name'])
+            $projects = User::with(['assignedTo'])
             ->find($employeeId);
-
-            $assignedProject = $projects->assignedTo;
-            $projectName = $assignedProject->name ?? '';
-            $projectId = $assignedProject->id ?? '';
-           
-            $all_responsible_users = [
-                'id' => $projectId,
-                'name' => $projectName,
-            ];
-     
-             if (!$all_responsible_users) {
-                 return response()->json(['error' => 'No responsible users found for the given employee ID']);
-             }
-     
-            //  $assignedresponibleClient =$projects->first()->contact?->responsibleClients;
-            // // dd( $projects->assignedTo->first()->contact->responsibleClients->id);
-            //  $assignedresponibleClientName = $projects->assignedTo->first()->contact->responsibleClients->first_name ?? '';
-            //  $assignedresponibleClientId = $projects->assignedTo->first()->contact->responsibleClients->id ?? '';
-
-            //  $responsible_clients = [
-            //     'id' => $assignedresponibleClientId,
-            //     'name' => $assignedresponibleClientName,
-            // ];
-            // dd( $responsible_clients);
-
+        
+        $assignedProject = $projects->assignedTo;
+        
+        $projectName = $assignedProject->name ?? '';
+        $projectId = $assignedProject->id ?? '';
+        
+        $all_responsible_users = [
+            'id' => $projectId,
+            'name' => $projectName,
+        ];
+        
+        if (!$all_responsible_users) {
+            return response()->json(['error' => 'No responsible users found for the given employee ID']);
+        }
+        
+        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+        
+        $userIds = json_decode($projects->assignedTo->assigned_to, true);
+        $assignedresponibleClient = [];
+        
+        if ($userIds) {
+            foreach ($userIds as $user_id) {
+                $assignedresponibleClient[] = [
+                    'id' => $user_id,
+                    'name' => $name_in_charge_choices[$user_id],
+                ];
+            }
+        }
+    
+   
             $b_id=user::where('id', $employeeId)->select('business_id')->get();
             $business=Business::where('id', 1)->select('name as name','id as id')->get();
             
             return response()->json([
                  'all_responsible_users' => $all_responsible_users,
                  
-               //  'responsible_client' => [$responsible_clients],
+                 'responsible_client' => $assignedresponibleClient,
                  'business' => $business,
              ]);
          }

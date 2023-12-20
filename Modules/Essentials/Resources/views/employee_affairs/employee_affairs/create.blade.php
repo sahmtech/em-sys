@@ -16,7 +16,8 @@
             <div class="col-md-12">
 
             @component('components.widget')
-            <h4>@lang('essentials::lang.basic_info'):</h4>
+           <div>
+           <h4>@lang('essentials::lang.basic_info'):</h4>
                     <div class="col-md-5">
                         <div class="form-group">
                             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
@@ -91,6 +92,8 @@
 
 <div class="clearfix"></div>
 
+           </div>
+         
                     @include('user.edit_profile_form_part')
 
                    
