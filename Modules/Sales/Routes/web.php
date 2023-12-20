@@ -37,7 +37,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/offer-price/edit/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'edit']);
         Route::PUT('/updateOfferPrice/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'update'])->name('updateOfferPrice');
         Route::get('/offerContractPriceShow/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice']);
-
+      
 
 
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'clientAdd'])->name('clientAdd');
@@ -47,6 +47,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/clients', [\Modules\Sales\Http\Controllers\ClientsController::class, 'index'])->name('sale.clients');
+        Route::get('/lead_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts'])->name('lead_contacts');
+        Route::get('/qualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'qualified_contacts'])->name('qualified_contacts');
+        Route::get('/unqualified_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'unqualified_contacts'])->name('unqualified_contacts');
+        Route::get('/converted_contacts', [\Modules\Sales\Http\Controllers\ClientsController::class, 'converted_contacts'])->name('converted_contacts');
+      
+        Route::get('/getEnglishNameForCity', [\Modules\Sales\Http\Controllers\ClientsController::class, 'getEnglishNameForCity'])->name('getEnglishNameForCity');
+        Route::post('/changeStatus', [\Modules\Sales\Http\Controllers\ClientsController::class, 'changeStatus'])->name('changeStatus');
+        Route::post('/change_to_converted_client', [\Modules\Sales\Http\Controllers\ClientsController::class, 'change_to_converted_client'])->name('change_to_converted_client');
+       
+        
+      
         Route::get('/clients/create', [\Modules\Sales\Http\Controllers\ClientsController::class, 'create'])->name('sale.clients.create');
         Route::post('/storeCustomer', [\Modules\Sales\Http\Controllers\ClientsController::class, 'store'])->name('sale.storeCustomer');
         Route::put('/UpdateCustomer/{id}', [\Modules\Sales\Http\Controllers\ClientsController::class, 'update'])->name('sale.UpdateCustomer');
@@ -59,6 +70,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/cotracts', [\Modules\Sales\Http\Controllers\ContractsController::class, 'index'])->name('saleContracts');
         Route::post('/storeContract', [\Modules\Sales\Http\Controllers\ContractsController::class, 'store'])->name('storeContract');
         Route::get('/getContractValues', [\Modules\Sales\Http\Controllers\ContractsController::class, 'getContractValues'])->name('sale.getContractValues');
+        Route::get('/get_projects', [\Modules\Sales\Http\Controllers\ContractsController::class, 'get_projects'])->name('sale.get_projects');
+        
         Route::delete('/cotracts/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'destroy'])->name('contract.destroy');
         Route::get('/offer_view/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'show'])->name('offer.view');
         Route::post('/specializations', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'fetchSpecializations'])->name('specializations');
@@ -93,6 +106,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/orderOperations', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index'])->name('sale.orderOperations');
         //Route::post('/storeSaleOperation', [\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'store'])->name('sale.storeSaleOperation');
 
+        Route::resource('sales_follow-ups', 'Modules\Sales\Http\Controllers\SalesScheduleController')->except(['show']);
 
 
         Route::prefix('saleProjects')->group(function () {
@@ -102,5 +116,31 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
             Route::get('/{id}/edit',  [\Modules\Sales\Http\Controllers\SalesProjectController::class,  'edit'])->name('sale.editSaleProject');
             Route::put('/updateSaleProject/{id}',  [\Modules\Sales\Http\Controllers\SalesProjectController::class, 'update'])->name('sale.updateSaleProject');
         });
+
+
+        Route::get('sales_costs', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'index'])->name('sales_costs');
+        Route::post('/store_cost', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'store'])->name('store_cost');
+        Route::DELETE('/sales_costs/delete/{id}', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'destroy'])->name('sales_costs_destroy');
+        Route::post('/sales_costs/update', [\Modules\Sales\Http\Controllers\SalesCostController::class, 'update'])->name('cost.update');
+
+
+        // Route::get('sales_templates', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'index'])->name('sales_templates');
+       // Route::get('create_sales_templates', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'create'])->name('create_sales_templates');
+        Route::get('first_choice_offer_price_template', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template'])->name('first_choice_offer_price_template');
+        Route::get('second_choice_offer_price_template', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'second_choice_offer_price_template'])->name('second_choice_offer_price_template');
+        Route::get('first_choice_sales_contract_template', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_sales_contract_template'])->name('first_choice_sales_contract_template');
+        Route::get('second_choice_sales_contract_template', [\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'second_choice_sales_contract_template'])->name('second_choice_sales_contract_template');
+          
+        Route::get('edit-proposal-template/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'getEdit']);
+        Route::post('update-proposal-template', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'postEdit']);
+        Route::get('view-proposal-template', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'getView']);
+        Route::get('send-proposal/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'send']);
+        Route::delete('delete-proposal-media/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'deleteProposalMedia']);
+        Route::resource('proposal-template', 'Modules\Sales\Http\Controllers\SalesTemplateController')->except(['show', 'edit', 'update', 'destroy']);
+            
+    
+
+        
+        
     });
 });

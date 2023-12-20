@@ -4,14 +4,13 @@ namespace Modules\Essentials\Http\Controllers\Api;
 
 use App\Business;
 use App\BusinessLocation;
+use App\BusinessLocationPolygonMarker;
 use App\Category;
-use App\Notification;
 use App\Transaction;
 use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Carbon\Carbon;
-use CarbonCarbon;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +19,6 @@ use Illuminate\Support\Facades\Hash;
 use Modules\Connector\Http\Controllers\Api\ApiController;
 use Modules\Connector\Transformers\CommonResource;
 use Modules\Essentials\Entities\EssentialsLeave;
-use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\ToDo;
 use Modules\Essentials\Utils\EssentialsUtil;
 
@@ -155,7 +153,7 @@ class ApiEssentialsController extends ApiController
             $user = Auth::user();
             $business_id = $user->business_id;
 
-           
+
 
             $payrolls = Transaction::where('transactions.business_id', $business_id)
                 ->where('type', 'payroll')->where('transactions.expense_for', $user->id)
@@ -175,8 +173,8 @@ class ApiEssentialsController extends ApiController
                     'dsgn.name as designation',
                     'epgt.payroll_group_id',
                 ])->get();
-                $res=[];
-           foreach ($payrolls as $payroll) {
+            $res = [];
+            foreach ($payrolls as $payroll) {
                 $payrollId = $payroll->id;
                 $query = Transaction::where('business_id', $business_id)
                     ->with(['transaction_for', 'payment_lines']);
@@ -255,13 +253,68 @@ class ApiEssentialsController extends ApiController
                     'location' => $location,
                     'total_days_present' => $total_days_present
                 ];
-              
-            }  
-             return new CommonResource($res);
+            }
+            return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             return $this->otherExceptions($e);
         }
     }
+
+    public function clockin(Request $request)
+    {
+        // modified to not need a user_id, it can depend on the token
+        if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $user = Auth::user();
+            $business_id = $user->business_id;
+            $business = Business::findOrFail($business_id);
+            $settings = $business->essentials_settings;
+            $settings = !empty($settings) ? json_decode($settings, true) : [];
+            $essentialsUtil = new \Modules\Essentials\Utils\EssentialsUtil;
+
+            $data = [
+                'business_id' => $business_id,
+                // 'user_id' => $request->input('user_id'),
+                'clock_in_time' => empty($request->input('clock_in_time')) ? \Carbon::now() : $request->input('clock_in_time'),
+                'clock_in_note' => $request->input('clock_in_note'),
+                'ip_address' => $request->input('ip_address'),
+            ];
+            $data['user_id'] = $user->id;
+            // if (!empty($settings['is_location_required'])) {
+            $long = $request->input('longitude');
+            $lat = $request->input('latitude');
+
+            if (empty($long) || empty($lat)) {
+                throw new \Exception('Latitude and longitude are required');
+            }
+
+            $response = $essentialsUtil->getLocationFromCoordinates($lat, $long);
+
+            if (!empty($response)) {
+                $data['clock_in_location'] = $response;
+            }
+            $data['clock_in_lat'] = $lat;
+            $data['clock_in_lng'] = $long;
+            //  }
+
+            $output = $essentialsUtil->clockin($data, $settings);
+
+            if ($output['success']) {
+                return $this->respond($output);
+            } else {
+                return $this->otherExceptions($output['msg']);
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            return $this->otherExceptions($e);
+        }
+    }
+
+
 }

@@ -29,6 +29,21 @@
                 'id' => 'user_hijri_dob',
             ]) !!}
 </div>
+<div class="col-md-12" id="section2">
+<hr>
+
+
+
+<div class="form-group col-md-3">
+            {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
+            {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
+                'class' => 'form-control hijri-date-picker',
+                'style' => 'height:36px',
+                'placeholder' => __('lang_v1.hijri_dob'),
+                'readonly',
+                'id' => 'user_hijri_dob',
+            ]) !!}
+</div>
 
         <div class="form-group col-md-3">
             {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
@@ -239,21 +254,116 @@
     <div class="col-md-12" id="section3">
         <hr>
         <h4>@lang('lang_v1.add_qualification'):</h4>
-                        <div class="form-group col-md-6">
-                                                {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
-                                                {!! Form::select('qualification_type', [
-                                                    'bachelors'=>__('essentials::lang.bachelors'),
-                                                    'master' =>__('essentials::lang.master'),
-                                                    'PhD' =>__('essentials::lang.PhD'),
-                                                    'diploma' =>__('essentials::lang.diploma'),
-                                            
-                                                ], !empty($qualification->qualification_type) ? $qualification->qualification_type : null, ['class' => 'form-control',
-                                                'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
-                        </div>
+
+        <div class="form-group col-md-6">
+            {!! Form::label('permanent_address', __('lang_v1.permanent_address') . ':') !!}
+            {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, [
+                'class' => 'form-control',
+                'style' => 'height:36px',
+                'placeholder' => __('lang_v1.permanent_address'),
+                'rows' => 3,
+            ]) !!}
+        </div>
+        <div class="form-group col-md-6">
+            {!! Form::label('current_address', __('lang_v1.current_address') . ':') !!}
+            {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, [
+                'class' => 'form-control',
+                'style' => 'height:36px',
+                'placeholder' => __('lang_v1.current_address'),
+                'rows' => 3,
+            ]) !!}
+        </div>
 
 
 
 
+
+        <div class="form-group col-md-3">
+            {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
+            <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control">
+                <option value="">@lang('user.select_proof_name')</option>
+                <option value="national_id"
+                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>
+                    @lang('user.national_id')</option>
+                <option value="eqama"
+                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'eqama' ? 'selected' : '' }}>
+                    @lang('user.eqama')</option>
+            </select>
+        </div>
+
+        <div id="eqamaEndDateInput" class="form-group col-md-3"
+            style="{{ !is_null($resident_doc) && !is_null($resident_doc->expiration_date) ? '' : 'display: none;' }}">
+            {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
+            {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('lang_v1.eqama_end_date'),
+                'id' => 'eqama_end_date',
+            ]) !!}
+        </div>
+
+        <div class="form-group col-md-3">
+            {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
+            {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('lang_v1.id_proof_number'),
+                'oninput' => 'validateIdProofNumber(this)',
+            ]) !!}
+            <span id="idProofNumberError" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-6" id="border_no_container"
+            style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
+            {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
+            {!! Form::text('border_no', optional($user)->border_no ?? '3', [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('essentials::lang.border_number'),
+                'id' => 'border_no',
+                'maxlength' => '10',
+                'oninput' => 'validateBorderNumber()',
+            ]) !!}
+            <div id="border_no_error" class="text-danger"></div>
+        </div>
+
+        <div class="form-group col-md-3">
+            {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
+            {!! Form::select('nationality', [], null, [
+                'class' => 'form-control select2 nationality-option',
+                'id' => 'nationalities_select',
+                'style' => 'height:40px',
+                'required',
+                'placeholder' => __('sales::lang.nationality'),
+            ]) !!}
+        </div>
+
+
+
+
+
+        {{-- <div class="form-group col-md-3">
+    {!! Form::label('fb_link', __( 'lang_v1.fb_link' ) . ':') !!}
+    {!! Form::text('fb_link', !empty($user->fb_link) ? $user->fb_link : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.fb_link') ]); !!}
+</div> --}}
+        {{-- <div class="form-group col-md-3">
+    {!! Form::label('twitter_link', __( 'lang_v1.twitter_link' ) . ':') !!}
+    {!! Form::text('twitter_link', !empty($user->twitter_link) ? $user->twitter_link : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.twitter_link') ]); !!}
+</div> --}}
+        {{-- <div class="form-group col-md-3">
+    {!! Form::label('social_media_1', __( 'lang_v1.social_media', ['number' => 1] ) . ':') !!}
+    {!! Form::text('social_media_1', !empty($user->social_media_1) ? $user->social_media_1 : null, ['class' => 'form-control','style'=>'height:36px', 'placeholder' => __( 'lang_v1.social_media', ['number' => 1] ) ]); !!}
+                                {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
+                                {!! Form::select('qualification_type', [
+                                    'bachelors'=>__('essentials::lang.bachelors'),
+                                     'master' =>__('essentials::lang.master'),
+                                     'PhD' =>__('essentials::lang.PhD'),
+                                     'diploma' =>__('essentials::lang.diploma'),
+                             
+                                 ], null, ['class' => 'form-control',
+                                  'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
+                             </div>
+                            
                             <div class="form-group col-md-6">
                                 {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
                                 {!! Form::select('major',$spacializations, null, ['class' => 'form-control','style'=>'height:40px',

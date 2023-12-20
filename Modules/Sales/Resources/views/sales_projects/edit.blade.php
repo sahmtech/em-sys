@@ -66,7 +66,7 @@
                             'id' => 'contact_location_name_in_charge',
                         ]) !!}
                     </div>
-                    <div class="form-group col-md-6">
+                    {{-- <div class="form-group col-md-6">
                         {!! Form::label('contact_location_phone_in_charge', __('sales::lang.contact_location_phone_in_charge')) !!}
                         {!! Form::text('contact_location_phone_in_charge',  $contactLocation->phone_in_charge , [
                             'class' => 'form-control',
@@ -83,7 +83,7 @@
                             'placeholder' => __('sales::lang.contact_location_email_in_charge'),
                             'id' => 'contact_location_email_in_charge',
                         ]) !!}
-                    </div>
+                    </div> --}}
 
 
 

@@ -74,6 +74,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('/countries/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'destroy'])->name('country.destroy');
         Route::put('/updateCountry/{id}', [\Modules\Essentials\Http\Controllers\EssentialsCountryController::class, 'update'])->name('updateCountry');
 
+
+        Route::get('/attendanceStatus', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'index'])->name('attendanceStatus');
+        Route::post('/storeAttendanceStatus', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'store'])->name('storeAttendanceStatus');
+        Route::delete('/attendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'destroy'])->name('attendanceStatus.destroy');
+        Route::put('/updateAttendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'update'])->name('updateAttendanceStatus');
+
+
+
+
         Route::get('/contract_types', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'index'])->name('contract_types');
         Route::get('/createContractType', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'create'])->name('createContractType');
         Route::post('/storeContractType', [\Modules\Essentials\Http\Controllers\EssentialsContractTypeController::class, 'store'])->name('storeContractType');
@@ -216,7 +225,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/qualifications.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'show'])->name('qualification.view');
         Route::post('/updateQualification/{qualificationId}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'updateQualification'])->name('updateQualification');
         Route::get('/qualifications/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'edit'])->name('qualification.edit');
-      
+
 
         Route::get('/employeeContracts', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'index'])->name('employeeContracts');
         Route::post('/storeEmployeeContract', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeContractController::class, 'store'])->name('storeEmployeeContract');
@@ -371,43 +380,42 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         // Movments
-           // Routes Car Types
-           Route::get('/cars-type', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index'])->name('essentials.car-types');
-           Route::get('/cars-type-create', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'create'])->name('essentials.car-type-create');
-           Route::get('/cars-type-edit/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'edit'])->name('essentials.cartype.edit');
-           Route::post('/cars-type-store', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'store'])->name('essentials.car-type-store');
-           Route::post('/cars-type-search', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'search'])->name('essentials.car-type-search');
-           Route::put('/cars-type-update/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'update'])->name('essentials.car-type-update');
-           Route::delete('/cars-type-delete/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'destroy'])->name('essentials.cartype.delete');
-           // Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('cars-model');
-           // Route Car Models
-           Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('essentials.car-models');
-           Route::get('/cars-model-create', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'create'])->name('essentials.car-model-create');
-           Route::get('/cars-model-edit/{id}', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'edit'])->name('essentials.carmodel.edit');
-           Route::post('/cars-model-store', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'store'])->name('essentials.car-model-store');
-           Route::post('/cars-model-search', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'search'])->name('essentials.car-model-search');
-           Route::put('/cars-model-update/{id}', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'update'])->name('essentials.car-model-update');
-           Route::delete('/cars-model-delete/{id}', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'destroy'])->name('essentials.carmodel.delete');
-           // Routes Cars
-   
-           Route::get('/cars', [\Modules\Essentials\Http\Controllers\CarController::class, 'index'])->name('essentials.cars');
-           Route::get('/cars-create', [\Modules\Essentials\Http\Controllers\CarController::class, 'create'])->name('essentials.car-create');
-           Route::get('/cars-edit/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'edit'])->name('essentials.car.edit');
-           Route::post('/cars-store', [\Modules\Essentials\Http\Controllers\CarController::class, 'store'])->name('essentials.car-store');
-           Route::post('/cars-search', [\Modules\Essentials\Http\Controllers\CarController::class, 'search'])->name('essentials.car-search');
-           Route::put('/cars-update/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'update'])->name('essentials.car-update');
-           Route::delete('/cars-delete/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'destroy'])->name('essentials.car.delete');
-           Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'getCarModelByCarType_id'])->name('essentials.getCarModelByCarType_id');
-   
-   
-   
-           Route::get('/car-drivers', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index'])->name('essentials.cardrivers');
-           Route::get('/cardrivers-create', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'create'])->name('essentials.cardrivers-create');
-           Route::get('/cardrivers-edit/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'])->name('essentials.cardrivers.edit');
-           Route::post('/cardrivers-store', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'store'])->name('essentials.cardrivers-store');
-           Route::post('/cardrivers-search', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'search'])->name('essentials.cardrivers-search');
-           Route::put('/cardrivers-update/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'update'])->name('essentials.cardrivers-update');
-           Route::delete('/cardrivers-delete/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'])->name('essentials.cardrivers.delete');
-   
+        // Routes Car Types
+        Route::get('/cars-type', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index'])->name('essentials.car-types');
+        Route::get('/cars-type-create', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'create'])->name('essentials.car-type-create');
+        Route::get('/cars-type-edit/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'edit'])->name('essentials.cartype.edit');
+        Route::post('/cars-type-store', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'store'])->name('essentials.car-type-store');
+        Route::post('/cars-type-search', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'search'])->name('essentials.car-type-search');
+        Route::put('/cars-type-update/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'update'])->name('essentials.car-type-update');
+        Route::delete('/cars-type-delete/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'destroy'])->name('essentials.cartype.delete');
+        // Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('cars-model');
+        // Route Car Models
+        Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('essentials.car-models');
+        Route::get('/cars-model-create', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'create'])->name('essentials.car-model-create');
+        Route::get('/cars-model-edit/{id}', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'edit'])->name('essentials.carmodel.edit');
+        Route::post('/cars-model-store', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'store'])->name('essentials.car-model-store');
+        Route::post('/cars-model-search', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'search'])->name('essentials.car-model-search');
+        Route::put('/cars-model-update/{id}', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'update'])->name('essentials.car-model-update');
+        Route::delete('/cars-model-delete/{id}', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'destroy'])->name('essentials.carmodel.delete');
+        // Routes Cars
+
+        Route::get('/cars', [\Modules\Essentials\Http\Controllers\CarController::class, 'index'])->name('essentials.cars');
+        Route::get('/cars-create', [\Modules\Essentials\Http\Controllers\CarController::class, 'create'])->name('essentials.car-create');
+        Route::get('/cars-edit/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'edit'])->name('essentials.car.edit');
+        Route::post('/cars-store', [\Modules\Essentials\Http\Controllers\CarController::class, 'store'])->name('essentials.car-store');
+        Route::post('/cars-search', [\Modules\Essentials\Http\Controllers\CarController::class, 'search'])->name('essentials.car-search');
+        Route::put('/cars-update/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'update'])->name('essentials.car-update');
+        Route::delete('/cars-delete/{id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'destroy'])->name('essentials.car.delete');
+        Route::get('/carModel-by-carType_id/{carType_id}', [\Modules\Essentials\Http\Controllers\CarController::class, 'getCarModelByCarType_id'])->name('essentials.getCarModelByCarType_id');
+
+
+
+        Route::get('/car-drivers', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index'])->name('essentials.cardrivers');
+        Route::get('/cardrivers-create', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'create'])->name('essentials.cardrivers-create');
+        Route::get('/cardrivers-edit/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'])->name('essentials.cardrivers.edit');
+        Route::post('/cardrivers-store', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'store'])->name('essentials.cardrivers-store');
+        Route::post('/cardrivers-search', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'search'])->name('essentials.cardrivers-search');
+        Route::put('/cardrivers-update/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'update'])->name('essentials.cardrivers-update');
+        Route::delete('/cardrivers-delete/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'])->name('essentials.cardrivers.delete');
     });
 });

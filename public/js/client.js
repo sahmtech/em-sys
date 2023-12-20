@@ -8,7 +8,7 @@ function submittedDataFunc(response) {
 
         var quantity = response.quantity;
 
-      //  $deleteUrl = route('service.delete', ['id' , submittedData.id]);
+     
  
         var newTotal= submittedData.monthly_cost_for_one * quantity;
         var newRow = '<tr class="product_row">' +
@@ -17,12 +17,13 @@ function submittedDataFunc(response) {
             '<td class="text-center">' + response.specialization + '</td>' +
             '<td class="text-center">' + response.nationality + '</td>' +
             '<td class="text-center">' + submittedData.gender + '</td>' +
+            
             '<td class="text-center">' + submittedData.monthly_cost_for_one + '</td>' +
             '<td class="text-center">' + quantity + '</td>' +
        
             '<td class="text-center total-column">' + newTotal + '</td>' +
             '<td class="text-center"><i class="fas fa-times" aria-hidden="true"></i></td>' +
-            //'<td class="text-center"><a href="'+ deleteUrl + '"><i class="fas fa-times btn btn-xs btn-danger delete_service_button" aria-hidden="true"></i></td>' +
+       
             
         '</tr>';
 
@@ -84,29 +85,3 @@ function updateArray(resultsArrayItem,productIdsItem,quantity) {
     
 
 
-// $(document).on('click', 'button.delete_service_button', function () {
-//     swal({
-//        title: LANG.sure,
-//        text: LANG.confirm_delete_service,
-//        icon: "warning",
-//        buttons: true,
-//        dangerMode: true,
-//    }).then((willDelete) => {
-//        if (willDelete) {
-//            var href = $(this).data('href');
-//            $.ajax({
-//                method: "DELETE",
-//                url: href,
-//                dataType: "json",
-//                success: function (result) {
-//                    if (result.success == true) {
-//                        toastr.success(result.msg);
-//                        buildings_table.ajax.reload();
-//                    } else {
-//                        toastr.error(result.msg);
-//                    }
-//                }
-//            });
-//        }
-//    });
-// });

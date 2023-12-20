@@ -526,7 +526,7 @@ class FollowUpRequestController extends Controller
         $request = FollowupWorkerRequest::with([
             'user', 'createdUser', 'followupWorkerRequestProcess.procedure.department', 'attachments'
         ])->where('id', $id)->first();
-      
+
         if (!$request) {
             return response()->json(['error' => 'Request not found'], 404);
         }
@@ -570,7 +570,7 @@ class FollowUpRequestController extends Controller
 
         $attachments = null;
         if ($request->attachments) {
-         
+
             $attachments = $request->attachments->map(function ($attachments) {
                 return [
                     'request_id' => $attachments->request_id,
