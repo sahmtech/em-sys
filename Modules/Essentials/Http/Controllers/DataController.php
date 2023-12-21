@@ -497,8 +497,8 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
-                'value' => 'essentials.curd_work_cards',
-                'label' => __('essentials::lang.curd_work_cards'),
+                'value' => 'essentials.view_work_cards',
+                'label' => __('essentials::lang.view_work_cards'),
                 'default' => false,
             ],
 
