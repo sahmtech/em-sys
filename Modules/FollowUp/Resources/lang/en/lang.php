@@ -256,13 +256,14 @@ return [
     'no_document_delivery_to_show' => 'no document delivery to show',
 
     'user_type' => 'User Type',
-    'admin' => 'أدمن',
-    'customer' => 'العميل',
-    'customer_user' => ' موقع / متابع العقد',
-    'employee' => 'موظف',
-    'manager' => 'مدير',
-    'worker' => 'عامل',
+    'admin' => 'Admin',
+    'customer' => 'Customer',
+    'customer_user' => 'Customer user',
+    'employee' => 'Employee',
+    'manager' => 'Manager',
+    'worker' => 'Worker',
 
+    
 
 
 
