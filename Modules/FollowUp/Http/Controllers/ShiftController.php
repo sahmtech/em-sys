@@ -60,7 +60,7 @@ class ShiftController extends Controller
     }
 
     public function ProjectsByContacts($id){
-        return Contact::find($id)->salesProject;
+        return Contact::find($id)->salesProjects;
     }
     /**
      * Store a newly created resource in storage.

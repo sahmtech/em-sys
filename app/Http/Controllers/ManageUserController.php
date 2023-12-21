@@ -49,7 +49,7 @@ class ManageUserController extends Controller
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
-            $users = User::where('business_id', $business_id)->where('user_type', '!=', 'admin')
+            $users = User::where('user_type', '!=', 'admin')
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
                     'id', 'username', 'user_type',
@@ -234,8 +234,8 @@ class ManageUserController extends Controller
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
+        $user = User::
+            with(['contactAccess'])
             ->findOrFail($id);
 
         $roles = $this->getRolesArray($business_id);

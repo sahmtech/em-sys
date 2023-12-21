@@ -103,8 +103,7 @@
                                 <th>@lang('essentials::lang.employee_number')</th>
                                
                                 <th>@lang('essentials::lang.employee_name')</th>
-                                <th>business_id</th>
-                                <th>user_type</th>
+                             
                                 <th>@lang('essentials::lang.Identity_proof_id')</th>
                                 <th>@lang('essentials::lang.contry_nationality')</th>
                                 <th>@lang('essentials::lang.total_salary')</th>
@@ -532,12 +531,7 @@
                     {
                         "data": "full_name"
                     },
-                    {
-                        "data": "business_id"
-                    },
-                    {
-                        "data": "user_type"
-                    },
+            
                     {
                         "data": "id_proof_number"
                     },
