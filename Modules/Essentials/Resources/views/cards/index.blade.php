@@ -263,35 +263,50 @@ $('#renew-selected').on('click', function (e) {
                 var inputClasses = 'form-group';
                              
                 var labelsRow = $('<div>', {
-                    class: 'row'
+                    class: 'row',
+                    style: 'display: flex; justify-content: space-between; padding: 9px;'
                 });
 
-                labelsRow.append($('<label>', {
-                    class: inputClasses + 'col-md-2',
-                    style: 'height: 40px; width:180px',
-                    text: '{{ __('essentials::lang.Residency_no') }}'
-                }));
+             
+labelsRow.append($('<label>', {
+    class: inputClasses + 'col-md-2',
+    style: 'height: 40px;  text-align: center;',
+    text: '{{ __('essentials::lang.Residency_no') }}'
+}));
 
-                labelsRow.append($('<label>', {
-                    class: inputClasses + 'col-md-2',
-                    style: 'height: 40px; width:180px',
-                    text: '{{ __('essentials::lang.Residency_end_date') }}'
-                })); 
-                
-                labelsRow.append($('<label>', {
-                    class: inputClasses + 'col-md-2',
-                    style: 'height: 40px; width:180px',
-                    text: '{{ __('essentials::lang.Residency_no') }}'
-                }));
+labelsRow.append($('<label>', {
+    class: inputClasses + 'col-md-2',
+    style: 'height: 40px; text-align: center;',
+    text: '{{ __('essentials::lang.Residency_end_date') }}'
+}));
 
-                labelsRow.append($('<label>', {
-                    class: inputClasses + 'col-md-2',
-                    style: 'height: 40px; width:180px',
-                    text: '{{ __('essentials::lang.Residency_end_date') }}'
-                })); 
-                $('.modal-body').append(labelsRow);
+labelsRow.append($('<label>', {
+    class: inputClasses + 'col-md-2',
+    style: 'height: 40px;  text-align: center;',
+    text: '{{ __('essentials::lang.renew_duration') }}'
+}));
 
-                   
+labelsRow.append($('<label>', {
+    class: inputClasses + 'col-md-2',
+    style: 'height: 40px; text-align: center;',
+    text: '{{ __('essentials::lang.fees') }}'
+}));
+
+labelsRow.append($('<label>', {
+    class: inputClasses + 'col-md-2',
+    style: 'height: 40px; text-align: center;',
+    text: '{{ __('essentials::lang.pay_number') }}'
+}));
+
+labelsRow.append($('<label>', {
+    class: inputClasses + 'col-md-2',
+    style: 'height: 40px; text-align: center;',
+    text: '{{ __('essentials::lang.fixed') }}'
+}));
+
+$('.modal-body').append(labelsRow);
+
+
                     var options = {
                         '3': '{{ __('essentials::lang.3_months') }}',
                         '6': '{{ __('essentials::lang.6_months') }}',
@@ -379,6 +394,7 @@ $('#renew-selected').on('click', function (e) {
                             renewDurationInput.append(option);
                         });
 
+                        renewDurationInput.val(row.workcard_duration);
 renewDurationInput.on('change', function () {
     var selectedValue = $(this).val();
     var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
