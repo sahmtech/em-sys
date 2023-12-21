@@ -38,7 +38,7 @@ class FollowUpContractsWishesController extends Controller
      
         //  $can_crud_projects = auth()->user()->can('followup.crud_projects');
         //  if (!$can_crud_projects) {
-        //      abort(403, 'Unauthorized action.');
+        //     //temp  abort(403, 'Unauthorized action.');
         //  }
      
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);

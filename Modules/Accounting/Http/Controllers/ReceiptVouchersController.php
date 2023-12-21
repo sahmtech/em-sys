@@ -106,7 +106,7 @@ class ReceiptVouchersController extends Controller
                 $transaction_before = $transaction->replicate();
 
                 if (!(auth()->user()->can('purchase.payments') || auth()->user()->can('sell.payments') || auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
-                    abort(403, 'Unauthorized action.');
+                   //temp  abort(403, 'Unauthorized action.');
                 }
 
                 if ($transaction->payment_status != 'paid') {
@@ -184,7 +184,7 @@ class ReceiptVouchersController extends Controller
             return redirect()->back()->with(['status' => $output]);
         } else {
             if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
 
             try {

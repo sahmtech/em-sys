@@ -29,7 +29,7 @@ class SalesCommissionAgentController extends Controller
     public function index()
     {
         if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -71,7 +71,7 @@ class SalesCommissionAgentController extends Controller
     public function create()
     {
         if (! auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('sales_commission_agent.create');
@@ -86,7 +86,7 @@ class SalesCommissionAgentController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -122,7 +122,7 @@ class SalesCommissionAgentController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('user.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $user = User::findOrFail($id);
@@ -141,7 +141,7 @@ class SalesCommissionAgentController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('user.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -180,7 +180,7 @@ class SalesCommissionAgentController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('user.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

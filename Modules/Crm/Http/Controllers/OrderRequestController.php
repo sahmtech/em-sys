@@ -70,7 +70,7 @@ class OrderRequestController extends Controller
     public function index()
     {
         // if (!auth()->user()->can('so.view_own') && !auth()->user()->can('so.view_all') && !auth()->user()->can('so.create')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $business_id = request()->session()->get('user.business_id');

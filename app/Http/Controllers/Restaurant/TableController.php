@@ -19,7 +19,7 @@ class TableController extends Controller
     public function index()
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -57,7 +57,7 @@ class TableController extends Controller
     public function create()
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -76,7 +76,7 @@ class TableController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -109,7 +109,7 @@ class TableController extends Controller
     public function show()
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('restaurant.table.show');
@@ -123,7 +123,7 @@ class TableController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -144,7 +144,7 @@ class TableController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -180,7 +180,7 @@ class TableController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('access_tables')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

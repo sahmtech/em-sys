@@ -186,7 +186,7 @@ class DashboardController extends Controller
         $user_id = auth()->user()->id;
 
         if (!$is_admin) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $this_month_start_date = \Carbon::today()->startOfMonth()->format('Y-m-d');

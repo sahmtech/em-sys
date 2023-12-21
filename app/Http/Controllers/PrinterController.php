@@ -16,7 +16,7 @@ class PrinterController extends Controller
     public function index()
     {
         if (! auth()->user()->can('access_printers')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -59,7 +59,7 @@ class PrinterController extends Controller
     public function create()
     {
         if (! auth()->user()->can('access_printers')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $capability_profiles = Printer::capability_profiles();
@@ -78,7 +78,7 @@ class PrinterController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('access_printers')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -132,7 +132,7 @@ class PrinterController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('access_printers')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -155,7 +155,7 @@ class PrinterController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('access_printers')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -196,7 +196,7 @@ class PrinterController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('access_printers')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

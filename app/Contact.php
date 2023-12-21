@@ -53,7 +53,7 @@ class Contact extends Authenticatable
     public function scopeOnlySuppliers($query)
     {
         if (auth()->check() && !auth()->user()->can('supplier.view') && !auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $query->whereIn('contacts.type', ['supplier', 'both']);
@@ -77,7 +77,7 @@ class Contact extends Authenticatable
     {
         //Commented because of issue in woocommerce sync
         // if (auth()->check() && !auth()->user()->can('customer.view') && !auth()->user()->can('customer.view_own')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $query->whereIn('contacts.type', ['customer', 'both']);

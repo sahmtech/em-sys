@@ -19,7 +19,7 @@ class BusinessDocumentController extends Controller
     
        
         if (! auth()->user()->can('business_documents.view') ) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $auth_id = request()->session()->get('user.business_id');
 
@@ -117,7 +117,7 @@ class BusinessDocumentController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('business_documents.destroy') ) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

@@ -38,7 +38,7 @@ class DiscountController extends Controller
     public function index()
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -107,7 +107,7 @@ class DiscountController extends Controller
     public function create()
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -135,7 +135,7 @@ class DiscountController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -189,7 +189,7 @@ class DiscountController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -233,7 +233,7 @@ class DiscountController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -289,7 +289,7 @@ class DiscountController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -323,7 +323,7 @@ class DiscountController extends Controller
     public function massDeactivate(Request $request)
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             if (! empty($request->input('selected_discounts'))) {
@@ -364,7 +364,7 @@ class DiscountController extends Controller
     public function activate($id)
     {
         if (! auth()->user()->can('discount.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

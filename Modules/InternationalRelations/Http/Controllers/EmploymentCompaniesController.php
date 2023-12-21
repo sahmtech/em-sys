@@ -66,7 +66,7 @@ class EmploymentCompaniesController extends Controller
 
         $can_crud_employment_companies = auth()->user()->can('internationalrelations.crud_employment_companies');
         if (!($isSuperAdmin || $can_crud_employment_companies)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
       
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -138,7 +138,7 @@ class EmploymentCompaniesController extends Controller
 
         $can_view_company_requests = auth()->user()->can('internationalrelations.view_company_requests');
         if (!($isSuperAdmin || $can_view_company_requests)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
     
         $irDelegations = IrDelegation::where('agency_id',$id)->with(['transactionSellLine.service'])->get();
@@ -160,7 +160,7 @@ class EmploymentCompaniesController extends Controller
 
         $can_store_emoloyment_company = auth()->user()->can('internationalrelations.store_emoloyment_company');
         if (!($isSuperAdmin || $can_store_emoloyment_company)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
     
         try {

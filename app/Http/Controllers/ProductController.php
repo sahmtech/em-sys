@@ -62,7 +62,7 @@ class ProductController extends Controller
     public function index()
     {
         if (! auth()->user()->can('product.view') && ! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
         $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
@@ -357,7 +357,7 @@ class ProductController extends Controller
     public function create()
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -441,7 +441,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $business_id = $request->session()->get('user.business_id');
@@ -590,7 +590,7 @@ class ProductController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('product.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -608,7 +608,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -671,7 +671,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -909,7 +909,7 @@ class ProductController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('product.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -1386,7 +1386,7 @@ class ProductController extends Controller
     public function quickAdd()
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $product_name = ! empty(request()->input('product_name')) ? request()->input('product_name') : '';
@@ -1432,7 +1432,7 @@ class ProductController extends Controller
     public function saveQuickProduct(Request $request)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1546,7 +1546,7 @@ class ProductController extends Controller
     public function view($id)
     {
         if (! auth()->user()->can('product.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1601,7 +1601,7 @@ class ProductController extends Controller
     public function massDestroy(Request $request)
     {
         if (! auth()->user()->can('product.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $purchase_exist = false;
@@ -1677,7 +1677,7 @@ class ProductController extends Controller
     public function addSellingPrices($id)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1707,7 +1707,7 @@ class ProductController extends Controller
     public function saveSellingPrices(Request $request)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1772,7 +1772,7 @@ class ProductController extends Controller
     public function viewGroupPrice($id)
     {
         if (! auth()->user()->can('product.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1811,7 +1811,7 @@ class ProductController extends Controller
     public function massDeactivate(Request $request)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             if (! empty($request->input('selected_products'))) {
@@ -1852,7 +1852,7 @@ class ProductController extends Controller
     public function activate($id)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -1886,7 +1886,7 @@ class ProductController extends Controller
     public function deleteMedia($media_id)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -2015,7 +2015,7 @@ class ProductController extends Controller
     public function bulkEdit(Request $request)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $selected_products_string = $request->input('selected_products');
@@ -2073,7 +2073,7 @@ class ProductController extends Controller
     public function bulkUpdate(Request $request)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2150,7 +2150,7 @@ class ProductController extends Controller
     public function getProductToEdit($product_id)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -2219,7 +2219,7 @@ class ProductController extends Controller
     public function updateProductLocation(Request $request)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2270,7 +2270,7 @@ class ProductController extends Controller
     public function productStockHistory($id)
     {
         if (! auth()->user()->can('product.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -2351,7 +2351,7 @@ class ProductController extends Controller
     {
         $is_admin = $this->productUtil->is_admin(auth()->user());
         if (! $is_admin) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $filename = 'products-export-'.\Carbon::now()->format('Y-m-d').'.xlsx';

@@ -105,7 +105,7 @@ class SalesTemplateController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         if (! (auth()->user()->can('sales.add_proposal_template'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $proposal_template = salesproposaltemplate::with(['media'])
@@ -133,7 +133,7 @@ class SalesTemplateController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         if (! (auth()->user()->can('sales.add_proposal_template'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $request->validate([
@@ -219,7 +219,7 @@ class SalesTemplateController extends Controller
      {
          $business_id = request()->session()->get('user.business_id');
          if (! (auth()->user()->can('sales.add_proposal_template'))) {
-             abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
          }
  
          $proposal_template = salesproposaltemplate::with(['media'])
@@ -244,7 +244,7 @@ class SalesTemplateController extends Controller
       
          $business_id = request()->session()->get('user.business_id');
          if (! (auth()->user()->can('sales.add_proposal_template'))) {
-             abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
          }
  
          $proposal_template = salesproposaltemplate::with(['media'])

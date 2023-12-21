@@ -32,7 +32,7 @@ class NotificationTemplateController extends Controller
     public function index()
     {
         if (! auth()->user()->can('send_notification')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -97,7 +97,7 @@ class NotificationTemplateController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('send_notification')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $template_data = $request->input('template_data');

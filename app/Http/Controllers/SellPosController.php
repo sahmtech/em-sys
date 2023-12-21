@@ -118,7 +118,7 @@ class SellPosController extends Controller
     public function index()
     {
         if (! auth()->user()->can('sell.view') && ! auth()->user()->can('sell.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -304,7 +304,7 @@ class SellPosController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('sell.create') && ! auth()->user()->can('direct_sell.access') && ! auth()->user()->can('so.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_direct_sale = false;
@@ -1086,7 +1086,7 @@ class SellPosController extends Controller
     {
         if (! auth()->user()->can('sell.update') && ! auth()->user()->can('direct_sell.access') &&
         ! auth()->user()->can('so.update') && ! auth()->user()->can('edit_pos_payment')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1519,7 +1519,7 @@ class SellPosController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('sell.delete') && ! auth()->user()->can('direct_sell.delete') && ! auth()->user()->can('so.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -2018,7 +2018,7 @@ class SellPosController extends Controller
     public function showInvoiceUrl($id)
     {
         // if (!auth()->user()->can('sell.update')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         if (request()->ajax()) {
@@ -2201,7 +2201,7 @@ class SellPosController extends Controller
     public function listSubscriptions()
     {
         if (! auth()->user()->can('sell.view') && ! auth()->user()->can('direct_sell.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -2359,7 +2359,7 @@ class SellPosController extends Controller
     public function toggleRecurringInvoices($id)
     {
         if (! auth()->user()->can('sell.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2676,7 +2676,7 @@ class SellPosController extends Controller
     public function convertToInvoice($id)
     {
         if (! auth()->user()->can('sell.create') && ! auth()->user()->can('direct_sell.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2835,7 +2835,7 @@ class SellPosController extends Controller
     public function convertToProforma($id)
     {
         if (! auth()->user()->can('sell.create') && ! auth()->user()->can('direct_sell.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2871,7 +2871,7 @@ class SellPosController extends Controller
     public function copyQuotation($id)
     {
         if (!auth()->user()->can('quotation.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -2923,7 +2923,7 @@ class SellPosController extends Controller
     public function downloadPdf($id)
     {
         if (! (config('constants.enable_download_pdf') && auth()->user()->can('print_invoice'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -2968,7 +2968,7 @@ class SellPosController extends Controller
     public function downloadQuotationPdf($id)
     {
         if (! (config('constants.enable_download_pdf'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -3007,7 +3007,7 @@ class SellPosController extends Controller
     public function downloadPackingListPdf($id)
     {
         if (! (config('constants.enable_download_pdf'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

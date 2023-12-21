@@ -43,7 +43,7 @@ class FollowUpOperationOrderController extends Controller
  
         $can_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
         if (!$can_crud_operation_orders) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 

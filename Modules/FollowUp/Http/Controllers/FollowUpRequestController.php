@@ -354,7 +354,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.view_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -674,7 +674,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -756,7 +756,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -818,7 +818,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -900,7 +900,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -986,7 +986,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1073,7 +1073,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1156,7 +1156,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1239,7 +1239,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1319,7 +1319,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1400,7 +1400,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -2066,7 +2066,7 @@ class FollowUpRequestController extends Controller
     {
         $can_return_request = auth()->user()->can('followup.return_request');
         if (!$can_return_request) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

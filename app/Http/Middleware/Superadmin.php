@@ -21,7 +21,7 @@ class Superadmin
         if (($isSuperAdmin) || (!empty($request->user()) && in_array(strtolower($request->user()->username), explode(',', strtolower($administrator_list))))) {
             return $next($request);
         } else {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
     }
 }

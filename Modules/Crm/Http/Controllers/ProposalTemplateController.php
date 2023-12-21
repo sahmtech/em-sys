@@ -54,7 +54,7 @@ class ProposalTemplateController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         if (! (auth()->user()->can('crm.add_proposal_template'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (! empty($this->__getProposalTemplate($business_id))) {
@@ -78,7 +78,7 @@ class ProposalTemplateController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         if (! (auth()->user()->can('crm.add_proposal_template'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (! empty($this->__getProposalTemplate($business_id))) {
@@ -182,7 +182,7 @@ class ProposalTemplateController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         if (! (auth()->user()->can('crm.add_proposal_template'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (empty($this->__getProposalTemplate($business_id))) {
@@ -203,7 +203,7 @@ class ProposalTemplateController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         if (! (auth()->user()->can('crm.add_proposal_template'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (empty($this->__getProposalTemplate($business_id))) {

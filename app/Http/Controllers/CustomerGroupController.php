@@ -29,7 +29,7 @@ class CustomerGroupController extends Controller
     public function index()
     {
         if (! auth()->user()->can('customer.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -70,7 +70,7 @@ class CustomerGroupController extends Controller
     public function create()
     {
         if (! auth()->user()->can('customer.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -88,7 +88,7 @@ class CustomerGroupController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('customer.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -122,7 +122,7 @@ class CustomerGroupController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('customer.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -147,7 +147,7 @@ class CustomerGroupController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('customer.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -185,7 +185,7 @@ class CustomerGroupController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('customer.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

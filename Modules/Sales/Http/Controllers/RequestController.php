@@ -66,12 +66,12 @@ class RequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');

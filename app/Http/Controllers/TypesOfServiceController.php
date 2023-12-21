@@ -35,7 +35,7 @@ class TypesOfServiceController extends Controller
     public function index()
     {
         if (! auth()->user()->can('access_types_of_service')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -76,7 +76,7 @@ class TypesOfServiceController extends Controller
     public function create()
     {
         if (! auth()->user()->can('access_types_of_service')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -96,7 +96,7 @@ class TypesOfServiceController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('access_types_of_service')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -144,7 +144,7 @@ class TypesOfServiceController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('access_types_of_service')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -168,7 +168,7 @@ class TypesOfServiceController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('access_types_of_service')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -208,7 +208,7 @@ class TypesOfServiceController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('access_types_of_service')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

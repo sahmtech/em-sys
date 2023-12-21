@@ -97,7 +97,7 @@ class NotificationController extends Controller
     public function send(Request $request)
     {
         // if (!auth()->user()->can('send_notification')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         $notAllowed = $this->notificationUtil->notAllowedInDemo();
         if (! empty($notAllowed)) {

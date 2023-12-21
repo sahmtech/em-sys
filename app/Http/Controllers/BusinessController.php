@@ -288,7 +288,7 @@ class BusinessController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('business_settings.access'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
@@ -431,7 +431,7 @@ class BusinessController extends Controller
     public function show($id)
     {
         if (!auth()->user()->can('business_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
@@ -504,7 +504,7 @@ class BusinessController extends Controller
     public function postBusinessSettings(Request $request)
     {
         if (!auth()->user()->can('business_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

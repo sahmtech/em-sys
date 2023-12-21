@@ -109,7 +109,7 @@ class CashRegisterController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('view_cash_register')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -135,7 +135,7 @@ class CashRegisterController extends Controller
     public function getRegisterDetails()
     {
         if (! auth()->user()->can('view_cash_register')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -165,7 +165,7 @@ class CashRegisterController extends Controller
     public function getCloseRegister($id = null)
     {
         if (! auth()->user()->can('close_cash_register')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -196,7 +196,7 @@ class CashRegisterController extends Controller
     public function postCloseRegister(Request $request)
     {
         if (! auth()->user()->can('close_cash_register')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

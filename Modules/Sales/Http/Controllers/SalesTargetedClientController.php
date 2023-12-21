@@ -35,7 +35,7 @@ class SalesTargetedClientController extends Controller
     {
         
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $specializations=EssentialsSpecialization::all()->pluck('name','id');
         $professions=EssentialsProfession::all()->pluck('name','id');

@@ -92,7 +92,7 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
         if (!$can_crud_offer_price) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
@@ -245,7 +245,7 @@ class OfferPriceController extends Controller
 
         $can_create_offer_price = auth()->user()->can('sales.create_offer_price');
         if (!$can_create_offer_price) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 

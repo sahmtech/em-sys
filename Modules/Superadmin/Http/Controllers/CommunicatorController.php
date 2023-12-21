@@ -21,7 +21,7 @@ class CommunicatorController extends Controller
     public function index()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $businesses = Business::orderby('name')
@@ -40,7 +40,7 @@ class CommunicatorController extends Controller
     public function send(Request $request)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo

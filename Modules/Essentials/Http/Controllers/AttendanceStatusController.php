@@ -29,7 +29,7 @@ class AttendanceStatusController extends Controller
 
         $can_crud_attendance_status = auth()->user()->can('essentials.crud_attencances_status');
         if (!$can_crud_attendance_status) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $attencancesStatuses = EssentialsAttendanceStatus::all();

@@ -39,7 +39,7 @@ class EssentialsLeaveTypeController extends Controller
 
 
         if (! auth()->user()->can('essentials.crud_leave_type')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $leave_types = EssentialsLeaveType::where('business_id', $business_id)
@@ -78,7 +78,7 @@ class EssentialsLeaveTypeController extends Controller
     public function create()
     {
         if (! auth()->user()->can('essentials.crud_leave_type')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
      
@@ -99,7 +99,7 @@ class EssentialsLeaveTypeController extends Controller
 
 
         if (! auth()->user()->can('essentials.crud_leave_type')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -144,7 +144,7 @@ class EssentialsLeaveTypeController extends Controller
 
 
         if (! auth()->user()->can('essentials.crud_leave_type')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $leave_type = EssentialsLeaveType::where('business_id', $business_id)
@@ -165,7 +165,7 @@ class EssentialsLeaveTypeController extends Controller
 
 
         if (! auth()->user()->can('essentials.crud_leave_type')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

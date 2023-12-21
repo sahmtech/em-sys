@@ -40,7 +40,7 @@ class OrderController extends Controller
     public function index()
     {
         // if (!auth()->user()->can('sell.view')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         $business_id = request()->session()->get('user.business_id');
         $user_id = request()->session()->get('user.id');
@@ -75,7 +75,7 @@ class OrderController extends Controller
     public function markAsServed($id)
     {
         // if (!auth()->user()->can('sell.update')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         try {
             $business_id = request()->session()->get('user.business_id');
