@@ -76,7 +76,7 @@
 
                   <!-- Profile Image -->
                         <div class="box box-primary">
-                            <div class="box-body box-profile">      
+                            <div class="box-body box-profile" style=" pointer-events: none; opacity: 0.5;">      
                                 <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
 
                                                         <div>
@@ -273,10 +273,5 @@
     </script>
 
 
-<script type="text/javascript">
-   
-    $(document).ready(function() {
-        $('input[type="checkbox"]').prop('disabled', true);
-    });
-</script>
+
 @endsection

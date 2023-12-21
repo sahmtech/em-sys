@@ -103,8 +103,18 @@ return [
     'workers' => 'عمال المشاريع',
     'please_add_the_HousingMovements_department'=>'الرجاء إضافة إدارة خاصة بالسكن'
 
-
-
-
+    'crud_rooms'=> 'إضافة/حذف/تعديل الغرف',
+    'crud_facilities'=> 'إضافة/حذف/تعديل المرافق',
+    'crud_htr_requests'=> 'إضافة/حذف/تعديل الطلبات',
+    'crud_htr_workers_projects'=> 'إضافة/حذف/تعديل عمال المشاريع',
+    'crud_htr_car_types'=> 'إضافة/حذف/تعديل عمال أنواع السيارات',
+    'crud_htr_car_models'=> 'إضافة/حذف/تعديل عمال طراز السيارات',
+    'crud_htr_cars'=> 'إضافة/حذف/تعديل عمال  السيارات',
+    'crud_htr_drivers'=> 'إضافة/حذف/تعديل   السائقين',
+    'crud_htr_trevelers'=> 'إضافة/حذف/تعديل   وصول جديد',
+    'crud_htr_housed_trevelers'=> 'إضافة/حذف/تعديل    تسكين',
+    'view_htr_dashboard'=> 'عرض داشبورد السكن',
+    'view_htr_dashboard'=> 'عرض  إدارة الحركة ',
+    'view_building_management'=> 'عرض  إدارة السكن ',
 
 ];
