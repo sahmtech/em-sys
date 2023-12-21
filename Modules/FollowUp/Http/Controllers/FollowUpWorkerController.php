@@ -232,9 +232,9 @@ class FollowUpWorkerController extends Controller
      */
     public function show($id)
     {
-        if (!auth()->user()->can('user.view')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (!auth()->user()->can('user.view')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
 
         $business_id = request()->session()->get('user.business_id');
 

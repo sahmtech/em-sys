@@ -22,8 +22,10 @@ class DataController extends Controller
     public function parse_notification($notification)
     {
         $notification_data = [];
-        if ($notification->type ==
-            'Modules\followup\Notifications\DocumentShareNotification') {
+        if (
+            $notification->type ==
+            'Modules\followup\Notifications\DocumentShareNotification'
+        ) {
             $notifiction_data = DocumentShare::documentShareNotificationData($notification->data);
             $notification_data = [
                 'msg' => $notifiction_data['msg'],
@@ -32,8 +34,10 @@ class DataController extends Controller
                 'read_at' => $notification->read_at,
                 'created_at' => $notification->created_at->diffForHumans(),
             ];
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\NewMessageNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\NewMessageNotification'
+        ) {
             $data = $notification->data;
             $msg = __('followup::lang.new_message_notification', ['sender' => $data['from']]);
 
@@ -44,13 +48,15 @@ class DataController extends Controller
                 'read_at' => $notification->read_at,
                 'created_at' => $notification->created_at->diffForHumans(),
             ];
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\NewLeaveNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\NewLeaveNotification'
+        ) {
             $data = $notification->data;
 
             $employee = User::find($data['applied_by']);
 
-            if (! empty($employee)) {
+            if (!empty($employee)) {
                 $msg = __('followup::lang.new_leave_notification', ['employee' => $employee->user_full_name, 'ref_no' => $data['ref_no']]);
 
                 $notification_data = [
@@ -61,13 +67,15 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\LeaveStatusNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\LeaveStatusNotification'
+        ) {
             $data = $notification->data;
 
             $admin = User::find($data['changed_by']);
 
-            if (! empty($admin)) {
+            if (!empty($admin)) {
                 $msg = __('followup::lang.status_change_notification', ['status' => $data['status'], 'ref_no' => $data['ref_no'], 'admin' => $admin->user_full_name]);
 
                 $notification_data = [
@@ -78,8 +86,10 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\PayrollNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\PayrollNotification'
+        ) {
             $data = $notification->data;
 
             $month = \Carbon::createFromFormat('m', $data['month'])->format('F');
@@ -88,11 +98,11 @@ class DataController extends Controller
 
             $created_by = User::find($data['created_by']);
 
-            if (! empty($created_by)) {
+            if (!empty($created_by)) {
                 if ($data['action'] == 'created') {
-                    $msg = __('followup::lang.payroll_added_notification', ['month_year' => $month.'/'.$data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
+                    $msg = __('followup::lang.payroll_added_notification', ['month_year' => $month . '/' . $data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
                 } elseif ($data['action'] == 'updated') {
-                    $msg = __('followup::lang.payroll_updated_notification', ['month_year' => $month.'/'.$data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
+                    $msg = __('followup::lang.payroll_updated_notification', ['month_year' => $month . '/' . $data['year'], 'ref_no' => $data['ref_no'], 'created_by' => $created_by->user_full_name]);
                 }
 
                 $notification_data = [
@@ -103,13 +113,15 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\NewTaskNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\NewTaskNotification'
+        ) {
             $data = $notification->data;
 
             $assigned_by = User::find($data['assigned_by']);
 
-            if (! empty($assigned_by)) {
+            if (!empty($assigned_by)) {
                 $msg = __('followup::lang.new_task_notification', ['assigned_by' => $assigned_by->user_full_name, 'task_id' => $data['task_id']]);
 
                 $notification_data = [
@@ -120,12 +132,14 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\NewTaskCommentNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\NewTaskCommentNotification'
+        ) {
             $data = $notification->data;
 
             $comment = followupTodoComment::with(['task', 'added_by'])->find($data['comment_id']);
-            if (! empty($comment) && $comment->task) {
+            if (!empty($comment) && $comment->task) {
                 $msg = __('followup::lang.new_task_comment_notification', ['added_by' => $comment->added_by->user_full_name, 'task_id' => $comment->task->task_id]);
 
                 $notification_data = [
@@ -136,13 +150,15 @@ class DataController extends Controller
                     'created_at' => $notification->created_at->diffForHumans(),
                 ];
             }
-        } elseif ($notification->type ==
-            'Modules\followup\Notifications\NewTaskDocumentNotification') {
+        } elseif (
+            $notification->type ==
+            'Modules\followup\Notifications\NewTaskDocumentNotification'
+        ) {
             $data = $notification->data;
 
             $uploaded_by = User::find($data['uploaded_by']);
 
-            if (! empty($uploaded_by)) {
+            if (!empty($uploaded_by)) {
                 $msg = __('followup::lang.new_task_document_notification', ['uploaded_by' => $uploaded_by->user_full_name, 'task_id' => $data['task_id']]);
 
                 $notification_data = [
@@ -175,210 +191,298 @@ class DataController extends Controller
                 'value' => 'followup.crud_projects',
                 'label' => __('followup::lang.crud_projects'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crud_operation_orders',
                 'label' => __('followup::lang.crud_operation_orders'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.create_order',
                 'label' => __('followup::lang.create_order'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.return_request',
                 'label' => __('followup::lang.return_request'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewExitRequests',
                 'label' => __('followup::lang.viewExitRequests'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudExitRequests',
                 'label' => __('followup::lang.crudExitRequests'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.view_requests',
                 'label' => __('followup::lang.view_requests'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewReturnRequest',
                 'label' => __('followup::lang.viewReturnRequest'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudReturnRequest',
                 'label' => __('followup::lang.crudReturnRequest'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewEscapeRequest',
                 'label' => __('followup::lang.viewEscapeRequest'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudEscapeRequest',
                 'label' => __('followup::lang.crudEscapeRequest'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewAdvanceSalary',
                 'label' => __('followup::lang.viewAdvanceSalary'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudAdvanceSalary',
                 'label' => __('followup::lang.crudAdvanceSalary'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewLeavesAndDepartures',
                 'label' => __('followup::lang.viewLeavesAndDepartures'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudLeavesAndDepartures',
                 'label' => __('followup::lang.crudLeavesAndDepartures'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewAtmCard',
                 'label' => __('followup::lang.viewAtmCard'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudAtmCard',
                 'label' => __('followup::lang.crudAtmCard'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewResidenceRenewal',
                 'label' => __('followup::lang.viewResidenceRenewal'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudResidenceRenewal',
                 'label' => __('followup::lang.crudResidenceRenewal'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewResidenceCard',
                 'label' => __('followup::lang.viewResidenceCard'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudResidenceCard',
                 'label' => __('followup::lang.crudResidenceCard'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.viewWorkerTransfer',
                 'label' => __('followup::lang.viewWorkerTransfer'),
                 'default' => false,
-      
+
             ],
             [
                 'value' => 'followup.crudWorkerTransfer',
                 'label' => __('followup::lang.crudWorkerTransfer'),
                 'default' => false,
-      
+
             ],
 
             [
                 'value' => 'followup.curd_contracts_wishes',
                 'label' => __('followup::lang.curd_contracts_wishes'),
                 'default' => false,
-      
-            ],
-            
-      
 
-            [ 
+            ],
+
+
+
+            [
 
 
                 'value' => 'followup.viewWorkInjuriesRequest',
                 'label' => __('followup::lang.viewWorkInjuriesRequest'),
                 'default' => false,
-    
+
             ],
-            [ 
+            [
 
 
                 'value' => 'followup.viewResidenceEditRequest',
                 'label' => __('followup::lang.viewResidenceEditRequest'),
                 'default' => false,
-    
+
             ],
-            [ 
+            [
 
 
                 'value' => 'followup.viewBaladyCardRequest',
                 'label' => __('followup::lang.viewBaladyCardRequest'),
                 'default' => false,
-    
+
             ],
-            [ 
+            [
 
 
                 'value' => 'followup.viewRecruitmentRequest',
                 'label' => __('followup::lang.viewRecruitmentRequest'),
                 'default' => false,
-    
+
             ],
-            [ 
+            [
 
                 'value' => 'followup.viewInsuranceUpgradeRequest',
                 'label' => __('followup::lang.viewInsuranceUpgradeRequest'),
                 'default' => false,
-    
+
             ],
-            [ 
+            [
 
 
                 'value' => 'followup.viewMofaRequest',
                 'label' => __('followup::lang.viewMofaRequest'),
                 'default' => false,
-    
+
             ],
-            [ 
+            [
 
 
                 'value' => 'followup.viewChamberRequest',
                 'label' => __('followup::lang.viewChamberRequest'),
                 'default' => false,
-    
+
+            ],
+            [
+
+
+                'value' => 'followup.contact_locations',
+                'label' => __('followup::lang.contact_locations'),
+                'default' => false,
+
+            ],
+            [
+
+
+                'value' => 'followup.projects',
+                'label' => __('followup::lang.projects'),
+                'default' => false,
+
+            ],
+            [
+
+
+                'value' => 'followup.workers',
+                'label' => __('followup::lang.workers'),
+                'default' => false,
+
+            ],
+            [
+
+
+                'value' => 'followup.operation_orders',
+                'label' => __('followup::lang.operation_orders'),
+                'default' => false,
+
             ],
 
-            
-           
-           
-   
+            [
+
+
+                'value' => 'followup.document_delivery',
+                'label' => __('followup::lang.document_delivery'),
+                'default' => false,
+
+            ],
+
+            [
+
+
+                'value' => 'followup.documents',
+                'label' => __('followup::lang.documents'),
+                'default' => false,
+
+            ],
+            [
+
+
+                'value' => 'followup.reports.projects',
+                'label' => __('followup::lang.reports.projectsReports'),
+                'default' => false,
+
+            ],
+            [
+
+
+                'value' => 'followup.reports.projectWorkers',
+                'label' => __('followup::lang.reports.projectWorkersReports'),
+                'default' => false,
+
+            ],
+
+            [
+
+
+                'value' => 'followup.contrascts_wishes',
+                'label' => __('followup::lang.contrascts_wishes'),
+                'default' => false,
+
+            ],
+
+            [
+
+
+                'value' => 'followup.shifts',
+                'label' => __('followup::lang.shifts'),
+                'default' => false,
+
+            ],
+
+
+
+
+
+
+
+
+
         ];
     }
 
@@ -416,6 +520,4 @@ class DataController extends Controller
             });
         }
     }
-
- 
 }

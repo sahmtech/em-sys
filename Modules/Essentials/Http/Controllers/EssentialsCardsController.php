@@ -66,9 +66,9 @@ class EssentialsCardsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        if ((!$is_admin) && (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if ((!$is_admin) && (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')))) {
+        //     abort(403, 'Unauthorized action.');
+        // }
         $business_name=Business::where('id', $business_id)->select('name','id')->first();
         $business_name = $business_name ? $business_name->name : null;
         $responsible_client = null;
@@ -541,9 +541,9 @@ class EssentialsCardsController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('user.create')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (!auth()->user()->can('user.create')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
         try {
             $data = $request->only([
              

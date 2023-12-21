@@ -75,7 +75,7 @@ class TravelersController extends Controller
                 'transactionSellLine.service.profession',
                 'transactionSellLine.service.nationality',
                 'transactionSellLine.transaction.salesContract.salesOrderOperation.contact',
-                'transactionSellLine.transaction.salesContract.salesOrderOperation.contact.salesProject',
+                'transactionSellLine.transaction.salesContract.project',
                 'visa',
                 'agency'
             ])
@@ -347,23 +347,25 @@ class TravelersController extends Controller
     {
         try {
             $requestData = $request->only(['htr_building', 'room_number', 'worker_id', 'shift_name']);
-    
+  // dd( $requestData);
             $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
-    
+            $shift = isset($requestData['shift_name']) ? $requestData['shift_name'] : null;
+
             $jsonData = [];
     
             foreach ($requestData['worker_id'] as $index => $workerId) {
+               
                 $jsonObject = [
                     'worker_id' => $workerId,
                     'room_number' => $commonRoomNumber,
-                    'shift_id' => $requestData['shift_name'],
+                    'shift_id' => $shift,
                 ];
     
                 $jsonData[] = $jsonObject;
             }
     
             $jsonData = json_encode($jsonData);
-    
+          
             \Log::info('JSON Data: ' . $jsonData);
     
             if (!empty($jsonData)) {
@@ -378,8 +380,10 @@ class TravelersController extends Controller
                         ->where('beds_count', '>', 0)
                         ->select('id', 'beds_count')
                         ->first();
-    
-                    if ($room) {
+
+                    $worker = IrProposedLabor::find($data['worker_id']);
+   
+                    if ($worker) {
                      
                         User::where('proposal_worker_id', $data['worker_id'])
                             ->update([
@@ -391,14 +395,20 @@ class TravelersController extends Controller
                             ->where('id', $room->id)
                             ->decrement('beds_count');
     
-                        $worker = IrProposedLabor::find($data['worker_id']);
+                      
+                      
                         $worker->update(['housed_status' => 1]);
     
-                        $user = User::where('proposal_worker_id', $data['worker_id'])->first();
-                        $user_shifts = DB::table('essentials_user_shifts')->insert([
-                            'user_id' => $user->id,
-                            'essentials_shift_id' => $data['shift_id'],
-                        ]);
+
+                        if(  $shift)
+                        {
+                            $user = User::where('proposal_worker_id', $data['worker_id'])->first();
+                            $user_shifts = DB::table('essentials_user_shifts')->insert([
+                                'user_id' => $user->id,
+                                'essentials_shift_id' =>  $shift,
+                            ]);
+                        }
+                    
                     } else {
                         
                         DB::rollBack();
@@ -410,7 +420,9 @@ class TravelersController extends Controller
             
                 DB::commit();
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-            } else {
+            }
+            
+            else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
@@ -419,6 +431,7 @@ class TravelersController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
+      //  return $output;
         return redirect()->back()->with(['status' => $output]);
     }
     
@@ -483,7 +496,7 @@ class TravelersController extends Controller
             foreach ($selectedData as $data) {
              
                 $worker = IrProposedLabor::find($data['worker_id']);
-
+//dd($worker->transactionSellLine?->transaction?->salesContract->project->id);
              
                 if ($worker) {
                     User::create([
@@ -497,7 +510,7 @@ class TravelersController extends Controller
                         'dob' => $worker->dob,
                         'marital_status' => $worker->marital_status,
                         'blood_group' => $worker->blood_group,
-                        'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract?->projects?->id ,
+                        'assigned_to' => $worker->transactionSellLine?->transaction?->salesContract->project->id ,
                         'contact_number' => $worker->contact_number,
                         'permanent_address' => $worker->permanent_address,
                         'current_address' => $worker->current_address,

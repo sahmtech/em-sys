@@ -66,7 +66,7 @@
                 </div>
             
                 <div class="box box-primary">
-                    <div class="box-body box-profile">
+                    <div class="box-body box-profile" style=" pointer-events: none; opacity: 0.5;">
                            <h3>@lang( 'essentials::lang.is_profile_complete' )</h3>
                              
                                         <div>
@@ -90,8 +90,9 @@
  
                        
                         </div>
-                    <!-- /.box-body -->
+                  
                 </div>
+
                 <div class="box box-primary" id="attachments-box">
                     <div class="box-body box-profile">
                         <h3>@lang('followup::lang.attachments')</h3>
@@ -265,23 +266,12 @@
             });
         });
 
-       
-
-       
-
-		
-  
 
 		
     </script>
 
 
-<script type="text/javascript">
-   
-    $(document).ready(function() {
-        $('input[type="checkbox"]').prop('disabled', true);
-    });
-</script>
+
 
 <script>
     $(document).ready(function () {

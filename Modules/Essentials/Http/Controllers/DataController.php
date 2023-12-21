@@ -965,6 +965,7 @@ class DataController extends Controller
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
+            $user->user_type= request()->input('user_type');
             $user->location_id = request()->input('location_id');
             if (request()->input('health_insurance') != null){
                 $user->has_insurance= request()->input('health_insurance');
