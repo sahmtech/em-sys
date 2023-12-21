@@ -430,6 +430,20 @@ return [
     'add_element' => 'Add Element',
     'chang_the_amount_or_duration_if_needed' => 'Change the Amount or Duration if Needed',
     'requests' => 'Requests',
+    'crud_contacts'=>'Crud Contacts',
+    'crud_follow_ups'=>'Crud Follow ups',
+    'crud_sales_projects'=>'Crud Sales Projects',
+    'crud_offer_price'=>'Crud All offer Prices',
+    'crud_contracts'=>'Crud All Contracts',
+    'crud_sale_operation_orders'=>'Crud Operations Orders',
+    'crud_requests'=>'Crud Requests',
+    'crud_settings'=>'Crud Settings',
+    'crud_sale_sources'=>' Crud Sales Sources',
+    'crud_contract_itmes'=>'Crud Contract Items',
+    'crud_contract_appendics'=>'Crud Contract Appendics',
+    'crud_sales_templates'=>'Crud Sales Templates',
+    'crud_sales_costs'=>'Crud Sales Costs',
+    
 
 
 ];

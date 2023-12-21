@@ -101,8 +101,10 @@ return [
 'add_price_offer_for_selected_workers'=>'أضف عرض سعر للعمالة المحددة',
 'add_acceptance_offer_for_selected_workers'=>'إضافة قبول العرض للعمالة المحددة',
 'Target_quantity_should_be_equal_to_or_less_than'=>' العدد المطلوب يجب أن يكون أصغر أو يساوي القيمة',
+'crud_all_reports'=>'إدارة التقارير',
+'crud_all_salary_requests'=>'إدارة طلبات الرواتب',
 
-
+// to here we have en file
 
 
 

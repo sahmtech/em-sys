@@ -100,6 +100,9 @@ return [
     'worker_visa' => 'Worker Visa',
     'add_price_offer_for_selected_workers' => 'Add Offer Price for Selected Workers',
     'add_acceptance_offer_for_selected_workers' => 'Add Acceptance Offer for Selected Workers',
-    'target_quantity_should_be_equal_to_or_less_than' => 'Target Quantity should be equal to or less than',
+   'target_quantity_should_be_equal_to_or_less_than' => 'Target Quantity should be equal to or less than',
+   'crud_all_reports'=>'Crud All Reports',
+   'crud_all_salary_requests'=>'Crud All Salary Requests', 
+ 
   ];
   

@@ -281,6 +281,20 @@ return [
     'add_element'=>'إضافة عنصر',
     'chang_the_amount_or_duration_if_needed'=>'قم بتغيير القيمة أو المدة إذا أردت',
     'requests'=>'الطلبات',
+    'crud_contacts'=>'إدارة العملاء',
+    'crud_follow_ups'=>'إدارة المتابعات',
+    'crud_sales_projects'=>'إدارة مشاريع العملاء',
+    'crud_offer_price'=>'إدارة عروض الأسعار',
+    'crud_contracts'=>'إدارة عقود المبيعات',
+    'crud_sale_operation_orders'=>'إدارة أوامر التشغيل',
+    'crud_requests'=>'إدارة طلبات المبيعات',
+    'crud_settings'=>'إدارة إعدادات المبيعات',
+    'crud_sale_sources'=>'إدارة مصادر العملاء',
+    'crud_contract_itmes'=>'إدارة بنود العقود',
+    'crud_contract_appendics'=>'إدارة ملاحق العقود',
+    'crud_sales_templates'=>'إدارة قوالب المبيعات',
+    'crud_sales_costs'=>'إدارة تكاليف المبيعات',
+    
 
 
 
