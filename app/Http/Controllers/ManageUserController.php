@@ -56,12 +56,12 @@ class ManageUserController extends Controller
                     DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
                 ]);
 
-                
-                if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
 
-                    $users = $users->where('user_type', request()->input('user_type_filter'));
-                }
-    
+            if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
+
+                $users = $users->where('user_type', request()->input('user_type_filter'));
+            }
+
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
@@ -228,37 +228,43 @@ class ManageUserController extends Controller
 
     public function makeUser($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            abort(403, 'Unauthorized action.');
+        try {
+            $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+            if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
+                abort(403, 'Unauthorized action.');
+            }
+
+             $business_id = request()->session()->get('user.business_id');
+
+            //$business_id = User::where('id', $id)->first()->business_id;
+            $user = User::with(['contactAccess'])
+                ->findOrFail($id);
+
+            $roles = $this->getRolesArray($business_id);
+
+            $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
+
+            if ($user->status == 'active') {
+                $is_checked_checkbox = true;
+            } else {
+                $is_checked_checkbox = false;
+            }
+
+            $locations = BusinessLocation::where('business_id', $business_id)
+                ->get();
+
+            $permitted_locations = $user->permitted_locations();
+            $username_ext = $this->moduleUtil->getUsernameExtension();
+
+            //Get user form part from modules
+            $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
+
+            return view('manage_user.make_user')
+                ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log(\Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
         }
-
-        $business_id = request()->session()->get('user.business_id');
-        $user = User::
-            with(['contactAccess'])
-            ->findOrFail($id);
-
-        $roles = $this->getRolesArray($business_id);
-
-        $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
-
-        if ($user->status == 'active') {
-            $is_checked_checkbox = true;
-        } else {
-            $is_checked_checkbox = false;
-        }
-
-        $locations = BusinessLocation::where('business_id', $business_id)
-            ->get();
-
-        $permitted_locations = $user->permitted_locations();
-        $username_ext = $this->moduleUtil->getUsernameExtension();
-
-        //Get user form part from modules
-        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-
-        return view('manage_user.make_user')
-            ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
 
@@ -380,8 +386,7 @@ class ManageUserController extends Controller
                 }
             }
 
-            $user = User::where('business_id', $business_id)
-                ->findOrFail($id);
+            $user = User::findOrFail($id);
             // if (!Str::contains($user->user_type, 'user')) {
             //     $user_data['user_type'] = ($user->user_type) . "user";
             // }

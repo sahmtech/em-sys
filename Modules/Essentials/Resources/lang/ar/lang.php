@@ -435,9 +435,11 @@ return [
   'not_added_to_salary' => 'لا تضاف إلى الراتب ',
   'business' => 'الشركات',
   'add_business' => 'إضافة شركة',
+  'curd_work_cards'=>'إضافة \حذف\تعديل كروت العمل',
   'licence_number' => 'رقم العقد',
   'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
+ 
   'expiration_date' => 'تاريخ الانتهاء',
   'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",

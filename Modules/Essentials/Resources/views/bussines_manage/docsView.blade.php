@@ -310,7 +310,7 @@
                 $("#licence_number").show();
                 $("#licence_date").show();
                 $("#capital").show();
-                $("#national_address").show();
+               // $("#national_address").show();
                 
                 $("#renew_date").hide();
                 $("#expiration_date").hide();  
