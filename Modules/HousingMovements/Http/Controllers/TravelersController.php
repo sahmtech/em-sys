@@ -349,11 +349,8 @@ class TravelersController extends Controller
             $requestData = $request->only(['htr_building', 'room_number', 'worker_id', 'shift_name']);
   // dd( $requestData);
             $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
-            $shift=null;
-            if( $requestData['shift_name'] != null)
-            {
-                $shift=$requestData['shift_name'];
-            }
+            $shift = isset($requestData['shift_name']) ? $requestData['shift_name'] : null;
+
             $jsonData = [];
     
             foreach ($requestData['worker_id'] as $index => $workerId) {
@@ -402,11 +399,16 @@ class TravelersController extends Controller
                       
                         $worker->update(['housed_status' => 1]);
     
-                        $user = User::where('proposal_worker_id', $data['worker_id'])->first();
-                        $user_shifts = DB::table('essentials_user_shifts')->insert([
-                            'user_id' => $user->id,
-                            'essentials_shift_id' =>  $shift,
-                        ]);
+
+                        if(  $shift)
+                        {
+                            $user = User::where('proposal_worker_id', $data['worker_id'])->first();
+                            $user_shifts = DB::table('essentials_user_shifts')->insert([
+                                'user_id' => $user->id,
+                                'essentials_shift_id' =>  $shift,
+                            ]);
+                        }
+                    
                     } else {
                         
                         DB::rollBack();
@@ -429,8 +431,8 @@ class TravelersController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-        return $output;
-        //return redirect()->back()->with(['status' => $output]);
+      //  return $output;
+        return redirect()->back()->with(['status' => $output]);
     }
     
     
