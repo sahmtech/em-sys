@@ -233,7 +233,7 @@ var i = 0;
                 
                 $('.modal-body').empty();
 
-                var inputClasses = 'form-group col-md-4 mb-2';
+                var inputClasses = 'form-group col-md-4 ';
              
 
  $.each(data, function (index, row) {
@@ -260,8 +260,8 @@ console.log(roomnumberInput);
 i++;
                     var workerSelect = $('<select>', {
                         name: 'worker_id[]',
-                        class: inputClasses +'select2',
-                        style: 'height: 40px; width: 250px;',
+                        class: inputClasses + ' select2',
+                        style: 'height: 40px; width: 350px;',
                         required: true,
                     });
 
@@ -276,29 +276,30 @@ i++;
                     });
 
                     $('.modal-body').append(roomIDInput, roomnumberInput, workerSelect);
+                    workerSelect.select2();
                 });
             }
         });
 
-        // $('#submitArrived').click(function () {
+        $('#submitArrived').click(function () {
 
-        //     $.ajax({
+            $.ajax({
                 
                 
-        //         url: $('#room_form').attr('action'),
-        //         type: 'post',
-        //         data: $('#room_form').serialize(),
+                url: $('#room_form').attr('action'),
+                type: 'post',
+                data: $('#room_form').serialize(),
                 
-        //         success: function (response) {
+                success: function (response) {
                     
-        //             console.log(response);
-        //             console.log($('#room_form').attr('action'));
+                    console.log(response);
+                    console.log($('#room_form').attr('action'));
 
-        //             $('#room_form').modal('hide');
-        //             reloadDataTable();
-        //         }
-        //     });
-        // });
+                    $('#room_form').modal('hide');
+                    reloadDataTable();
+                }
+            });
+        });
 
     } else {
         $('input#selected_rows').val('');

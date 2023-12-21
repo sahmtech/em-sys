@@ -248,8 +248,8 @@
                     'PhD' => __('essentials::lang.PhD'),
                     'diploma' => __('essentials::lang.diploma'),
                 ],
-                null,
-                ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
+                ['class' => 'form-control', 'required', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
             ) !!}
         </div>
 
@@ -298,7 +298,7 @@
     </div>
     <div class="col-md-12  box box-primary" id="section3">
 
-        <h4>@lang('lang_v1.bank_details_creat_edit'):</h4>
+        <h4>@lang('lang_v1.bank_details'):</h4>
 
         <div class="form-group col-md-3">
             {!! Form::label('account_holder_name', __('lang_v1.account_holder_name') . ':') !!}
