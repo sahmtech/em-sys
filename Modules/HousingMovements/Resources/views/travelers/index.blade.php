@@ -210,6 +210,7 @@ $('#arraived-selected').on('click', function (e) {
                             class: inputClasses + 'mb-2', 
                             placeholder: '{{ __('housingmovements::lang.id') }}',
                             required: true,
+                            style: 'height: 40px',
                             value: row.worker_id
                         });
                         
@@ -219,6 +220,7 @@ $('#arraived-selected').on('click', function (e) {
                             class: inputClasses + 'mb-2', 
                             placeholder: '{{ __('housingmovements::lang.worker_name') }}',
                             required: true,
+                            style: 'height: 40px',
                             value: row.worker_name
                         });
 
@@ -228,6 +230,7 @@ $('#arraived-selected').on('click', function (e) {
                             class: inputClasses+ 'mb-2',
                             placeholder: '{{ __('housingmovements::lang.passport_number') }}',
                             required: true,
+                            style: 'height: 40px',
                             value: row.passport_number
                         });
 
@@ -235,6 +238,7 @@ $('#arraived-selected').on('click', function (e) {
                             type: 'number',
                             name: 'border_no[]',
                             class: inputClasses + 'mb-2',
+                            style: 'height: 40px',
                             placeholder: '{{ __('housingmovements::lang.border_no') }}',
                             required: true
                         });

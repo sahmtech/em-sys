@@ -256,19 +256,50 @@ $('#renew-selected').on('click', function (e) {
                 data: { selectedRows: selectedRows },
                 success: function (data) {
                   
-                    $('.modal-body').find('input').remove();
+                  
+                $('.modal-body').empty();
 
                     console.log(data);
-                    var inputClasses = 'form-group';
-                    var renewDurationInputs = $('select[name="renew_duration[]"]');
-                  
-                    renewDurationInputs.on('change', function () {
-                        var selectedValue = $(this).val();
-                        var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
-                        var fees = calculateFees(selectedValue);
-                        console.log(fees);
-                        feesInput.val(fees);
-                    });
+                var inputClasses = 'form-group';
+                             
+                var labelsRow = $('<div>', {
+                    class: 'row'
+                });
+
+                labelsRow.append($('<label>', {
+                    class: inputClasses + 'col-md-2',
+                    style: 'height: 40px; width:180px',
+                    text: '{{ __('essentials::lang.Residency_no') }}'
+                }));
+
+                labelsRow.append($('<label>', {
+                    class: inputClasses + 'col-md-2',
+                    style: 'height: 40px; width:180px',
+                    text: '{{ __('essentials::lang.Residency_end_date') }}'
+                })); 
+                
+                labelsRow.append($('<label>', {
+                    class: inputClasses + 'col-md-2',
+                    style: 'height: 40px; width:180px',
+                    text: '{{ __('essentials::lang.Residency_no') }}'
+                }));
+
+                labelsRow.append($('<label>', {
+                    class: inputClasses + 'col-md-2',
+                    style: 'height: 40px; width:180px',
+                    text: '{{ __('essentials::lang.Residency_end_date') }}'
+                })); 
+                $('.modal-body').append(labelsRow);
+
+                   
+                    var options = {
+                        '3': '{{ __('essentials::lang.3_months') }}',
+                        '6': '{{ __('essentials::lang.6_months') }}',
+                        '9': '{{ __('essentials::lang.9_months') }}',
+                        '12': '{{ __('essentials::lang.12_months') }}',
+                    };
+
+                
                                     
                     $.each(data, function (index, row) {
                         
@@ -276,7 +307,7 @@ $('#renew-selected').on('click', function (e) {
                                 class: 'row'
                             });
 
-                       
+              
                       var selectInput = $('<select>', {
                             name: 'renew_duration[]',
                             class: 'form-control',
@@ -330,34 +361,23 @@ $('#renew-selected').on('click', function (e) {
                         });
                         rowDiv.append(expiration_dateInput);
 
-                       
+
 
                         var renewDurationInput = $('<select>', {
-                            name: 'renew_duration[]',
-                            class: 'form-control ' + inputClasses + 'col-md-2',
-                            style: 'height: 40px ; width:150px',
-                            required: true,
+                        name: 'renew_duration[]',
+                        class: 'form-control ' + inputClasses + 'col-md-2',
+                        style: 'height: 40px; width: 150px',
+                        required: true,
+                         });
+
+                        Object.keys(options).forEach(function (value) {
+                            var option = $('<option>', {
+                                value: value,
+                                text: options[value],
+                            });
+
+                            renewDurationInput.append(option);
                         });
-                       
-
-                     
-
-$.each({
-    '3': '{{ __('essentials::lang.3_months') }}',
-    '6': '{{ __('essentials::lang.6_months') }}',
-    '9': '{{ __('essentials::lang.9_months') }}',
-    '12': '{{ __('essentials::lang.12_months') }}',
-}, function (value, text) {
-    
-    var option = $('<option>', {
-        value: value,
-        text: text,
-    });
-
-    renewDurationInput.append(option);
-});
-renewDurationInput.val(1);
-console.log(renewDurationInput.val(1));
 
 renewDurationInput.on('change', function () {
     var selectedValue = $(this).val();
@@ -440,7 +460,10 @@ renewDurationInput.on('change', function () {
         }
     });
 
-
+$('#renewModal').on('hidden.bs.modal', function (e) {
+    
+    $('.modal-body').find('input, select').val('');
+});
 
     
 function getCheckRecords() {
