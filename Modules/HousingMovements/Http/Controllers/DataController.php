@@ -30,11 +30,93 @@ class DataController extends Controller
     {
         return [
             [
+                'value' => 'housingmovement.view_htr_dashboard',
+                'label' => __('housingmovements::lang.view_htr_dashboard'),
+                'default' => false,
+            ],
+
+            [
                 'value' => 'housingmovement.crud_buildings',
                 'label' => __('housingmovements::lang.crud_buildings'),
                 'default' => false,
             ],
+            [
+                'value' => 'housingmovement.view_movement_management',
+                'label' => __('housingmovements::lang.view_movement_management'),
+                'default' => false,
+            ],
 
+            
+            [
+                'value' => 'housingmovement.crud_rooms',
+                'label' => __('housingmovements::lang.crud_rooms'),
+                'default' => false,
+            ],
+
+          
+            
+            [
+                'value' => 'housingmovement.crud_facilities',
+                'label' => __('housingmovements::lang.crud_facilities'),
+                'default' => false,
+            ],
+
+              
+            [
+                'value' => 'housingmovement.crud_htr_requests',
+                'label' => __('housingmovements::lang.crud_htr_requests'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.crud_htr_workers_projects',
+                'label' => __('housingmovements::lang.crud_htr_workers_projects'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.crud_htr_car_types',
+                'label' => __('housingmovements::lang.crud_htr_car_types'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.crud_htr_car_models',
+                'label' => __('housingmovements::lang.crud_htr_car_models'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.crud_htr_cars',
+                'label' => __('housingmovements::lang.crud_htr_cars'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.crud_htr_drivers',
+                'label' => __('housingmovements::lang.crud_htr_drivers'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.crud_htr_trevelers',
+                'label' => __('housingmovements::lang.crud_htr_trevelers'),
+                'default' => false,
+            ],
+
+            
+            [
+                'value' => 'housingmovement.crud_htr_housed_trevelers',
+                'label' => __('housingmovements::lang.crud_htr_housed_trevelers'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'housingmovement.view_building_management',
+                'label' => __('housingmovements::lang.view_building_management'),
+                'default' => false,
+            ],
+         
            
            
         ];
