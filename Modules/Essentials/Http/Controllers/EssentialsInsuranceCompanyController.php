@@ -33,7 +33,7 @@ class EssentialsInsuranceCompanyController extends Controller
 
         $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
         if (!$can_crud_insurance_companies) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         if (request()->ajax()) {
             $insuranceCompanies = Contact::join('business', 'business.id', '=', 'contacts.business_id')

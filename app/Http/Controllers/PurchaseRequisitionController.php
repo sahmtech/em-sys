@@ -56,7 +56,7 @@ class PurchaseRequisitionController extends Controller
     public function index()
     {
         if (! auth()->user()->can('purchase_requisition.view_all') && ! auth()->user()->can('purchase_requisition.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -176,7 +176,7 @@ class PurchaseRequisitionController extends Controller
     public function create()
     {
         if (! auth()->user()->can('purchase_requisition.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -199,7 +199,7 @@ class PurchaseRequisitionController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('purchase_requisition.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -272,7 +272,7 @@ class PurchaseRequisitionController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('purchase_requisition.view_all') && ! auth()->user()->can('purchase_requisition.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -329,7 +329,7 @@ class PurchaseRequisitionController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('purchase_requisition.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

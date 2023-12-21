@@ -34,7 +34,7 @@ class TaxRateController extends Controller
     public function index()
     {
         if (! auth()->user()->can('tax_rate.view') && ! auth()->user()->can('tax_rate.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -74,7 +74,7 @@ class TaxRateController extends Controller
     public function create()
     {
         if (! auth()->user()->can('tax_rate.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('tax_rate.create');
@@ -89,7 +89,7 @@ class TaxRateController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('tax_rate.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -135,7 +135,7 @@ class TaxRateController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('tax_rate.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -157,7 +157,7 @@ class TaxRateController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('tax_rate.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -203,7 +203,7 @@ class TaxRateController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('tax_rate.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

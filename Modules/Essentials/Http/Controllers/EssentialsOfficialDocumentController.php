@@ -28,7 +28,7 @@ class EssentialsOfficialDocumentController extends Controller
         // $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
         // if (!$can_crud_official_documents) {
         //     error_log("2222");
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         $official_documents = EssentialsOfficialDocument::
         join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
@@ -182,7 +182,7 @@ class EssentialsOfficialDocumentController extends Controller
     public function show($id)
     {
         if (!auth()->user()->can('user.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

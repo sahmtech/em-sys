@@ -38,7 +38,7 @@ class SellingPriceGroupController extends Controller
     public function index()
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -73,7 +73,7 @@ class SellingPriceGroupController extends Controller
     public function create()
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('selling_price_group.create');
@@ -88,7 +88,7 @@ class SellingPriceGroupController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -136,7 +136,7 @@ class SellingPriceGroupController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -158,7 +158,7 @@ class SellingPriceGroupController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -195,7 +195,7 @@ class SellingPriceGroupController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -227,7 +227,7 @@ class SellingPriceGroupController extends Controller
      */
     public function updateProductPrice(){
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('selling_price_group.update_product_price');
@@ -401,7 +401,7 @@ class SellingPriceGroupController extends Controller
     public function activateDeactivate($id)
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

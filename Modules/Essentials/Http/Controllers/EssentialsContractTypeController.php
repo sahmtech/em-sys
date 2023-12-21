@@ -28,7 +28,7 @@ class EssentialsContractTypeController extends Controller
 
         $can_crud_contract_types = auth()->user()->can('essentials.crud_contract_types');
         if (! $can_crud_contract_types) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 

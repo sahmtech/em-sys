@@ -284,7 +284,7 @@ class FieldForceController extends ApiController
     public function index()
     {
         if (! $this->moduleUtil->isModuleInstalled('FieldForce')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $user = Auth::user();
@@ -371,14 +371,14 @@ class FieldForceController extends ApiController
     public function store(Request $request)
     {
         if (! $this->moduleUtil->isModuleInstalled('FieldForce')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
             $user = Auth::user();
 
             if (! $user->can('visit.create')) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
 
             $business_id = $user->business_id;
@@ -456,7 +456,7 @@ class FieldForceController extends ApiController
     public function updateStatus(Request $request, $id)
     {
         if (! $this->moduleUtil->isModuleInstalled('FieldForce')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -468,7 +468,7 @@ class FieldForceController extends ApiController
             $visit = FieldForce::find($id);
 
             if ($user->id != $visit->assigned_to) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
 
             if (! empty($input['visited_on'])) {

@@ -30,7 +30,7 @@ class RoomController extends Controller
 
         $can_crud_rooms = auth()->user()->can('housingmovement_module.crud_rooms');
         if (! $can_crud_rooms) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');

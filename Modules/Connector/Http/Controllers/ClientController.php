@@ -25,7 +25,7 @@ class ClientController extends Controller
     public function index()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_demo = (config('app.env') == 'demo');
@@ -61,7 +61,7 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -134,7 +134,7 @@ class ClientController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -154,7 +154,7 @@ class ClientController extends Controller
     public function regenerate()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

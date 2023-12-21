@@ -16,7 +16,7 @@ class BarcodeController extends Controller
     public function index()
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -62,7 +62,7 @@ class BarcodeController extends Controller
     public function create()
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('barcode.create');
@@ -77,7 +77,7 @@ class BarcodeController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -137,7 +137,7 @@ class BarcodeController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -157,7 +157,7 @@ class BarcodeController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -200,7 +200,7 @@ class BarcodeController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -237,7 +237,7 @@ class BarcodeController extends Controller
     public function setDefault($id)
     {
         if (! auth()->user()->can('barcode_settings.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

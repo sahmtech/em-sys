@@ -228,7 +228,7 @@ class FollowUpController extends ApiController
     {
         $user = Auth::user();
         if (! ($this->moduleUtil->isModuleInstalled('Crm') && ($user->can('crm.access_all_schedule') || $user->can('crm.access_own_schedule')))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $start_date = request()->input('start_date');
@@ -294,7 +294,7 @@ class FollowUpController extends ApiController
     public function getFollowUpResources()
     {
         if (! $this->moduleUtil->isModuleInstalled('Crm')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $params['statuses'] = \Modules\Crm\Entities\Schedule::statusDropdown();
@@ -350,7 +350,7 @@ class FollowUpController extends ApiController
     public function store(Request $request)
     {
         if (! $this->moduleUtil->isModuleInstalled('Crm')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -520,7 +520,7 @@ class FollowUpController extends ApiController
     {
         $user = Auth::user();
         if (! ($this->moduleUtil->isModuleInstalled('Crm') && ($user->can('crm.access_all_schedule') || $user->can('crm.access_own_schedule')))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $follow_up_ids = explode(',', $follow_up_ids);
@@ -588,7 +588,7 @@ class FollowUpController extends ApiController
     {
         $user = Auth::user();
         if (! ($this->moduleUtil->isModuleInstalled('Crm') && ($user->can('crm.access_all_schedule') || $user->can('crm.access_own_schedule')))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

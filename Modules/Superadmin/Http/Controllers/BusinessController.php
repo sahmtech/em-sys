@@ -45,7 +45,7 @@ class BusinessController extends BaseController
     public function index()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -223,7 +223,7 @@ class BusinessController extends BaseController
     public function create()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $currencies = $this->businessUtil->allCurrencies();
@@ -262,7 +262,7 @@ class BusinessController extends BaseController
     public function store(Request $request)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -353,7 +353,7 @@ class BusinessController extends BaseController
     public function show($business_id)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business = Business::with(['currency', 'locations', 'subscriptions', 'owner'])->find($business_id);
@@ -394,7 +394,7 @@ class BusinessController extends BaseController
     public function destroy($id)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -450,7 +450,7 @@ class BusinessController extends BaseController
     public function toggleActive(Request $request, $business_id, $is_active)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->businessUtil->notAllowedInDemo();
@@ -476,7 +476,7 @@ class BusinessController extends BaseController
     public function usersList($business_id)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -524,7 +524,7 @@ class BusinessController extends BaseController
     public function updatePassword(Request $request)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

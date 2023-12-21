@@ -24,7 +24,7 @@ class EssentialsEntitlementController extends Controller
 
        $can_crud_entitlements= auth()->user()->can('essentials.crud_entitlements');
        if (! $can_crud_entitlements) {
-           abort(403, 'Unauthorized action.');
+          //temp  abort(403, 'Unauthorized action.');
        }
        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 

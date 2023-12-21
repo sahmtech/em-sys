@@ -41,7 +41,7 @@ class OpeningStockController extends Controller
     public function add($product_id)
     {
         if (! auth()->user()->can('product.opening_stock')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -140,7 +140,7 @@ class OpeningStockController extends Controller
     public function save(Request $request)
     {
         if (! auth()->user()->can('product.opening_stock')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

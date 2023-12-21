@@ -34,7 +34,7 @@ class TaxonomyController extends Controller
     {
         $category_type = request()->get('type');
         if ($category_type == 'product' && ! auth()->user()->can('category.view') && ! auth()->user()->can('category.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -96,7 +96,7 @@ class TaxonomyController extends Controller
     {
         $category_type = request()->get('type');
         if ($category_type == 'product' && ! auth()->user()->can('category.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -129,7 +129,7 @@ class TaxonomyController extends Controller
     {
         $category_type = request()->input('category_type');
         if ($category_type == 'product' && ! auth()->user()->can('category.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -179,7 +179,7 @@ class TaxonomyController extends Controller
     {
         $category_type = request()->get('type');
         if ($category_type == 'product' && ! auth()->user()->can('category.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -224,7 +224,7 @@ class TaxonomyController extends Controller
                 $category = Category::where('business_id', $business_id)->findOrFail($id);
 
                 if ($category->category_type == 'product' && ! auth()->user()->can('category.update')) {
-                    abort(403, 'Unauthorized action.');
+                   //temp  abort(403, 'Unauthorized action.');
                 }
 
                 $category->name = $input['name'];
@@ -268,7 +268,7 @@ class TaxonomyController extends Controller
                 $category = Category::where('business_id', $business_id)->findOrFail($id);
 
                 if ($category->category_type == 'product' && ! auth()->user()->can('category.delete')) {
-                    abort(403, 'Unauthorized action.');
+                   //temp  abort(403, 'Unauthorized action.');
                 }
 
                 $category->delete();

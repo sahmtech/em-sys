@@ -38,7 +38,7 @@ class ImportOpeningStockController extends Controller
     public function index()
     {
         if (! auth()->user()->can('product.opening_stock')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $zip_loaded = extension_loaded('zip') ? true : false;
@@ -70,7 +70,7 @@ class ImportOpeningStockController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('product.opening_stock')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

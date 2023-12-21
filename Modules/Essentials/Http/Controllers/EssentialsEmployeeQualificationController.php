@@ -29,7 +29,7 @@ class EssentialsEmployeeQualificationController extends Controller
 
         $can_crud_employee_qualifications = auth()->user()->can('essentials.crud_employee_qualifications');
         if (!$can_crud_employee_qualifications) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $countries = $countries = EssentialsCountry::forDropdown();

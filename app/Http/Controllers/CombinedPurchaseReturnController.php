@@ -44,7 +44,7 @@ class CombinedPurchaseReturnController extends Controller
     public function create()
     {
         if (! auth()->user()->can('purchase.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -73,7 +73,7 @@ class CombinedPurchaseReturnController extends Controller
     public function save(Request $request)
     {
         if (! auth()->user()->can('purchase.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -170,7 +170,7 @@ class CombinedPurchaseReturnController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('purchase.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -247,7 +247,7 @@ class CombinedPurchaseReturnController extends Controller
     public function update(Request $request)
     {
         if (! auth()->user()->can('purchase.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

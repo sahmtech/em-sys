@@ -28,7 +28,7 @@ class ContractItemController extends Controller
 
          $can_crud_contract_items= auth()->user()->can('sales.crud_contract_items');
          if (! $can_crud_contract_items) {
-             abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
          }
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
  

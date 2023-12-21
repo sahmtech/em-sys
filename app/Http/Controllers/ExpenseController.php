@@ -44,7 +44,7 @@ class ExpenseController extends Controller
     public function index()
     {
         if (! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -286,7 +286,7 @@ class ExpenseController extends Controller
     public function create()
     {
         if (! auth()->user()->can('expense.add')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -338,7 +338,7 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('expense.add')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -411,7 +411,7 @@ class ExpenseController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('expense.edit')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -460,7 +460,7 @@ class ExpenseController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('expense.edit')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -505,7 +505,7 @@ class ExpenseController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('expense.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

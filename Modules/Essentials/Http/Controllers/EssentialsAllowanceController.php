@@ -31,7 +31,7 @@ class EssentialsAllowanceController extends Controller
 
 
         if (! auth()->user()->can('essentials.add_allowance_and_deduction') && ! auth()->user()->can('essentials.view_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         if (request()->ajax()) {
             $allowances = EssentialsAllowanceAndDeduction::where('business_id', $business_id);
@@ -68,7 +68,7 @@ class EssentialsAllowanceController extends Controller
  
     //     $can_crud_allowances = auth()->user()->can('essentials.crud_allowances');
     //     if (! $can_crud_allowances) {
-    //         abort(403, 'Unauthorized action.');
+    //        //temp  abort(403, 'Unauthorized action.');
     //     }
     //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
  
@@ -128,7 +128,7 @@ class EssentialsAllowanceController extends Controller
     //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
     //     if (! (auth()->user()->can('superadmin') || ($business_id, 'essentials_module')) && ! $is_admin) {
-    //         abort(403, 'Unauthorized action.');
+    //        //temp  abort(403, 'Unauthorized action.');
     //     }
  
     //     try {

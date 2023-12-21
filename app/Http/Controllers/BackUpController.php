@@ -29,7 +29,7 @@ class BackUpController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('backup'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
@@ -67,7 +67,7 @@ class BackUpController extends Controller
     public function create()
     {
         if (!auth()->user()->can('backup')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -106,7 +106,7 @@ class BackUpController extends Controller
     public function download($file_name)
     {
         if (!auth()->user()->can('backup')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo
@@ -144,7 +144,7 @@ class BackUpController extends Controller
     public function delete($file_name)
     {
         if (!auth()->user()->can('backup')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo

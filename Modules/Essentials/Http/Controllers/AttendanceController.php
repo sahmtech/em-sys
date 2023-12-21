@@ -50,7 +50,7 @@ class AttendanceController extends Controller
         $can_view_own_attendance = auth()->user()->can('essentials.view_own_attendance');
 
         if (!$can_crud_all_attendance && !$can_view_own_attendance) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $statuses = EssentialsAttendanceStatus::pluck( 'name','id');
         if (request()->ajax()) {

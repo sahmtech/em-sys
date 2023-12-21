@@ -71,7 +71,7 @@ class EssentialsLeaveController extends Controller
         $can_crud_own_leave = auth()->user()->can('essentials.crud_own_leave');
 
         if (!$can_crud_all_leave && !$can_crud_own_leave) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -252,7 +252,7 @@ class EssentialsLeaveController extends Controller
         $can_crud_own_leave = auth()->user()->can('essentials.crud_own_leave');
 
         if (!$can_crud_all_leave && !$can_crud_own_leave) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -409,7 +409,7 @@ class EssentialsLeaveController extends Controller
 
 
         if (!auth()->user()->can('essentials.crud_all_leave')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

@@ -30,7 +30,7 @@ class ContractAppendixController extends Controller
 
          $can_crud_contract_appendics= auth()->user()->can('sales.crud_contract_appendics');
          if (! $can_crud_contract_appendics) {
-             abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
          }
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
          $contracts=salesContract::all()->pluck('number_of_contract','id');

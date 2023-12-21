@@ -39,7 +39,7 @@ class EssentialsMessageController extends Controller
 
 
         if (! auth()->user()->can('essentials.view_message') && ! auth()->user()->can('essentials.create_message')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $query = EssentialsMessage::where('business_id', $business_id)
@@ -73,7 +73,7 @@ class EssentialsMessageController extends Controller
 
 
         if (! auth()->user()->can('essentials.create_message')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -129,7 +129,7 @@ class EssentialsMessageController extends Controller
 
 
         if (! auth()->user()->can('essentials.create_message')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -193,7 +193,7 @@ class EssentialsMessageController extends Controller
 
 
         if (! auth()->user()->can('essentials.view_message') && ! auth()->user()->can('essentials.create_message')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $query = EssentialsMessage::where('business_id', $business_id)

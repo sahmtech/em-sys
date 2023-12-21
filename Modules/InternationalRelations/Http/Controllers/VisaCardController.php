@@ -43,7 +43,7 @@ class VisaCardController extends Controller
 
         $can_crud_visa_card = auth()->user()->can('internationalrelations.crud_visa_cards');
         if (!($isSuperAdmin || $can_crud_visa_card)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $visaCards = IrVisaCard::with(
             'operationOrder.contact',
@@ -140,7 +140,7 @@ class VisaCardController extends Controller
 
     //     $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
     //     if (!($isSuperAdmin || $can_store_visa_card)) {
-    //         abort(403, 'Unauthorized action.');
+    //        //temp  abort(403, 'Unauthorized action.');
     //     }
     //     try {
     //         DB::transaction(function () use ($request) {
@@ -185,7 +185,7 @@ class VisaCardController extends Controller
 
         $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
         if (!($isSuperAdmin || $can_store_visa_card)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
     
         try {
@@ -244,7 +244,7 @@ class VisaCardController extends Controller
 
         $can_view_visa_workers = auth()->user()->can('internationalrelations.view_visa_workers');
         if (!($isSuperAdmin || $can_view_visa_workers)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $nationalities = EssentialsCountry::nationalityForDropdown();

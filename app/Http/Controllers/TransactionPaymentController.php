@@ -68,7 +68,7 @@ class TransactionPaymentController extends Controller
             $transaction_before = $transaction->replicate();
 
             if (! (auth()->user()->can('purchase.payments') || auth()->user()->can('sell.payments') || auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
 
             if ($transaction->payment_status != 'paid') {
@@ -166,7 +166,7 @@ class TransactionPaymentController extends Controller
     public function show($id)
     {
         if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -199,7 +199,7 @@ class TransactionPaymentController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('edit_purchase_payment') && ! auth()->user()->can('edit_sell_payment')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -232,7 +232,7 @@ class TransactionPaymentController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('edit_purchase_payment') && ! auth()->user()->can('edit_sell_payment') && ! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -320,7 +320,7 @@ class TransactionPaymentController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('delete_purchase_payment') && ! auth()->user()->can('delete_sell_payment') && ! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -383,7 +383,7 @@ class TransactionPaymentController extends Controller
     public function addPayment($transaction_id)
     {
         if (! auth()->user()->can('purchase.payments') && ! auth()->user()->can('sell.payments') && ! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -436,7 +436,7 @@ class TransactionPaymentController extends Controller
     public function getPayContactDue($contact_id)
     {
         if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -538,7 +538,7 @@ class TransactionPaymentController extends Controller
     public function postPayContactDue(Request $request)
     {
         if (! (auth()->user()->can('sell.payments') || auth()->user()->can('purchase.payments'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -600,7 +600,7 @@ class TransactionPaymentController extends Controller
                 auth()->user()->can('edit_purchase_payment') ||
                 auth()->user()->can('delete_purchase_payment')
             )) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -643,7 +643,7 @@ class TransactionPaymentController extends Controller
                 auth()->user()->can('edit_purchase_payment') ||
                 auth()->user()->can('delete_purchase_payment')
             )) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -676,7 +676,7 @@ class TransactionPaymentController extends Controller
                 auth()->user()->can('edit_purchase_payment') ||
                 auth()->user()->can('delete_purchase_payment')
             )) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('business.id');

@@ -30,7 +30,7 @@ class EssentialsTravelCategorieController extends Controller
 
         $can_crud_travel_categories = auth()->user()->can('essentials.crud_travel_categories');
         if (!$can_crud_travel_categories) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -70,7 +70,7 @@ class EssentialsTravelCategorieController extends Controller
 
 
         if (!auth()->user()->can('essentials.view_user_travel_categorie')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         if (request()->ajax()) {

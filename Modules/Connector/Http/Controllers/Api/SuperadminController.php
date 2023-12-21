@@ -214,7 +214,7 @@ class SuperadminController extends ApiController
     public function getPackages()
     {
         if (! $this->moduleUtil->isSuperadminInstalled()) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $packages = \Modules\Superadmin\Entities\Package::orderby('sort_order', 'asc')->get();

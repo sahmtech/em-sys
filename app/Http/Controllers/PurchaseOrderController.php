@@ -76,7 +76,7 @@ class PurchaseOrderController extends Controller
     public function index()
     {
         if (! auth()->user()->can('purchase_order.view_all') && ! auth()->user()->can('purchase_order.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->businessUtil->is_admin(auth()->user());
@@ -246,7 +246,7 @@ class PurchaseOrderController extends Controller
     public function create()
     {
         if (! auth()->user()->can('purchase_order.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -296,7 +296,7 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('purchase_order.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -443,7 +443,7 @@ class PurchaseOrderController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('purchase_order.view_all') && ! auth()->user()->can('purchase_order.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -506,7 +506,7 @@ class PurchaseOrderController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('purchase_order.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -614,7 +614,7 @@ class PurchaseOrderController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('purchase_order.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -737,7 +737,7 @@ class PurchaseOrderController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('purchase_order.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -797,7 +797,7 @@ class PurchaseOrderController extends Controller
     public function downloadPdf($id)
     {
         if (! ((auth()->user()->can('purchase_order.view_all') || auth()->user()->can('purchase_order.view_own')))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -867,7 +867,7 @@ class PurchaseOrderController extends Controller
     {
         $is_admin = $this->businessUtil->is_admin(auth()->user());
         if (! $is_admin) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if ($request->ajax()) {
@@ -892,7 +892,7 @@ class PurchaseOrderController extends Controller
     {
         $is_admin = $this->businessUtil->is_admin(auth()->user());
         if (! $is_admin) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if ($request->ajax()) {

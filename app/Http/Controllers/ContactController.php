@@ -103,7 +103,7 @@ class ContactController extends Controller
     private function indexSupplier()
     {
         if (! auth()->user()->can('supplier.view') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -286,7 +286,7 @@ class ContactController extends Controller
     private function indexCustomer()
     {
         if (! auth()->user()->can('customer.view') && ! auth()->user()->can('customer.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -534,7 +534,7 @@ class ContactController extends Controller
     public function create()
     {
         if (! auth()->user()->can('supplier.create') && ! auth()->user()->can('customer.create') && ! auth()->user()->can('customer.view_own') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -576,7 +576,7 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('supplier.create') && ! auth()->user()->can('customer.create') && ! auth()->user()->can('customer.view_own') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -657,7 +657,7 @@ class ContactController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('supplier.view') && ! auth()->user()->can('customer.view') && ! auth()->user()->can('customer.view_own') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -671,12 +671,12 @@ class ContactController extends Controller
 
         if (! auth()->user()->can('supplier.view') && auth()->user()->can('supplier.view_own')) {
             if ($contact->created_by != auth()->user()->id & ! in_array($contact->id, $user_contacts)) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         }
         if (! auth()->user()->can('customer.view') && auth()->user()->can('customer.view_own')) {
             if ($contact->created_by != auth()->user()->id & ! in_array($contact->id, $user_contacts)) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         }
 
@@ -712,7 +712,7 @@ class ContactController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('supplier.update') && ! auth()->user()->can('customer.update') && ! auth()->user()->can('customer.view_own') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -769,7 +769,7 @@ class ContactController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('supplier.update') && ! auth()->user()->can('customer.update') && ! auth()->user()->can('customer.view_own') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -840,7 +840,7 @@ class ContactController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('supplier.delete') && ! auth()->user()->can('customer.delete') && ! auth()->user()->can('customer.view_own') && ! auth()->user()->can('supplier.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -995,7 +995,7 @@ class ContactController extends Controller
     public function getImportContacts()
     {
         if (! auth()->user()->can('supplier.create') && ! auth()->user()->can('customer.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $zip_loaded = extension_loaded('zip') ? true : false;
@@ -1022,7 +1022,7 @@ class ContactController extends Controller
     public function postImportContacts(Request $request)
     {
         if (! auth()->user()->can('supplier.create') && ! auth()->user()->can('customer.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1264,7 +1264,7 @@ class ContactController extends Controller
     public function getLedger()
     {
         if (! auth()->user()->can('supplier.view') && ! auth()->user()->can('customer.view') && ! auth()->user()->can('supplier.view_own') && ! auth()->user()->can('customer.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1287,12 +1287,12 @@ class ContactController extends Controller
 
         if (! auth()->user()->can('supplier.view') && auth()->user()->can('supplier.view_own')) {
             if ($contact->created_by != auth()->user()->id & ! in_array($contact->id, $user_contacts)) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         }
         if (! auth()->user()->can('customer.view') && auth()->user()->can('customer.view_own')) {
             if ($contact->created_by != auth()->user()->id & ! in_array($contact->id, $user_contacts)) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         }
 
@@ -1549,7 +1549,7 @@ class ContactController extends Controller
     public function updateStatus($id)
     {
         if (! auth()->user()->can('supplier.update') && ! auth()->user()->can('customer.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -1572,7 +1572,7 @@ class ContactController extends Controller
     public function contactMap()
     {
         if (! auth()->user()->can('supplier.view') && ! auth()->user()->can('customer.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

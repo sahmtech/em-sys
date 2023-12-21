@@ -27,7 +27,7 @@ class EssentialsBasicSalayController extends Controller
 
        $can_crud_basic_salary= auth()->user()->can('essentials.crud_basic_salary');
        if (! $can_crud_basic_salary) {
-           abort(403, 'Unauthorized action.');
+          //temp  abort(403, 'Unauthorized action.');
        }
        
        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);

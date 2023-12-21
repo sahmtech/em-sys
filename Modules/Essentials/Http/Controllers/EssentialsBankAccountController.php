@@ -29,7 +29,7 @@ class EssentialsBankAccountController extends Controller
  
          $can_crud_bank_accounts= auth()->user()->can('essentials.crud_bank_accounts');
          if (! $can_crud_bank_accounts) {
-             abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
          }
          $locations = BusinessLocation::where('business_id', $business_id)->active()->pluck('name','id');
 

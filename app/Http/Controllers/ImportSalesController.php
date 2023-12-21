@@ -57,7 +57,7 @@ class ImportSalesController extends Controller
     public function index()
     {
         if (! auth()->user()->can('sell.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -90,7 +90,7 @@ class ImportSalesController extends Controller
     public function preview(Request $request)
     {
         if (! auth()->user()->can('sell.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->businessUtil->notAllowedInDemo();
@@ -163,7 +163,7 @@ class ImportSalesController extends Controller
     public function import(Request $request)
     {
         if (! auth()->user()->can('sell.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -546,7 +546,7 @@ class ImportSalesController extends Controller
     public function revertSaleImport($batch)
     {
         if (! auth()->user()->can('sell.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

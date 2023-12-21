@@ -64,7 +64,7 @@ class WorkerController extends Controller
 
         $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
         if (!($isSuperAdmin || $can_view_proposed_labors)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -184,7 +184,7 @@ class WorkerController extends Controller
 
         $can_view_worker_info = auth()->user()->can('internationalrelations.view_worker_info');
         if (!($isSuperAdmin || $can_view_worker_info)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -204,7 +204,7 @@ class WorkerController extends Controller
 
         $can_view_accepted_workers = auth()->user()->can('internationalrelations.view_accepted_workers');
         if (!($isSuperAdmin || $can_view_accepted_workers)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -301,7 +301,7 @@ class WorkerController extends Controller
 
         $can_view_unaccepted_workers = auth()->user()->can('internationalrelations.view_unaccepted_workers');
         if (!($isSuperAdmin || $can_view_unaccepted_workers)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -412,7 +412,7 @@ class WorkerController extends Controller
 
         $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
         if (!($isSuperAdmin || $can_view_proposed_labors)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $currentDate = now();
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -586,7 +586,7 @@ class WorkerController extends Controller
             $can_passport_stamped = auth()->user()->can('internationalrelations.passport_stamped');
 
             if (!($isSuperAdmin || $can_passport_stamped)) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
 
             $selectedRowsData = json_decode($request->input('selectedRowsData2'));
@@ -642,7 +642,7 @@ class WorkerController extends Controller
 
         $can_fingerprinting = auth()->user()->can('internationalrelations.fingerprinting');
         if (!($isSuperAdmin || $can_fingerprinting)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $selectedRows = $request->input('selectedRows');
@@ -672,7 +672,7 @@ class WorkerController extends Controller
 
         $can_medical_examination = auth()->user()->can('internationalrelations.medical_examination');
         if (!($isSuperAdmin || $can_medical_examination)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $selectedRows = $request->input('selectedRows');
@@ -703,7 +703,7 @@ class WorkerController extends Controller
 
         $can_accepted_by_worker = auth()->user()->can('internationalrelations.accepted_by_worker');
         if (!($isSuperAdmin || $can_accepted_by_worker)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -761,7 +761,7 @@ class WorkerController extends Controller
 
         $can_store_visa_worker = auth()->user()->can('internationalrelations.store_visa_worker');
         if (!($isSuperAdmin || $can_store_visa_worker)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             foreach ($request->worker_id as $workerId) {
@@ -796,7 +796,7 @@ class WorkerController extends Controller
 
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
         if (!($isSuperAdmin || $can_store_proposed_labor)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -896,7 +896,7 @@ class WorkerController extends Controller
     
         $canChangeWorkerStatus = $user->can('internationalrelations.change_worker_status');
         if (!($isSuperAdmin || $canChangeWorkerStatus)) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
     
         try {

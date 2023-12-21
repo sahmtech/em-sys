@@ -46,7 +46,7 @@ class StockAdjustmentController extends Controller
     public function index()
     {
         if (! auth()->user()->can('purchase.view') && ! auth()->user()->can('purchase.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -131,7 +131,7 @@ class StockAdjustmentController extends Controller
     public function create()
     {
         if (! auth()->user()->can('purchase.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -156,7 +156,7 @@ class StockAdjustmentController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('purchase.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -259,7 +259,7 @@ class StockAdjustmentController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('purchase.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
         $stock_adjustment = Transaction::where('transactions.business_id', $business_id)
@@ -314,7 +314,7 @@ class StockAdjustmentController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('purchase.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             if (request()->ajax()) {
@@ -415,7 +415,7 @@ class StockAdjustmentController extends Controller
     public function removeExpiredStock($purchase_line_id)
     {
         if (! auth()->user()->can('purchase.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

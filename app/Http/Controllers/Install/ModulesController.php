@@ -35,7 +35,7 @@ class ModulesController extends Controller
 
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('manage_modules'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
@@ -92,7 +92,7 @@ class ModulesController extends Controller
     public function regenerate()
     {
         if (!auth()->user()->can('manage_modules')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
@@ -172,7 +172,7 @@ class ModulesController extends Controller
     public function update(Request $request, $module_name)
     {
         if (!auth()->user()->can('manage_modules')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
@@ -213,7 +213,7 @@ class ModulesController extends Controller
     public function destroy($module_name)
     {
         if (!auth()->user()->can('manage_modules')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $notAllowed = $this->moduleUtil->notAllowedInDemo();

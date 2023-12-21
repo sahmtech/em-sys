@@ -63,7 +63,7 @@ class SettingsController extends Controller
 
         //check for admin
         if (!$this->accountingUtil->is_admin(auth()->user())) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         //reset logic

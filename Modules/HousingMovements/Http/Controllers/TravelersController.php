@@ -64,7 +64,7 @@ class TravelersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         // if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -193,7 +193,7 @@ class TravelersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         // if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
