@@ -1,7 +1,7 @@
 @component('components.widget')
 <div class="row">
-<div class="col-md-12" id="section4">
-        <hr>
+<div class="col-md-12  box box-primary" id="section4">
+    
         <h4>@lang('essentials::lang.hrm_details'):</h4>
         <div class="col-md-6">
         <div class="form-group">
@@ -48,8 +48,8 @@
 
 
 
-<div class="col-md-12" id="section5">
-            <hr>
+<div class="col-md-12  box box-primary" id="section5">
+         
             <h4>@lang('essentials::lang.contract_details'):</h4>
             {{-- 
                 <div class="form-group col-md-3">
@@ -128,8 +128,8 @@
 
 @component('components.widget')
 <div class="row">
-<div class="col-md-12" id="section6">
-            <hr>
+<div class="col-md-12  box box-primary" id="section6">
+       
             <h4>@lang('essentials::lang.payroll'):</h4>
 
     <div class="col-md-4">
@@ -195,8 +195,8 @@
 </div>
 
 
-<div class="col-md-12" id="section7">
-    <hr>
+<div class="col-md-12  box box-primary" id="section7">
+  
     <h4>@lang('essentials::lang.features'):</h4>
 
     <div>
