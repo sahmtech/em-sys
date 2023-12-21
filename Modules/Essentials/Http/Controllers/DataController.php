@@ -496,6 +496,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_attendances_status'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.curd_work_cards',
+                'label' => __('essentials::lang.curd_work_cards'),
+                'default' => false,
+            ],
 
         ];
     }
