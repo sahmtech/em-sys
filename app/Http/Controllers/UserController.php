@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+
 
 class UserController extends Controller
 {
@@ -62,11 +64,11 @@ class UserController extends Controller
 
         $nationalities=EssentialsCountry::nationalityForDropdown();
         $banks = EssentialsBankAccounts::all()->pluck('name','id');
-        
-
+        $countries = EssentialsCountry::forDropdown();
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $resident_doc=null;
    
-        return view('user.profile', compact('user','resident_doc','banks', 'languages','blood_types','nationalities'));
+        return view('user.profile', compact('user','resident_doc','banks','countries', 'languages','blood_types','nationalities','spacializations'));
     }
 
     /**

@@ -147,7 +147,14 @@
 @endsection
 
 @section('javascript')
+<script>
+ 
+</script>
 <script type="text/javascript">
+       var translations = {
+        cantHoused: '{{ __("housingmovements::lang.cant_housed") }}',
+        notAvailable: '{{ __("housingmovements::lang.not_avaiable") }}',
+    };
     var rooms_table;
 
     function reloadDataTable() {
@@ -220,66 +227,73 @@ $('#rooms-selected').on('click', function (e) {
     e.preventDefault();
 
     var selectedRows = getCheckRecords();
+ 
 
     if (selectedRows.length > 0) {
         $('#roomsModal').modal('show');
 var i = 0;
-        $.ajax({
-            url: '{{ route("getSelectedroomsData") }}',
-            type: 'post',
-            data: { selectedRows: selectedRows },
-            success: function (data) {
+$.ajax({
+    url: '{{ route("getSelectedroomsData") }}',
+    type: 'post',
+    data: { selectedRows: selectedRows },
+    success: function (data) {
+        $('.modal-body').empty();
 
-                
-                $('.modal-body').empty();
+        var inputClasses = 'form-group col-md-4 ';
 
-                var inputClasses = 'form-group col-md-4 ';
-             
+        $.each(data.rooms, function (index, room) {
+            var roomIDInput = $('<input>', {
+                type: 'hidden',
+                name: 'room_id[]',
+                class: inputClasses,
+                required: true,
+                value: room.room_id
+            });
 
- $.each(data, function (index, row) {
-      
+            var roomnumberInput = $('<input>', {
+                type: 'text',
+                name: 'room_number[]',
+                class: inputClasses,
+                style: 'height: 40px',
+                placeholder: '{{ __('housingmovements::lang.room_number') }}',
+                required: true,
+                value: room.room_number
+            });
 
-    var roomIDInput = $('<input>', {
-        type: 'hidden',
-        name: 'room_id[]',
-        class: inputClasses,
-        required: true,
-        value: data.rooms[i]['room_id']
-    });
-    console.log(roomIDInput);
-    var roomnumberInput = $('<input>', {
-    type: 'text',
-    name: 'room_number[]',
-    class: inputClasses,
-    style: 'height: 40px',
-    placeholder: '{{ __('housingmovements::lang.room_number') }}',
-    required: true,
-    value: data.rooms[i]['room_number']
-});
-console.log(roomnumberInput);
-i++;
-                    var workerSelect = $('<select>', {
-                        name: 'worker_id[]',
-                        class: inputClasses + ' select2',
-                        style: 'height: 40px; width: 350px;',
-                        required: true,
-                    });
+            var workerSelect = $('<select>', {
+                name: 'worker_id[]',
+                class: inputClasses + ' select2',
+                style: 'height: 40px; width: 350px;',
+                required: true,
+            });
 
-                    
-                    // Populate worker dropdown options
-                    $.each(data.workers, function (workerId, workerName) {
-                        var option = $('<option>', {
-                            value: workerId,
-                            text: workerName
-                        });
-                        workerSelect.append(option);
-                    });
-
-                    $('.modal-body').append(roomIDInput, roomnumberInput, workerSelect);
-                    workerSelect.select2();
+            // Populate worker dropdown options
+            $.each(data.workers, function (workerId, workerName) {
+                var option = $('<option>', {
+                    value: workerId,
+                    text: workerName
                 });
-            }
+                workerSelect.append(option);
+            });
+
+            // Append elements to modal body
+            $('.modal-body').append(roomIDInput, roomnumberInput, workerSelect);
+            workerSelect.select2();
+
+            // Check if beds_count is 0 and show an error message
+            if (room.beds_count === 0) {
+               
+    swal({
+       
+        text: translations.cantHoused + ' ' + room.room_number + ' ' + translations.notAvailable,
+        icon: 'error',
+        button: 'OK',
+    });
+    $('#room_form').modal('hide');
+}
         });
+    }
+});
 
         $('#submitArrived').click(function () {
 
@@ -310,6 +324,7 @@ i++;
         });
     }
 });
+
 $('#bulk_edit').submit(function (e) {
    
    e.preventDefault();

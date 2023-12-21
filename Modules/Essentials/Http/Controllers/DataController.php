@@ -496,6 +496,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_attendances_status'),
                 'default' => false,
             ],
+            [
+                'value' => 'essentials.view_work_cards',
+                'label' => __('essentials::lang.view_work_cards'),
+                'default' => false,
+            ],
 
         ];
     }
@@ -808,6 +813,7 @@ class DataController extends Controller
             if (request()->input('health_insurance') != null){
             $user->has_insurance= request()->input('health_insurance');
                 }
+             
             $user->save();
 
 
@@ -967,6 +973,7 @@ class DataController extends Controller
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->user_type= request()->input('user_type');
             $user->location_id = request()->input('location_id');
+
             if (request()->input('health_insurance') != null){
                 $user->has_insurance= request()->input('health_insurance');
             }
@@ -980,10 +987,10 @@ class DataController extends Controller
                 $user->contact_number = null;
             }
 
-            $user->update();
+           
 
 
-
+          $user->save();
          
         if(!empty(request()->input('expiration_date')))
         { 

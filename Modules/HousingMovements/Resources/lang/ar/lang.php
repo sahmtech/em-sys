@@ -12,6 +12,8 @@ return [
     'building_address'=>'عنوان السكن',
     'city' => 'المدينة',
     'address' => 'العنوان',
+    'cant_housed'=>'لايمكن التسكين في الغرفة رقم ',
+    'not_avaiable'=>'غير متاحة ',
     'building_guard' => 'حارس العمارة',
     'building_supervisor' => 'مشرف العمارة',
     'building_cleaner' => 'عامل النظافة',
