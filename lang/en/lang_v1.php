@@ -19,6 +19,8 @@ return [
     'sales_added' => 'Sales Added',
     'sales_with_commission' => 'Sales With Commission',
     // 'total_sale_with_commission' => 'Total Sale With Commission',
+    "bank_details_creat_edit" => " Bank account",
+
     'total_sale_commission' => 'Total Sale Commission',
     'sales_item_addition_method' => 'Sales Item Addition Method',
     'add_item_in_new_row' => 'Add item in new row',

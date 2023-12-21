@@ -11,6 +11,7 @@ return [
     'created_at' => 'Created Date',
     'action' => 'Action',
     "payroll_create_edit" => "Salary",
+    'contract_details_create_edit' => 'Employment contract',
 
     'all_documents' => 'All documents',
     'manage_document' => 'Manage all your documents',
