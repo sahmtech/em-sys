@@ -277,7 +277,8 @@
                 $("#expiration_date").show(); 
                 $("#licence_date").show();
                 $('#unified_number').show();
-               
+                $('#issuing_location').show();
+                
                 $("#renew_date").hide();
                 $("#licence_number").hide();
                 $("#capital").hide();

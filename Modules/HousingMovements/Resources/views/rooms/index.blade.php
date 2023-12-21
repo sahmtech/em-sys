@@ -22,6 +22,16 @@
                     </div>
                 </div>
                 @endif
+
+                <div class="form-group col-md-3">
+                            {!! Form::label('room_status', __('housingmovements::lang.room_status') . ':*') !!}
+                            {!! Form::select('room_status', $roomStatusOptions, null, [
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                                'placeholder' => __('housingmovements::lang.room_status'),
+                                'id' => 'room_status',
+                            ]) !!}
+                        </div>
             @endcomponent
         </div>
     </div>
@@ -40,6 +50,7 @@
                     <table class="table table-bordered table-striped" id="rooms_table">
                         <thead>
                             <tr>
+                            <th><input type="checkbox" class="largerCheckbox" id="chkAll" /></th>
                                 <th>@lang('housingmovements::lang.room_number')</th>
                                 <th>@lang('housingmovements::lang.htr_building')</th>
                                 <th>@lang('housingmovements::lang.area')</th>
@@ -48,10 +59,36 @@
                                 <th>@lang('messages.action')</th>
                             </tr>
                         </thead>
+
+
+                             
+                <tfoot>
+                    <tr>
+                    <td colspan="5">
+                        <div style="display: flex; width: 100%;">
+                  
+                                {!! Form::hidden('selected_rows', null, ['id' => 'selected_rows']); !!}
+                               
+                                @include('housingmovements::rooms.room_housed_modal')
+                               
+                                {!! Form::submit(__('housingmovements::lang.housed'),
+                                    array('class' => 'btn btn-xs btn-success', 'id' => 'rooms-selected')) !!}
+
+                      
+                        
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
                     </table>
                 </div>
             @endcomponent
         </div>
+
+
+
+
+
 
         <div class="modal fade room_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 
@@ -105,7 +142,8 @@
     </div>
 </section>
 <!-- /.content -->
-
+<div class="col-md-8 selectedDiv" style="display:none;">
+</div>
 @endsection
 
 @section('javascript')
@@ -126,9 +164,20 @@
                     if ($('#htr_building_filter').length) {
                         d.htr_building = $('#htr_building_filter').val();
                     }
+                     // Add the room_status filter
+                d.room_status = $('#room_status').val();
                 }
             },
             columns: [
+                { 
+                data: 'id', 
+                name: 'checkbox', 
+                orderable: false, 
+                searchable: false,
+                render: function (data, type, row) {
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' + data + '" />';
+                }
+            },
                 { data: 'room_number' },
                 { data: 'htr_building_id' },
                 { data: 'area' },
@@ -139,11 +188,152 @@
             ]
         });
 
-        $('#htr_building_filter').on('change', function () {
-            reloadDataTable();
+        $('#htr_building_filter, #room_status').on('change', function () {
+            console.log($('#room_status').val());
+        reloadDataTable();
+    });
+
+
+
+
+ $('#rooms_table').on('change', '.tblChk', function (){
+         
+         if ($('.tblChk:checked').length == $('.tblChk').length) {
+             $('#chkAll').prop('checked', true);
+         } else {
+             $('#chkAll').prop('checked', false);
+         }
+         getCheckRecords();
+ });
+
+$("#chkAll").change(function () {
+          
+          if ($(this).prop('checked')) {
+              $('.tblChk').prop('checked', true);
+          } else {
+              $('.tblChk').prop('checked', false);
+          }
+          getCheckRecords();
+});
+
+$('#rooms-selected').on('click', function (e) {
+    e.preventDefault();
+
+    var selectedRows = getCheckRecords();
+
+    if (selectedRows.length > 0) {
+        $('#roomsModal').modal('show');
+var i = 0;
+        $.ajax({
+            url: '{{ route("getSelectedroomsData") }}',
+            type: 'post',
+            data: { selectedRows: selectedRows },
+            success: function (data) {
+
+                
+                $('.modal-body').find('input').remove();
+
+                var inputClasses = 'form-group col-md-4 mb-2';
+             
+
+ $.each(data, function (index, row) {
+      
+
+    var roomIDInput = $('<input>', {
+        type: 'hidden',
+        name: 'room_id[]',
+        class: inputClasses,
+        required: true,
+        value: data.rooms[i]['room_id']
+    });
+    console.log(roomIDInput);
+    var roomnumberInput = $('<input>', {
+    type: 'text',
+    name: 'room_number[]',
+    class: inputClasses,
+    style: 'height: 40px',
+    placeholder: '{{ __('housingmovements::lang.room_number') }}',
+    required: true,
+    value: data.rooms[i]['room_number']
+});
+console.log(roomnumberInput);
+i++;
+                    var workerSelect = $('<select>', {
+                        name: 'worker_id[]',
+                        class: inputClasses +'select2',
+                        style: 'height: 40px; width: 250px;',
+                        required: true,
+                    });
+
+                    
+                    // Populate worker dropdown options
+                    $.each(data.workers, function (workerId, workerName) {
+                        var option = $('<option>', {
+                            value: workerId,
+                            text: workerName
+                        });
+                        workerSelect.append(option);
+                    });
+
+                    $('.modal-body').append(roomIDInput, roomnumberInput, workerSelect);
+                });
+            }
         });
 
-        $(document).on('click', 'button.delete_room_button', function () {
+        // $('#submitArrived').click(function () {
+
+        //     $.ajax({
+                
+                
+        //         url: $('#room_form').attr('action'),
+        //         type: 'post',
+        //         data: $('#room_form').serialize(),
+                
+        //         success: function (response) {
+                    
+        //             console.log(response);
+        //             console.log($('#room_form').attr('action'));
+
+        //             $('#room_form').modal('hide');
+        //             reloadDataTable();
+        //         }
+        //     });
+        // });
+
+    } else {
+        $('input#selected_rows').val('');
+        swal({
+            title: "@lang('lang_v1.no_row_selected')",
+            icon: "warning",
+            button: "OK",
+        });
+    }
+});
+$('#bulk_edit').submit(function (e) {
+   
+   e.preventDefault();
+
+var formData = $(this).serializeArray();
+  console.log(formData);
+  console.log( $(this).attr('action'));
+   $.ajax({
+       url: $(this).attr('action'),
+       type: 'post',
+       data: formData,
+       success: function (response) {
+        
+           console.log(response);
+
+       
+           $('#roomsModal').modal('hide');
+           reloadDataTable();
+       }
+   });
+});
+
+
+
+     $(document).on('click', 'button.delete_room_button', function () {
              swal({
                 title: LANG.sure,
                 text: LANG.confirm_delete_room,
@@ -169,7 +359,30 @@
                 }
             });
         });
+
+
+
+
     });
 
+    function getCheckRecords() {
+            var selectedRows = [];
+            $(".selectedDiv").html("");
+           
+            $('.tblChk:checked').each(function () {
+                if ($(this).prop('checked')) {
+                    const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
+                    console.log(rec);
+                    $(".selectedDiv").append(rec);
+                    selectedRows.push($(this).attr("data-id"));
+
+                    console.log(selectedRows);
+                    
+                }
+
+            });
+        
+            return selectedRows;
+        }
 </script>
 @endsection

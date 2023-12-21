@@ -298,7 +298,7 @@ $('#arraived-selected').on('click', function (e) {
 
 
 
-    $('#edit-selected').on('click', function (e) {
+$('#edit-selected').on('click', function (e) {
     e.preventDefault();
 
     var selectedRows = getCheckRecords();

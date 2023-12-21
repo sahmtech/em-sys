@@ -40,7 +40,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/rooms/{id}/edit', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'edit'])->name('room.edit');
         Route::delete('/rooms/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'destroy'])->name('room.destroy');
         Route::put('/updateRoom/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'update'])->name('updateRoom');
-
+        Route::post('/postRoomsData', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'postRoomsData'])->name('postRoomsData');
+        Route::post('/getSelectedroomsData', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getSelectedroomsData'])->name('getSelectedroomsData');
+       Route::post('/room_data', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'room_data'])->name('room_data');
+        
         //facilities
         Route::get('/facilities', [\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index'])->name('facilities');
 

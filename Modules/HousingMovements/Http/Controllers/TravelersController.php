@@ -383,7 +383,7 @@ class TravelersController extends Controller
 
                     $worker = IrProposedLabor::find($data['worker_id']);
    
-                    if ($worker) {
+                    if ($room) {
                      
                         User::where('proposal_worker_id', $data['worker_id'])
                             ->update([
