@@ -25,9 +25,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_employee_families = auth()->user()->can('essentials.crud_employee_families');
         if (!$crud_employee_families) {
             abort(403, 'Unauthorized action.');
@@ -94,9 +92,7 @@ class EssentialsEmployeeFamilyController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['first_name', 'last_name', 'address', 'age', 'gender', 'relative_relation', 'eqama_number', 'employee']);
@@ -149,9 +145,7 @@ class EssentialsEmployeeFamilyController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsEmployeesFamily::where('id', $id)
@@ -188,9 +182,7 @@ class EssentialsEmployeeFamilyController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $family = EssentialsEmployeesFamily::findOrFail($id);
 
@@ -215,9 +207,7 @@ class EssentialsEmployeeFamilyController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['first_name', 'last_name', 'address', 'age', 'gender', 'relative_relation', 'eqama_number', 'employee']);

@@ -202,9 +202,7 @@ class OfferPriceController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.approve_leave')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['status', 'offer_id']);

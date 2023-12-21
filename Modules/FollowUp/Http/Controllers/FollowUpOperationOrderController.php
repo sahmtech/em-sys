@@ -40,9 +40,7 @@ class FollowUpOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
         $can_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
         if (!$can_crud_operation_orders) {
             abort(403, 'Unauthorized action.');

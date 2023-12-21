@@ -39,10 +39,7 @@ class SettingsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         $account_sub_types = AccountingAccountType::where('account_type', 'sub_type')
             ->where(function ($q) use ($business_id) {
@@ -62,10 +59,7 @@ class SettingsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         //check for admin
         if (!$this->accountingUtil->is_admin(auth()->user())) {
@@ -109,10 +103,6 @@ class SettingsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id,
-                'accounting_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $input = $request->only(['journal_entry_prefix', 'transfer_prefix', 'barcode_type', 'repair_tc_condition', 'job_sheet_prefix', 'problem_reported_by_customer', 'product_condition', 'product_configuration', 'job_sheet_custom_field_1', 'job_sheet_custom_field_2', 'job_sheet_custom_field_3', 'job_sheet_custom_field_4', 'job_sheet_custom_field_5', 'default_repair_checklist']);
@@ -245,11 +235,7 @@ class SettingsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.map_transactions'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $elem = AccountingMappingSetting::query()->where('id', $request->id)->first();

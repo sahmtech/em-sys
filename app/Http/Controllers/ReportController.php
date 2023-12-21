@@ -334,7 +334,7 @@ class ReportController extends Controller
                 break;
             }
         }
-        if ($this->moduleUtil->isModuleInstalled('Manufacturing') && (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'manufacturing_module'))) {
+        if ($this->moduleUtil->isModuleInstalled('Manufacturing') && (auth()->user()->can('superadmin') )) {
             $show_manufacturing_data = 1;
         } else {
             $show_manufacturing_data = 0;

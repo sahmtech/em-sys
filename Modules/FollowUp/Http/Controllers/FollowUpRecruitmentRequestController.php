@@ -27,9 +27,7 @@ class FollowUpRecruitmentRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
      
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+     
         
         $specializations=EssentialsSpecialization::all()->pluck('name','id');
         $professions=EssentialsProfession::all()->pluck('name','id');
@@ -118,9 +116,7 @@ class FollowUpRecruitmentRequestController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
  
         try {
             $input = $request->only(['nationlity', 'quantity','date', 'profession', 'specialization','note']);

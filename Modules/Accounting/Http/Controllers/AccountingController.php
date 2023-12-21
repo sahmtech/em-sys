@@ -41,10 +41,7 @@ class AccountingController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+      
 
         $start_date = request()->get('start_date', session()->get('financial_year.start')); 
         $end_date = request()->get('end_date', session()->get('financial_year.end')); 

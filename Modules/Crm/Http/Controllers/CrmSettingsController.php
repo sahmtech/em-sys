@@ -40,9 +40,7 @@ class CrmSettingsController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) && $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $crm_settings = $this->crmUtil->getCrmSettings($business_id);
 
@@ -61,9 +59,7 @@ class CrmSettingsController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) && $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['order_request_prefix']);

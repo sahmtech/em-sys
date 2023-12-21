@@ -28,9 +28,7 @@ class EssentialsInsuranceContractController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
         if (!$can_crud_insurance_companies) {
             abort(403, 'Unauthorized action.');
@@ -120,9 +118,7 @@ class EssentialsInsuranceContractController extends Controller
         $user_id = $request->session()->get('user.id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['insurance_company', 'policy_number', 'insurance_start_date', 'insurance_end_date']);
@@ -175,9 +171,7 @@ class EssentialsInsuranceContractController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+    
         $contract = EssentialsInsuranceContract::findOrFail($id);
         $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
 
@@ -194,9 +188,7 @@ class EssentialsInsuranceContractController extends Controller
     {  $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+     
         try {
             $input = $request->only(['insurance_company', 'policy_number', 'insurance_start_date', 'insurance_end_date']);
         
@@ -231,9 +223,7 @@ class EssentialsInsuranceContractController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsInsuranceContract::where('id', $id)

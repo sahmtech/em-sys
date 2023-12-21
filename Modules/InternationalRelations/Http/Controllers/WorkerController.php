@@ -61,9 +61,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
         if (!($isSuperAdmin || $can_view_proposed_labors)) {
             abort(403, 'Unauthorized action.');
@@ -183,9 +181,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_worker_info = auth()->user()->can('internationalrelations.view_worker_info');
         if (!($isSuperAdmin || $can_view_worker_info)) {
             abort(403, 'Unauthorized action.');
@@ -205,9 +201,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_accepted_workers = auth()->user()->can('internationalrelations.view_accepted_workers');
         if (!($isSuperAdmin || $can_view_accepted_workers)) {
             abort(403, 'Unauthorized action.');
@@ -304,9 +298,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_unaccepted_workers = auth()->user()->can('internationalrelations.view_unaccepted_workers');
         if (!($isSuperAdmin || $can_view_unaccepted_workers)) {
             abort(403, 'Unauthorized action.');
@@ -417,9 +409,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
         if (!($isSuperAdmin || $can_view_proposed_labors)) {
             abort(403, 'Unauthorized action.');
@@ -591,9 +581,7 @@ class WorkerController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
 
-            if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-                abort(403, 'Unauthorized action.');
-            }
+
 
             $can_passport_stamped = auth()->user()->can('internationalrelations.passport_stamped');
 
@@ -651,9 +639,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_fingerprinting = auth()->user()->can('internationalrelations.fingerprinting');
         if (!($isSuperAdmin || $can_fingerprinting)) {
             abort(403, 'Unauthorized action.');
@@ -683,9 +669,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_medical_examination = auth()->user()->can('internationalrelations.medical_examination');
         if (!($isSuperAdmin || $can_medical_examination)) {
             abort(403, 'Unauthorized action.');
@@ -716,9 +700,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_accepted_by_worker = auth()->user()->can('internationalrelations.accepted_by_worker');
         if (!($isSuperAdmin || $can_accepted_by_worker)) {
             abort(403, 'Unauthorized action.');
@@ -776,9 +758,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_store_visa_worker = auth()->user()->can('internationalrelations.store_visa_worker');
         if (!($isSuperAdmin || $can_store_visa_worker)) {
             abort(403, 'Unauthorized action.');
@@ -813,9 +793,7 @@ class WorkerController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_store_proposed_labor = auth()->user()->can('internationalrelations.store_proposed_labor');
         if (!($isSuperAdmin || $can_store_proposed_labor)) {
             abort(403, 'Unauthorized action.');
@@ -914,9 +892,7 @@ class WorkerController extends Controller
         $businessId = $request->session()->get('user.business_id');
     
      
-        if (!($isSuperAdmin || $user->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($businessId, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
     
         $canChangeWorkerStatus = $user->can('internationalrelations.change_worker_status');
         if (!($isSuperAdmin || $canChangeWorkerStatus)) {

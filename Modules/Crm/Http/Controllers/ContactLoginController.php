@@ -43,9 +43,7 @@ class ContactLoginController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if ($request->ajax()) {
             $query = User::with('contact')
@@ -112,9 +110,7 @@ class ContactLoginController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if (request()->ajax()) {
             $crm_contact_id = request()->get('contact_id');
@@ -138,9 +134,7 @@ class ContactLoginController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         try {
             $input = $request->only('crm_contact_id', 'surname', 'first_name', 'last_name', 'email', 'username', 'password', 'contact_no', 'alt_number', 'family_number', 'crm_department', 'crm_designation', 'cmmsn_percent');
@@ -188,9 +182,7 @@ class ContactLoginController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if (request()->ajax()) {
             $crm_contact_id = request()->get('crm_contact_id');
@@ -220,9 +212,7 @@ class ContactLoginController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         try {
             $input = $request->only('surname', 'first_name', 'last_name', 'email', 'username', 'contact_no', 'alt_number', 'family_number', 'crm_department', 'crm_designation', 'cmmsn_percent');
@@ -264,9 +254,7 @@ class ContactLoginController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if (request()->ajax()) {
             try {
@@ -298,9 +286,7 @@ class ContactLoginController extends Controller
     public function allContactsLoginList()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         $business_id = request()->session()->get('user.business_id');
         $contacts = CrmContact::contactsDropdownForLogin($business_id, true);
@@ -315,9 +301,7 @@ class ContactLoginController extends Controller
     public function commissions(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! auth()->user()->can('crm.access_contact_login')) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if ($request->ajax()) {
             $query = CrmContactPersonCommission::join('users as u', 'u.id', 'crm_contact_person_commissions.contact_person_id')

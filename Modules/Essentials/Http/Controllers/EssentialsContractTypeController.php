@@ -25,9 +25,7 @@ class EssentialsContractTypeController extends Controller
     
        $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_contract_types = auth()->user()->can('essentials.crud_contract_types');
         if (! $can_crud_contract_types) {
             abort(403, 'Unauthorized action.');
@@ -86,9 +84,7 @@ class EssentialsContractTypeController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
  
         try {
             $input = $request->only(['type', 'details', 'is_active']);
@@ -137,9 +133,7 @@ class EssentialsContractTypeController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         $contract_type = EssentialsContractType::findOrFail($id);
         return view('essentials::settings.partials.contractTypes.edit')->with(compact('contract_type'));
@@ -152,9 +146,7 @@ class EssentialsContractTypeController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         try {
             $input = $request->only(['type', 'details', 'is_active']);
@@ -188,9 +180,7 @@ class EssentialsContractTypeController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             EssentialsContractType::where('id', $id)

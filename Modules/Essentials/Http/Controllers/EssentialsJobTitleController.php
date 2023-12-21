@@ -26,9 +26,7 @@ class EssentialsJobTitleController extends Controller
   
         $business_id = request()->session()->get('user.business_id');
     
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
     
    
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -74,8 +72,7 @@ class EssentialsJobTitleController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-                     abort(403, 'Unauthorized action.');}
+
        
         return view('essentials::settings.partials.job_titles.create');
         
@@ -92,9 +89,7 @@ class EssentialsJobTitleController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+    
  
         try {
             $input = $request->only(['job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions', 'details', 'is_active']);
@@ -151,9 +146,7 @@ class EssentialsJobTitleController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         $job_title = EssentialsJobTitle::findOrFail($id);
 
@@ -173,9 +166,7 @@ class EssentialsJobTitleController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+       
 
         try {
             $input = $request->only(['job_title', 'job_code', 'responsibilities', 'supervision_scope', 'authorization_and_permissions', 'details', 'is_active']);
@@ -222,10 +213,7 @@ class EssentialsJobTitleController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
-
+     
         try {
             EssentialsJobTitle::where('id', $id)
                         ->delete();

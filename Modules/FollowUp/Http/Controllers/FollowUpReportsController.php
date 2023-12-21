@@ -37,9 +37,7 @@ class FollowUpReportsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+    
         $can_crud_workers = auth()->user()->can('followup.crud_workers');
         if (!$can_crud_workers) {
             abort(403, 'Unauthorized action.');
@@ -160,9 +158,7 @@ class FollowUpReportsController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
             ->with([
@@ -186,9 +182,7 @@ class FollowUpReportsController extends Controller
             $userProjects = array_unique($userProjects);
             $salesProjects = $salesProjects->whereIn('id', $userProjects);
             // $contacts = $contacts->whereIn('id', $contactIds);
-            if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-                abort(403, 'Unauthorized action.');
-            }
+
         }
 
         if (request()->ajax()) {

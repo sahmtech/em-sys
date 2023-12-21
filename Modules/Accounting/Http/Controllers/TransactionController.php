@@ -405,13 +405,7 @@ class TransactionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.map_transactions'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
 
@@ -487,13 +481,7 @@ class TransactionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.map_transactions'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             if (request()->ajax()) {

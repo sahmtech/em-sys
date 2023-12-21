@@ -33,11 +33,6 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.view_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         if (request()->ajax()) {
             $journal = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
@@ -103,11 +98,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.add_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         return view('accounting::journal_entry.create');
     }
@@ -116,11 +107,6 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.add_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
 
        
       
@@ -215,11 +201,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.view_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
 
         return view('accounting::journal_entry.show');
@@ -229,11 +211,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.edit_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $journal = AccountingAccTransMapping::where('business_id', $business_id)
             ->where('type', 'journal_entry')
@@ -251,11 +229,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.edit_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             DB::beginTransaction();
@@ -334,11 +308,7 @@ class JournalEntryController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.delete_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $user_id = request()->session()->get('user.id');
 
@@ -359,11 +329,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.map_transactions'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
 
@@ -436,11 +402,7 @@ class JournalEntryController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.add_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             DB::beginTransaction();

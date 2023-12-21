@@ -43,11 +43,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.view_transfer') )) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $transfers = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
@@ -147,11 +143,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.add_transfer'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         if (request()->ajax()) {
             return view('accounting::transfer.create');
@@ -167,11 +159,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.add_transfer'))) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             DB::beginTransaction();
@@ -258,11 +246,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.edit_transfer'))) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         if (request()->ajax()) {
             $mapping_transaction = AccountingAccTransMapping::where('id', $id)
@@ -289,11 +273,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.edit_transfer'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         try {
             $mapping_transaction = AccountingAccTransMapping::where('id', $id)
@@ -361,11 +341,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.delete_transfer'))) {
-            abort(403, 'Unauthorized action.');
-        }
+    
         
         $user_id = request()->session()->get('user.id');
 

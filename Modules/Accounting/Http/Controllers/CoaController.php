@@ -36,13 +36,7 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+    
 
         $account_types = AccountingAccountType::accounting_primary_type();
         $account_GLC = [];
@@ -117,13 +111,7 @@ class CoaController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         if (request()->ajax()) {
             $account_types = AccountingAccountType::accounting_primary_type();
@@ -141,13 +129,7 @@ class CoaController extends Controller
         //check no accounts
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         $user_id = request()->session()->get('user.id');
 
@@ -170,13 +152,7 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+    
 
         if (request()->ajax()) {
             $account_type_id = request()->input('account_type_id');
@@ -261,13 +237,7 @@ class CoaController extends Controller
     public function store_old(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         try {
             DB::beginTransaction();
@@ -330,13 +300,7 @@ class CoaController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             DB::beginTransaction();
@@ -412,13 +376,7 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $account = AccountingAccount::where('business_id', $business_id)
@@ -465,13 +423,7 @@ class CoaController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         try {
             DB::beginTransaction();
@@ -509,13 +461,7 @@ class CoaController extends Controller
     public function activateDeactivate($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         if (request()->ajax()) {
             $account = AccountingAccount::where('business_id', $business_id)
@@ -544,13 +490,7 @@ class CoaController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.manage_accounts'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         $account = AccountingAccount::where('business_id', $business_id)
             ->with(['account_sub_type', 'detail_type'])

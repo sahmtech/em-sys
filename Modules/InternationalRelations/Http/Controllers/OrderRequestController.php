@@ -43,9 +43,7 @@ class OrderRequestController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_orders_operations = auth()->user()->can('internationalrelations.crud_orders_operations');
         if (!($isSuperAdmin || $can_crud_orders_operations)) {
             abort(403, 'Unauthorized action.');
@@ -132,9 +130,7 @@ class OrderRequestController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_delegate_order = auth()->user()->can('internationalrelations.delegate_order');
         if (!($isSuperAdmin || $can_delegate_order)) {
             abort(403, 'Unauthorized action.');
@@ -171,9 +167,7 @@ class OrderRequestController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_delegation_info = auth()->user()->can('internationalrelations.view_delegation_info');
         if (!($isSuperAdmin || $can_view_delegation_info)) {
             abort(403, 'Unauthorized action.');

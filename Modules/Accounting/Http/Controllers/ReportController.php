@@ -38,11 +38,7 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.view_reports')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $first_account = AccountingAccount::where('business_id', $business_id)
                             ->where('status', 'active')
@@ -64,11 +60,7 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.view_reports')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;
@@ -104,11 +96,7 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.view_reports')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (!empty(request()->start_date) && !empty(request()->end_date)) {
             $start_date = request()->start_date;
@@ -165,11 +153,7 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.view_reports')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $location_id = request()->input('location_id', null);
 
@@ -185,11 +169,6 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.view_reports')) ) {
-            abort(403, 'Unauthorized action.');
-        }
 
         $location_id = request()->input('location_id', null);
         $report_details = $this->accountingUtil->getAgeingReport($business_id, 'purchase', 'contact', $location_id);

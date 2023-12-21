@@ -44,9 +44,7 @@ class AssetAllocationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         if ($request->ajax()) {
             $asset_allocated = AssetTransaction::join('assets',
@@ -151,9 +149,7 @@ class AssetAllocationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+     
 
         if (request()->ajax()) {
             $users = User::forDropdown($business_id, false);
@@ -175,9 +171,6 @@ class AssetAllocationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $input = $request->only('ref_no', 'asset_id', 'quantity',
@@ -249,9 +242,7 @@ class AssetAllocationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         if (request()->ajax()) {
             $asset_allocated = AssetTransaction::with('asset', 'revokeTransaction')
@@ -279,9 +270,7 @@ class AssetAllocationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             $input = $request->only('asset_id', 'quantity', 'receiver',
@@ -334,9 +323,7 @@ class AssetAllocationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         if (request()->ajax()) {
             try {

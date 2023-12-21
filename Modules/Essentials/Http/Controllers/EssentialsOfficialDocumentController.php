@@ -24,10 +24,7 @@ class EssentialsOfficialDocumentController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-
-            abort(403, 'Unauthorized action.');
-        }
+     
         // $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
         // if (!$can_crud_official_documents) {
         //     error_log("2222");
@@ -120,9 +117,7 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(
@@ -210,9 +205,7 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $doc = EssentialsOfficialDocument::where('essentials_official_documents.id', $id)
             ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
             ->select([
@@ -251,9 +244,7 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
 
         try {
@@ -317,9 +308,7 @@ class EssentialsOfficialDocumentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsOfficialDocument::where('id', $id)

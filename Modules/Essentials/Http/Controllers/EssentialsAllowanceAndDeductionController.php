@@ -43,9 +43,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (!auth()->user()->can('essentials.add_allowance_and_deduction') && !auth()->user()->can('essentials.view_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
@@ -91,9 +89,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         if (!auth()->user()->can('essentials.view_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
@@ -159,9 +155,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $users = User::forDropdown($business_id, false);
 
@@ -173,9 +167,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['description', 'type', 'amount', 'amount_type', 'applicable_date']);
@@ -205,9 +197,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['employee', 'allowance', 'amount']);
@@ -249,9 +239,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         return view('essentials::show');
     }
@@ -265,9 +253,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $allowance = EssentialsAllowanceAndDeduction::where('business_id', $business_id)
             ->with('employees')
@@ -289,9 +275,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $UserAllowance = EssentialsUserAllowancesAndDeduction::findOrFail($id);
 
@@ -314,9 +298,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['description', 'type', 'amount', 'amount_type', 'applicable_date']);
@@ -348,9 +330,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['employee', 'allowance', 'amount']);
@@ -390,9 +370,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {
@@ -422,9 +400,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsUserAllowancesAndDeduction::where('id', $id)

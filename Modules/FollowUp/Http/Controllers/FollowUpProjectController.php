@@ -35,9 +35,7 @@ class FollowUpProjectController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 
@@ -61,9 +59,7 @@ class FollowUpProjectController extends Controller
             $userProjects = array_unique($userProjects);
             $salesProjects = $salesProjects->whereIn('id', $userProjects);
             // $contacts = $contacts->whereIn('id', $contactIds);
-            if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-                abort(403, 'Unauthorized action.');
-            }
+
         }
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {

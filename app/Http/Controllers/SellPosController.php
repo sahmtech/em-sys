@@ -159,9 +159,7 @@ class SellPosController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || auth()->user()->can('sell.create') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'repair_module') && auth()->user()->can('repair.create')))) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         //Check if subscribed or not, then check for users quota
         if (! $this->moduleUtil->isSubscribed($business_id)) {
@@ -790,12 +788,7 @@ class SellPosController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || auth()->user()->can('sell.update')
-        || auth()->user()->can('edit_pos_payment')
-         || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'repair_module') &&
-         auth()->user()->can('repair.update')))) {
-            abort(403, 'Unauthorized action.');
-        }
+       
 
         //Check if the transaction can be edited or not.
         $edit_days = request()->session()->get('business.transaction_edit_days');

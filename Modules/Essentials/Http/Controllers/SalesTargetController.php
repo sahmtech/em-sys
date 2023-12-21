@@ -34,9 +34,7 @@ class SalesTargetController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.access_sales_target')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $user_id = request()->session()->get('user.id');
@@ -75,9 +73,7 @@ class SalesTargetController extends Controller
     public function setSalesTarget($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.access_sales_target')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $user = User::where('business_id', $business_id)
                     ->find($id);
@@ -97,9 +93,7 @@ class SalesTargetController extends Controller
     public function saveSalesTarget(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.access_sales_target')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $target_ids = [];

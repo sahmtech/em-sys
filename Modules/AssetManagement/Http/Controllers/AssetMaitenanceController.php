@@ -48,9 +48,6 @@ class AssetMaitenanceController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! ((auth()->user()->can('asset.view_all_maintenance') && auth()->user()->can('asset.view_own_maintenance')) || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         if (request()->ajax()) {
             $query = AssetMaintenance::with(['asset', 'asset.warranties'])
@@ -193,9 +190,6 @@ class AssetMaitenanceController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! ((auth()->user()->can('asset.view_all_maintenance') && auth()->user()->can('asset.view_own_maintenance')) || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         if (request()->ajax()) {
             $asset_id = request()->input('asset_id');
@@ -228,9 +222,6 @@ class AssetMaitenanceController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! ((auth()->user()->can('asset.view_all_maintenance') && auth()->user()->can('asset.view_own_maintenance')) || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $input = $request->only('status', 'priority', 'asset_id', 'maintenance_note');
@@ -294,9 +285,6 @@ class AssetMaitenanceController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! ((auth()->user()->can('asset.view_all_maintenance') && auth()->user()->can('asset.view_own_maintenance')) || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         if (request()->ajax()) {
             $maintenance = AssetMaintenance::where('business_id', $business_id)
@@ -330,9 +318,6 @@ class AssetMaitenanceController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! ((auth()->user()->can('asset.view_all_maintenance') && auth()->user()->can('asset.view_own_maintenance')) || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $input = $request->only('status', 'priority', 'details', 'assigned_to');
@@ -386,9 +371,6 @@ class AssetMaitenanceController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! ((auth()->user()->can('asset.view_all_maintenance') && auth()->user()->can('asset.view_own_maintenance')) || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         if (request()->ajax()) {
             try {

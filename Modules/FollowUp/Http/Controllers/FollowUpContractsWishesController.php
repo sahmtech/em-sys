@@ -34,9 +34,7 @@ class FollowUpContractsWishesController extends Controller
      {
          $business_id = request()->session()->get('user.business_id');
      
-        //  if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-        //      abort(403, 'Unauthorized action.');
-        //  }
+  
      
         //  $can_crud_projects = auth()->user()->can('followup.crud_projects');
         //  if (!$can_crud_projects) {
@@ -164,9 +162,7 @@ class FollowUpContractsWishesController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        // if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-        //     abort(403, 'Unauthorized action.');
-        // }
+  
         try {
             $employeeId = $request->input('employee_id');
             $wish = $request->input('wish');

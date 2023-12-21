@@ -32,9 +32,7 @@ class ContactLocationController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $contact_locations = ContactLocation::with(['project']);
         $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
@@ -135,9 +133,7 @@ class ContactLocationController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             error_log($request->contact_name);
@@ -189,11 +185,7 @@ class ContactLocationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin
-            || auth()->user()->can('superadmin')
-            || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         $contactLocation = ContactLocation::findOrFail($id);
         $cities = EssentialsCity::forDropdown();
@@ -218,9 +210,7 @@ class ContactLocationController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $contactLocation['sales_project_id'] = $request->contact_name;
@@ -254,9 +244,7 @@ class ContactLocationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             ContactLocation::where('id', $id)

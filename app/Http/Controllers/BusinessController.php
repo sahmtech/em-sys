@@ -355,9 +355,6 @@ class BusinessController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $allLicenseTypes = [
@@ -392,8 +389,8 @@ class BusinessController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '';
                         if ($is_admin) {
-                            $html .= '<a href="' . route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-view"></i> ' . __('messages.view') . '</a>
-                        &nbsp;';
+                        //     $html .= '<a href="' . route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-view"></i> ' . __('messages.view') . '</a>
+                        // &nbsp;';
                             $html .= '<a href="' . route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('business.view_business_docs') . '</a>
                         &nbsp;';
                             $html .= '<a href="' . route('business_subscriptions.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.view_business_subscriptions') . '</a>';
