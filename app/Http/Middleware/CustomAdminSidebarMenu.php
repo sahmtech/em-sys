@@ -357,6 +357,11 @@ class CustomAdminSidebarMenu
                             __('essentials::lang.residencyreports'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                         )->order(1);
+                        $sub->url(
+                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                            __('essentials::lang.facilities_management'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
+                        )->order(3);
                         $sub->dropdown(
                             __('housingmovements::lang.movement_management'),
                             function ($movement_management_SubMenu) {
@@ -942,13 +947,13 @@ class CustomAdminSidebarMenu
 
             $menu->url(
 
-                    action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
-                    __('accounting::lang.acconuting'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
+                action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
+                __('accounting::lang.acconuting'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
             )->order(6);
-         
 
-          
+
+
 
 
             $menu->url(
@@ -956,7 +961,7 @@ class CustomAdminSidebarMenu
                 __('accounting::lang.automatedMigration'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'AutomatedMigration']
             )->order(7);
-            
+
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
                 __('accounting::lang.transfer'),
@@ -1028,13 +1033,13 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($isSuperAdmin || auth()->user()->can('essentials.view_facilities_management') || true) {
-                $menu->url(
-                    action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                    __('essentials::lang.facilities_management'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'getBusiness'],
-                )->order(3);
-            }
+            // if ($isSuperAdmin || auth()->user()->can('essentials.view_facilities_management') || true) {
+            //     $menu->url(
+            //         action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+            //         __('essentials::lang.facilities_management'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'getBusiness'],
+            //     )->order(3);
+            // }
             if ($isSuperAdmin || auth()->user()->can('internationalrelations.view_delegation') || true) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\DelegationController::class, 'index']),
