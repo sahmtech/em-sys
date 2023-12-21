@@ -130,33 +130,29 @@ class RoomController extends Controller
     public function room_data(Request $request)
     {
         try {
-            $requestData = $request->only([ 'room_number','room_id',  'worker_id']);
-  
-            $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
-             $commonRoomids = isset($requestData['room_id'][0]) ? $requestData['room_id'][0] : null;
-         
+            $requestData = $request->only(['room_number', 'room_id', 'worker_id']);
 
             $jsonData = [];
-    
+            
             foreach ($requestData['worker_id'] as $index => $workerId) {
-               
                 $jsonObject = [
                     'worker_id' => $workerId,
-                    'room_number' => $commonRoomNumber,
-                    'room_id'=>$commonRoomids
-                    
+                    'room_number' => isset($requestData['room_number'][$index]) ? $requestData['room_number'][$index] : null,
+                    'room_id' => isset($requestData['room_id'][$index]) ? $requestData['room_id'][$index] : null,
                 ];
-    
+            
                 $jsonData[] = $jsonObject;
             }
-    
+            
             $jsonData = json_encode($jsonData);
+    
+           
           
             \Log::info('JSON Data: ' . $jsonData);
     
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
-    
+   
                 DB::beginTransaction();
     
                 foreach ($selectedData as $data) {
@@ -175,7 +171,7 @@ class RoomController extends Controller
                         $htrroom_histoty->save();
   
                         DB::table('htr_rooms')
-                        ->where('id', $room->id)
+                        ->where('id', $data['room_id'])
                         ->decrement('beds_count');
                     }
 
@@ -183,7 +179,7 @@ class RoomController extends Controller
                         
                         DB::rollBack();
                         $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
-                        return redirect()->back()->withErrors([$output['msg']]);
+                        return response()->json($output);
                     }
                    
                      
@@ -206,9 +202,8 @@ class RoomController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-     // return $output;
-     return redirect()->back()->withErrors([$output['msg']]);
-       // return redirect()->back()->with(['status' => $output]);
+     // return $jsonData;
+        return redirect()->back()->with(['status' => $output]);
     }
     
 
