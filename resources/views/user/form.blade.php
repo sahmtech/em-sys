@@ -251,13 +251,13 @@
                                   'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                              </div>
                             
-                           {{-- 
+                          
                             <div class="form-group col-md-6">
                                 {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                {!! Form::select('major',$spacializations, null, ['class' => 'form-control','style'=>'height:40px','required',
+                                {!! Form::select('major',$spacializations,  !empty($qualification->major) ? $qualification->major : null, ['class' => 'form-control','style'=>'height:40px','required',
                                      'placeholder' =>  __('essentials::lang.major'),]) !!}
                             </div> 
-                            --}}
+                          
                            
        
                                 
