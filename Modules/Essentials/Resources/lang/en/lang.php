@@ -655,5 +655,6 @@ return [
 'employees_reports_view'=>'employees reports view',
 'employees_information_report'=>'employees information report',
 'total_of_employees'=>'total of employees',
+'please_add_the_essentials_department'=>'Add the HR department please'
 ];
 

@@ -234,8 +234,8 @@
 
 
 
-<div class="col-md-12">
-<hr>
+<div class="col-md-12 box box-primary">
+
         <h4>@lang('lang_v1.add_qualification'):</h4>
 <div class="form-group col-md-3">
 
@@ -277,8 +277,8 @@
                                 {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null,['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'step' => 'any']) !!}
                             </div>
 </div>
-<div class="col-md-12" id="section3">
-        <hr>
+<div class="col-md-12  box box-primary" id="section3">
+      
         <h4>@lang('lang_v1.bank_details'):</h4>
 
         <div class="form-group col-md-3">

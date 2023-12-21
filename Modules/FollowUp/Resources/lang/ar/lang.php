@@ -258,6 +258,15 @@ return [
     'document_delivery' => 'سندات التسليم',
     'nots' => 'الملاحظات',
     'no_document_delivery_to_show' => 'لا يوجد سندات',
+    'please_add_the_followup_department'=>'قم بإضافة إدارة المتابعة من فضلك',
+    'user_type' => 'نوع المستخدم',
+    'admin' => 'أدمن',
+    'customer' => 'العميل',
+    'customer_user' => ' موقع / متابع العقد',
+    'employee' => 'موظف',
+    'manager' => 'مدير',
+    'worker' => 'عامل',
+
 
 
 

@@ -17,7 +17,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
 
         //requests 
-        Route::get('/requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->name('requests');
+        Route::get('/hm.requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->name('hm.requests');
+        Route::post('/hm.returnReq', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'returnReq'])->name('hm.returnReq');
+        Route::post('/hm.returnReq.store', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'store'])->name('hm.returnReq.store');
+
+
 
         Route::get('/', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'index'])->name('housingMovements_landingPage');
 

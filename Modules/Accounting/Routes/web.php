@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Accounting\Http\Controllers\OpeningBalanceController;
 use Modules\Accounting\Http\Controllers\PaymentVouchersController;
 use Modules\Accounting\Http\Controllers\ReceiptVouchersController;
+
 use Modules\Accounting\Http\Controllers\SettingsController;
 
 Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'timezone', 'CustomAdminSidebarMenu'], 'prefix' => 'accounting', 'namespace' => '\Modules\Accounting\Http\Controllers'], function () {
@@ -51,6 +52,11 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     Route::get('automated-migration-delete-acc-trans-mapping/{id}', 'AutomatedMigrationController@destroy_acc_trans_mapping_setting');
 
     
+       //requests 
+    Route::get('/accounting.requests', [ \Modules\Accounting\Http\Controllers\RequestController::class, 'index'])->name('accounting.requests');
+    Route::post('/accounting.returnReq', [\Modules\Accounting\Http\Controllers\RequestController::class, 'returnReq'])->name('accounting.returnReq');
+    Route::post('/accounting.returnReq.store', [\Modules\Accounting\Http\Controllers\RequestController::class, 'store'])->name('accounting.returnReq.store');
+
     
     Route::resource('transfer', 'TransferController')->except(['show']);
 

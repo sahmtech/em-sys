@@ -56,6 +56,12 @@ class ManageUserController extends Controller
                     DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
                 ]);
 
+                
+                if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
+
+                    $users = $users->where('user_type', request()->input('user_type_filter'));
+                }
+    
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
@@ -90,8 +96,11 @@ class ManageUserController extends Controller
                 ->rawColumns(['action', 'username'])
                 ->make(true);
         }
+        $users_fillter = User::select('user_type')
+            ->groupBy('user_type')
+            ->get();
 
-        return view('manage_user.index');
+        return view('manage_user.index', compact('users_fillter'));
     }
 
 
@@ -247,9 +256,9 @@ class ManageUserController extends Controller
 
         //Get user form part from modules
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-      
+
         return view('manage_user.make_user')
-            ->with(compact( 'roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+            ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
 

@@ -134,8 +134,7 @@ class FollowUpRequestController extends Controller
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as 
- full_name"))->get();
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $workers = $all_users->pluck('full_name', 'id');
         return view('followup::requests.create')->with(compact('workers', 'leaveTypes'));
     }
@@ -388,6 +387,12 @@ class FollowUpRequestController extends Controller
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker')
                 ->where('department_id', $department);
+        }
+        else {
+            $output = ['success' => false,
+            'msg' => __('followup::lang.please_add_the_followup_department'),
+                ];
+            return redirect()->action([\Modules\Followup\Http\Controllers\FollowUpController::class, 'index'])->with('status', $output);
         }
 
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
