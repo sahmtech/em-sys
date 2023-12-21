@@ -261,46 +261,43 @@ $('#renew-selected').on('click', function (e) {
 
                     console.log(data);
                 var inputClasses = 'form-group';
-                             
                 var labelsRow = $('<div>', {
-                    class: 'row',
-                    style: 'display: flex; justify-content: space-between; padding: 9px;'
-                });
+    class: 'row'
+});
 
-             
 labelsRow.append($('<label>', {
     class: inputClasses + 'col-md-2',
-    style: 'height: 40px;  text-align: center;',
+    style: 'height: 40px; width:140px; text-align: left; padding-left: 0;',
     text: '{{ __('essentials::lang.Residency_no') }}'
 }));
 
 labelsRow.append($('<label>', {
     class: inputClasses + 'col-md-2',
-    style: 'height: 40px; text-align: center;',
+    style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
     text: '{{ __('essentials::lang.Residency_end_date') }}'
 }));
 
 labelsRow.append($('<label>', {
     class: inputClasses + 'col-md-2',
-    style: 'height: 40px;  text-align: center;',
+    style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; ',
     text: '{{ __('essentials::lang.renew_duration') }}'
 }));
 
 labelsRow.append($('<label>', {
     class: inputClasses + 'col-md-2',
-    style: 'height: 40px; text-align: center;',
+    style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
     text: '{{ __('essentials::lang.fees') }}'
 }));
 
 labelsRow.append($('<label>', {
     class: inputClasses + 'col-md-2',
-    style: 'height: 40px; text-align: center;',
+    style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 20px;',
     text: '{{ __('essentials::lang.pay_number') }}'
 }));
 
 labelsRow.append($('<label>', {
     class: inputClasses + 'col-md-2',
-    style: 'height: 40px; text-align: center;',
+    style: 'height: 40px; width:140px; text-align: center; padding-left: 20px; padding-right: 0;',
     text: '{{ __('essentials::lang.fixed') }}'
 }));
 
