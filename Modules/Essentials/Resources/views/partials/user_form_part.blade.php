@@ -130,7 +130,7 @@
 <div class="row">
 <div class="col-md-12  box box-primary" id="section6">
        
-            <h4>@lang('essentials::lang.payroll'):</h4>
+            <h4>@lang('essentials::lang.payroll_create_edit'):</h4>
 
     <div class="col-md-4">
         <div class="form-group">
