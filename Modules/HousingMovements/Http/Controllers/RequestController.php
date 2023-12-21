@@ -322,6 +322,8 @@ class RequestController extends Controller
         } else {
             $end_date = $request->end_date;
         }
+
+
         if ($request->type == 'cancleContractRequest' && !empty($request->main_reason)) {
 
             $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->first();
@@ -351,17 +353,24 @@ class RequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.contract_expired'),
                 ];
-                return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+
+                return redirect()->back()->withErrors([$output['msg']]);
+              //  return redirect()->route('hm.requests')->withErrors([$output['msg']]);
             }
         }
+
+
         $procedure = EssentialsWkProcedure::where('type', $request->type)->get();
         if ($procedure->count() == 0) {
             $output = [
                 'success' => false,
                 'msg' => __('followup::lang.this_type_has_not_procedure'),
             ];
-            return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+            return redirect()->back()->withErrors([$output['msg']]);
+        //    return redirect()->route('hm.requests')->withErrors([$output['msg']]);
         }
+
+
         $success = 1;
 
         foreach ($request->worker_id as $workerId) {
@@ -433,13 +442,15 @@ class RequestController extends Controller
                 'success' => 1,
                 'msg' => __('sales::lang.operationOrder_added_success'),
             ];
-            return redirect()->route('hm.requests')->with('success', $output['msg']);
+            return redirect()->back()->withErrors([$output['msg']]);
+           // return redirect()->route('hm.requests')->with('success', $output['msg']);
         } else {
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
-            return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+            return redirect()->back()->withErrors([$output['msg']]);
+          //  return redirect()->route('hm.requests')->withErrors([$output['msg']]);
         }
     }
 

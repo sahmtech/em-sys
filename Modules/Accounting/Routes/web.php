@@ -55,6 +55,7 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
        //requests 
     Route::get('/accounting.requests', [ \Modules\Accounting\Http\Controllers\RequestController::class, 'index'])->name('accounting.requests');
     Route::post('/accounting.returnReq', [\Modules\Accounting\Http\Controllers\RequestController::class, 'returnReq'])->name('accounting.returnReq');
+    Route::post('/accounting.returnReq.store', [\Modules\Accounting\Http\Controllers\RequestController::class, 'store'])->name('accounting.returnReq.store');
 
     
     Route::resource('transfer', 'TransferController')->except(['show']);

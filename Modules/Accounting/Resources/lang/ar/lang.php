@@ -443,6 +443,7 @@ return [
     'receipt_type' => 'نوع السند: ',
     'customer_vouchers' => 'فواتير العميل',
     'print' => 'طباعة',
+    'acconuting'=>'طلبات',
     'all' => 'الكل',
     'payment_vouchers' => 'سندات الصرف',
     'supplier' => 'المورد',
@@ -542,7 +543,7 @@ return [
         "Meals and entertainment" => "تكاليف الوجبات والترفيه",
         "Materials - COS" => "المواد - تكلفة المبيعات",
         "Management compensation" => "تعويضات الإدارة",
-
+       
         "Loss on disposal of assets" => "خسارة عند التخلص من الأصول",
         "Loss on discontinued operations, net of tax" => "خسارة عن العمليات المتوقفة، بعد الضرائب",
         "Long-term investments" => "استثمارات طويلة الأجل",
@@ -586,7 +587,8 @@ return [
         "Accrued holiday payable" => "أجور الإجازات المستحقة",
         "Accounts Receivable (A/R)" => "المدينونيات التجارية (A/R)",
         "requests" => "الطلبات",
-        'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك'
+        'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك',
+     
 
 
     ],
