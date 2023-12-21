@@ -438,6 +438,7 @@ return [
   'licence_number' => 'رقم العقد',
   'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
+ 
   'expiration_date' => 'تاريخ الانتهاء',
   'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",

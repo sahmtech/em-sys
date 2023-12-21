@@ -109,7 +109,7 @@ class RoomController extends Controller
         // dd(  $selectedRows);
        
         $rooms = HtrRoom::whereIn('id', $selectedRows)
-        ->select('id as room_id', 'room_number as room_number')
+        ->select('id as room_id', 'room_number as room_number' ,'beds_count')
         ->get();
 
     $workers = User::where('user_type', 'worker')->select(
