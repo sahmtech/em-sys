@@ -8,10 +8,26 @@
         <h1>@lang('user.users')
             <small>@lang('user.manage_users')</small>
         </h1>
-        <!-- <ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                        <li class="active">Here</li>
-                    </ol> -->
+        <div class="row">
+            <div class="col-md-12">
+                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('user_type_filter', __('followup::lang.user_type') . ':') !!}
+
+                            <select class="form-control" name="user_type_filter" id='user_type_filter' style="padding: 2px;">
+                                <option value="all" selected>@lang('lang_v1.all')</option>
+                                @foreach ($users_fillter as $users_fillter)
+                                    <option value="{{ $users_fillter->user_type }}"> @lang('followup::lang.' . $users_fillter->user_type)</option>
+                                @endforeach
+
+                            </select>
+
+                        </div>
+                    </div>
+                @endcomponent
+            </div>
+        </div>
     </section>
 
     <!-- Main content -->
@@ -51,10 +67,21 @@
     <script type="text/javascript">
         //Roles table
         $(document).ready(function() {
+            $('user_type_filter').select2();
             var users_table = $('#users_table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '/users',
+                ajax: {
+                    url: '{{ route('get-all-users') }}',
+                    data: function(d) {
+                        if ($('#user_type_filter').val()) {
+                            d.user_type_filter = $('#user_type_filter').val();
+                        }
+
+                    }
+
+
+                },
                 columnDefs: [{
                     "targets": [3],
                     "orderable": false,
@@ -74,6 +101,10 @@
                         "data": "action"
                     }
                 ]
+            });
+
+            $('#user_type_filter').on('change', function() {
+                $('#users_table').DataTable().ajax.reload();
             });
             $(document).on('click', 'button.delete_user_button', function() {
                 swal({

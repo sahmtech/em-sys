@@ -258,6 +258,14 @@ return [
     'document_delivery' => 'سندات التسليم',
     'nots' => 'الملاحظات',
     'no_document_delivery_to_show' => 'لا يوجد سندات',
+    'user_type' => 'نوع المستخدم',
+    'admin' => 'Admin',
+    'customer' => 'Customer',
+    'customer_user' => 'Customer user',
+    'employee' => 'Employee',
+    'manager' => 'Manager',
+    'worker' => 'Worker',
+
 
 
 

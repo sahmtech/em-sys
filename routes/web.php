@@ -270,7 +270,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('hrm/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
     Route::post('hrm/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::resource('users', ManageUserController::class);
-
+    Route::get('users',[ManageUserController::class,'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);
 
     Route::get('/barcodes/set_default/{id}', [BarcodeController::class, 'setDefault']);
