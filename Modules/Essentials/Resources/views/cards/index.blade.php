@@ -305,6 +305,7 @@ $('.modal-body').append(labelsRow);
 
 
                     var options = {
+                       
                         '3': '{{ __('essentials::lang.3_months') }}',
                         '6': '{{ __('essentials::lang.6_months') }}',
                         '9': '{{ __('essentials::lang.9_months') }}',
@@ -373,33 +374,53 @@ $('.modal-body').append(labelsRow);
                         });
                         rowDiv.append(expiration_dateInput);
 
-
-
                         var renewDurationInput = $('<select>', {
-                        name: 'renew_duration[]',
-                        class: 'form-control ' + inputClasses + 'col-md-2',
-                        style: 'height: 40px; width: 150px',
-                        required: true,
-                         });
+    name: 'renew_duration[]',
+    class: 'form-control ' + inputClasses + 'col-md-2',
+    style: 'height: 40px; width: 150px',
+    required: true,
+});
 
-                        Object.keys(options).forEach(function (value) {
-                            var option = $('<option>', {
-                                value: value,
-                                text: options[value],
-                            });
+Object.keys(options).forEach(function (value) {
+    var option = $('<option>', {
+        value: value,
+        text: options[value],
+    });
 
-                            renewDurationInput.append(option);
-                        });
+    renewDurationInput.append(option);
+});
 
-                        renewDurationInput.val(row.workcard_duration);
+
+
+console.log(renewDurationInput.val(row.workcard_duration));
+
+renewDurationInput.val(row.workcard_duration);
+
+// Add change event handler
 renewDurationInput.on('change', function () {
+    renewDurationInput.val(row.workcard_duration);
     var selectedValue = $(this).val();
     var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
     var fees = calculateFees(selectedValue);
     console.log(fees);
     feesInput.val(fees);
+    renewDurationInput.val(selectedValue);
+    // Print the selected value to the console
+    setTimeout(function () {
+        console.log('Selected Option:', renewDurationInput.val());
+    }, 0);
 });
-    rowDiv.append(renewDurationInput);
+
+// Append the select element to the row
+rowDiv.append(renewDurationInput);
+
+// Print the selected value to the console after appending
+setTimeout(function () {
+    console.log('Selected Option after appending:', renewDurationInput.val());
+}, 0);
+
+rowDiv.append(renewDurationInput);
+
 
     var feesInput = $('<input>', {
         type: 'text',

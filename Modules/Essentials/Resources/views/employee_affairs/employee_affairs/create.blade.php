@@ -15,8 +15,8 @@
         <div class="row">
             <div class="col-md-12">
 
-            @component('components.widget')
-           <div>
+         @component('components.widget')
+         <div class="box box-primary">
            <h4>@lang('essentials::lang.basic_info'):</h4>
                     <div class="col-md-5">
                         <div class="form-group">
@@ -90,7 +90,7 @@
                         </div>
                     </div>
 
-<div class="clearfix"></div>
+
 
            </div>
          
