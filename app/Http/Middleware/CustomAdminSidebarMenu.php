@@ -298,13 +298,6 @@ class CustomAdminSidebarMenu
                 )->order(2);
             }
 
-            if ($isSuperAdmin || auth()->user()->can('essentials.view_facilities_management') || true) {
-                $menu->url(
-                    action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                    __('essentials::lang.facilities_management'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
-                )->order(3);
-            }
 
             if ($isSuperAdmin  || auth()->user()->can('essentials.crud_all_attendance') || true) {
                 $menu->url(
@@ -432,13 +425,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
                 )->order(9);
             }
-            if ($isSuperAdmin || true) {
-                $menu->url(
-                    action([\App\Http\Controllers\TaxonomyController::class, 'index']),
-                    __('essentials::lang.loan'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
-                )->order(10);
-            }
+            // if ($isSuperAdmin || true) {
+            //     $menu->url(
+            //         action([\App\Http\Controllers\TaxonomyController::class, 'index']),
+            //         __('essentials::lang.loan'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'taxonomies'],
+            //     )->order(10);
+            // }
 
             if ($isSuperAdmin  || auth()->user()->can('essentials.crud_insurance_contracts') || true) {
                 $menu->url(
@@ -753,34 +746,32 @@ class CustomAdminSidebarMenu
             $menu->header("");
             $menu->header("");
 
-//             $menu->url(
-//                 action([\App\Http\Controllers\HomeController::class, 'index']),
-//                 __('home.home'),
-//                 ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
-//             )->order(0);
+            //             $menu->url(
+            //                 action([\App\Http\Controllers\HomeController::class, 'index']),
+            //                 __('home.home'),
+            //                 ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
+            //             )->order(0);
 
-//             $menu->url(
-//                 action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
-//                 __('housingmovements::lang.requests'),
-//                 [
-//                     'icon' => 'fa fas fa-plus-circle',
-//                     'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'hm.requests'
-//                 ],
-//             )->order(1);
+            //             $menu->url(
+            //                 action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
+            //                 __('housingmovements::lang.requests'),
+            //                 [
+            //                     'icon' => 'fa fas fa-plus-circle',
+            //                     'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'hm.requests'
+            //                 ],
+            //             )->order(1);
 
 
 
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_htr_dashboard') || true)
-             {
-                    $menu->url(
-                        action([\App\Http\Controllers\HomeController::class, 'index']),
-                        __('home.home'),
-                        ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
-                    )->order(0);
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_htr_dashboard') || true) {
+                $menu->url(
+                    action([\App\Http\Controllers\HomeController::class, 'index']),
+                    __('home.home'),
+                    ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
+                )->order(0);
             }
 
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings') || true)
-            {
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings') || true) {
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
                     __('housingmovements::lang.requests'),
@@ -792,120 +783,102 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms') || true)
-            {
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms') || true) {
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
                     __('housingmovements::lang.workers'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'workers'],
 
                 )->order(2);
-
             }
 
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_trevelers') || true)
-            {
-                    $menu->url(
-                        action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),
-                        __('housingmovements::lang.travelers'),
-                        [
-                            'icon' => 'fa fas fa-plus-circle',
-                            'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers'
-                        ],
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_trevelers') || true) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),
+                    __('housingmovements::lang.travelers'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers'
+                    ],
 
-                    )->order(3);
-
+                )->order(3);
             }
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_building_management') || true)
-            {
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_building_management') || true) {
 
-            $menu->dropdown(
-                __('housingmovements::lang.building_management'),
-                function ($buildingSubMenu)   use ($isSuperAdmin) {
+                $menu->dropdown(
+                    __('housingmovements::lang.building_management'),
+                    function ($buildingSubMenu)   use ($isSuperAdmin) {
 
-                    if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings') || true)
-                       {
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings') || true) {
                             $buildingSubMenu->url(
                                 action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
                                 __('housingmovements::lang.buildings'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
                             )->order(4);
-                    
-
                         }
-                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms') || true)
-                        {
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms') || true) {
 
-                        $buildingSubMenu->url(
-                            action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
-                            __('housingmovements::lang.rooms'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
-                        )->order(5);
+                            $buildingSubMenu->url(
+                                action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
+                                __('housingmovements::lang.rooms'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
+                            )->order(5);
                         }
 
-                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_facilities') || true)
-                        {
-                  
-                        $buildingSubMenu->url(
-                            action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
-                            __('housingmovements::lang.facilities'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
-                        )->order(6);
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_facilities') || true) {
+
+                            $buildingSubMenu->url(
+                                action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
+                                __('housingmovements::lang.facilities'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
+                            )->order(6);
                         }
-                    
-                },
-                ['icon' => 'fa fas fa-plus-circle',],
-            );
+                    },
+                    ['icon' => 'fa fas fa-plus-circle',],
+                );
+            }
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.movement_management') || true) {
+                $menu->dropdown(
+                    __('housingmovements::lang.movement_management'),
+                    function ($movement_management_SubMenu)  use ($isSuperAdmin) {
 
-        }
-        if ($isSuperAdmin  || auth()->user()->can('housingmovements.movement_management') || true)
-        {
-            $menu->dropdown(
-                __('housingmovements::lang.movement_management'),
-                function ($movement_management_SubMenu)  use($isSuperAdmin ){
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_car_types') || true) {
+                            $movement_management_SubMenu->url(
+                                action([\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index']),
+                                __('housingmovements::lang.carTypes'),
+                                ['icon' => 'fa fas fa-plus-circle',  'active' =>  request()->segment(2) == 'cars-type']
+                            )->order(7);
+                        }
 
-                    if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_car_types') || true)
-                    {
-                        $movement_management_SubMenu->url(
-                            action([\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index']),
-                            __('housingmovements::lang.carTypes'),
-                            ['icon' => 'fa fas fa-plus-circle',  'active' =>  request()->segment(2) == 'cars-type']
-                        )->order(7);
-                    }
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_car_models') || true) {
+                            $movement_management_SubMenu->url(
+                                action([\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index']),
+                                __('housingmovements::lang.carModels'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
+                            )->order(8);
+                        }
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_cars') || true) {
+                            $movement_management_SubMenu->url(
+                                action([\Modules\HousingMovements\Http\Controllers\CarController::class, 'index']),
+                                __('housingmovements::lang.cars'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
+                            )->order(9);
+                        }
 
-                    if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_car_models') || true)
-                    {
-                        $movement_management_SubMenu->url(
-                            action([\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index']),
-                            __('housingmovements::lang.carModels'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
-                        )->order(8);
-                    }
-                    if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_cars') || true)
-                    {
-                        $movement_management_SubMenu->url(
-                            action([\Modules\HousingMovements\Http\Controllers\CarController::class, 'index']),
-                            __('housingmovements::lang.cars'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
-                        )->order(9);
-                    }
+                        if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_drivers') || true) {
+                            $movement_management_SubMenu->url(
+                                action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index']),
+                                __('housingmovements::lang.car_drivers'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
+                            )->order(9);
+                        }
+                    },
+                    ['icon' => 'fa fas fa-plus-circle',],
 
-                    if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_drivers') || true)
-                    {
-                        $movement_management_SubMenu->url(
-                            action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index']),
-                            __('housingmovements::lang.car_drivers'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
-                        )->order(9);
-                    }
-                },
-                ['icon' => 'fa fas fa-plus-circle',],
-              
 
-            )->order(2);
-        }
+                )->order(2);
+            }
         });
-    
     }
 
     public function accountingMenu()
@@ -966,8 +939,9 @@ class CustomAdminSidebarMenu
                 __('accounting::lang.journal_entry'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
             )->order(5);
-          
+
             $menu->url(
+
                     action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
                     __('accounting::lang.acconuting'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
@@ -975,6 +949,7 @@ class CustomAdminSidebarMenu
          
 
           
+
 
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
@@ -1050,6 +1025,15 @@ class CustomAdminSidebarMenu
                     __('internationalrelations::lang.EmploymentCompanies'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'EmploymentCompanies'],
                 )->order(2);
+            }
+
+
+            if ($isSuperAdmin || auth()->user()->can('essentials.view_facilities_management') || true) {
+                $menu->url(
+                    action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                    __('essentials::lang.facilities_management'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'getBusiness'],
+                )->order(3);
             }
             if ($isSuperAdmin || auth()->user()->can('internationalrelations.view_delegation') || true) {
                 $menu->url(
