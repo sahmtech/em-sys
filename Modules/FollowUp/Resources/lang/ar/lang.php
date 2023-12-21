@@ -253,7 +253,8 @@ return [
     'doc_name_ar' => 'اسم السند بالعربية',
     'doc_name_en' => 'اسم السند بالانكليزية',
     'add_document' => 'إضافة سند',
-
+    'shifts' => 'فترات الدوام',
+    'contact_locations' => 'فروع المشاريع',
     'document_delivery' => 'سندات التسليم',
     'nots' => 'الملاحظات',
     'no_document_delivery_to_show' => 'لا يوجد سندات',
