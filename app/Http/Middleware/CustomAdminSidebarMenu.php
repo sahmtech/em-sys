@@ -941,41 +941,47 @@ class CustomAdminSidebarMenu
             )->order(5);
 
             $menu->url(
-                action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
-                __('accounting::lang.requests'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting.requests']
+
+                    action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
+                    __('accounting::lang.acconuting'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
             )->order(6);
+         
+
+          
+
 
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
                 __('accounting::lang.automatedMigration'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'AutomatedMigration']
-            )->order(6);
+            )->order(7);
+            
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
                 __('accounting::lang.transfer'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transfer']
-            )->order(7);
+            )->order(8);
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index']),
                 __('accounting::lang.transactions'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
-            )->order(8);
+            )->order(9);
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
                 __('accounting::lang.budget'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'budget']
-            )->order(9);
+            )->order(10);
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index']),
                 __('accounting::lang.reports'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'reports']
-            )->order(10);
+            )->order(11);
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
                 __('messages.settings'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
-            )->order(11);
+            )->order(12);
         });
     }
 
