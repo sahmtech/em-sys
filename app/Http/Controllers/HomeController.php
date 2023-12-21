@@ -316,7 +316,7 @@ class HomeController extends Controller
 
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
-            ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
+           // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
             ['id' => 'essentials',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
