@@ -79,7 +79,7 @@ class HomeController extends Controller
         $roleHasPermission = false;
         foreach ($roles as $role) {
 
-            if ($role->hasPermissionTo('dashboard.data') ||  $is_admin) {
+            if ( $is_admin ||$role->hasPermissionTo('dashboard.data') ) {
                 $roleHasPermission = true;
                 break;
             }
