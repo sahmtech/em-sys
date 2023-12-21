@@ -2,7 +2,7 @@
 <div class="row">
 <div class="col-md-12  box box-primary" id="section4">
     
-        <h4>@lang('essentials::lang.hrm_details'):</h4>
+        <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
         <div class="col-md-6">
         <div class="form-group">
         {!! Form::label('location_id', __('lang_v1.primary_work_location') . ':*') !!}
@@ -50,7 +50,7 @@
 
 <div class="col-md-12  box box-primary" id="section5">
          
-            <h4>@lang('essentials::lang.contract_details'):</h4>
+            <h4>@lang('essentials::lang.contract_details_create_edit'):</h4>
             {{-- 
                 <div class="form-group col-md-3">
             {!! Form::label('contract_number', __( 'essentials::lang.contract_number') . ':') !!}
@@ -130,7 +130,7 @@
 <div class="row">
 <div class="col-md-12  box box-primary" id="section6">
        
-            <h4>@lang('essentials::lang.payroll'):</h4>
+            <h4>@lang('essentials::lang.payroll_create_edit'):</h4>
 
     <div class="col-md-4">
         <div class="form-group">

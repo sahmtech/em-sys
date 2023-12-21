@@ -144,7 +144,7 @@ class EssentialsRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-    
+
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
@@ -391,7 +391,7 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-    
+
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
@@ -403,7 +403,7 @@ class EssentialsRequestController extends Controller
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%بشرية%')
             ->first();
-
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
@@ -457,16 +457,16 @@ class EssentialsRequestController extends Controller
                         $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
                     });
                 });
-        }
-        else {
-            $output = ['success' => false,
-            'msg' => __('essentials::lang.please_add_the_essentials_department'),
-                ];
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.please_add_the_essentials_department'),
+            ];
             return redirect()->action([\Modules\Essentials\Http\Controllers\EssentialsController::class, 'index'])->with('status', $output);
         }
         if (request()->ajax()) {
 
-        
+
 
             return DataTables::of($requestsProcess ?? [])
 
@@ -502,12 +502,13 @@ class EssentialsRequestController extends Controller
 
                 ->make(true);
         }
-      
+
 
         $workers = User::whereIn('user_type', ['employee', 'manager'])->whereIn('users.business_id', $user_businesses_ids)->select(
-                'id',
-                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
-    
+            'id',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' - ',COALESCE(id_proof_number,'')) as full_name")
+        )->pluck('full_name', 'id');
+
 
         $statuses = $this->statuses;
 
