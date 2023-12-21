@@ -875,6 +875,13 @@ class CustomAdminSidebarMenu
                 __('accounting::lang.journal_entry'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
             )->order(5);
+          
+            $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
+                    __('accounting::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting.requests']
+            )->order(6);
+         
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
                 __('accounting::lang.automatedMigration'),
