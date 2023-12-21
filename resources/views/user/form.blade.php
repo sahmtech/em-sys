@@ -251,12 +251,17 @@
                                   'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                              </div>
                             
+                           {{-- 
                             <div class="form-group col-md-6">
                                 {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
                                 {!! Form::select('major',$spacializations, null, ['class' => 'form-control','style'=>'height:40px','required',
                                      'placeholder' =>  __('essentials::lang.major'),]) !!}
                             </div> 
+                            --}}
+                           
        
+                                
+                       
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
                                 {!! Form::date('graduation_year', !empty($qualification->graduation_year) ? $qualification->graduation_year : null,
@@ -270,7 +275,7 @@
                             
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
-                                {!! Form::select('graduation_country',$countries, null, ['class' => 'form-control','style'=>'height:40px','required',
+                                {!! Form::select('graduation_country',$countries, !empty($qualification->graduation_country) ? $qualification->graduation_country : null, ['class' => 'form-control','style'=>'height:40px','required',
                                      'placeholder' =>  __('essentials::lang.select_country'), ]) !!}
                             </div>
                             <div class="form-group col-md-6">
