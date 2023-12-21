@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\HousingMovements\Http\Controllers;
+namespace Modules\Sales\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -62,6 +62,7 @@ class RequestController extends Controller
     }
     public function index()
     {
+     
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
@@ -76,9 +77,9 @@ class RequestController extends Controller
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
-            ->where('name', 'LIKE', '%سكن%')
+            ->where('name', 'LIKE', '%مبيعات%')
             ->first();
-       
+      
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
@@ -136,7 +137,7 @@ class RequestController extends Controller
             $output = ['success' => false,
             'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
                 ];
-            return redirect()->action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
+            return redirect()->action([\Modules\Sales\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
         }
         if (request()->ajax()) {
 
@@ -184,7 +185,7 @@ class RequestController extends Controller
 
         $statuses = $this->statuses;
 
-        return view('housingmovements::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        return view('sales::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
    
@@ -331,7 +332,7 @@ class RequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.no_contract_found'),
                 ];
-                return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+                return redirect()->route('sales.requests')->withErrors([$output['msg']]);
             }
 
 
@@ -340,7 +341,7 @@ class RequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.no_wishes_found'),
                 ];
-                return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+                return redirect()->route('sales.requests')->withErrors([$output['msg']]);
             }
 
             $contractEndDate = Carbon::parse($contract->contract_end_date);
@@ -351,7 +352,7 @@ class RequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.contract_expired'),
                 ];
-                return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+                return redirect()->route('sales.requests')->withErrors([$output['msg']]);
             }
         }
         $procedure = EssentialsWkProcedure::where('type', $request->type)->get();
@@ -360,7 +361,7 @@ class RequestController extends Controller
                 'success' => false,
                 'msg' => __('followup::lang.this_type_has_not_procedure'),
             ];
-            return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+            return redirect()->route('sales.requests')->withErrors([$output['msg']]);
         }
         $success = 1;
 
@@ -433,13 +434,13 @@ class RequestController extends Controller
                 'success' => 1,
                 'msg' => __('sales::lang.operationOrder_added_success'),
             ];
-            return redirect()->route('hm.requests')->with('success', $output['msg']);
+            return redirect()->route('sales.requests')->with('success', $output['msg']);
         } else {
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
-            return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+            return redirect()->route('sales.requests')->withErrors([$output['msg']]);
         }
     }
 

@@ -87,9 +87,6 @@ return [
     'private'=>'خاص',
     'motorcycle'=>'دراجة نارية',
     'expiry_date'=>'تاريخ انتهاء الاستمارة',
-
-
-
     'worning' => 'تنبيه!!',
     'travelers' => 'وصول جديد',
     'worker_name' => 'اسم العامل',
@@ -104,6 +101,7 @@ return [
     'arrived' => 'تم الوصول',
     'housed' => 'تسكين',
     'workers' => 'عمال المشاريع',
+    'please_add_the_HousingMovements_department'=>'الرجاء إضافة إدارة خاصة بالسكن'
 
 
 

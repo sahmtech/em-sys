@@ -291,8 +291,8 @@ return [
     'fixed_costs'=>'التكاليف (المصاريف) الثابتة',
     'variable_costs'=>'التكاليف المتغيرة',
     'add_element'=>'إضافة عنصر',
-    'chang_the_amount_or_duration_if_needed'=>'قم بتغيير القيمة أو المدة إذا أردت'
-
+    'chang_the_amount_or_duration_if_needed'=>'قم بتغيير القيمة أو المدة إذا أردت',
+    'requests'=>'الطلبات',
 
 
 

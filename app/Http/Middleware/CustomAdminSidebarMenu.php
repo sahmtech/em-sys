@@ -633,7 +633,14 @@ class CustomAdminSidebarMenu
                 __('sales::lang.sale_operation_orders'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
             );
-
+            $menu->url(
+                action([\Modules\Sales\Http\Controllers\RequestController::class, 'index']),
+                __('sales::lang.requests'),
+                [
+                    'icon' => 'fa fas fa-plus-circle',
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'sales.requests'
+                ],
+            );
             $menu->dropdown(
                 __('sales::lang.sales_settings'),
                 function ($sub) {
@@ -700,7 +707,7 @@ class CustomAdminSidebarMenu
                 __('housingmovements::lang.requests'),
                 [
                     'icon' => 'fa fas fa-plus-circle',
-                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'requests'
+                    'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'hm.requests'
                 ],
             )->order(1);
 
