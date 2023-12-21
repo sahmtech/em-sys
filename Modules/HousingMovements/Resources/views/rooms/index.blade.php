@@ -231,7 +231,7 @@ var i = 0;
             success: function (data) {
 
                 
-                $('.modal-body').find('input').remove();
+                $('.modal-body').empty();
 
                 var inputClasses = 'form-group col-md-4 mb-2';
              
