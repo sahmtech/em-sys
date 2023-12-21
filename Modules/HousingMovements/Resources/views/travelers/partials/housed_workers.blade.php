@@ -297,7 +297,8 @@ $('#arraived-selected').on('click', function (e) {
 
 
 
-$('#edit-selected').on('click', function (e) {
+
+    $('#edit-selected').on('click', function (e) {
     e.preventDefault();
 
     var selectedRows = getCheckRecords();
@@ -332,6 +333,7 @@ $('#bulk_edit_form').submit(function (e) {
 
     var formData = $(this).serializeArray();
    console.log(formData);
+   console.log( $(this).attr('action'));
     $.ajax({
         url: $(this).attr('action'),
         type: 'post',
