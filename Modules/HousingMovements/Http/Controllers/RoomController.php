@@ -183,7 +183,7 @@ class RoomController extends Controller
                         
                         DB::rollBack();
                         $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
-                        return response()->json($output);
+                        return redirect()->back()->withErrors([$output['msg']]);
                     }
                    
                      
@@ -206,7 +206,8 @@ class RoomController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-      return $output;
+     // return $output;
+     return redirect()->back()->withErrors([$output['msg']]);
        // return redirect()->back()->with(['status' => $output]);
     }
     
