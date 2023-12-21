@@ -585,6 +585,8 @@ return [
         "Accrued liabilities" => "التزامات مستحقة",
         "Accrued holiday payable" => "أجور الإجازات المستحقة",
         "Accounts Receivable (A/R)" => "المدينونيات التجارية (A/R)",
+        "requests" => "الطلبات",
+        'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك'
 
 
     ],

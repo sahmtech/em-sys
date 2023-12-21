@@ -53,7 +53,7 @@ class EssentialsWkProcedureController extends Controller
 
         $actualTypes = EssentialsWkProcedure::distinct()->pluck('type')->toArray();
         $missingTypes = array_diff($requestsType, $actualTypes);
-        $departments=EssentialsDepartment::all()->pluck('name','id');
+        $departments=EssentialsDepartment::where('business_id',$business_id)->pluck('name','id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
 

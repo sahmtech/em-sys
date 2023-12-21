@@ -523,6 +523,7 @@ return [
       "Accrued liabilities" => "Accrued liabilities",
       "Accrued holiday payable" =>"Accrued holiday payable",
       "Accounts Receivable (A/R)" =>   "Accounts Receivable (A/R)",
+      "requests" => "Requests",
 
 
    ],

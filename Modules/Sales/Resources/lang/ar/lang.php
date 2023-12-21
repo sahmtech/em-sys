@@ -11,13 +11,9 @@ return [
     'supplier_business_name' => 'اسم الشركة',
     'date' => 'التاريخ',
     'value' => 'القيمة',
-
     'lead' => 'عميل محتمل',
     'customer' => 'عميل',
-
     'contract_duration'=>'مدة العقد',
-
-
     'offer_type' => 'نوع العرض',
     'offer_status' => 'حالة العرض',
     'action' => 'العمليات',
@@ -71,11 +67,9 @@ return [
     'nationality_cs' => 'جنسية موقع العقد',
     'allow_login' => 'السماح بتسجيل الدخول',
     'username_cs' => 'اسم المستخدم',
-
     'password_cs' => 'كلمة المرور',
     'confirm_password_cs' => 'تاكيد كلمة المرور',
     'add_Contract_follower' => 'إضافة متابع العقد',
-
     'first_name' => 'الاسم الأول',
     'last_name' => 'اسم العائلة',
     'first_name_cf' => 'الاسم الأول لمتابع العقد',
@@ -84,7 +78,6 @@ return [
     'english_name_cf' => 'الاسم باللغة الانكليزية ',
     'capacity_cf' => 'صفة متابع العقد',
     'email_cf' => 'ايميل متابع العقد',
-
     'mobile_cf' => 'رقم جوال ',
     'contact_view' => 'عرض  بيانات العميل',
     'customer_info' => 'معلومات العميل',
@@ -94,7 +87,6 @@ return [
     'confirm_password_cf' => 'تاكيد كلمة المرور',
     'name_ar' => 'الاسم باللغة العربية',
     'name_en' => 'الاسم باللغة الانكليزية',
-
     'more_info' => 'مزيد من المعلومات',
     'Contract_follower_details' => 'معلومات متابع العقد',
     'edit_customer' => 'تعديل  بيانات العميل',
@@ -178,8 +170,6 @@ return [
     'crud_contract' => 'حذف/ إضافة/تعديل  عقود المبيعات',
     'crud_contract_items' => 'حذف/ إضافة/تعديل  بنود العقود',
     'crud_contract_appendics' => 'حذف/ إضافة/تعديل ملاحق العقود',
-    ////// to here we have the en lang file
-
     'allowances' => 'البدلات',
     'allowance_name' => 'اسم البدل',
     'nationality_name' => 'الجنسية ',
@@ -267,14 +257,12 @@ return [
     'second_choice_offer_price'=>' عرض السعر الخيار الثاني',
     'first_choice_sales_contract'=>' العقد الخيار الأول',
     'second_choice_sales_contract'=>' العقد الخيار الثاني',
-
     'first_choice_offer_price_template'=>'قالب عرض السعر الخيار الأول',
     'second_choice_offer_price_template'=>'قالب عرض السعر الخيار الثاني',
     'first_choice_sales_contract_template'=>'قالب العقد الخيار الأول',
     'second_choice_sales_contract_template'=>'قالب العقد الخيار الثاني',
-
     'comma_separated_email'=>'قيم البريد الإلكتروني المدخلة بفاصلة بين كل بريد وآخر',
-    'email_body' => 'هيئة البريد الإلكتروني',
+    'email_body' => 'النص',
     'send_notification' => 'إرسال إشعار',
     'send' => 'إرسال',
     'subject' => 'موضوع',
@@ -291,8 +279,23 @@ return [
     'fixed_costs'=>'التكاليف (المصاريف) الثابتة',
     'variable_costs'=>'التكاليف المتغيرة',
     'add_element'=>'إضافة عنصر',
-    'chang_the_amount_or_duration_if_needed'=>'قم بتغيير القيمة أو المدة إذا أردت'
-
+    'chang_the_amount_or_duration_if_needed'=>'قم بتغيير القيمة أو المدة إذا أردت',
+    'requests'=>'الطلبات',
+    'crud_contacts'=>'إدارة العملاء',
+    'crud_follow_ups'=>'إدارة المتابعات',
+    'crud_sales_projects'=>'إدارة مشاريع العملاء',
+    'crud_offer_price'=>'إدارة عروض الأسعار',
+    'crud_contracts'=>'إدارة عقود المبيعات',
+    'crud_sale_operation_orders'=>'إدارة أوامر التشغيل',
+    'crud_requests'=>'إدارة طلبات المبيعات',
+    'crud_settings'=>'إدارة إعدادات المبيعات',
+    'crud_sale_sources'=>'إدارة مصادر العملاء',
+    'crud_contract_itmes'=>'إدارة بنود العقود',
+    'crud_contract_appendics'=>'إدارة ملاحق العقود',
+    'crud_sales_templates'=>'إدارة قوالب المبيعات',
+    'crud_sales_costs'=>'إدارة تكاليف المبيعات',
+    'please_add_the_Sales_department'=>'قم بإضافة إدارة المبيعات من فضلك'
+    
 
 
 

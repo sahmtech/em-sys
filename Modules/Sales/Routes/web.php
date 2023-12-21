@@ -27,7 +27,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/store_source/update', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'update'])->name('source.update');
 
 
-
+        //requests 
+        Route::get('/sales.requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'index'])->name('sales.requests');
+        Route::post('/sales.returnReq', [\Modules\Sales\Http\Controllers\RequestController::class, 'returnReq'])->name('sales.returnReq');
 
         Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('price_offer');
         Route::get('/createOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create'])->name('createOfferPrice');

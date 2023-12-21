@@ -28,7 +28,7 @@
             </div>
             <div class="box-body">
             	<div class="row">
-            		<div class="col-md-12">
+            		{{-- <div class="col-md-12">
 						<p>
 							<strong>CC:</strong> {{$proposal_template->cc}}
 						</p>
@@ -37,7 +37,7 @@
 						<p>
 							<strong>BCC:</strong> {{$proposal_template->bcc}}
 						</p>
-					</div>
+					</div> --}}
             		<div class="col-md-12">
 						<p>
 							<strong>{{__('crm::lang.subject')}}:</strong> {{$proposal_template->subject}}
@@ -47,7 +47,7 @@
 				<div class="row mt-10">
 					<div class="col-md-12">
 						<p>
-							<strong>{{__('crm::lang.email_body')}}:</strong> {!!$proposal_template->body!!}
+							<strong>{{__('sales::lang.email_body')}}:</strong> {!!$proposal_template->body!!}
 						</p>
 					</div>
 				</div>
