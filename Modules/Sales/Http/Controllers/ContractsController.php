@@ -14,6 +14,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\Utils\ModuleUtil;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
+use Modules\Sales\Entities\salesContractAppendic;
 use Modules\Sales\Entities\SalesProject;
 
 class ContractsController extends Controller
@@ -77,7 +78,7 @@ class ContractsController extends Controller
                         $html = '';
                         $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
                         $html .= '&nbsp;';
-                        // Check if $row->file is not empty before rendering the button
+                        
                         if (!empty($row->file)) {
                             $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
                         } else {
@@ -103,8 +104,11 @@ class ContractsController extends Controller
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-
-        return view('sales::contracts.index')->with(compact('offer_prices', 'items', 'users'));
+        $contracts = DB::table('sales_orders_operations')
+        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+        ->select('sales_contracts.number_of_contract as contract_number' ,'sales_contracts.id')
+        ->get();
+        return view('sales::contracts.index')->with(compact('offer_prices', 'items', 'users','contracts'));
     }
 
 
@@ -171,7 +175,9 @@ class ContractsController extends Controller
 
         try {
 
-            $input = $request->only(['offer_price', 'start_date','contract_duration','contract_duration_unit', 'end_date','status','contract_items','is_renewable','notes','file']);
+            $input = $request->only(['offer_price','contract-select',
+             'start_date','contract_duration','contract_duration_unit',
+              'end_date','status','contract_items','is_renewable','notes','file']);
             
             $input2['offer_price_id'] = $input['offer_price'];
             $input2['start_date'] = $input['start_date'];
@@ -186,67 +192,109 @@ class ContractsController extends Controller
 
 
 
-            $latestRecord = salesContract::orderBy('number_of_contract', 'desc')->first();
-            if ($latestRecord) {
-
-                $latestRefNo = $latestRecord->number_of_contract;
-                $numericPart = (int)substr($latestRefNo, 3);
-                $numericPart++;
-                $input2['number_of_contract'] = 'CR' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-            } else {
-
-                $input2['number_of_contract'] = 'CR0001';
-            }
-            $selectedItems = $request->input('contract_items');
-            $selectedItems = array_filter($selectedItems, function ($item) {
-
-                return $item !== null;
-            });
-            $input2['items_ids'] = json_encode(array_values($selectedItems));
-
-            if ($request->hasFile('file')) {
-                $file = request()->file('file');
-                $filePath = $file->store('/salesContracts');
-
-                $input2['file'] = $filePath;
-            }
 
           
-            if ($request->contract_type == 'new') {
-                $contact_id = Transaction::whereId($input['offer_price'])->first()->contact_id;
-                $sale_project['contact_id'] = $contact_id;
-                $sale_project['name'] = $request->project_name;
-                $assignedTo = $request->input('assigned_to');
+         if ($request->contract_type == 'new') {
 
-                $assignedToJson = json_encode($assignedTo);
-                $sale_project['assigned_to'] = $assignedToJson;
-                $sale_project=SalesProject::create($sale_project);
-                $input2['sales_project_id'] = $sale_project->id;
+                        
+                    $latestRecord = salesContract::orderBy('number_of_contract', 'desc')->first();
+                    if ($latestRecord) {
+
+                        $latestRefNo = $latestRecord->number_of_contract;
+                        $numericPart = (int)substr($latestRefNo, 3);
+                        $numericPart++;
+                        $input2['number_of_contract'] = 'CR' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                    } else {
+
+                        $input2['number_of_contract'] = 'CR0001';
+                    }
+                    $selectedItems = $request->input('contract_items');
+                    $selectedItems = array_filter($selectedItems, function ($item) {
+
+                        return $item !== null;
+                    });
+                    $input2['items_ids'] = json_encode(array_values($selectedItems));
+
+                    if ($request->hasFile('file')) {
+                        $file = request()->file('file');
+                        $filePath = $file->store('/salesContracts');
+
+                        $input2['file'] = $filePath;
+                    }
+
+                        $contact_id = Transaction::whereId($input['offer_price'])->first()->contact_id;
+                        $sale_project['contact_id'] = $contact_id;
+                        $sale_project['name'] = $request->project_name;
+                        $assignedTo = $request->input('assigned_to');
+
+                        $assignedToJson = json_encode($assignedTo);
+                        $sale_project['assigned_to'] = $assignedToJson;
+                        $sale_project=SalesProject::create($sale_project);
+                        $input2['sales_project_id'] = $sale_project->id;
+
+
+                        salesContract::create($input2);
             }
 
-            if ($request->contract_type == 'appendix') {
-                $input2['sales_project_id'] = $request->appendix_project_id;
-            }
+        
+        
+        if ($request->contract_type == 'appendix')
+             {
+                $contracts = DB::table('sales_orders_operations')
+                ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+                ->select('sales_contracts.number_of_contract as contract_number' ,'sales_contracts.id')
+                ->get();
+                
+                $selectedContract = $contracts->firstWhere('contract_number', $request->input('contract-select'));
+            
+                if ($selectedContract) {
+                    
+                    $input2['contract_id'] = $selectedContract->id;
+                   // dd($input2['contract_id']);
+            
+                    
+                    $latestRecord = salesContractAppendic::orderBy('number_of_appendix', 'desc')->first();
+            
+                    if ($latestRecord) {
+                        $latestRefNo = $latestRecord->number_of_appendix;
+                        $numericPart = (int)substr($latestRefNo, 3);
+                        $numericPart++;
+                        $input2['number_of_appendix'] = 'CAP' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                    } else {
+                        $input2['number_of_appendix'] = 'CAP0001';
+                    }
+            
+                    salesContractAppendic::create($input2);
+                }
 
-            salesContract::create($input2);
+          
+            }
         
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
-        } catch (\Exception $e) {
+        } 
+        
+        
+        catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
 
             ];
         }
+
+
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
         $offer_prices = Transaction::where([['type', '=', 'sell'], ['status', '=', 'approved']])->pluck('ref_no', 'id');
         $items = salesContractItem::pluck('name_of_item', 'id');
-        return redirect()->route('saleContracts')->with(compact('offer_prices', 'items'));
+
+        return redirect()->back()->with(['output']);
+       // return $output;
+      
     }
 
     /**
