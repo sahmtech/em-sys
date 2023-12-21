@@ -1,4 +1,4 @@
-<div class="row">
+{{-- <div class="row">
     <div class="col-md-12">
         <div class="form-group">
             {!! Form::label('cc', 'CC:' )!!}
@@ -15,7 +15,7 @@
             <p class="help-block">@lang('sales::lang.comma_separated_email')</p>
        </div> 
     </div>
-</div>
+</div> --}}
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
@@ -34,7 +34,7 @@
 <div class="row">
 	<div class="col-md-12">
         <div class="form-group">
-            {!! Form::label('body', __('crm::lang.email_body') . ':*') !!}
+            {!! Form::label('body', __('sales::lang.email_body') . ':*') !!}
             {!! Form::textarea('body', !empty($proposal_template) ? $proposal_template->body : '', ['class' => 'form-control', 'id' => 'proposal_email_body','required']); !!}
         </div>
         @error('body')

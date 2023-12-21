@@ -1097,5 +1097,5 @@ return [
   'attendance_status' => 'حالات الحضور والانصراف',
   'add_attendance_status' => 'إضافة حالة',
   'business_single'=>'الشركة',
-  'nationalities'
+  'please_add_the_essentials_department'=>'قم بإضافة إدارة الموارد البشرية من فضلك'
 ];

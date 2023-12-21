@@ -412,59 +412,65 @@ class EssentialsRequestController extends Controller
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
 
+        $requestsProcess = null;
 
+        if ($department) {
+            $department = $department->id;
+            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+            $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+            if (!$is_admin) {
+                $userProjects = [];
+                $userBusinesses = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+                $user_projects_ids = array_unique($userProjects);
+                $user_businesses_ids = array_unique($userBusinesses);
+            }
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests_process.id as process_id',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'essentials_wk_procedures.can_return',
+                'users.assigned_to'
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->where('department_id', $department)->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                    $query->where(function ($query2) use ($user_businesses_ids) {
+                        $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
+                    })->orWhere(function ($query3) use ($user_projects_ids) {
+                        $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                    });
+                });
+        }
+        else {
+            $output = ['success' => false,
+            'msg' => __('essentials::lang.please_add_the_essentials_department'),
+                ];
+            return redirect()->action([\Modules\Essentials\Http\Controllers\EssentialsController::class, 'index'])->with('status', $output);
+        }
         if (request()->ajax()) {
 
-            $requestsProcess = null;
-
-            if ($department) {
-                $department = $department->id;
-                $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-                $user_projects_ids = SalesProject::all('id')->unique()->toArray();
-                if (!$is_admin) {
-                    $userProjects = [];
-                    $userBusinesses = [];
-                    $roles = auth()->user()->roles;
-                    foreach ($roles as $role) {
-
-                        $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                        $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                        $userProjects = array_merge($userProjects, $userProjectsForRole);
-                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                    }
-                    $user_projects_ids = array_unique($userProjects);
-                    $user_businesses_ids = array_unique($userBusinesses);
-                }
-                $requestsProcess = FollowupWorkerRequest::select([
-                    'followup_worker_requests.request_no',
-                    'followup_worker_requests_process.id as process_id',
-                    'followup_worker_requests.id',
-                    'followup_worker_requests.type as type',
-                    DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                    'followup_worker_requests.created_at',
-                    'followup_worker_requests_process.status',
-                    'followup_worker_requests_process.status_note as note',
-                    'followup_worker_requests.reason',
-                    'essentials_wk_procedures.department_id as department_id',
-                    'users.id_proof_number',
-                    'essentials_wk_procedures.can_return',
-                    'users.assigned_to'
-
-                ])
-                    ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                    ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                    ->where('department_id', $department)->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                        $query->where(function ($query2) use ($user_businesses_ids) {
-                            $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
-                        })->orWhere(function ($query3) use ($user_projects_ids) {
-                            $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
-                        });
-                    });
-            }
+        
 
             return DataTables::of($requestsProcess ?? [])
 
@@ -500,16 +506,12 @@ class EssentialsRequestController extends Controller
 
                 ->make(true);
         }
-        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'employee');
-        $all_users = $query->select(
-            'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-         ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )
-            ->get();
+      
 
-        $workers = $all_users->pluck('full_name', 'id');
+        $workers = User::whereIn('user_type', ['employee', 'manager'])->whereIn('users.business_id', $user_businesses_ids)->select(
+                'id',
+                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
+    
 
         $statuses = $this->statuses;
 

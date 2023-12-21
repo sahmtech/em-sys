@@ -262,7 +262,7 @@ return [
     'first_choice_sales_contract_template'=>'قالب العقد الخيار الأول',
     'second_choice_sales_contract_template'=>'قالب العقد الخيار الثاني',
     'comma_separated_email'=>'قيم البريد الإلكتروني المدخلة بفاصلة بين كل بريد وآخر',
-    'email_body' => 'هيئة البريد الإلكتروني',
+    'email_body' => 'النص',
     'send_notification' => 'إرسال إشعار',
     'send' => 'إرسال',
     'subject' => 'موضوع',
@@ -294,6 +294,7 @@ return [
     'crud_contract_appendics'=>'إدارة ملاحق العقود',
     'crud_sales_templates'=>'إدارة قوالب المبيعات',
     'crud_sales_costs'=>'إدارة تكاليف المبيعات',
+    'please_add_the_Sales_department'=>'قم بإضافة إدارة المبيعات من فضلك'
     
 
 

@@ -411,7 +411,7 @@ return [
     'first_choice_sales_contract_template' => 'First Choice Sales Contract Template',
     'second_choice_sales_contract_template' => 'Second Choice Sales Contract Template',
     'comma_separated_email' => 'Comma-Separated Email Values',
-    'email_body' => 'Email Body',
+    'email_body' => 'Body',
     'send_notification' => 'Send Notification',
     'send' => 'Send',
     'subject' => 'Subject',
@@ -443,6 +443,7 @@ return [
     'crud_contract_appendics'=>'Crud Contract Appendics',
     'crud_sales_templates'=>'Crud Sales Templates',
     'crud_sales_costs'=>'Crud Sales Costs',
+    'please_add_the_Sales_department'=>'please add the sales depatments'
     
 
 

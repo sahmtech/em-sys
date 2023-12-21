@@ -135,9 +135,9 @@ class RequestController extends Controller
         }
         else {
             $output = ['success' => false,
-            'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
+            'msg' => __('sales::lang.please_add_the_Sales_department'),
                 ];
-            return redirect()->action([\Modules\Sales\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
+            return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
         }
         if (request()->ajax()) {
 
