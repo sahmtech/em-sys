@@ -179,13 +179,10 @@ class RoomController extends Controller
                         
                         DB::rollBack();
                         $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
-                        return response()->json($output);
+                        return redirect()->back()->withErrors([$output['msg']]);
                     }
                    
-                     
 
-
-                    
                 }
     
             
