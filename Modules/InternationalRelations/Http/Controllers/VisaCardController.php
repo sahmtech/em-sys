@@ -40,9 +40,7 @@ class VisaCardController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_visa_card = auth()->user()->can('internationalrelations.crud_visa_cards');
         if (!($isSuperAdmin || $can_crud_visa_card)) {
             abort(403, 'Unauthorized action.');
@@ -139,9 +137,7 @@ class VisaCardController extends Controller
     //     $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
     //     $business_id = request()->session()->get('user.business_id');
-    //     if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-    //         abort(403, 'Unauthorized action.');
-    //     }
+
     //     $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
     //     if (!($isSuperAdmin || $can_store_visa_card)) {
     //         abort(403, 'Unauthorized action.');
@@ -186,9 +182,7 @@ class VisaCardController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
     
         $business_id = $request->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
         if (!($isSuperAdmin || $can_store_visa_card)) {
             abort(403, 'Unauthorized action.');
@@ -247,9 +241,7 @@ class VisaCardController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_view_visa_workers = auth()->user()->can('internationalrelations.view_visa_workers');
         if (!($isSuperAdmin || $can_view_visa_workers)) {
             abort(403, 'Unauthorized action.');

@@ -36,9 +36,7 @@ class EssentialsMessageController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (! auth()->user()->can('essentials.view_message') && ! auth()->user()->can('essentials.create_message')) {
             abort(403, 'Unauthorized action.');
@@ -72,9 +70,7 @@ class EssentialsMessageController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (! auth()->user()->can('essentials.create_message')) {
             abort(403, 'Unauthorized action.');
@@ -130,9 +126,7 @@ class EssentialsMessageController extends Controller
     public function destroy($id)
     {
         $business_id = request()->user()->business_id;
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (! auth()->user()->can('essentials.create_message')) {
             abort(403, 'Unauthorized action.');
@@ -196,9 +190,7 @@ class EssentialsMessageController extends Controller
         $last_chat_time = request()->input('last_chat_time');
 
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (! auth()->user()->can('essentials.view_message') && ! auth()->user()->can('essentials.create_message')) {
             abort(403, 'Unauthorized action.');

@@ -40,9 +40,7 @@ class AssetSettingsController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module'))) || ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $asset_settings = $this->assetUtil->getAssetSettings($business_id);
 
@@ -107,9 +105,7 @@ class AssetSettingsController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module'))) || ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only('asset_code_prefix', 'allocation_code_prefix', 'revoke_code_prefix', 'asset_maintenance_prefix', 'send_for_maintenence_recipients');

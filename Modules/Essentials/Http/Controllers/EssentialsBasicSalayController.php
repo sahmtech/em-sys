@@ -23,9 +23,7 @@ class EssentialsBasicSalayController extends Controller
    {
       $business_id = request()->session()->get('user.business_id');
 
-       if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-           abort(403, 'Unauthorized action.');
-       }
+
 
        $can_crud_basic_salary= auth()->user()->can('essentials.crud_basic_salary');
        if (! $can_crud_basic_salary) {
@@ -69,8 +67,7 @@ class EssentialsBasicSalayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-                     abort(403, 'Unauthorized action.');}
+       
        
         return view('essentials::settings.partials.basic_salary.create');
      
@@ -81,9 +78,7 @@ class EssentialsBasicSalayController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
  
         try {
             $input = $request->only(['type',  'details', 'is_active']);
@@ -121,9 +116,7 @@ class EssentialsBasicSalayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         $basic_salary_type = EssentialsBasicSalaryType::findOrFail($id);
 
@@ -138,9 +131,6 @@ class EssentialsBasicSalayController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $input = $request->only([ 'type', 'details', 'is_active']);
@@ -174,9 +164,7 @@ class EssentialsBasicSalayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             EssentialsBasicSalaryType::where('id', $id)

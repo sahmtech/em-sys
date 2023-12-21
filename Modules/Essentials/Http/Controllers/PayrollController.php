@@ -66,9 +66,7 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_view_all_payroll = auth()->user()->can('essentials.view_all_payroll');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $payrolls = $this->essentialsUtil->getPayrollQuery($business_id);
@@ -180,9 +178,7 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.create_payroll')) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         $employee_ids = request()->input('employee_ids');
         $month_year_arr = explode('/', request()->input('month_year'));
@@ -313,9 +309,7 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.create_payroll')) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             $transaction_date = $request->input('transaction_date');
@@ -441,9 +435,7 @@ class PayrollController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $query = Transaction::where('business_id', $business_id)
                         ->with(['transaction_for', 'payment_lines']);
@@ -518,9 +510,7 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ! $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.update_payroll')) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         $payroll = Transaction::where('business_id', $business_id)
                                 ->with(['transaction_for'])
@@ -546,9 +536,7 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.update_payroll')) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         try {
             $input = $request->only(['essentials_duration', 'essentials_amount_per_unit_duration', 'final_total', 'essentials_duration_unit']);
@@ -606,9 +594,7 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! auth()->user()->can('essentials.delete_payroll')) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         if (request()->ajax()) {
             try {
@@ -663,9 +649,7 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        if (! (auth()->user()->can('superadmin') || $is_admin || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if ($request->ajax()) {
             $payroll_groups = PayrollGroup::where('essentials_payroll_groups.business_id', $business_id)
@@ -765,9 +749,6 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        if (! (auth()->user()->can('superadmin') || $is_admin || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         $payroll_group = PayrollGroup::where('business_id', $business_id)
                             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
@@ -802,9 +783,7 @@ class PayrollController extends Controller
     public function getEditPayrollGroup($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || auth()->user()->can('essentials.update_payroll') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $payroll_group = PayrollGroup::where('business_id', $business_id)
                             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation'])
@@ -875,9 +854,7 @@ class PayrollController extends Controller
     public function getUpdatePayrollGroup(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || auth()->user()->can('essentials.update_payroll') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         try {
             $transaction_date = $request->input('transaction_date');
@@ -940,9 +917,6 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        if (! (auth()->user()->can('superadmin') || $is_admin || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         $payroll_group = PayrollGroup::where('business_id', $business_id)
                             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
@@ -983,9 +957,6 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-        if (! (auth()->user()->can('superadmin') || $is_admin || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $payments = $request->input('payments');
@@ -1091,9 +1062,7 @@ class PayrollController extends Controller
     public function getMyPayrolls(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         if ($request->ajax()) {
             $payrolls = $this->essentialsUtil->getPayrollQuery($business_id);
@@ -1140,9 +1109,7 @@ class PayrollController extends Controller
     public function getEmployeesBasedOnLocation(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $location_id = $request->get('location_id');

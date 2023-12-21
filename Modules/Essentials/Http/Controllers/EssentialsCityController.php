@@ -28,9 +28,7 @@ class EssentialsCityController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_cities = auth()->user()->can('essentials.crud_cities');
         if (! $can_crud_cities) {
             abort(403, 'Unauthorized action.');
@@ -109,8 +107,7 @@ class EssentialsCityController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-                     abort(403, 'Unauthorized action.');}
+   
         
         $countries = EssentialsCountry::forDropdown();
      
@@ -128,9 +125,6 @@ class EssentialsCityController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
  
         try {
             $input = $request->only(['arabic_name', 'english_name', 'country', 'details', 'is_active']);
@@ -187,9 +181,7 @@ class EssentialsCityController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $city = EssentialsCity::findOrFail($id);
         $country2=EssentialsCountry::whereId($city->country_id)->first();
@@ -212,9 +204,7 @@ class EssentialsCityController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         try {
             $input = $request->only(['arabic_name', 'english_name', 'country', 'details', 'is_active']);
@@ -257,9 +247,7 @@ class EssentialsCityController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsCity::where('id', $id)

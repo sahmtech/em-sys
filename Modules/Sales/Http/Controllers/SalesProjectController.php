@@ -31,9 +31,7 @@ class SalesProjectController extends Controller
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $SalesProjects = SalesProject::with(['contact']);
         $cities = EssentialsCity::forDropdown();
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
@@ -129,9 +127,7 @@ class SalesProjectController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             error_log($request->contact_name);
@@ -183,11 +179,7 @@ class SalesProjectController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin
-            || auth()->user()->can('superadmin')
-            || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
@@ -210,9 +202,7 @@ class SalesProjectController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $contactLocation['contact_id'] = $request->contact_name;
@@ -246,9 +236,7 @@ class SalesProjectController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             SalesProject::where('id', $id)

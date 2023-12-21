@@ -47,9 +47,7 @@ class EssentialsEmployeeAppointmentController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $can_crud_employee_appointments = auth()->user()->can('essentials.crud_employee_appointments');
         if (!$can_crud_employee_appointments) {
@@ -153,9 +151,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.approve_leave')) {
-            abort(403, 'Unauthorized action.');
-        }
+    
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
@@ -206,9 +202,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['employee', 'department', 'location', 'profession', 'specialization']);
@@ -257,9 +251,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsEmployeeAppointmet::where('id', $id)
@@ -287,9 +279,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $Appointmet = EssentialsEmployeeAppointmet::findOrFail($id);
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
@@ -308,9 +298,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
 
         try {

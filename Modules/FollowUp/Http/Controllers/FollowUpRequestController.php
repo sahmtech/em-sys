@@ -130,9 +130,7 @@ class FollowUpRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+       
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
@@ -353,9 +351,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $crud_requests = auth()->user()->can('followup.view_requests');
         if (!$crud_requests) {
@@ -670,9 +666,7 @@ class FollowUpRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -753,9 +747,7 @@ class FollowUpRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $filter = request()->query('filter');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
@@ -818,9 +810,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -902,9 +892,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -990,9 +978,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -1079,9 +1065,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -1164,9 +1148,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -1249,9 +1231,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -1331,9 +1311,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -1414,9 +1392,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
             abort(403, 'Unauthorized action.');
@@ -1497,9 +1473,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -1578,9 +1552,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -1660,9 +1632,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -1747,9 +1717,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -1830,9 +1798,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -1914,9 +1880,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)
@@ -2000,9 +1964,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $department = EssentialsDepartment::where('business_id', $business_id)

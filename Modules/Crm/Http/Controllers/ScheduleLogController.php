@@ -42,9 +42,7 @@ class ScheduleLogController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $schedule_id = $request->get('schedule_id');
         $modal_content = $request->get('modal_content') == 'false' ? false : true;
@@ -105,9 +103,7 @@ class ScheduleLogController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $id = request()->get('schedule_id');
         $schedule = Schedule::where('business_id', $business_id)
@@ -128,9 +124,7 @@ class ScheduleLogController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only('log_type', 'subject', 'description');
@@ -174,9 +168,7 @@ class ScheduleLogController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $schedule_id = request()->get('schedule_id');
 
@@ -197,9 +189,7 @@ class ScheduleLogController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $schedule_id = request()->get('schedule_id');
 
@@ -226,9 +216,7 @@ class ScheduleLogController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only('log_type', 'subject', 'description');
@@ -275,9 +263,7 @@ class ScheduleLogController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {

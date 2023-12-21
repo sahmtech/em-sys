@@ -28,9 +28,7 @@ class EssentialsRegionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_regoins = auth()->user()->can('essentials.crud_regions');
         if (! $can_crud_regoins) {
             abort(403, 'Unauthorized action.');
@@ -105,9 +103,7 @@ class EssentialsRegionController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
  
         try {
             $input = $request->only(['arabic_name', 'english_name', 'city', 'details', 'is_active']);
@@ -157,9 +153,7 @@ class EssentialsRegionController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+     
 
         $region = EssentialsRegion::findOrFail($id);
         $city2=EssentialsCity::whereId($region->city_id)->first();
@@ -182,9 +176,7 @@ class EssentialsRegionController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+     
 
         try {
             $input = $request->only(['arabic_name', 'english_name', 'city', 'details', 'is_active']);
@@ -226,9 +218,7 @@ class EssentialsRegionController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+    
 
         try {
             EssentialsRegion::where('id', $id)

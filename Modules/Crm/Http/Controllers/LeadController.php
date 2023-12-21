@@ -46,9 +46,7 @@ class LeadController extends Controller
         $can_access_all_leads = auth()->user()->can('crm.access_all_leads');
         $can_access_own_leads = auth()->user()->can('crm.access_own_leads');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_leads || $can_access_own_leads)) {
-            abort(403, 'Unauthorized action.');
-        }
+}
 
         $life_stages = Category::forDropdown($business_id, 'life_stage');
 
@@ -298,9 +296,7 @@ class LeadController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         
         $users = User::forDropdown($business_id, false, false, false, true);
         $sources = Category::forDropdown($business_id, 'source');
@@ -324,9 +320,7 @@ class LeadController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['type', 'prefix', 'first_name', 'middle_name', 'last_name', 'tax_number', 'mobile', 'landline', 'alternate_number', 'city', 'state', 'country', 'landmark', 'contact_id', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'custom_field5', 'custom_field6', 'custom_field7', 'custom_field8', 'custom_field9', 'custom_field10', 'email', 'crm_source', 'crm_life_stage', 'dob', 'address_line_1', 'address_line_2', 'zip_code', 'supplier_business_name', 'shipping_custom_field_details']);
@@ -384,9 +378,7 @@ class LeadController extends Controller
         $can_access_all_leads = auth()->user()->can('crm.access_all_leads');
         $can_access_own_leads = auth()->user()->can('crm.access_own_leads');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_leads || $can_access_own_leads)) {
-            abort(403, 'Unauthorized action.');
-        }
+}
 
         $query = CrmContact::with('leadUsers', 'Source', 'lifeStage')
                     ->where('business_id', $business_id);
@@ -416,9 +408,7 @@ class LeadController extends Controller
         $can_access_all_leads = auth()->user()->can('crm.access_all_leads');
         $can_access_own_leads = auth()->user()->can('crm.access_own_leads');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_leads || $can_access_own_leads)) {
-            abort(403, 'Unauthorized action.');
-        }
+}
 
         $query = CrmContact::with('leadUsers')
                     ->where('business_id', $business_id);
@@ -452,9 +442,7 @@ class LeadController extends Controller
         $can_access_all_leads = auth()->user()->can('crm.access_all_leads');
         $can_access_own_leads = auth()->user()->can('crm.access_own_leads');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_leads || $can_access_own_leads)) {
-            abort(403, 'Unauthorized action.');
-        }
+}
 
         try {
             $input = $request->only(['type', 'prefix', 'first_name', 'middle_name', 'last_name', 'tax_number', 'mobile', 'landline', 'alternate_number', 'city', 'state', 'country', 'landmark', 'contact_id', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'custom_field5', 'custom_field6', 'custom_field7', 'custom_field8', 'custom_field9', 'custom_field10', 'email', 'crm_source', 'crm_life_stage', 'dob', 'address_line_1', 'address_line_2', 'zip_code', 'supplier_business_name', 'shipping_custom_field_details', 'export_custom_field_1', 'export_custom_field_2', 'export_custom_field_3', 'export_custom_field_4', 'export_custom_field_5', 'export_custom_field_6']);
@@ -502,9 +490,7 @@ class LeadController extends Controller
         $can_access_all_leads = auth()->user()->can('crm.access_all_leads');
         $can_access_own_leads = auth()->user()->can('crm.access_own_leads');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_leads || $can_access_own_leads)) {
-            abort(403, 'Unauthorized action.');
-        }
+}
 
         if (request()->ajax()) {
             try {
@@ -536,9 +522,7 @@ class LeadController extends Controller
     public function convertToCustomer($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {
@@ -572,9 +556,7 @@ class LeadController extends Controller
     public function postLifeStage($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {

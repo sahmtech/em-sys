@@ -88,9 +88,7 @@ class SalesTemplateController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $proposal_template = $this->__getProposalTemplate($business_id);
 
@@ -301,9 +299,7 @@ class SalesTemplateController extends Controller
     public function getView()
     {
          $business_id = request()->session()->get('user.business_id');
-         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-             abort(403, 'Unauthorized action.');
-         }
+
  
          if (empty($this->__getProposalTemplate($business_id))) {
              return redirect()
@@ -322,9 +318,7 @@ class SalesTemplateController extends Controller
      public function send($id)
      {
          $business_id = request()->session()->get('user.business_id');
-         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-             abort(403, 'Unauthorized action.');
-         }
+
  
          $proposal_template = salesproposaltemplate::with(['media'])
          ->where('business_id', $business_id)->where('id',$id)
@@ -347,9 +341,7 @@ class SalesTemplateController extends Controller
      public function deleteProposalMedia(Request $request, $id)
      {
          $business_id = request()->session()->get('user.business_id');
-         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-             abort(403, 'Unauthorized action.');
-         }
+
  
          if (request()->ajax()) {
              try {

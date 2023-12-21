@@ -323,7 +323,7 @@ class ProductController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id);
         $business_locations->prepend(__('lang_v1.none'), 'none');
 
-        if ($this->moduleUtil->isModuleInstalled('Manufacturing') && (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'manufacturing_module'))) {
+        if ($this->moduleUtil->isModuleInstalled('Manufacturing') && (auth()->user()->can('superadmin') )) {
             $show_manufacturing_data = true;
         } else {
             $show_manufacturing_data = false;

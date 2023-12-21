@@ -26,9 +26,7 @@ class AttendanceStatusController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_attendance_status = auth()->user()->can('essentials.crud_attencances_status');
         if (!$can_crud_attendance_status) {
             abort(403, 'Unauthorized action.');
@@ -77,9 +75,7 @@ class AttendanceStatusController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['name']);
@@ -116,9 +112,7 @@ class AttendanceStatusController extends Controller
     //     $business_id = $request->session()->get('user.business_id');
     //     $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-    //     if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-    //         abort(403, 'Unauthorized action.');
-    //     }
+
 
     //     try {
     //         $input = $request->only(['arabic_name', 'english_name', 'nationality', 'details', 'is_active']);
@@ -154,9 +148,7 @@ class AttendanceStatusController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsAttendanceStatus::where('id', $id)

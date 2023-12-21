@@ -115,7 +115,7 @@ class LoginController extends Controller
                         'status',
                         ['success' => 0, 'msg' => __('lang_v1.login_not_allowed')]
                     );
-            } elseif ((Str::contains($user->user_type, 'user_customer')) && !$this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
+            } elseif ((Str::contains($user->user_type, 'user_customer')) ) {
                 \Auth::logout();
 
                 return redirect('/login')

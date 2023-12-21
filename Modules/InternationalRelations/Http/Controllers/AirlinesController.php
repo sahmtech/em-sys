@@ -65,9 +65,7 @@ class AirlinesController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'internationalRelations_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_airlines= auth()->user()->can('internationalrelations.crud_airlines');
         if (! $can_crud_airlines) {
             abort(403, 'Unauthorized action.');

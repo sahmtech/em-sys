@@ -55,9 +55,7 @@ class SaleOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         $contracts = DB::table('sales_orders_operations')
@@ -345,9 +343,7 @@ class SaleOperationOrderController extends Controller
         //  dd(  $business_id);
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $record = SalesOrdersOperation::find($id);
         if (!$record) {

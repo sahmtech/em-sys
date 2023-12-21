@@ -26,13 +26,7 @@ class CostCenterController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.view_journal'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+   
         $mainCenters = CostCenter::query()->whereNull('deleted_at')->whereNull('parent_id')->get();
         $allCenters = CostCenter::query()->whereNull('deleted_at')->get();
         $businessLocations = BusinessLocation::where('business_id', $business_id)->get();

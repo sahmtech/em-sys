@@ -66,9 +66,7 @@ class EssentialsLeaveController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_all_leave = auth()->user()->can('essentials.crud_all_leave');
         $can_crud_own_leave = auth()->user()->can('essentials.crud_own_leave');
 
@@ -249,9 +247,7 @@ class EssentialsLeaveController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_all_leave = auth()->user()->can('essentials.crud_all_leave');
         $can_crud_own_leave = auth()->user()->can('essentials.crud_own_leave');
 
@@ -410,9 +406,7 @@ class EssentialsLeaveController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (!auth()->user()->can('essentials.crud_all_leave')) {
             abort(403, 'Unauthorized action.');
@@ -443,9 +437,7 @@ class EssentialsLeaveController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.approve_leave')) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         try {
             $input = $request->only(['status', 'leave_id', 'status_note']);
@@ -488,9 +480,7 @@ class EssentialsLeaveController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $leave = EssentialsLeave::where('business_id', $business_id)
             ->find($id);
@@ -516,9 +506,7 @@ class EssentialsLeaveController extends Controller
 
         $user_id = $is_admin ? request()->input('user_id') : auth()->user()->id;
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (empty($user_id)) {
             return '';

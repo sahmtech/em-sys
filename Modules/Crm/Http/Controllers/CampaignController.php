@@ -47,9 +47,7 @@ class CampaignController extends Controller
         $can_access_all_campaigns = auth()->user()->can('crm.access_all_campaigns');
         $can_access_own_campaigns = auth()->user()->can('crm.access_own_campaigns');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_campaigns || $can_access_own_campaigns)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $campaigns = Campaign::with('createdBy')
@@ -135,9 +133,7 @@ class CampaignController extends Controller
         $can_access_all_campaigns = auth()->user()->can('crm.access_all_campaigns');
         $can_access_own_campaigns = auth()->user()->can('crm.access_own_campaigns');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_campaigns || $can_access_own_campaigns)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $tags = Campaign::getTags();
         $leads = CrmContact::leadsDropdown($business_id, false);
@@ -166,9 +162,7 @@ class CampaignController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only('name', 'campaign_type', 'subject', 'email_body', 'sms_body');
@@ -229,9 +223,7 @@ class CampaignController extends Controller
         $can_access_all_campaigns = auth()->user()->can('crm.access_all_campaigns');
         $can_access_own_campaigns = auth()->user()->can('crm.access_own_campaigns');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_campaigns || $can_access_own_campaigns)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $query = Campaign::with('createdBy')
                     ->where('business_id', $business_id);
@@ -260,9 +252,7 @@ class CampaignController extends Controller
         $can_access_all_campaigns = auth()->user()->can('crm.access_all_campaigns');
         $can_access_own_campaigns = auth()->user()->can('crm.access_own_campaigns');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_campaigns || $can_access_own_campaigns)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $query = Campaign::where('business_id', $business_id);
 
@@ -302,9 +292,7 @@ class CampaignController extends Controller
         $can_access_all_campaigns = auth()->user()->can('crm.access_all_campaigns');
         $can_access_own_campaigns = auth()->user()->can('crm.access_own_campaigns');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_campaigns || $can_access_own_campaigns)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only('name', 'campaign_type', 'subject', 'email_body', 'sms_body');
@@ -371,9 +359,7 @@ class CampaignController extends Controller
         $can_access_all_campaigns = auth()->user()->can('crm.access_all_campaigns');
         $can_access_own_campaigns = auth()->user()->can('crm.access_own_campaigns');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module')) || ! ($can_access_all_campaigns || $can_access_own_campaigns)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {
@@ -406,9 +392,7 @@ class CampaignController extends Controller
     public function sendNotification($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $output = $this->__sendCampaignNotification($id, $business_id);

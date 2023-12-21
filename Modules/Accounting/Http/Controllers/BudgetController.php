@@ -34,11 +34,7 @@ class BudgetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.manage_budget')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+    
 
         $fy_year = request()->input('financial_year', null);
         $budget = [];
@@ -177,11 +173,7 @@ class BudgetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.manage_budget')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+    
 
         $fy_year = request()->input('financial_year');
 
@@ -207,11 +199,7 @@ class BudgetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || 
-            $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) || 
-            !(auth()->user()->can('accounting.manage_budget')) ) {
-            abort(403, 'Unauthorized action.');
-        }
+     
         
         try {
             DB::beginTransaction();

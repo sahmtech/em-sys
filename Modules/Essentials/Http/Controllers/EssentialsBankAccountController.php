@@ -23,9 +23,7 @@ class EssentialsBankAccountController extends Controller
      {
         $business_id = request()->session()->get('user.business_id');
  
-         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-             abort(403, 'Unauthorized action.');
-         }
+
  
          $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
  
@@ -84,8 +82,6 @@ class EssentialsBankAccountController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-                     abort(403, 'Unauthorized action.');}
        
         return view('essentials::settings.partials.bank_accounts.create');
         
@@ -104,9 +100,7 @@ class EssentialsBankAccountController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
  
         try {
             $input = $request->only(['name', 'phone_number', 'mobile_number',
@@ -173,9 +167,7 @@ class EssentialsBankAccountController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         $bank = EssentialsBankAccounts::findOrFail($id);
 
@@ -196,10 +188,7 @@ class EssentialsBankAccountController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
-
+  
         try {
             $oldLocation=EssentialsBankAccounts::whereId($id)->first()->location_id;
             $input = $request->only(['name', 'phone_number', 'mobile_number',
@@ -249,9 +238,6 @@ class EssentialsBankAccountController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             EssentialsBankAccounts::where('id', $id)

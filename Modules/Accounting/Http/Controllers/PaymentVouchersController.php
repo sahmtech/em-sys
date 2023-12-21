@@ -38,11 +38,7 @@ class PaymentVouchersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.view_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $contacts = Contact::whereNot('id', 1)->where('type', 'supplier')->get();
         $transactionUtil = new TransactionUtil();
         $moduleUtil = new ModuleUtil();

@@ -35,9 +35,7 @@ class ManageProfileController extends Controller
     public function getProfile()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $user_id = request()->session()->get('user.id');
         $user = User::where('id', $user_id)->with(['media'])->first();
@@ -58,9 +56,7 @@ class ManageProfileController extends Controller
     public function updateProfile(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $user_id = $request->session()->get('user.id');
@@ -98,9 +94,7 @@ class ManageProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'crm_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $user_id = $request->session()->get('user.id');

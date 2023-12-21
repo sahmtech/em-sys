@@ -56,9 +56,7 @@ class ClientsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
@@ -107,9 +105,7 @@ class ClientsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
@@ -155,9 +151,7 @@ class ClientsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
        
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
@@ -203,9 +197,7 @@ class ClientsController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
 
-        if (!($is_admin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
       
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
@@ -416,9 +408,7 @@ class ClientsController extends Controller
         $businessId = $request->session()->get('user.business_id');
     
      
-        if (!($isSuperAdmin || $user->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($businessId, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
@@ -789,9 +779,7 @@ class ClientsController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         $business_id = request()->session()->get('user.business_id');
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
       
         try {
             $selectedRows = $request->input('selectedRows');

@@ -24,9 +24,7 @@ class EssentialsContractsFinishReasonsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
     
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+  
     
         $reasons = EssentailsReasonWish::where('type','reason')->select(
             'id',
@@ -109,9 +107,6 @@ class EssentialsContractsFinishReasonsController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
         try {
             $input = $request->only(
                 ['employee_type',
@@ -192,9 +187,7 @@ class EssentialsContractsFinishReasonsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentailsReasonWish::where('id', $id)

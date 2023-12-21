@@ -42,9 +42,7 @@ class RevokeAllocatedAssetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if (request()->ajax()) {
             $asset_allocated = AssetTransaction::join('asset_transactions as PT',
@@ -117,9 +115,7 @@ class RevokeAllocatedAssetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if ($request->ajax()) {
             $allocated_id = $request->get('id');
@@ -143,9 +139,7 @@ class RevokeAllocatedAssetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         try {
             $input = $request->only('ref_no', 'parent_id', 'asset_id', 'quantity', 'transaction_datetime', 'reason');
@@ -235,9 +229,7 @@ class RevokeAllocatedAssetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || ($this->moduleUtil->hasThePermissionInSubscription($business_id, 'assetmanagement_module')))) {
-            abort(403, 'Unauthorized action.');
-        }
+        
 
         if (request()->ajax()) {
             try {

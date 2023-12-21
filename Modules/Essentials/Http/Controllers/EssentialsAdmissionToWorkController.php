@@ -26,9 +26,7 @@ class EssentialsAdmissionToWorkController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_employee_work_adminitions = auth()->user()->can('essentials.crud_employee_work_adminitions');
         if (!$can_crud_employee_work_adminitions) {
             abort(403, 'Unauthorized action.');
@@ -111,9 +109,7 @@ class EssentialsAdmissionToWorkController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);
@@ -160,9 +156,7 @@ class EssentialsAdmissionToWorkController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsAdmissionToWork::where('id', $id)
@@ -206,9 +200,7 @@ class EssentialsAdmissionToWorkController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $work = EssentialsAdmissionToWork::findOrFail($id);
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
@@ -227,9 +219,7 @@ class EssentialsAdmissionToWorkController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['employee', 'admissions_type', 'admissions_status', 'admissions_date']);

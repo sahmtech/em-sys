@@ -37,9 +37,7 @@ class EssentialsHolidayController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_holidays= auth()->user()->can('essentials.crud_holidays');
         if (! $can_crud_holidays) {
             abort(403, 'Unauthorized action.');
@@ -125,9 +123,7 @@ class EssentialsHolidayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+  
 
         $locations = BusinessLocation::forDropdown($business_id);
 
@@ -145,9 +141,7 @@ class EssentialsHolidayController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+     
 
         try {
             $input = $request->only(['name', 'start_date', 'end_date', 'location_id', 'note']);
@@ -191,9 +185,7 @@ class EssentialsHolidayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         $holiday = EssentialsHoliday::where('business_id', $business_id)
                                     ->findOrFail($id);
@@ -214,9 +206,7 @@ class EssentialsHolidayController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+      
 
         try {
             $input = $request->only(['name', 'start_date', 'end_date', 'location_id', 'note']);
@@ -252,9 +242,7 @@ class EssentialsHolidayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             EssentialsHoliday::where('business_id', $business_id)

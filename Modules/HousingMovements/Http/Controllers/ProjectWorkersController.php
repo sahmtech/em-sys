@@ -40,9 +40,7 @@ class ProjectWorkersController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        // if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup_module'))) {
-        //     abort(403, 'Unauthorized action.');
-        // }
+
         // $can_crud_workers = auth()->user()->can('followup.crud_workers');
         // if (!$can_crud_workers) {
         //     abort(403, 'Unauthorized action.');

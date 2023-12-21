@@ -64,9 +64,7 @@ class SuperadminRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'superadmin'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!($isSuperAdmin || $crud_requests)) {

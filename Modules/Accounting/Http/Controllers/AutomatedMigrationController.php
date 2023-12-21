@@ -58,13 +58,7 @@ class AutomatedMigrationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.add_journal'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+     
         // try {
         DB::beginTransaction();
 
@@ -207,13 +201,7 @@ class AutomatedMigrationController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         // return $request;
-        if (
-            !(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.add_journal'))
-        ) {
-            abort(403, 'Unauthorized action.');
-        }
+   
         // try {
         DB::beginTransaction();
 

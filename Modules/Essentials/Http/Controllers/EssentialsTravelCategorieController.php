@@ -27,9 +27,7 @@ class EssentialsTravelCategorieController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_travel_categories = auth()->user()->can('essentials.crud_travel_categories');
         if (!$can_crud_travel_categories) {
             abort(403, 'Unauthorized action.');
@@ -70,9 +68,7 @@ class EssentialsTravelCategorieController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         if (!auth()->user()->can('essentials.view_user_travel_categorie')) {
             abort(403, 'Unauthorized action.');
         }
@@ -126,9 +122,7 @@ class EssentialsTravelCategorieController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
 
@@ -168,9 +162,7 @@ class EssentialsTravelCategorieController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         return view('essentials::settings.partials.travel_categories.create');
     }
@@ -181,9 +173,7 @@ class EssentialsTravelCategorieController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['name', 'employee_ticket_value', 'wife_ticket_value', 'children_ticket_value', 'details', 'is_active']);
@@ -231,9 +221,7 @@ class EssentialsTravelCategorieController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $travel_categorie = EssentialsTravelTicketCategorie::findOrFail($id);
 
@@ -249,9 +237,7 @@ class EssentialsTravelCategorieController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['name', 'employee_ticket_value', 'wife_ticket_value', 'children_ticket_value', 'details', 'is_active']);
@@ -292,9 +278,7 @@ class EssentialsTravelCategorieController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsTravelTicketCategorie::where('id', $id)
@@ -320,9 +304,7 @@ class EssentialsTravelCategorieController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             EssentialsEmployeeTravelCategorie::where('id', $id)

@@ -27,9 +27,7 @@ class EssentialsOrganizationController extends Controller
   
         $business_id = request()->session()->get('user.business_id');
     
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
     
    
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -78,8 +76,7 @@ class EssentialsOrganizationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-                     abort(403, 'Unauthorized action.');}
+
        
         
         $banks = EssentialsBankAccounts::forDropdown();
@@ -100,9 +97,7 @@ class EssentialsOrganizationController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+ 
 
         try {
             $input = $request->only(['name', 'code', 'level_type', 'parent_level', 'account_number', 'details', 'is_active','bank']);
@@ -161,9 +156,7 @@ class EssentialsOrganizationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+     
 
         $organization = EssentialsOrganization::findOrFail($id);
         $bank=EssentialsBankAccounts::whereId($organization->bank_id)->first();
@@ -185,9 +178,6 @@ class EssentialsOrganizationController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
 
         try {
             $input = $request->only(['name', 'code', 'level_type', 'parent_level', 'account_number', 'details', 'is_active','bank']);
@@ -239,9 +229,7 @@ class EssentialsOrganizationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+   
 
         try {
             EssentialsOrganization::where('id', $id)

@@ -25,9 +25,7 @@ class ContractItemController extends Controller
      
         $business_id = request()->session()->get('user.business_id');
  
-         if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module'))) {
-             abort(403, 'Unauthorized action.');
-         }
+
          $can_crud_contract_items= auth()->user()->can('sales.crud_contract_items');
          if (! $can_crud_contract_items) {
              abort(403, 'Unauthorized action.');
@@ -75,9 +73,7 @@ class ContractItemController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
  
         try {
             $input = $request->only(['number_of_item', 'name_of_item', 'details']);
@@ -120,9 +116,7 @@ class ContractItemController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
  
         try {
             $input = $request->only(['number_of_item', 'name_of_item', 'details']);
@@ -170,9 +164,7 @@ class ContractItemController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $item = salesContractItem::findOrFail($id);
 
@@ -192,9 +184,7 @@ class ContractItemController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['number_of_item', 'name_of_item', 'details']);
@@ -229,9 +219,7 @@ class ContractItemController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'sales_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             salesContractItem::where('id', $id)

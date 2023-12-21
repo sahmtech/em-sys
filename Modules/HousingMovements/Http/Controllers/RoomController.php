@@ -24,9 +24,7 @@ class RoomController extends Controller
     
        $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'housingmovement_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_rooms = auth()->user()->can('housingmovement_module.crud_rooms');
         if (! $can_crud_rooms) {
             abort(403, 'Unauthorized action.');
@@ -93,9 +91,7 @@ class RoomController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
       
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'housingmovement_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
         
         try {
             $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
@@ -144,9 +140,7 @@ class RoomController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'housingmovement_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $room = DB::table('htr_rooms')->find($id);
         $buildings = DB::table('htr_buildings')->get()->pluck('name','id');
@@ -162,9 +156,7 @@ class RoomController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'housingmovement_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
@@ -198,9 +190,7 @@ class RoomController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'housingmovement_module')) && ! $is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             DB::table('htr_rooms')->where('id', $id)

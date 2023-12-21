@@ -36,9 +36,7 @@ class DocumentController extends Controller
     public function index(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $type = $request->get('type');
 
@@ -160,9 +158,7 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $user_id = $request->session()->get('user.id');
@@ -229,9 +225,7 @@ class DocumentController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             $memo = Document::where('business_id', $business_id)
@@ -270,9 +264,7 @@ class DocumentController extends Controller
     public function destroy(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {
@@ -322,9 +314,7 @@ class DocumentController extends Controller
     public function download(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $user_id = $request->session()->get('user.id');

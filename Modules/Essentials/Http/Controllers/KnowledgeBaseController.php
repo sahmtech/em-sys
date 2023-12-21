@@ -35,9 +35,7 @@ class KnowledgeBaseController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $user_id = auth()->user()->id;
         $knowledge_bases = KnowledgeBase::where('business_id', $business_id)
@@ -63,9 +61,7 @@ class KnowledgeBaseController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $parent = null;
         $users = null;
@@ -89,9 +85,7 @@ class KnowledgeBaseController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $user_id = $request->session()->get('user.id');
@@ -134,9 +128,7 @@ class KnowledgeBaseController extends Controller
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $kb_object = KnowledgeBase::where('business_id', $business_id)
                                     ->with(['children', 'children.children', 'users'])
@@ -180,9 +172,7 @@ class KnowledgeBaseController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $kb = KnowledgeBase::where('business_id', $business_id)
                             ->with(['users'])
@@ -207,9 +197,7 @@ class KnowledgeBaseController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['title', 'content']);
@@ -251,9 +239,7 @@ class KnowledgeBaseController extends Controller
     public function destroy(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {

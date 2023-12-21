@@ -45,9 +45,7 @@ class AttendanceController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
         $can_view_own_attendance = auth()->user()->can('essentials.view_own_attendance');
 
@@ -187,9 +185,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $employees = User::forDropdown($business_id, false);
 
@@ -207,9 +203,7 @@ class AttendanceController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $attendance = $request->input('attendance');
@@ -266,9 +260,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $attendance = EssentialsAttendance::where('business_id', $business_id)
             ->with(['employee'])
@@ -288,9 +280,7 @@ class AttendanceController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $input = $request->only(['clock_in_time', 'clock_out_time', 'ip_address', 'clock_in_note', 'clock_out_note']);
@@ -327,9 +317,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         if (request()->ajax()) {
             try {
@@ -361,9 +349,7 @@ class AttendanceController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         //Check if employees allowed to add their own attendance
         $settings = request()->session()->get('business.essentials_settings');
@@ -427,9 +413,7 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $user_id = $is_admin ? request()->input('user_id') : auth()->user()->id;
@@ -504,9 +488,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $date = $this->moduleUtil->uf_date(request()->input('date'));
 
@@ -554,9 +536,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $start_date = request()->input('start_date');
         $end_date = request()->input('end_date');
@@ -600,9 +580,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $notAllowed = $this->moduleUtil->notAllowedInDemo();
@@ -718,9 +696,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module') || $is_admin)) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $user = User::where('business_id', $business_id)
             ->findOrFail($user_id);

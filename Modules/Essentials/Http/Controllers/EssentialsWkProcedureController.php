@@ -26,9 +26,7 @@ class EssentialsWkProcedureController extends Controller
     { 
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
         $requestsType = [
             'exitRequest',
             'returnRequest',
@@ -215,9 +213,7 @@ class EssentialsWkProcedureController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         try {
             $type=EssentialsWkProcedure::where('id', $id)->first()->type;

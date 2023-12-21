@@ -31,11 +31,7 @@ class ReceiptVouchersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin') ||
-                $this->moduleUtil->hasThePermissionInSubscription($business_id, 'accounting_module')) ||
-            !(auth()->user()->can('accounting.view_journal'))) {
-            abort(403, 'Unauthorized action.');
-        }
+
 
         $transactions = TransactionPayment::with('transaction')->where('payment_type', 'credit')
             ->orWhereHas('transaction', function ($q){
