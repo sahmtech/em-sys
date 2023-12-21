@@ -813,6 +813,7 @@ class DataController extends Controller
             if (request()->input('health_insurance') != null){
             $user->has_insurance= request()->input('health_insurance');
                 }
+             
             $user->save();
 
 
@@ -972,6 +973,7 @@ class DataController extends Controller
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->user_type= request()->input('user_type');
             $user->location_id = request()->input('location_id');
+
             if (request()->input('health_insurance') != null){
                 $user->has_insurance= request()->input('health_insurance');
             }
@@ -985,10 +987,10 @@ class DataController extends Controller
                 $user->contact_number = null;
             }
 
-            $user->update();
+           
 
 
-
+          $user->save();
          
         if(!empty(request()->input('expiration_date')))
         { 
