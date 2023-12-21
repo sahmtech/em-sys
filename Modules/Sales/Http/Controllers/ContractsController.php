@@ -104,10 +104,12 @@ class ContractsController extends Controller
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-        $contracts = DB::table('sales_orders_operations')
-        ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
+        $contracts = DB::table('sales_contracts')
+      
         ->select('sales_contracts.number_of_contract as contract_number' ,'sales_contracts.id')
         ->get();
+
+
         return view('sales::contracts.index')->with(compact('offer_prices', 'items', 'users','contracts'));
     }
 
@@ -240,16 +242,12 @@ class ContractsController extends Controller
         
         if ($request->contract_type == 'appendix')
              {
-                $contracts = DB::table('sales_orders_operations')
-                ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-                ->select('sales_contracts.number_of_contract as contract_number' ,'sales_contracts.id')
-                ->get();
+               
                 
-                $selectedContract = $contracts->firstWhere('contract_number', $request->input('contract-select'));
-            
-                if ($selectedContract) {
+           
+              
                     
-                    $input2['contract_id'] = $selectedContract->id;
+                    $input2['contract_id'] =$request->input('contract-select');
                    // dd($input2['contract_id']);
             
                     
@@ -265,7 +263,7 @@ class ContractsController extends Controller
                     }
             
                     salesContractAppendic::create($input2);
-                }
+           
 
           
             }
