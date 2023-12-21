@@ -320,7 +320,9 @@ $('#arraived-selected').on('click', function (e) {
             
             $('#bulk_edit_form').append(workerIdInput);
         });
-    } else {
+    } 
+    
+    else {
         $('input#selected_rows').val('');
         swal('@lang("lang_v1.no_row_selected")');
     }
@@ -331,7 +333,7 @@ $('#bulk_edit_form').submit(function (e) {
     e.preventDefault();
 
 
-    var formData = $(this).serializeArray();
+var formData = $(this).serializeArray();
    console.log(formData);
    console.log( $(this).attr('action'));
     $.ajax({

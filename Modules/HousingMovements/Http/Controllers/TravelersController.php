@@ -347,16 +347,21 @@ class TravelersController extends Controller
     {
         try {
             $requestData = $request->only(['htr_building', 'room_number', 'worker_id', 'shift_name']);
-   dd( $requestData);
+  // dd( $requestData);
             $commonRoomNumber = isset($requestData['room_number'][0]) ? $requestData['room_number'][0] : null;
-    
+            $shift=null;
+            if( $requestData['shift_name'] != null)
+            {
+                $shift=$requestData['shift_name'];
+            }
             $jsonData = [];
     
             foreach ($requestData['worker_id'] as $index => $workerId) {
+               
                 $jsonObject = [
                     'worker_id' => $workerId,
                     'room_number' => $commonRoomNumber,
-                    'shift_id' => $requestData['shift_name'],
+                    'shift_id' => $shift,
                 ];
     
                 $jsonData[] = $jsonObject;
@@ -400,7 +405,7 @@ class TravelersController extends Controller
                         $user = User::where('proposal_worker_id', $data['worker_id'])->first();
                         $user_shifts = DB::table('essentials_user_shifts')->insert([
                             'user_id' => $user->id,
-                            'essentials_shift_id' => $data['shift_id'],
+                            'essentials_shift_id' =>  $shift,
                         ]);
                     } else {
                         
@@ -413,7 +418,9 @@ class TravelersController extends Controller
             
                 DB::commit();
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-            } else {
+            }
+            
+            else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
@@ -422,7 +429,8 @@ class TravelersController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-        return redirect()->back()->with(['status' => $output]);
+        return $output;
+        //return redirect()->back()->with(['status' => $output]);
     }
     
     
