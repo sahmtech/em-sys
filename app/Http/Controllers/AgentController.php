@@ -331,7 +331,7 @@ class AgentController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $users = User::where('user_type', 'worker')->whereIn('assigned_to',  $projectsIds)
+        $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
