@@ -411,7 +411,7 @@ class ManageUserController extends Controller
             }
 
             //Grant Location permissions
-            $this->moduleUtil->giveLocationPermissions($user, $request);
+          //  $this->moduleUtil->giveLocationPermissions($user, $request);
 
             //Assign selected contacts
             if ($user_data['selected_contacts'] == 1) {
