@@ -27,9 +27,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeWorker', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'storeWorker'])->name('storeWorker');
 
         Route::get('/operation_orders', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index'])->name('operation_orders');
-        Route::post('/storeOperation', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'store'])->name('storeOperation');
-        Route::PUT('/updateOrder/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'update'])->name('updateOrder');
-        Route::get('/getUpdatedData/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'getUpdatedData'])->name('getUpdatedData');
+        // Route::post('/storeOperation', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'store'])->name('storeOperation');
+        // Route::PUT('/updateOrder/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'update'])->name('updateOrder');
+        // Route::get('/getUpdatedData/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderControlle::class, 'getUpdatedData'])->name('getUpdatedData');
 
 
         Route::prefix('contactLocations')->group(function () {
