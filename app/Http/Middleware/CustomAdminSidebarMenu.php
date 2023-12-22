@@ -283,6 +283,7 @@ class CustomAdminSidebarMenu
             );
             $menu->header("");
             $menu->header("");
+
             if ($isSuperAdmin  || auth()->user()->can('essentials.view_employee_affairs')) {
                 $menu->url(
                     route('employees'),
@@ -344,55 +345,67 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('essentials::lang.work_cards'),
-                    function ($sub) use ($enabled_modules) {
+                    function ($sub) use ($isSuperAdmin) {
 
+                        if ($isSuperAdmin || auth()->user()->can('essentials.renewal_residence')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+                                __('essentials::lang.renewal_residence'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                            );
+                        }
+                        if ($isSuperAdmin || auth()->user()->can('essentials.residencyreports')) {
+                            $sub->url(
+                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+                                __('essentials::lang.residencyreports'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                            );
+                        }
+                        if ($isSuperAdmin || auth()->user()->can('essentials.facilities_management')) {
+                            $sub->url(
+                                action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                                __('essentials::lang.facilities_management'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
+                            );
+                        }
+                        if ($isSuperAdmin || auth()->user()->can('essentials.movement_management')) {
+                            $sub->dropdown(
+                                __('housingmovements::lang.movement_management'),
+                                function ($movement_management_SubMenu) use ($isSuperAdmin) {
+                                    if ($isSuperAdmin || auth()->user()->can('essentials.carTypes')) {
+                                        $movement_management_SubMenu->url(
+                                            action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
+                                            __('housingmovements::lang.carTypes'),
+                                            ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
+                                        );
+                                    }
+                                    if ($isSuperAdmin || auth()->user()->can('essentials.carModels')) {
+                                        $movement_management_SubMenu->url(
+                                            action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
+                                            __('housingmovements::lang.carModels'),
+                                            ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
+                                        );
+                                    }
+                                    if ($isSuperAdmin || auth()->user()->can('essentials.cars')) {
+                                        $movement_management_SubMenu->url(
+                                            action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
+                                            __('housingmovements::lang.cars'),
+                                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
+                                        );
+                                    }
+                                    if ($isSuperAdmin || auth()->user()->can('essentials.car_drivers')) {
+                                        $movement_management_SubMenu->url(
+                                            action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
+                                            __('housingmovements::lang.car_drivers'),
+                                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
+                                        );
+                                    }
+                                },
+                                ['icon' => 'fa fas fa-plus-circle',],
+                                // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
 
-                        $sub->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
-                            __('essentials::lang.renewal_residence'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
-                        );
-                        $sub->url(
-                            action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
-                            __('essentials::lang.residencyreports'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
-                        );
-                        $sub->url(
-                            action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                            __('essentials::lang.facilities_management'),
-                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
-                        );
-                        $sub->dropdown(
-                            __('housingmovements::lang.movement_management'),
-                            function ($movement_management_SubMenu) {
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
-                                    __('housingmovements::lang.carTypes'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
-                                );
-
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
-                                    __('housingmovements::lang.carModels'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
-                                );
-
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
-                                    __('housingmovements::lang.cars'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
-                                );
-
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
-                                    __('housingmovements::lang.car_drivers'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
-                                );
-                            },
-                            ['icon' => 'fa fas fa-plus-circle',],
-                            // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
-
-                        );
+                            );
+                        }
                     },
                     ['icon' => 'fa fas fa-plus-circle']
 
@@ -495,7 +508,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                 );
             }
-            if ($isSuperAdmin) {
+            if ($isSuperAdmin || auth()->user()->can('essentials.essentials')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
                     __('essentials::lang.essentials'),
@@ -667,14 +680,14 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($isSuperAdmin || auth()->user()->can('sales.crud_contract_appendics') ) {
+            if ($isSuperAdmin || auth()->user()->can('sales.crud_contract_appendics')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
                     __('sales::lang.contract_appendics'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                 );
             }
-            if ($isSuperAdmin || auth()->user()->can('sales.crud_sale_operation_orders') ) {
+            if ($isSuperAdmin || auth()->user()->can('sales.crud_sale_operation_orders')) {
 
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
@@ -711,8 +724,8 @@ class CustomAdminSidebarMenu
                             );
                         }
 
-                      
-                        if ($isSuperAdmin || auth()->user()->can('sales.crud_sales_templates') ) {
+
+                        if ($isSuperAdmin || auth()->user()->can('sales.crud_sales_templates')) {
 
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
@@ -815,7 +828,7 @@ class CustomAdminSidebarMenu
                 );
             }
             if ($isSuperAdmin  || auth()->user()->can('housingmovements.movement_management')) {
-                
+
                 $menu->dropdown(
                     __('housingmovements::lang.movement_management'),
                     function ($movement_management_SubMenu)  use ($isSuperAdmin) {
