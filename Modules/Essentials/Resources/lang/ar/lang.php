@@ -439,7 +439,7 @@ return [
   'licence_number' => 'رقم الترخيص',
   'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
- 
+ 'Iban_file'=>'مرفق  الأيبان',
   'expiration_date' => 'تاريخ الانتهاء',
   'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",
