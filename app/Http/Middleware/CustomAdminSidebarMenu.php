@@ -666,7 +666,16 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
                 );
             }
-            if ($isSuperAdmin || auth()->user()->can('sales.crud_sale_operation_orders')) {
+
+            if ($isSuperAdmin || auth()->user()->can('sales.crud_contract_appendics') ) {
+                $menu->url(
+                    action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
+                    __('sales::lang.contract_appendics'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
+                );
+            }
+            if ($isSuperAdmin || auth()->user()->can('sales.crud_sale_operation_orders') ) {
+
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
                     __('sales::lang.sale_operation_orders'),
@@ -701,14 +710,10 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_itmes'],
                             );
                         }
-                        if ($isSuperAdmin || auth()->user()->can('sales.crud_contract_appendics')) {
-                            $sub->url(
-                                action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
-                                __('sales::lang.contract_appendics'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
-                            );
-                        }
-                        if ($isSuperAdmin || auth()->user()->can('sales.crud_sales_templates')) {
+
+                      
+                        if ($isSuperAdmin || auth()->user()->can('sales.crud_sales_templates') ) {
+
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
                                 __('sales::lang.sales_templates'),

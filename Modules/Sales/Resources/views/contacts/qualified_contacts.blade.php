@@ -30,8 +30,10 @@
                             <th>@lang('sales::lang.contact_number')</th>
                             <th>@lang('sales::lang.supplier_business_name')</th>
                             <th>@lang('sales::lang.commercial_register_no')</th>
+                            <th>@lang('sales::lang.qualified_by')</th>
                             <th>@lang('sales::lang.contact_mobile')</th>
                             <th>@lang('sales::lang.contact_email')</th>
+                            <th>@lang('sales::lang.qualified_on')</th>
                             <th>@lang('messages.action')</th>
 
 
@@ -97,12 +99,20 @@
                         name: 'commercial_register_no'
                     },
                     {
+                        data: 'qualified_by',
+                        name: 'qualified_by'
+                    },
+                    {
                         data: 'mobile',
                         name: 'mobile'
                     },
                     {
                         data: 'email',
                         name: 'email'
+                    },
+                    {
+                        data: 'qualified_on',
+                        name: 'qualified_on'
                     },
                     {
                         data: 'action',

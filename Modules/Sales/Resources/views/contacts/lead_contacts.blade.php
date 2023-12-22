@@ -37,8 +37,10 @@
                             <th>@lang('sales::lang.contact_number')</th>
                             <th>@lang('sales::lang.supplier_business_name')</th>
                             <th>@lang('sales::lang.commercial_register_no')</th>
+                            <th>@lang('sales::lang.created_by')</th>
                             <th>@lang('sales::lang.contact_mobile')</th>
                             <th>@lang('sales::lang.contact_email')</th>
+                            <th>@lang('sales::lang.created_at')</th>
                             <th>@lang('messages.action')</th>
 
 
@@ -623,6 +625,11 @@
                         data: 'commercial_register_no',
                         name: 'commercial_register_no'
                     },
+                    
+                    {
+                        data: 'created_by',
+                        name: 'created_by'
+                    },
                     {
                         data: 'mobile',
                         name: 'mobile'
@@ -630,6 +637,11 @@
                     {
                         data: 'email',
                         name: 'email'
+                    },
+                      
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
                     },
                     {
                         data: 'action',
