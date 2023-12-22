@@ -58,11 +58,13 @@ class EssentialsManageEmployeeController extends Controller
     public function getAmount($salaryType)
     {
 
-
-
-
-        $categories = EssentialsAllowanceAndDeduction::where('id', $salaryType)->select('amount')
-            ->first();
+        $categories = EssentialsAllowanceAndDeduction::where('id', $salaryType)->first();
+        if($categories){
+            $categories->select('amount');
+        }
+        else {
+            $categories='';
+        }
         return response()->json($categories);
     }
 
