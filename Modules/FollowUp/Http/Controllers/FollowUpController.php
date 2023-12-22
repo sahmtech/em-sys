@@ -2,6 +2,9 @@
 
 namespace Modules\FollowUp\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleBusiness;
+use App\AccessRoleProject;
 use App\Business;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -15,6 +18,7 @@ use DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowUpController extends Controller
@@ -57,7 +61,7 @@ class FollowUpController extends Controller
                 $query->where('type', 'residence_permit');
             });
 
-       
+
         return DataTables::of($contracts)
             ->addColumn(
                 'worker_name',
@@ -176,15 +180,35 @@ class FollowUpController extends Controller
 
     public function withinTwoMonthExpiryWorkCard()
     {
-        $business_id = request()->session()->get('user.business_id');
 
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $business = Business::where('id', $business_id)->first();
         $contracts = User::where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
             $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))
                 ->whereDate('contract_end_date', '<=', Carbon::now($business->time_zone)->addMonths(2));
         })->whereHas('essentialsworkCard', function ($qu) {
         });
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
 
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                $userProjects = array_merge($userProjects, $userProjectsForRole);
+                $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+            $contracts = $contracts->whereIn('assigned_to', $user_projects_ids);
+        }
 
 
         return DataTables::of($contracts)

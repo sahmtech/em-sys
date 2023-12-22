@@ -475,14 +475,6 @@ class DataController extends Controller
 
             ],
 
-
-
-
-
-
-
-
-
         ];
     }
 
