@@ -12,7 +12,8 @@
                 <div class="col-sm-3 col-sm-4">
                     <b>{{ __('sales::lang.transaction_number') }} :</b></b> {{ $query->ref_no }}<br>
                     <b>{{ __('sales::lang.transaction_date') }} :</b></b> {{ $query->transaction_date }}<br>
-                    <b>{{ __('sales::lang.customer_name') }} :</b></b> {{ $query->contact->supplier_business_name }}<br>
+                    <b>{{ __('sales::lang.customer_name') }} :</b></b>
+                    {{ $query->contact->supplier_business_name ?? '' }}<br>
                     <b>{{ __('sales::lang.contact_mobile') }} :</b></b> {{ $query->contact->mobile }}<br>
                 </div>
 
@@ -236,7 +237,7 @@
                 var quantity = $(this).find('td:nth-child(3)').text();
                 var serviceId = $(this).find('input[name="product_id"]').val();
                 var targetQuantity = parseFloat($(this).find('input[name="target_quantity[]"]')
-                .val()) || 0;
+                    .val()) || 0;
 
                 var key = serviceId + '_' + quantity;
 
@@ -256,9 +257,10 @@
                     var quantity = parts[1];
 
                     if (quantityMap[key] > quantity) {
-                        alert('{{ __("internationalrelations::lang.Target_quantity_should_be_equal_to_or_less_than")}}' +' '+
+                        alert('{{ __('internationalrelations::lang.Target_quantity_should_be_equal_to_or_less_than') }}' +
+                            ' ' +
                             quantity);
-              
+
                         return false;
                     }
                 }
