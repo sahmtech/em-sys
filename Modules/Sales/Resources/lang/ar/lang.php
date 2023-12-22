@@ -295,7 +295,12 @@ return [
     'crud_sales_templates'=>'إدارة قوالب المبيعات',
     'crud_sales_costs'=>'إدارة تكاليف المبيعات',
     'please_add_the_Sales_department'=>'قم بإضافة إدارة المبيعات من فضلك',
-    'you_have_no_access_role'=>'ليس لديك صلاحية الوصول لأي شركة أو مشروع'
+    'you_have_no_access_role'=>'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
+    'created_by'=>'أنشئ بواسطة',
+    'created_at'=>'تاريخ الإنشاء',
+    'qualified_by'=>'تم التأهيل بواسطة',
+    'qualified_on'=>'تاريخ التأهيل',
+
     
 
 

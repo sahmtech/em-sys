@@ -10,6 +10,7 @@ use App\User;
 use App\Business;
 use App\BusinessLocation;
 use App\Contact;
+use Carbon\Carbon;
 use App\CustomerGroup;
 use App\Notifications\CustomerNotification;
 use Spatie\Activitylog\Models\Activity;
@@ -61,14 +62,10 @@ class ClientsController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-        // $can_crud_customers = auth()->user()->can('sales.crud_customers');
-        // if (!$can_crud_customers) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
 
         $contacts = DB::table('contacts')
             ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id',
+                'id', 'supplier_business_name', 'type', 'contact_id','created_by','created_at',
                 'commercial_register_no', 'mobile', 'email', 'city'
 
             ])->where('business_id', $business_id)->where('type','lead');
@@ -85,7 +82,14 @@ class ClientsController extends Controller
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     return $html;
                 })
-              
+                ->editColumn('created_by', function ($row) use ($users) {
+
+                    return $users[$row->created_by];
+                })
+                ->editColumn('created_at', function ($row) use ($users) {
+
+                    return Carbon::parse($row->created_at);
+                })
 
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
@@ -105,7 +109,9 @@ class ClientsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-
+        $query = User::where('business_id', $business_id);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
 
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
@@ -116,7 +122,7 @@ class ClientsController extends Controller
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
             ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id',
+                'id', 'supplier_business_name', 'type', 'contact_id','qualified_by','qualified_on',
                 'commercial_register_no', 'mobile', 'email', 'city'
 
             ])->where('business_id', $business_id)->where('type','qualified');
@@ -129,6 +135,13 @@ class ClientsController extends Controller
 
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     return $html;
+                })
+                ->editColumn('qualified_by', function ($row) use ($users) {
+                    if($row->qualified_by){
+                    return $users[$row->qualified_by];}
+                    else {
+                        return " ";
+                    }
                 })
               
                 ->filterColumn('name', function ($query, $keyword) {
@@ -407,9 +420,9 @@ class ClientsController extends Controller
         $isSuperAdmin = $user->user_type == 'superadmin';
         $businessId = $request->session()->get('user.business_id');
     
-     
-
-
+        $todayDate = Carbon::now();
+        
+        
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
     
@@ -422,8 +435,10 @@ class ClientsController extends Controller
                 }
     
                 $contact->type = $request->status;
-               
-             
+                $contact->qualified_by=$businessId;
+                $contact->qualified_on=$todayDate;
+
+
                 $contact->save();
             }
     
