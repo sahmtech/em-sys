@@ -109,8 +109,8 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']), __('crm::lang.crm'), ['icon' => 'fas fa fa-broadcast-tower', 'style' => config('app.env') == 'demo' ? 'background-color: #8CAFD4;' : '', 'active' => request()->segment(1) == 'crm' || request()->get('type') == 'life_stage' || request()->get('type') == 'source']);
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->url(
                 action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
@@ -135,8 +135,8 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) === 'asset'
                 ]
             );
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
     }
@@ -149,8 +149,8 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
 
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
@@ -195,8 +195,8 @@ class CustomAdminSidebarMenu
                 __('connector::lang.clients'),
                 ['icon' => 'fa fas fa-network-wired', 'active' => request()->segment(1) == 'connector' && request()->segment(2) == 'api']
             );
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->dropdown(
                 __('connector::lang.connector'),
@@ -231,8 +231,8 @@ class CustomAdminSidebarMenu
                 __('user.users'),
                 ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
             );
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             //User management dropdown
             if ($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
@@ -281,8 +281,8 @@ class CustomAdminSidebarMenu
                 __('essentials::lang.hrm'),
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' || request()->segment(1) == 'hrm' || request()->segment(1) == 'roles'],
             );
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
 
             if ($isSuperAdmin  || auth()->user()->can('essentials.view_employee_affairs')) {
                 $menu->url(
@@ -527,13 +527,6 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(
-                action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
-                __('followup::lang.followUp'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']
-            );
-            $menu->header("");
-            $menu->header("");
-            $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
                 [
@@ -541,6 +534,14 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            $menu->url(
+                action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
+                __('followup::lang.followUp'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'notification-templates']
+            );
+            //$menu->header("");
+            //$menu->header("");
+
 
             if ($isSuperAdmin  || auth()->user()->can('followup.contact_locations')) {
                 $menu->url(
@@ -634,15 +635,15 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
                 route('sales_landing'),
                 __('sales::lang.sales'),
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
             );
-            $menu->header("");
-            $menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            //$menu->header("");
+            //$menu->header("");
             if ($isSuperAdmin || auth()->user()->can('sales.crud_contacts')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
@@ -756,6 +757,12 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
+            );
             $menu->url(
                 action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
                 __('housingmovements::lang.housing_move'),
@@ -766,14 +773,9 @@ class CustomAdminSidebarMenu
 
                 ]
             );
-            $menu->header("");
-            $menu->header("");
+            //$menu->header("");
+            //$menu->header("");
 
-            //             $menu->url(
-            //                 action([\App\Http\Controllers\HomeController::class, 'index']),
-            //                 __('home.home'),
-            //                 ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
-            //             );
 
             //             $menu->url(
             //                 action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
@@ -786,13 +788,8 @@ class CustomAdminSidebarMenu
 
 
 
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_htr_dashboard')) {
-                $menu->url(
-                    action([\App\Http\Controllers\HomeController::class, 'index']),
-                    __('home.home'),
-                    ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
-                );
-            }
+
+
             if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_building_management')) {
 
                 $menu->dropdown(
@@ -912,10 +909,17 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            // //$menu->header("");
 
-            // $menu->header("");
-
-            // $menu->header("");
+            // //$menu->header("");
             $menu->url(
                 action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
                 __('accounting::lang.accounting'),
@@ -925,14 +929,7 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'accounting'
                 ]
             );
-            $menu->url(
-                action([\App\Http\Controllers\HomeController::class, 'index']),
-                __('home.home'),
-                [
-                    'icon' => 'fas fa-home  ',
-                    'active' => request()->segment(1) == 'home'
-                ]
-            );
+
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
                 __('accounting::lang.chart_of_accounts'),
@@ -1019,6 +1016,7 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
             $menu->url(
                 action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
                 __('internationalrelations::lang.International'),
@@ -1030,8 +1028,10 @@ class CustomAdminSidebarMenu
             );
 
 
-            $menu->header("");
-            $menu->header("");
+
+
+            //$menu->header("");
+            //$menu->header("");
 
 
             if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_orders_operations')) {
@@ -1091,21 +1091,21 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 );
             }
-            if ($isSuperAdmin || auth()->user()->can('essentials.crud_all_ir_requests')) {
+            if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_all_ir_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
                     __('followup::lang.requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allRequests']
                 );
             }
-            if ($isSuperAdmin || auth()->user()->can('essentials.crud_all_reports')) {
+            if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_all_reports')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
                     __('followup::lang.reports.title'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'internationalRleations']
                 );
             }
-            if ($isSuperAdmin || auth()->user()->can('essentials.crud_all_salary_requests')) {
+            if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_all_salary_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
                     __('followup::lang.salary_requests'),
@@ -1123,16 +1123,6 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
             $menu->url(
-                action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings']),
-                __('business.settings'),
-                [
-                    'icon' => 'fa fas fa-cog',
-                    // 'active' => request()->segment(1) == 'home'
-                ]
-            );
-            $menu->header("");
-            $menu->header("");
-            $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
                 [
@@ -1140,6 +1130,17 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            $menu->url(
+                action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings']),
+                __('business.settings'),
+                [
+                    'icon' => 'fa fas fa-cog',
+                    // 'active' => request()->segment(1) == 'home'
+                ]
+            );
+            //$menu->header("");
+            //$menu->header("");
+
             $menu->dropdown(
                 __('business.settings'),
                 function ($sub) use ($enabled_modules) {
@@ -1470,11 +1471,12 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(route('purchases.index'),   __('purchase.purchases'), ['icon' => 'fas fa-cart-plus']);
-            $menu->header("");
-            $menu->header("");
-
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(route('purchases.index'),   __('purchase.purchases'), ['icon' => 'fas fa-cart-plus']);
+            //$menu->header("");
+            //$menu->header("");
+
             //Purchase dropdown
             if ((auth()->user()->can('purchase.view') || auth()->user()->can('purchase.create') || auth()->user()->can('purchase.update'))) {
                 $menu->dropdown(
@@ -1531,10 +1533,11 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
-            $menu->url(action([\App\Http\Controllers\ProductController::class, 'index']), __('sale.products'), ['icon' => 'fas fa-chart-pie']);
-            $menu->header("");
-            $menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(action([\App\Http\Controllers\ProductController::class, 'index']), __('sale.products'), ['icon' => 'fas fa-chart-pie']);
+            //$menu->header("");
+            //$menu->header("");
             //Products dropdown
             if (
                 auth()->user()->can('product.view') || auth()->user()->can('product.create') ||
@@ -1643,11 +1646,12 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
             $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index']), __('superadmin::lang.superadmin'), ['icon' => 'fa fas fa-users-cog', 'active' => request()->segment(1) == 'superadmin']);
 
-            $menu->header("");
-            $menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            //$menu->header("");
+            //$menu->header("");
 
             if (($isSuperAdmin) || (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access'))) {
                 $menu->url(
