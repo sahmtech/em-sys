@@ -165,7 +165,11 @@ class DataController extends Controller
                 'label' => __('internationalrelations::lang.crud_all_salary_requests'),
                 'default' => false,
             ],
-            
+              [
+                'value' => 'internationalrelations.crud_all_ir_requests',
+                'label' => __('internationalrelations::lang.crud_all_ir_requests'),
+                'default' => false,
+            ],
             
             
             
