@@ -102,13 +102,14 @@ class RequestController extends Controller
 
                         $userProjects = array_merge($userProjects, $userProjectsForRole);
                         $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                    } else {
-                        $output = [
-                            'success' => false,
-                            'msg' => __('sales::lang.you_have_no_access_role'),
-                        ];
-                        return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
                     }
+                    //  else {
+                    //     $output = [
+                    //         'success' => false,
+                    //         'msg' => __('sales::lang.you_have_no_access_role'),
+                    //     ];
+                    //     return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
+                    // }
                 }
                 $user_projects_ids = array_unique($userProjects);
                 $user_businesses_ids = array_unique($userBusinesses);

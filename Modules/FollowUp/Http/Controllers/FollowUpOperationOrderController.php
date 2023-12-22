@@ -40,10 +40,10 @@ class FollowUpOperationOrderController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
- 
+
         $can_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
         if (!$can_crud_operation_orders) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -82,9 +82,10 @@ class FollowUpOperationOrderController extends Controller
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                $userProjects = array_merge($userProjects, $userProjectsForRole);
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                }
             }
             $userProjects = array_unique($userProjects);
             $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();

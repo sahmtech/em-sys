@@ -52,9 +52,10 @@ class FollowUpProjectController extends Controller
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                $userProjects = array_merge($userProjects, $userProjectsForRole);
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                }
             }
             $userProjects = array_unique($userProjects);
             $salesProjects = $salesProjects->whereIn('id', $userProjects);
