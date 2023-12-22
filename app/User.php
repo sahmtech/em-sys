@@ -210,7 +210,7 @@ class User extends Authenticatable
             $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-        
+
 
         //Prepend none
         if ($prepend_none) {
@@ -238,7 +238,7 @@ class User extends Authenticatable
             ->where('is_cmmsn_agnt', 1)
             ->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"));
-            
+
         $users = $all_cmmsn_agnts->pluck('full_name', 'id');
 
         //Prepend none
@@ -394,24 +394,25 @@ class User extends Authenticatable
     }
 
 
-    
+
     public function rooms()
     {
         return $this->belongsTo(HtrRoom::class, 'room_id');
     }
-    
+
 
     public function calculateTotalSalary()
     {
         $allowances = $this->UserallowancesAndDeductions;
-    
-      
+
+
         $totalSalary = $this->essentials_salary;
-    
+
         foreach ($allowances as $allowance) {
-            $totalSalary += $allowance->allowancedescription->amount;
+            if ($allowance->allowancedescription !== null) {
+                $totalSalary += $allowance->allowancedescription->amount ?? 0;
+            }
         }
-    
         return $totalSalary;
     }
 
