@@ -103,6 +103,11 @@ class DataController extends Controller
                 'label' => __('sales::lang.crud_sales_costs'),
                 'default' => false,
             ],
+            [
+                'value' => 'sales.crud_contracts',
+                'label' => __('sales::lang.contracts'),
+                'default' => false,
+            ],
 
         ];
     }
