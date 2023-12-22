@@ -810,6 +810,7 @@ class CustomAdminSidebarMenu
                 );
             }
             if ($isSuperAdmin  || auth()->user()->can('housingmovements.movement_management')) {
+                
                 $menu->dropdown(
                     __('housingmovements::lang.movement_management'),
                     function ($movement_management_SubMenu)  use ($isSuperAdmin) {
