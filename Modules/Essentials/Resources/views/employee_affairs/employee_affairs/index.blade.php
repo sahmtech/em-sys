@@ -597,9 +597,9 @@
                         var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
 
                         if (daysRemaining <= 0) {
-                            $('td', row).eq(9).addClass('text-danger'); // Contract expired, colored red
+                            $('td', row).eq(7).addClass('text-danger'); // Contract expired, colored red
                         } else if (daysRemaining <= 25) {
-                            $('td', row).eq(9).addClass(
+                            $('td', row).eq(7).addClass(
                                 'text-warning'); // Contract expires within 25 days, colored yellow
                         }
                     }
