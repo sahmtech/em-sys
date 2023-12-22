@@ -78,25 +78,32 @@ class BusinessDocumentController extends Controller
     public function store(Request $request)
     {
        
-
+       // dd($request->all());
         $businessDocument = new BusinessDocument();
-        $businessDocument->licence_type = $request->licence_type;
-        $businessDocument->licence_number = $request->licence_number;
-        $businessDocument->business_id = $request->business_id;
-        $businessDocument->licence_date = $request->licence_date;
-        $businessDocument->renew_date = $request->renew_date;
-        $businessDocument->expiration_date = $request->expiration_date;
-        $businessDocument->issuing_location = $request->issuing_location;
-        $businessDocument->details = $request->details;
-        
-        $businessDocument->capital = $request->capital;
-        $businessDocument->national_address = $request->national_address;
-        $businessDocument->register_number = $request->register_number;
+        $businessDocument->licence_type = $request->input('licence_type');
+        $businessDocument->licence_number = $request->input('licence_number');
+        $businessDocument->business_id = $request->input('business_id');
+        $businessDocument->licence_date = $request->input('licence_date');
+        $businessDocument->renew_date = $request->input('renew_date');
+        $businessDocument->expiration_date = $request->input('expiration_date');
+        $businessDocument->issuing_location = $request->input('issuing_location');
+        $businessDocument->details = $request->input('details');
+        $businessDocument->unified_number = $request->input('unified_number');
+      
        
-        if ($request->input('licence_type') === 'COMMERCIALREGISTER') {
-            $businessDocument->unified_number = $request->unified_number;
+        // if ($request->input('licence_type') === 'COMMERCIALREGISTER') {
+        //     $businessDocument->unified_number = $request->unified_number;
+        // }
+        // else {$businessDocument->unified_number=Null;
+        // }
+
+        if ($request->input('licence_type') === 'memorandum_of_association') {
+            $businessDocument->capital = $request->input('capital');
+         
         }
-        else {$businessDocument->unified_number=Null;
+        else {
+            $businessDocument->capital =null;
+          
         }
     
       
@@ -106,9 +113,9 @@ class BusinessDocumentController extends Controller
             $businessDocument->path_file = $filePath;
         }
     
-
+      
         $businessDocument->save();
-
+       // dd($businessDocument);
         return redirect()->route('business_documents.view', ['id' => $request->business_id])->with('success', 'Business document added successfully');
 
     }
