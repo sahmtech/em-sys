@@ -32,7 +32,7 @@
                             'required',
                             'autofocus',
                         ],
-                        // $bl_attributes,
+                        
                     ) !!}
                 </div>
             </div>
@@ -52,7 +52,7 @@
                 <div class="form-group">
                     <label for="nationalities_filter">@lang('essentials::lang.nationality'):</label>
                     {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
-                        'class' => 'form-control select2', // Add the select2 class
+                        'class' => 'form-control select2', 
                         'placeholder' => __('lang_v1.all'),
                         'style' => 'height:36px; width:100%',
                         'id' => 'nationalities_select',
@@ -416,8 +416,8 @@
                             <div class="form-group col-md-8">
                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                 {!! Form::select('contract_items[]', $items, null, [
-                                    'class' => 'form-control select2', // Add the 'select2' class for styling
-                                    'multiple' => 'multiple', // Enable multiselect
+                                    'class' => 'form-control select2', 
+                                    'multiple' => 'multiple', 
                                     'placeholder' => __('sales::lang.select_contract_items'),
                                     'required',
                                 ]) !!}
@@ -472,7 +472,7 @@
             $('#addQualificationModal').modal('show');
 
 
-            $('#employee').empty(); // Clear previous options
+            $('#employee').empty(); 
             $('#employee').append('<option value="' + userId + '">' + userName + '</option>');
         });
     </script>
@@ -487,12 +487,12 @@
             $('#add_doc').modal('show');
 
 
-            $('#employees2').empty(); // Clear previous options
+            $('#employees2').empty(); 
             $('#employees2').append('<option value="' + userId + '">' + userName + '</option>');
         });
     </script>
     <script type="text/javascript">
-        //Roles table
+        
         $(document).ready(function() {
             var users_table = $('#employees').DataTable({
                 processing: true,
@@ -597,10 +597,10 @@
                         var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
 
                         if (daysRemaining <= 0) {
-                            $('td', row).eq(7).addClass('text-danger'); // Contract expired, colored red
+                            $('td', row).eq(7).addClass('text-danger'); 
                         } else if (daysRemaining <= 25) {
                             $('td', row).eq(7).addClass(
-                                'text-warning'); // Contract expires within 25 days, colored yellow
+                                'text-warning'); 
                         }
                     }
                 }
