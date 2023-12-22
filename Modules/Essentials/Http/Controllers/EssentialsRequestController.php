@@ -422,11 +422,20 @@ class EssentialsRequestController extends Controller
 
                     $accessRole = AccessRole::where('role_id', $role->id)->first();
 
+                   
+                if ($accessRole) {
                     $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                     $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
 
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                } else {
+                    $output = [
+                        'success' => false,
+                        'msg' => __('sales::lang.you_have_no_access_role'),
+                    ];
+                    return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
+                }
                 }
                 $user_projects_ids = array_unique($userProjects);
                 $user_businesses_ids = array_unique($userBusinesses);
@@ -504,7 +513,7 @@ class EssentialsRequestController extends Controller
         }
 
 
-        $workers = User::whereIn('user_type', ['employee', 'manager'])->whereIn('users.business_id', $user_businesses_ids)->select(
+        $workers = User::whereIn('user_type', ['employee', 'manager'])->where('business_id', $business_id)->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' - ',COALESCE(id_proof_number,'')) as full_name")
         )->pluck('full_name', 'id');
