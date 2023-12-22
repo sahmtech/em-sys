@@ -138,12 +138,15 @@ class EssentialsManageEmployeeController extends Controller
             $user_businesses_ids = array_unique($userBusinesses);
         }
 
-        $users = User::with(['UserallowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+        $users = User::where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+          
             $query->where(function ($query2) use ($user_businesses_ids) {
                 $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
             })->orWhere(function ($query3) use ($user_projects_ids) {
                 $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
-            });
+        });
+
+        
         })->where('users.is_cmmsn_agnt', 0)
 
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
@@ -160,7 +163,7 @@ class EssentialsManageEmployeeController extends Controller
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
                 DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
-
+                 'nationality_id',
                 'essentials_admission_to_works.admissions_date as admissions_date',
                 'essentials_employees_contracts.contract_end_date as contract_end_date',
                 'users.email',
@@ -300,7 +303,7 @@ class EssentialsManageEmployeeController extends Controller
                 })
 
                 ->filterColumn('nationality', function ($query, $keyword) {
-                    $query->whereRaw("COALESCE(essentials_countries.nationality, '')  like ?", ["%{$keyword}%"]);
+                    $query->whereRaw("COALESCE(essentials_countries.id, '')  like ?", ["%{$keyword}%"]);
                 })
 
                 ->filterColumn('admissions_date', function ($query, $keyword) {

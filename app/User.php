@@ -405,11 +405,12 @@ class User extends Authenticatable
     {
         $allowances = $this->UserallowancesAndDeductions;
     
-      
         $totalSalary = $this->essentials_salary;
     
         foreach ($allowances as $allowance) {
-            $totalSalary += $allowance->allowancedescription->amount;
+            if ($allowance->allowancedescription !== null) {
+                $totalSalary += $allowance->allowancedescription->amount ?? 0;
+            }
         }
     
         return $totalSalary;
