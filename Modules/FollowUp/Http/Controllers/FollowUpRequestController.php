@@ -392,7 +392,7 @@ class FollowUpRequestController extends Controller
             $output = ['success' => false,
             'msg' => __('followup::lang.please_add_the_followup_department'),
                 ];
-            return redirect()->action([\Modules\Followup\Http\Controllers\FollowUpController::class, 'index'])->with('status', $output);
+            return redirect()->action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->with('status', $output);
         }
 
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
