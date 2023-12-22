@@ -262,8 +262,8 @@ return [
     'employee' => 'Employee',
     'manager' => 'Manager',
     'worker' => 'Worker',
+    'user' => 'User',
 
-    
 
 
 

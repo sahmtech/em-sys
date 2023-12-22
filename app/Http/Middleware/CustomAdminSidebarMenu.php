@@ -529,6 +529,7 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            
             if ($isSuperAdmin  || auth()->user()->can('followup.contact_locations') ) {
                 $menu->url(
                     action([\App\Http\Controllers\ContactLocationController::class, 'index']),
