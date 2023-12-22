@@ -959,10 +959,7 @@ class DataController extends Controller
           
     
               }
-           
 
-  
-  
 
 
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {

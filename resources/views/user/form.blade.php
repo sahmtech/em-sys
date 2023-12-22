@@ -239,7 +239,7 @@
         <h4>@lang('lang_v1.add_qualification'):</h4>
         <div class="form-group col-md-3">
 
-            {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
+            {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':') !!}
             {!! Form::select(
                 'qualification_type',
                 [
@@ -249,12 +249,12 @@
                     'diploma' => __('essentials::lang.diploma'),
                 ],
                 !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
-                ['class' => 'form-control', 'required', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
             ) !!}
         </div>
 
         <div class="form-group col-md-6">
-            {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
+            {!! Form::label('major', __('essentials::lang.major') . ':') !!}
             {!! Form::select('major', $spacializations, null, [
                 'class' => 'form-control',
                 'style' => 'height:40px',
@@ -370,7 +370,15 @@
             ]) !!}
         </div>
 
-
+        <div class="form-group col-md-6">
+        {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':*') !!}
+        {!! Form::file('Iban_file', null, [
+            'class' => 'form-control',
+            'placeholder' => __('essentials::lang.Iban_file'),
+        
+            'style' => 'height:40px',
+        ]) !!}
+    </div>
 
 
         {{--
