@@ -436,10 +436,10 @@ return [
   'business' => 'الشركات',
   'add_business' => 'إضافة شركة',
   'curd_work_cards'=>'إضافة \حذف\تعديل كروت العمل',
-  'licence_number' => 'رقم العقد',
+  'licence_number' => 'رقم الترخيص',
   'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
- 
+ 'Iban_file'=>'مرفق  الأيبان',
   'expiration_date' => 'تاريخ الانتهاء',
   'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",

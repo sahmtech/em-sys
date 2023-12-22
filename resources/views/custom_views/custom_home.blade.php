@@ -82,13 +82,15 @@
                     <div class="col-md-12">
                         <div class="card-grid">
                             @foreach ($cards as $card)
-                                <div class="card">
-                                    <a href="{{ $card['link'] }}" class="card-link">
-                                        <div class="card-content">
-                                            <h3>{{ $card['title'] }}</h3>
-                                            <i class="fa fa-{{ $card['icon'] }}"></i>
-                                        </div>
-                                    </a>
+                                <div class="col-md-3">
+                                    <div class="card">
+                                        <a href="{{ $card['link'] }}" class="card-link">
+                                            <div class="card-content">
+                                                <h3>{{ $card['title'] }}</h3>
+                                                <i class="fa fa-{{ $card['icon'] }}"></i>
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -185,7 +187,7 @@
                     },
                     {
                         data: 'status',
-        
+
                     },
                     {
                         data: 'note'
@@ -206,7 +208,7 @@
                 dom: 'rtip',
                 ajax: {
                     url: "{{ route('my_todo') }}",
-                  
+
                 },
                 columnDefs: [{
 

@@ -501,10 +501,70 @@ class DataController extends Controller
                 'label' => __('essentials::lang.view_work_cards'),
                 'default' => false,
             ],
-
+            [
+                'value' => 'essentials.renewal_residence',
+                'label' => __('essentials::lang.renewal_residence'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.residencyreports',
+                'label' => __('essentials::lang.residencyreports'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.facilities_management',
+                'label' => __('essentials::lang.facilities_management'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.movement_management',
+                'label' => __('housingmovements::lang.movement_management'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carTypes',
+                'label' => __('housingmovements::lang.carTypes'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carModels',
+                'label' => __('housingmovements::lang.carModels'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.cars',
+                'label' => __('housingmovements::lang.cars'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.car_drivers',
+                'label' => __('housingmovements::lang.car_drivers'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.curd_contracts_end_reasons',
+                'label' => __('essentials::lang.contracts_end_reasons'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_all_leave',
+                'label' => __('essentials::lang.system_settings'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.curd_organizational_structure',
+                'label' => __('essentials::lang.organizational_structure'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.essentials',
+                'label' => __('essentials::lang.essentials'),
+                'default' => false,
+            ],
+            
         ];
     }
-
+    
     /**
      * Superadmin package permissions
      *
@@ -899,10 +959,7 @@ class DataController extends Controller
           
     
               }
-           
 
-  
-  
 
 
             if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {

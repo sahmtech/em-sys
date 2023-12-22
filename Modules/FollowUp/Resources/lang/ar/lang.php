@@ -265,6 +265,7 @@ return [
     'customer_user' => ' موقع / متابع العقد',
     'employee' => 'موظف',
     'manager' => 'مدير',
+    'user'=>'مستخدم',
     'worker' => 'عامل',
 
 

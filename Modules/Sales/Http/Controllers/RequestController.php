@@ -62,16 +62,16 @@ class RequestController extends Controller
     }
     public function index()
     {
-     
+
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'followup'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
@@ -79,12 +79,12 @@ class RequestController extends Controller
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%مبيعات%')
             ->first();
-      
+
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
         $requestsProcess = null;
-     
+
         if ($department) {
             $department = $department->id;
             $user_businesses_ids = Business::pluck('id')->unique()->toArray();
@@ -96,12 +96,20 @@ class RequestController extends Controller
                 foreach ($roles as $role) {
 
                     $accessRole = AccessRole::where('role_id', $role->id)->first();
+                    if ($accessRole) {
+                        $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
 
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                        $userProjects = array_merge($userProjects, $userProjectsForRole);
+                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    }
+                    //  else {
+                    //     $output = [
+                    //         'success' => false,
+                    //         'msg' => __('sales::lang.you_have_no_access_role'),
+                    //     ];
+                    //     return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
+                    // }
                 }
                 $user_projects_ids = array_unique($userProjects);
                 $user_businesses_ids = array_unique($userBusinesses);
@@ -132,11 +140,11 @@ class RequestController extends Controller
                         $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
                     });
                 });
-        }
-        else {
-            $output = ['success' => false,
-            'msg' => __('sales::lang.please_add_the_Sales_department'),
-                ];
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('sales::lang.please_add_the_Sales_department'),
+            ];
             return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
         }
         if (request()->ajax()) {
@@ -155,18 +163,18 @@ class RequestController extends Controller
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
-                        
+
                         if (auth()->user()->can('crudExitRequests')) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                         }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -176,7 +184,8 @@ class RequestController extends Controller
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
+        //->whereIn('assigned_to', $user_projects_ids)
+        $workers = User::where('user_type', 'worker')->where('business_id', $business_id)->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
          ' - ',COALESCE(id_proof_number,'')) as full_name")
@@ -188,19 +197,19 @@ class RequestController extends Controller
         return view('sales::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
-   
-    
+
+
     public function changeStatus(Request $request)
     {
 
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
-            
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->first();
-   
-            $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
 
-            if($procedure == 0 && $input['status']=='rejected'){
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
+
+            $procedure = EssentialsWkProcedure::where('id', $requestProcess->procedure_id)->first()->can_reject;
+
+            if ($procedure == 0 && $input['status'] == 'rejected') {
                 $output = [
                     'success' => false,
                     'msg' => __('lang_v1.this_department_cant_reject_this_request'),
@@ -210,7 +219,7 @@ class RequestController extends Controller
 
 
             $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
-           
+
 
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
@@ -261,7 +270,7 @@ class RequestController extends Controller
 
         return $output;
     }
-    
+
     public function search(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');

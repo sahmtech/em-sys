@@ -392,6 +392,7 @@ class DataController extends Controller
             ],
             [
 
+                
 
                 'value' => 'followup.contact_locations',
                 'label' => __('followup::lang.contact_locations'),
@@ -419,6 +420,22 @@ class DataController extends Controller
 
                 'value' => 'followup.operation_orders',
                 'label' => __('followup::lang.operation_orders'),
+                'default' => false,
+
+            ],
+             [
+
+
+                'value' => 'followup.requests',
+                'label' => __('followup::lang.requests'),
+                'default' => false,
+
+            ],
+            [
+
+
+                'value' => 'followup.recruitmentRequests',
+                'label' => __('followup::lang.recruitmentRequests'),
                 'default' => false,
 
             ],
@@ -474,14 +491,6 @@ class DataController extends Controller
                 'default' => false,
 
             ],
-
-
-
-
-
-
-
-
 
         ];
     }

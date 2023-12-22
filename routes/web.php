@@ -270,7 +270,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('hrm/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
     Route::post('hrm/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::resource('users', ManageUserController::class);
-    Route::get('get-all-users',[ManageUserController::class,'index'])->name('get-all-users');
+    Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);
 
     Route::get('/barcodes/set_default/{id}', [BarcodeController::class, 'setDefault']);
@@ -526,6 +526,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/agent_contracts', [AgentController::class, 'agentContracts'])->name('agent_contracts');
     Route::get('/agent_workers', [AgentController::class, 'agentWorker'])->name('agent_workers');
     Route::get('/agent_workers/{id}', [AgentController::class, 'showAgentWorker'])->name('show_agent_worker');
+    Route::get('/agent_requests', [AgentController::class, 'agentRequests'])->name('agent_requests');
 
     //
 });

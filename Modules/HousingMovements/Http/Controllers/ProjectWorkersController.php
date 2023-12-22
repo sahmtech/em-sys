@@ -2,6 +2,8 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleProject;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -47,28 +49,41 @@ class ProjectWorkersController extends Controller
         // }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-       
+
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
         $users = User::with(['rooms'])
-             ->where('user_type', 'worker')
+            ->where('user_type', 'worker')
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-       
+
         $users->select(
             'users.*',
             'users.room_id',
             'users.id_proof_number',
             'users.nationality_id',
             'users.essentials_salary',
-             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'contact_locations.name as contact_name'
         );
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
 
-        
-        
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                }
+            }
+            $userProjects = array_unique($userProjects);
+            $users = $users->whereIn('users.assigned_to',   $userProjects);
+        }
+
+
         if (request()->ajax()) {
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -102,7 +117,7 @@ class ProjectWorkersController extends Controller
                     return $user->assignedTo?->name;
                 })
 
-                
+
                 ->addColumn('building', function ($user) {
                     return $user->rooms?->building->name;
                 })
@@ -159,7 +174,6 @@ class ProjectWorkersController extends Controller
      */
     public function store(Request $request)
     {
-        
     }
 
     /**
@@ -175,33 +189,30 @@ class ProjectWorkersController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $user = User::with(['contactAccess','assignedTo','OfficialDocument','proposal_worker'])
+        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
 
 
 
-            $documents = null;
+        $documents = null;
 
-            if ($user->user_type == 'employee') {
-               
+        if ($user->user_type == 'employee') {
+
+            $documents = $user->OfficialDocument;
+        } else if ($user->user_type == 'worker') {
+
+            if (!empty($user->proposal_worker_id)) {
+
+                $officialDocuments = $user->OfficialDocument;
+                $workerDocuments = $user->proposal_worker?->worker_documents;
+                $documents = $officialDocuments->merge($workerDocuments);
+            } else {
                 $documents = $user->OfficialDocument;
-            } 
-
-            else if ($user->user_type == 'worker') {
-               
-                if (!empty($user->proposal_worker_id)) {
-                  
-                    $officialDocuments = $user->OfficialDocument;
-                    $workerDocuments = $user->proposal_worker?->worker_documents;
-                    $documents = $officialDocuments->merge($workerDocuments);
-                } 
-                else {
-                    $documents = $user->OfficialDocument;
-                }
             }
-            
-        
-    
+        }
+
+
+
 
         $dataArray = [];
         if (!empty($user->bank_details)) {
@@ -213,7 +224,7 @@ class ProjectWorkersController extends Controller
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-       
+
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -247,7 +258,7 @@ class ProjectWorkersController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $nationality_id = $user->nationality_id;
         $nationality = "";
-       
+
         if (!empty($nationality_id)) {
             $nationality = EssentialsCountry::select('nationality')->where('id', '=', $nationality_id)->first();
         }
@@ -268,8 +279,6 @@ class ProjectWorkersController extends Controller
             'nationality',
             'documents',
         ));
-
-       
     }
 
     /**
@@ -290,7 +299,6 @@ class ProjectWorkersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
     }
 
     /**
@@ -300,6 +308,5 @@ class ProjectWorkersController extends Controller
      */
     public function destroy($id)
     {
-        
     }
 }
