@@ -39,7 +39,7 @@ class KitchenController extends Controller
     public function index()
     {
         // if (!auth()->user()->can('sell.view')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $business_id = request()->session()->get('user.business_id');
@@ -56,7 +56,7 @@ class KitchenController extends Controller
     public function markAsCooked($id)
     {
         // if (!auth()->user()->can('sell.update')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         try {
             $business_id = request()->session()->get('user.business_id');
@@ -92,7 +92,7 @@ class KitchenController extends Controller
     {
 
         // if (!auth()->user()->can('sell.view')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         $business_id = request()->session()->get('user.business_id');
         $orders_for = $request->orders_for;
@@ -123,7 +123,7 @@ class KitchenController extends Controller
     {
 
         // if (!auth()->user()->can('sell.view')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
         $business_id = request()->session()->get('user.business_id');
         $orders_for = $request->orders_for;

@@ -33,7 +33,7 @@ class BrandController extends Controller
     public function index()
     {
         if (! auth()->user()->can('brand.view') && ! auth()->user()->can('brand.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -69,7 +69,7 @@ class BrandController extends Controller
     public function create()
     {
         if (! auth()->user()->can('brand.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $quick_add = false;
@@ -92,7 +92,7 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('brand.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -141,7 +141,7 @@ class BrandController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('brand.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -165,7 +165,7 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('brand.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -207,7 +207,7 @@ class BrandController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('brand.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

@@ -57,7 +57,7 @@ class AttendanceController extends ApiController
     public function getAttendance($user_id)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $user = Auth::user();
@@ -75,7 +75,7 @@ class AttendanceController extends ApiController
     {
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $user = Auth::user();
@@ -314,7 +314,7 @@ class AttendanceController extends ApiController
     {
         // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -383,7 +383,7 @@ class AttendanceController extends ApiController
     {
         // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -457,7 +457,7 @@ class AttendanceController extends ApiController
     public function getHolidays()
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $user = Auth::user();

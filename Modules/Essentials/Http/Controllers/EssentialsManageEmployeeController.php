@@ -87,7 +87,7 @@ class EssentialsManageEmployeeController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         if (!($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $permissionName = 'essentials.view_profile_picture';
@@ -378,7 +378,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -444,7 +444,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -505,7 +505,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -576,7 +576,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -633,7 +633,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.view'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -747,7 +747,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -848,7 +848,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $user_data = $request->only([
@@ -942,7 +942,7 @@ class EssentialsManageEmployeeController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),

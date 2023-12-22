@@ -104,11 +104,6 @@
                                  'placeholder' => __('essentials::lang.capital')]) !!}
                         </div>
 
-                        <div class="form-group col-md-6" id="register_number"  style="display: none;">
-                            {!! Form::label('register_number', __('essentials::lang.register_number') . ':*') !!}
-                            {!! Form::number('register_number', null, ['class' => 'form-control',
-                                 'placeholder' => __('essentials::lang.register_number')]) !!}
-                        </div>
 
 
 
@@ -273,15 +268,16 @@
             if ( this.value == 'activity')
             {
                 $("#unified_number").show();     
-                $("#register_number").show();
-                $("#expiration_date").show(); 
+                $("#licence_number").show();
+                $("#expiration_date").prop('required', false);
                 $("#licence_date").show();
                 $('#unified_number').show();
-               
+                $('#issuing_location').show();
+                
                 $("#renew_date").hide();
-                $("#licence_number").hide();
                 $("#capital").hide();
                 $("#national_address").hide();
+                $("#expiration_date").show(); 
                
                 
                 
@@ -290,12 +286,12 @@
            else if ( this.value == 'national_address')
             {
                 $("#expiration_date").show();     
-                $("#register_number").show();
+                $("#licence_number").show();
                 $("#licence_date").show();
 
                 
                 $("#renew_date").hide();
-                $("#licence_number").hide();
+              
                 $("#issuing_location").hide();
                 $("#capital").hide();
                 $("#national_address").hide();
@@ -309,10 +305,11 @@
                 $("#licence_number").show();
                 $("#licence_date").show();
                 $("#capital").show();
-                $("#national_address").show();
+                $("#expiration_date").show(); 
+               // $("#national_address").show();
                 
                 $("#renew_date").hide();
-                $("#expiration_date").hide();  
+                
                 $("#issuing_location").hide();
                 $('#unified_number').hide();
 
@@ -325,19 +322,25 @@
                 $("#licence_number").show();
                 $("#licence_date").show();
                 $("#expiration_date").show(); 
-                $("#issuing_location").hide();
+                $("#issuing_location").show();
                
                 $("#capital").hide();
-                $("#register_number").hide();
+              
                 $("#national_address").hide();
 
             }
             else
             {
                 $("#capital").hide();
-                $("#register_number").hide();
+            
                 $('#unified_number').hide();
                 $("#national_address").hide();
+
+                $("#licence_number").show();
+                $("#licence_date").show();
+                $("#issuing_location").show();
+                $("#expiration_date").show();
+                $("#renew_date").show();
             }
  
 

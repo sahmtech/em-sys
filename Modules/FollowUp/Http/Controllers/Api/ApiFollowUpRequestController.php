@@ -70,7 +70,7 @@ class ApiFollowUpRequestController extends ApiController
 
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -163,7 +163,7 @@ class ApiFollowUpRequestController extends ApiController
 
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

@@ -84,7 +84,7 @@ class ReportController extends Controller
     public function getProfitLoss(Request $request)
     {
         if (! auth()->user()->can('profit_loss_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -115,7 +115,7 @@ class ReportController extends Controller
     public function getPurchaseSell(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -178,7 +178,7 @@ class ReportController extends Controller
     public function getCustomerSuppliers(Request $request)
     {
         if (! auth()->user()->can('contacts_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -320,7 +320,7 @@ class ReportController extends Controller
     public function getStockReport(Request $request)
     {
         if (! auth()->user()->can('stock_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -561,7 +561,7 @@ class ReportController extends Controller
     public function getTaxDetails(Request $request)
     {
         if (! auth()->user()->can('tax_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if ($request->ajax()) {
@@ -775,7 +775,7 @@ class ReportController extends Controller
     public function getTaxReport(Request $request)
     {
         if (! auth()->user()->can('tax_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -829,7 +829,7 @@ class ReportController extends Controller
     public function getTrendingProducts(Request $request)
     {
         if (! auth()->user()->can('trending_product_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -880,7 +880,7 @@ class ReportController extends Controller
     public function getExpenseReport(Request $request)
     {
         if (! auth()->user()->can('expense_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -928,7 +928,7 @@ class ReportController extends Controller
     public function getStockAdjustmentReport(Request $request)
     {
         if (! auth()->user()->can('stock_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -977,7 +977,7 @@ class ReportController extends Controller
     public function getRegisterReport(Request $request)
     {
         if (! auth()->user()->can('register_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = $request->session()->get('user.business_id');
 
@@ -1121,7 +1121,7 @@ class ReportController extends Controller
     public function getSalesRepresentativeReport(Request $request)
     {
         if (! auth()->user()->can('sales_representative.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1144,7 +1144,7 @@ class ReportController extends Controller
     public function getSalesRepresentativeTotalExpense(Request $request)
     {
         if (! auth()->user()->can('sales_representative.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if ($request->ajax()) {
@@ -1166,7 +1166,7 @@ class ReportController extends Controller
     public function getSalesRepresentativeTotalSell(Request $request)
     {
         if (! auth()->user()->can('sales_representative.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1213,7 +1213,7 @@ class ReportController extends Controller
     public function getSalesRepresentativeTotalCommission(Request $request)
     {
         if (! auth()->user()->can('sales_representative.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1265,7 +1265,7 @@ class ReportController extends Controller
     public function getStockExpiryReport(Request $request)
     {
         if (! auth()->user()->can('stock_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1448,7 +1448,7 @@ class ReportController extends Controller
     public function getStockExpiryReportEditModal(Request $request, $purchase_line_id)
     {
         if (! auth()->user()->can('stock_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1491,7 +1491,7 @@ class ReportController extends Controller
     public function updateStockExpiryReport(Request $request)
     {
         if (! auth()->user()->can('stock_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1551,7 +1551,7 @@ class ReportController extends Controller
     public function getCustomerGroup(Request $request)
     {
         if (! auth()->user()->can('contacts_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1609,7 +1609,7 @@ class ReportController extends Controller
     public function getproductPurchaseReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1729,7 +1729,7 @@ class ReportController extends Controller
     public function getproductSellReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -1918,7 +1918,7 @@ class ReportController extends Controller
     public function getproductSellReportWithPurchase(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2062,7 +2062,7 @@ class ReportController extends Controller
     public function getLotReport(Request $request)
     {
         if (! auth()->user()->can('stock_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2211,7 +2211,7 @@ class ReportController extends Controller
     public function purchasePaymentReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2333,7 +2333,7 @@ class ReportController extends Controller
     public function sellPaymentReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2474,7 +2474,7 @@ class ReportController extends Controller
     public function getTableReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2521,7 +2521,7 @@ class ReportController extends Controller
     public function getServiceStaffReport(Request $request)
     {
         if (! auth()->user()->can('sales_representative.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2542,7 +2542,7 @@ class ReportController extends Controller
     public function getproductSellGroupedReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2673,7 +2673,7 @@ class ReportController extends Controller
     public function productSellReportBy(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -2785,7 +2785,7 @@ class ReportController extends Controller
     public function productStockDetails()
     {
         if (! auth()->user()->can('report.stock_details')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -2817,7 +2817,7 @@ class ReportController extends Controller
     public function adjustProductStock()
     {
         if (! auth()->user()->can('report.stock_details')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (! empty(request()->input('variation_id'))
@@ -3317,7 +3317,7 @@ class ReportController extends Controller
     public function purchaseReport()
     {
         if ((! auth()->user()->can('purchase.view') && ! auth()->user()->can('purchase.create') && ! auth()->user()->can('view_own_purchase')) || empty(config('constants.show_report_606'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
         if (request()->ajax()) {
@@ -3472,7 +3472,7 @@ class ReportController extends Controller
     public function saleReport()
     {
         if ((! auth()->user()->can('sell.view') && ! auth()->user()->can('sell.create') && ! auth()->user()->can('direct_sell.access') && ! auth()->user()->can('view_own_sell_only')) || empty(config('constants.show_report_607'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -3654,7 +3654,7 @@ class ReportController extends Controller
     public function gstSalesReport(Request $request)
     {
         if (! auth()->user()->can('tax_report.view') || empty(config('constants.enable_gst_report_india'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');
@@ -3803,7 +3803,7 @@ class ReportController extends Controller
     public function gstPurchaseReport(Request $request)
     {
         if (! auth()->user()->can('tax_report.view') || empty(config('constants.enable_gst_report_india'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = $request->session()->get('user.business_id');

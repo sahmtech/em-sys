@@ -36,7 +36,7 @@ class ContractsController extends Controller
 
         $can_crud_contracts = auth()->user()->can('sales.crud_contract');
         if (!$can_crud_contracts) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
         $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
@@ -312,7 +312,7 @@ class ContractsController extends Controller
     {
 
         if (!auth()->user()->can('user.view')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

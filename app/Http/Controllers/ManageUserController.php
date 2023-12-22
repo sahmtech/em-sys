@@ -43,25 +43,25 @@ class ManageUserController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
             $user_id = request()->session()->get('user.id');
-            $users = User::where('business_id', $business_id)->where('user_type', '!=', 'admin')
+            $users = User::where('user_type', '!=', 'admin')
                 ->where('is_cmmsn_agnt', 0)
                 ->select([
                     'id', 'username', 'user_type',
                     DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login',
                 ]);
 
-                
-                if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
 
-                    $users = $users->where('user_type', request()->input('user_type_filter'));
-                }
-    
+            if (!empty(request()->input('user_type_filter')) && request()->input('user_type_filter') !== 'all') {
+
+                $users = $users->where('user_type', request()->input('user_type_filter'));
+            }
+
             return Datatables::of($users)
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
@@ -113,7 +113,7 @@ class ManageUserController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -149,7 +149,7 @@ class ManageUserController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -204,7 +204,7 @@ class ManageUserController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.view'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -228,37 +228,43 @@ class ManageUserController extends Controller
 
     public function makeUser($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            abort(403, 'Unauthorized action.');
+        try {
+            $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+            if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
+               //temp  abort(403, 'Unauthorized action.');
+            }
+
+             $business_id = request()->session()->get('user.business_id');
+
+            //$business_id = User::where('id', $id)->first()->business_id;
+            $user = User::with(['contactAccess'])
+                ->findOrFail($id);
+
+            $roles = $this->getRolesArray($business_id);
+
+            $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
+
+            if ($user->status == 'active') {
+                $is_checked_checkbox = true;
+            } else {
+                $is_checked_checkbox = false;
+            }
+
+            $locations = BusinessLocation::where('business_id', $business_id)
+                ->get();
+
+            $permitted_locations = $user->permitted_locations();
+            $username_ext = $this->moduleUtil->getUsernameExtension();
+
+            //Get user form part from modules
+            $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
+
+            return view('manage_user.make_user')
+                ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log(\Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
         }
-
-        $business_id = request()->session()->get('user.business_id');
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
-            ->findOrFail($id);
-
-        $roles = $this->getRolesArray($business_id);
-
-        $contact_access = $user->contactAccess->pluck('name', 'id')->toArray();
-
-        if ($user->status == 'active') {
-            $is_checked_checkbox = true;
-        } else {
-            $is_checked_checkbox = false;
-        }
-
-        $locations = BusinessLocation::where('business_id', $business_id)
-            ->get();
-
-        $permitted_locations = $user->permitted_locations();
-        $username_ext = $this->moduleUtil->getUsernameExtension();
-
-        //Get user form part from modules
-        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.edit', 'user' => $user]);
-
-        return view('manage_user.make_user')
-            ->with(compact('roles', 'user', 'contact_access', 'is_checked_checkbox', 'locations', 'permitted_locations', 'form_partials', 'username_ext'));
     }
 
 
@@ -272,12 +278,11 @@ class ManageUserController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
-        $user = User::where('business_id', $business_id)
-            ->with(['contactAccess'])
+        $user = User::with(['contactAccess'])
             ->findOrFail($id);
 
         $roles = $this->getRolesArray($business_id);
@@ -321,7 +326,7 @@ class ManageUserController extends Controller
 
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -380,8 +385,7 @@ class ManageUserController extends Controller
                 }
             }
 
-            $user = User::where('business_id', $business_id)
-                ->findOrFail($id);
+            $user = User::findOrFail($id);
             // if (!Str::contains($user->user_type, 'user')) {
             //     $user_data['user_type'] = ($user->user_type) . "user";
             // }
@@ -407,7 +411,7 @@ class ManageUserController extends Controller
             }
 
             //Grant Location permissions
-            $this->moduleUtil->giveLocationPermissions($user, $request);
+          //  $this->moduleUtil->giveLocationPermissions($user, $request);
 
             //Assign selected contacts
             if ($user_data['selected_contacts'] == 1) {
@@ -479,7 +483,7 @@ class ManageUserController extends Controller
 
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.delete'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -543,7 +547,7 @@ class ManageUserController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
 
         if (!($isSuperAdmin || auth()->user()->can('superadmin')) && empty(session('previous_user_id'))) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $user_id = auth()->user()->id;

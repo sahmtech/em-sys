@@ -30,7 +30,7 @@ class EssentialsEmployeeContractController extends Controller
 
         // $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
         // if (! $can_crud_employee_contracts) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
 

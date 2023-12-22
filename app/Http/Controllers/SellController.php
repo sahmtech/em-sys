@@ -77,7 +77,7 @@ class SellController extends Controller
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
         if (! $is_admin && ! auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping', 'so.view_all', 'so.view_own'])) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -626,11 +626,11 @@ class SellController extends Controller
 
         if ($sale_type == 'sales_order') {
             if (! auth()->user()->can('so.create')) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         } else {
             if (! auth()->user()->can('direct_sell.access')) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         }
 
@@ -786,7 +786,7 @@ class SellController extends Controller
     public function show($id)
     {
         // if (!auth()->user()->can('sell.view') && !auth()->user()->can('direct_sell.access') && !auth()->user()->can('view_own_sell_only')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $business_id = request()->session()->get('user.business_id');
@@ -878,7 +878,7 @@ class SellController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('direct_sell.update') && ! auth()->user()->can('so.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         //Check if the transaction can be edited or not.
@@ -906,7 +906,7 @@ class SellController extends Controller
                             ->findorfail($id);
 
         if ($transaction->type == 'sales_order' && ! auth()->user()->can('so.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $location_id = $transaction->location_id;
@@ -1180,7 +1180,7 @@ class SellController extends Controller
     public function getDrafts()
     {
         if (! auth()->user()->can('draft.view_all') && ! auth()->user()->can('draft.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1202,7 +1202,7 @@ class SellController extends Controller
     public function getQuotations()
     {
         if (! auth()->user()->can('quotation.view_all') && ! auth()->user()->can('quotation.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1449,7 +1449,7 @@ class SellController extends Controller
     public function duplicateSell($id)
     {
         if (! auth()->user()->can('sell.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1529,7 +1529,7 @@ class SellController extends Controller
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
         if (! $is_admin && ! auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1563,7 +1563,7 @@ class SellController extends Controller
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
         if (! $is_admin && ! auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1609,7 +1609,7 @@ class SellController extends Controller
         $is_admin = $this->businessUtil->is_admin(auth()->user());
 
         if (! $is_admin && ! auth()->user()->hasAnyPermission(['access_shipping', 'access_own_shipping', 'access_commission_agent_shipping'])) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $shipping_statuses = $this->transactionUtil->shipping_statuses();
@@ -1660,7 +1660,7 @@ class SellController extends Controller
     public function resetMapping()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         Artisan::call('pos:mapPurchaseSell');

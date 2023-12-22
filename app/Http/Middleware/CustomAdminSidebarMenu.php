@@ -529,6 +529,7 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            
             if ($isSuperAdmin  || auth()->user()->can('followup.contact_locations') ) {
                 $menu->url(
                     action([\App\Http\Controllers\ContactLocationController::class, 'index']),
@@ -775,7 +776,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
                 )->order(0);
             }
-
             if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings') ) {
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
@@ -786,6 +786,7 @@ class CustomAdminSidebarMenu
                     ],
                 )->order(1);
             }
+
 
 
             if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms') ) {

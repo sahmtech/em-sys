@@ -89,7 +89,7 @@ class ModifierSetsController extends Controller
     public function create()
     {
         if (! auth()->user()->can('product.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         return view('restaurant.modifier_sets.create');
@@ -105,7 +105,7 @@ class ModifierSetsController extends Controller
     {
         try {
             if (! auth()->user()->can('product.create')) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
 
             $input = $request->all();
@@ -178,7 +178,7 @@ class ModifierSetsController extends Controller
     public function edit($id, Request $request)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -207,7 +207,7 @@ class ModifierSetsController extends Controller
     public function update($id, Request $request)
     {
         if (! auth()->user()->can('product.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -287,7 +287,7 @@ class ModifierSetsController extends Controller
     public function destroy($id, Request $request)
     {
         if (! auth()->user()->can('product.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

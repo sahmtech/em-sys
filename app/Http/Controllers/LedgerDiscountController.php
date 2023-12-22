@@ -114,7 +114,7 @@ class LedgerDiscountController extends Controller
         $is_admin = $this->commonUtil->is_admin(auth()->user());
 
         if (! $is_admin) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -180,7 +180,7 @@ class LedgerDiscountController extends Controller
         $is_admin = $this->commonUtil->is_admin(auth()->user());
 
         if (! $is_admin) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

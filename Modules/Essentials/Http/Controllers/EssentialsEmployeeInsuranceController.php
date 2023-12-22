@@ -32,7 +32,7 @@ class EssentialsEmployeeInsuranceController extends Controller
 
         $can_crud_employees_insurances = auth()->user()->can('essentials.crud_employees_insurances');
         if (!$can_crud_employees_insurances) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
         $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');

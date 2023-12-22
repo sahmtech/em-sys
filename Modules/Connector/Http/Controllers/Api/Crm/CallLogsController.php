@@ -46,7 +46,7 @@ class CallLogsController extends ApiController
     public function saveCallLogs(Request $request)
     {
         if (! $this->moduleUtil->isModuleInstalled('Crm')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

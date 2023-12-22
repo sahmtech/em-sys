@@ -435,11 +435,13 @@ return [
   'not_added_to_salary' => 'لا تضاف إلى الراتب ',
   'business' => 'الشركات',
   'add_business' => 'إضافة شركة',
+  'curd_work_cards'=>'إضافة \حذف\تعديل كروت العمل',
   'licence_number' => 'رقم الترخيص',
-  'licence_date' => 'تاريخ الترخيص',
+  'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
+ 
   'expiration_date' => 'تاريخ الانتهاء',
-  'issuing_location' => 'مكان الاصدار',
+  'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",
   'add_BusinessDoc' => 'إضافة وثيقة ترخيص',
   'licence_type' => 'نوع الترخيص',
@@ -1022,6 +1024,7 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
+  
   'years' => 'سنة',
   'months' => 'شهر',
   'workcard_duration' => 'مدة كرت العمل',

@@ -41,7 +41,7 @@ class EssentialsDepartmentsController extends Controller
 
         $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
         if (!$can_crud_organizational_structure) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
@@ -133,7 +133,7 @@ class EssentialsDepartmentsController extends Controller
 
         $can_crud_depatments = auth()->user()->can('essentials.crud_departments');
         if (!$can_crud_depatments) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $departments = EssentialsDepartment::all()->pluck('name', 'id');

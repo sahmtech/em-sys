@@ -250,7 +250,7 @@ class AssetController extends Controller
     public function create(Request $request)
     {
         if (! auth()->user()->can('asset.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -277,7 +277,7 @@ class AssetController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('asset.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -388,7 +388,7 @@ class AssetController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('asset.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -420,7 +420,7 @@ class AssetController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('asset.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -534,7 +534,7 @@ class AssetController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('asset.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

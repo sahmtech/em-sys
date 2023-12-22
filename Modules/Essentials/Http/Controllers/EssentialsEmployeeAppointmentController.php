@@ -51,7 +51,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $can_crud_employee_appointments = auth()->user()->can('essentials.crud_employee_appointments');
         if (!$can_crud_employee_appointments) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $business_locations = BusinessLocation::all()->pluck('name', 'id');

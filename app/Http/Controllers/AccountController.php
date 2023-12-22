@@ -41,7 +41,7 @@ class AccountController extends Controller
     public function index()
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -198,7 +198,7 @@ class AccountController extends Controller
     public function create()
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -220,7 +220,7 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -272,7 +272,7 @@ class AccountController extends Controller
     public function show($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -488,7 +488,7 @@ class AccountController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -515,7 +515,7 @@ class AccountController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -555,7 +555,7 @@ class AccountController extends Controller
     public function destroyAccountTransaction($id)
     {
         if (! auth()->user()->can('delete_account_transaction')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -596,7 +596,7 @@ class AccountController extends Controller
     public function close($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -632,7 +632,7 @@ class AccountController extends Controller
     public function getFundTransfer($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -659,7 +659,7 @@ class AccountController extends Controller
     public function postFundTransfer(Request $request)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -730,7 +730,7 @@ class AccountController extends Controller
     public function getDeposit($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -758,7 +758,7 @@ class AccountController extends Controller
     public function postDeposit(Request $request)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -822,7 +822,7 @@ class AccountController extends Controller
     public function getAccountBalance($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -849,7 +849,7 @@ class AccountController extends Controller
     public function cashFlow()
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1196,7 +1196,7 @@ class AccountController extends Controller
     public function activate($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -1232,7 +1232,7 @@ class AccountController extends Controller
     public function editAccountTransaction($id)
     {
         if (! auth()->user()->can('edit_account_transaction')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1249,7 +1249,7 @@ class AccountController extends Controller
     public function updateAccountTransaction(Request $request, $id)
     {
         if (! auth()->user()->can('edit_account_transaction')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

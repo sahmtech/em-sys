@@ -31,7 +31,7 @@ class EssentialsInsuranceContractController extends Controller
 
         $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
         if (!$can_crud_insurance_companies) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
         $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);

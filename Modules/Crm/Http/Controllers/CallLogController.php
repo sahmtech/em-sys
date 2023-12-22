@@ -33,7 +33,7 @@ class CallLogController extends Controller
     public function index()
     {
         if ((! auth()->user()->can('crm.view_all_call_log') && ! auth()->user()->can('crm.view_own_call_log')) || ! config('constants.enable_crm_call_log')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');

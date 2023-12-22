@@ -61,10 +61,10 @@ class ClientsController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-        $can_crud_customers = auth()->user()->can('sales.crud_customers');
-        if (!$can_crud_customers) {
-            abort(403, 'Unauthorized action.');
-        }
+        // $can_crud_customers = auth()->user()->can('sales.crud_customers');
+        // if (!$can_crud_customers) {
+        //    //temp  abort(403, 'Unauthorized action.');
+        // }
 
         $contacts = DB::table('contacts')
             ->select([
@@ -109,7 +109,7 @@ class ClientsController extends Controller
 
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -155,7 +155,7 @@ class ClientsController extends Controller
        
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -201,7 +201,7 @@ class ClientsController extends Controller
       
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
 
         }
 
@@ -253,7 +253,7 @@ class ClientsController extends Controller
     {
        
         if (!auth()->user()->can('user.create') && !auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
            
@@ -445,7 +445,7 @@ class ClientsController extends Controller
     public function show($id)
     {
         if (!auth()->user()->can('customer.view') && !auth()->user()->can('customer.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -460,7 +460,7 @@ class ClientsController extends Controller
 
         if (!auth()->user()->can('customer.view') && auth()->user()->can('customer.view_own')) {
             if ($contact->created_by != auth()->user()->id & !in_array($contact->id, $user_contacts)) {
-                abort(403, 'Unauthorized action.');
+               //temp  abort(403, 'Unauthorized action.');
             }
         }
 
@@ -569,7 +569,7 @@ class ClientsController extends Controller
     public function update(Request $request, $id)
     {
         if (!auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $business_id = $request->session()->get('user.business_id');

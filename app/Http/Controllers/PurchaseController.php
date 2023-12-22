@@ -60,7 +60,7 @@ class PurchaseController extends Controller
     public function index()
     {
         if (! auth()->user()->can('purchase.view') && ! auth()->user()->can('purchase.create') && ! auth()->user()->can('view_own_purchase')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
         if (request()->ajax()) {
@@ -230,7 +230,7 @@ class PurchaseController extends Controller
     public function create()
     {
         if (! auth()->user()->can('purchase.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -291,7 +291,7 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('purchase.create')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -444,7 +444,7 @@ class PurchaseController extends Controller
     public function show($id)
     {
         // if (!auth()->user()->can('purchase.view')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $business_id = request()->session()->get('user.business_id');
@@ -519,7 +519,7 @@ class PurchaseController extends Controller
     public function edit($id)
     {
         if (! auth()->user()->can('purchase.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -642,7 +642,7 @@ class PurchaseController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('purchase.update')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -779,7 +779,7 @@ class PurchaseController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('purchase.delete')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -1360,7 +1360,7 @@ class PurchaseController extends Controller
     public function updateStatus(Request $request)
     {
         if (! auth()->user()->can('purchase.update') && ! auth()->user()->can('purchase.update_status')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         //Check if the transaction can be edited or not.
         $edit_days = request()->session()->get('business.transaction_edit_days');

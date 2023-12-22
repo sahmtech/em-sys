@@ -41,7 +41,7 @@ class PackagesController extends Controller
     public function index()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $packages = Package::orderby('sort_order', 'asc')
@@ -68,7 +68,7 @@ class PackagesController extends Controller
     public function create()
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $intervals = ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')];
@@ -90,7 +90,7 @@ class PackagesController extends Controller
     public function store(Request $request)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -169,7 +169,7 @@ class PackagesController extends Controller
     public function update(Request $request, $id)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -234,7 +234,7 @@ class PackagesController extends Controller
     public function destroy($id)
     {
         if (! auth()->user()->can('superadmin')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

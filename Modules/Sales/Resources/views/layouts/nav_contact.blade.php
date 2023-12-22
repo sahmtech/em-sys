@@ -16,37 +16,37 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    @can('essentials.view_lead_contacts')
-                        <li @if (request()->segment(2) == 'lead_contacts') class="active" @endif>
-                            <a href="{{ route('lead_contacts') }}">
-                                <i class="fas fa-bullseye" aria-hidden="true" style="font-size: smaller;"></i>
-                                @lang('sales::lang.lead_contacts')
-                            </a>
-                        </li>
-                    @endcan
-                    @can('essentials.view_qualified_contacts')
-                        <li @if (request()->segment(2) == 'qualified_contacts') class="active" @endif>
-                            <a href="{{ route('qualified_contacts') }}">
-                                <i class="fas fa-check-circle" aria-hidden="true"></i> @lang('sales::lang.qualified_contacts')
-                            </a>
-                        </li>
-                    @endcan
 
-                    @can('essentials.view_unqualified_contacts')
-                        <li @if (request()->segment(2) == 'unqualified_contacts') class="active" @endif>
-                            <a href="{{ route('unqualified_contacts') }}">
-                                <i class="fas fa-times-circle" aria-hidden="true"></i> @lang('sales::lang.unqualified_contacts')
-                            </a>
-                        </li>
-                    @endcan
-                    @can('essentials.view_converted_contacts')
-                        <li @if (request()->segment(2) == 'converted_contacts') class="active" @endif>
-                            <a href="{{ route('converted_contacts') }}">
-                                <i class="fas fa-handshake" aria-hidden="true" style="font-size: smaller;"></i>
-                                @lang('sales::lang.converted_contacts')
-                            </a>
-                        </li>
-                    @endcan
+                    <li @if (request()->segment(2) == 'lead_contacts') class="active" @endif>
+                        <a href="{{ route('lead_contacts') }}">
+                            <i class="fas fa-bullseye" aria-hidden="true" style="font-size: smaller;"></i>
+                            @lang('sales::lang.lead_contacts')
+                        </a>
+                    </li>
+
+
+                    <li @if (request()->segment(2) == 'qualified_contacts') class="active" @endif>
+                        <a href="{{ route('qualified_contacts') }}">
+                            <i class="fas fa-check-circle" aria-hidden="true"></i> @lang('sales::lang.qualified_contacts')
+                        </a>
+                    </li>
+
+
+
+                    <li @if (request()->segment(2) == 'unqualified_contacts') class="active" @endif>
+                        <a href="{{ route('unqualified_contacts') }}">
+                            <i class="fas fa-times-circle" aria-hidden="true"></i> @lang('sales::lang.unqualified_contacts')
+                        </a>
+                    </li>
+
+
+                    <li @if (request()->segment(2) == 'converted_contacts') class="active" @endif>
+                        <a href="{{ route('converted_contacts') }}">
+                            <i class="fas fa-handshake" aria-hidden="true" style="font-size: smaller;"></i>
+                            @lang('sales::lang.converted_contacts')
+                        </a>
+                    </li>
+
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

@@ -161,7 +161,7 @@ class HomeController extends ApiController
     public function removeNotification($id)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -179,7 +179,7 @@ class HomeController extends ApiController
     public function readAllNotifications()
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

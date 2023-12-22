@@ -36,7 +36,7 @@ class AccountReportsController extends Controller
     public function balanceSheet()
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -101,7 +101,7 @@ class AccountReportsController extends Controller
     public function trialBalance()
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -223,7 +223,7 @@ class AccountReportsController extends Controller
     public function paymentAccountReport()
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -364,7 +364,7 @@ class AccountReportsController extends Controller
     public function getLinkAccount($id)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = session()->get('user.business_id');
@@ -386,7 +386,7 @@ class AccountReportsController extends Controller
     public function postLinkAccount(Request $request)
     {
         if (! auth()->user()->can('account.access')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

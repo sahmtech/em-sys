@@ -51,7 +51,7 @@ class ApiEssentialsController extends ApiController
     {
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -79,7 +79,7 @@ class ApiEssentialsController extends ApiController
     public function updateUserInfo(Request $request)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -109,7 +109,7 @@ class ApiEssentialsController extends ApiController
     public function resetPassword(Request $request)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -132,7 +132,7 @@ class ApiEssentialsController extends ApiController
     public  function changeToDoStatus(Request $request, $id)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -266,7 +266,7 @@ class ApiEssentialsController extends ApiController
     {
         // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-            abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

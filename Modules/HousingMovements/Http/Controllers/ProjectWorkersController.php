@@ -43,7 +43,7 @@ class ProjectWorkersController extends Controller
 
         // $can_crud_workers = auth()->user()->can('followup.crud_workers');
         // if (!$can_crud_workers) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -170,7 +170,7 @@ class ProjectWorkersController extends Controller
     public function show($id)
     {
         // if (!auth()->user()->can('user.view')) {
-        //     abort(403, 'Unauthorized action.');
+        //    //temp  abort(403, 'Unauthorized action.');
         // }
 
         $business_id = request()->session()->get('user.business_id');
