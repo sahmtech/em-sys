@@ -294,7 +294,8 @@ return [
     'crud_contract_appendics'=>'إدارة ملاحق العقود',
     'crud_sales_templates'=>'إدارة قوالب المبيعات',
     'crud_sales_costs'=>'إدارة تكاليف المبيعات',
-    'please_add_the_Sales_department'=>'قم بإضافة إدارة المبيعات من فضلك'
+    'please_add_the_Sales_department'=>'قم بإضافة إدارة المبيعات من فضلك',
+    'you_have_no_access_role'=>'ليس لديك صلاحية الوصول لأي شركة أو مشروع'
     
 
 
