@@ -296,6 +296,8 @@
             ]) !!}
         </div>
     </div>
+
+
     <div class="col-md-12  box box-primary" id="section3">
 
         <h4>@lang('lang_v1.bank_details'):</h4>
@@ -381,7 +383,7 @@
 
 
 
-
+        </div>
 
 <div class="col-md-12 box box-primary">
 

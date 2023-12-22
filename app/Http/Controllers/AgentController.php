@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Business;
 use App\BusinessLocation;
 use App\Category;
 use App\Charts\CommonChart;
@@ -16,6 +17,7 @@ use App\Utils\RestaurantUtil;
 use App\Utils\TransactionUtil;
 use App\Utils\Util;
 use App\VariationLocationDetails;
+use Carbon\Carbon;
 use DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
@@ -30,8 +32,11 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\SalesProject;
@@ -52,6 +57,10 @@ class AgentController extends Controller
 
     protected $restUtil;
 
+    protected $statuses;
+
+    protected $statuses2;
+
     /**
      * Create a new controller instance.
      *
@@ -69,6 +78,31 @@ class AgentController extends Controller
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
         $this->restUtil = $restUtil;
+        $this->statuses = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+            'rejected' => [
+                'name' => __('followup::lang.rejected'),
+                'class' => 'bg-red',
+            ],
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+        $this->statuses2 = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
     }
     private function __chartOptions2()
     {
@@ -160,8 +194,7 @@ class AgentController extends Controller
         $cities = EssentialsCity::forDropdown();
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
         $all_users = $query->select('id', FacadesDB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as 
- full_name"))->get();
+        ' - ',COALESCE(id_proof_number,'')) as  full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         if (request()->ajax()) {
 
@@ -331,7 +364,7 @@ class AgentController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $users = User::where('user_type', 'worker')->whereIn('assigned_to',  $projectsIds)
+        $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
@@ -528,7 +561,98 @@ class AgentController extends Controller
 
 
 
+    public function agentRequests()
+    {
 
+        $business_id = request()->session()->get('user.business_id');
+
+        $crud_requests = auth()->user()->can('followup.crud_requests');
+        if (!$crud_requests) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+
+        $user = User::where('id', auth()->user()->id)->first();
+        $contact_id =  $user->crm_contact_id;
+        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+        $requestsProcess = FollowupWorkerRequest::select([
+            'followup_worker_requests.request_no',
+            'followup_worker_requests_process.id as process_id',
+            'followup_worker_requests.id',
+            'followup_worker_requests.type as type',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+            'followup_worker_requests.created_at',
+            'followup_worker_requests_process.status',
+            'followup_worker_requests_process.status_note as note',
+            'followup_worker_requests.reason',
+            'essentials_wk_procedures.department_id as department_id',
+            'users.id_proof_number',
+            'essentials_wk_procedures.can_return',
+            'users.assigned_to'
+
+        ])
+            ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+            ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+            ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+            ->where('user_type', 'worker')
+            ->whereIn('assigned_to', $projectsIds);;
+
+
+        if (request()->ajax()) {
+
+
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
+                    $item = $ContactsLocation[$row->assigned_to] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('status', function ($row) {
+                    $status = '';
+
+                    if ($row->status == 'pending') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+
+                        if (auth()->user()->can('crudExitRequests')) {
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        }
+                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                        $status = trans('followup::lang.' . $row->status);
+                    }
+
+                    return $status;
+                })
+
+                ->rawColumns(['status'])
+
+
+                ->make(true);
+        }
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $projectsIds)->select(
+            'id',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+         ' - ',COALESCE(id_proof_number,'')) as full_name")
+        )->pluck('full_name', 'id');
+
+        $statuses = $this->statuses;
+
+
+
+        return view('internationalrelations::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+    }
 
 
 
