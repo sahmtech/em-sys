@@ -103,6 +103,7 @@
                                                 {!! Form::select('offer_price', $offer_prices, null, [
                                                     'class' => 'form-control',
                                                     'id' => 'offer_price',
+                                                    'style'=>'height:36px;',
                                                     'placeholder' => __('sales::lang.select_offer_price'),
                                                  
                                                 ]) !!}
@@ -116,7 +117,7 @@
                                                 
                                                 ]) !!}
                                             </div>
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group col-md-6" style="float:left;">
                                                 {!! Form::label('contract_follower', __('sales::lang.contract_follower') . ':') !!}
                                                 {!! Form::text('contract_follower', null, [
                                                     'class' => 'form-control',
@@ -125,7 +126,7 @@
                                                 ]) !!}
                                             </div>
 
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group col-md-6" style="float:left;">
                                                 {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
                                                 {!! Form::date('start_date', !empty($contract->start_date) ? $contract->start_date : null, [
                                                     'class' => 'form-control',
@@ -134,33 +135,8 @@
                                                     'placeholder' => __('essentials::lang.start_date'),
                                                 ]) !!}
                                             </div>
-                                            <div class="form-group col-md-8">
-                                                {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
-                                                <div class="form-group">
-                                                    <div class="multi-input">
-                                                        <div class="input-group">
-                                                            {!! Form::number(
-                                                                'contract_duration',
-                                                                !empty($contract->contract_duration) ? $contract->contract_duration : null,
-                                                                [
-                                                                    'class' => 'form-control width-40 pull-left',
-                                                                    'style' => 'height:36px',
-                                                                    'id' => 'contract_duration',
-                                                                    'placeholder' => __('essentials::lang.contract_duration'),
-                                                                ],
-                                                            ) !!}
-                                                            {!! Form::select(
-                                                                'contract_duration_unit',
-                                                                ['years' => __('essentials::lang.years'), 'months' => __('essentials::lang.months')],
-                                                                !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
-                                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:36px;', 'id' => 'contract_duration_unit'],
-                                                            ) !!}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group col-md-6" style="float:left;">
                                                 {!! Form::label('end_date', __('essentials::lang.end_date') . ':') !!}
                                                 {!! Form::date('end_date', !empty($contract->end_date) ? $contract->end_date : null, [
                                                     'class' => 'form-control',
@@ -170,16 +146,34 @@
                                                 ]) !!}
                                             </div>
 
-                                            <div class="form-group col-md-6">
-                                                {!! Form::label('status', __('essentials::lang.status') . ':*') !!}
-                                                {!! Form::select(
-                                                    'status',
-                                                    ['valid' => __('sales::lang.valid'), 'finished' => __('sales::lang.finished')],
-                                                    null,
-                                                    ['class' => 'form-control','id'=>'status',
-                                                     'placeholder' => __('essentials::lang.status'), ],
-                                                ) !!}
+                                            <div class="form-group col-md-6" style="float:left;">
+                                                {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
+                                                <div class="form-group">
+                                                    <div class="multi-input">
+                                                        <div class="input-group">
+                                                            {!! Form::number(
+                                                                'contract_duration',
+                                                                  null,
+                                                                [
+                                                                    'class' => 'form-control width-40 pull-left',
+                                                                    'style' => 'height:36px',
+                                                                    'id' => 'contract_duration',
+                                                                    'placeholder' => __('essentials::lang.contract_duration'),
+                                                                ],
+                                                            ) !!}
+                                                            {!! Form::select(
+                                                                'contract_duration_unit',
+                                                                [ 'months' => __('essentials::lang.months')],
+                                                                !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
+                                                                ['class' => 'form-control width-60 pull-left', 'style' => 'height:36px;', 'id' => 'contract_duration_unit'],
+                                                            ) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                          
+                                           
                                             <div class="form-group col-md-8">
                                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                                 {!! Form::select('contract_items[]', $items, null, [
@@ -202,7 +196,7 @@
                                                 ) !!}
 
                                             </div>
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group col-md-6" style="float:left;">
                                                 {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
                                                 {!! Form::file('file', null, [
                                                     'class' => 'form-control',
@@ -210,7 +204,7 @@
                                                     'required',
                                                 ]) !!}
                                             </div>
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group col-md-6"  >
                                                 {!! Form::label('notes', __('sales::lang.notes') . ':') !!}
                                                 {!! Form::textarea('notes', null, [
                                                     'class' => 'form-control',
@@ -281,6 +275,7 @@
     </section>
 @endsection
 @section('javascript')
+
 <script>
     $(document).ready(function () {
         
@@ -329,82 +324,45 @@
     });
 </script>
 
+<script>
+    $(document).ready(function() {
+    // ... (existing code)
 
-    <script>
-        $(document).ready(function() {
-            
-            $('#start_date, #end_date').change(function() {
-                updateContractDuration();
-            });
+    // Add an event listener for the start date change
+    $('#start_date').change(function() {
+        updateEndDateFromStartDate();
+    });
 
-            
-            $('#contract_duration, #contract_duration_unit').change(function() {
-                updateEndDate();
-            });
+    // Function to update end date based on start date
+    function updateEndDateFromStartDate() {
+        var startDate = $('#start_date').val();
+        var duration = $('#contract_duration').val();
+        var unit = $('#contract_duration_unit').val();
 
-            function updateContractDuration() {
-                var startDate = $('#start_date').val();
-                var endDate = $('#end_date').val();
+        if (startDate && duration && unit) {
+            var newEndDate = calculateEndDate(startDate, duration, unit);
+            $('#end_date').val(newEndDate);
+        }
+    }
 
-                if (startDate && endDate) {
-                    var durationObj = calculateDuration(startDate, endDate);
-                    $('#contract_duration').val(durationObj.value);
-                    $('#contract_duration_unit').val(durationObj.unit);
-                }
-            }
+    // ... (existing code)
 
-            function updateEndDate() {
-                var startDate = $('#start_date').val();
-                var duration = $('#contract_duration').val();
-                var unit = $('#contract_duration_unit').val();
+    // Function to calculate end date
+    function calculateEndDate(startDate, duration, unit) {
+        var startDateObj = new Date(startDate);
+        var endDateObj = new Date(startDateObj);
 
-                if (startDate && !duration && !unit) {
-                    var endDate = $('#end_date').val();
-                    if (endDate) {
-                        var durationObj = calculateDuration(startDate, endDate);
-                        $('#contract_duration').val(durationObj.value);
-                        $('#contract_duration_unit').val(durationObj.unit);
-                    }
-                } else if (startDate && duration && unit) {
-                    var newEndDate = calculateEndDate(startDate, duration, unit);
-                    $('#end_date').val(newEndDate);
-                }
-            }
+        if (unit === 'years') {
+            endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
+        } else if (unit === 'months') {
+            endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
+        }
 
-            function calculateDuration(startDate, endDate) {
-                var startDateObj = new Date(startDate);
-                var endDateObj = new Date(endDate);
-                var diffInMonths = (endDateObj.getFullYear() - startDateObj.getFullYear()) * 12 + endDateObj
-                    .getMonth() - startDateObj.getMonth();
-                var diffInYears = diffInMonths / 12;
+        return endDateObj.toISOString().split('T')[0];
+    }
+});
 
-                if (Number.isInteger(diffInYears)) {
-                    return {
-                        value: diffInYears,
-                        unit: 'years'
-                    };
-                } else {
-                    return {
-                        value: diffInMonths,
-                        unit: 'months'
-                    };
-                }
-            }
-
-            function calculateEndDate(startDate, duration, unit) {
-                var startDateObj = new Date(startDate);
-                var endDateObj = new Date(startDateObj);
-
-                if (unit === 'years') {
-                    endDateObj.setFullYear(startDateObj.getFullYear() + parseInt(duration));
-                } else if (unit === 'months') {
-                    endDateObj.setMonth(startDateObj.getMonth() + parseInt(duration));
-                }
-
-                return endDateObj.toISOString().split('T')[0]; 
-            }
-        });
-    </script>
+</script>
 
 
 
@@ -545,12 +503,18 @@
                         'offer_price': offerPrice
                     },
                     success: function(data) {
-                        $('#contract_follower').val(data.contract_follower.first_name + ' ' +
+                        console.log(data);
+                        if(data.contract_follower != null && data.contract_signer != null )
+                        {
+                            $('#contract_follower').val(data.contract_follower.first_name + ' ' +
                             data.contract_follower.last_name);
                         $('#contract_signer').val(data.contract_signer.first_name + ' ' + data
                             .contract_signer.last_name)
                         $('#contract_follower').prop('disabled', true);
                         $('#contract_signer').prop('disabled', true);
+                        }
+                        $('#contract_duration').val(data.contract_duration);
+                     
                     }
                 });
             });

@@ -220,7 +220,7 @@ class SalesSalaryRequestsController extends Controller
             }
         
             
-            $existingFile = $req->file; 
+            $existingFile = $req->file??''; 
            
         
             $output = [
