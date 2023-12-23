@@ -130,7 +130,7 @@ class FollowUpRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-       
+
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'worker');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
@@ -354,7 +354,7 @@ class FollowUpRequestController extends Controller
 
         $crud_requests = auth()->user()->can('followup.view_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -387,12 +387,12 @@ class FollowUpRequestController extends Controller
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker')
                 ->where('department_id', $department);
-        }
-        else {
-            $output = ['success' => false,
-            'msg' => __('followup::lang.please_add_the_followup_department'),
-                ];
-            return redirect()->action([\Modules\Followup\Http\Controllers\FollowUpController::class, 'index'])->with('status', $output);
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('followup::lang.please_add_the_followup_department'),
+            ];
+            return redirect()->action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->with('status', $output);
         }
 
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
@@ -411,8 +411,8 @@ class FollowUpRequestController extends Controller
 
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                } 
-/*
+                }
+                /*
 else {
                     $output = [
                         'success' => false,
@@ -685,7 +685,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -767,10 +767,11 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -781,19 +782,68 @@ else {
 
             $requestsProcess = FollowupWorkerRequest::select([
                 'followup_worker_requests.request_no',
+                'followup_worker_requests.id',
                 'followup_worker_requests.type as type',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
                 'followup_worker_requests.created_at',
-                'followup_worker_requests.status',
-                'followup_worker_requests.note',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
                 'followup_worker_requests.reason',
-                'essentials_wk_procedures.department_id as department_id'
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'users.assigned_to'
+
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('user_type', 'worker')
                 ->where('department_id', $department);
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('followup::lang.please_add_the_followup_department'),
+            ];
+            return redirect()->action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])->with('status', $output);
         }
+
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+                /*
+else {
+                    $output = [
+                        'success' => false,
+                        'msg' => __('sales::lang.you_have_no_access_role'),
+                    ];
+                    return redirect()->action([\Modules\Sales\Http\Controllers\SalesController::class, 'index'])->with('status', $output);
+                }
+*/
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+            $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                $query->where(function ($query2) use ($user_businesses_ids) {
+                    $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
+                })->orWhere(function ($query3) use ($user_projects_ids) {
+                    $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                });
+            });
+        }
+
         $pageName = __('followup::lang.allRequests');
         if ($filter == 'finished') {
             $pageName = __('followup::lang.finished_requests');
@@ -829,7 +879,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -911,7 +961,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -997,7 +1047,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1084,7 +1134,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1167,7 +1217,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1250,7 +1300,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1330,7 +1380,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -1411,7 +1461,7 @@ else {
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
@@ -2077,7 +2127,7 @@ else {
     {
         $can_return_request = auth()->user()->can('followup.return_request');
         if (!$can_return_request) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

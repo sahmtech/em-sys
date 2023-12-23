@@ -79,7 +79,7 @@
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
                 <div class="col-sm-3">
-                    @can('user.create')
+                   
                         @slot('tool')
                             <div class="box-tools">
                                 <a class="btn btn-block btn-primary" href="{{ route('createEmployee') }}">
@@ -87,14 +87,14 @@
                                 </a>
                             </div>
                         @endslot
-                    @endcan
+          
                 </div>
 
 
             </div>
 
 
-            @can('user.view')
+        
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="employees">
                         <thead>
@@ -122,7 +122,7 @@
                         </thead>
                     </table>
                 </div>
-            @endcan
+            
         @endcomponent
 
         <div class="modal fade user_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

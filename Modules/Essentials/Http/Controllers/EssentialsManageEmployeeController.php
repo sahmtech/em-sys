@@ -175,26 +175,6 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-        // $userProjects = [];
-        // if (!$is_admin) {
-        //     $roles = auth()->user()->roles;
-        //     foreach ($roles as $role) {
-
-        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-        //         $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        //         $userProjects = array_merge($userProjects, $userProjectsForRole);
-        //     }
-        //     $userProjects = array_unique($userProjects);
-        //     $users = $users->whereIn('assigned_to', $userProjects)
-        //         ->orWhere(function ($query) use ($business_id) {
-        //             $query->whereNull('assigned_to')->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
-        //         });
-        // }
-
-        // $users = $users->union($workers)->orderby('id', 'desc');
-
-
         if (!empty($request->input('specialization'))) {
 
             $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
@@ -295,7 +275,7 @@ class EssentialsManageEmployeeController extends Controller
                 })
 
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
 
                 ->filterColumn('nationality', function ($query, $keyword) {
