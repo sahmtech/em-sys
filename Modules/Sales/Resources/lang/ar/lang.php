@@ -300,6 +300,18 @@ return [
     'created_at'=>'تاريخ الإنشاء',
     'qualified_by'=>'تم التأهيل بواسطة',
     'qualified_on'=>'تاريخ التأهيل',
+    'total_amount'=>'إجمالي القيمة ',
+    'total_monthly_amount'=>'إجمالي التكلفة الشهرية',
+    'total_amount_of_fixed_and_var_costs'=>'إجمالي التكلفة الثابتة و المتغيرة الشهرية',
+    'total_amount_with_fees'=>'التكلفة الشهرية مع أتعاب امدادات',
+    'emdadat_fees'=>'أتعاب إمدادات',
+    'number_of_workers'=>'عدد العمال',
+    'total_monthly'=>'التكلفة الشهرية الإجمالية',
+    'total_contract_cost'=>'إجمالي تكلفة العقد',
+    'accepted_offer_prices' => ' عروض الأسعار المقبولة',
+    'unaccepted_offer_prices' => ' عروض الأسعار الغير مقبولة',
+    'under_study_offer_prices' => 'عروض الأسعار قيد الدراسة',
+
 
     
 

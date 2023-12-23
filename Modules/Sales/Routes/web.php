@@ -40,6 +40,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::PUT('/updateOfferPrice/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'update'])->name('updateOfferPrice');
         Route::get('/offerContractPriceShow/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice']);
       
+        Route::get('/accepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'accepted_offer_prices'])->name('accepted_offer_prices');
+        Route::get('/unaccepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'unaccepted_offer_prices'])->name('unaccepted_offer_prices');
+        Route::get('/under_study_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('under_study_offer_prices');
 
 
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'clientAdd'])->name('clientAdd');
