@@ -6,12 +6,9 @@
             {{-- Single Column --}}
             <div class="col-md-12">
 
-                {{-- First Item: Row with Three Parts --}}
-                <div class="row">
-                    {{-- First Part with 20% width --}}
+                {{-- <div class="row">
 
 
-                    {{-- Second Part with 40% width --}}
                     <div class="col-md-5">
                         <div class="custom_table_card">
 
@@ -38,7 +35,6 @@
 
                         </div>
                     </div>
-                    {{-- Third Part with 40% width --}}
                     <div class="col-md-5">
                         <div class="custom_table_card">
                             <h5>@lang('essentials::lang.todo_list')</h5>
@@ -75,7 +71,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 {{-- Second Item (Placeholder) --}}
                 <div class="row">
