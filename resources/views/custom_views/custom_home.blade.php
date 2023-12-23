@@ -70,8 +70,8 @@
                             <!-- Employee Profile Card Content -->
                             <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
                             <div class="employee-info">
-                                <h3>John Doe</h3>
-                                <p>Department: Marketing</p>
+                                <h3>متعب الكبرى</h3>
+                                <p>مدير التشغيل</p>
                             </div>
                         </div>
                     </div>
