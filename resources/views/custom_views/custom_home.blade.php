@@ -1,7 +1,11 @@
 @extends('layouts.custom_layouts.custom_home_layout')
 @section('title', __('home.home'))
 @section('content')
-    <section class="content-header content-header-custom parent-div">
+    <section class="content-header content-header-custom parent-div"
+        style="   
+    background: url('{{ asset('img/emdadat-bg-img.jpg') }}');
+    background:#b4b4b4, url('{{ asset('img/emdadat-bg-img.jpg') }}');
+    background-size: cover;">
         <div class="custom_column">
             {{-- Single Column --}}
             <div class="col-md-12">
