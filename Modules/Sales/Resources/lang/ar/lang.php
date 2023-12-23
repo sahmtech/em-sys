@@ -354,6 +354,19 @@ return [
 
 
 
+    'crud_sales_salary_requests'=>'إضافة\حذف\تعديل طلبات الرواتب',
+    'salary_requests'=>'طلبات الرواتب',
+    'worker_name'=>'اسم العامل',
+    'recruitment_fees'=>'رسوم الاستقدام',
+    'arrival_period'=>'فترة الوصول',
+    'add_salary_request'=>'إضافة طلب راتب',
+    'file'=>'المرفق',
+    'openfile'=>'افتح المرفق',
+
+    
+
+
+
 
 
 

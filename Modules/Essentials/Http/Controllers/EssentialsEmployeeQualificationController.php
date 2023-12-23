@@ -32,7 +32,7 @@ class EssentialsEmployeeQualificationController extends Controller
            //temp  abort(403, 'Unauthorized action.');
         }
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $countries = $countries = EssentialsCountry::forDropdown();
+        $countries = EssentialsCountry::forDropdown();
         if (request()->ajax()) {
             $employees_qualifications = EssentialsEmployeesQualification::join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
                 ->where('u.business_id', $business_id)

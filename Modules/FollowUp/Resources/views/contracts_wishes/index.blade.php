@@ -92,7 +92,7 @@
                 <div class="form-group col-md-6">
                 {!! Form::label('employees', __('followup::lang.worker') . ':*') !!}
                 {!! Form::select('employees', $employees->pluck('full_name', 'id'), null, [
-                    'class' => 'form-control',
+                    'class' => 'form-control select2',
                     'placeholder' => __('followup::lang.choose_worker'),
                     'required',
                     'id'=>'employees_select',

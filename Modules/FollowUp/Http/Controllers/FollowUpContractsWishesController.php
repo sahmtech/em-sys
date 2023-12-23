@@ -118,10 +118,7 @@ class FollowUpContractsWishesController extends Controller
          ->pluck('reason', 'id');
          $projects= SalesProject::pluck('name','id');
      
-       $employees=User::join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
-             ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
-             ->leftjoin('essentials_employees_contracts','essentials_employees_contracts.employee_id','users.id')
-             ->where('users.user_type', 'worker')
+       $employees=User::where('users.user_type', 'worker')
              ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
              ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id',)->get();
              
