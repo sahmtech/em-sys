@@ -67,13 +67,20 @@
                            
                         ]) !!}
                     </div>
-
-                    <div class="form-group col-md-6">
-                        {!! Form::label('file', __('sales::lang.file') . ':*') !!}
-                        
-                        @if (!empty($existingFile)) 
+                    
+                     <div class="form-group col-md-6">
+                     <input type="hidden" name="existingFile" id="existingFile" value="{{ old('existingFile') }}">
+                     <div id="openFileContainer" style="display: none;"></div>
+                    
+                     @if (!empty($existingFile)) 
                             <p>Existing File: <a href="" target="_blank">{{ $existingFile }}</a></p>
+                          
                         @endif
+                        </div>
+                   
+                     <div class="form-group col-md-8">
+                        {!! Form::label('file', __('sales::lang.file') . ':*') !!}
+                       
                         
                         {!! Form::file('file', null, [
                             'class' => 'form-control',

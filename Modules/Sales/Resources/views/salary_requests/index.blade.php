@@ -132,6 +132,18 @@ $('body').on('click', '.open-edit-modal', function() {
             dataType: 'json',
             success: function(response) {
                 var data = response.data;
+                if (response.data.file) {
+                    $('#existingFile').val(response.data.file);
+
+                    // Show a button to open the file
+                    var openFileButton = '<a href="' + response.data.file + '" target="_blank" class="btn btn-primary">' + '{{ __("sales::lang.openfile") }}' + '</a>';
+                    $('#openFileContainer').html(openFileButton);
+                    $('#openFileContainer').show();
+                } else {
+                    $('#existingFile').val(''); // Clear the value if there is no existing file
+                    $('#openFileContainer').hide();
+                }
+
                 console.log(data);
                 $('#editsalaryRequestModal select[name="workers"]').val(data.worker_id).trigger('change');
                 $('#editsalaryRequestModal input[name="salary"]').val(data.salary).trigger('change');

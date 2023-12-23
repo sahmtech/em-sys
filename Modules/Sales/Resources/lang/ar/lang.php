@@ -310,6 +310,7 @@ return [
     'arrival_period'=>'فترة الوصول',
     'add_salary_request'=>'إضافة طلب راتب',
     'file'=>'المرفق',
+    'openfile'=>'افتح المرفق',
 
     
 
