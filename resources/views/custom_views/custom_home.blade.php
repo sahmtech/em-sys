@@ -1,7 +1,7 @@
 @extends('layouts.custom_layouts.custom_home_layout')
 @section('title', __('home.home'))
 @section('content')
-    <section class="content-header content-header-custom parent-div"
+    <section class="content"
         style="   
     background: url('{{ asset('img/emdadat-bg-img.jpg') }}');
     background:#b4b4b4, url('{{ asset('img/emdadat-bg-img.jpg') }}');
