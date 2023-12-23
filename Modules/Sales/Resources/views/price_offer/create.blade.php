@@ -18,7 +18,7 @@
         @if (session('business.enable_rp') == 1)
             <input type="hidden" id="reward_point_enabled">
         @endif
-        @if (count($business_locations) > 0)
+        {{-- @if (count($business_locations) > 0)
             <div class="row">
                 <div class="col-sm-3">
                     <div class="form-group">
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         @php
             $custom_labels = json_decode(session('business.custom_labels'), true);
@@ -81,12 +81,23 @@
                         <div class="form-group">
                             <div class="form-group col-md-10">
                                 {!! Form::label('contact_id', __('sales::lang.project_name') . ':*') !!}
-                                {!! Form::select('contact_id', $leads, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height:40px',
-                                    'placeholder' => __('sales::lang.select_project'),
-                                    'required',
-                                ]) !!}
+                                @if (!empty($id))
+                                    {!! Form::select('contact_id', $leads, $id, [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                        // 'placeholder' => __('sales::lang.select_project'),
+                                        'required',
+                                        // 'disabled' => true,
+                                    ]) !!}
+                                @else
+                                    {!! Form::select('contact_id', $leads, null, [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                        'placeholder' => __('sales::lang.select_project'),
+                                        'required',
+                                    ]) !!}
+                                @endif
+
                             </div>
                         </div>
                     </div>
@@ -380,6 +391,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {!! Form::label('prefer_payment_account', __('lang_v1.prefer_payment_account') . ':') !!}
@@ -408,6 +420,7 @@
                                     ]) !!}
                                 </div>
                             </div>
+
                             @include('sale_pos.partials.payment_row_form', [
                                 'row_index' => 0,
                                 'show_date' => true,
@@ -693,10 +706,10 @@
 
 
             $('#costs_table').on('blur', '.editable-amount, .editable-duration', function() {
-    var rowId = $(this).data('row-id');
-    updateMonthlyCost(rowId);
-    updateTotalAmount();
-});
+                var rowId = $(this).data('row-id');
+                updateMonthlyCost(rowId);
+                updateTotalAmount();
+            });
 
 
             function updateTotalAmount() {

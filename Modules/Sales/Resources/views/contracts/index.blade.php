@@ -87,16 +87,16 @@
 
                                 <div class="row">
 
-                                        <div class="form-group col-md-12">
+                                        {{-- <div class="form-group col-md-12">
                                                 {!! Form::radio('contract_type', 'new', null, ['id' => 'new_contract']) !!}
                                                 <label for="new_contract">{{ __('sales::lang.new_contract') }}</label>
 
                                                 {!! Form::radio('contract_type', 'appendix', null, ['id' => 'appendix_contract']) !!}
                                                 <label for="appendix_contract">{{ __('sales::lang.appendix_contract') }}</label>
 
-                                        </div>
+                                        </div> --}}
 
-                                    <div id="new-contract-fields" class="form-fields" style="display:none;">
+                                   
             
                                             <div class="form-group col-md-6">
                                                 {!! Form::label('offer_price', __('sales::lang.offer_price') . ':*') !!}
@@ -243,12 +243,12 @@
                                             <div >
                                             
 
-                                            </div>
+                                        
 
                                         
                                     </div>
 
-                                    <div id="appendix-contract-fields" class="form-fields" style="display:none;">
+                                    {{-- <div id="appendix-contract-fields" class="form-fields" style="display:none;">
                                             <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="offer_type_filter">@lang('sales::lang.contract'):</label>
@@ -262,7 +262,7 @@
                                                         </div>
                                             </div>
                                     </div>
-                            
+                             --}}
                                 </div>
                             </div>
 
