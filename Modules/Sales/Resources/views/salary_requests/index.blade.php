@@ -62,7 +62,7 @@
 @section('javascript')
 
 <script type="text/javascript">
-    // Countries table
+    
     function reload()
     { 
         $('#salary_request_table').DataTable().ajax.reload();
@@ -133,16 +133,16 @@ $('body').on('click', '.open-edit-modal', function() {
             success: function(response) {
                 var data = response.data;
                 if (response.data.file) {
-                    $('#existingFile').val(response.data.file);
+                        $('#existingFile').val(response.data.file);
 
-                    // Show a button to open the file
-                    var openFileButton = '<a href="' + response.data.file + '" target="_blank" class="btn btn-primary">' + '{{ __("sales::lang.openfile") }}' + '</a>';
-                    $('#openFileContainer').html(openFileButton);
-                    $('#openFileContainer').show();
-                } else {
-                    $('#existingFile').val(''); // Clear the value if there is no existing file
-                    $('#openFileContainer').hide();
-                }
+                        
+                        var openFileButton = '<a href="/uploads/' + response.data.file + '" target="_blank" class="btn btn-primary">' + '{{ __("sales::lang.openfile") }}' + '</a>';
+                        $('#openFileContainer').html(openFileButton);
+                        $('#openFileContainer').show();
+                    } else {
+                        $('#existingFile').val(''); 
+                        $('#openFileContainer').hide();
+                    }
 
                 console.log(data);
                 $('#editsalaryRequestModal select[name="workers"]').val(data.worker_id).trigger('change');
@@ -151,7 +151,7 @@ $('body').on('click', '.open-edit-modal', function() {
                 $('#editsalaryRequestModal input[name="recruitment_fees"]').val(data.recruitment_fees);
                 $('#editsalaryRequestModal select[name="nationality"]').val(data.nationality).trigger('change');
                 $('#editsalaryRequestModal select[name="profession"]').val(data.profession).trigger('change');
-               // $('#editsalaryRequestModal input[name="file"]').val(data.salary).trigger('change');
+               
        
 
                 $('#editsalaryRequestModal').modal('show');
@@ -190,13 +190,13 @@ $('body').on('submit', '#editsalaryRequestModal form', function (e) {
         },
         error: function (error) {
             console.error('Error submitting form:', error);
-            // Show a generic error message
+            
             toastr.error('An error occurred while submitting the form.', 'Error');
         },
     });
 });
 
-// Trigger DataTable reload after modal is completely hidden
+
 $('#editsalaryRequestModal').on('hidden.bs.modal', function () {
     reload();
 });
@@ -234,14 +234,14 @@ $(document).on('shown.bs.modal', '#addItemModal', function() {
                     $('#profession_select').empty();
                     console.log(data);
 
-                    // Populate Nationality Dropdown
+                    
                     $.each(data.nationalities, function (id, text) {
                         $('#nationality_select').append($('<option>', {
                             value: id,
                             text: text
                         }));
                     });
-                     // Populate Nationality Dropdown
+                     
                      $.each(data.professions, function (id, text) {
                         $('#profession_select').append($('<option>', {
                             value: id,
