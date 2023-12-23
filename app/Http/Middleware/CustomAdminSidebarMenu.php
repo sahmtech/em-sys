@@ -648,7 +648,7 @@ class CustomAdminSidebarMenu
             if ($isSuperAdmin || auth()->user()->can('sales.crud_contacts')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
-                    __('sales::lang.customers'),
+                    __('sales::lang.lead_contacts'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'lead_contacts'],
                 );
             }
