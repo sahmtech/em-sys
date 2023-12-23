@@ -50,37 +50,62 @@ function submittedDataFunc(response) {
 }
 
 
-   function updatePriceTotal() {
-            var totalPrice = 0;
-            $('.product_row').each(function () {
-                totalPrice += parseFloat($(this).find('.total-column').text());
-            });
-            $('#price_total_input').val(totalPrice);
-            $('.price_total').text(totalPrice);
-        }
+function updatePriceTotal() {
+        var totalPrice = 0;
+        $('.product_row').each(function () {
+            totalPrice += parseFloat($(this).find('.total-column').text());
+        });
+        $('#price_total_input').val(totalPrice);
+        $('.price_total').text(totalPrice);
+        var totalMonthlyAmount = parseFloat($('#total_monthly_amount').text()) || 0;
+        var priceTotal = parseFloat($('.price_total').text()) || 0;
+
+        var totalSum = totalMonthlyAmount + priceTotal ;
+
+       
+        $('#total_sum_value').text(totalSum.toFixed(2));
+        var totalSum = parseFloat($('#total_sum_value').text()) || 0;
+        var fees = parseFloat($('#fees_input').val()) || 0;
+
+        totalAmountWithFees = totalSum + fees;
+   
+     
+        $('#total_amount_with_fees').text(totalAmountWithFees.toFixed(2));
+    }
 
   
 const resultsArray = [];
 const productIds = [];
 const quantityArr = [];
-
-        
+var quantityArrDisplay = 0;
     
 
 
 function updateArray(resultsArrayItem,productIdsItem,quantity) {
 
-    
+ 
     resultsArray.push(resultsArrayItem);
     productIds.push(productIdsItem);
     quantityArr.push(quantity);
   
- 
-
+   
     $('#productData').val(JSON.stringify(resultsArray));
     $('#productIds').val(JSON.stringify(productIds));
     $('#quantityArr').val(JSON.stringify(quantityArr));
+   
+    updateSumOfQuantityArr();
+    
 
+}
+function updateSumOfQuantityArr() {
+    var quantityArr = JSON.parse($('#quantityArr').val());
+  
+    quantityArrDisplay = quantityArr.reduce(function (accumulator, currentValue) {
+        return accumulator + parseInt(currentValue, 10);
+    }, 0);
+   
+    $('#quantityArrDisplay').val(quantityArrDisplay);
+    $('#quantityArrDisplay2').text(quantityArrDisplay);
 }
     
 

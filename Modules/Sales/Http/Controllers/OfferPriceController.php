@@ -62,10 +62,7 @@ class OfferPriceController extends Controller
                 'name' => __('sales::lang.cancelled'),
                 'class' => 'bg-red',
             ],
-            'transfared' => [
-                'name' => __('sales::lang.transfared'),
-                'class' => 'bg-blue',
-            ],
+            
             'under_study' => [
                 'name' => __('sales::lang.under_study'),
                 'class' => 'bg-yellow',
@@ -98,6 +95,7 @@ class OfferPriceController extends Controller
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'sell')
+            ->where('transactions.status','under_study')
             ->select(
                 'transactions.id as id',
                 'transactions.location_id as location_id',
@@ -126,13 +124,11 @@ class OfferPriceController extends Controller
 
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
-                    if ($row->status == 'under_study') {
+                  
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
                         $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                    } else {
-                        $status = trans('sales::lang.' . $row->status);
-                    }
+                  
                     return $status;
                 })
                 ->editColumn('location_id', function ($row) use ($business_locations) {
@@ -158,13 +154,7 @@ class OfferPriceController extends Controller
                                     </li>';
 
 
-                        if ($row->status == "under_study") {
-                            $html .= '<li>
-                                            <a target="_blank" href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'edit'], [$row->id]) . '">
-                                                <i class="fas fa-edit"></i>' . __('messages.edit') . '
-                                            </a>
-                                        </li>';
-                        }
+                       
 
 
                         $html .= '</ul></div>';
@@ -196,6 +186,180 @@ class OfferPriceController extends Controller
             ->with(compact('business_locations', 'statuses', 'customers', 'sales_representative'));
     }
 
+    public function accepted_offer_prices()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+        $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
+        if (!$can_crud_offer_price) {
+           //temp  abort(403, 'Unauthorized action.');
+        }
+        $business_locations = BusinessLocation::forDropdown($business_id, false);
+        $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status','approved')
+            ->select(
+                'transactions.id as id',
+                'transactions.transaction_date',
+                'transactions.ref_no',
+                'transactions.final_total',
+                'transactions.is_direct_sale',
+                'contacts.supplier_business_name as supplier_business_name',
+                'contacts.mobile as mobile',
+                'contacts.name as name',
+               
+
+            );
+
+        if (request()->ajax()) {
+
+
+
+
+            $sells->groupBy('transactions.id');
+            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                $sells->where('status', request()->input('status'));
+            }
+
+
+            return Datatables::of($sells)
+               
+              
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '<div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                    data-toggle="dropdown" aria-expanded="false">' .
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <li>
+                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
+                                    </a>
+                                    </li>';
+
+                        $html .= '</ul></div>';
+
+                        return $html;
+                    }
+                )
+                ->removeColumn('id')
+
+                ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('sales_projects.name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('added_by', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['action', 'invoice_no', 'status', 'transaction_date', 'supplier_business_name'])
+                ->make(true);
+        }
+
+        $customers = Contact::customersDropdown($business_id, false);
+        $statuses = $this->statuses;
+        $sales_representative = User::forDropdown($business_id, false, false, true);
+
+        return view('sales::price_offer.accepted_offer_prices')
+            ->with(compact('business_locations', 'statuses', 'customers', 'sales_representative'));
+    }
+
+    public function unaccepted_offer_prices()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+        $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
+        if (!$can_crud_offer_price) {
+           //temp  abort(403, 'Unauthorized action.');
+        }
+        $business_locations = BusinessLocation::forDropdown($business_id, false);
+        $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+            ->where('transactions.business_id', $business_id)
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status','cancelled')
+            ->select(
+                'transactions.id as id',
+                'transactions.transaction_date',
+                'transactions.ref_no',
+                'transactions.final_total',
+                'transactions.is_direct_sale',
+                'contacts.supplier_business_name as supplier_business_name',
+                'contacts.mobile as mobile',
+                'contacts.name as name',
+               
+
+            );
+
+        if (request()->ajax()) {
+
+
+
+
+            $sells->groupBy('transactions.id');
+            if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
+                $sells->where('status', request()->input('status'));
+            }
+
+
+            return Datatables::of($sells)
+               
+              
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '<div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                    data-toggle="dropdown" aria-expanded="false">' .
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <li>
+                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
+                                    </a>
+                                    </li>';
+
+
+
+
+                        $html .= '</ul></div>';
+
+                        return $html;
+                    }
+                )
+                ->removeColumn('id')
+
+                ->editColumn('transaction_date', '{{@format_date($transaction_date)}}')
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('sales_projects.name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('added_by', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(u.surname, ''), ' ', COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['action', 'invoice_no', 'status', 'transaction_date', 'supplier_business_name'])
+                ->make(true);
+        }
+
+        $customers = Contact::customersDropdown($business_id, false);
+        $statuses = $this->statuses;
+        $sales_representative = User::forDropdown($business_id, false, false, true);
+
+        return view('sales::price_offer.unaccepted_offer_prices')
+            ->with(compact('business_locations', 'statuses', 'customers', 'sales_representative'));
+    }
 
 
     public function changeStatus(Request $request)
@@ -539,10 +703,10 @@ class OfferPriceController extends Controller
 
         try {
             $business_id = $request->session()->get('user.business_id');
-            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date', 'final_total', 'status'];
+            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date', 'final_total'];
             $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
             $offer_details = $request->only($offer);
-            $offer_details['location_id'] = $request->input('location_id');
+         //   $offer_details['location_id'] = $request->input('location_id');
             $offer_details['contact_id'] = $request->input('contact_id');
             $offer_details['business_id'] = $business_id;
             $offer_details['transaction_date'] = $transactionDate;
@@ -550,6 +714,15 @@ class OfferPriceController extends Controller
             $offer_details['type'] = 'sell';
             $offer_details['sub_type'] = 'service';
             $offer_details['is_quotation'] = 1;
+            $offer_details['total_worker_number'] = $request->input('quantityArrDisplay');
+            $offer_details['business_fees'] = $request->input('fees_input');
+            $offer_details['total_worker_monthly'] = $request->input('total_monthly_for_all_workers2');
+            $offer_details['contract_duration'] = $request->input('contract_duration');
+            $offer_details['total_contract_cost'] = $request->input('total_contract_cost');
+            $offer_details['status'] ='under_study';
+
+            
+            
             $latestRecord = Transaction::where('sub_type', 'service')->orderBy('ref_no', 'desc')->first();
 
 
@@ -559,7 +732,7 @@ class OfferPriceController extends Controller
                 $numericPart++;
                 $offer_details['ref_no'] = 'QN' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
             } else {
-                // No previous records, start from 3000
+              
                 $offer_details['ref_no'] = 'QN0003000';
             }
 
