@@ -15,8 +15,7 @@
                     {{-- First Part with 20% width --}}
 
 
-                    {{-- Second Part with 40% width --}}
-                    <div class="col-md-5">
+                    {{-- <div class="col-md-5">
                         <div class="custom_table_card">
 
                             <h4> @lang('followup::lang.requests')</h4>
@@ -42,7 +41,6 @@
 
                         </div>
                     </div>
-                    {{-- Third Part with 40% width --}}
                     <div class="col-md-5">
                         <div class="custom_table_card">
                             <h5>@lang('essentials::lang.todo_list')</h5>
@@ -65,25 +63,9 @@
                             </div>
 
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="card-content2">
-                            <div class="ribbon">
-                                <span>الموظف المثالي</span>
-                            </div>
-                            <!-- Employee Profile Card Content -->
-                            <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
-                            <div class="employee-info">
-                                <h3>John Doe</h3>
-                                <p>Department: Marketing</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </div> --}}
 
-                {{-- Second Item (Placeholder) --}}
-                <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-10">
                         <div class="card-grid">
                             @foreach ($cards as $card)
                                 <div class="col-md-3">
@@ -99,7 +81,25 @@
                             @endforeach
                         </div>
                     </div>
+                    <div class="col-md-2">
+                        <div class="card-content2" style=" margin-top: 17%;">
+                            <div class="ribbon">
+                                <span>الموظف المثالي</span>
+                            </div>
+                            <!-- Employee Profile Card Content -->
+                            <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
+                            <div class="employee-info">
+                                <h3>متعب الكبرى</h3>
+                                <p>مدير التشغيل</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                {{-- Second Item (Placeholder) --}}
+                {{-- <div class="row">
+                  
+                </div> --}}
 
             </div>
         </div>
