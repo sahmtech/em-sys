@@ -73,7 +73,7 @@ class FollowUpWorkerController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-        $users->select(
+           $users->select(
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',

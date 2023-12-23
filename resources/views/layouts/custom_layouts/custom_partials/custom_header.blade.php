@@ -1,9 +1,9 @@
 @inject('request', 'Illuminate\Http\Request')
 <!-- Main Header -->
-  <header class="main-header no-print">
+  <header class="main-header no-print" style="background:#12142e ">
 
     <!-- Header Navbar -->
-    <nav class="navbar navbar-static-top custom_nav" role="navigation">
+    <nav class="navbar navbar-static-top custom_nav" role="navigation" style="background:#12142e ">
       <!-- Sidebar toggle button-->
       <a href="{{route('home')}}" class="logo"  style="background: transparent">
       

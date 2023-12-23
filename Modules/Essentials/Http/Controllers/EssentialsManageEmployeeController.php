@@ -58,12 +58,11 @@ class EssentialsManageEmployeeController extends Controller
     public function getAmount($salaryType)
     {
 
-        $categories = EssentialsAllowanceAndDeduction::where('id', $salaryType)->first();
-        if ($categories) {
-            $categories->select('amount');
-        } else {
-            $categories = '';
-        }
+
+
+
+        $categories = EssentialsAllowanceAndDeduction::where('id', $salaryType)->select('amount')
+            ->first();
         return response()->json($categories);
     }
 
@@ -88,7 +87,7 @@ class EssentialsManageEmployeeController extends Controller
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         if (!($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $permissionName = 'essentials.view_profile_picture';
@@ -126,13 +125,16 @@ class EssentialsManageEmployeeController extends Controller
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
+               
+                if( $accessRole ){
+
                     $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                     $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
 
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
+                            
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
@@ -177,6 +179,26 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
+        // $userProjects = [];
+        // if (!$is_admin) {
+        //     $roles = auth()->user()->roles;
+        //     foreach ($roles as $role) {
+
+        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+        //         $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+        //         $userProjects = array_merge($userProjects, $userProjectsForRole);
+        //     }
+        //     $userProjects = array_unique($userProjects);
+        //     $users = $users->whereIn('assigned_to', $userProjects)
+        //         ->orWhere(function ($query) use ($business_id) {
+        //             $query->whereNull('assigned_to')->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
+        //         });
+        // }
+
+        // $users = $users->union($workers)->orderby('id', 'desc');
+
+
         if (!empty($request->input('specialization'))) {
 
             $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
@@ -196,6 +218,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $users->where('users.nationality_id', $request->input('nationality'));
             error_log("111");
+
         }
         if (request()->ajax()) {
 
@@ -276,7 +299,7 @@ class EssentialsManageEmployeeController extends Controller
                 })
 
                 ->filterColumn('full_name', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
                 })
 
                 ->filterColumn('nationality', function ($query, $keyword) {
@@ -359,7 +382,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -425,7 +448,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -486,7 +509,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -557,7 +580,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -614,7 +637,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.view'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -728,7 +751,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -829,7 +852,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
-            //temp  abort(403, 'Unauthorized action.');
+           //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $user_data = $request->only([
@@ -923,7 +946,7 @@ class EssentialsManageEmployeeController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),

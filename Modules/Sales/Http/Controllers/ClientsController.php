@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientsController extends Controller
 {
-    
+
     protected $moduleUtil;
     protected $statuses;
 
@@ -47,11 +47,11 @@ class ClientsController extends Controller
                 'name' => __('sales::lang.unqualified'),
                 'class' => 'bg-red',
             ],
-            
+
         ];
     }
-  
-  
+
+
     public function lead_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -65,10 +65,10 @@ class ClientsController extends Controller
 
         $contacts = DB::table('contacts')
             ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id','created_by','created_at',
+                'id', 'supplier_business_name', 'type', 'contact_id', 'created_by', 'created_at',
                 'commercial_register_no', 'mobile', 'email', 'city'
 
-            ])->where('business_id', $business_id)->where('type','lead');
+            ])->where('business_id', $business_id)->where('type', 'lead');
         $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
 
@@ -80,8 +80,13 @@ class ClientsController extends Controller
                     $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
 
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    $html .= '&nbsp;<a href="' . route('changeContactStatus', ['id' => $row->id]) . '"
+                    data-href="' . route('changeContactStatus', ['id' => $row->id])  . ' "  
+                    data-container="#changeStatusContactModal" class="btn btn-xs btn-modal btn-warning" style="margin-top:3px;"> ' . __('sales::lang.change_contact_status') . '</a>'; // New view button
+                    // $html .= '&nbsp;<button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-client">'.__('sales::lang.change_contact_status').'</button>'; // New view button
                     return $html;
                 })
+
                 ->editColumn('created_by', function ($row) use ($users) {
 
                     return $users[$row->created_by];
@@ -101,7 +106,7 @@ class ClientsController extends Controller
 
         $status = $this->statuses;
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        return view('sales::contacts.lead_contacts')->with(compact('users','status', 'cities', 'nationalities'));
+        return view('sales::contacts.lead_contacts')->with(compact('users', 'status', 'cities', 'nationalities'));
     }
 
     public function qualified_contacts(Request $request)
@@ -115,18 +120,18 @@ class ClientsController extends Controller
 
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
 
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
-            ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id','qualified_by','qualified_on',
-                'commercial_register_no', 'mobile', 'email', 'city'
+                ->select([
+                    'id', 'supplier_business_name', 'type', 'contact_id', 'qualified_by', 'qualified_on',
+                    'commercial_register_no', 'mobile', 'email', 'city'
 
-            ])->where('business_id', $business_id)->where('type','qualified');
-            
+                ])->where('business_id', $business_id)->where('type', 'qualified');
+
             return Datatables::of($contacts)
 
                 ->addColumn('action', function ($row) {
@@ -134,16 +139,17 @@ class ClientsController extends Controller
                     $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
 
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    $html .= '&nbsp;<a href="' . route('create_offer_price_qualified_contacts', ['id' => $row->id, 'status' => 'quotation']) . '" class="btn btn-xs btn-warning" style="margin-top: 3px;"><i class="fa fa-plus"></i> ' . __('lang_v1.add_quotation') . '</a>'; // New view button
                     return $html;
                 })
                 ->editColumn('qualified_by', function ($row) use ($users) {
-                    if($row->qualified_by){
-                    return $users[$row->qualified_by];}
-                    else {
+                    if ($row->qualified_by) {
+                        return $users[$row->qualified_by];
+                    } else {
                         return " ";
                     }
                 })
-              
+
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
@@ -151,7 +157,7 @@ class ClientsController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-   
+
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
@@ -165,10 +171,10 @@ class ClientsController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
 
-       
+
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -177,10 +183,10 @@ class ClientsController extends Controller
                 ->select([
                     'id', 'supplier_business_name', 'type', 'contact_id',
                     'commercial_register_no', 'mobile', 'email', 'city'
-    
-                ])->where('business_id', $business_id)->where('type','unqualified');
 
-               
+                ])->where('business_id', $business_id)->where('type', 'unqualified');
+
+
             return Datatables::of($contacts)
 
                 ->addColumn('action', function ($row) {
@@ -190,7 +196,7 @@ class ClientsController extends Controller
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     return $html;
                 })
-              
+
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
@@ -198,10 +204,10 @@ class ClientsController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-       
+
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        return view('sales::contacts.unqualified_contacts')->with(compact( 'nationalities'));
+        return view('sales::contacts.unqualified_contacts')->with(compact('nationalities'));
     }
 
     public function converted_contacts(Request $request)
@@ -211,31 +217,31 @@ class ClientsController extends Controller
 
 
 
-      
+
         $can_crud_customers = auth()->user()->can('sales.crud_customers');
         if (!$can_crud_customers) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
 
         }
 
 
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
-            ->select([
-                'id', 'supplier_business_name', 'type', 'contact_id',
-                'commercial_register_no', 'mobile', 'email', 'city'
+                ->select([
+                    'id', 'supplier_business_name', 'type', 'contact_id',
+                    'commercial_register_no', 'mobile', 'email', 'city'
 
-            ])->where('business_id', $business_id)->where('type','converted');
+                ])->where('business_id', $business_id)->where('type', 'converted');
 
             return Datatables::of($contacts)
-               
+
                 ->addColumn('action', function ($row) {
 
                     $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                     $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     return $html;
                 })
-              
+
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
                 })
@@ -243,7 +249,7 @@ class ClientsController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-      
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         return view('sales::contacts.converted_contacts')->with(compact('nationalities'));
     }
@@ -264,42 +270,42 @@ class ClientsController extends Controller
 
     public function store(Request $request)
     {
-       
+
         if (!auth()->user()->can('user.create') && !auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         try {
-           
+
             $business_id = session()->get('user.business_id');
 
             if (!$this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse();
             }
-           
-            $input = $request->only([
-                'contact_name', 'name_en','city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
 
-                'last_name_cs', 'first_name_cs', 'english_name_cs','nationality_cs','email_cs', 'identityNO_cs', 'mobile_cs', 'allow_login_cs', 'username_cs', 'password_cs',
-             
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'allow_login_cf', 'username_cf', 'password_cf'
+            $input = $request->only([
+                'contact_name', 'name_en', 'city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
+
+                'last_name_cs', 'first_name_cs', 'english_name_cs', 'nationality_cs', 'email_cs', 'identityNO_cs', 'mobile_cs', 'username_cs', 'password_cs',
+
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf'
             ]);
 
-            $input['allow_login_cs'] = $request->filled('allow_login_cs');
-            $input['allow_login_cf'] = $request->filled('allow_login_cf');
-            $latestRecord = Contact::whereIn('type',['lead','qualified','unqualified','converted'])->orderBy('ref_no', 'desc')->first();
-    
-            
+            // $input['allow_login_cs'] = $request->filled('allow_login_cs');
+            // $input['allow_login_cf'] = $request->filled('allow_login_cf');
+            $latestRecord = Contact::whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
+
+
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->ref_no;
-                $numericPart = (int)substr($latestRefNo, 5); 
+                $numericPart = (int)substr($latestRefNo, 5);
                 $numericPart++;
                 $contact_input['ref_no'] = 'L' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
             } else {
-           
+
                 $contact_input['ref_no'] = 'L0005000';
             }
-            
-         
+
+
             //store contact
             // $contact_input['name'] =  $request->input('contact_name');
             $contact_input['supplier_business_name'] = $request->input('contact_name');
@@ -311,30 +317,30 @@ class ClientsController extends Controller
             $contact_input['business_id'] = $business_id;
             $contact_input['created_by'] = $request->session()->get('user.id');
             $contact_input['type'] = "lead";
-           
+
 
             $output = $this->contactUtil->createNewContact($contact_input);
             $responseData = $output['data'];
             $contactId = $responseData->id;
-            if ($contactId){
-           
-            //add contact as user can't log in
-                    $userInfo['user_type'] = 'customer';
-                    $userInfo['first_name'] = $request->supplier_business_name;
-                    $userInfo['allow_login'] = 0;
-                    $userInfo['business_id'] =  $business_id;
-                    $userInfo['crm_contact_id'] =  $contactId;
-                    User::create($userInfo);
+            if ($contactId) {
+
+                //add contact as user can't log in
+                $userInfo['user_type'] = 'customer';
+                $userInfo['first_name'] = $request->supplier_business_name;
+                $userInfo['allow_login'] = 0;
+                $userInfo['business_id'] =  $business_id;
+                $userInfo['crm_contact_id'] =  $contactId;
+                User::create($userInfo);
             }
 
-         
+
 
             event(new ContactCreatedOrModified($contact_input, 'added'));
 
             $this->moduleUtil->getModuleData('after_contact_saved', ['contact' => $output['data'], 'input' => $request->input()]);
 
             $this->contactUtil->activityLog($output['data'], 'added');
-            
+
 
             //store contact signer
             $contact_signer_input['crm_contact_id'] = $contactId;
@@ -347,21 +353,15 @@ class ClientsController extends Controller
             $contact_signer_input['contact_number'] = $request->input('mobile_cs');
             $contact_signer_input['business_id'] = $business_id;
 
-            if ($input['allow_login_cs'] == true) {
-                $contact_signer_input['user_type'] = 'customer_user';
-                $contact_signer_input['username'] = $request->input('username_cs');
-                if (!empty($input['password_cs'])) {
-                    $contact_signer_input['password'] = Hash::make($request->input('password_cs'));
-                }
-            } else {
-                $contact_signer_input['user_type'] = 'customer_user';
-                $contact_signer_input['username'] = null;
-                $contact_signer_input['password'] = null;
-            }
 
-            $contact_signer_input['allow_login'] = $input['allow_login_cs'];
+            $contact_signer_input['user_type'] = 'customer_user';
+            $contact_signer_input['username'] = null;
+            $contact_signer_input['password'] = null;
+
+
+            // $contact_signer_input['allow_login'] = $input['allow_login_cs'];
             $contact_signer_input['contact_user_type'] = 'contact_signer';
-            if ($request->input('first_name_cs')){
+            if ($request->input('first_name_cs')) {
                 User::create($contact_signer_input);
             }
 
@@ -374,28 +374,20 @@ class ClientsController extends Controller
             $contact_follower_input['contact_number'] = $input['mobile_cf'];
             $contact_follower_input['business_id'] = $business_id;
 
-            if ($input['allow_login_cf'] == true) {
-                $contact_follower_input['user_type'] = "customer_user";
-                $contact_follower_input['username'] = $input['username_cf'];
 
-                if (!empty($input['password_cf'])) {
-                    $contact_follower_input['password'] = Hash::make($input['password_cf']);
-                }
-            } else {
+            $contact_follower_input['user_type'] = "customer_user";
+            $contact_follower_input['username'] = null;
+            $contact_follower_input['password'] = null;
 
-                $contact_follower_input['user_type'] = "customer_user";
-                $contact_follower_input['username'] = null;
-                $contact_follower_input['password'] = null;
-            }
-         
-            $contact_follower_input['allow_login'] = $input['allow_login_cf'];
+
+            // $contact_follower_input['allow_login'] = $input['allow_login_cf'];
             $contact_follower_input['contact_user_type'] = 'contract_follower';
 
             User::create($contact_follower_input);
-            $output = ['success' => true,
-            'msg' => __('lang_v1.added_success'),
-                 ];
-            
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
@@ -409,9 +401,8 @@ class ClientsController extends Controller
             return response()->json(['success' => false, 'errors' => $errors], 422);
         }
 
-       
-        return redirect()->route('lead_contacts');
 
+        return redirect()->route('lead_contacts');
     }
 
     public function changeStatus(Request $request)
@@ -419,48 +410,115 @@ class ClientsController extends Controller
         $user = auth()->user();
         $isSuperAdmin = $user->user_type == 'superadmin';
         $businessId = $request->session()->get('user.business_id');
-    
+
         $todayDate = Carbon::now();
-        
-        
+
+
         try {
             $selectedRowsData = json_decode($request->input('selectedRowsData'));
-    
+            if ($request->hasFile('file_lead')) {
+                $file = $request->file('file_lead');
+                $filePath = $file->store('/lead_files');
+            }
             foreach ($selectedRowsData as $row) {
                 $contact = Contact::find($row->id);
-    
+
                 if (!$contact) {
-                    
+
                     continue;
                 }
-    
+
                 $contact->type = $request->status;
-                $contact->qualified_by=$businessId;
-                $contact->qualified_on=$todayDate;
+                $contact->file_lead = $filePath;
+                $contact->note_lead = $request->note_lead;
+                $contact->qualified_by = $businessId;
+                $contact->qualified_on = $todayDate;
 
 
                 $contact->save();
             }
-    
+
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-    
+
         return $output;
+    }
+
+    public function changeContact_Status_dialog()
+    {
+        $contact_id = request()->get('id', '');
+        $status = $this->statuses;
+        return view('sales::contacts.change_status', compact('contact_id', 'status'));
+    }
+
+    public function changeStatusContact(Request $request, $id)
+    {
+        $user = auth()->user();
+        $isSuperAdmin = $user->user_type == 'superadmin';
+        $businessId = $request->session()->get('user.business_id');
+
+        $todayDate = Carbon::now();
+
+
+        try {
+            // $selectedRowsData = json_decode($request->input('selectedRowsData'));
+            if ($request->hasFile('file_lead')) {
+                $file = $request->file('file_lead');
+                $filePath = $file->store('/lead_files');
+            }
+
+            $contact = Contact::find($id);
+
+
+            $contact->type = $request->status;
+            $contact->file_lead = $filePath;
+            $contact->note_lead = $request->note_lead;
+            $contact->qualified_by = $businessId;
+            $contact->qualified_on = $todayDate;
+
+
+            $contact->save();
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ]);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
+        }
+
+        return redirect()->back();
     }
     public function show($id)
     {
         if (!auth()->user()->can('customer.view') && !auth()->user()->can('customer.view_own')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -475,11 +533,11 @@ class ClientsController extends Controller
 
         if (!auth()->user()->can('customer.view') && auth()->user()->can('customer.view_own')) {
             if ($contact->created_by != auth()->user()->id & !in_array($contact->id, $user_contacts)) {
-               //temp  abort(403, 'Unauthorized action.');
+                //temp  abort(403, 'Unauthorized action.');
             }
         }
 
-        
+
 
         $contact_dropdown = Contact::contactDropdown($business_id, false, false);
 
@@ -584,7 +642,7 @@ class ClientsController extends Controller
     public function update(Request $request, $id)
     {
         if (!auth()->user()->can('customer.create') && !auth()->user()->can('customer.view_own')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $business_id = $request->session()->get('user.business_id');
@@ -596,12 +654,12 @@ class ClientsController extends Controller
             $input = $request->only([
                 'type', 'contact_id',
                 'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
-                'allow_login_cs',
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'allow_login_cf', 'username_cf', 'password_cf'
+
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf'
             ]);
 
-            $input['allow_login_cs'] = $request->filled('allow_login_cs');
-            $input['allow_login_cf'] = $request->filled('allow_login_cf');
+            // $input['allow_login_cs'] = $request->filled('allow_login_cs');
+            // $input['allow_login_cf'] = $request->filled('allow_login_cf');
 
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
@@ -634,22 +692,22 @@ class ClientsController extends Controller
                 'id_proof_number' => $request->input('identityNO_cs'),
                 'contact_number' => $request->input('mobile_cs'),
                 'business_id' => $request->session()->get('user.id'),
-                'allow_login' => $input['allow_login_cs'],
+                // 'allow_login' => $input['allow_login_cs'],
                 'contact_user_type' => 'contact_signer',
             ];
 
-            if ($input['allow_login_cs'] == true) {
-                $contract_signer_input['user_type'] = 'customer_user';
-                $contract_signer_input['username'] = $request->input('username_cs');
+            // if ($input['allow_login_cs'] == true) {
+            //     $contract_signer_input['user_type'] = 'customer_user';
+            //     $contract_signer_input['username'] = $request->input('username_cs');
 
-                if (!empty($input['password_cs'])) {
-                    $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
-                }
-            } else {
-                $contract_signer_input['user_type'] = 'customer_user';
-                $contract_signer_input['username'] = null;
-                $contract_signer_input['password'] = null;
-            }
+            //     if (!empty($input['password_cs'])) {
+            //         $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
+            //     }
+            // } else {
+            $contract_signer_input['user_type'] = 'customer_user';
+            $contract_signer_input['username'] = null;
+            $contract_signer_input['password'] = null;
+            // }
             if ($contactSigners != null) {
                 $contactSigners->update($contract_signer_input);
             } else {
@@ -676,23 +734,16 @@ class ClientsController extends Controller
 
                 'contact_number' => $request->input('mobile_cf'),
                 'business_id' => $request->session()->get('user.id'),
-                'allow_login' => $input['allow_login_cf'],
+                // 'allow_login' => $input['allow_login_cf'],
                 'contact_user_type' => 'contract_follower',
             ];
 
 
-            if ($input['allow_login_cf'] == true) {
-                $contract_follower_input['user_type'] = 'customer_user';
-                $contract_follower_input['username'] = $request->input('username_cf');
 
-                if (!empty($input['password_cf'])) {
-                    $contract_follower_input['password'] = Hash::make($request->input('password_cf'));
-                }
-            } else {
-                $contract_follower_input['user_type'] = 'customer_user';
-                $contract_follower_input['username'] = null;
-                $contract_follower_input['password'] = null;
-            }
+            $contract_follower_input['user_type'] = 'customer_user';
+            $contract_follower_input['username'] = null;
+            $contract_follower_input['password'] = null;
+
 
             if ($contactFollower != null) {
                 $contactFollower->update($contract_follower_input);
@@ -701,7 +752,7 @@ class ClientsController extends Controller
                     $contract_follower = User::create($contract_follower_input);
                 }
             }
-            
+
             DB::commit();
 
 
@@ -721,8 +772,8 @@ class ClientsController extends Controller
                 'msg' => $e->getMessage(),
             ];
         }
-        
-        return redirect()->route('sale.clients');
+
+        return redirect()->route('lead_contacts');
     }
 
     /**
@@ -770,7 +821,7 @@ class ClientsController extends Controller
         try {
             $contact = Contact::findOrFail($id);
             User::where('crm_contact_id', $contact->id)->delete();
-            
+
             $contact->delete();
 
             return response()->json([
@@ -795,7 +846,7 @@ class ClientsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-      
+
         try {
             $selectedRows = $request->input('selectedRows');
 

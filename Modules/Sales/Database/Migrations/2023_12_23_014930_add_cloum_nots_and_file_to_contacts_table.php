@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('ir_visa_cards', function (Blueprint $table) {
-            $table->text('file')->nullable()->after('operation_order_id');
+        Schema::table('contacts', function (Blueprint $table) {
+            $table->text('file_lead')->nullable();
+            $table->text('note_lead')->nullable();
         });
     }
 
@@ -26,8 +26,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('', function (Blueprint $table) {
-
+        Schema::table('contacts', function (Blueprint $table) {
         });
     }
 };
