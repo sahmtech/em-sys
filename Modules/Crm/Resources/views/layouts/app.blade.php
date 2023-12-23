@@ -23,7 +23,7 @@
         <!-- empty div for vuejs -->
         <div id="app"></div>
         
-        <div class="wrapper thetop">
+        <div class="wrapper thetop" style=" background-color: #12142e;">
             <script type="text/javascript">
                 if(localStorage.getItem("upos_sidebar_collapse") == 'true'){
                     var body = document.getElementsByTagName("body")[0];

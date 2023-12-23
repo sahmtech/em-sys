@@ -43,6 +43,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::PUT('/updateOfferPrice/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'update'])->name('updateOfferPrice');
         Route::get('/offerContractPriceShow/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice']);
 
+      
+        Route::get('/accepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'accepted_offer_prices'])->name('accepted_offer_prices');
+        Route::get('/unaccepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'unaccepted_offer_prices'])->name('unaccepted_offer_prices');
+        Route::get('/under_study_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('under_study_offer_prices');
+
 
 
         Route::get('/clientAdd', [\Modules\Sales\Http\Controllers\SalesTargetedClientController::class, 'clientAdd'])->name('clientAdd');
@@ -144,5 +149,21 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('send-proposal/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'send']);
         Route::delete('delete-proposal-media/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'deleteProposalMedia']);
         Route::resource('proposal-template', 'Modules\Sales\Http\Controllers\SalesTemplateController')->except(['show', 'edit', 'update', 'destroy']);
+
+            
+        //salary_requests
+        Route::get('salary-requests-index', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'index'])->name('salary-requests-index');
+        Route::get('/fetch-worker-details/{workerId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'fetchWorkerDetails'])->name('fetch-worker-details');
+
+        Route::get('/edit-salary-request/{salaryId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'edit'])->name('edit_salay_request');
+
+        Route::post('/store_salay_request', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'store'])->name('store_salay_request');
+        Route::post('salary_request/update/{salaryId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'update'])->name('salay_request.update');
+        Route::delete('delete-salay-request/{id}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'destroy'])->name('salay_request.destroy');
+        
+      
+        
+        
+
     });
 });

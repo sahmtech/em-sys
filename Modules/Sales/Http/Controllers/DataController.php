@@ -109,6 +109,12 @@ class DataController extends Controller
                 'default' => false,
             ],
 
+            [
+                'value' => 'sales.crud_sales_salary_requests',
+                'label' => __('sales::lang.crud_sales_salary_requests'),
+                'default' => false,
+            ],
+
         ];
     }
     

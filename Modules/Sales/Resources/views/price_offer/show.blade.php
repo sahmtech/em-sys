@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="col-sm-2 col-sm-4">
-                    <b>{{ __('sales::lang.final_total') }} :</b></b> {{ $query->final_total }}<br>
+                    <b>{{ __('sales::lang.final_total_for_var_costs') }} :</b></b> {{ $query->final_total }}<br>
                     <b>{{ __('sales::lang.Status') }} :</b>
                     {{ __('sales::lang.' . $query->status) }}
                     <br>

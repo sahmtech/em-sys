@@ -7,8 +7,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class EssentialsProfession extends Model
 {
     protected $guarded = ['id'];
+   
     public function specializations(): HasMany
     {
         return $this->hasMany(EssentialsSpecialization::class, 'profession_id');
+    }
+    public static function professionForDropdown()
+    {
+        $countries = EssentialsProfession::all()->pluck('name', 'id');
+
+        return $countries;
     }
 }
