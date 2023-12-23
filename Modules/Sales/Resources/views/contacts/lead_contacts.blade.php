@@ -30,9 +30,9 @@
                 <table class="table table-bordered table-striped" id="cust_table">
                     <thead>
                         <tr>
-                            <th>
+                            {{-- <th>
                                 <input type="checkbox" id="select-all">
-                            </th>
+                            </th> --}}
                             <th>#</th>
                             <th>@lang('sales::lang.contact_number')</th>
                             <th>@lang('sales::lang.supplier_business_name')</th>
@@ -47,11 +47,11 @@
                         </tr>
                     </thead>
                 </table>
-                <div style="margin-bottom: 10px;">
+                {{-- <div style="margin-bottom: 10px;">
                     <button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-selected">
                         @lang('sales::lang.change_contact_status')
                     </button>
-                </div>
+                </div> --}}
             </div>
         @endcomponent
 
@@ -328,7 +328,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                {{-- <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label>
@@ -336,7 +336,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-3" id="username_cs_wrapper" style="display: none;">
                                     <div class="form-group">
@@ -470,7 +470,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                {{-- <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label>
@@ -478,7 +478,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-3" id="username_cf_wrapper" style="display: none;">
                                     <div class="form-group">
@@ -627,15 +627,16 @@
                 info: false,
 
 
-                columns: [{
-                        data: null,
-                        render: function(data, type, row, meta) {
-                            return '<input type="checkbox" class="select-row" data-id="' + row.id +
-                                '">';
-                        },
-                        orderable: false,
-                        searchable: false,
-                    },
+                columns: [
+                    // {
+                    //     data: null,
+                    //     render: function(data, type, row, meta) {
+                    //         return '<input type="checkbox" class="select-row" data-id="' + row.id +
+                    //             '">';
+                    //     },
+                    //     orderable: false,
+                    //     searchable: false,
+                    // },
                     {
                         data: 'id',
                         name: 'id'
