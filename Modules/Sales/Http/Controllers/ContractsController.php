@@ -135,13 +135,17 @@ class ContractsController extends Controller
 
         $offerPrice = $request->input('offer_price');
         $contact = Transaction::whereId($offerPrice)->first()->contact_id;
-
+       
+        $transaction=Transaction::where('id','=',$offerPrice )->select('contract_duration')->first();
+        $contract_duration= $transaction->contract_duration ?? " ";
+        //dd( $contract_duration);
 
 
         $contract_signer = User::where([
             ['crm_contact_id', $contact],
             ['contact_user_type', 'contact_signer']
         ])->first();
+        
         $contract_follower = User::where([
             ['crm_contact_id', $contact],
             ['contact_user_type', 'contract_follower']
@@ -152,7 +156,8 @@ class ContractsController extends Controller
 
         return response()->json([
             'contract_follower' => $contract_follower,
-            'contract_signer' => $contract_signer
+            'contract_signer' => $contract_signer,
+            'contract_duration'=> $contract_duration
         ]);
     }
 
@@ -179,6 +184,7 @@ class ContractsController extends Controller
                 'end_date', 'status', 'contract_items', 'is_renewable', 'notes', 'file'
             ]);
 
+
             $input2['offer_price_id'] = $input['offer_price'];
             $input2['start_date'] = $input['start_date'];
             $input2['end_date'] = $input['end_date'];
@@ -186,7 +192,7 @@ class ContractsController extends Controller
             $input2['contract_duration'] = $input['contract_duration'];
             $input2['contract_duration_unit'] = $input['contract_duration_unit'];
 
-            $input2['status'] = $input['status'];
+            $input2['status'] = 'valid';
             $input2['is_renwable'] = $input['is_renewable'];
             $input2['notes'] = $input['notes'];
 
@@ -305,6 +311,21 @@ class ContractsController extends Controller
     public function edit($id)
     {
         return view('sales::edit');
+    }
+
+    public function fetchContractDuration($offerPrice)
+   {
+    $contractDuration = Transaction::where('id','=',$offerPrice)
+    ->select('contract_duration', 'id')->first();
+   
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'contract_duration' => $contractDuration,
+          
+        ],
+        'msg' => __('lang_v1.fetched_success'),
+    ]);
     }
 
     public function show($id)
