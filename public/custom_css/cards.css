@@ -3,7 +3,7 @@
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); */
     gap: 10%;
     padding: 2%;
-    margin: 5%;
+ 
 }
 
 .card-link {
@@ -25,7 +25,7 @@
     text-align: center;
     height: 100%;
     width: 100%;
-    /* box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5); */
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
 }
 
 .custom_card {
@@ -200,6 +200,7 @@
     background-color: white;
     height: 50vh;
     position: relative;
+   
     /* Ensure relative positioning for absolute child elements */
 }
 
