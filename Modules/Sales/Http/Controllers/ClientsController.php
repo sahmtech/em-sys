@@ -285,13 +285,13 @@ class ClientsController extends Controller
             $input = $request->only([
                 'contact_name', 'name_en', 'city', 'commercial_register_no', 'mobile', 'alternate_number', 'email',
 
-                'last_name_cs', 'first_name_cs', 'english_name_cs', 'nationality_cs', 'email_cs', 'identityNO_cs', 'mobile_cs', 'allow_login_cs', 'username_cs', 'password_cs',
+                'last_name_cs', 'first_name_cs', 'english_name_cs', 'nationality_cs', 'email_cs', 'identityNO_cs', 'mobile_cs', 'username_cs', 'password_cs',
 
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'allow_login_cf', 'username_cf', 'password_cf'
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf'
             ]);
 
-            $input['allow_login_cs'] = $request->filled('allow_login_cs');
-            $input['allow_login_cf'] = $request->filled('allow_login_cf');
+            // $input['allow_login_cs'] = $request->filled('allow_login_cs');
+            // $input['allow_login_cf'] = $request->filled('allow_login_cf');
             $latestRecord = Contact::whereIn('type', ['lead', 'qualified', 'unqualified', 'converted'])->orderBy('ref_no', 'desc')->first();
 
 
@@ -353,19 +353,13 @@ class ClientsController extends Controller
             $contact_signer_input['contact_number'] = $request->input('mobile_cs');
             $contact_signer_input['business_id'] = $business_id;
 
-            if ($input['allow_login_cs'] == true) {
-                $contact_signer_input['user_type'] = 'customer_user';
-                $contact_signer_input['username'] = $request->input('username_cs');
-                if (!empty($input['password_cs'])) {
-                    $contact_signer_input['password'] = Hash::make($request->input('password_cs'));
-                }
-            } else {
-                $contact_signer_input['user_type'] = 'customer_user';
-                $contact_signer_input['username'] = null;
-                $contact_signer_input['password'] = null;
-            }
 
-            $contact_signer_input['allow_login'] = $input['allow_login_cs'];
+            $contact_signer_input['user_type'] = 'customer_user';
+            $contact_signer_input['username'] = null;
+            $contact_signer_input['password'] = null;
+
+
+            // $contact_signer_input['allow_login'] = $input['allow_login_cs'];
             $contact_signer_input['contact_user_type'] = 'contact_signer';
             if ($request->input('first_name_cs')) {
                 User::create($contact_signer_input);
@@ -380,21 +374,13 @@ class ClientsController extends Controller
             $contact_follower_input['contact_number'] = $input['mobile_cf'];
             $contact_follower_input['business_id'] = $business_id;
 
-            if ($input['allow_login_cf'] == true) {
-                $contact_follower_input['user_type'] = "customer_user";
-                $contact_follower_input['username'] = $input['username_cf'];
 
-                if (!empty($input['password_cf'])) {
-                    $contact_follower_input['password'] = Hash::make($input['password_cf']);
-                }
-            } else {
+            $contact_follower_input['user_type'] = "customer_user";
+            $contact_follower_input['username'] = null;
+            $contact_follower_input['password'] = null;
 
-                $contact_follower_input['user_type'] = "customer_user";
-                $contact_follower_input['username'] = null;
-                $contact_follower_input['password'] = null;
-            }
 
-            $contact_follower_input['allow_login'] = $input['allow_login_cf'];
+            // $contact_follower_input['allow_login'] = $input['allow_login_cf'];
             $contact_follower_input['contact_user_type'] = 'contract_follower';
 
             User::create($contact_follower_input);
@@ -472,7 +458,7 @@ class ClientsController extends Controller
     {
         $contact_id = request()->get('id', '');
         $status = $this->statuses;
-        return view('sales::contacts.change_status', compact('contact_id','status'));
+        return view('sales::contacts.change_status', compact('contact_id', 'status'));
     }
 
     public function changeStatusContact(Request $request, $id)
@@ -509,10 +495,10 @@ class ClientsController extends Controller
                 'msg' => __('lang_v1.updated_success'),
             ];
             return redirect()->back()
-            ->with('status', ['success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ]);
-           
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ]);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
@@ -521,13 +507,13 @@ class ClientsController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
             return redirect()->back()
-            ->with('status', ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
 
-        return redirect()->back()
-            ;
+        return redirect()->back();
     }
     public function show($id)
     {
@@ -668,12 +654,12 @@ class ClientsController extends Controller
             $input = $request->only([
                 'type', 'contact_id',
                 'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
-                'allow_login_cs',
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'allow_login_cf', 'username_cf', 'password_cf'
+
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf'
             ]);
 
-            $input['allow_login_cs'] = $request->filled('allow_login_cs');
-            $input['allow_login_cf'] = $request->filled('allow_login_cf');
+            // $input['allow_login_cs'] = $request->filled('allow_login_cs');
+            // $input['allow_login_cf'] = $request->filled('allow_login_cf');
 
             $input['business_id'] = $business_id;
             $input['created_by'] = $request->session()->get('user.id');
@@ -706,22 +692,22 @@ class ClientsController extends Controller
                 'id_proof_number' => $request->input('identityNO_cs'),
                 'contact_number' => $request->input('mobile_cs'),
                 'business_id' => $request->session()->get('user.id'),
-                'allow_login' => $input['allow_login_cs'],
+                // 'allow_login' => $input['allow_login_cs'],
                 'contact_user_type' => 'contact_signer',
             ];
 
-            if ($input['allow_login_cs'] == true) {
-                $contract_signer_input['user_type'] = 'customer_user';
-                $contract_signer_input['username'] = $request->input('username_cs');
+            // if ($input['allow_login_cs'] == true) {
+            //     $contract_signer_input['user_type'] = 'customer_user';
+            //     $contract_signer_input['username'] = $request->input('username_cs');
 
-                if (!empty($input['password_cs'])) {
-                    $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
-                }
-            } else {
-                $contract_signer_input['user_type'] = 'customer_user';
-                $contract_signer_input['username'] = null;
-                $contract_signer_input['password'] = null;
-            }
+            //     if (!empty($input['password_cs'])) {
+            //         $contract_signer_input['password'] = Hash::make($request->input('password_cs'));
+            //     }
+            // } else {
+            $contract_signer_input['user_type'] = 'customer_user';
+            $contract_signer_input['username'] = null;
+            $contract_signer_input['password'] = null;
+            // }
             if ($contactSigners != null) {
                 $contactSigners->update($contract_signer_input);
             } else {
@@ -748,23 +734,16 @@ class ClientsController extends Controller
 
                 'contact_number' => $request->input('mobile_cf'),
                 'business_id' => $request->session()->get('user.id'),
-                'allow_login' => $input['allow_login_cf'],
+                // 'allow_login' => $input['allow_login_cf'],
                 'contact_user_type' => 'contract_follower',
             ];
 
 
-            if ($input['allow_login_cf'] == true) {
-                $contract_follower_input['user_type'] = 'customer_user';
-                $contract_follower_input['username'] = $request->input('username_cf');
 
-                if (!empty($input['password_cf'])) {
-                    $contract_follower_input['password'] = Hash::make($request->input('password_cf'));
-                }
-            } else {
-                $contract_follower_input['user_type'] = 'customer_user';
-                $contract_follower_input['username'] = null;
-                $contract_follower_input['password'] = null;
-            }
+            $contract_follower_input['user_type'] = 'customer_user';
+            $contract_follower_input['username'] = null;
+            $contract_follower_input['password'] = null;
+
 
             if ($contactFollower != null) {
                 $contactFollower->update($contract_follower_input);
@@ -794,7 +773,7 @@ class ClientsController extends Controller
             ];
         }
 
-        return redirect()->route('sale.clients');
+        return redirect()->route('lead_contacts');
     }
 
     /**
