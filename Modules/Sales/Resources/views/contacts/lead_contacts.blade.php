@@ -102,7 +102,7 @@
                                 </div>
                             </div>
                         </div>
-                   
+
                         {{-- <div class="col-md-4 business">
                             <div class="form-group">
                                 {!! Form::label('supplier_business_name', __('business.business_name') . ':') !!}
@@ -539,21 +539,23 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+        <div class="modal fade" id="changeStatusModal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     {!! Form::open([
                         'url' => action([\Modules\Sales\Http\Controllers\ClientsController::class, 'changeStatus']),
                         'method' => 'post',
+                        'enctype' => 'multipart/form-data',
                         'id' => 'change_status_form',
                     ]) !!}
-        
+
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">@lang('essentials::lang.change_status')</h4>
                     </div>
-        
+
                     <div class="modal-body">
                         <div class="form-group">
                             <input type="hidden" name="selectedRowsData" id="selectedRowsData" />
@@ -565,20 +567,46 @@
                                 @endforeach
                             </select>
                         </div>
-                      
+
+                        <div class="row" style="margin-top:8px; ">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('file_lead', __('sales::lang.file_lead') . '*') !!}
+                                    {!! Form::file('file_lead', ['class' => 'form-control', 'required', 'accept' => 'doc/*']) !!}
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('note_lead', __('sales::lang.note_lead') . '') !!}
+                                    {!! Form::text('nots', '', [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('sales::lang.note_lead'),
+                                        'id' => 'note_lead',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
                     </div>
-        
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" id="submitFilesBtn">@lang('messages.save')</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
-        
+
                     {!! Form::close() !!}
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div>
     </section>
-
+    <div class="modal fade" id="changeStatusContactModal" tabindex="-1" role="dialog"></div>
 @endsection
 
 @section('javascript')
@@ -587,6 +615,7 @@
 
     <script>
         $(document).ready(function() {
+
 
             var customers_table = $('#cust_table').DataTable({
                 ajax: {
@@ -598,11 +627,11 @@
                 info: false,
 
 
-                columns: [
-                    {
+                columns: [{
                         data: null,
                         render: function(data, type, row, meta) {
-                            return '<input type="checkbox" class="select-row" data-id="' + row.id + '">';
+                            return '<input type="checkbox" class="select-row" data-id="' + row.id +
+                                '">';
                         },
                         orderable: false,
                         searchable: false,
@@ -625,7 +654,7 @@
                         data: 'commercial_register_no',
                         name: 'commercial_register_no'
                     },
-                    
+
                     {
                         data: 'created_by',
                         name: 'created_by'
@@ -638,7 +667,7 @@
                         data: 'email',
                         name: 'email'
                     },
-                      
+
                     {
                         data: 'created_at',
                         name: 'created_at'
@@ -682,7 +711,7 @@
                     }
                 }
             });
-            
+
             $('#allow_login_cs_checkbox').change(function() {
 
                 if ($(this).prop('checked')) {
@@ -750,7 +779,7 @@
                 }
             });
 
-        
+
             $('#moreInfoButton').click(function() {
                 $('#more_div').toggleClass('hide');
             });
@@ -760,7 +789,7 @@
                 $('#more_div2').toggleClass('hide');
             });
 
-            
+
             $('#select-all').change(function() {
                 $('.select-row').prop('checked', $(this).prop('checked'));
             });
@@ -769,18 +798,20 @@
                 $('#select-all').prop('checked', $('.select-row:checked').length === cust_table.rows()
                     .count());
             });
-            
+
             $('#change-status-selected').click(function() {
                 var selectedRows = $('.select-row:checked').map(function() {
                     return {
                         id: $(this).data('id'),
-                     
+
                     };
                 }).get();
 
                 $('#selectedRowsData').val(JSON.stringify(selectedRows));
                 $('#changeStatusModal').modal('show');
             });
+
+
 
             $('#submitFilesBtn').click(function() {
                 var formData = new FormData($('#change_status_form')[0]);
@@ -809,7 +840,7 @@
 
 
 
-           
+
         });
     </script>
 
