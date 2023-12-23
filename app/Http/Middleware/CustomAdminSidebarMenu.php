@@ -703,10 +703,25 @@ class CustomAdminSidebarMenu
                     __('sales::lang.requests'),
                     [
                         'icon' => 'fa fas fa-plus-circle',
-                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'sales.requests'
+                        'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales.requests'
                     ],
                 );
             }
+
+            if ($isSuperAdmin || auth()->user()->can('sales.crud_sales_salary_requests')) {
+                $menu->url(
+                    action([\Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'index']),
+                    __('sales::lang.salary_requests'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales.salary.requests'
+                    ],
+                );
+            }
+
+          
+
+
             if ($isSuperAdmin || auth()->user()->can('sales.crud_settings')) {
                 $menu->dropdown(
                     __('sales::lang.sales_settings'),
@@ -1108,7 +1123,7 @@ class CustomAdminSidebarMenu
             }
             if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_all_salary_requests')) {
                 $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
+                    action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
                     __('followup::lang.salary_requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'internationalRleations']
                 );

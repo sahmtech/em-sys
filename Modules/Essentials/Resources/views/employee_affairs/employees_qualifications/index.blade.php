@@ -262,7 +262,7 @@
 
 
 
-            $('body').on('click', '.open-edit-modal', function() {
+$('body').on('click', '.open-edit-modal', function() {
         var qualificationId = $(this).data('id');
         $('#qualificationIdInput').val(qualificationId);
 
