@@ -27,8 +27,7 @@ use App\TypesOfService;
 use Carbon\Carbon;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Entities\salesOfferPricesCost;
-
-
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class OfferPriceController extends Controller
 {
@@ -62,7 +61,7 @@ class OfferPriceController extends Controller
                 'name' => __('sales::lang.cancelled'),
                 'class' => 'bg-red',
             ],
-            
+
             'under_study' => [
                 'name' => __('sales::lang.under_study'),
                 'class' => 'bg-yellow',
@@ -95,7 +94,7 @@ class OfferPriceController extends Controller
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'sell')
-            ->where('transactions.status','under_study')
+            ->where('transactions.status', 'under_study')
             ->select(
                 'transactions.id as id',
                 'transactions.location_id as location_id',
@@ -124,11 +123,11 @@ class OfferPriceController extends Controller
 
             return Datatables::of($sells)
                 ->editColumn('status', function ($row) {
-                  
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
-                        $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                  
+
+                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                        . $this->statuses[$row->status]['name'] . '</span>';
+                    $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+
                     return $status;
                 })
                 ->editColumn('location_id', function ($row) use ($business_locations) {
@@ -154,7 +153,7 @@ class OfferPriceController extends Controller
                                     </li>';
 
 
-                       
+
 
 
                         $html .= '</ul></div>';
@@ -192,13 +191,13 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
         if (!$can_crud_offer_price) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'sell')
-            ->where('transactions.status','approved')
+            ->where('transactions.status', 'approved')
             ->select(
                 'transactions.id as id',
                 'transactions.transaction_date',
@@ -208,7 +207,7 @@ class OfferPriceController extends Controller
                 'contacts.supplier_business_name as supplier_business_name',
                 'contacts.mobile as mobile',
                 'contacts.name as name',
-               
+
 
             );
 
@@ -224,8 +223,8 @@ class OfferPriceController extends Controller
 
 
             return Datatables::of($sells)
-               
-              
+
+
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -278,13 +277,13 @@ class OfferPriceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
         if (!$can_crud_offer_price) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
             ->where('transactions.type', 'sell')
-            ->where('transactions.status','cancelled')
+            ->where('transactions.status', 'cancelled')
             ->select(
                 'transactions.id as id',
                 'transactions.transaction_date',
@@ -294,7 +293,7 @@ class OfferPriceController extends Controller
                 'contacts.supplier_business_name as supplier_business_name',
                 'contacts.mobile as mobile',
                 'contacts.name as name',
-               
+
 
             );
 
@@ -310,8 +309,8 @@ class OfferPriceController extends Controller
 
 
             return Datatables::of($sells)
-               
-              
+
+
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -699,14 +698,14 @@ class OfferPriceController extends Controller
      */
     public function store(Request $request)
     {
-      
+
 
         try {
             $business_id = $request->session()->get('user.business_id');
             $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date', 'final_total'];
             $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
             $offer_details = $request->only($offer);
-         //   $offer_details['location_id'] = $request->input('location_id');
+            //   $offer_details['location_id'] = $request->input('location_id');
             $offer_details['contact_id'] = $request->input('contact_id');
             $offer_details['business_id'] = $business_id;
             $offer_details['transaction_date'] = $transactionDate;
@@ -719,10 +718,10 @@ class OfferPriceController extends Controller
             $offer_details['total_worker_monthly'] = $request->input('total_monthly_for_all_workers2');
             $offer_details['contract_duration'] = $request->input('contract_duration');
             $offer_details['total_contract_cost'] = $request->input('total_contract_cost');
-            $offer_details['status'] ='under_study';
+            $offer_details['status'] = 'under_study';
 
-            
-            
+
+
             $latestRecord = Transaction::where('sub_type', 'service')->orderBy('ref_no', 'desc')->first();
 
 
@@ -732,7 +731,7 @@ class OfferPriceController extends Controller
                 $numericPart++;
                 $offer_details['ref_no'] = 'QN' . str_pad($numericPart, 7, '0', STR_PAD_LEFT);
             } else {
-              
+
                 $offer_details['ref_no'] = 'QN0003000';
             }
 
@@ -792,6 +791,94 @@ class OfferPriceController extends Controller
         }
 
         return redirect()->route('price_offer');
+    }
+
+
+
+    public function print($id)
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $query = Transaction::where('business_id', $business_id)
+            ->where('id', $id)
+            ->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
+
+            ->select(
+                'id',
+                'business_id',
+                'location_id',
+                'status',
+                'contact_id',
+                'ref_no',
+                'final_total',
+                'down_payment',
+                'contract_form',
+                'transaction_date'
+
+            )->get()[0];
+
+        $templatePath = public_path('word_templates/fixed_cost.docx');
+        $templateProcessor = new TemplateProcessor($templatePath);
+        $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
+        $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
+        $templateProcessor->setValue('PROF', $query->sell_lines->first()['service']['profession']['name'] ?? '');
+        $templateProcessor->setValue('SALARY',   $query->sell_lines->first()['service']['service_price'] ?? '');
+        $templateProcessor->setValue('FOOD', '' ?? '');
+        $templateProcessor->setValue('TRANS', '' ?? '');
+        $templateProcessor->setValue('ACCO', '' ?? '');
+        $templateProcessor->setValue('OTHERS', '' ?? '');
+        $templateProcessor->setValue('GENDER', __('sales::lang.' . $query->sell_lines->first()['service']['gender']) ?? '');
+        $templateProcessor->setValue('Q', $query->sell_lines->first()->quantity ?? '');
+        $templateProcessor->setValue('TPEL', $query->sell_lines->first()['service']['monthly_cost_for_one'] ?? '');
+        $templateProcessor->setValue('NATIONALITY', $query->sell_lines->first()['service']['nationality']['nationality'] ?? '');
+        $templateProcessor->setValue('DURATION',  $query->contract->duration ?? '');
+        $templateProcessor->setValue('TUNVAT', $data['watermark'] ?? '');
+        $templateProcessor->setValue('VAT', $data['name'] ?? '');
+        $templateProcessor->setValue('TOTAL', $data['watermark'] ?? '');
+        $templateProcessor->setValue('FOOD_ALLOW', $data['watermark'] ?? '');
+
+
+        $templateProcessor->setValue('ACCO_TRANS', $data['name']);
+        $templateProcessor->setValue('UNIFORM', $data['watermark']);
+        $templateProcessor->setValue('RECRUIT', $data['watermark']);
+
+
+        $templateProcessor->setValue('PRE_PAY', $data['name']);
+        $templateProcessor->setValue('BANK_GUARANTEE', $data['watermark']);
+
+
+        $templateProcessor->setValue('CREATED_BY', $data['watermark']);
+        $templateProcessor->setValue('CREATED_BY_EN', $data['name']);
+
+
+        $pdfContent = $this->convertToPDF($templateProcessor);
+
+        $this->displayPDF($pdfContent);
+
+        return response()->stream(
+            function () use ($pdfContent) {
+                echo $pdfContent;
+            },
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename=output.pdf',
+            ]
+        );
+    }
+    private function convertToPDF(TemplateProcessor $templateProcessor)
+    {
+        // Save the modified template as PDF using Unoconv or other libraries
+        $pdfContent = shell_exec("unoconv -f pdf --stdout {$templateProcessor->getTemplate()}");
+
+        // Alternatively, you can explore other methods to convert DOCX to PDF
+        return $pdfContent;
+    }
+    private function displayPDF($pdfContent)
+    {
+        // Display the PDF in a new browser window or tab using JavaScript
+        echo "<script>window.open('data:application/pdf;base64," . base64_encode($pdfContent) . "','_blank');</script>";
     }
 
 
