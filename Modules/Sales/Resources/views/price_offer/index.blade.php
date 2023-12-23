@@ -11,27 +11,11 @@
 
 <!-- Main content -->
 <section class="content no-print">
-        @component('components.filters', ['title' => __('report.filters')])
+@include('sales::layouts.nav_offer_prices')
+
+    
        
     
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="status_filter">@lang('essentials::lang.status'):</label>
-                <select class="form-control select2" name="status_filter" required id="status_filter" style="width: 100%;">
-                    <option value="all">@lang('lang_v1.all')</option>
-                    <option value="approved">@lang('sales::lang.approved')</option>
-                    <option value="transfared">@lang('sales::lang.transfared')</option>
-                    <option value="cancelled">@lang('sales::lang.cancelled')</option>
-                    <option value="under_study">@lang('sales::lang.under_study')</option>
-
-
-                </select>
-            </div>
-        </div>
-
-      
-
-    @endcomponent
     @component('components.widget', ['class' => 'box-primary'])
         @slot('tool')
             <div class="box-tools">
@@ -73,7 +57,7 @@ $(document).ready( function(){
         serverSide: true,
         aaSorting: [[0, 'desc']],
         ajax: {
-            "url": '{{ route('price_offer') }}',
+            "url": '{{ route('under_study_offer_prices') }}',
             "data": function ( d ) {
                 
 

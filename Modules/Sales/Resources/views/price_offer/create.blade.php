@@ -2,7 +2,15 @@
 
 
 @section('title', __('lang_v1.add_quotation'))
+<style>
+    .larger-text {
+        font-size: larger;
+    }
 
+    .custom-width-input {
+        width: 50px;
+    }
+</style>
 @section('content')
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -119,7 +127,7 @@
 
                         </div>
                     </div>
-                    <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+                    {{-- <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
                         <div class="form-group">
                             {!! Form::label('status', __('sale.status') . ':*') !!}
                             {!! Form::select(
@@ -134,7 +142,8 @@
                                 ['class' => 'form-control', 'required', 'style' => 'height:40px', 'placeholder' => __('sale.status')],
                             ) !!}
                         </div>
-                    </div>
+                    </div> --}}
+                    <div class="clearfix"></div>
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('down_payment', __('sales::lang.down_payment') . ':*') !!}
@@ -213,7 +222,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>@lang('sales::lang.description')</th>
+                                                <th> @lang('sales::lang.description')</th>
                                                 <th style="color: red;">@lang('sales::lang.amount')</th>
                                                 <th style="color: red;">@lang('sales::lang.duration_by_month')</th>
                                                 <th>@lang('sales::lang.monthly_cost')</th>
@@ -226,10 +235,15 @@
                                                     <strong><span
                                                             style="color: black; font-weight: bold;">@lang('sales::lang.total')</span></strong>
                                                 </td>
-                                                <td><span id="total_amount" style="color: black; font-weight: bold;">0</span>
+                                                <td><span id="total_amount" style="color: black; font-weight: bold;">0.00</span>
                                                 </td>
+                                                <td></td>
+                                                <td><span id="total_monthly_amount"
+                                                        style="color: black; font-weight: bold;">0.00</span></td>
                                             </tr>
                                         </tfoot>
+
+
                                     </table>
                                 </div>
                             </div>
@@ -267,7 +281,7 @@
                             value="{{ $business_details->sell_price_tax }}">
 
 
-                        <!-- Keeps count of product rows -->
+
                         <input type="hidden" id="product_row_count" value="0">
 
                         <div class="table-responsive">
@@ -304,7 +318,7 @@
                                 <tbody></tbody>
                             </table>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive" id="price_total">
                             <table class="table table-condensed table-bordered table-striped">
                                 <tr>
                                     <td>
@@ -324,7 +338,72 @@
                     <input type="hidden" id="productData" name="productData" value="">
                     <input type="hidden" id="productIds" name="productIds" value="">
                     <input type="hidden" id="quantityArr" name="quantityArr" value="">
+                    <input type="hidden" id="quantityArrDisplay" name="quantityArrDisplay" value="">
+                    <input type="hidden" name="fees_input" id="fees_input" value="0">
+                    <input type="hidden" id="total_amount_with_fees2" name="total_amount_with_fees" value="">
+                    <input type="hidden" id="total_monthly_for_all_workers" name="total_monthly_for_all_workers2" value="">
+                    <input type="hidden" id="total_contract_cost2" name="total_contract_cost" value="">
                 @endcomponent
+                @component('components.widget', ['class' => 'box-solid', 'id' => 'myComponent'])
+                    <div id="total_sum">
+                        <div class="table-responsive">
+                            <table class="table table-condensed table-bordered table-striped">
+                                <tr>
+                                    <td>
+                                        <div class="larger-text">
+                                            <b>@lang('sales::lang.total_amount_of_fixed_and_var_costs'):</b>
+                                            <span id="total_sum_value">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                @endcomponent
+                @component('components.widget', ['class' => 'box-solid', 'id' => 'feesComponent'])
+                    <div id="fees_section">
+                        <div class="table-responsive">
+                            <table class="table table-condensed table-bordered table-striped">
+                                <tr>
+                                    <td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="fees_input">@lang('sales::lang.emdadat_fees')</label>
+                                            <input type="number" id="fees_input" name="fees_input" class="form-control custom-width-input"
+                                                placeholder="Enter fees">
+                                        </div>
+
+                                        <div class="larger-text">
+                                            <b>@lang('sales::lang.total_amount_with_fees'):</b>
+                                            <span id="total_amount_with_fees">0.00</span>
+                                        </div>
+                                        <div class="larger-text">
+                                            <b>@lang('sales::lang.number_of_workers'):</b>
+                                            <span id="quantityArrDisplay2">0</span>
+                                        </div>
+                                        <div class="larger-text">
+                                            <b>@lang('sales::lang.total_monthly'):</b>
+                                            <span id="total_monthly_for_all_workers2">0</span>
+                                        </div>
+                                        <br>
+                                        <div class="form-group">
+                                            <label for="contract_duration_input">@lang('sales::lang.contract_duration')</label>
+                                            <input type="number" id="contract_duration_input"
+                                                class="form-control custom-width-input" name="contract_duration"
+                                                placeholder="Enter Contract Duration (in months)">
+                                        </div>
+                                        <div class="larger-text">
+                                            <b>@lang('sales::lang.total_contract_cost'):</b>
+                                            <span id="total_contract_cost">0</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                @endcomponent
+              
+
 
             </div>
         </div>
@@ -525,13 +604,12 @@
     <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
         @include('contact.create', ['quick_add' => true])
     </div>
-    <!-- /.content -->
+
     <div class="modal fade register_details_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
     <div class="modal fade close_register_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
 
-    <!-- quick product modal -->
     <div class="modal fade quick_add_client_modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle">
 
     </div>
@@ -551,6 +629,14 @@
         $(document).ready(function() {
             console.log("Document ready");
             updateTotalAmount();
+            updateTotalMonthlyAmount();
+            updateTotalSum();
+            updateTotalFees();
+
+            $('#fees_section').on('input', '#contract_duration_input', function() {
+                updateTotalContractCost();
+            });
+
             $('#status').change(function() {
                 if ($(this).val() == 'final') {
                     $('#payment_rows_div').removeClass('hide');
@@ -628,10 +714,30 @@
                     $('#costs_table_id').show();
                     $('#costs_tablet-id').show();
                     updateTotalAmount();
+                    updateTotalMonthlyAmount();
+                    updateTotalSum();
+                    updateTotalFees();
                 } else {
 
                     $('#costs_table_id').hide();
                     $('#costs_tablet-id').hide();
+                    updateTotalAmount();
+                    updateTotalMonthlyAmount();
+
+                    var priceTotal = parseFloat($('.price_total').text()) || 0;
+                    var totalSum = priceTotal;
+                    $('#total_sum_value').text(totalSum.toFixed(2));
+                    var totalSum2 = parseFloat($('#total_sum_value').text()) || 0;
+                    var fees = parseFloat($('#fees_input').val()) || 0;
+
+                    totalAmountWithFees = totalSum2 + fees;
+
+                    console.log("Grand Total:", totalAmountWithFees);
+                    $('#total_amount_with_fees').text(totalAmountWithFees.toFixed(2));
+                    $('#total_amount_with_fees2').val(totalAmountWithFees);
+
+                    updateTotalMonthlyForAllWorkers();
+
                 }
             });
 
@@ -642,7 +748,7 @@
                 info: false,
                 orderable: false,
                 dom: 'lrtip',
-                // paging: false,
+                paging: false,
                 ajax: {
                     url: "{{ route('sales_costs') }}",
 
@@ -709,6 +815,11 @@
                 var rowId = $(this).data('row-id');
                 updateMonthlyCost(rowId);
                 updateTotalAmount();
+
+                updateTotalMonthlyAmount();
+                updateTotalSum();
+                updateTotalFees();
+
             });
 
 
@@ -719,7 +830,20 @@
                     totalAmount += amount;
                 });
                 console.log("Total Amount:", totalAmount);
-                $('#total_amount').text(totalAmount);
+                $('#total_amount').text(totalAmount.toFixed(2));
+            }
+
+            function updateTotalMonthlyAmount() {
+                var totalMonthlyAmount = 0;
+
+                $('#costs_table tbody tr').each(function() {
+                    var monthlyCost = parseFloat($(this).find('.editable-monthly-cost').text()) || 0;
+                    totalMonthlyAmount += monthlyCost;
+                });
+
+
+                $('#total_monthly_amount').text(totalMonthlyAmount.toFixed(4));
+                updateTotalMonthlyForAllWorkers();
             }
 
             function updateMonthlyCost(rowId) {
@@ -729,7 +853,68 @@
                     .text()) || 1;
                 var monthlyCost = (amount / duration).toFixed(2);
                 $('#costs_table').find('.editable-monthly-cost[data-row-id="' + rowId + '"]').text(monthlyCost);
+                updateTotalSum();
             }
+
+            function updateTotalSum() {
+
+                var totalMonthlyAmount = parseFloat($('#total_monthly_amount').text()) || 0;
+                var priceTotal = parseFloat($('.price_total').text()) || 0;
+
+                var totalSum = totalMonthlyAmount + priceTotal;
+
+
+                $('#total_sum_value').text(totalSum.toFixed(2));
+                updateTotalFees();
+                updateTotalMonthlyForAllWorkers();
+            }
+
+            $('#fees_section').on('input', '#fees_input', function() {
+                updateTotalFees();
+            });
+
+            function updateTotalFees() {
+
+                var totalSum = parseFloat($('#total_sum_value').text()) || 0;
+                var fees = parseFloat($('#fees_input').val()) || 0;
+
+                totalAmountWithFees = totalSum + fees;
+
+                console.log("Grand Total:", totalAmountWithFees);
+                $('#total_amount_with_fees').text(totalAmountWithFees.toFixed(2));
+                updateTotalMonthlyForAllWorkers();
+            }
+
+
+            function updateTotalMonthlyForAllWorkers() {
+
+                var totalAmountWithFees = parseFloat($('#total_amount_with_fees').text()) || 0;
+                var quantityArrDisplay2 = parseFloat($('#quantityArrDisplay2').text()) || 0;
+
+
+                var totalMonthlyForAllWorkers = totalAmountWithFees * quantityArrDisplay2;
+
+
+                $('#total_monthly_for_all_workers2').text(totalMonthlyForAllWorkers.toFixed(2));
+                $('#total_monthly_for_all_workers').val(totalMonthlyForAllWorkers);
+
+                updateTotalContractCost();
+            }
+
+            function updateTotalContractCost() {
+                var contractDuration = parseFloat($('#contract_duration_input').val()) || 0;
+                var totalMonthlyForAllWorkers = parseFloat($('#total_monthly_for_all_workers2').text()) || 0;
+
+                var totalContractCost = contractDuration * totalMonthlyForAllWorkers;
+
+                $('#total_contract_cost').text(totalContractCost.toFixed(2));
+                $('#total_contract_cost2').val(totalContractCost);
+
+            }
+
+            updateTotalContractCost();
+
+
 
         });
     </script>
