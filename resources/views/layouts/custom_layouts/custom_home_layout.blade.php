@@ -113,7 +113,7 @@
 
 <body 
     class="@if ($pos_layout) hold-transition lockscreen @else hold-transition skin-@if (!empty(session('business.theme_color'))){{ session('business.theme_color') }}@else{{ 'blue-light' }} @endif  @endif">
-    <div class="wrapper thetop">
+    <div class="wrapper thetop" style=" background-color: #12142e;">
         <script type="text/javascript">
             var body = document.getElementsByTagName("body")[0];
             body.className += " sidebar-collapse";
