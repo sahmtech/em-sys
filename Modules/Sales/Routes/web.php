@@ -161,13 +161,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/store_salay_request', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'store'])->name('store_salay_request');
         Route::post('salary_request/update/{salaryId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'update'])->name('salay_request.update');
         Route::delete('delete-salay-request/{id}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'destroy'])->name('salay_request.destroy');
-<<<<<<< HEAD
-=======
         
       
        
         
 
->>>>>>> 58c53c2c703883f85274719fa958996e27248f7d
     });
 });
