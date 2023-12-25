@@ -115,4 +115,8 @@ return [
     'view_htr_dashboard' => 'View Housing Dashboard',
     'view_htr_dashboard' => 'View Movement Management',
     'view_building_management' => 'View Building Management',
+    'carType_added_success' => 'Car Type added success',
+    'added_success' => 'The item was added successfully',
+    'updated_success' => 'The item has been modified successfully',
+
 ];

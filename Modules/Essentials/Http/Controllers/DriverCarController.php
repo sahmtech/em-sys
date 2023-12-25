@@ -19,8 +19,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class DriverCarController extends Controller
 {
-    
-   
+
+
     protected $commonUtil;
 
     public function __construct(Util $commonUtil)
@@ -92,7 +92,7 @@ class DriverCarController extends Controller
                         return $html;
                     }
                 )
-             
+
                 ->filter(function ($query) use ($request) {
 
                     // if (!empty($request->input('full_name'))) {
@@ -162,15 +162,19 @@ class DriverCarController extends Controller
 
             ]);
 
-            $output = [
-                'success' => true,
-                'msg' => __('account.account_updated_success'),
-            ];
             DB::commit();
-            return redirect()->back()->with(__('account.account_updated_success'));
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.added_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -236,15 +240,20 @@ class DriverCarController extends Controller
             $update_data['delivery_date'] =  $request->input('delivery_date');
             $driver = DriverCar::find($id);
             $driver->update($update_data);
-            $output = [
-                'success' => true,
-                'msg' => __('account.account_updated_success'),
-            ];
+
             DB::commit();
-            return redirect()->back()->with(__('account.account_updated_success'));
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.updated_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -263,10 +272,13 @@ class DriverCarController extends Controller
                     'msg' => 'تم حذف السائق بنجاح',
                 ];
             } catch (Exception $e) {
-                return redirect()->back();
+                return redirect()->back()
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong'),
+                    ]);
             }
             return $output;
         }
     }
-
 }
