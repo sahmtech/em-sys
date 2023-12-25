@@ -562,6 +562,13 @@ class DataController extends Controller
                 'default' => false,
             ],
             
+
+            [
+                'value' => 'essentials.crud_essentials_recuirements_requests',
+                'label' => __('essentials::lang.crud_essentials_recuirements_requests'),
+                'default' => false,
+            ],
+            
         ];
     }
     
