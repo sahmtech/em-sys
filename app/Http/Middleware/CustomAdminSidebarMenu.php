@@ -992,7 +992,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
                 __('accounting::lang.automatedMigration'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'AutomatedMigration']
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'automated-migration']
             );
 
             $menu->url(
