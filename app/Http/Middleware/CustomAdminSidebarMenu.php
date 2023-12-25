@@ -309,6 +309,8 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'attendance'],
                 );
             }
+
+
             if ($isSuperAdmin  || auth()->user()->can('essentials.crud_all_procedures')) {
                 $menu->url(
 
@@ -342,6 +344,17 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'allRequests']
                 );
             }
+
+            if ($isSuperAdmin  || auth()->user()->can('essentials.crud_essentials_recuirements_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'index']),
+                    __('essentials::lang.recuirements_requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'recuirements_requests']
+                );
+            }
+
+
+
             if ($isSuperAdmin || auth()->user()->can('essentials.view_work_cards')) {
 
                 $menu->dropdown(
