@@ -144,5 +144,18 @@
 <script>
     $(document).ready(function() {
         $('#holidays').select2();
+
+        $('#edit_shits_model').on('shown.bs.modal', function(e) {
+            $('#contacts_select').select2({
+                dropdownParent: $(
+                    '#edit_shits_model'),
+                width: '100%',
+            });
+            $('#project_id').select2({
+                dropdownParent: $(
+                    '#edit_shits_model'),
+                width: '100%',
+            });
+        });
     });
 </script>
