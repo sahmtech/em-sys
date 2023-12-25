@@ -435,11 +435,11 @@ return [
   'not_added_to_salary' => 'لا تضاف إلى الراتب ',
   'business' => 'الشركات',
   'add_business' => 'إضافة شركة',
-  'curd_work_cards'=>'إضافة \حذف\تعديل كروت العمل',
+  'curd_work_cards' => 'إضافة \حذف\تعديل كروت العمل',
   'licence_number' => 'رقم الترخيص',
   'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
- 'Iban_file'=>'مرفق  الأيبان',
+  'Iban_file' => 'مرفق  الأيبان',
   'expiration_date' => 'تاريخ الانتهاء',
   'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",
@@ -1024,7 +1024,7 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
-  
+
   'years' => 'سنة',
   'months' => 'شهر',
   'workcard_duration' => 'مدة كرت العمل',
@@ -1103,5 +1103,6 @@ return [
   'attendance_status' => 'حالات الحضور والانصراف',
   'add_attendance_status' => 'إضافة حالة',
   'business_single' => 'الشركة',
-  'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك'
+  'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك',
+  'edit_docs' => 'تعديل ترخيص',
 ];

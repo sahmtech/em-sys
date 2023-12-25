@@ -271,6 +271,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeBusiness', [\App\Http\Controllers\BusinessController::class, 'store'])->name('storeBusiness');
         Route::post('/storeBusinessDoc', [\App\Http\Controllers\BusinessDocumentController::class, 'store'])->name('storeBusinessDoc');
         Route::delete('/doc/{id}', [\App\Http\Controllers\BusinessDocumentController::class, 'destroy'])->name('doc.destroy');
+        Route::get('/doc/{id}', [\App\Http\Controllers\BusinessDocumentController::class, 'edit'])->name('doc.edit');
+        Route::put('/doc/{id}', [\App\Http\Controllers\BusinessDocumentController::class, 'update'])->name('doc.update');
         Route::get('/business_subscriptions.view/{id}', [\App\Http\Controllers\BusinessSubscriptionController::class, 'show'])->name('business_subscriptions.view');
         Route::post('/storeBusinessSubscription', [\App\Http\Controllers\BusinessSubscriptionController::class, 'store'])->name('storeBusinessSubscription');
         Route::delete('/business_subscriptions/{id}', [\App\Http\Controllers\BusinessSubscriptionController::class, 'destroy'])->name('busSubscription.destroy');

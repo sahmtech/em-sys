@@ -172,15 +172,20 @@ class CarController extends Controller
 
             ]);
 
-            $output = [
-                'success' => true,
-                'msg' => __('account.account_updated_success'),
-            ];
+          
             DB::commit();
-            return redirect()->back()->with(__('account.account_updated_success'));
+            return redirect()->back()
+            ->with('status', [
+                'success' => true,
+                'msg' => __('housingmovements::lang.added_success'),
+            ]);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back();
+            return redirect()->back()
+            ->with('status', [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
         }
     }
 
@@ -239,15 +244,20 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
-            $output = [
-                'success' => true,
-                'msg' => __('account.account_updated_success'),
-            ];
+       
             DB::commit();
-            return redirect()->back()->with(__('account.account_updated_success'));
+            return redirect()->back()
+            ->with('status', [
+                'success' => true,
+                'msg' => __('housingmovements::lang.updated_success'),
+            ]);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back();
+            return redirect()->back()
+            ->with('status', [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
         }
     }
 
@@ -267,7 +277,11 @@ class CarController extends Controller
                     'msg' => 'تم حذف السيارة بنجاح',
                 ];
             } catch (Exception $e) {
-                return redirect()->back();
+                return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
             }
             return $output;
         }
