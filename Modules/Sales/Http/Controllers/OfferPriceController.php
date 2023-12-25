@@ -27,7 +27,10 @@ use App\TypesOfService;
 use Carbon\Carbon;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Entities\salesOfferPricesCost;
-use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpWord\Writer\HTML;
 
 class OfferPriceController extends Controller
 {
@@ -147,7 +150,7 @@ class OfferPriceController extends Controller
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li>
-                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
+                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
                                     <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
                                     </a>
                                     </li>';
@@ -798,88 +801,88 @@ class OfferPriceController extends Controller
     public function print($id)
     {
 
-        $business_id = request()->session()->get('user.business_id');
+        try {
+            $business_id = request()->session()->get('user.business_id');
 
-        $query = Transaction::where('business_id', $business_id)
-            ->where('id', $id)
-            ->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
+            $query = Transaction::where('business_id', $business_id)
+                ->where('id', $id)
+                ->with(['sales_person', 'contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
 
-            ->select(
-                'id',
-                'business_id',
-                'location_id',
-                'status',
-                'contact_id',
-                'ref_no',
-                'final_total',
-                'down_payment',
-                'contract_form',
-                'transaction_date'
+                ->select(
+                    'id',
+                    'business_id',
+                    'location_id',
+                    'status',
+                    'contact_id',
+                    'ref_no',
+                    'final_total',
+                    'down_payment',
+                    'contract_form',
+                    'transaction_date'
 
-            )->get()[0];
+                )->get()[0];
 
-        $templatePath = public_path('word_templates/fixed_cost.docx');
-        $templateProcessor = new TemplateProcessor($templatePath);
-        $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
-        $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
-        $templateProcessor->setValue('PROF', $query->sell_lines->first()['service']['profession']['name'] ?? '');
-        $templateProcessor->setValue('SALARY',   $query->sell_lines->first()['service']['service_price'] ?? '');
-        $templateProcessor->setValue('FOOD', '' ?? '');
-        $templateProcessor->setValue('TRANS', '' ?? '');
-        $templateProcessor->setValue('ACCO', '' ?? '');
-        $templateProcessor->setValue('OTHERS', '' ?? '');
-        $templateProcessor->setValue('GENDER', __('sales::lang.' . $query->sell_lines->first()['service']['gender']) ?? '');
-        $templateProcessor->setValue('Q', $query->sell_lines->first()->quantity ?? '');
-        $templateProcessor->setValue('TPEL', $query->sell_lines->first()['service']['monthly_cost_for_one'] ?? '');
-        $templateProcessor->setValue('NATIONALITY', $query->sell_lines->first()['service']['nationality']['nationality'] ?? '');
-        $templateProcessor->setValue('DURATION',  $query->contract->duration ?? '');
-        $templateProcessor->setValue('TUNVAT', $data['watermark'] ?? '');
-        $templateProcessor->setValue('VAT', $data['name'] ?? '');
-        $templateProcessor->setValue('TOTAL', $data['watermark'] ?? '');
-        $templateProcessor->setValue('FOOD_ALLOW', $data['watermark'] ?? '');
+            $phpWord = new PhpWord();
 
 
-        $templateProcessor->setValue('ACCO_TRANS', $data['name']);
-        $templateProcessor->setValue('UNIFORM', $data['watermark']);
-        $templateProcessor->setValue('RECRUIT', $data['watermark']);
+            $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path('word_templates/fixed_cost.docx'));
+            // $templatePath = public_path('word_templates/fixed_cost.docx');
+            //$templateProcessor = new TemplateProcessor($templatePath);
+            $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
+            $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
+            $templateProcessor->setValue('PROF', $query->sell_lines->first()['service']['profession']['name'] ?? '');
+            $templateProcessor->setValue('SALARY',   $query->sell_lines->first()['service']['service_price'] ?? '');
+            $templateProcessor->setValue('FOOD', '' ?? '');
+            $templateProcessor->setValue('TRANS', '' ?? '');
+            $templateProcessor->setValue('ACCO', '' ?? '');
+            $templateProcessor->setValue('OTHERS', '' ?? '');
+            $templateProcessor->setValue('GENDER', __('sales::lang.' . $query->sell_lines->first()['service']['gender']) ?? '');
+            $templateProcessor->setValue('Q', $query->sell_lines->first()->quantity ?? '');
+            $templateProcessor->setValue('TPEL', $query->sell_lines->first()['service']['monthly_cost_for_one'] ?? '');
+            $templateProcessor->setValue('NATIONALITY', $query->sell_lines->first()['service']['nationality']['nationality'] ?? '');
+            $templateProcessor->setValue('DURATION',  $query->contract?->contract_duration ?? '');
+            // $templateProcessor->setValue('TUNVAT', $query->contract?->total_contract_cost ?? '');
+            // $templateProcessor->setValue('VAT', ($query->contract?->total_contract_cost??0) * 15 / 100 ?? '');
+            // $templateProcessor->setValue('TOTAL', $query->contract?->total_contract_cost??0 +  ($query->contract?->total_contract_cost??0) * 15 / 100 ?? '');
+            $templateProcessor->setValue('FOOD_ALLOW', '' ?? '');
 
 
-        $templateProcessor->setValue('PRE_PAY', $data['name']);
-        $templateProcessor->setValue('BANK_GUARANTEE', $data['watermark']);
+            $templateProcessor->setValue('ACCO_TRANS', '' ?? '');
+            $templateProcessor->setValue('UNIFORM', '' ?? '');
+            $templateProcessor->setValue('RECRUIT', '' ?? '');
 
 
-        $templateProcessor->setValue('CREATED_BY', $data['watermark']);
-        $templateProcessor->setValue('CREATED_BY_EN', $data['name']);
+            $templateProcessor->setValue('PRE_PAY', $query->down_payment ?? '');
+            $templateProcessor->setValue('BANK_GUARANTEE', '' ?? '');
 
 
-        $pdfContent = $this->convertToPDF($templateProcessor);
+            $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
+            $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
+            // $outputPath = public_path('generated_document.docx');
+            // $templateProcessor->save($outputPath);
+            // $outputPath = public_path('generated_document.docx');
+            // $templateProcessor->saveAs($outputPath);
+            // return response()->download($outputPath);
+            $outputPath = public_path('generated_document.docx');
+            // Convert the Word document to PDF using Dompdf
+            $phpWord = IOFactory::load($outputPath);
+            $htmlWriter = new HTML($phpWord);
+            $htmlPath = storage_path('generated_document.html');
+            $htmlWriter->save($htmlPath);
 
-        $this->displayPDF($pdfContent);
+            // Convert HTML to PDF using Dompdf
+            $pdf = PDF::loadHtmlFile($htmlPath);
+            $pdfPath = public_path('generated_document.pdf');
+            $pdf->save($pdfPath);
 
-        return response()->stream(
-            function () use ($pdfContent) {
-                echo $pdfContent;
-            },
-            200,
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename=output.pdf',
-            ]
-        );
+            // Return the PDF as a response or download it
+            return response()->download($pdfPath, 'generated_document.pdf');
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
     }
-    private function convertToPDF(TemplateProcessor $templateProcessor)
-    {
-        // Save the modified template as PDF using Unoconv or other libraries
-        $pdfContent = shell_exec("unoconv -f pdf --stdout {$templateProcessor->getTemplate()}");
 
-        // Alternatively, you can explore other methods to convert DOCX to PDF
-        return $pdfContent;
-    }
-    private function displayPDF($pdfContent)
-    {
-        // Display the PDF in a new browser window or tab using JavaScript
-        echo "<script>window.open('data:application/pdf;base64," . base64_encode($pdfContent) . "','_blank');</script>";
-    }
 
 
     /**
