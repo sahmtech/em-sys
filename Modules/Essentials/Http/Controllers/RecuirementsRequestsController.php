@@ -91,7 +91,7 @@ class RecuirementsRequestsController extends Controller
                   
                 $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                     . $this->statuses[$row->status]['name'] . '</span>';
-                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"  data-quantity="' . $row->quantity . '"    data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
           
             return $status;
         })
@@ -197,6 +197,7 @@ class RecuirementsRequestsController extends Controller
             'quantity',
 
         ])->where('status' ,'approved');
+      
         if (request()->ajax())
          {
 
@@ -206,7 +207,7 @@ class RecuirementsRequestsController extends Controller
                   
                 $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                     . $this->statuses[$row->status]['name'] . '</span>';
-                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"    data-quantity="' . $row->quantity . '"    data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"       data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
           
             return $status;
         })

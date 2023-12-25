@@ -1112,4 +1112,5 @@ return [
   'rejected'=>' مرفوض ',
   'approved'=>' مقبول ',
   'unacceptable'=>'الطلبات المرفوضة ',
+  'quantity_validation'=>'العدد المدخل يجب أن يكون أقل من '
 ];

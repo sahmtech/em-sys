@@ -113,8 +113,9 @@
             $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value')).change();
             $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
             $('#change_status_modal').find('#quantity_value').val($(this).data('quantity')); 
+           
             $('#change_status_modal').modal('show');
-
+          
 
             
              });
@@ -151,17 +152,16 @@
 
 $('#quantity').on('input', function() {
     var quantityValue = $('#quantity_value').val();
-    var enteredQuantity = $(this).val();
+    var enteredQuantity = parseInt($(this).val());
 
     if (!isNaN(quantityValue) && !isNaN(enteredQuantity)) {
         if (enteredQuantity >= quantityValue) {
-            $('#quantity-error').text('Entered quantity must be less than or equal to ' +  $('#quantity_value').val());
+            $('#quantity-error').text('Entered quantity must be less than or equal to ' + quantityValue);
         } else {
             $('#quantity-error').text('');
         }
     }
 });
-
 </script>
 
 @endsection
