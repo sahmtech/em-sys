@@ -83,6 +83,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeContract', [\Modules\Sales\Http\Controllers\ContractsController::class, 'store'])->name('storeContract');
         Route::get('/getContractValues', [\Modules\Sales\Http\Controllers\ContractsController::class, 'getContractValues'])->name('sale.getContractValues');
         Route::get('/get_projects', [\Modules\Sales\Http\Controllers\ContractsController::class, 'get_projects'])->name('sale.get_projects');
+        Route::get('/fetch-contract-duration/{offerPrice}',  [\Modules\Sales\Http\Controllers\ContractsController::class, 'fetchContractDuration'])->name('fetch-contract-duration');
 
         Route::delete('/cotracts/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'destroy'])->name('contract.destroy');
         Route::get('/offer_view/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'show'])->name('offer.view');
@@ -160,5 +161,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/store_salay_request', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'store'])->name('store_salay_request');
         Route::post('salary_request/update/{salaryId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'update'])->name('salay_request.update');
         Route::delete('delete-salay-request/{id}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'destroy'])->name('salay_request.destroy');
+<<<<<<< HEAD
+=======
+        
+      
+       
+        
+
+>>>>>>> 58c53c2c703883f85274719fa958996e27248f7d
     });
 });

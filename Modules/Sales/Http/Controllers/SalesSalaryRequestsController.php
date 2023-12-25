@@ -13,7 +13,7 @@ use DB;
 use App\Utils\ModuleUtil;
 
 use Yajra\DataTables\Facades\DataTables;
-use Modules\Sales\Entities\salesSalariesRequest;
+use Modules\Sales\Entities\SalesSalariesRequest;
 class SalesSalaryRequestsController extends Controller
 {
     protected $moduleUtil;
@@ -220,7 +220,7 @@ class SalesSalaryRequestsController extends Controller
             }
         
             
-            $existingFile = $req->file; 
+            $existingFile = $req->file??''; 
            
         
             $output = [

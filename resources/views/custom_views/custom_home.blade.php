@@ -92,7 +92,9 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
+
 
                 {{-- Second Item (Placeholder) --}}
                 {{-- <div class="row">
@@ -100,6 +102,14 @@
                 </div> --}}
 
             </div>
+            @if (count($cards) < 4)
+                <div class="card-grid">
+                </div>
+                <div class="card-grid">
+                </div>
+                <div class="card-grid">
+                </div>
+            @endif
         </div>
     </section>
     <!-- Main content -->
