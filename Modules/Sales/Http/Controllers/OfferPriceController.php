@@ -153,7 +153,9 @@ class OfferPriceController extends Controller
                                     <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
                                 </a>
 
-                                    </li>';
+                                    </li>
+               
+                                    ';
 
 
 
@@ -797,7 +799,6 @@ class OfferPriceController extends Controller
     }
 
 
-
     public function print($id)
     {
 
@@ -880,6 +881,7 @@ class OfferPriceController extends Controller
                 $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
                 $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
                 $outputPath = public_path('uploads/offer_prices/' . $query->ref_no . '.docx');
+                $templateProcessor->saveAs($outputPath);
                 $headers = [
                     'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     'Content-Disposition' => 'attachment; filename="' . $query->ref_no . '.docx"',
@@ -963,6 +965,8 @@ class OfferPriceController extends Controller
                 $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
                 $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
                 $outputPath = public_path('uploads/offer_prices/' . $query->ref_no . '.docx');
+                $templateProcessor->saveAs($outputPath);
+
                 $headers = [
                     'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     'Content-Disposition' => 'attachment; filename="' . $query->ref_no . '.docx"',
