@@ -100,7 +100,7 @@
                         data: 'number_of_contract'
                     },
                     {
-                        data: 'sales_project_id'
+                        data: 'contact_id'
                     },
 
                     {

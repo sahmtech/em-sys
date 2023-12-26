@@ -146,7 +146,7 @@
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'storeIrRequest', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'storeAgentRequests', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -543,7 +543,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('allIrRequests') }}"
+                    url: "{{ route('agentRequests') }}"
                 },
 
                 columns: [
