@@ -202,7 +202,7 @@
                                 case 'pending':
                                     return '{{ trans('followup::lang.pending') }}';
                                 case 'approved':
-                                    return '{{ trans('followup::lang.under approved') }}';
+                                    return '{{ trans('followup::lang.approved') }}';
 
                                 case 'rejected':
                                     return '{{ trans('followup::lang.rejected') }}';
