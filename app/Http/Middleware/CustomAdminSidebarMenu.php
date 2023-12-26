@@ -172,9 +172,9 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent_workers'],
             );
             $menu->url(
-                action([\App\Http\Controllers\HomeController::class, 'index']),
+                route('agentRequests'),
                 __('agent.requests'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers'],
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agentRequests'],
             );
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
