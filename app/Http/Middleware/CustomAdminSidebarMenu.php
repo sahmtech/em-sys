@@ -806,6 +806,37 @@ class CustomAdminSidebarMenu
                 ]
             );
 
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
+                    __('housingmovements::lang.requests'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'hm.requests'
+                    ],
+                );
+            }
+
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_trevelers')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),
+                    __('housingmovements::lang.travelers'),
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers' || request()->segment(2) == 'housed-workers'
+                    ],
+
+                );
+            }
+
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
+                    __('housingmovements::lang.workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'workers'],
+
+                );
+            }
 
             if ($isSuperAdmin  || auth()->user()->can('housingmovements.view_building_management')) {
 
@@ -880,39 +911,6 @@ class CustomAdminSidebarMenu
                     },
                     ['icon' => 'fa fas fa-plus-circle',],
 
-
-                );
-            }
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings')) {
-                $menu->url(
-                    action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
-                    __('housingmovements::lang.requests'),
-                    [
-                        'icon' => 'fa fas fa-plus-circle',
-                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'hm.requests'
-                    ],
-                );
-            }
-
-
-
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_rooms')) {
-                $menu->url(
-                    action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
-                    __('housingmovements::lang.workers'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'workers'],
-
-                );
-            }
-
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_htr_trevelers')) {
-                $menu->url(
-                    action([\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'index']),
-                    __('housingmovements::lang.travelers'),
-                    [
-                        'icon' => 'fa fas fa-plus-circle',
-                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'travelers' || request()->segment(2) == 'housed-workers'
-                    ],
 
                 );
             }
