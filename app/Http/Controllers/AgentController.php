@@ -41,6 +41,8 @@ use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Activitylog\Models\Activity;
+use Modules\Essentials\Entities\EssentialsWkProcedure;
+use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 
 class AgentController extends Controller
 {
@@ -282,18 +284,18 @@ class AgentController extends Controller
     {
 
 
-        $contacts = SalesProject::all()->pluck('name', 'id');
+        $contacts = Contact::all()->pluck('supplier_business_name', 'id');
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
-        $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+      
         if (request()->ajax()) {
 
             $contracts = salesContract::join('transactions', 'transactions.id', '=', 'sales_contracts.offer_price_id')
                 ->select([
                     'sales_contracts.number_of_contract', 'sales_contracts.id', 'sales_contracts.offer_price_id', 'sales_contracts.start_date',
                     'sales_contracts.end_date', 'sales_contracts.status', 'sales_contracts.file',
-                    'transactions.contract_form as contract_form', 'transactions.sales_project_id', 'transactions.id as tra'
-                ])->whereIn('sales_project_id', $projectsIds);
+                    'transactions.contract_form as contract_form', 'transactions.contact_id', 'transactions.id as tra'
+                ])->where('contact_id', $contact_id);
 
             if (!empty(request()->input('status')) && request()->input('status') !== 'all') {
                 $contracts->where('sales_contracts.status', request()->input('status'));
@@ -304,8 +306,8 @@ class AgentController extends Controller
             return Datatables::of($contracts)
 
 
-                ->editColumn('sales_project_id', function ($row) use ($contacts) {
-                    $item = $contacts[$row->sales_project_id] ?? '';
+                ->editColumn('contact_id', function ($row) use ($contacts) {
+                    $item = $contacts[$row->contact_id] ?? '';
 
                     return $item;
                 })
@@ -559,18 +561,156 @@ class AgentController extends Controller
         ));
     }
 
+ 
+    public function storeAgentRequests(Request $request)
+    {
 
+        $attachmentPath = null;
+
+
+        if (isset($request->attachment) && !empty($request->attachment)) {
+            $attachmentPath = $request->attachment->store('/requests_attachments');
+        }
+
+        if (is_null($request->start_date) && !empty($request->escape_date)) {
+            $startDate = $request->escape_date;
+        } elseif (is_null($request->start_date) && !empty($request->exit_date)) {
+            $startDate = $request->exit_date;
+        } else {
+            $startDate = $request->startDate;
+        }
+        if (is_null($request->end_date) && !empty($request->return_date)) {
+            $end_date = $request->return_date;
+        } else {
+            $end_date = $request->end_date;
+        }
+        if ($request->type == 'cancleContractRequest' && !empty($request->main_reason)) {
+
+            $contract = EssentialsEmployeesContract::where('employee_id', $request->worker_id)->first();
+
+            if (!$contract) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.no_contract_found'),
+                ];
+                return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+            }
+
+
+            if (is_null($contract->wish_id)) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.no_wishes_found'),
+                ];
+                return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+            }
+
+            $contractEndDate = Carbon::parse($contract->contract_end_date);
+            $todayDate = Carbon::now();
+
+            if ($todayDate->diffInMonths($contractEndDate) > 1) {
+                $output = [
+                    'success' => false,
+                    'msg' => __('followup::lang.contract_expired'),
+                ];
+                return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+            }
+        }
+        $procedure = EssentialsWkProcedure::where('type', $request->type)->get();
+        if ($procedure->count() == 0) {
+            $output = [
+                'success' => false,
+                'msg' => __('followup::lang.this_type_has_not_procedure'),
+            ];
+            return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+        }
+        $success = 1;
+
+        foreach ($request->worker_id as $workerId) {
+            if ($workerId !== null) {
+                if ($request->type == "exitRequest") {
+                    $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $workerId)->first()->contract_end_date;
+                }
+
+                $workerRequest = new FollowupWorkerRequest;
+
+                $workerRequest->request_no = $this->generateRequestNo($request->type);
+                $workerRequest->worker_id = $workerId;
+                $workerRequest->type = $request->type;
+                $workerRequest->start_date = $startDate;
+                $workerRequest->end_date = $end_date;
+                $workerRequest->reason = $request->reason;
+                $workerRequest->note = $request->note;
+                $workerRequest->attachment = $attachmentPath;
+                $workerRequest->essentials_leave_type_id = $request->leaveType;
+                $workerRequest->escape_time = $request->escape_time;
+                $workerRequest->installmentsNumber = $request->installmentsNumber;
+                $workerRequest->monthlyInstallment = $request->monthlyInstallment;
+                $workerRequest->advSalaryAmount = $request->amount;
+                $workerRequest->updated_by = auth()->user()->id;
+                $workerRequest->insurance_classes_id = $request->ins_class;
+                $workerRequest->baladyCardType = $request->baladyType;
+                $workerRequest->resCardEditType = $request->resEditType;
+                $workerRequest->workInjuriesDate = $request->workInjuriesDate;
+                $workerRequest->contract_main_reason_id = $request->main_reason;
+                $workerRequest->contract_sub_reason_id = $request->sub_reason;
+                $workerRequest->visa_number = $request->visa_number;
+                $workerRequest->atmCardType = $request->atmType;
+                $workerRequest->save();
+
+
+
+                if ($workerRequest) {
+                    $process = FollowupWorkerRequestProcess::create([
+                        'worker_request_id' => $workerRequest->id,
+                        'procedure_id' => $this->getProcedureIdForType($request->type),
+                        'status' => 'pending',
+                        'reason' => null,
+                        'status_note' => null,
+                    ]);
+
+                    if (!$process) {
+
+                        $workerRequest->delete();
+                        // $output = [
+                        //     'success' => 0,
+                        //     'msg' => __('messages.something_went_wrong'),
+                        // ];
+                        // return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+                        $success = 0;
+                    }
+                } else {
+
+                    $success = 0;
+                    // $output = [
+                    //     'success' => 0,
+                    //     'msg' => __('messages.something_went_wrong'),
+                    // ];
+                    // return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+                }
+            }
+        }
+        if ($success) {
+            $output = [
+                'success' => 1,
+                'msg' => __('sales::lang.operationOrder_added_success'),
+            ];
+            return redirect()->route('agent_requests')->with('success', $output['msg']);
+        } else {
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->route('agent_requests')->withErrors([$output['msg']]);
+        }
+    }
 
     public function agentRequests()
     {
 
         $business_id = request()->session()->get('user.business_id');
 
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            abort(403, 'Unauthorized action.');
-        }
-
+    
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
 
@@ -600,7 +740,7 @@ class AgentController extends Controller
             ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
             ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
             ->where('user_type', 'worker')
-            ->whereIn('assigned_to', $projectsIds);;
+            ->whereIn('assigned_to', $projectsIds);
 
 
         if (request()->ajax()) {
@@ -619,18 +759,11 @@ class AgentController extends Controller
                     return $item;
                 })
                 ->editColumn('status', function ($row) {
-                    $status = '';
+            
 
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
-
-                        if (auth()->user()->can('crudExitRequests')) {
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        }
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                        $status = trans('followup::lang.' . $row->status);
-                    }
+                   
+                    $status = trans('followup::lang.' . $row->status) ?? ' ';
+                    
 
                     return $status;
                 })
@@ -651,10 +784,59 @@ class AgentController extends Controller
 
 
 
-        return view('internationalrelations::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        return view('custom_views.agents.requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
+    public function agentWorkersRequests()
+    {
+      
+        if (request()->ajax()) {
 
+            $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+            $requestsProcess = null;
+
+            $user = User::where('id', auth()->user()->id)->first();
+            $contact_id =  $user->crm_contact_id;
+            $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'users.assigned_to'
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->where('user_type', 'worker')
+                ->whereIn('assigned_to', $projectsIds);
+
+
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
+                    $item = $ContactsLocation[$row->assigned_to] ?? '';
+
+                    return $item;
+                })
+
+
+
+                ->make(true);
+        }
+    }
 
 
 

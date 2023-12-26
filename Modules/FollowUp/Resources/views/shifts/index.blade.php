@@ -10,46 +10,11 @@
 
     <!-- Main content -->
     <section class="content">
-        {{-- <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    {!! Form::open([
-                        'url' => action('\Modules\FollowUp\Http\Controllers\ShiftController@search'),
-                        'method' => 'post',
-                        'id' => 'carType_search',
-                    ]) !!}
-                    <div class="col-sm-4">
-                        <div class="form-group row">
-                            {!! Form::label('search_lable', __('housingmovements::lang.search') . '  ') !!}
-                            {!! Form::text('search', '', [
-                                'class' => 'form-control',
-                                'required',
-                                'placeholder' => __('housingmovements::lang.name_in_ar_en'),
-                                'id' => 'search',
-                            ]) !!}
 
-                        </div>
-                    </div>
-                    <div class="col-sm-8" style="padding-right: 3px;">
-                        <button class="btn btn-block btn-primary" style="width: max-content;margin-top: 25px;" type="submit">
-                            @lang('housingmovements::lang.search')</button>
-                      
-                    </div>
-                    {!! Form::close() !!}
-                @endcomponent
-            </div>
-        </div> --}}
 
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary'])
-                    {{-- @slot('tool')
-                        <div class="box-tools">
-                            <a class="btn btn-block btn-primary"
-                                href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@create') }}">
-                                <i class="fas fa-plus"></i> @lang('messages.add')</a>
-                        </div>
-                    @endslot --}}
                     @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-primary pull-right m-5 btn-modal"
@@ -61,7 +26,7 @@
                     @endslot
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="rooms_table" style="margin-bottom: 100px;">
+                        <table class="table table-bordered table-striped" id="shifts_table" style="margin-bottom: 100px;">
                             <thead>
                                 <tr>
                                 <tr>
@@ -75,117 +40,15 @@
                                 </tr>
 
                             </thead>
-                            <tbody id="tbody">
-                                @foreach ($shifts as $row)
-                                    <tr>
-                                        <td style="text-align: center;">
-                                            {{ $row->name }}
 
-                                        </td>
-                                        {{-- <td style="text-align: center;">
-                                            {{ $row->type }}
-
-                                        </td> --}}
-                                        @php
-                                            $dateTime = DateTime::createFromFormat('H:i:s', $row->start_time);
-                                            $start_time = $dateTime->format('g:i A');
-                                            $dateTime_ = DateTime::createFromFormat('H:i:s', $row->end_time);
-                                            $end_time = $dateTime_->format('g:i A');
-                                        @endphp
-                                        <td style="text-align: center;">
-                                            {{ $start_time }}
-
-                                        </td>
-                                        <td style="text-align: center;">
-                                            {{ $end_time }}
-
-                                        </td>
-
-                                        <td style="display: flex;gap: 5px;">
-                                            @if ($row->holidays)
-                                                @foreach ($row->holidays as $holiday)
-                                                    <h6 style="margin-top: 0px;"><span
-                                                            class="badge badge-secondary">{{ __('lang_v1.' . $holiday) }}</span>
-                                                    </h6>
-                                                @endforeach
-                                            @else
-                                                <h6 style="margin-top: 0px;"><span class="badge badge-secondary">لا يوجد
-                                                        عطل</span>
-                                                </h6>
-                                            @endif
-
-
-
-                                        </td>
-
-                                        <td style="text-align: center;">
-
-                                            {{ $row->project->name }}
-
-
-
-                                        </td>
-
-
-
-
-                                        <td style="text-align: center;">
-                                            <div class="btn-group" role="group">
-                                                <button id="btnGroupDrop1" type="button"
-                                                    style="background-color: transparent;
-                                                font-size: x-large;
-                                                padding: 0px 20px;"
-                                                    class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fa fa-cog" aria-hidden="true"></i>
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item btn-modal" style="margin: 2px;"
-                                                        title="@lang('messages.edit')"
-                                                        href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@edit', $row->id) }}"
-                                                        data-href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@edit', $row->id) }}"
-                                                        data-container="#edit_shits_model">
-
-                                                        <i class="fas fa-edit cursor-pointer"
-                                                            style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                                                        @lang('messages.edit') </a>
-
-                                                    <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
-                                                        href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@destroy', $row->id) }}"
-                                                        data-href="{{ action('Modules\FollowUp\Http\Controllers\ShiftController@destroy', $row->id) }}"
-                                                        {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
-
-                                                        <i class="fa fa-trash cursor-pointer"
-                                                            style="padding: 2px;color:red;"></i>
-                                                        @lang('messages.delete')
-
-                                                    </a>
-                                                </div>
-                                            </div>
-
-
-
-
-                                        </td>
-
-
-
-
-                                    </tr>
-                                @endforeach
-
-                            </tbody>
                         </table>
 
-                        <center class="mt-5">
+                        {{-- <center class="mt-5">
                             {{ $shifts->links() }}
-                        </center>
+                        </center> --}}
                     </div>
 
-                    {{-- <div class="modal fade" id="add_shits_model" tabindex="-1" role="dialog"
-                        aria-labelledby="gridSystemModalLabel">
-                        @include('housingmovements::shifts.create')
-                    </div> --}}
+
                     <div class="modal fade" id="add_shits_model" tabindex="-1" role="dialog"></div>
                     <div class="modal fade" id="edit_shits_model" tabindex="-1" role="dialog"></div>
                 @endcomponent
@@ -204,7 +67,80 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#holidays').select2();
+            shifts_table = $('#shifts_table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ route('shifts') }}',
+                },
+                columns: [
+                    // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
 
+                    {
+                        "data": "name"
+                    },
+                    {
+                        "data": "start_time"
+                    },
+                    {
+                        "data": "end_time"
+                    },
+                    {
+                        "data": "holiday"
+                    },
+                     {
+                        "data": "project_name"
+                    },
+                    {
+                        data: 'action'
+                    }
+                ]
+            });
+
+            $(document).on('click', 'button.delete_shift_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "DELETE",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            shifts_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
+
+
+            $(document).on('click', 'button.edit_car_button', function() {
+
+                var href = $(this).data('href');
+                var data = $(this).serialize();
+                $.ajax({
+                    method: "get",
+                    url: href,
+                    dataType: "json",
+                    data: data,
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    }
+                });
+
+
+            });
 
         });
     </script>

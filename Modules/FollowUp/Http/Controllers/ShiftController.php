@@ -5,12 +5,14 @@ namespace Modules\FollowUp\Http\Controllers;
 use App\Contact;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
+use DateTime;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\Shift;
 use Modules\Sales\Entities\SalesProject;
+use Yajra\DataTables\Facades\DataTables;
 
 class ShiftController extends Controller
 {
@@ -27,19 +29,77 @@ class ShiftController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-
-
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
         $shifts = Shift::where('essentials_shifts.business_id', $business_id)->where('user_type', 'worker')
             ->with('Project')
-            ->paginate(5);
+            ->get();
         $salesProject = SalesProject::all()->pluck('name', 'id');
-        
+        if (request()->ajax()) {
+            return DataTables::of($shifts)
+
+                ->editColumn('name', function ($row) {
+                    return $row->name ?? '';
+                })
+
+                ->editColumn('start_time', function ($row) {
+                    $dateTime = DateTime::createFromFormat('H:i:s', $row->start_time);
+                    $start_time = $dateTime->format('g:i A');
+
+                    return $start_time ?? '';
+                })
+                ->editColumn('end_time', function ($row) {
+                    $dateTime_ = DateTime::createFromFormat('H:i:s', $row->end_time);
+                    $end_time = $dateTime_->format('g:i A');
+                    return $end_time ?? '';
+                })
+                ->editColumn('holiday', function ($row) {
+                    $html = '';
+                    if ($row->holidays)
+                        foreach ($row->holidays as $holiday) {
+                            $html .= '<h6 style="margin-top: 0px;"><span class="badge badge-secondary">' . __('lang_v1.' . $holiday) . '</span></h6>';
+                        }
+                    else {
+                        $html .= ' <h6 style="margin-top: 0px;"><span class="badge badge-secondary">لا يوجد عطل</span></h6>';
+                    }
+
+                    return $html;
+                })
+                ->editColumn('project_name', function ($row) {
+                    return $row->Project->name ?? '';
+                })
+                ->addColumn(
+                    'action',
+                    function ($row) {
+
+                        $html = '';
+
+                        $html .= '
+                        <a href="' . route('shifts-edit', ['id' => $row->id])  . '"
+                        data-href="' . route('shifts-edit', ['id' => $row->id])  . ' "
+                         class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_shits_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
+                    ';
+                        $html .= '
+                    <button data-href="' .  route('shifts-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_shift_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                ';
+
+
+                        return $html;
+                    }
+                )
+
+                ->filter(function ($query) use ($request) {
+                })
+
+                ->rawColumns(['action', 'name', 'shift_type', 'start_time', 'holiday', 'end_time', 'project_name'])
+                ->make(true);
+        }
+
+
 
         return view('followup::shifts.index', compact('shifts', 'salesProject'));
     }
@@ -59,7 +119,8 @@ class ShiftController extends Controller
         return view('followup::shifts.create', compact('contacts', 'days'));
     }
 
-    public function ProjectsByContacts($id){
+    public function ProjectsByContacts($id)
+    {
         return Contact::find($id)->salesProjects;
     }
     /**
@@ -90,12 +151,19 @@ class ShiftController extends Controller
             ]);
 
 
-            return redirect()->back();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.added_success'),
+                ]);
         } catch (\Exception $e) {
             // \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-
-            return redirect()->back();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
         return redirect()->back();
     }
@@ -148,14 +216,18 @@ class ShiftController extends Controller
                 'end_time' => $this->moduleUtil->uf_time(date("h:i:sa", strtotime($request->input('end_time')))),
                 'start_time' => $this->moduleUtil->uf_time(date("h:i:sa", strtotime($request->input('start_time')))),
             ]);
-
-
-            return redirect()->back();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.updated_success'),
+                ]);
         } catch (\Exception $e) {
             // \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-
-            return redirect()->back();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
         return redirect()->back();
     }
@@ -168,11 +240,21 @@ class ShiftController extends Controller
 
     public function destroy($id)
     {
-        try {
-            Shift::find($id)->delete();
-            return redirect()->back();
-        } catch (Exception $e) {
-            return redirect()->back();
+        if (request()->ajax()) {
+            try {
+                Shift::find($id)->delete();
+                $output = [
+                    'success' => true,
+                    'msg' => 'تم حذف الفترة بنجاح',
+                ];
+            } catch (Exception $e) {
+                return redirect()->back()
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong'),
+                    ]);
+            }
+            return $output;
         }
     }
 }

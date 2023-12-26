@@ -435,11 +435,11 @@ return [
   'not_added_to_salary' => 'لا تضاف إلى الراتب ',
   'business' => 'الشركات',
   'add_business' => 'إضافة شركة',
-  'curd_work_cards'=>'إضافة \حذف\تعديل كروت العمل',
+  'curd_work_cards' => 'إضافة \حذف\تعديل كروت العمل',
   'licence_number' => 'رقم الترخيص',
   'licence_date' => 'تاريخ الإصدار',
   'renew_date' => 'تاريخ التجديد',
- 'Iban_file'=>'مرفق  الأيبان',
+  'Iban_file' => 'مرفق  الأيبان',
   'expiration_date' => 'تاريخ الانتهاء',
   'issuing_location' => ' المنطقة ',
   'file' => "الوثيقة",
@@ -1024,7 +1024,7 @@ return [
   'expired_contracts' => 'العقود المنتهية',
   'remaining_contracts' => 'العقود انتهت فترة التجربة',
   'escape_date' => 'تاريخ الهروب',
-  
+
   'years' => 'سنة',
   'months' => 'شهر',
   'workcard_duration' => 'مدة كرت العمل',
@@ -1103,5 +1103,18 @@ return [
   'attendance_status' => 'حالات الحضور والانصراف',
   'add_attendance_status' => 'إضافة حالة',
   'business_single' => 'الشركة',
-  'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك'
+  'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك',
+
+  'crud_essentials_recuirements_requests'=>'حذف \ إضافة \ تعديل  طلبات التوظيف الداخلي ',
+  'recuirements_requests'=>' طلبات التوظيف الداخلي',
+  'under_study'=>'الطلبات قيد الدراسة ',
+  'accepted'=>'الطلبات المقبولة ',
+  'pending'=>'قيد الدراسة ',
+  'rejected'=>' مرفوض ',
+  'approved'=>' مقبول ',
+  'unacceptable'=>'الطلبات المرفوضة ',
+  'quantity_validation'=>'العدد المدخل يجب أن يكون أقل من ',
+
+  'edit_docs' => 'تعديل ترخيص',
 ];
+

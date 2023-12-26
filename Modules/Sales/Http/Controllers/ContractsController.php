@@ -181,7 +181,7 @@ class ContractsController extends Controller
             $input = $request->only([
                 'offer_price', 'contract-select',
                 'start_date', 'contract_duration', 'contract_duration_unit',
-                'end_date', 'status', 'contract_items', 'is_renewable', 'notes', 'file'
+                'end_date', 'status',  'is_renewable', 'notes', 'file'
             ]);
 
 
@@ -214,12 +214,12 @@ class ContractsController extends Controller
 
                 $input2['number_of_contract'] = 'CR0001';
             }
-            $selectedItems = $request->input('contract_items');
-            $selectedItems = array_filter($selectedItems, function ($item) {
+            // $selectedItems = $request->input('contract_items');
+            // $selectedItems = array_filter($selectedItems, function ($item) {
 
-                return $item !== null;
-            });
-            $input2['items_ids'] = json_encode(array_values($selectedItems));
+            //     return $item !== null;
+            // });
+            // $input2['items_ids'] = json_encode(array_values($selectedItems));
 
             if ($request->hasFile('file')) {
                 $file = request()->file('file');
