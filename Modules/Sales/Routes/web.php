@@ -37,13 +37,13 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'store'])->name('storeOfferPrice');
         Route::post('/change-status', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'changeStatus'])->name('changeStatus');
 
-
+        Route::get('/offerPricePrint/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print']);
         Route::get('/offerPriceShow/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show']);
         Route::get('/offer-price/edit/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'edit']);
         Route::PUT('/updateOfferPrice/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'update'])->name('updateOfferPrice');
         Route::get('/offerContractPriceShow/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice']);
 
-      
+
         Route::get('/accepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'accepted_offer_prices'])->name('accepted_offer_prices');
         Route::get('/unaccepted_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'unaccepted_offer_prices'])->name('unaccepted_offer_prices');
         Route::get('/under_study_offer_prices', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('under_study_offer_prices');
@@ -151,7 +151,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::delete('delete-proposal-media/{id}', [Modules\Sales\Http\Controllers\SalesTemplateController::class, 'deleteProposalMedia']);
         Route::resource('proposal-template', 'Modules\Sales\Http\Controllers\SalesTemplateController')->except(['show', 'edit', 'update', 'destroy']);
 
-            
+
         //salary_requests
         Route::get('salary-requests-index', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'index'])->name('salary-requests-index');
         Route::get('/fetch-worker-details/{workerId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'fetchWorkerDetails'])->name('fetch-worker-details');
@@ -165,6 +165,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
       
        
         
+        Route::get('/download-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'])->name('download.file');
 
     });
 });

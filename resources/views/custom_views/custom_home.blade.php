@@ -10,9 +10,7 @@
             {{-- Single Column --}}
             <div class="col-md-12">
 
-                {{-- First Item: Row with Three Parts --}}
-                <div class="row">
-                    {{-- First Part with 20% width --}}
+                {{-- <div class="row">
 
 
                     {{-- <div class="col-md-5">
