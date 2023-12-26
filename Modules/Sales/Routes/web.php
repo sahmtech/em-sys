@@ -164,7 +164,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         
       
        
-        
+        // Route::get('/preview-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'preview'])->name('preview.file');
+
         Route::get('/download-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'])->name('download.file');
 
     });
