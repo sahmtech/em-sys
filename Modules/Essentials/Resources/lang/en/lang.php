@@ -12,6 +12,7 @@ return [
     'action' => 'Action',
     "payroll_create_edit" => "Salary",
     'contract_details_create_edit' => 'Employment contract',
+    'edit_docs' => 'Document Edit',
 
     'all_documents' => 'All documents',
     'manage_document' => 'Manage all your documents',
