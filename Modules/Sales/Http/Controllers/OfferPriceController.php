@@ -150,8 +150,7 @@ class OfferPriceController extends Controller
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li>
                                     <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
-                                    <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
-                                </a>
+                                    <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>
 
                                     </li>
                
