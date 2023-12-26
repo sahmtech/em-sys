@@ -27,10 +27,9 @@ use App\TypesOfService;
 use Carbon\Carbon;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Entities\salesOfferPricesCost;
-use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
-use Barryvdh\DomPDF\Facade\Pdf;
-use PhpOffice\PhpWord\Writer\HTML;
+use PhpOffice\PhpWord\IOFactory;
+use Barryvdh\DomPDF\Facade\PDF;
 
 class OfferPriceController extends Controller
 {
@@ -150,9 +149,10 @@ class OfferPriceController extends Controller
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li>
-                                    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'], [$row->id]) . '" class="btn-modal" data-container=".view_modal">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
-                                    </a>
+                                    <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
+                                    <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
+                                </a>
+
                                     </li>';
 
 
@@ -808,75 +808,194 @@ class OfferPriceController extends Controller
                 ->where('id', $id)
                 ->with(['sales_person', 'contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
 
-                ->select(
-                    'id',
-                    'business_id',
-                    'location_id',
-                    'status',
-                    'contact_id',
-                    'ref_no',
-                    'final_total',
-                    'down_payment',
-                    'contract_form',
-                    'transaction_date'
-
-                )->get()[0];
+                ->get()[0];
 
             $phpWord = new PhpWord();
 
 
-            $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path('word_templates/fixed_cost.docx'));
-            // $templatePath = public_path('word_templates/fixed_cost.docx');
-            //$templateProcessor = new TemplateProcessor($templatePath);
-            $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
-            $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
-            $templateProcessor->setValue('PROF', $query->sell_lines->first()['service']['profession']['name'] ?? '');
-            $templateProcessor->setValue('SALARY',   $query->sell_lines->first()['service']['service_price'] ?? '');
-            $templateProcessor->setValue('FOOD', '' ?? '');
-            $templateProcessor->setValue('TRANS', '' ?? '');
-            $templateProcessor->setValue('ACCO', '' ?? '');
-            $templateProcessor->setValue('OTHERS', '' ?? '');
-            $templateProcessor->setValue('GENDER', __('sales::lang.' . $query->sell_lines->first()['service']['gender']) ?? '');
-            $templateProcessor->setValue('Q', $query->sell_lines->first()->quantity ?? '');
-            $templateProcessor->setValue('TPEL', $query->sell_lines->first()['service']['monthly_cost_for_one'] ?? '');
-            $templateProcessor->setValue('NATIONALITY', $query->sell_lines->first()['service']['nationality']['nationality'] ?? '');
-            $templateProcessor->setValue('DURATION',  $query->contract?->contract_duration ?? '');
-            // $templateProcessor->setValue('TUNVAT', $query->contract?->total_contract_cost ?? '');
-            // $templateProcessor->setValue('VAT', ($query->contract?->total_contract_cost??0) * 15 / 100 ?? '');
-            // $templateProcessor->setValue('TOTAL', $query->contract?->total_contract_cost??0 +  ($query->contract?->total_contract_cost??0) * 15 / 100 ?? '');
-            $templateProcessor->setValue('FOOD_ALLOW', '' ?? '');
+            if ($query->contract_form == 'monthly_cost') {
+                $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path('word_templates/cost_plus.docx'));
+                $templateProcessor->cloneRow('R', $query->sell_lines->count());
+                $templateProcessor->setValue('DATE', Carbon::parse($query->transaction_date)->format('Y-m-d'));
+                $templateProcessor->setValue('DATE_EN', Carbon::parse($query->transaction_date)->format('d-m-Y'));
+                $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
+                $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
+                $i = 1;
+                $food = 0;
+                $housing = 0;
+                $transportaions = 0;
+                $others = 0;
+                $uniform = 0;
+                $recruit = 0;
+
+                foreach ($query->sell_lines as $sell_line) {
+                    $templateProcessor->setValue('R#' . $i, $i);
+                    $templateProcessor->setValue('A#' . $i, $sell_line['service']['profession']['name'] ?? '');
+                    $templateProcessor->setValue('B#' . $i,   number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''));
+
+                    foreach (json_decode($sell_line->additional_allwances) as $allwance) {
+                        if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
+                            if ($allwance->salaryType == 'food_allowance') {
+                                $food = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'housing_allowance') {
+                                $housing = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'transportation_allowance') {
+                                $transportaions = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'other_allowances') {
+                                $others = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'uniform_allowance') {
+                                $uniform = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'recruit_allowance') {
+                                $recruit = $allwance->amount;
+                            }
+                        }
+                    }
+                    $templateProcessor->setValue('C#' . $i, $food);
+                    $templateProcessor->setValue('D#' . $i,  $transportaions);
+                    $templateProcessor->setValue('E#' . $i, $housing);
+                    $templateProcessor->setValue('F#' . $i, $others);
+                    $templateProcessor->setValue('G#' . $i, __('sales::lang.' . $sell_line['service']['gender']) ?? '');
+                    $templateProcessor->setValue('H#' . $i, $sell_line->quantity ?? 0);
+                    $templateProcessor->setValue('I#' . $i, number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''));
+                    $templateProcessor->setValue('J#' . $i, $sell_line['service']['nationality']['nationality'] ?? '');
+                    $templateProcessor->setValue('K#' . $i,  $query->contract_duration ?? 0);
+                    $templateProcessor->setValue('L#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity);
+                    $templateProcessor->setValue('M#' . $i, ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '');
+                    $templateProcessor->setValue('N#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0);
+
+                    $i++;
+                }
 
 
-            $templateProcessor->setValue('ACCO_TRANS', '' ?? '');
-            $templateProcessor->setValue('UNIFORM', '' ?? '');
-            $templateProcessor->setValue('RECRUIT', '' ?? '');
+                $templateProcessor->setValue('PRE_PAY', $query->down_payment ?? '');
+                $templateProcessor->setValue('PRE_PAY_EN', $query->down_payment ?? '');
+                $templateProcessor->setValue('BANK_GURANTEE', '' ?? '');
+                $templateProcessor->setValue('BANK_GURANTEE_EN', '' ?? '');
+
+                $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
+                $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
+                $outputPath = public_path('uploads/offer_prices/' . $query->ref_no . '.docx');
+                $headers = [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'Content-Disposition' => 'attachment; filename="' . $query->ref_no . '.docx"',
+                ];
+
+                // Return the response with the file content
+                return response()->download($outputPath, $query->ref_no . '.docx', $headers);
+            } else if ($query->contract_form == 'operating_fees') {
 
 
-            $templateProcessor->setValue('PRE_PAY', $query->down_payment ?? '');
-            $templateProcessor->setValue('BANK_GUARANTEE', '' ?? '');
+                $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path('word_templates/fixed_cost.docx'));
+                $templateProcessor->cloneRow('R', $query->sell_lines->count());
+                $templateProcessor->setValue('DATE', Carbon::parse($query->transaction_date)->format('Y-m-d'));
+                $templateProcessor->setValue('DATE_EN', Carbon::parse($query->transaction_date)->format('d-m-Y'));
+                $templateProcessor->setValue('CONTACTS',    $query->contact->supplier_business_name ?? '');
+                $templateProcessor->setValue('CONTACTS_EN',  $query->contact->english_name ?? '');
+                $i = 1;
+                $food = 0;
+                $housing = 0;
+                $transportaions = 0;
+                $others = 0;
+                $uniform = 0;
+                $recruit = 0;
+
+                foreach ($query->sell_lines as $sell_line) {
+                    $templateProcessor->setValue('R#' . $i, $i);
+                    $templateProcessor->setValue('A#' . $i, $sell_line['service']['profession']['name'] ?? '');
+                    $templateProcessor->setValue('B#' . $i,   number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''));
+
+                    foreach (json_decode($sell_line->additional_allwances) as $allwance) {
+                        if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
+                            if ($allwance->salaryType == 'food_allowance') {
+                                $food = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'housing_allowance') {
+                                $housing = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'transportation_allowance') {
+                                $transportaions = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'other_allowances') {
+                                $others = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'uniform_allowance') {
+                                $uniform = $allwance->amount;
+                            }
+                            if ($allwance->salaryType == 'recruit_allowance') {
+                                $recruit = $allwance->amount;
+                            }
+                        }
+                    }
+                    $templateProcessor->setValue('C#' . $i, $food);
+                    $templateProcessor->setValue('D#' . $i,  $transportaions);
+                    $templateProcessor->setValue('E#' . $i, $housing);
+                    $templateProcessor->setValue('F#' . $i, $others);
+                    $templateProcessor->setValue('G#' . $i, __('sales::lang.' . $sell_line['service']['gender']) ?? '');
+                    $templateProcessor->setValue('H#' . $i, $sell_line->quantity ?? 0);
+                    $templateProcessor->setValue('I#' . $i, number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''));
+                    $templateProcessor->setValue('J#' . $i, $sell_line['service']['nationality']['nationality'] ?? '');
+                    $templateProcessor->setValue('K#' . $i,  $query->contract_duration ?? 0);
+                    $templateProcessor->setValue('L#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity);
+                    $templateProcessor->setValue('M#' . $i, ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '');
+                    $templateProcessor->setValue('N#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0);
+
+                    $i++;
+                }
+
+                $templateProcessor->setValue('FOOD_ALLOW', $food == 0 ? "no" : "yes");
 
 
-            $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
-            $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
-            // $outputPath = public_path('generated_document.docx');
-            // $templateProcessor->save($outputPath);
-            // $outputPath = public_path('generated_document.docx');
-            // $templateProcessor->saveAs($outputPath);
-            // return response()->download($outputPath);
-            $outputPath = public_path('generated_document.docx');
-            // Convert the Word document to PDF using Dompdf
-            $phpWord = IOFactory::load($outputPath);
-            $htmlWriter = new HTML($phpWord);
-            $htmlPath = storage_path('generated_document.html');
-            $htmlWriter->save($htmlPath);
+                $templateProcessor->setValue('ACCO_TRANS', ($transportaions == 0 && $housing == 0) ? "no" : "yes");
+                $templateProcessor->setValue('UNIFORM', $uniform == 0 ? "no" : "yes");
+                $templateProcessor->setValue('RECRUIT', $recruit == 0 ? "no" : "yes");
 
-            // Convert HTML to PDF using Dompdf
-            $pdf = PDF::loadHtmlFile($htmlPath);
-            $pdfPath = public_path('generated_document.pdf');
-            $pdf->save($pdfPath);
+
+                $templateProcessor->setValue('PRE_PAY', $query->down_payment ?? '');
+                $templateProcessor->setValue('PRE_PAY_EN', $query->down_payment ?? '');
+                $templateProcessor->setValue('BANK_GURANTEE', '' ?? '');
+                $templateProcessor->setValue('BANK_GURANTEE_EN', '' ?? '');
+
+                $templateProcessor->setValue('CREATED_BY', $query->sales_person->first_name ?? '');
+                $templateProcessor->setValue('CREATED_BY_EN', $query->sales_person->english_name ?? '');
+                $outputPath = public_path('uploads/offer_prices/' . $query->ref_no . '.docx');
+                $headers = [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'Content-Disposition' => 'attachment; filename="' . $query->ref_no . '.docx"',
+                ];
+
+                // Return the response with the file content
+                return response()->download($outputPath, $query->ref_no . '.docx', $headers);
+            }
+            //   return response()->download($outputPath);
+            // \PhpOffice\PhpWord\Settings::setPdfRendererPath(public_path());
+            // \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
+            // $Content = \PhpOffice\PhpWord\IOFactory::load($outputPath);
+            // $PDFWriter = \PhpOffice\PhpWord\IOFactory::createWriter($Content, 'PDF');
+
+            // $pdfFileName = $query->ref_no . '.pdf';
+            // $PDFWriter->save(public_path($pdfFileName));
+
+            // return response()->download(public_path($pdfFileName));
+
+            // // Convert the Word document to PDF using Dompdf
+            // $phpWord = IOFactory::load($outputPath);
+            // $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
+            // $htmlPath = public_path('generated_document.html');
+            // $htmlWriter->save($htmlPath);
+
+            // // Convert HTML to PDF using Dompdf
+            // $pdf = PDF::loadFile($htmlPath);
+            // $pdfPath = public_path($query->ref_no . '.pdf');
+            // $pdf->saveAs($pdfPath);
 
             // Return the PDF as a response or download it
-            return response()->download($pdfPath, 'generated_document.pdf');
+            //return response()->download($pdfPath, $query->ref_no . '.pdf');
+
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

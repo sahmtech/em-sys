@@ -51,7 +51,19 @@ $(document).ready( function(){
    
     
   
+    $(document).on('click', '.btn-download', function (e) {
+    e.preventDefault();
+
+    var downloadUrl = $(this).data('href');
     
+    // Trigger the download using JavaScript
+    var link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = downloadUrl.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
     sale_table = $('#sale_table').DataTable({
         processing: true,
         serverSide: true,
