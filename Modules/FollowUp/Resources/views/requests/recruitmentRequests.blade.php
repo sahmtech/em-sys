@@ -6,6 +6,21 @@
     <section class="content-header">
         <h1>@lang('followup::lang.recruitmentRequests')</h1>
     </section>
+    <head>
+        <style>
+.text-success {
+    color: green;
+}
+
+.text-danger {
+    color: red;
+}
+
+.text-warning {
+    color: yellow;
+}
+        </style>
+    </head>
     <section class="content">
 
         <div class="row">
@@ -30,7 +45,7 @@
                                     <th>@lang('sales::lang.profession')</th>
                                     <th>@lang('essentials::lang.specialization')</th>
                                     <th>@lang('essentials::lang.nationlity')</th>
-                                    <th>@lang('essentials::lang.quantity')</th>
+                                 {{-- <th>@lang('essentials::lang.quantity')</th> --}}  
                                     <th>@lang('essentials::lang.required_date')</th>
                                     <th>@lang('essentials::lang.status')</th>
                                     <th>@lang('essentials::lang.notes')</th>
@@ -187,30 +202,61 @@
                     {
                         data: 'nationality_id'
                     },
-                    {
-                        data: 'quantity'
-                    },
+                    // {
+                    //     data: 'quantity'
+                    // },
                     {
                         data: 'date'
                     },
                     {
-                        data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
+                    data: 'status',
+                    render: function (data, type, full, meta) {
+                        var statusList = '';
+                        // Assuming 'status' is a string like "approved: 5, rejected: 6, pending: 1"
+                        var statusArray = data.split(', ');
 
-
-                                case 'pending':
-                                    return '{{ trans('followup::lang.pending') }}';
-                                case 'approved':
-                                    return '{{ trans('followup::lang.approved') }}';
-
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
+                        statusArray.forEach(function (statusItem) {
+                            var parts = statusItem.split(': ');
+                            var statusName = parts[0].trim();
+                            console.log(statusName);
+                            var statusValue = parseInt(parts[1]);
+                            console.log(statusValue);
+                            // Define color classes based on status
+                            var colorClass = '';
+                            if (statusName === 'مقبول') {
+                                colorClass = 'text-success'; // Green color for approved
+                            } else if (statusName === 'مرفوض') {
+                                colorClass = 'text-danger'; // Red color for canceled
+                            } else if (statusName === 'pending') {
+                                colorClass = 'text-warning'; // Yellow color for pending
                             }
-                        }
-                    },
+
+                            statusList += '<span class="' + colorClass + '">' + statusName + ': ' + statusValue + '</span><br>';
+                        });
+
+                        return statusList;
+                    }
+                },
+
+
+                    // {
+                    //     data: 'status',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
+
+
+                    //             case 'pending':
+                    //                 return '{{ trans('followup::lang.pending') }}';
+                    //             case 'approved':
+                    //                 return '{{ trans('followup::lang.approved') }}';
+
+                    //             case 'rejected':
+                    //                 return '{{ trans('followup::lang.rejected') }}';
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
                     {
                         data: 'note'
                     },

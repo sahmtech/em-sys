@@ -33,6 +33,7 @@ class FollowUpRecruitmentRequestController extends Controller
         $professions=EssentialsProfession::all()->pluck('name','id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         if (request()->ajax()) {
+          
             $recruitmentRequests = followupRecruitmentRequest::
                 select([
                     'id',
@@ -44,13 +45,26 @@ class FollowUpRecruitmentRequestController extends Controller
                     'note',
                     'status',
                     'attachment',
-
-
-                ]);
+                    'assigned_to',
+                ])->where('assigned_to','=',0);
          
 
 
         return Datatables::of($recruitmentRequests)
+        ->editColumn('status', function ($row) {
+            if ($row->assigned_to != 0) {
+                return '';
+            }
+        
+            $assignedRows = followupRecruitmentRequest::where('assigned_to', $row->id)->get();
+        
+            $statusesAndQuantities = $assignedRows->map(function ($assignedRow) {
+                return trans('followup::lang.' . $assignedRow->status) . ': ' . $assignedRow->quantity;
+            })->prepend(trans('followup::lang.' . $row->status) . ': ' . $row->quantity)->implode(', ');
+        
+            return $statusesAndQuantities;
+        })
+
                 ->editColumn('nationality_id',function($row)use($nationalities){
                     $item = $nationalities[$row->nationality_id]??'';
     
