@@ -150,8 +150,7 @@ class OfferPriceController extends Controller
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li>
                                     <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
-                                    <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
-                                </a>
+                                    <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>
 
                                     </li>
                
@@ -1018,8 +1017,7 @@ class OfferPriceController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $query = Transaction::where('business_id', $business_id)
-            ->where('id', $id)
+        $query = Transaction::where('id', $id)
             ->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
 
             ->select(

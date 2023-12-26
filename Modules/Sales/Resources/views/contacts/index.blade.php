@@ -511,6 +511,13 @@
     <script>
         $(document).ready(function() {
 
+
+
+           
+
+
+
+
             $('#allow_login_cs_checkbox').change(function() {
 
                 if ($(this).prop('checked')) {
