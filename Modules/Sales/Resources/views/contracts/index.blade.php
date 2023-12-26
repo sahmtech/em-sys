@@ -174,7 +174,7 @@
 
                                           
                                            
-                                            <div class="form-group col-md-8">
+                                            {{-- <div class="form-group col-md-8">
                                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                                 {!! Form::select('contract_items[]', $items, null, [
                                                     'class' => 'form-control select2', 
@@ -182,7 +182,7 @@
                                                     'placeholder' => __('sales::lang.select_contract_items'),
                                                     'required',
                                                 ]) !!}
-                                            </div>
+                                            </div> --}}
 
 
 
