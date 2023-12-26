@@ -172,7 +172,6 @@
 @endsection
 
 @section('javascript')
-    <script></script>
     <script type="text/javascript">
         var translations = {
             cantHoused: '{{ __('housingmovements::lang.cant_housed') }}',
@@ -301,11 +300,14 @@
                                 });
 
                                 var workerSelect = $('<select>', {
+                                    id: 'workerSelectId',
                                     name: 'worker_id[]',
                                     class: inputClasses + ' select2',
                                     style: 'height: 40px; width: 350px;',
                                     required: true,
                                 });
+
+
 
                                 // Populate worker dropdown options
                                 $.each(data.workers, function(workerId, workerName) {
@@ -316,10 +318,15 @@
                                     workerSelect.append(option);
                                 });
 
+
                                 // Append elements to modal body
                                 $('.modal-body').append(roomIDInput, roomnumberInput,
                                     workerSelect);
-                                workerSelect.select2();
+                                $('#workerSelectId').select2({
+                                    dropdownParent: $('#roomsModal'),
+                                });
+
+
 
                                 // Check if beds_count is 0 and show an error message
                                 if (room.beds_count === 0) {
