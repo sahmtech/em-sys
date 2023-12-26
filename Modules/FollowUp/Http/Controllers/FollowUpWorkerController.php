@@ -73,7 +73,7 @@ class FollowUpWorkerController extends Controller
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-           $users->select(
+        $users->select(
             'users.*',
             'users.id_proof_number',
             'users.nationality_id',
@@ -179,6 +179,9 @@ class FollowUpWorkerController extends Controller
                 })
                 ->filterColumn('worker', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
                 ->rawColumns(['contact_name', 'worker', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
