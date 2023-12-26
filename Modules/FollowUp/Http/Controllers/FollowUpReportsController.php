@@ -69,6 +69,21 @@ class FollowUpReportsController extends Controller
             'sales_projects.name as contact_name'
         );
 
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                }
+            }
+            $userProjects = array_unique($userProjects);
+            $users = $users->whereIn('users.assigned_to',   $userProjects);
+        }
+
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
@@ -144,7 +159,18 @@ class FollowUpReportsController extends Controller
                     $bank_details = json_decode($user->bank_details);
                     return $bank_details->bank_code ?? ' ';
                 })
-                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->addColumn('contact_name', function ($user) {
+
+
+                    return $user->contact_name;
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['contact_name', 'worker', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 

@@ -51,7 +51,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $can_crud_employee_appointments = auth()->user()->can('essentials.crud_employee_appointments');
         if (!$can_crud_employee_appointments) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $business_locations = BusinessLocation::all()->pluck('name', 'id');
@@ -74,7 +74,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 ]);
 
             if (!empty(request()->input('job_title')) && request()->input('job_title') !== 'all') {
-                $employeeAppointments->where('essentials_employee_appointmets.job_title', request()->input('job_title'));
+                $employeeAppointments = $employeeAppointments->where('essentials_employee_appointmets.profession_id', request()->input('job_title'));
             }
 
             if (!empty(request()->input('location')) && request()->input('location') !== 'all') {
@@ -151,7 +151,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-    
+
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();

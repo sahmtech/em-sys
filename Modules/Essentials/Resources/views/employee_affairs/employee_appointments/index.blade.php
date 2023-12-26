@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('job_title_filter', __('essentials::lang.job_title') . ':') !!}
                             {!! Form::text('job_title_filter', null, [
@@ -19,6 +19,17 @@
                                 'placeholder' => __('lang_v1.all'),
                             ]) !!}
                         </div>
+                    </div> --}}
+                    <div class="form-group col-md-3">
+                        {!! Form::label('job_title', __('essentials::lang.job_title') . '') !!}
+
+                        {!! Form::select('job_title_filter', $professions, null, [
+                            'class' => 'form-control select2',
+                            'style' => 'width:100%',
+                            'placeholder' => __('lang_v1.all'),
+                            'id' => 'job_title_filterSelect',
+                        ]) !!}
+
                     </div>
 
 
@@ -171,7 +182,7 @@
         $(document).ready(function() {
 
 
-
+            $('#job_title_filterSelect').select2();
 
             $('#addAppointmentModal').on('shown.bs.modal', function(e) {
                 $('#employee_select').select2({
@@ -217,8 +228,8 @@
                     url: "{{ route('appointments') }}",
                     data: function(d) {
 
-                        if ($('#job_title_filter').length) {
-                            d.job_title = $('#job_title_filter').val();
+                        if ($('#job_title_filterSelect').length) {
+                            d.job_title = $('#job_title_filterSelect').val();
                         }
                         if ($('#location_filter').length) {
                             d.location = $('#location_filter').val();
@@ -286,7 +297,7 @@
 
 
 
-            $('#job_title_filter,#location_filter, #department_filter').on('change', function() {
+            $('#job_title_filterSelect,#location_filter, #department_filter').on('change', function() {
                 reloadDataTable();
             });
             $(document).on('click', 'button.delete_appointment_button', function() {
