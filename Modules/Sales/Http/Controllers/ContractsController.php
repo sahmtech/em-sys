@@ -361,11 +361,12 @@ class ContractsController extends Controller
 
     public function print($id)
     {
-        error_log("123123");
         try {
             $business_id = request()->session()->get('user.business_id');
 
             $query = salesContract::where('id', $id)->With(['transaction.contact', 'transaction.sales_person', 'transaction.sell_lines', 'transaction.sell_lines.service'])->get()[0];
+
+
 
             $phpWord = new PhpWord();
             $type = "";
@@ -376,14 +377,13 @@ class ContractsController extends Controller
                 $type = __('sales::lang.monthly_cost');
                 $type_en = __('sales::lang.monthly_cost', [], 'en');
             } else if ($query->transaction->contract_form == 'operating_fees') {
-
-
-
                 $contract_form = "word_templates/fixed_contract.docx";
                 $type = __('sales::lang.operating_fees');
                 $type_en = __('sales::lang.operating_fees', [], 'en');
             }
-
+            $contact_id = $query->transaction->contact->id;
+            $signer = $query->transaction->contact->signer($contact_id);
+            $follower = $query->transaction->contact->follower($contact_id);
             $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path($contract_form));
             $templateProcessor->cloneRow('R', $query->transaction->sell_lines->count());
             $dateToday = Carbon::now("Asia/Riyadh");
@@ -408,17 +408,17 @@ class ContractsController extends Controller
             $templateProcessor->setValue('address',  $query->transaction->contact->address_line_1 ?? '');
             $templateProcessor->setValue('address_en',  $query->transaction->contact->address_line_1 ?? '');
             $templateProcessor->setValue('post_code',  $query->transaction->contact->zip_code ?? '');
-            $templateProcessor->setValue('s_nm',  '' ?? '');
-            $templateProcessor->setValue('s_nm_en',  '' ?? '');
-            $templateProcessor->setValue('ID_num',  '' ?? '');
-            $templateProcessor->setValue('acting_as',  '' ?? '');
-            $templateProcessor->setValue('acting_as_en',  '' ?? '');
-            $templateProcessor->setValue('phone',  '' ?? '');
-            $templateProcessor->setValue('email',  '' ?? '');
-            $templateProcessor->setValue('c_nm',  '' ?? '');
-            $templateProcessor->setValue('c_nm_en',  '' ?? '');
-            $templateProcessor->setValue('c_phone',  '' ?? '');
-            $templateProcessor->setValue('c_email',  '' ?? '');
+            $templateProcessor->setValue('s_nm', $signer?->first_name ?? '' . ' ' . $signer?->last_name ?? '');
+            $templateProcessor->setValue('s_nm_en',  $signer?->english_name ?? '');
+            $templateProcessor->setValue('ID_num',  $signer?->id_proof_number ?? '');
+            $templateProcessor->setValue('acting_as',  $signer?->signer_acting_as);
+            $templateProcessor->setValue('acting_as_en',  $signer?->signer_acting_as_en);
+            $templateProcessor->setValue('phone', $signer?->contact_number ?? '');
+            $templateProcessor->setValue('email', $signer?->email ?? '');
+            $templateProcessor->setValue('c_nm',  $follower?->first_name ?? '' . ' ' . $follower?->last_name ?? '');
+            $templateProcessor->setValue('c_nm_en',  $follower?->english_name ?? '');
+            $templateProcessor->setValue('c_phone',  $follower?->contact_number ?? '');
+            $templateProcessor->setValue('c_email',  $follower?->email ?? '');
             $i = 1;
             $food = 0;
             $housing = 0;
