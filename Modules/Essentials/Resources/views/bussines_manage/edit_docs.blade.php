@@ -13,7 +13,7 @@
                     {!! Form::open([
                         'url' => action('\App\Http\Controllers\BusinessDocumentController@update', $busines->id),
                         'method' => 'put',
-                        'id' => 'carType_add_form',
+                       
                     ]) !!}
 
                     <input type="hidden" name="business_id" value="{{ $busines->business_id }}">
@@ -161,71 +161,3 @@
     </div>
 </div> <!-- /.modal-content -->
 
-<script>
-    $('#licence_type').on('change', function() {
-
-        if (this.value == 'activity') {
-            $("#unified_number").show();
-            $("#licence_number").show();
-            $("#expiration_date").prop('required', false);
-            $("#licence_date").show();
-            $('#unified_number').show();
-            $('#issuing_location').show();
-
-            $("#renew_date").hide();
-            $("#capital").hide();
-            $("#national_address").hide();
-            $("#expiration_date").show();
-
-
-
-        } else if (this.value == 'national_address') {
-            $("#expiration_date").show();
-            $("#licence_number").show();
-            $("#licence_date").show();
-
-
-            $("#renew_date").hide();
-
-            $("#issuing_location").hide();
-            $("#capital").hide();
-            $("#national_address").hide();
-            $('#unified_number').hide();
-
-        } else if (this.value == 'memorandum_of_association') {
-
-            $("#licence_number").show();
-            $("#licence_date").show();
-            $("#capital").show();
-            $("#expiration_date").show();
-            // $("#national_address").show();
-            $("#renew_date").hide();
-            $("#issuing_location").hide();
-            $('#unified_number').hide();
-
-        } else if (this.value == 'COMMERCIALREGISTER') {
-
-            $('#unified_number').show();
-            $("#licence_number").show();
-            $("#licence_date").show();
-            $("#expiration_date").show();
-            $("#issuing_location").show();
-
-            $("#capital").hide();
-
-            $("#national_address").hide();
-
-        } else {
-            $("#capital").hide();
-
-            $('#unified_number').hide();
-            $("#national_address").hide();
-
-            $("#licence_number").show();
-            $("#licence_date").show();
-            $("#issuing_location").show();
-            $("#expiration_date").show();
-            $("#renew_date").show();
-        }
-    }).trigger("change");
-</script>

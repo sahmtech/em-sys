@@ -318,6 +318,8 @@
 
         });
     </script>
+
+    
     <script>
         $(document).ready(function() {
             $('#licence_type').on('change', function() {

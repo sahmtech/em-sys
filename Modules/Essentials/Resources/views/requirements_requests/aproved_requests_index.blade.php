@@ -24,7 +24,7 @@
                                     <th>@lang('essentials::lang.nationlity')</th>
                                     <th>@lang('essentials::lang.quantity')</th>
                                     <th>@lang('essentials::lang.required_date')</th>
-                                    <th>@lang('essentials::lang.status')</th>
+                              {{--  <th>@lang('essentials::lang.status')</th> --}}     
                                     <th>@lang('essentials::lang.notes')</th>
                                     <th>@lang('followup::lang.attachments')</th>
                                 </tr>
@@ -73,24 +73,24 @@
                     {
                         data: 'date'
                     },
-                    {
-                        data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
+                    // {
+                    //     data: 'status',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
 
 
-                                case 'pending':
-                                    return '{{ trans('followup::lang.pending') }}';
-                                case 'approved':
-                                    return '{{ trans('followup::lang.under approved') }}';
+                    //             case 'pending':
+                    //                 return '{{ trans('followup::lang.pending') }}';
+                    //             case 'approved':
+                    //                 return '{{ trans('followup::lang.under approved') }}';
 
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
-                            }
-                        }
-                    },
+                    //             case 'rejected':
+                    //                 return '{{ trans('followup::lang.rejected') }}';
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
                     {
                         data: 'note'
                     },
