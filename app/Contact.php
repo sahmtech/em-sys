@@ -412,4 +412,6 @@ class Contact extends Authenticatable
     {
         return $this->belongsTo(\App\User::class, 'responsible_user_id');
     }
+
+
 }

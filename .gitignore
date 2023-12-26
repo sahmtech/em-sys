@@ -54,6 +54,7 @@ uploads/business_documents/
 uploads/employee_contracts/
 uploads/insuranceContracts/
 uploads/officalDocuments/
+uploads/contracts/
 uploads/*
 uploads/*/*
 .env
