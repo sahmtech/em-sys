@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', __('home.home'))
 
+
 @section('content')
 
     <!-- Content Header (Page header) -->
@@ -8,7 +9,7 @@
 
         <br>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
                 <a href="{{ route('agent_workers') }}">
                     <div class=" custom_card_customer">
 
@@ -17,12 +18,13 @@
                                 <div class="w-title">
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5>{{ __('followup::lang.customer_home_workers_count') }}</h5>
+                                        <h3 id="counter-0">0</h3>
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4>{{ $workers_count }}</h4>
+                                        <h5>{{ __('agent.worker') }}</h5>
                                     </div>
+
                                 </div>
                             </div>
 
@@ -31,43 +33,21 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
-                <a href="{{ route('agent_workers')}}">
-                    <div class="  custom_card_customer">
-
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5>{{ __('followup::lang.customer_home_active_workers_count') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4>{{ $active_workers_count }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s" style="visibility : hidden;">
                 <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
                                 <div class="w-title">
+
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5>{{ __('followup::lang.customer_home_in_active_workers_count') }}</h5>
+                                        <h3 id="counter-1">0</h3>
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4>{{ $inactive_workers_count }}</h4>
+                                        <h5>{{ __('agent.active_worker') }}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -77,21 +57,46 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.15s" style="visibility : hidden;">
                 <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
                                 <div class="w-title">
+
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5>{{ __('followup::lang.customer_home_under_process__workers_requests_count') }}
+                                        <h3 id="counter-2">0</h3>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5>{{ __('agent.inactive_worker') }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s" style="visibility : hidden;">
+                <a href="{{ route('agent_workers') }}">
+                    <div class="  custom_card_customer">
+
+                        <div class="widget widget-one_hybrid widget-engagement">
+                            <div class="widget-heading">
+                                <div class="w-title">
+
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h3 id="counter-3">0</h3>
+                                    </div>
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h5>{{ __('agent.under_process_worker_request') }}
                                         </h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4>{{ $total_requests ?? 0 }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +110,7 @@
         <br>
         <br>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
                 <div class="custom_table_card_6">
                     <h4> @lang('followup::lang.customer_home_workers_requests')</h4>
                     <div class="table-responsive custom_table3">
@@ -127,7 +132,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 wow fadeIn" data-wow-delay="0.01s" style="visibility : hidden;">
                 @component('components.widget', [
                     'class' => 'chart_card',
                 ])
@@ -137,61 +142,6 @@
             </div>
         </div>
 
-
-        {{-- <div class="row">
-
-            <div class="col-md-6">
-                <div class="custom_table_card_6">
-
-                    <h4> @lang('followup::lang.requests')</h4>
-                    <div class="table-responsive custom_table2">
-                        <table class="table table-bordered table-striped" id="requests_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('followup::lang.request_number')</th>
-                                    <th>@lang('followup::lang.worker_name')</th>
-                                    <th>@lang('followup::lang.eqama_number')</th>
-                                    <th>@lang('followup::lang.project_name')</th>
-                                    <th>@lang('followup::lang.request_type')</th>
-                                    <th>@lang('followup::lang.request_date')</th>
-                                    <th>@lang('followup::lang.status')</th>
-                                    <th>@lang('followup::lang.note')</th>
-                                    <th>@lang('followup::lang.action')</th>
-
-
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="custom_table_card_6">
-                    <h5>@lang('essentials::lang.todo_list')</h5>
-                    <div class="table-responsive custom_table2">
-                        <table class="table table-bordered table-striped" id="task_table">
-                            <thead>
-                                <tr>
-                                    <th>@lang('lang_v1.added_on')</th>
-                                    <th> @lang('essentials::lang.task_id')</th>
-                                    <th class="col-md-2"> @lang('essentials::lang.task')</th>
-                                    <th> @lang('sale.status')</th>
-
-                                    <th> @lang('essentials::lang.estimated_hours')</th>
-                                    <th> @lang('essentials::lang.assigned_by')</th>
-                                    <th> @lang('essentials::lang.assigned_to')</th>
-
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-
-        </div> --}}
     </section>
     <!-- Main content -->
 
@@ -199,8 +149,48 @@
 @section('javascript')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {!! $chart->script() !!}
+
+
     <script type="text/javascript">
+         var wow = new WOW({
+        callback: function (box) {
+            if (box.classList.contains('fadeIn')) {
+                box.style.visibility = 'visible';
+            }
+        }
+    });
+
+    wow.init();
+  
+    
         $(document).ready(function() {
+
+            var counters = [
+                {{ $workers_count }},
+                {{ $active_workers_count }},
+                {{ $inactive_workers_count }},
+                {{ $total_requests ?? 0 }}
+                // Add more counter values if needed
+            ];
+
+            // Iterate through each counter
+            $.each(counters, function(index, value) {
+                var counterElement = $('#counter-' + index);
+
+                $({
+                    count: 0
+                }).animate({
+                    count: value
+                }, {
+                    duration: 2000,
+                    step: function() {
+                        counterElement.text(Math.floor(this.count));
+                    },
+                    complete: function() {
+                        counterElement.text(this.count);
+                    }
+                });
+            });
             var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,

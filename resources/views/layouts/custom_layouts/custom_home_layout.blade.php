@@ -34,7 +34,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     @include('layouts.partials.css')
     @include('layouts.custom_layouts.custom_partials.custom_css')
     @yield('css')
@@ -118,6 +118,7 @@
             var body = document.getElementsByTagName("body")[0];
             body.className += " sidebar-collapse";
         </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
                @include('layouts.custom_layouts.custom_partials.custom_header')
 
 

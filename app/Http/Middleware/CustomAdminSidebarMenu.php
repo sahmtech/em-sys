@@ -32,9 +32,9 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if (Str::startsWith($currentPath, ['users', 'manage_user'])) {
+        if (Str::startsWith($currentPath, ['users', 'manage_user','roles'])) {
             $this->userManagementMenu();
-        } elseif (Str::startsWith($currentPath, ['essentials', 'hrm', 'roles'])) {
+        } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
             $this->assetManagementMenu();
@@ -233,38 +233,48 @@ class CustomAdminSidebarMenu
                 __('user.users'),
                 ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
             );
+            if(auth()->user()->can('essentials.crud_all_roles')){
+                   $menu->url(
+                route('roles') ,
+                __('user.roles'),
+                ['icon' => 'fa fas fa-key', 'active' =>request()->segment(1) == 'roles' ]
+            );
+            }
+         
+           
+          
             //$menu->header("");
             //$menu->header("");
             //User management dropdown
-            if ($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
-                $menu->dropdown(
-                    __('user.user_management'),
-                    function ($sub) {
+            // if ($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {
+            //     $menu->dropdown(
+            //         __('user.user_management'),
+            //         function ($sub) {
 
-                        $sub->url(
-                            action([\App\Http\Controllers\ManageUserController::class, 'index']),
-                            __('user.users'),
-                            ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
-                        );
+            //             $sub->url(
+            //                 action([\App\Http\Controllers\ManageUserController::class, 'index']),
+            //                 __('user.users'),
+            //                 ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
+            //             );
 
-                        // if (auth()->user()->can('roles.view')) {
-                        //     $sub->url(
-                        //         action([\App\Http\Controllers\RoleController::class, 'index']),
-                        //         __('user.roles'),
-                        //         ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
-                        //     );
-                        // }
-                        // if (auth()->user()->can('user.create')) {
-                        //     $sub->url(
-                        //         action([\App\Http\Controllers\SalesCommissionAgentController::class, 'index']),
-                        //         __('lang_v1.sales_commission_agents'),
-                        //         ['icon' => 'fa fas fa-handshake', 'active' => request()->segment(1) == 'sales-commission-agents']
-                        //     );
-                        // }
-                    },
-                    ['icon' => 'fas fa-user-tie ']
-                );
-            }
+            //             // if (auth()->user()->can('roles.view')) {
+            //             //     $sub->url(
+            //             //         action([\App\Http\Controllers\RoleController::class, 'index']),
+            //             //         __('user.roles'),
+            //             //         ['icon' => 'fa fas fa-briefcase', 'active' => request()->segment(1) == 'roles']
+            //             //     );
+            //             // }
+            //             // if (auth()->user()->can('user.create')) {
+            //             //     $sub->url(
+            //             //         action([\App\Http\Controllers\SalesCommissionAgentController::class, 'index']),
+            //             //         __('lang_v1.sales_commission_agents'),
+            //             //         ['icon' => 'fa fas fa-handshake', 'active' => request()->segment(1) == 'sales-commission-agents']
+            //             //     );
+            //             // }
+            //         },
+            //         ['icon' => 'fas fa-user-tie ']
+            //     );
+            // }
         });
     }
     public function essentialsMenu()

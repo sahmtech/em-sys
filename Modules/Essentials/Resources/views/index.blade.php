@@ -10,7 +10,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
-                <div class="col-md-3">
+                <div class="col-md-3  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -21,7 +21,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{ $num_employee_staff }}</h4>
+                                        <h4 style="color:#fff" id="counter-0">0</h4>
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3  wow fadeIn" data-wow-delay="0.20s" style="visibility : hidden;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -40,7 +40,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{ $num_employees }}</h4>
+                                        <h4 style="color:#fff" id="counter-1">0</h4>
                                     </div>
                                 </div>
                             </div>
@@ -50,7 +50,7 @@
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-md-3  wow fadeIn" data-wow-delay="0.15s" style="visibility : hidden;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -61,7 +61,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{ $num_workers }}</h4>
+                                        <h4 style="color:#fff" id="counter-2">0</h4>
                                     </div>
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3  wow fadeIn" data-wow-delay="0.1s" style="visibility : hidden;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -80,7 +80,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{ $num_managers }}</h4>
+                                        <h4 style="color:#fff" id="counter-3">0</h4>
                                     </div>
                                 </div>
                             </div>
@@ -91,6 +91,7 @@
 
 
             </div>
+        </div>
             <br>
 
             {{-- 
@@ -99,7 +100,7 @@
 
             </div> --}}
 
-            <div class="row">
+            <div class="row  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
 
 
 
@@ -122,7 +123,7 @@
 
 
             </div>
-            <div class="row">
+            <div class="row  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
                 <div class="col-md-11 custom_table">
                     @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.contracts')])
                         <div class="table-responsive">
@@ -142,7 +143,7 @@
 
 
             </div>
-            <div class="row">
+            <div class="row  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
                 <div class="col-md-6 custom_table">
                     @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.residence_permits')])
                         <div class="table-responsive">
@@ -194,6 +195,47 @@
 @section('javascript')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {!! $chart->script() !!}
+
+
+
+          <script type="text/javascript">
+         var wow = new WOW({
+        callback: function (box) {
+            if (box.classList.contains('fadeIn')) {
+                box.style.visibility = 'visible';
+            }
+        }
+    });
+
+    wow.init();
+        $(document).ready(function () {
+            // Define an array of counters
+            var counters = [
+                {{ $num_employee_staff }},
+                {{ $num_employees }},
+                {{ $num_workers }},
+                {{ $num_managers }}
+                // Add more counter values if needed
+            ];
+    
+            // Iterate through each counter
+            $.each(counters, function (index, value) {
+                var counterElement = $('#counter-' + index);
+    
+                $({ count: 0 }).animate({
+                    count: value
+                }, {
+                    duration: 2000,
+                    step: function () {
+                        counterElement.text(Math.floor(this.count));
+                    },
+                    complete: function () {
+                        counterElement.text(this.count);
+                    }
+                });
+            });
+        });
+    </script>
 
     <script>
         function fetchLeaveStatusData() {
