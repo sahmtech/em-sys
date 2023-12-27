@@ -139,9 +139,10 @@ class ContractsController extends Controller
 
         $offerPrice = $request->input('offer_price');
         $contact = Transaction::whereId($offerPrice)->first()->contact_id;
-
-        $transaction = Transaction::where('id', '=', $offerPrice)->select('contract_duration')->first();
-        $contract_duration = $transaction->contract_duration ?? " ";
+       
+        $transaction=Transaction::where('id','=',$offerPrice )->select('contract_duration')->first();
+        $contract_duration= $transaction->contract_duration ;
+       
         //dd( $contract_duration);
 
 

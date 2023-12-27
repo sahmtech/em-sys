@@ -105,7 +105,18 @@
 @section('javascript')
 
 <script type="text/javascript">
-   
+     $(document).on('shown.bs.modal', '#bulkEditModal', function() {
+        $(this).find('#htr_building_select').select2({
+            dropdownParent: $('#bulkEditModal')
+        });
+
+        $(this).find('#project_name2').select2({
+            dropdownParent: $('#bulkEditModal')
+        });
+     
+       
+       
+    });
     var product_table2;
 
     function reloadDataTable() {
