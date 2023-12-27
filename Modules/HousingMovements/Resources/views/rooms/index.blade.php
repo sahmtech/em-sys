@@ -200,9 +200,13 @@ $("#chkAll").change(function () {
           getCheckRecords();
 });
 
-$('#roomsModal').on('hidden.bs.modal', function () {
+
     
-    location.reload();
+
+$(document).ready(function () {
+    $('#roomsModal').on('hidden.bs.modal', function () {
+        location.reload();
+    });
 });
 
 
@@ -286,6 +290,7 @@ $('#rooms-selected').on('click', function (e) {
                             button: 'OK',
                         });
                         $('#room_form').modal('hide');
+                         location.reload();
                         reloadDataTable();
                     }
                 });
@@ -295,24 +300,11 @@ $('#rooms-selected').on('click', function (e) {
             }
         });
 
-        $('#submitArrived').click(function () {
-            $.ajax({
-                url: $('#room_form').attr('action'),
-                type: 'post',
-                data: $('#room_form').serialize(),
-                success: function (response) {
-                    console.log(response);
-                    console.log($('#room_form').attr('action'));
-                    $('#room_form').modal('hide');
-                    
-                    location.reload();
-                }
-            });
-        });
+
     } else {
         $('input#selected_rows').val('');
         
-        location.reload();
+       
         swal({
             title: "@lang('lang_v1.no_row_selected')",
             icon: "warning",
@@ -324,27 +316,49 @@ $('#rooms-selected').on('click', function (e) {
 
 
 
-            $('#bulk_edit').submit(function(e) {
+$('#bulk_edit').submit(function (e) {
+    e.preventDefault();
 
-                e.preventDefault();
+    var formData = $(this).serializeArray();
 
-                var formData = $(this).serializeArray();
-                console.log(formData);
-                console.log($(this).attr('action'));
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'post',
-                    data: formData,
-                    success: function(response) {
+    
+    var roomData = {};
 
-                        console.log(response);
+    for (var i = 0; i < formData.length; i++) {
+        var field = formData[i];
 
+        
+        if (field.name === 'room_number[]') {
+            var roomNumber = field.value;
 
-                        $('#roomsModal').modal('hide');
-                        reloadDataTable();
-                    }
-                });
-            });
+            
+            if (!roomData[roomNumber]) {
+                roomData[roomNumber] = [];
+            }
+        } else if (field.name === 'worker_id[]') {
+            
+            roomData[roomNumber].push(field.value);
+        }
+    }
+
+    console.log(roomData);
+
+    
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'post',
+        data: {
+            roomData: JSON.stringify(roomData),
+            
+        },
+        success: function (response) {
+            console.log(response);
+            $('#roomsModal').modal('hide');
+            reloadDataTable();
+        }
+    });
+});
+
 
 
 

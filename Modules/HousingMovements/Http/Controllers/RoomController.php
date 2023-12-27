@@ -30,7 +30,7 @@ class RoomController extends Controller
 
         $can_crud_rooms = auth()->user()->can('housingmovement_module.crud_rooms');
         if (! $can_crud_rooms) {
-           //temp  abort(403, 'Unauthorized action.');
+           
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
@@ -105,7 +105,7 @@ class RoomController extends Controller
     public function getSelectedroomsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
-        // dd(  $selectedRows);
+        
        
         $rooms = HtrRoom::whereIn('id', $selectedRows)
         ->select('id as room_id', 'room_number as room_number' ,'beds_count')
@@ -129,23 +129,27 @@ class RoomController extends Controller
     public function room_data(Request $request)
     {
         try {
-            $requestData = $request->only(['room_number', 'room_id', 'worker_id']);
+            
 
-            $jsonData = [];
+          
             
-            foreach ($requestData['worker_id'] as $index => $workerId) {
-                $jsonObject = [
-                    'worker_id' => $workerId,
-                    'room_number' => isset($requestData['room_number'][$index]) ? $requestData['room_number'][$index] : null,
-                    'room_id' => isset($requestData['room_id'][$index]) ? $requestData['room_id'][$index] : null,
-                ];
             
-                $jsonData[] = $jsonObject;
-            }
             
-            $jsonData = json_encode($jsonData);
-    
-           
+        
+               
+            
+            
+            
+            
+            
+            
+            
+ 
+            $jsonData = $request->input('roomData');
+
+        
+        
+
           
             \Log::info('JSON Data: ' . $jsonData);
     
@@ -153,36 +157,57 @@ class RoomController extends Controller
                 $selectedData = json_decode($jsonData, true);
    
                 DB::beginTransaction();
-    
-                foreach ($selectedData as $data) {
+
+                foreach ($selectedData as $roomNumber => $workerIds) {
                    
-                    $room = DB::table('htr_rooms')
-                        ->where('id', $data['room_id'])
+                  
+                    foreach ($workerIds as $workerId)
+                     {
+                         $room = DB::table('htr_rooms')
+                        ->where('room_number', $roomNumber)
                         ->where('beds_count', '>', 0)
                         ->select('id', 'beds_count')
                         ->first();
+                      
+                        if($room)
+                            {
+                                $htrroom_histoty= new   HtrRoomsWorkersHistory();
+                                $htrroom_histoty->room_id =$room->id ;
+                                $htrroom_histoty->worker_id =$workerId;
+                                $htrroom_histoty->save();
+          
+                                DB::table('htr_rooms')
+                                ->where('id',$room->id)
+                                ->decrement('beds_count');
+                            }
+        
+                            else {
+                                
+                                DB::rollBack();
+                                $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
+                                return response()->json(['status' => $output]);
+                            }
+                           
 
-                    if($room)
-                    {
-                        $htrroom_histoty= new   HtrRoomsWorkersHistory();
-                        $htrroom_histoty->room_id = $data['room_id'];
-                        $htrroom_histoty->worker_id =$data['worker_id'];
-                        $htrroom_histoty->save();
-  
-                        DB::table('htr_rooms')
-                        ->where('id', $data['room_id'])
-                        ->decrement('beds_count');
-                    }
-
-                    else {
                         
-                        DB::rollBack();
-                        $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
-                        return response()->json(['status' => $output]);
+                        
+                        
+                        
                     }
-                   
-
                 }
+        
+    
+                
+                   
+                
+                
+                
+                
+                
+
+                
+
+                
     
             
                 DB::commit();
@@ -198,8 +223,8 @@ class RoomController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-     // return $jsonData;
-     return response()->json(['status' => $output]);
+   
+        return response()->json(['status' => $output]);
     }
     
 
