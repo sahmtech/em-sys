@@ -67,8 +67,7 @@ class RoomController extends Controller
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
-                        $html .= '<a href="'. route('room.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                        &nbsp;';
+                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
                         $html .= '<button class="btn btn-xs btn-danger delete_room_button" data-href="' . route('room.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         
@@ -268,22 +267,29 @@ class RoomController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit($roomId)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
 
 
-        $room = DB::table('htr_rooms')->find($id);
+        $room = DB::table('htr_rooms')->find($roomId);
         $buildings = DB::table('htr_buildings')->get()->pluck('name','id');
-
+        $output = [
+            'success' => true,
+            'data' => [
+                'room' => $room,
+                'buildings' => $buildings,
+            ],
+            'msg' => __('lang_v1.fetched_success'),
+        ];
    
-        return view('housingmovements::rooms.edit')->with(compact('room','buildings'));
+        return response()->json($output);
     }
 
  
-    public function update(Request $request, $id)
+    public function update(Request $request, $roomId)
     {
       
         $business_id = $request->session()->get('user.business_id');
@@ -302,10 +308,14 @@ class RoomController extends Controller
             $input2['contents'] = $input['contents'];
            
          
-            DB::table('htr_rooms')->where('id', $id)->update($input2);
+            DB::table('htr_rooms')->where('id', $roomId)->update($input2);
+
+
             $output = ['success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
+
+
         } catch (\Exception $e) {
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
@@ -315,8 +325,10 @@ class RoomController extends Controller
         }
 
 
-        return redirect()->route('rooms');
+        return response()->json($output);
     }
+
+
 
     public function destroy($id)
     {

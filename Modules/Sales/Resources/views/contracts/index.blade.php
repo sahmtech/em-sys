@@ -316,7 +316,6 @@
         $('#appendix_contract').change(function () {
             
             $('.form-fields').hide();
-
             
             var selectedRadio = $('input[name="contract_type"]:checked').val();
             $('#' + selectedRadio + '-appendix-fields').show();
@@ -326,14 +325,14 @@
 
 <script>
     $(document).ready(function() {
-    // ... (existing code)
+    
 
-    // Add an event listener for the start date change
+    
     $('#start_date').change(function() {
         updateEndDateFromStartDate();
     });
 
-    // Function to update end date based on start date
+    
     function updateEndDateFromStartDate() {
         var startDate = $('#start_date').val();
         var duration = $('#contract_duration').val();
@@ -345,9 +344,9 @@
         }
     }
 
-    // ... (existing code)
+    
 
-    // Function to calculate end date
+    
     function calculateEndDate(startDate, duration, unit) {
         var startDateObj = new Date(startDate);
         var endDateObj = new Date(startDateObj);

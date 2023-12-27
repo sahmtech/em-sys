@@ -87,7 +87,7 @@
 
 
 
-
+        @include('housingmovements::rooms.edit')
 
 
         <div class="modal fade room_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
@@ -104,7 +104,7 @@
                         <div class="row">
                             <div class="form-group col-md-4">
                                 {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
-                                {!! Form::number('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
+                                {!! Form::text('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-4">
                                 {!! Form::label('area', __('housingmovements::lang.area') . ':') !!}
@@ -141,6 +141,8 @@
         </div>
     </div>
 </section>
+
+x
 <!-- /.content -->
 <div class="col-md-8 selectedDiv" style="display:none;">
 </div>
@@ -222,6 +224,81 @@ $("#chkAll").change(function () {
           }
           getCheckRecords();
 });
+
+$('body').on('click', '.open-edit-modal', function() {
+        var roomId = $(this).data('id');
+        $('#roomIdInput').val(roomId);
+
+        var editUrl = '{{ route("room.edit", ":roomId") }}'
+        editUrl = editUrl.replace(':roomId', roomId);
+        console.log(editUrl);
+
+        $.ajax({
+            url: editUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                var data = response.data;
+                console.log(data);
+             
+                $('#editroomModal select[name="htr_building"]').val(data.room.htr_building_id).trigger('change');
+             
+                $('#editroomModal input[name="room_number"]').val(data.room.room_number);
+                $('#editroomModal input[name="area"]').val(data.room.area);
+                $('#editroomModal textarea[name="contents"]').val(data.room.contents);
+                
+                $('#editroomModal input[name="beds_count"]').val(data.room.beds_count);
+
+                $('#editroomModal').modal('show');
+            },
+            error: function(error) {
+                console.error('Error fetching user data:', error);
+            }
+        });
+    });
+
+
+$('body').on('submit', '#editroomModal form', function (e) {
+    e.preventDefault();
+
+   var roomId = $('#roomIdInput').val(); 
+   console.log(roomId);
+
+    var urlWithId = '{{ route("updateRoom", ":roomId") }}';
+    urlWithId = urlWithId.replace(':roomId', roomId);
+    console.log(urlWithId);
+
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+       
+        success: function (response) {
+            if (response.success) {
+             
+               
+                reloadDataTable();
+                $('#editroomModal').modal('hide');
+               toastr.success(response.msg, 'Success');
+              
+            } 
+            
+            else {
+                toastr.error(response.msg);
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+           
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
+
+
 
 $('#rooms-selected').on('click', function (e) {
     e.preventDefault();

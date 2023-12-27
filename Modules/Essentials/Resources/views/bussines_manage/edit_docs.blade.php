@@ -1,4 +1,6 @@
 <div class="modal-dialog modal-lg" id="edit_docs_model" role="document">
+
+
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:red"><span
@@ -35,18 +37,18 @@
                                 'national_address' => __('essentials::lang.national_address'),
                                 'activity' => __('essentials::lang.activity'),
                             ],
-                            $busines->licence_type,
+                              $busines->licence_type,
                             [
                                 'class' => 'form-control',
                                 'style' => 'height:40px',
-                                'id' => 'licence_type',
+                                'id' => 'licence_type_edit',
                                 'placeholder' => __('essentials::lang.select_licence_type'),
                                 'required',
                             ],
                         ) !!}
                     </div>
 
-                    <div class="form-group col-sm-6" id="unified_number" style="display: none;">
+                    <div class="form-group col-sm-6" id="unified_number_edit" style="display: none;">
                         {!! Form::label('unified_number', __('essentials::lang.unified_number') . ':*') !!}
                         {!! Form::number('unified_number', $busines->unified_number, [
                             'class' => 'form-control',
@@ -54,7 +56,7 @@
                         ]) !!}
                     </div>
 
-                    <div class="form-group col-sm-6" id="national_address" style="display: none;">
+                    <div class="form-group col-sm-6" id="national_address_edit" style="display: none;">
                         {!! Form::label('national_address', __('essentials::lang.national_address') . ':*') !!}
                         {!! Form::text('national_address', $busines->national_address, [
                             'class' => 'form-control',
@@ -63,7 +65,7 @@
                     </div>
 
 
-                    <div class="form-group col-sm-6" id="capital" style="display: none;">
+                    <div class="form-group col-sm-6" id="capital_edit" style="display: none;">
                         {!! Form::label('capital', __('essentials::lang.capital') . ':*') !!}
                         {!! Form::text('capital', $busines->capital, [
                             'class' => 'form-control',
@@ -71,7 +73,7 @@
                         ]) !!}
                     </div>
 
-                    <div class="form-group col-md-8" id ="licence_number">
+                    <div class="form-group col-md-8" id ="licence_number_edit">
                         {!! Form::label('licence_number', __('essentials::lang.licence_number') . ':*') !!}
                         {!! Form::text('licence_number', $busines->licence_number, [
                             'class' => 'form-control',
@@ -80,7 +82,7 @@
                     </div>
 
 
-                    <div class="form-group col-md-8" id="licence_date">
+                    <div class="form-group col-md-8" id="licence_date_edit">
                         {!! Form::label('licence_date', __('essentials::lang.licence_date') . ':*') !!}
                         {!! Form::date('licence_date', $busines->licence_date, [
                             'class' => 'form-control',
@@ -89,7 +91,7 @@
                     </div>
 
 
-                    <div class="form-group col-md-6" id="renew_date">
+                    <div class="form-group col-md-6" id="renew_date_edit">
                         {!! Form::label('renew_date', __('essentials::lang.renew_date') . ':*') !!}
                         {!! Form::date('renew_date', $busines->renew_date, [
                             'class' => 'form-control',
@@ -98,7 +100,7 @@
                     </div>
 
 
-                    <div class="form-group col-md-6" id="expiration_date">
+                    <div class="form-group col-md-6" id="expiration_date_edit">
                         {!! Form::label('expiration_date', __('essentials::lang.expiration_date') . ':') !!}
                         {!! Form::date('expiration_date', $busines->expiration_date, [
                             'class' => 'form-control',
@@ -106,7 +108,7 @@
                         ]) !!}
                     </div>
 
-                    <div class="form-group col-md-6" id="issuing_location">
+                    <div class="form-group col-md-6" id="issuing_location_edit">
                         {!! Form::label('issuing_location', __('essentials::lang.issuing_location') . ':') !!}
                         {!! Form::text('issuing_location', $busines->issuing_location, [
                             'class' => 'form-control',
@@ -114,7 +116,7 @@
                         ]) !!}
                     </div>
 
-                    <div class="form-group col-md-6" id="#details">
+                    <div class="form-group col-md-6" id="#details_edit">
                         {!! Form::label('details', __('essentials::lang.contry_details') . ':*') !!}
                         {!! Form::textarea('details', $busines->details, [
                             'class' => 'form-control',
@@ -124,7 +126,7 @@
                         ]) !!}
                     </div>
                     
-                    <div class="form-group col-md-6" id="file">
+                    <div class="form-group col-md-6" id="file_edit">
                         {!! Form::label('file', __('essentials::lang.file') . ':*') !!}
                         {!! Form::file('file', null, [
                             'class' => 'form-control',
