@@ -135,7 +135,7 @@
                         if ($('#htr_building_filter').length) {
                             d.htr_building = $('#htr_building_filter').val();
                         }
-                        // Add the room_status filter
+                        
                         d.room_status = $('#room_status').val();
                     }
                 },
@@ -201,7 +201,7 @@ $("#chkAll").change(function () {
 });
 
 $('#roomsModal').on('hidden.bs.modal', function () {
-    // Reload the page here
+    
     location.reload();
 });
 
@@ -248,12 +248,12 @@ $('#rooms-selected').on('click', function (e) {
                     });
 
                     var workerSelect = $('<select>', {
-                        id: 'workerSelectId_' + index, // Append the index to make it unique
+                        id: 'workerSelectId_' + index, 
                         name: 'worker_id[]',
                         class: inputClasses + ' select2',
                         style: 'height: 40px; width:220px; margin-right: 0;',
                         required: true,
-                        multiple: true, // Add the 'multiple' attribute
+                        multiple: true, 
                     });
 
                     $.each(data.workers, function (workerId, workerName) {
@@ -271,12 +271,12 @@ $('#rooms-selected').on('click', function (e) {
                     row.append(workerSelect);
                     $('.modal-body').append(row);
 
-                    // Use the unique ID when initializing select2
+                    
                     $('#workerSelectId_' + index).select2({
                         dropdownParent: $('#roomsModal'),
                     });
 
-                    // Check if beds_count is 0 and show an error message
+                    
                     if (room.beds_count === 0) {
                         swal({
                             text: translations.cantHoused + ' ' +
@@ -290,7 +290,7 @@ $('#rooms-selected').on('click', function (e) {
                     }
                 });
 
-                // Show the modal after populating data
+                
                 $('#roomsModal').modal('show');
             }
         });
@@ -304,14 +304,14 @@ $('#rooms-selected').on('click', function (e) {
                     console.log(response);
                     console.log($('#room_form').attr('action'));
                     $('#room_form').modal('hide');
-                    // Reload the page here
+                    
                     location.reload();
                 }
             });
         });
     } else {
         $('input#selected_rows').val('');
-        // Reload the page here
+        
         location.reload();
         swal({
             title: "@lang('lang_v1.no_row_selected')",
@@ -437,7 +437,7 @@ $('body').on('submit', '#editroomModal form', function (e) {
         },
         error: function (error) {
             console.error('Error submitting form:', error);
-            // Show a generic error message
+            
             toastr.error('An error occurred while submitting the form.', 'Error');
         },
     });
