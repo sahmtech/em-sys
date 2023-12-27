@@ -51,7 +51,7 @@ class ApiEssentialsController extends ApiController
     {
 
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -79,7 +79,7 @@ class ApiEssentialsController extends ApiController
     public function updateUserInfo(Request $request)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -109,14 +109,14 @@ class ApiEssentialsController extends ApiController
     public function resetPassword(Request $request)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
-            $user = Auth::user();
+          //  $user = Auth::user();
 
             if ($request->otp == '1111') {
-                $user = User::where('id', $user->id)->first();
+                $user = User::where('id', $request->user_id)->first();
                 $user->update(['password' => Hash::make($request->new_password)]);
                 return new CommonResource(['msg' => 'تم تغيير كلمة المرور بنجاح']);
             } else {
@@ -132,7 +132,7 @@ class ApiEssentialsController extends ApiController
     public  function changeToDoStatus(Request $request, $id)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -266,7 +266,7 @@ class ApiEssentialsController extends ApiController
     {
         // modified to not need a user_id, it can depend on the token
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -315,6 +315,4 @@ class ApiEssentialsController extends ApiController
             return $this->otherExceptions($e);
         }
     }
-
-
 }
