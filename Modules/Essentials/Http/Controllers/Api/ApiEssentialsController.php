@@ -116,7 +116,10 @@ class ApiEssentialsController extends ApiController
           //  $user = Auth::user();
 
             if ($request->otp == '1111') {
-                $user = User::where('id', $request->user_id)->first();
+                $user = User::where('contact_number', $request->phone)->first();
+                if(!$user){
+                    throw new \Exception("no such user, register first.");
+                }
                 $user->update(['password' => Hash::make($request->new_password)]);
                 return new CommonResource(['msg' => 'تم تغيير كلمة المرور بنجاح']);
             } else {
