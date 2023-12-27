@@ -53,7 +53,7 @@ class Contact extends Authenticatable
     public function scopeOnlySuppliers($query)
     {
         if (auth()->check() && !auth()->user()->can('supplier.view') && !auth()->user()->can('supplier.view_own')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $query->whereIn('contacts.type', ['supplier', 'both']);
@@ -411,5 +411,21 @@ class Contact extends Authenticatable
     public function responsibleClients()
     {
         return $this->belongsTo(\App\User::class, 'responsible_user_id');
+    }
+
+    public function follower($contact_id)
+    {
+        return User::where([
+            ['crm_contact_id', $contact_id],
+            ['contact_user_type', 'contract_follower']
+        ])->first();
+    }
+
+    public function signer($contact_id)
+    {
+        return User::where([
+            ['crm_contact_id', $contact_id],
+            ['contact_user_type', 'contact_signer']
+        ])->first();
     }
 }

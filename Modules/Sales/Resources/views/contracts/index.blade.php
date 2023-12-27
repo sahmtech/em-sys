@@ -174,7 +174,7 @@
 
                                           
                                            
-                                            <div class="form-group col-md-8">
+                                            {{-- <div class="form-group col-md-8">
                                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                                 {!! Form::select('contract_items[]', $items, null, [
                                                     'class' => 'form-control select2', 
@@ -182,7 +182,7 @@
                                                     'placeholder' => __('sales::lang.select_contract_items'),
                                                     'required',
                                                 ]) !!}
-                                            </div>
+                                            </div> --}}
 
 
 
@@ -279,6 +279,21 @@
 <script>
     $(document).ready(function () {
         
+        $(document).on('click', '.btn-download', function(e) {
+                    e.preventDefault();
+
+                    var downloadUrl = $(this).data('href');
+
+                    // Trigger the download using JavaScript
+                    var link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = downloadUrl.split('/').pop();
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+
         $('.select2').select2();
         console.log("selectedRadio");
         

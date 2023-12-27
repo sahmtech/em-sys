@@ -12,10 +12,12 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\Utils\ModuleUtil;
+use Carbon\Carbon;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\salesContractAppendic;
 use Modules\Sales\Entities\SalesProject;
+use PhpOffice\PhpWord\PhpWord;
 
 class ContractsController extends Controller
 {
@@ -74,7 +76,9 @@ class ContractsController extends Controller
                     'action',
                     function ($row) {
                         $html = '';
-                        $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
+                        //  $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
+                        $html .= '  <a href="#" data-href="' . route('download.contract', ['id' => $row->id]) . '" class="btn btn-xs btn-success btn-download">
+                        <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>';
                         $html .= '&nbsp;';
 
                         if (!empty($row->file)) {
@@ -146,7 +150,7 @@ class ContractsController extends Controller
             ['crm_contact_id', $contact],
             ['contact_user_type', 'contact_signer']
         ])->first();
-        
+
         $contract_follower = User::where([
             ['crm_contact_id', $contact],
             ['contact_user_type', 'contract_follower']
@@ -158,7 +162,7 @@ class ContractsController extends Controller
         return response()->json([
             'contract_follower' => $contract_follower,
             'contract_signer' => $contract_signer,
-            'contract_duration'=> $contract_duration
+            'contract_duration' => $contract_duration
         ]);
     }
 
@@ -182,7 +186,7 @@ class ContractsController extends Controller
             $input = $request->only([
                 'offer_price', 'contract-select',
                 'start_date', 'contract_duration', 'contract_duration_unit',
-                'end_date', 'status', 'contract_items', 'is_renewable', 'notes', 'file'
+                'end_date', 'status',  'is_renewable', 'notes', 'file'
             ]);
 
 
@@ -215,12 +219,12 @@ class ContractsController extends Controller
 
                 $input2['number_of_contract'] = 'CR0001';
             }
-            $selectedItems = $request->input('contract_items');
-            $selectedItems = array_filter($selectedItems, function ($item) {
+            // $selectedItems = $request->input('contract_items');
+            // $selectedItems = array_filter($selectedItems, function ($item) {
 
-                return $item !== null;
-            });
-            $input2['items_ids'] = json_encode(array_values($selectedItems));
+            //     return $item !== null;
+            // });
+            // $input2['items_ids'] = json_encode(array_values($selectedItems));
 
             if ($request->hasFile('file')) {
                 $file = request()->file('file');
@@ -315,18 +319,18 @@ class ContractsController extends Controller
     }
 
     public function fetchContractDuration($offerPrice)
-   {
-    $contractDuration = Transaction::where('id','=',$offerPrice)
-    ->select('contract_duration', 'id')->first();
-   
-    return response()->json([
-        'success' => true,
-        'data' => [
-            'contract_duration' => $contractDuration,
-          
-        ],
-        'msg' => __('lang_v1.fetched_success'),
-    ]);
+    {
+        $contractDuration = Transaction::where('id', '=', $offerPrice)
+            ->select('contract_duration', 'id')->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'contract_duration' => $contractDuration,
+
+            ],
+            'msg' => __('lang_v1.fetched_success'),
+        ]);
     }
 
     public function show($id)
@@ -355,6 +359,143 @@ class ContractsController extends Controller
 
         return view('sales::price_offer.show')->with(compact('offer'));
     }
+
+    public function print($id)
+    {
+        try {
+            $business_id = request()->session()->get('user.business_id');
+
+            $query = salesContract::where('id', $id)->With(['transaction.contact', 'transaction.sales_person', 'transaction.sell_lines', 'transaction.sell_lines.service'])->get()[0];
+
+
+
+            $phpWord = new PhpWord();
+            $type = "";
+            $type_en = "";
+            $contract_form = "";
+            if ($query->transaction->contract_form == 'monthly_cost') {
+                $contract_form = "word_templates/cost_plus_contract.docx";
+                $type = __('sales::lang.monthly_cost');
+                $type_en = __('sales::lang.monthly_cost', [], 'en');
+            } else if ($query->transaction->contract_form == 'operating_fees') {
+                $contract_form = "word_templates/fixed_contract.docx";
+                $type = __('sales::lang.operating_fees');
+                $type_en = __('sales::lang.operating_fees', [], 'en');
+            }
+            $contact_id = $query->transaction->contact->id;
+            $signer = $query->transaction->contact->signer($contact_id);
+            $follower = $query->transaction->contact->follower($contact_id);
+            $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path($contract_form));
+            $templateProcessor->cloneRow('R', $query->transaction->sell_lines->count());
+            $dateToday = Carbon::now("Asia/Riyadh");
+            $templateProcessor->setValue('nationality',   'سعودي');
+            $templateProcessor->setValue('nationality_en', 'Saudi');
+            $templateProcessor->setValue('type', $type);
+            $templateProcessor->setValue('type_en', $type_en);
+            $templateProcessor->setValue('DATE', $dateToday->format('Y-m-d'));
+            $templateProcessor->setValue('contract_no', $query->number_of_contract);
+            $templateProcessor->setValue('contacts',    $query->contact->supplier_business_name ?? '');
+            $templateProcessor->setValue('contacts_en',  $query->contact->english_name ?? '');
+            $templateProcessor->setValue('contract_duration',  $query->contract_duration);
+            $templateProcessor->setValue('c_dur',  $query->contract_duration);
+
+            $templateProcessor->setValue('DATE_EN', $dateToday->format('d-m-Y'));
+            $templateProcessor->setValue('d_nm_en', $dateToday->translatedFormat('l', 'en'));
+            $templateProcessor->setValue('d_nm', $dateToday->translatedFormat('l', 'ar'));
+            $templateProcessor->setValue('contacts',    $query->transaction->contact->supplier_business_name ?? '');
+            $templateProcessor->setValue('contacts_en',  $query->transaction->contact->english_name ?? '');
+            $templateProcessor->setValue('c_r_n',  $query->transaction->contact->commercial_register_no ?? '');
+            $templateProcessor->setValue('c_r_n_en',  $query->transaction->contact->commercial_register_no ?? '');
+            $templateProcessor->setValue('address',  $query->transaction->contact->address_line_1 ?? '');
+            $templateProcessor->setValue('address_en',  $query->transaction->contact->address_line_1 ?? '');
+            $templateProcessor->setValue('post_code',  $query->transaction->contact->zip_code ?? '');
+            $templateProcessor->setValue('s_nm', $signer?->first_name ?? '' . ' ' . $signer?->last_name ?? '');
+            $templateProcessor->setValue('s_nm_en',  $signer?->english_name ?? '');
+            $templateProcessor->setValue('ID_num',  $signer?->id_proof_number ?? '');
+            $templateProcessor->setValue('acting_as',  $signer?->signer_acting_as);
+            $templateProcessor->setValue('acting_as_en',  $signer?->signer_acting_as_en);
+            $templateProcessor->setValue('phone', $signer?->contact_number ?? '');
+            $templateProcessor->setValue('email', $signer?->email ?? '');
+            $templateProcessor->setValue('c_nm',  $follower?->first_name ?? '' . ' ' . $follower?->last_name ?? '');
+            $templateProcessor->setValue('c_nm_en',  $follower?->english_name ?? '');
+            $templateProcessor->setValue('c_phone',  $follower?->contact_number ?? '');
+            $templateProcessor->setValue('c_email',  $follower?->email ?? '');
+            $i = 1;
+            $food = 0;
+            $housing = 0;
+            $transportaions = 0;
+            $others = 0;
+            $uniform = 0;
+            $recruit = 0;
+
+            foreach ($query->transaction->sell_lines as $sell_line) {
+                $templateProcessor->setValue('R#' . $i, $i);
+                $templateProcessor->setValue('A#' . $i, $sell_line['service']['profession']['name'] ?? '');
+                $templateProcessor->setValue('B#' . $i,   number_format($sell_line['service']['service_price'] ?? 0, 0, '.', ''));
+
+                foreach (json_decode($sell_line->additional_allwances) as $allwance) {
+                    if (is_object($allwance) && property_exists($allwance, 'salaryType') && property_exists($allwance, 'amount')) {
+                        if ($allwance->salaryType == 'food_allowance') {
+                            $food = $allwance->amount;
+                        }
+                        if ($allwance->salaryType == 'housing_allowance') {
+                            $housing = $allwance->amount;
+                        }
+                        if ($allwance->salaryType == 'transportation_allowance') {
+                            $transportaions = $allwance->amount;
+                        }
+                        if ($allwance->salaryType == 'other_allowances') {
+                            $others = $allwance->amount;
+                        }
+                        if ($allwance->salaryType == 'uniform_allowance') {
+                            $uniform = $allwance->amount;
+                        }
+                        if ($allwance->salaryType == 'recruit_allowance') {
+                            $recruit = $allwance->amount;
+                        }
+                    }
+                }
+                $templateProcessor->setValue('C#' . $i, $food);
+                $templateProcessor->setValue('D#' . $i,  $transportaions);
+                $templateProcessor->setValue('E#' . $i, $housing);
+                $templateProcessor->setValue('F#' . $i, $others);
+                $templateProcessor->setValue('G#' . $i, __('sales::lang.' . $sell_line['service']['gender']) ?? '');
+                $templateProcessor->setValue('H#' . $i, $sell_line->quantity ?? 0);
+                $templateProcessor->setValue('I#' . $i, number_format($sell_line['service']['monthly_cost_for_one'] ?? 0, 0, '.', ''));
+                $templateProcessor->setValue('J#' . $i, $sell_line['service']['nationality']['nationality'] ?? '');
+                $templateProcessor->setValue('K#' . $i,  $query->transaction->contract_duration ?? 0);
+                $templateProcessor->setValue('L#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity);
+                $templateProcessor->setValue('M#' . $i, ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? '');
+                $templateProcessor->setValue('N#' . $i, $sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0 +  ($sell_line['service']['monthly_cost_for_one'] * $sell_line->quantity ?? 0) * 15 / 100 ?? 0);
+
+                $i++;
+            }
+
+
+            $templateProcessor->setValue('down_payment', $query->down_payment ?? '');
+            $templateProcessor->setValue('down_payment', $query->down_payment ?? '');
+            $templateProcessor->setValue('value', '' ?? '');
+            $templateProcessor->setValue('bank_gurantee', '' ?? '');
+            $templateProcessor->setValue('bank_gurantee_en', '' ?? '');
+
+
+            $outputPath = public_path('uploads/contracts/' . $query->number_of_contract . '.docx');
+            $templateProcessor->saveAs($outputPath);
+
+            $headers = [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'Content-Disposition' => 'attachment; filename="' . $query->number_of_contract . '.docx"',
+            ];
+
+            // Return the response with the file content
+            return response()->download($outputPath, $query->number_of_contract . '.docx', $headers);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+        }
+    }
+
+
     /**
      * Update the specified resource in storage.
      * @param Request $request
