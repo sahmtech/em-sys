@@ -74,6 +74,7 @@ class EssentialsTravelCategorieController extends Controller
         }
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         if (request()->ajax()) {
+            
             $userTravelCat = EssentialsEmployeeTravelCategorie::join('users as u', 'u.id', '=', 'essentials_employee_travel_categories.employee_id')->where('u.business_id', $business_id)
                 ->select([
                     'essentials_employee_travel_categories.id',

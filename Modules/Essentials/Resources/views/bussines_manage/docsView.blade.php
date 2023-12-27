@@ -301,6 +301,7 @@
                     method: "get",
                     url: href,
                     dataType: "json",
+                   
                     success: function(result) {
                         if (result.success == true) {
                             toastr.success(result.msg);
@@ -358,7 +359,7 @@
                     $("#licence_date").show();
                     $("#capital").show();
                     $("#expiration_date").show();
-                    // $("#national_address").show();
+                    
 
                     $("#renew_date").hide();
 
@@ -398,5 +399,104 @@
 
         });
     </script>
+
+
+
+
+
+
+<script>
+    $(document).ready(function() {
+        console.log("done");
+
+       
+        function handleLicenceTypeChange(value) {
+            console.log("second"+value);
+            if (value == 'activity') {
+                    $("#unified_number_edit").show();
+                    $("#licence_number_edit").show();
+                    $("#expiration_date_edit").prop('required', false);
+                    $("#licence_date_edit").show();
+                    $('#unified_number_edit').show();
+                    $('#issuing_location_edit').show();
+
+                    $("#renew_date_edit").hide();
+                    $("#capital_edit").hide();
+                    $("#national_address_edit").hide();
+                    $("#expiration_date_edit").show();
+
+
+
+                } else if (value == 'national_address') {
+                    $("#expiration_date_edit").show();
+                    $("#licence_number_edit").show();
+                    $("#licence_date_edit").show();
+
+
+                    $("#renew_date_edit").hide();
+
+                    $("#issuing_location_edit").hide();
+                    $("#capital_edit").hide();
+                    $("#national_address_edit").hide();
+                    $('#unified_number_edit').hide();
+
+                } else if (value == 'memorandum_of_association') {
+
+                    $("#licence_number_edit").show();
+                    $("#licence_date_edit").show();
+                    $("#capital_edit").show();
+                    $("#expiration_date_edit").show();
+                    
+
+                    $("#renew_date_edit").hide();
+
+                    $("#issuing_location_edit").hide();
+                    $('#unified_number_edit').hide();
+
+                } else if (value == 'COMMERCIALREGISTER') {
+
+                    $('#unified_number_edit').show();
+                    $("#licence_number_edit").show();
+                    $("#licence_date_edit").show();
+                    $("#expiration_date_edit").show();
+                    $("#issuing_location_edit").show();
+
+                    $("#capital_edit").hide();
+
+                    $("#national_address_edit").hide();
+
+                } else {
+                    $("#capital_edit").hide();
+
+                    $('#unified_number_edit').hide();
+                    $("#national_address_edit").hide();
+
+                    $("#licence_number_edit").show();
+                    $("#licence_date_edit").show();
+                    $("#issuing_location_edit").show();
+                    $("#expiration_date_edit").show();
+                    $("#renew_date_edit").show();
+                }
+
+        }
+
+     
+        function handleLicenceTypeEditChange() {
+            var value = $('#licence_type_edit').val();
+            console.log("first"+value);
+            handleLicenceTypeChange(value);
+        }
+
+        
+        $('#licence_type_edit').on('change', handleLicenceTypeEditChange);
+
+        
+        $('#edit_docs_model').on('shown.bs.modal', function() {
+            
+            handleLicenceTypeEditChange();
+        });
+    });
+</script>
+
 
 @endsection
