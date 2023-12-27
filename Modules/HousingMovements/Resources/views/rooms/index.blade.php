@@ -205,6 +205,7 @@ $('#roomsModal').on('hidden.bs.modal', function () {
     location.reload();
 });
 
+
 $('#rooms-selected').on('click', function (e) {
     e.preventDefault();
 
@@ -221,7 +222,7 @@ $('#rooms-selected').on('click', function (e) {
             success: function (data) {
                 $('.modal-body').empty();
 
-                var inputClasses = 'form-group col-md-4 ';
+                var inputClasses = 'form-group col-md-2';
                 var labelRow = $('<div class="row" style="padding-bottom: 10px;">');
                 labelRow.append('<div class="col-md-4">' + translations.room_number + '</div>');
                 labelRow.append('<div class="col-md-4">' + translations.worker_name + '</div>');
@@ -240,8 +241,8 @@ $('#rooms-selected').on('click', function (e) {
                         type: 'text',
                         name: 'room_number[]',
                         class: inputClasses,
-                        style: 'height: 30px; ',
-                        placeholder: '{{ __('housingmovements::lang.room_number') }}',
+                        style: 'height: 40px; width:150px; margin-right: 0;',
+                        placeholder: translations.room_number,
                         required: true,
                         value: room.room_number
                     });
@@ -250,8 +251,9 @@ $('#rooms-selected').on('click', function (e) {
                         id: 'workerSelectId_' + index, // Append the index to make it unique
                         name: 'worker_id[]',
                         class: inputClasses + ' select2',
-                        style: 'height: 30px; ',
+                        style: 'height: 40px; width:220px; margin-right: 0;',
                         required: true,
+                        multiple: true, // Add the 'multiple' attribute
                     });
 
                     $.each(data.workers, function (workerId, workerName) {
@@ -262,15 +264,17 @@ $('#rooms-selected').on('click', function (e) {
                         workerSelect.append(option);
                     });
 
-                    $('.modal-body').append(roomIDInput, roomnumberInput,
-                        workerSelect);
+                    var row = $('<div class="row" style="margin-bottom: 10px;">');
+                    row.append('<div class="col-md-6"></div>');
+                    row.append('<div class="col-md-6"></div>');
+                    row.append(roomnumberInput);
+                    row.append(workerSelect);
+                    $('.modal-body').append(row);
 
-                     // Use the unique ID when initializing select2
+                    // Use the unique ID when initializing select2
                     $('#workerSelectId_' + index).select2({
                         dropdownParent: $('#roomsModal'),
                     });
-
-                  
 
                     // Check if beds_count is 0 and show an error message
                     if (room.beds_count === 0) {
@@ -316,6 +320,8 @@ $('#rooms-selected').on('click', function (e) {
         });
     }
 });
+
+
 
 
             $('#bulk_edit').submit(function(e) {
