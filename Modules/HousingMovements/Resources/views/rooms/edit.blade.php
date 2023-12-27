@@ -22,7 +22,9 @@
                 </div>
                 <div class="form-group col-md-6">
                     {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
-                    {!! Form::select('htr_building', $buildings,null, ['class' => 'form-control select2','style'=>'width:100%; height:40px', 'placeholder' => __('housingmovements::lang.htr_building'), 'required']) !!}
+                    {!! Form::select('htr_building', $buildings,null,
+                         ['class' => 'form-control select2','style'=>'width:100%; height:40px',
+                          'placeholder' => __('housingmovements::lang.htr_building'), 'required']) !!}
                 </div>
 
             

@@ -96,56 +96,11 @@
 
         @include('housingmovements::rooms.edit')
 
+        @include('housingmovements::rooms.create_modal')
 
-            <div class="modal fade room_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 
-        <div class="modal fade" id="addRoomModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open(['route' => 'storeRoom']) !!}
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('housingmovements::lang.add_room')</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="form-group col-md-4">
-                                {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
-                                {!! Form::number('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
-                            </div>
-                            <div class="form-group col-md-4">
-                                {!! Form::label('area', __('housingmovements::lang.area') . ':') !!}
-                                {!! Form::text('area', null,
-                                     ['class' => 'form-control',
-                                      'placeholder' => __('housingmovements::lang.area'),'required']) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
-                                {!! Form::select('htr_building',
-                                     $buildings, null, ['class' => 'form-control select2','style'=>'width:100%;height:40px;',
-                                     'placeholder' => __('housingmovements::lang.htr_building'), 'required']) !!}
-                            </div>
-        
-                        
-                            <div class="form-group col-md-4">
-                                {!! Form::label('beds_count', __('housingmovements::lang.beds_count') . ':*') !!}
-                                {!! Form::number('beds_count', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.beds_count'), 'required']) !!}
-                            </div>
-                            
-                            <div class="form-group col-md-8">
-                                {!! Form::label('contents', __('housingmovements::lang.contents') . ':*') !!}
-                                {!! Form::textarea('contents', null, ['class' => 'form-control ', 'placeholder' => __('housingmovements::lang.contents'),'row'=>'1']) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
+
+
     </div>
 </section>
 <!-- /.content -->
@@ -218,8 +173,6 @@
                 console.log($('#room_status').val());
                 reloadDataTable();
             });
-
-
 
 
             $('#rooms_table').on('change', '.tblChk', function() {
@@ -410,6 +363,71 @@ $("#chkAll").change(function () {
 
 
 
+
+$('body').on('click', '.open-edit-modal', function() {
+        var roomId = $(this).data('id');
+        $('#roomIdInput').val(roomId);
+
+        var editUrl = '{{ route("room.edit", ":roomId") }}'
+        editUrl = editUrl.replace(':roomId', roomId);
+        console.log(editUrl);
+
+        $.ajax({
+            url: editUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                var data = response.data;
+
+                $('#editroomModal select[name="htr_building"]').val(data.room.htr_building_id).trigger('change');
+               
+                $('#editroomModal input[name="room_number"]').val(data.room.room_number);
+                $('#editroomModal input[name="area"]').val(data.room.area);
+                $('#editroomModal input[name="beds_count"]').val(data.room.beds_count);
+                $('#editroomModal textarea[name="contents"]').val(data.room.contents);
+
+                $('#editroomModal').modal('show');
+            },
+            error: function(error) {
+                console.error('Error fetching user data:', error);
+            }
+        });
+    });
+
+$('body').on('submit', '#editroomModal form', function (e) {
+    e.preventDefault();
+
+    var roomId = $('#roomIdInput').val();
+    console.log(roomId);
+
+    var urlWithId = '{{ route("updateRoom", ":roomId") }}';
+    urlWithId = urlWithId.replace(':roomId', roomId);
+    console.log(urlWithId);
+
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            if (response.success) {
+                console.log(response);
+                toastr.success(response.msg, 'Success');
+                reloadDataTable();
+                $('#editroomModal').modal('hide');
+            } else {
+                toastr.error(response.msg);
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            // Show a generic error message
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
 
         });
 
