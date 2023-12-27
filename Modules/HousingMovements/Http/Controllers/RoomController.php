@@ -338,8 +338,12 @@ class RoomController extends Controller
 
 
         try {
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
             DB::table('htr_rooms')->where('id', $id)
                         ->delete();
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
             $output = ['success' => true,
                 'msg' => __('lang_v1.deleted_success'),
@@ -349,7 +353,7 @@ class RoomController extends Controller
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
        

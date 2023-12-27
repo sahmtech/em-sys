@@ -11,6 +11,7 @@
 
     <!-- Main content -->
     <section class="content">
+       
         <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
@@ -45,10 +46,9 @@
                 @component('components.widget', ['class' => 'box-primary'])
                     @slot('tool')
                         <div class="box-tools">
-                            <button type="button" class="btn btn-block btn-primary" data-toggle="modal"
-                                data-target="#addRoomModal">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </button>
+                        <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#createRoomModal">
+                                    <i class="fa fa-plus"></i> @lang('messages.add')
+                        </button>
                         </div>
                     @endslot
                     <div class="table-responsive">
@@ -94,14 +94,16 @@
 
 
 
-        @include('housingmovements::rooms.edit')
+                @include('housingmovements::rooms.edit')
+
+           
+
+
+
+
+        </div>
 
         @include('housingmovements::rooms.create_modal')
-
-
-
-
-    </div>
 </section>
 <!-- /.content -->
 <div class="col-md-8 selectedDiv" style="display:none;">
@@ -113,6 +115,9 @@
         var translations = {
             cantHoused: '{{ __('housingmovements::lang.cant_housed') }}',
             notAvailable: '{{ __('housingmovements::lang.not_avaiable') }}',
+
+            room_number: '{{ __('housingmovements::lang.room_number') }}',
+            worker_name: '{{ __('housingmovements::lang.worker_name') }}',
         };
         var rooms_table;
 
@@ -195,120 +200,123 @@ $("#chkAll").change(function () {
           getCheckRecords();
 });
 
-            $('#rooms-selected').on('click', function(e) {
-                e.preventDefault();
+$('#roomsModal').on('hidden.bs.modal', function () {
+    // Reload the page here
+    location.reload();
+});
 
-                var selectedRows = getCheckRecords();
+$('#rooms-selected').on('click', function (e) {
+    e.preventDefault();
 
+    var selectedRows = getCheckRecords();
 
-                if (selectedRows.length > 0) {
-                    $('#roomsModal').modal('show');
-                    var i = 0;
-                    $.ajax({
-                        url: '{{ route('getSelectedroomsData') }}',
-                        type: 'post',
-                        data: {
-                            selectedRows: selectedRows
-                        },
-                        success: function(data) {
-                            $('.modal-body').empty();
+    if (selectedRows.length > 0) {
+        var i = 0;
+        $.ajax({
+            url: '{{ route('getSelectedroomsData') }}',
+            type: 'post',
+            data: {
+                selectedRows: selectedRows
+            },
+            success: function (data) {
+                $('.modal-body').empty();
 
-                            var inputClasses = 'form-group col-md-4 ';
+                var inputClasses = 'form-group col-md-4 ';
+                var labelRow = $('<div class="row" style="padding-bottom: 10px;">');
+                labelRow.append('<div class="col-md-4">' + translations.room_number + '</div>');
+                labelRow.append('<div class="col-md-4">' + translations.worker_name + '</div>');
+                $('.modal-body').append(labelRow);
 
-                            $.each(data.rooms, function(index, room) {
-                                var roomIDInput = $('<input>', {
-                                    type: 'hidden',
-                                    name: 'room_id[]',
-                                    class: inputClasses,
-                                    required: true,
-                                    value: room.room_id
-                                });
-
-                                var roomnumberInput = $('<input>', {
-                                    type: 'text',
-                                    name: 'room_number[]',
-                                    class: inputClasses,
-                                    style: 'height: 40px',
-                                    placeholder: '{{ __('housingmovements::lang.room_number') }}',
-                                    required: true,
-                                    value: room.room_number
-                                });
-
-                                var workerSelect = $('<select>', {
-                                    id: 'workerSelectId',
-                                    name: 'worker_id[]',
-                                    class: inputClasses + ' select2',
-                                    style: 'height: 40px; width: 350px;',
-                                    required: true,
-                                });
-
-
-
-                                // Populate worker dropdown options
-                                $.each(data.workers, function(workerId, workerName) {
-                                    var option = $('<option>', {
-                                        value: workerId,
-                                        text: workerName
-                                    });
-                                    workerSelect.append(option);
-                                });
-
-
-                                // Append elements to modal body
-                                $('.modal-body').append(roomIDInput, roomnumberInput,
-                                    workerSelect);
-                                $('#workerSelectId').select2({
-                                    dropdownParent: $('#roomsModal'),
-                                });
-
-
-
-                                // Check if beds_count is 0 and show an error message
-                                if (room.beds_count === 0) {
-
-                                    swal({
-
-                                        text: translations.cantHoused + ' ' +
-                                            room.room_number + ' ' +
-                                            translations.notAvailable,
-                                        icon: 'error',
-                                        button: 'OK',
-                                    });
-                                    $('#room_form').modal('hide');
-                                }
-                            });
-                        }
+                $.each(data.rooms, function (index, room) {
+                    var roomIDInput = $('<input>', {
+                        type: 'hidden',
+                        name: 'room_id[]',
+                        class: inputClasses,
+                        required: true,
+                        value: room.room_id
                     });
 
-                    $('#submitArrived').click(function() {
+                    var roomnumberInput = $('<input>', {
+                        type: 'text',
+                        name: 'room_number[]',
+                        class: inputClasses,
+                        style: 'height: 30px; ',
+                        placeholder: '{{ __('housingmovements::lang.room_number') }}',
+                        required: true,
+                        value: room.room_number
+                    });
 
-                        $.ajax({
+                    var workerSelect = $('<select>', {
+                        id: 'workerSelectId_' + index, // Append the index to make it unique
+                        name: 'worker_id[]',
+                        class: inputClasses + ' select2',
+                        style: 'height: 30px; ',
+                        required: true,
+                    });
 
-
-                            url: $('#room_form').attr('action'),
-                            type: 'post',
-                            data: $('#room_form').serialize(),
-
-                            success: function(response) {
-
-                                console.log(response);
-                                console.log($('#room_form').attr('action'));
-
-                                $('#room_form').modal('hide');
-                                reloadDataTable();
-                            }
+                    $.each(data.workers, function (workerId, workerName) {
+                        var option = $('<option>', {
+                            value: workerId,
+                            text: workerName
                         });
+                        workerSelect.append(option);
                     });
 
-                } else {
-                    $('input#selected_rows').val('');
-                    swal({
-                        title: "@lang('lang_v1.no_row_selected')",
-                        icon: "warning",
-                        button: "OK",
+                    $('.modal-body').append(roomIDInput, roomnumberInput,
+                        workerSelect);
+
+                     // Use the unique ID when initializing select2
+                    $('#workerSelectId_' + index).select2({
+                        dropdownParent: $('#roomsModal'),
                     });
+
+                  
+
+                    // Check if beds_count is 0 and show an error message
+                    if (room.beds_count === 0) {
+                        swal({
+                            text: translations.cantHoused + ' ' +
+                                room.room_number + ' ' +
+                                translations.notAvailable,
+                            icon: 'error',
+                            button: 'OK',
+                        });
+                        $('#room_form').modal('hide');
+                        reloadDataTable();
+                    }
+                });
+
+                // Show the modal after populating data
+                $('#roomsModal').modal('show');
+            }
+        });
+
+        $('#submitArrived').click(function () {
+            $.ajax({
+                url: $('#room_form').attr('action'),
+                type: 'post',
+                data: $('#room_form').serialize(),
+                success: function (response) {
+                    console.log(response);
+                    console.log($('#room_form').attr('action'));
+                    $('#room_form').modal('hide');
+                    // Reload the page here
+                    location.reload();
                 }
             });
+        });
+    } else {
+        $('input#selected_rows').val('');
+        // Reload the page here
+        location.reload();
+        swal({
+            title: "@lang('lang_v1.no_row_selected')",
+            icon: "warning",
+            button: "OK",
+        });
+    }
+});
+
 
             $('#bulk_edit').submit(function(e) {
 

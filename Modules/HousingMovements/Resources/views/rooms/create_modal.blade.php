@@ -1,6 +1,6 @@
+<div class="modal fade"  id="createRoomModal" tabindex="-1" role="dialog" aria-labelledby="createRoomModal">
+        <div class="modal-dialog" role="document">
 
-<div class="modal fade" id="addRoomModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     {!! Form::open(['route' => 'storeRoom']) !!}
                     <div class="modal-header">
@@ -11,7 +11,7 @@
                         <div class="row">
                             <div class="form-group col-md-4">
                                 {!! Form::label('room_number', __('housingmovements::lang.room_number') . ':*') !!}
-                                {!! Form::number('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
+                                {!! Form::text('room_number', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.room_number'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-4">
                                 {!! Form::label('area', __('housingmovements::lang.area') . ':') !!}
@@ -44,5 +44,6 @@
                     </div>
                     {!! Form::close() !!}
                 </div>
-            </div>
-        </div>
+         </div>
+       
+</div>
