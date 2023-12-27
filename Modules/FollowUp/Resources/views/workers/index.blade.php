@@ -111,6 +111,8 @@
                             <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.admissions_date')</td>
+                            <td style="width: 100px !important;">@lang('essentials::lang.admissions_type')</td>
+                            <td style="width: 100px !important;">@lang('essentials::lang.admissions_status')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.contract_end_date')</td>
                             <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
                             <td style="width: 100px !important;">@lang('business.email')</td>
@@ -124,6 +126,7 @@
                             <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
+                            <td style="width: 100px !important;">@lang('essentials::lang.travel_categorie')</td>
 
 
 
@@ -201,6 +204,26 @@
                         data: 'admissions_date'
                     },
                     {
+                        data: 'admissions_type',
+                        render: function(data, type, row) {
+                            if (data === 'first_time') {
+                                return '@lang('essentials::lang.first_time')';
+                            } else {
+                                return '@lang('essentials::lang.after_vac')';
+                            }
+                        }
+                    },
+                    {
+                        data: 'admissions_status',
+                        render: function(data, type, row) {
+                            if (data === 'on_date') {
+                                return '@lang('essentials::lang.on_date')';
+                            } else {
+                                return '@lang('essentials::lang.delay')';
+                            }
+                        }
+                    },
+                    {
                         data: 'contract_end_date'
                     },
                     {
@@ -259,6 +282,10 @@
                     },
                     {
                         data: 'bank_code',
+
+                    },
+                    {
+                        data: 'categorie_id',
 
                     },
 
