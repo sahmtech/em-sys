@@ -148,8 +148,11 @@ class BusinessDocumentController extends Controller
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $auth_id);
 
         $busines = BusinessDocument::find($id);
+        
         return view('essentials::bussines_manage.edit_docs', compact('busines'));
     }
+
+
 
     public function update(Request $request, $id)
     {

@@ -470,13 +470,25 @@ $('#renew-selected').on('click', function (e) {
                     type: 'post',
                     data: $('#renew_form').serialize(),
                     success: function (response) {
-
-                        console.log(data);
-                        console.log(response);
+                            if (response.success) {
+                            
+                                toastr.success(response.msg, 'Success');
+                      
+                              $('#renew_form').modal('hide');
+                              reloadDataTable();
+                            
+                            } 
+                            
+                            else {
+                                toastr.error(response.msg);
+                                console.log(response);
+                            }
+                        },
+                        error: function (error) {
+                            console.error('Error submitting form:', error);
                         
-                        $('#renewModal').modal('hide');
-                        reloadDataTable();
-                    }
+                            toastr.error('An error occurred while submitting the form.', 'Error');
+                        },
                 });
             });
 
