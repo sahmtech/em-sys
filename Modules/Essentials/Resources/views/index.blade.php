@@ -10,7 +10,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
-                <div class="col-md-3  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
+                <div class="col-md-3 ">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3  wow fadeIn" data-wow-delay="0.20s" style="visibility : hidden;">
+                <div class="col-md-3 ">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -50,7 +50,7 @@
                 </div>
 
 
-                <div class="col-md-3  wow fadeIn" data-wow-delay="0.15s" style="visibility : hidden;">
+                <div class="col-md-3 ">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3  wow fadeIn" data-wow-delay="0.1s" style="visibility : hidden;">
+                <div class="col-md-3 ">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -100,7 +100,7 @@
 
             </div> --}}
 
-            <div class="row  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
+            <div class="row">
 
 
 
@@ -123,7 +123,7 @@
 
 
             </div>
-            <div class="row  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
+            <div class="row  ">
                 <div class="col-md-11 custom_table">
                     @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.contracts')])
                         <div class="table-responsive">
@@ -143,7 +143,7 @@
 
 
             </div>
-            <div class="row  wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
+            <div class="row ">
                 <div class="col-md-6 custom_table">
                     @component('components.widget', ['class' => 'box-solid', 'title' => __('essentials::lang.residence_permits')])
                         <div class="table-responsive">
@@ -199,15 +199,7 @@
 
 
           <script type="text/javascript">
-         var wow = new WOW({
-        callback: function (box) {
-            if (box.classList.contains('fadeIn')) {
-                box.style.visibility = 'visible';
-            }
-        }
-    });
-
-    wow.init();
+      
         $(document).ready(function () {
             // Define an array of counters
             var counters = [

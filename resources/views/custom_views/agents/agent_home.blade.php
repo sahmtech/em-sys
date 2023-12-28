@@ -9,7 +9,7 @@
 
         <br>
         <div class="row">
-            <div class="col-md-3 wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
+            <div class="col-md-3 ">
                 <a href="{{ route('agent_workers') }}">
                     <div class=" custom_card_customer">
 
@@ -33,7 +33,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s" style="visibility : hidden;">
+            <div class="col-md-3 ">
                 <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
@@ -57,7 +57,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-3 wow fadeIn" data-wow-delay="0.15s" style="visibility : hidden;">
+            <div class="col-md-3 ">
                 <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
@@ -81,7 +81,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s" style="visibility : hidden;">
+            <div class="col-md-3">
                 <a href="{{ route('agent_workers') }}">
                     <div class="  custom_card_customer">
 
@@ -110,7 +110,7 @@
         <br>
         <br>
         <div class="row">
-            <div class="col-md-6 wow fadeIn" data-wow-delay="0.25s" style="visibility : hidden;">
+            <div class="col-md-6 ">
                 <div class="custom_table_card_6">
                     <h4> @lang('followup::lang.customer_home_workers_requests')</h4>
                     <div class="table-responsive custom_table3">
@@ -132,7 +132,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 wow fadeIn" data-wow-delay="0.01s" style="visibility : hidden;">
+            <div class="col-md-6">
                 @component('components.widget', [
                     'class' => 'chart_card',
                 ])
@@ -152,17 +152,6 @@
 
 
     <script type="text/javascript">
-         var wow = new WOW({
-        callback: function (box) {
-            if (box.classList.contains('fadeIn')) {
-                box.style.visibility = 'visible';
-            }
-        }
-    });
-
-    wow.init();
-  
-    
         $(document).ready(function() {
 
             var counters = [
