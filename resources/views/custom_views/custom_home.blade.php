@@ -66,11 +66,9 @@
 
                 <div class="col-md-10">
                     <div class="card-grid">
-                        @php
-                            $delay = 0.01;
-                        @endphp
+                     
                         @foreach ($cards as $card)
-                            <div class="col-md-3 wow fadeIn" data-wow-delay="{{ $delay . 's' }}" style="visibility : hidden;">
+                            <div class="col-md-3">
                                 <div class="card">
                                     <a href="{{ $card['link'] }}" class="card-link">
                                         <div class="card-content">
@@ -80,13 +78,11 @@
                                     </a>
                                 </div>
                             </div>
-                            @php
-                            $delay += 0.05;
-                        @endphp
+                          
                         @endforeach
                     </div>
                 </div>
-                <div class="col-md-2 wow fadeIn" data-wow-delay="{{ $delay . 's' }}" style="visibility : hidden;">
+                <div class="col-md-2">
                     <div class="card-content2" style=" margin-top: 17%;">
                         <div class="ribbon">
                             <span>الموظف المثالي</span>
@@ -131,15 +127,7 @@
 
 
     <script type="text/javascript">
-        var wow = new WOW({
-            callback: function(box) {
-                if (box.classList.contains('fadeIn')) {
-                    box.style.visibility = 'visible';
-                }
-            }
-        });
-
-        wow.init();
+     
 
 
         $(document).ready(function() {

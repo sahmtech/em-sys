@@ -118,7 +118,7 @@
             var body = document.getElementsByTagName("body")[0];
             body.className += " sidebar-collapse";
         </script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+           
                @include('layouts.custom_layouts.custom_partials.custom_header')
 
 

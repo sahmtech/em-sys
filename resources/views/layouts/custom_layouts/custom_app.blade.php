@@ -121,7 +121,7 @@
                 body.className += " sidebar-collapse";
             }
         </script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+          
         @if (!$pos_layout)
             @include('layouts.partials.header')
             @include('layouts.custom_layouts.custom_partials.custom_sidebar')
