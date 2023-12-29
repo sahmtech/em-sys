@@ -16,137 +16,120 @@
             'method' => 'post',
             'id' => 'user_add_form',
         ]) !!}
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.widget')
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            {!! Form::label('surname', __('business.prefix') . ':') !!}
-                            {!! Form::text('surname', null, ['class' => 'form-control', 'placeholder' => __('business.prefix_placeholder')]) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            {!! Form::label('first_name', __('business.first_name') . ':*') !!}
-                            {!! Form::text('first_name', null, [
-                                'class' => 'form-control',
-                                'required',
-                                'placeholder' => __('business.first_name'),
-                            ]) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            {!! Form::label('last_name', __('business.last_name') . ':') !!}
-                            {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('business.last_name')]) !!}
-                        </div>
-                    </div>
-                    {{-- <div class="col-md-5">
-        <div class="form-group">
-          {!! Form::label('username', __( 'business.username' ) . ':') !!}
-          @if (!empty($username_ext))
-            <div class="input-group">
-              {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __( 'business.username' ) ]); !!}
-              <span class="input-group-addon">{{$username_ext}}</span>
-            </div>
-            <p class="help-block" id="show_username"></p>
-          @else
-              {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __( 'business.username' ) ]); !!}
-          @endif
-          <p class="help-block">@lang('lang_v1.username_help')</p>
-        </div>
-      </div> --}}
-                    <div class="clearfix"></div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('email', __('business.email') . ':*') !!}
-                            {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __('business.email')]) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('password', __('business.password') . ':*') !!}
-                            {!! Form::password('password', [
-                                'class' => 'form-control',
-                                'required',
-                                'placeholder' => __('business.password'),
-                            ]) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('confirm_password', __('business.confirm_password') . ':*') !!}
-                            {!! Form::password('confirm_password', [
-                                'class' => 'form-control',
-                                'required',
-                                'placeholder' => __('business.confirm_password'),
-                            ]) !!}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    {!! Form::checkbox('is_active', 'active', true, ['class' => 'input-icheck status']) !!} {{ __('lang_v1.status_for_user') }}
-                                </label>
-                                @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
-                            </div>
-                        </div>
-                    </div>
 
-                    {{-- <div class="col-md-4">
-        <div class="form-group">
-          <div class="checkbox">
+        <div class="col-md-12 box box-primary">
+            <h4>@lang('lang_v1.user_info'):</h4>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('surname', __('business.prefix') . ':') !!}
+                    {!! Form::text('surname', null, ['class' => 'form-control', 'placeholder' => __('business.prefix_placeholder')]) !!}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('first_name', __('business.first_name') . ':*') !!}
+                    {!! Form::text('first_name', null, [
+                        'class' => 'form-control',
+                        'required',
+                        'placeholder' => __('business.first_name'),
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('last_name', __('business.last_name') . ':') !!}
+                    {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('business.last_name')]) !!}
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('email', __('business.email') . ':*') !!}
+                    {!! Form::text('email', null, ['class' => 'form-control', 'required', 'placeholder' => __('business.email')]) !!}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('password', __('business.password') . ':*') !!}
+                    {!! Form::password('password', [
+                        'class' => 'form-control',
+                        'required',
+                        'placeholder' => __('business.password'),
+                    ]) !!}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('confirm_password', __('business.confirm_password') . ':*') !!}
+                    {!! Form::password('confirm_password', [
+                        'class' => 'form-control',
+                        'required',
+                        'placeholder' => __('business.confirm_password'),
+                    ]) !!}
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+
+
+
+
+     
+
+
+
+
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('username', __('business.username') . ':') !!}
+                    @if (!empty($username_ext))
+                        <div class="input-group">
+                            {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __('business.username')]) !!}
+                            <span class="input-group-addon">{{ $username_ext }}</span>
+                        </div>
+                        <p class="help-block" id="show_username"></p>
+                    @else
+                        {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __('business.username')]) !!}
+                    @endif
+                    <p class="help-block">@lang('lang_v1.username_help')</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label('role', __('user.role') . ':*') !!} @show_tooltip(__('lang_v1.admin_role_location_permission_help'))
+                    {!! Form::select('role', $roles, null, ['class' => 'form-control select2']) !!}
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            {!! Form::checkbox('is_active', 'active', true, ['class' => 'input-icheck status']) !!} {{ __('lang_v1.status_for_user') }}
+                        </label>
+                        @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            {!! Form::checkbox('allow_login', 1, true, ['class' => 'input-icheck', 'id' => 'allow_login']) !!} {{ __('lang_v1.allow_login') }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+
          
-            <label>
-              {!! Form::checkbox('allow_login', 1, true, 
-              [ 'class' => 'input-icheck', 'id' => 'allow_login']); !!} {{ __( 'lang_v1.allow_login' ) }}
-            </label>
-          </div>
-       </div>
-      </div> --}}
-                @endcomponent
-            </div>
-            <div class="col-md-12">
-                @component('components.widget', ['title' => __('lang_v1.roles_and_permissions')])
-                    <div class="user_auth_fields">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                {!! Form::label('username', __('business.username') . ':') !!}
-                                @if (!empty($username_ext))
-                                    <div class="input-group">
-                                        {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __('business.username')]) !!}
-                                        <span class="input-group-addon">{{ $username_ext }}</span>
-                                    </div>
-                                    <p class="help-block" id="show_username"></p>
-                                @else
-                                    {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __('business.username')]) !!}
-                                @endif
-                                <p class="help-block">@lang('lang_v1.username_help')</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    {!! Form::checkbox('allow_login', 1, true, ['class' => 'input-icheck', 'id' => 'allow_login']) !!} {{ __('lang_v1.allow_login') }}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
+            <div class="clearfix"></div>
 
-                    <div class="clearfix"></div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            {!! Form::label('role', __('user.role') . ':*') !!} @show_tooltip(__('lang_v1.admin_role_location_permission_help'))
-                            {!! Form::select('role', $roles, null, ['class' => 'form-control select2']) !!}
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="col-md-3">
+
+            {{--  <div class="col-md-3">
                         <h4>@lang('role.access_locations') @show_tooltip(__('tooltip.access_locations_permission'))</h4>
                     </div>
                     <div class="col-md-9">
@@ -155,7 +138,7 @@
                                 <label>
                                     {!! Form::checkbox('access_all_locations', 'access_all_locations', true, ['class' => 'input-icheck']) !!} {{ __('role.all_locations') }}
                                 </label>
-                                @show_tooltip(__('tooltip.all_location_permission'))
+                      
                             </div>
                         </div>
                         @foreach ($locations as $location)
@@ -168,97 +151,14 @@
                                     </label>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-                    <div class="clearfix"></div>
-
-{{-- 
-                    <hr>
-                    <div class="col-md-3">
-                        <h4>@lang('role.access_contact_locations') </h4>
-                    </div>
-                    <div class="col-md-9">
-                        @foreach ($contacts as $contact)
-                            <div class="row check_group">
-                                <div class="col-md-5">
-                                    <h4>{{ $contact->supplier_business_name }}</h4>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-
-                                    @foreach ($contact->contactLocation as $project)
-                                        <div class="col-md-12">
-                                            <div class="checkbox">
-                                                <label>
-                                                    {!! Form::checkbox('contact_locations[]', $project->id, false, ['class' => 'input-icheck']) !!} {{ $project->name }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="clearfix"></div>
-                            <hr>
-                        @endforeach
-
+                        @endforeach 
                     </div> --}}
-                @endcomponent
-            </div>
-
-            {{-- <div class="col-md-12">
-    @component('components.widget', ['title' => __('sale.sells')])
-      <div class="col-md-4">
-        <div class="form-group">
-          {!! Form::label('cmmsn_percent', __( 'lang_v1.cmmsn_percent' ) . ':') !!} @show_tooltip(__('lang_v1.commsn_percent_help'))
-            {!! Form::text('cmmsn_percent', null, ['class' => 'form-control input_number', 'placeholder' => __( 'lang_v1.cmmsn_percent' ) ]); !!}
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-group">
-          {!! Form::label('max_sales_discount_percent', __( 'lang_v1.max_sales_discount_percent' ) . ':') !!} @show_tooltip(__('lang_v1.max_sales_discount_percent_help'))
-            {!! Form::text('max_sales_discount_percent', null, ['class' => 'form-control input_number', 'placeholder' => __( 'lang_v1.max_sales_discount_percent' ) ]); !!}
-        </div>
-      </div>
-      <div class="clearfix"></div>
-      
-      <div class="col-md-4">
-        <div class="form-group">
-            <div class="checkbox">
-            <br/>
-              <label>
-                {!! Form::checkbox('selected_contacts', 1, false, 
-                [ 'class' => 'input-icheck', 'id' => 'selected_contacts']); !!} {{ __( 'lang_v1.allow_selected_contacts' ) }}
-              </label>
-              @show_tooltip(__('lang_v1.allow_selected_contacts_tooltip'))
-            </div>
-        </div>
-      </div>
-      <div class="col-sm-4 hide selected_contacts_div">
-          <div class="form-group">
-              {!! Form::label('user_allowed_contacts', __('lang_v1.selected_contacts') . ':') !!}
-              <div class="form-group">
-                  {!! Form::select('selected_contact_ids[]', [], null, ['class' => 'form-control select2', 'multiple', 'style' => 'width: 100%;', 'id' => 'user_allowed_contacts' ]); !!}
-              </div>
-          </div>
-      </div>
-
-    @endcomponent
-  </div> --}}
+            <div class="clearfix"></div>
 
         </div>
-        {{-- @include('user.edit_profile_form_part')
 
-    @if (!empty($form_partials))
-      @foreach ($form_partials as $partial)
-        {!! $partial !!}
-      @endforeach
-    @endif --}}
+
+
         <div class="row">
             <div class="col-md-12 text-center">
                 <button type="submit" class="btn btn-primary btn-big" id="submit_user_button">@lang('messages.save')</button>
