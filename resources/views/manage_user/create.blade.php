@@ -75,7 +75,7 @@
 
 
 
-     
+
 
 
 
@@ -104,7 +104,7 @@
             </div>
 
             <div class="clearfix"></div>
-            
+
             <div class="col-md-4">
                 <div class="form-group">
                     <div class="checkbox">
@@ -125,9 +125,11 @@
                 </div>
             </div>
 
-         
-            <div class="clearfix"></div>
 
+            <div class="clearfix"></div>
+            <div style="display:none">
+                {!! Form::checkbox('access_all_locations', 'access_all_locations', true, ['class' => 'input-icheck']) !!} {{ __('role.all_locations') }}
+            </div>
 
             {{--  <div class="col-md-3">
                         <h4>@lang('role.access_locations') @show_tooltip(__('tooltip.access_locations_permission'))</h4>
@@ -136,7 +138,7 @@
                         <div class="col-md-12">
                             <div class="checkbox">
                                 <label>
-                                    {!! Form::checkbox('access_all_locations', 'access_all_locations', true, ['class' => 'input-icheck']) !!} {{ __('role.all_locations') }}
+                                
                                 </label>
                       
                             </div>
