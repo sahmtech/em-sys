@@ -1,5 +1,6 @@
 @extends('layouts.custom_layouts.custom_home_layout')
 @section('title', __('home.home'))
+
 @section('content')
     <section class="content"
         style="   
@@ -63,53 +64,55 @@
                         </div>
                     </div> --}}
 
-                    <div class="col-md-10">
-                        <div class="card-grid">
-                            @foreach ($cards as $card)
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <a href="{{ $card['link'] }}" class="card-link">
-                                            <div class="card-content">
-                                                <h3>{{ $card['title'] }}</h3>
-                                                <i class="fa fa-{{ $card['icon'] }}"></i>
-                                            </div>
-                                        </a>
-                                    </div>
+                <div class="col-md-10">
+                    <div class="card-grid">
+                     
+                        @foreach ($cards as $card)
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <a href="{{ $card['link'] }}" class="card-link">
+                                        <div class="card-content">
+                                            <h3>{{ $card['title'] }}</h3>
+                                            <i class="fa fa-{{ $card['icon'] }}"></i>
+                                        </div>
+                                    </a>
                                 </div>
-                            @endforeach
+                            </div>
+                          
+                        @endforeach
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card-content2" style=" margin-top: 17%;">
+                        <div class="ribbon">
+                            <span>الموظف المثالي</span>
+                        </div>
+                        <!-- Employee Profile Card Content -->
+                        <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
+                        <div class="employee-info">
+                            <h3>متعب الكبرى</h3>
+                            <p>مدير التشغيل</p>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="card-content2" style=" margin-top: 17%;">
-                            <div class="ribbon">
-                                <span>الموظف المثالي</span>
-                            </div>
-                            <!-- Employee Profile Card Content -->
-                            <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
-                            <div class="employee-info">
-                                <h3>متعب الكبرى</h3>
-                                <p>مدير التشغيل</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
+            </div>
 
-                {{-- Second Item (Placeholder) --}}
-                {{-- <div class="row">
+
+            {{-- Second Item (Placeholder) --}}
+            {{-- <div class="row">
                   
                 </div> --}}
 
+        </div>
+        @if (count($cards) < 4)
+            <div class="card-grid">
             </div>
-            @if (count($cards) < 4)
-                <div class="card-grid">
-                </div>
-                <div class="card-grid">
-                </div>
-                <div class="card-grid">
-                </div>
-            @endif
+            <div class="card-grid">
+            </div>
+            <div class="card-grid">
+            </div>
+        @endif
         </div>
     </section>
     <!-- Main content -->
@@ -121,7 +124,12 @@
 @stop
 
 @section('javascript')
+
+
     <script type="text/javascript">
+     
+
+
         $(document).ready(function() {
 
 

@@ -48,21 +48,7 @@
     display: flex;
 }
 
-.custom_card_customer {
-    background-color: #fff;
-    border-radius: 10px;
-    transition: transform 0.3s;
 
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-
-    text-align: center;
-    height: 30%;
-    width: 100%;
-    color: #245b80;
-
-}
 
 
 
@@ -242,5 +228,18 @@
 
 .skin-black .main-header .logo,
 .skin-black-light .main-header .logo {
-    background: #12142e !important;
+    background: #fbbc16 !important;
+    color:#12142e !important;
 }
+
+.main-footer {
+    background: #fbbc16 !important;
+    
+    padding: 10px;
+}
+
+
+/* .content-header{
+    background: #b4b4b4 url('/img/emdadat-bg-img.jpg') !important;
+} */
+
