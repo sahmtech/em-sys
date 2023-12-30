@@ -1104,7 +1104,6 @@ return [
   'add_attendance_status' => 'إضافة حالة',
   'business_single' => 'الشركة',
   'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك',
-
   'crud_essentials_recuirements_requests'=>'حذف \ إضافة \ تعديل  طلبات التوظيف الداخلي ',
   'recuirements_requests'=>' طلبات التوظيف الداخلي',
   'under_study'=>'الطلبات قيد الدراسة ',
@@ -1114,7 +1113,10 @@ return [
   'approved'=>' مقبول ',
   'unacceptable'=>'الطلبات المرفوضة ',
   'quantity_validation'=>'العدد المدخل يجب أن يكون أقل من ',
-
   'edit_docs' => 'تعديل ترخيص',
+  'escalates_to'=>'يُصعّد إلى',
+  'escalates_after'=>'يُصعّد بعد',
+  'in_hours'=>'بالساعات',
+  'you_have_no_access_role' => 'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
 ];
 
