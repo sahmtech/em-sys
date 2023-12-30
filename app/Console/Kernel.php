@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+
     protected function schedule(Schedule $schedule)
     {
         $env = config('app.env');
@@ -36,6 +37,10 @@ class Kernel extends ConsoleKernel
                     //->everyThirtyMinutes()
                     ->emailOutputTo($email);
         }
+  
+      //  $schedule->command('escalate:pending-requests')->dailyAt('20:25')->timezone('Asia/Riyadh');
+ //     $schedule->command('escalate:pending-requests')->everyMinute();
+
     }
 
     /**
@@ -48,4 +53,6 @@ class Kernel extends ConsoleKernel
         $this->load(__DIR__.'/Commands');
         require base_path('routes/console.php');
     }
+
+   
 }
