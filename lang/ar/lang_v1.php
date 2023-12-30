@@ -1450,7 +1450,8 @@ return [
     'not_yet' => 'ليس بعد',
     'done' => 'تمت',
     'accepted' => 'تم القبول',
-    'the_passport_number_already_exists' => 'رقم جواز السفر المدخل موجود سابقاً'
-
+    'the_passport_number_already_exists' => 'رقم جواز السفر المدخل موجود سابقاً',
+    'address' => 'العنوان',
+   
 
 ];

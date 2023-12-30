@@ -335,7 +335,7 @@ class EssentialsCardsController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-        return redirect()->back()->with(['status' => $output]);
+        return redirect()->route('cards')->with(['output']);
     // return $output;
     }
 

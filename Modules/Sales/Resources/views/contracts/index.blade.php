@@ -174,7 +174,7 @@
 
                                           
                                            
-                                            <div class="form-group col-md-8">
+                                            {{-- <div class="form-group col-md-8">
                                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                                 {!! Form::select('contract_items[]', $items, null, [
                                                     'class' => 'form-control select2', 
@@ -182,7 +182,7 @@
                                                     'placeholder' => __('sales::lang.select_contract_items'),
                                                     'required',
                                                 ]) !!}
-                                            </div>
+                                            </div> --}}
 
 
 
@@ -279,6 +279,21 @@
 <script>
     $(document).ready(function () {
         
+        $(document).on('click', '.btn-download', function(e) {
+                    e.preventDefault();
+
+                    var downloadUrl = $(this).data('href');
+
+                    // Trigger the download using JavaScript
+                    var link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = downloadUrl.split('/').pop();
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+
         $('.select2').select2();
         console.log("selectedRadio");
         
@@ -316,7 +331,6 @@
         $('#appendix_contract').change(function () {
             
             $('.form-fields').hide();
-
             
             var selectedRadio = $('input[name="contract_type"]:checked').val();
             $('#' + selectedRadio + '-appendix-fields').show();
@@ -326,14 +340,14 @@
 
 <script>
     $(document).ready(function() {
-    // ... (existing code)
+    
 
-    // Add an event listener for the start date change
+    
     $('#start_date').change(function() {
         updateEndDateFromStartDate();
     });
 
-    // Function to update end date based on start date
+    
     function updateEndDateFromStartDate() {
         var startDate = $('#start_date').val();
         var duration = $('#contract_duration').val();
@@ -345,9 +359,9 @@
         }
     }
 
-    // ... (existing code)
+    
 
-    // Function to calculate end date
+    
     function calculateEndDate(startDate, duration, unit) {
         var startDateObj = new Date(startDate);
         var endDateObj = new Date(startDateObj);

@@ -15,7 +15,8 @@
                             {!! Form::label('htr_building', __('housingmovements::lang.htr_building') . ':*') !!}
                             {!! Form::select('htr_building', $buildings,
                                 null,
-                                [  'class' => 'form-control select2','style'=>'width:100%',
+                                [    'class' => 'form-control select2',
+                                'style'=>'width:100%',
                                 'placeholder' => __('housingmovements::lang.htr_building'), 'required',
                                  'id' => 'htr_building_select']) !!}
                         </div>

@@ -20,6 +20,7 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
 
@@ -54,6 +55,8 @@ class FollowUpReportsController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
+
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
         $users = User::where('user_type', 'worker')
@@ -68,6 +71,21 @@ class FollowUpReportsController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         );
+
+        if (!$is_admin) {
+            $userProjects = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                }
+            }
+            $userProjects = array_unique($userProjects);
+            $users = $users->whereIn('users.assigned_to',   $userProjects);
+        }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -119,6 +137,14 @@ class FollowUpReportsController extends Controller
                     // return $this->getDocumentnumber($user, 'admissions_date');
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
+                ->addColumn('admissions_type', function ($user) {
+                    // return $this->getDocumentnumber($user, 'admissions_date');
+                    return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
+                })
+                ->addColumn('admissions_status', function ($user) {
+                    // return $this->getDocumentnumber($user, 'admissions_date');
+                    return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
+                })
 
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
@@ -144,7 +170,23 @@ class FollowUpReportsController extends Controller
                     $bank_details = json_decode($user->bank_details);
                     return $bank_details->bank_code ?? ' ';
                 })
-                ->rawColumns(['nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->addColumn('contact_name', function ($user) {
+
+
+                    return $user->contact_name;
+                })
+                ->addColumn('categorie_id', function ($row) use ($travelCategories) {
+                    $item = $travelCategories[$row->categorie_id] ?? '';
+
+                    return $item;
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_type', 'admissions_status', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 

@@ -1001,6 +1001,7 @@ return [
   'card_no' => 'رقم كرت العمل',
   'edit_Appointme' => 'تعديل التعيين',
   'basic_info' => 'المعلومات الأساسية ',
+  'personal_info' => 'المعلومات الشخصية ',
   'hrm_details' => 'التعيين',
   'hrm_details_create_edit' => 'التعيين',
   'renewal_residence' => 'تجديد الإقامات ',
@@ -1104,6 +1105,7 @@ return [
   'add_attendance_status' => 'إضافة حالة',
   'business_single' => 'الشركة',
   'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك',
+
   'crud_essentials_recuirements_requests'=>'حذف \ إضافة \ تعديل  طلبات التوظيف الداخلي ',
   'recuirements_requests'=>' طلبات التوظيف الداخلي',
   'under_study'=>'الطلبات قيد الدراسة ',
@@ -1118,5 +1120,5 @@ return [
   'escalates_after'=>'يُصعّد بعد',
   'in_hours'=>'بالساعات',
   'you_have_no_access_role' => 'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
-];
 
+];

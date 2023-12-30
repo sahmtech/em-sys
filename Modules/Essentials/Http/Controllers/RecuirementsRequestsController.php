@@ -91,7 +91,7 @@ class RecuirementsRequestsController extends Controller
                   
                 $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                     . $this->statuses[$row->status]['name'] . '</span>';
-                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"  data-quantity="' . $row->quantity . '"    data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"  data-quantity="' . $row->quantity . '"   fo data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
           
             return $status;
         })
@@ -145,34 +145,97 @@ class RecuirementsRequestsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-
         try {
-            $input = $request->only(['status', 'request_id','quantity']);
-
+            $input = $request->only(['status', 'request_id', 'quantity']);
+        
             $reqRequest = followupRecruitmentRequest::find($input['request_id']);
-           
+          
+            if ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'approved' && $reqRequest->change_status == 0) {
+               
+                $reqRequest->quantity -= $input['quantity'];
+                $reqRequest->change_status = 1;
+                $reqRequest->save();
+        
+                $newreq = new followupRecruitmentRequest();
+                $newreq->nationality_id = $reqRequest->nationality_id;
+                $newreq->specialization_id = $reqRequest->specialization_id;
+                $newreq->profession_id = $reqRequest->profession_id;
+                $newreq->date = $reqRequest->date;
+                $newreq->note = $reqRequest->note;
+                $newreq->assigned_to = $reqRequest->id;
+                $newreq->change_status =1;
+                $newreq->attachment = $reqRequest->attachment;
+                $newreq->quantity = $input['quantity'];
+                $newreq->status = $input['status'];
+                $newreq->save();
+            } 
+            
+            elseif ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'approved' && $reqRequest->change_status == 1) 
+            {
+                $reqRequest->quantity =$reqRequest->quantity - $input['quantity'];
+                $reqRequest->save();
 
-            $reqRequest->status = $input['status'];
-            $reqRequest->quantity =  $reqRequest->quantity  - $input['quantity'];
+                $req = followupRecruitmentRequest::where('assigned_to', $reqRequest->id)->first();
+        
+                if ($req) {
+                    
+                    $req->quantity = $req->quantity + $input['quantity'];
+                    $req->save();
+                }
+            }
 
-            $reqRequest->save();
 
-            $reqRequest->status = $this->statuses[$reqRequest->status]['name'];
 
-           
+
+                      
+            if ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'rejected' && $reqRequest->reject_change_status == 0) {
+               
+                $reqRequest->quantity -= $input['quantity'];
+                $reqRequest->reject_change_status = 1;
+                $reqRequest->save();
+        
+                $newreq = new followupRecruitmentRequest();
+                $newreq->nationality_id = $reqRequest->nationality_id;
+                $newreq->specialization_id = $reqRequest->specialization_id;
+                $newreq->profession_id = $reqRequest->profession_id;
+                $newreq->date = $reqRequest->date;
+                $newreq->note = $reqRequest->note;
+                $newreq->assigned_to = $reqRequest->id;
+                $newreq->reject_change_status =1;
+                $newreq->attachment = $reqRequest->attachment;
+                $newreq->quantity = $input['quantity'];
+                $newreq->status = $input['status'];
+                $newreq->save();
+            } 
+            
+            elseif ($reqRequest->quantity >= $input['quantity'] && $input['status'] == 'rejected' && $reqRequest->reject_change_status == 1) 
+            {
+                $reqRequest->quantity =$reqRequest->quantity - $input['quantity'];
+                $reqRequest->save();
+
+                $req = followupRecruitmentRequest::where('assigned_to', $reqRequest->id)->first();
+        
+                if ($req) {
+                    
+                    $req->quantity = $req->quantity + $input['quantity'];
+                    $req->save();
+                }
+            }
+
+        
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+        
             $output = [
                 'success' => false,
                 'msg' => $e->getMessage(),
             ];
         }
-
+        
         return $output;
     }
 
@@ -203,14 +266,14 @@ class RecuirementsRequestsController extends Controller
 
             return Datatables::of($recruitmentRequests)
 
-            ->editColumn('status', function ($row) {
+        
                   
-                $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                    . $this->statuses[$row->status]['name'] . '</span>';
-                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"       data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+        
+        
+        
           
-            return $status;
-        })
+        
+        
 
 
             ->editColumn('nationality_id',function($row)use($nationalities){
@@ -283,14 +346,14 @@ class RecuirementsRequestsController extends Controller
             return Datatables::of($recruitmentRequests)
 
             
-            ->editColumn('status', function ($row) {
+        
                   
-                $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                    . $this->statuses[$row->status]['name'] . '</span>';
-                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+        
+        
+        
           
-            return $status;
-        })
+        
+        
 
             ->editColumn('nationality_id',function($row)use($nationalities){
                 $item = $nationalities[$row->nationality_id]??'';
@@ -350,7 +413,7 @@ class RecuirementsRequestsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -381,7 +444,7 @@ class RecuirementsRequestsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -391,6 +454,6 @@ class RecuirementsRequestsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }
