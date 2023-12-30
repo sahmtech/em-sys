@@ -66,7 +66,6 @@ Route::middleware('web', 'SetSessionData', 'auth', 'language', 'timezone', 'Cust
     Route::get('/subscription/{subcription_id}/force-active', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'forceActive'])->name('force-active');
   
   
-    Route::get('/alladminRequests', [\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests'])->name('alladminRequests');
 
 });
 

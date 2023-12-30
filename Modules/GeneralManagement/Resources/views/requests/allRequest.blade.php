@@ -111,16 +111,6 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-            {{-- @slot('tool')
-                <div class="box-tools">
-
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#addRequestModal">
-                        <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
-                    </button>
-                </div>
-            @endslot --}}
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -182,18 +172,19 @@
 
                                 <h4>@lang('followup::lang.attachments')</h4>
                                 <ul id="attachments-list">
-                                    
+
                                 </ul>
                             </div>
                         </div>
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
-                        
+
                             <div class="form-group">
                                 <label for="attachment">
                                     <h4>@lang('followup::lang.add_attachment')</h4>
                                 </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
+                                    name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
@@ -241,6 +232,12 @@
 @endsection
 
 @section('javascript')
+    <script>
+        var langStrings = {
+            approved: '{{ __('followup::lang.approved') }}',
+            rejected: '{{ __('followup::lang.rejected') }}'
+        };
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -251,7 +248,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('alladminRequests') }}"
+                    url: "{{ route('president_requests') }}"
                 },
 
                 columns: [
@@ -322,31 +319,29 @@
                     {
                         data: 'note'
                     },
-
                     {
                         data: 'can_return',
                         render: function(data, type, row) {
                             var buttonsHtml = '';
 
-
                             if (data == 1 &&
-                                (row.department_id == {{ $department1->id }} || row.department_id ==
-                                    {{ $department2->id }}) &&
-                                row.status.toLowerCase() != 'trans(followup::lang.approved)' && row
-                                .status.toLowerCase() != 'tans(followup::lang.rejected)') {
-
-                                buttonsHtml +=
-                                    '<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('followup::lang.return_the_request')</button>';
+                                {{ json_encode($departmentIds) }}.includes(row.department_id) &&
+                                row.status.toLowerCase() != langStrings.approved && row.status
+                                .toLowerCase() != langStrings.rejected) {
+                                buttonsHtml += `
+                            <button class="btn btn-danger btn-sm btn-return" data-request-id="${row.process_id}">
+                                @lang('followup::lang.return_the_request')
+                            </button>`;
                             }
-                            buttonsHtml +=
-                                '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('followup::lang.view_request')</button>';
+
+                            buttonsHtml += `
+                            <button class="btn btn-primary btn-sm btn-view-request" data-request-id="${row.id}">
+                                @lang('followup::lang.view_request')
+                            </button>`;
 
                             return buttonsHtml;
                         }
-                    },
-
+                    }
 
 
                 ],
@@ -438,7 +433,7 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
@@ -534,11 +529,15 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                    attachment += '<p>';
-                                   
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
-                               
-                                 attachment += '</p>';
+                                attachment += '<p>';
+
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) + '</a>';
+
+                                attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);

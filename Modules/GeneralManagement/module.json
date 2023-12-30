@@ -1,0 +1,11 @@
+{
+    "name": "GeneralManagement",
+    "alias": "generalmanagement",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralManagement\\Providers\\GeneralManagementServiceProvider"
+    ],
+    "files": []
+}

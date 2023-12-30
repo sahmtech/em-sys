@@ -83,6 +83,8 @@ class CustomAdminSidebarMenu
             $this->assetManagementMenu();
         } elseif (Str::startsWith($currentPath, 'crm')) {
             $this->crmMenu();
+        }elseif (Str::startsWith($currentPath, 'generalmanagement')) {
+                $this->generalmanagementMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -138,6 +140,32 @@ class CustomAdminSidebarMenu
             //$menu->header("");
             //$menu->header("");
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+        });
+    }
+
+    public function generalmanagementMenu(){
+        Menu::create('admin-sidebar-menu', function ($menu) {
+
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(
+                action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index']),
+                '<i class="fas fa-users-cog"></i> ' . __('generalmanagement::lang.GeneralManagement'),
+                [
+                    'active' => request()->segment(1) == 'generalmanagement',
+                    // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
+                ],
+            );
+            if (auth()->user()->can('generalmanagement.president_requests')) {
+                $menu->url(
+                    action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']),
+                    __('generalmanagement::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'president_requests']
+                );
+            }
+
+            
+            
         });
     }
 
@@ -989,7 +1017,7 @@ class CustomAdminSidebarMenu
             $menu->url(
 
                 action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
-                __('accounting::lang.acconuting'),
+                __('accounting::lang.requests'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
             );
 
@@ -1686,13 +1714,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
                 );
             }
-            if (auth()->user()->can('Superadmin.crud_all_admin_requests')) {
-                $menu->url(
-                    action([\Modules\Superadmin\Http\Controllers\SuperadminRequestController::class, 'requests']),
-                    __('followup::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'alladminRequests']
-                );
-            }
+           
             //Modules menu
             if (($isSuperAdmin) || (auth()->user()->can('manage_modules'))) {
                 $menu->url(action([\App\Http\Controllers\Install\ModulesController::class, 'index']), __('lang_v1.modules'), ['icon' => 'fa fas fa-plug', 'active' => request()->segment(1) == 'manage-modules']);
