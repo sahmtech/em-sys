@@ -211,12 +211,18 @@ class EssentialsRequestController extends Controller
         $success = 1;
 
         foreach ($request->worker_id as $workerId) {
+            error_log($workerId);
             if ($workerId !== null) {
                 $business_id=User::where('id',$workerId)->first()->business_id;
+            error_log($business_id);
+
                 $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$business_id);
                 if ($procedure->count() == 0) {
+
                     $is_main=Business::where('id',$business_id)->first()->is_main;
                     if($is_main){
+                        error_log('1111111111111111');
+
                         $output = [
                             'success' => false,
                             'msg' => __('followup::lang.this_type_has_not_procedure'),
@@ -224,7 +230,7 @@ class EssentialsRequestController extends Controller
                         return redirect()->route('allEssentialsRequests')->withErrors([$output['msg']]);
                     }
                     else{
-                        $parentBusiness=Business::where('id',$business_id)->first()->parentBusiness;
+                        $parentBusiness=Business::where('id',$business_id)->first()->parent_business_id;
                         $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$parentBusiness);
                         if ($procedure->count() == 0) {
                             $output = [

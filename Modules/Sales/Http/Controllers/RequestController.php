@@ -356,7 +356,7 @@ class RequestController extends Controller
                         return redirect()->route('sales.requests')->withErrors([$output['msg']]);
                     }
                     else{
-                        $parentBusiness=Business::where('id',$business_id)->first()->parentBusiness;
+                        $parentBusiness=Business::where('id',$business_id)->first()->parent_business_id;
                         $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$parentBusiness);
                         if ($procedure->count() == 0) {
                             $output = [
