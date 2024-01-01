@@ -66,7 +66,7 @@
 
                 <div class="col-md-10">
                     <div class="card-grid">
-                     
+
                         @foreach ($cards as $card)
                             <div class="col-md-3">
                                 <div class="card">
@@ -77,23 +77,7 @@
                                         </div>
                                     </a>
                                 </div>
-
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="card-content2" style=" margin-top: 17%;">
-                            <div class="ribbon">
-                                <span>الموظف المثالي</span>
                             </div>
-                            <!-- Employee Profile Card Content -->
-                            <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
-                            <div class="employee-info">
-                                <h3>متعب الكبرى</h3>
-                                <p>مدير إدارة التشغيل</p>
-
-                            </div>
-                          
                         @endforeach
                     </div>
                 </div>
@@ -106,7 +90,8 @@
                         <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
                         <div class="employee-info">
                             <h3>متعب الكبرى</h3>
-                            <p>مدير التشغيل</p>
+
+                            <p>مدير إدارة التشغيل</p>
                         </div>
                     </div>
                 </div>
@@ -142,9 +127,6 @@
 
 
     <script type="text/javascript">
-     
-
-
         $(document).ready(function() {
 
 
