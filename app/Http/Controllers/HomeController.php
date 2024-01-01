@@ -340,7 +340,11 @@ class HomeController extends Controller
 
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
+// <<<<<<< Development
             ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
+// =======
+//             ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fa fas fa-network-wired', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
+// >>>>>>> live
             ['id' => 'settings',  'permissions' => [], 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
 
 
@@ -348,7 +352,9 @@ class HomeController extends Controller
         $cards = [];
 
         $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+
         $user_id = auth()->user()->id;
+
 
         foreach ($cardsPack as $card) {
             if (!empty($card['permissions'])) {
