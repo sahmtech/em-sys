@@ -34,9 +34,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     @include('layouts.partials.css')
     @include('layouts.custom_layouts.custom_partials.custom_css')
+
     @yield('css')
     <style>
         *,
@@ -120,6 +121,7 @@
                 body.className += " sidebar-collapse";
             }
         </script>
+          
         @if (!$pos_layout)
             @include('layouts.partials.header')
             @include('layouts.custom_layouts.custom_partials.custom_sidebar')
@@ -173,12 +175,12 @@
         </div>
         @include('home.todays_profit_modal')
         <!-- /.content-wrapper -->
-
-        @if (!$pos_layout)
+        @include('layouts.custom_layouts.custom_footer')
+        {{-- @if (!$pos_layout)
             @include('layouts.partials.footer')
         @else
             @include('layouts.partials.footer_pos')
-        @endif
+        @endif --}}
 
         <audio id="success-audio">
             <source src="{{ asset('/audio/success.ogg?v=' . $asset_v) }}" type="audio/ogg">

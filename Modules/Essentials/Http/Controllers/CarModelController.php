@@ -13,9 +13,9 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CarModelController extends Controller
 {
- 
 
-       /**
+
+    /**
      * Display a listing of the resource.
      * @return Renderable
      */
@@ -26,12 +26,11 @@ class CarModelController extends Controller
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-              
+
                 $carModles = $carModles->where('car_type_id', request()->input('carTypeSelect'));
-            
             }
 
-          
+
 
             return DataTables::of($carModles)
 
@@ -66,7 +65,7 @@ class CarModelController extends Controller
                         return $html;
                     }
                 )
-              
+
                 ->filter(function ($query) use ($request) {
 
                     // if (!empty($request->input('full_name'))) {
@@ -109,15 +108,20 @@ class CarModelController extends Controller
                 'car_type_id' => $request->input('car_type_id'),
             ]);
 
-            $output = [
-                'success' => true,
-                'msg' => __('account.account_updated_success'),
-            ];
             DB::commit();
-            return redirect()->back()->with(__('account.account_updated_success'));
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.added_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back();
+            return redirect()->back()
+            ->with('status', [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
+
         }
     }
 
@@ -161,15 +165,20 @@ class CarModelController extends Controller
                 'car_type_id' => $request->input('car_type_id'),
             ]);
 
-            $output = [
-                'success' => true,
-                'msg' => __('account.account_updated_success'),
-            ];
             DB::commit();
-            return redirect()->back()->with(__('account.account_updated_success'));
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.updated_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back();
+            return redirect()->back()
+            ->with('status', [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ]);
+
         }
     }
 
@@ -189,7 +198,12 @@ class CarModelController extends Controller
                     'msg' => 'تم حذف طراز السيارة بنجاح',
                 ];
             } catch (Exception $e) {
-                return redirect()->back();
+                return redirect()->back()
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
+
             }
             return $output;
         }

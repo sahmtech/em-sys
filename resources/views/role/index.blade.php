@@ -2,7 +2,7 @@
 @section('title', __('user.roles'))
 
 @section('content')
-@include('essentials::layouts.nav_employee_affairs')
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>@lang( 'user.roles' )
@@ -48,7 +48,7 @@
         var roles_table = $('#roles_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '/roles',
+                    ajax: '{{ route('roles')}}',
                     buttons:[],
                     columnDefs: [ {
                         "targets": 1,

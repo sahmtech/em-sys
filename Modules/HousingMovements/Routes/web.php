@@ -37,9 +37,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/rooms', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index'])->name('rooms');
         Route::get('/createRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'create'])->name('createRoom');
         Route::post('/storeRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'store'])->name('storeRoom');
-        Route::get('/rooms/{id}/edit', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'edit'])->name('room.edit');
+        Route::get('/rooms/edit/{roomId}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'edit'])->name('room.edit');
         Route::delete('/rooms/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'destroy'])->name('room.destroy');
-        Route::put('/updateRoom/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'update'])->name('updateRoom');
+        Route::post('/updateRoom/{roomId}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'update'])->name('updateRoom');
         Route::post('/postRoomsData', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'postRoomsData'])->name('postRoomsData');
         Route::post('/getSelectedroomsData', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'getSelectedroomsData'])->name('getSelectedroomsData');
        Route::post('/room_data', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'room_data'])->name('room_data');

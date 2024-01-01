@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('title', __('essentials::lang.procedures'))
-
+<style>
+    .custom-modal-dialog.style {
+        width: 72% !important;
+      
+    }
+</style>
 @section('content')
 
     <section class="content-header">
@@ -41,7 +46,7 @@
 
         <div class="modal fade" id="addProceduresModal" tabindex="-1" role="dialog"
             aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog custom-modal-dialog style ">
                 <div class="modal-content">
                     {!! Form::open(['route' => 'storeProcedure']) !!}
                     <div class="modal-header">
@@ -54,7 +59,7 @@
                         <div>
                             <div id="procedureSteps" class="row">
 
-                                <div class="form-group col-md-10">
+                                <div class="form-group col-md-6">
                                     {!! Form::label('type', __('essentials::lang.procedure_type') . ':*') !!}
                                     {!! Form::select(
                                         'type',
@@ -64,22 +69,25 @@
                                             'class' => 'form-control',
                                             'id' => 'type_select',
                                             'placeholder' => __('essentials::lang.procedure_type'),
-                                            'required',
+                                            'required', 'style' => 'height:40px',
                                         ],
                                     ) !!}
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="workflow-step" class="row">
-                                    <div class="form-group col-md-4">
+                                    
+                                    <div class="form-group col-md-2" style="width: 200px;">
                                         {!! Form::label('department_id', __('essentials::lang.managment') . ':*') !!}
                                         {!! Form::select('department_id', $departments, null, [
                                             'class' => 'form-control',
                                             'name' => 'steps[0][department_id]',
                                             'placeholder' => __('essentials::lang.managment'),
                                             'required',
+                                            'style' => 'height:40px',
                                         ]) !!}
                                     </div>
 
-                                    <div class="form-group col-md-4">
+                                    <div class="form-group col-md-2">
                                         <label>@lang('essentials::lang.can_reject') </label>
                                         <div class="radio">
                                             <label>
@@ -91,7 +99,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-md-4">
+                                    <div class="form-group col-md-2">
                                         <label>@lang('essentials::lang.can_return')</label>
                                         <div class="radio">
                                             <label>
@@ -102,7 +110,32 @@
                                             </label>
                                         </div>
                                     </div>
+
+                                    <div class="form-group col-md-2" style="width: 200px;">
+                                        {!! Form::label('escalates_to', __('essentials::lang.escalates_to') . ':') !!}
+                                        {!! Form::select('escalates_to', $departments, null, [
+                                            'class' => 'form-control',
+                                            'name' => 'steps[0][escalates_to]',
+                                            'placeholder' => __('essentials::lang.escalates_to'),
+                                            'style' => 'height:40px',
+                                        ]) !!}
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        {!! Form::label('escalates_after', __('essentials::lang.escalates_after') . ' (' . __('essentials::lang.in_hours') . ')' . ':') !!}
+                                        
+                                        <div class="input-group">
+                                            {!! Form::number('escalates_after', null, [
+                                                'class' => 'form-control',
+                                                'name' => 'steps[0][escalates_after]',
+                                                'placeholder' => __('essentials::lang.escalates_after'),
+                                                'style' => 'height:36px',
+                                            ]) !!}
+                                           
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
                                 </div>
+                   
 
                             </div>
 

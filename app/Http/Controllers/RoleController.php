@@ -86,7 +86,7 @@ class RoleController extends Controller
                 ->make(false);
         }
 
-        return view('essentials::employee_affairs.role.index');
+        return view('role.index');
     }
 
     public function editOrCreateAccessRole($id)

@@ -1276,6 +1276,8 @@ class Util
             __('followup::lang.nationality'),
             __('followup::lang.eqama_end_date'),
             __('followup::lang.admissions_date'),
+            __('essentials::lang.admissions_type'),
+            __('essentials::lang.admissions_status'),
             __('followup::lang.contract_end_date'),
             __('essentials::lang.mobile_number'),
             __('business.email'),
@@ -1288,7 +1290,8 @@ class Util
             __('followup::lang.gender'),
             __('followup::lang.marital_status'),
             __('followup::lang.blood_group'),
-            __('followup::lang.bank_code')
+            __('followup::lang.bank_code'),
+            __('essentials::lang.travel_categorie'),
         ];
     }
 
@@ -1308,7 +1311,7 @@ class Util
         $notifications_data = [];
         foreach ($notifications as $notification) {
             $data = $notification->data;
-        
+
             if (in_array($notification->type, [\App\Notifications\RecurringInvoiceNotification::class, \App\Notifications\RecurringExpenseNotification::class])) {
                 $msg = '';
                 $icon_class = '';
@@ -1606,9 +1609,9 @@ class Util
             'custom_field_2', 'custom_field_3', 'eqama_end_date',
             'custom_field_4', 'guardian_name', 'assigned_to',
             'id_proof_name', 'id_proof_number', 'permanent_address', 'border_no', 'expiration_date',
-            'current_address', 'bank_details', 'selected_contacts', 'emp_number','total_salary'
+            'current_address', 'bank_details', 'selected_contacts', 'emp_number', 'total_salary'
 
-            
+
         ]);
 
         if ($request->input('border_no') == 3) {
@@ -1689,7 +1692,7 @@ class Util
 
 
 
-      
+
         $user = User::create($user_details);
 
         if (!empty($user_details['expiration_date'])) {

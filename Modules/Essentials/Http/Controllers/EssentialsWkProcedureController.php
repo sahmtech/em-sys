@@ -116,6 +116,9 @@ class EssentialsWkProcedureController extends Controller
             'steps.*.department_id' => 'required|exists:essentials_departments,id',
             'steps.*.can_reject' => 'nullable|boolean',
             'steps.*.can_return' => 'nullable|boolean',
+            'steps.*.escalates_to' => 'nullable|exists:essentials_departments,id',
+            'escalates_after' => 'nullable|number',
+            
        
         ]);
 
@@ -129,18 +132,19 @@ class EssentialsWkProcedureController extends Controller
             $previousStep = null;
 
             foreach ($steps as $index => $step) {
+                $business_id=EssentialsDepartment::where('id',$step['department_id'])->first()->business_id;
                 $workflowStep = [
                     'type' => $type,
                     'department_id' => $step['department_id'],
+                    'business_id' => $business_id,
+                    'escalates_to' => $step['escalates_to'] ?? null,
+                    'escalates_after' => $step['escalates_after'] ?? null,
                     'next_department_id' => null,
                     'start' => $previousStep === null ? 1 : null,
                     'end' => $index === count($steps) - 1 ? 1 : null,
                     'can_reject' =>$step['can_reject'],
                     'can_return' => $step['can_return'],
-                    // 'can_reject' => isset($step['can_reject']) ? 1 : 0,
-                    // 'can_return' => isset($step['can_return']) ? 1 : 0,
-             
-                   
+       
                 ];
 
                 if ($previousStep !== null) {

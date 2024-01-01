@@ -266,9 +266,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('pos', SellPosController::class);
 
     Route::resource('roles', RoleController::class);
+    Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles');
 
-    Route::get('hrm/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
-    Route::post('hrm/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
+    Route::get('/roles/editOrCreateAccessRole/{id}', [RoleController::class, 'editOrCreateAccessRole'])->name('editOrCreateAccessRole');
+    Route::post('/roles/updateAccessRole/{roleId}', [RoleController::class, 'updateAccessRole'])->name('updateAccessRole');
     Route::resource('users', ManageUserController::class);
     Route::get('get-all-users', [ManageUserController::class, 'index'])->name('get-all-users');
     Route::resource('group-taxes', GroupTaxController::class);
@@ -521,12 +522,16 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
 
     Route::get('/agent_home', [AgentController::class, 'agentHome'])->name('agent_home');
-    Route::get('/agent_workers_requests', [FollowUpRequestController::class, 'agentWorkersRequests'])->name('agent_workers_requests');
+    Route::get('/agent_workers_requests', [AgentController::class, 'agentWorkersRequests'])->name('agent_workers_requests');
     Route::get('/agent_projects', [AgentController::class, 'agentProjects'])->name('agent_projects');
     Route::get('/agent_contracts', [AgentController::class, 'agentContracts'])->name('agent_contracts');
     Route::get('/agent_workers', [AgentController::class, 'agentWorker'])->name('agent_workers');
     Route::get('/agent_workers/{id}', [AgentController::class, 'showAgentWorker'])->name('show_agent_worker');
-    Route::get('/agent_requests', [AgentController::class, 'agentRequests'])->name('agent_requests');
+
+    Route::get('/agent_requests', [AgentController::class, 'agentRequests'])->name('agentRequests');
+    Route::post('/storeAgentRequests', [AgentController::class, 'storeAgentRequests'])->name('storeAgentRequests');
+
+    
 
     //
 });

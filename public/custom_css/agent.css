@@ -1,0 +1,27 @@
+.skin-black .content-wrapper .content-header-custom,
+.skin-black-light .content-wrapper .content-header-custom {
+    background: #b4b4b4 url('/img/emdadat-bg-img.jpg') !important;
+    background-size: cover !important;
+    color: #fff !important;
+    padding: 15px 15px 200px;
+}
+
+.custom_card_customer {
+    background-color: #fff;
+    border-radius: 10px;
+    transition: transform 0.3s;
+ 
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+
+    text-align: center;
+    height: 30%;
+    width: 100%;
+    color: #245b80;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
+}
+
+.custom_card_customer:hover {
+    transform: scale(1.05); /* Increase the size on hover */
+}
