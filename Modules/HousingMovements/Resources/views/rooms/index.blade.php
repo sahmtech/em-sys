@@ -118,6 +118,7 @@
 
             room_number: '{{ __('housingmovements::lang.room_number') }}',
             worker_name: '{{ __('housingmovements::lang.worker_name') }}',
+            transfer_to_room:'{{ __('housingmovements::lang.transfer_to_room') }}',
         };
         var rooms_table;
 
@@ -233,6 +234,7 @@ $('#rooms-selected').on('click', function (e) {
                 var labelRow = $('<div class="row" style="padding-bottom: 10px;">');
                 labelRow.append('<div class="col-md-4">' + translations.room_number + '</div>');
                 labelRow.append('<div class="col-md-4">' + translations.worker_name + '</div>');
+                labelRow.append('<div class="col-md-4" style="display: none;">' + translations.transfer_to_room + '</div>');
                 $('.modal-body').append(labelRow);
 
                 $.each(data.rooms, function (index, room) {
@@ -248,14 +250,33 @@ $('#rooms-selected').on('click', function (e) {
                         type: 'text',
                         name: 'room_number[]',
                         class: inputClasses,
-                        style: 'height: 40px; width:150px; margin-right: 0;',
+                        style: ' height:36px; width:150px; margin-right: 0;',
                         placeholder: translations.room_number,
                         required: true,
                         value: room.room_number
-                    });
+                    });                  
+var roomSelect = $('<select>', {
+    id: 'roomSelectId_' + index,  // Corrected ID generation
+    name: 'transfer_to_room_id[]',
+    class: inputClasses + ' select2',
+    style: 'height: 40px; width:220px; margin-right: 0; display: none;', // initially hidden
+});
+
+// Populate room options for transfer
+$.each(data.rooms, function (transferIndex, transferRoom) {
+    if (transferRoom.room_id !== room.room_id) {
+        var option = $('<option>', {
+            value: transferRoom.room_id,
+            text: transferRoom.room_number
+        });
+        roomSelect.append(option);
+    }
+});
+
 
                     var workerSelect = $('<select>', {
                         id: 'workerSelectId_' + index, 
+                     
                         name: 'worker_id[]',
                         class: inputClasses + ' select2',
                         style: 'height: 40px; width:220px; margin-right: 0;',
@@ -272,19 +293,37 @@ $('#rooms-selected').on('click', function (e) {
                         });
                         workerSelect.append(option);
                     });
+//                     console.log(room.beds_count );
+//                     if (room.beds_count === 0) {
+//     $('#roomSelectId_' + index).show();  // Corrected ID reference
+//     $('#roomSelectId_' + index).select2({
+//         dropdownParent: $('#roomsModal'),
+//     });
+// } else {
+//     $('#roomSelectId_' + index).hide();
+// }
 
                     var row = $('<div class="row" style="margin-bottom: 10px;">');
                     row.append('<div class="col-md-6"></div>');
                     row.append('<div class="col-md-6"></div>');
                     row.append(roomnumberInput);
                     row.append(workerSelect);
+                    row.append(roomSelect);
                     $('.modal-body').append(row);
 
                     $('#workerSelectId_' + index).select2({
                         dropdownParent: $('#roomsModal'),
                     });
 
+                    
+                    $('#roomSelectId_' + index).select2({
+                        dropdownParent: $('#roomsModal'),
+                    });
+
+
                     if (room.beds_count === 0) {
+                       
+
                         swal({
                             text: translations.cantHoused + ' ' +
                                 room.room_number + ' ' +
@@ -318,67 +357,6 @@ $('#rooms-selected').on('click', function (e) {
         });
     }
 });
-
-
-
-
-
-$('#bulk_edit').submit(function (e) {
-    e.preventDefault();
-
-    var formData = $(this).serializeArray();
-
-    
-    var roomData = {};
-
-    for (var i = 0; i < formData.length; i++) {
-        var field = formData[i];
-
-        
-        if (field.name === 'room_number[]') {
-            var roomNumber = field.value;
-
-            
-            if (!roomData[roomNumber]) {
-                roomData[roomNumber] = [];
-            }
-        } else if (field.name === 'worker_id[]') {
-            
-            roomData[roomNumber].push(field.value);
-        }
-    }
-
-    
-    $.ajax({
-        url: $(this).attr('action'),
-        type: 'post',
-        data: {
-            roomData: JSON.stringify(roomData),
-            
-        },
-        success: function (response) {
-
-            if (response.success) {
-                toastr.success(response.msg, 'Success');
-                $('#roomsModal').modal('hide');
-
-                  reloadDataTable();
-               
-            } else {
-                // Show error notification
-
-                $('#roomsModal').modal('hide');
-                reloadDataTable();
-               
-            }
-         
-          
-        }
-    });
-});
-
-
-
 
             $(document).on('click', 'button.delete_room_button', function() {
                 swal({
@@ -496,5 +474,8 @@ $('body').on('submit', '#editroomModal form', function (e) {
 
             return selectedRows;
         }
+
+
+
     </script>
 @endsection

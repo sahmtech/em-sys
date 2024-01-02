@@ -20,6 +20,7 @@ return [
     'address' => 'العنوان',
     'cant_housed' => 'لايمكن التسكين في الغرفة رقم ',
     'not_avaiable' => 'متاحة فقط للنقل  ',
+    'transfer_to_room'=>'نقل إلى الغرفة',
     'building_guard' => 'حارس العمارة',
     'building_supervisor' => 'مشرف العمارة',
     'building_cleaner' => 'عامل النظافة',
