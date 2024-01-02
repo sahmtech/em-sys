@@ -141,13 +141,27 @@ class RoomController extends Controller
         $data = [
             'rooms' => [],
             'workers' => [],
+            'otherRooms'=>[],
         ];
     
         foreach ($selectedRows as $roomId) {
             $room = HtrRoom::find($roomId);
-    
+            $otherRooms = HtrRoom::where('id', '!=', $roomId)->get();
+            
+            foreach ($otherRooms as $otherRoom) {
+                
+                $data['otherRooms'][] = [
+                    'room_id' => $otherRoom->id,
+                    'room_number' => $otherRoom->room_number,
+                    'beds_count' => $otherRoom->beds_count,
+                ];
+            }
+
+
+
             if ($room) {
                 $existingWorkerIds = HtrRoomsWorkersHistory::where('room_id', $roomId)
+                   ->where('still_housed',1)
                     ->pluck('worker_id')
                     ->toArray();
                   
@@ -167,7 +181,7 @@ class RoomController extends Controller
                     }
 
                  else {
-                    // Fetch all workers except those associated with the current room
+                    
                     $workers = User::where('user_type', 'worker')
                         ->whereNotIn('id', $existingWorkerIds)
                         ->select(
@@ -177,6 +191,7 @@ class RoomController extends Controller
                         )
                         ->pluck('full_name', 'id');
                 }
+
     
                 $data['rooms'][] = [
                     'room_id' => $room->id,
@@ -194,19 +209,19 @@ class RoomController extends Controller
     
 
    
-   
     public function room_data(Request $request)
     {
         try {
             $jsonData = $request->input('roomData');
+            
             \Log::info('JSON Data: ' . $jsonData);
     
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
                 DB::beginTransaction();
     
-                foreach ($selectedData as $roomNumber => $workerIds) {
-                    foreach ($workerIds as $workerId) {
+                foreach ($selectedData as $roomNumber => $roomData) {
+                    foreach ($roomData['worker_ids'] as $workerId) {
                         $room = DB::table('htr_rooms')
                             ->where('room_number', $roomNumber)
                             ->select('id', 'beds_count')
@@ -214,41 +229,67 @@ class RoomController extends Controller
     
                         if ($room) {
                             
-                            $existingHistory = HtrRoomsWorkersHistory::where('worker_id', $workerId)
-                                ->where('still_housed', 1)
-                                ->first();
+                            if (!empty($roomData['transfer_to_room_ids']) && count($roomData['transfer_to_room_ids']) > 0) {
+                                foreach ($roomData['transfer_to_room_ids'] as $transferRoomId) {
+                                    $existingHistory = HtrRoomsWorkersHistory::where('worker_id', $workerId)
+                                        ->where('room_id', $room->id)
+                                        ->where('still_housed', 1)
+                                        ->first();
     
-                            if ($existingHistory) {
-                                
-                                $existingHistory->still_housed = 0;
-                                $existingHistory->save();
+                                    if ($existingHistory) {
+                                        $existingHistory->still_housed = 0;
+                                        $existingHistory->save();
     
+                                        DB::table('htr_rooms')
+                                            ->where('id', $existingHistory->room_id)
+                                            ->increment('beds_count');
+                                    }
+    
+                                    
+                                    $transferHistory = new HtrRoomsWorkersHistory();
+                                    $transferHistory->room_id = $transferRoomId;
+                                    $transferHistory->worker_id = $workerId;
+                                    $transferHistory->still_housed = 1;
+                                    $transferHistory->save();
+    
+                                    
+                                    $user = User::find($workerId);
+                                    $user->update(['room_id' => $transferRoomId]);
+    
+                                    
+                                    DB::table('htr_rooms')
+                                        ->where('id', $transferRoomId)
+                                        ->decrement('beds_count');
+                                }
+                            } else {
                                 
+                                $existingHistory = HtrRoomsWorkersHistory::where('worker_id', $workerId)
+                                    ->where('still_housed', 1)
+                                    ->first();
+    
+                                if ($existingHistory) {
+                                    $existingHistory->still_housed = 0;
+                                    $existingHistory->save();
+    
+                                    DB::table('htr_rooms')
+                                        ->where('id', $existingHistory->room_id)
+                                        ->increment('beds_count');
+                                }
+    
+                                $htrroom_histoty = new HtrRoomsWorkersHistory();
+                                $htrroom_histoty->room_id = $room->id;
+                                $htrroom_histoty->worker_id = $workerId;
+                                $htrroom_histoty->still_housed = 1;
+                                $htrroom_histoty->save();
+    
+                                $user = User::find($workerId);
+                                $user->update(['room_id' => $room->id]);
+    
                                 DB::table('htr_rooms')
-                                    ->where('id', $existingHistory->room_id)
-                                    ->increment('beds_count');
+                                    ->where('id', $room->id)
+                                    ->decrement('beds_count');
                             }
-    
-                            
-                            $htrroom_histoty = new HtrRoomsWorkersHistory();
-                            $htrroom_histoty->room_id = $room->id;
-                            $htrroom_histoty->worker_id = $workerId;
-                            $htrroom_histoty->still_housed = 1;
-                            $htrroom_histoty->save();
-    
-                            
-                            $user = User::find($workerId);
-                            $user->update(['room_id' => $room->id]);
-    
-                            
-                            DB::table('htr_rooms')
-                                ->where('id', $room->id)
-                                ->decrement('beds_count');
-                        } else {
-                            DB::rollBack();
-                            $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
-                            return response()->json(['status' => $output]);
-                        }
+                        } 
                     }
                 }
     
@@ -261,9 +302,12 @@ class RoomController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-
-      return response()->json($output);
+    
+        return response()->json($output);
     }
+    
+    
+    
     
     
 

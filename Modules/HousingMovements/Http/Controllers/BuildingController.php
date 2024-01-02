@@ -32,7 +32,7 @@ class BuildingController extends Controller
 
         $can_crud_buildings = auth()->user()->can('housingmovement_module.crud_buildings');
         if (! $can_crud_buildings) {
-           //temp  abort(403, 'Unauthorized action.');
+           
         }
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
         $query = User::where('business_id', $business_id);
@@ -71,8 +71,9 @@ class BuildingController extends Controller
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
-                        $html .= '<a href="'. route('building.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                        &nbsp;';
+                     
+                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                    
                         $html .= '<button class="btn btn-xs btn-danger delete_building_button" data-href="' . route('building.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         
@@ -162,24 +163,23 @@ class BuildingController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit($buildingId)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
-
-
-        $building = DB::table('htr_buildings')->find($id);
-        $query = User::where('business_id', $business_id)->where('user_type','worker');
+    
+        $building = DB::table('htr_buildings')->find($buildingId);
+      
+        $query = User::where('business_id', $business_id)->where('user_type', 'worker');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users2 = $all_users->pluck('full_name', 'id');
-        $cities= EssentialsCity::forDropdown();
-   
-        return view('housingmovements::buildings.edit')->with(compact('users2','cities','building'));
+        $cities = EssentialsCity::forDropdown();
+    
+        return response()->json(['data' => compact('building', 'users2', 'cities')]);
     }
-
+    
  
-    public function update(Request $request, $id)
+    public function update(Request $request, $buildingId)
     {
       
         $business_id = $request->session()->get('user.business_id');
@@ -199,7 +199,7 @@ class BuildingController extends Controller
             $input2['supervisor_id'] = $input['supervisor'];
             $input2['cleaner_id'] = $input['cleaner'];
             
-            DB::table('htr_buildings')->where('id', $id)->update($input2);
+            DB::table('htr_buildings')->where('id', $buildingId)->update($input2);
             $output = ['success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
@@ -212,7 +212,7 @@ class BuildingController extends Controller
         }
 
 
-        return redirect()->route('buildings');
+        return response()->json($output);
     }
 
     public function destroy($id)
