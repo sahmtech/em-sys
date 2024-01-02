@@ -4,9 +4,10 @@
 @section('content')
 
 <section class="content-header">
-        <h1>
-            <span>@lang('followup::lang.workers_details')</span>
-        </h1>
+    <h1>
+        <span>@lang('followup::lang.workers_details')</span>
+        - {{ __('housingmovements::lang.room_number') }} {{ $roomWorkersHistory->first()->room->room_number }}
+    </h1>
 </section>
 
   <!-- Main content -->

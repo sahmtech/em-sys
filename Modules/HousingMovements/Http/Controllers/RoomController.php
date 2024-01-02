@@ -108,6 +108,7 @@ class RoomController extends Controller
     public function show_room_workers($id)
     {
         $roomWorkersHistory = HtrRoomsWorkersHistory::where('room_id', $id)
+            ->where('still_housed',1)
             ->get();
     
         $userIds = $roomWorkersHistory->pluck('worker_id');

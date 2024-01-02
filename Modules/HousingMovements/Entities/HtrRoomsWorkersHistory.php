@@ -4,6 +4,7 @@ namespace Modules\HousingMovements\Entities;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\HousingMovements\Entities\HtrRoom;
 
 class HtrRoomsWorkersHistory extends Model
 {
@@ -16,6 +17,11 @@ class HtrRoomsWorkersHistory extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(HtrRoom::class, 'room_id');
     }
 
 }
