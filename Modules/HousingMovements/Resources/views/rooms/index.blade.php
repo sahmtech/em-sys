@@ -261,7 +261,7 @@ $('#rooms-selected').on('click', function (e) {
                         style: 'height: 40px; width:220px; margin-right: 0;',
                      
                         multiple: true,
-                        disabled: room.beds_count === 0 
+                       // disabled: room.beds_count === 0 
                     });
 
                        // Populate worker options for the current room
@@ -349,8 +349,6 @@ $('#bulk_edit').submit(function (e) {
     }
 
     
-
-    
     $.ajax({
         url: $(this).attr('action'),
         type: 'post',
@@ -359,9 +357,22 @@ $('#bulk_edit').submit(function (e) {
             
         },
         success: function (response) {
+
+            if (response.success) {
+                toastr.success(response.msg, 'Success');
+                $('#roomsModal').modal('hide');
+
+                  reloadDataTable();
+               
+            } else {
+                // Show error notification
+
+                $('#roomsModal').modal('hide');
+                reloadDataTable();
+               
+            }
          
-            $('#roomsModal').modal('hide');
-            reloadDataTable();
+          
         }
     });
 });

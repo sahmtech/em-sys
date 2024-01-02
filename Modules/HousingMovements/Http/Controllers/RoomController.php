@@ -138,40 +138,59 @@ class RoomController extends Controller
     {
         $selectedRows = $request->input('selectedRows');
     
-        $rooms = HtrRoom::whereIn('id', $selectedRows)
-            ->select('id as room_id', 'room_number as room_number', 'beds_count')
-            ->get();
-    
         $data = [
             'rooms' => [],
             'workers' => [],
         ];
     
-        foreach ($rooms as $room) {
-            $existingWorkerIds = HtrRoomsWorkersHistory::where('room_id', $room->room_id)
-                ->pluck('worker_id')
-                ->toArray();
+        foreach ($selectedRows as $roomId) {
+            $room = HtrRoom::find($roomId);
     
-            $workers = User::where('user_type', 'worker')
-                ->whereNotIn('id', $existingWorkerIds)
-                ->select(
-                    'id',
-                    DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-                        ' - ',COALESCE(id_proof_number,'')) as full_name")
-                )
-                ->pluck('full_name', 'id');
+            if ($room) {
+                $existingWorkerIds = HtrRoomsWorkersHistory::where('room_id', $roomId)
+                    ->pluck('worker_id')
+                    ->toArray();
+                  
+                    if ($room->beds_count == 0) {
+                        $historyWorkerIds = HtrRoomsWorkersHistory::where('room_id', '=', $roomId)
+                            ->where('still_housed',1)
+                            ->pluck('worker_id')
+                            ->toArray();
+                                       
+                        $workers = User::whereIn('id', $historyWorkerIds)
+                            ->select(
+                                'id',
+                                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+                                    ' - ',COALESCE(id_proof_number,'')) as full_name")
+                            )
+                            ->pluck('full_name', 'id');
+                    }
+
+                 else {
+                    // Fetch all workers except those associated with the current room
+                    $workers = User::where('user_type', 'worker')
+                        ->whereNotIn('id', $existingWorkerIds)
+                        ->select(
+                            'id',
+                            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+                                ' - ',COALESCE(id_proof_number,'')) as full_name")
+                        )
+                        ->pluck('full_name', 'id');
+                }
     
-            $data['rooms'][] = [
-                'room_id' => $room->room_id,
-                'room_number' => $room->room_number,
-                'beds_count' => $room->beds_count,
-            ];
+                $data['rooms'][] = [
+                    'room_id' => $room->id,
+                    'room_number' => $room->room_number,
+                    'beds_count' => $room->beds_count,
+                ];
     
-            $data['workers'][$room->room_id] = $workers;
+                $data['workers'][$room->id] = $workers;
+            }
         }
     
         return response()->json($data);
     }
+    
     
 
    
@@ -234,7 +253,7 @@ class RoomController extends Controller
                 }
     
                 DB::commit();
-                $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+                $output = ['success' => 1, 'msg' => __('housingmovements::lang.housed_sucess')];
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
@@ -242,8 +261,8 @@ class RoomController extends Controller
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-    
-        return response()->json(['status' => $output]);
+
+      return response()->json($output);
     }
     
     

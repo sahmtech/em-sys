@@ -6,7 +6,7 @@
 <section class="content-header">
     <h1>
         <span>@lang('followup::lang.workers_details')</span>
-        - {{ __('housingmovements::lang.room_number') }} {{ $roomWorkersHistory->first()->room->room_number }}
+        - {{ __('housingmovements::lang.room_number') }} {{ $roomWorkersHistory->first()->room?->room_number  ?? ''}}
     </h1>
 </section>
 
