@@ -142,11 +142,11 @@ class RoomController extends Controller
             ->select('id as room_id', 'room_number as room_number', 'beds_count')
             ->get();
     
-        // Fetch user_ids from HtrRoomsWorkersHistory
+        
         $existingWorkerIds = HtrRoomsWorkersHistory::pluck('worker_id')
             ->toArray();
     
-        // Fetch users whose ids do not exist in HtrRoomsWorkersHistory
+        
         $workers = User::where('user_type', 'worker')
             ->whereNotIn('id', $existingWorkerIds)
             ->select(
@@ -201,6 +201,10 @@ class RoomController extends Controller
                                 $htrroom_histoty->room_id =$room->id ;
                                 $htrroom_histoty->worker_id =$workerId;
                                 $htrroom_histoty->save();
+
+
+                                $user=User::where('id',$workerId);
+                                $user->update(['room_id' => $room->id]);
           
                                 DB::table('htr_rooms')
                                 ->where('id',$room->id)
@@ -222,18 +226,6 @@ class RoomController extends Controller
                     }
                 }
         
-    
-                
-                   
-                
-                
-                
-                
-                
-
-                
-
-                
     
             
                 DB::commit();

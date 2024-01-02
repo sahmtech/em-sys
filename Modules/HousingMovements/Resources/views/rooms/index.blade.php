@@ -291,7 +291,7 @@ $('#rooms-selected').on('click', function (e) {
                             button: 'OK',
                         });
                         $('#room_form').modal('hide');
-                        // location.reload();
+                        
                         reloadDataTable();
                     }
                 });
