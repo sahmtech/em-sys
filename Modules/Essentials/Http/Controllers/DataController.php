@@ -491,7 +491,7 @@ class DataController extends Controller
                 'label' => __('essentials::lang.curd_wishes'),
                 'default' => false,
             ],
-     [
+            [
                 'value' => 'essentials.crud_attendances_status',
                 'label' => __('essentials::lang.crud_attendances_status'),
                 'default' => false,
@@ -561,17 +561,27 @@ class DataController extends Controller
                 'label' => __('essentials::lang.essentials'),
                 'default' => false,
             ],
-            
+
 
             [
                 'value' => 'essentials.crud_essentials_recuirements_requests',
                 'label' => __('essentials::lang.crud_essentials_recuirements_requests'),
                 'default' => false,
             ],
-            
+            [
+                'value' => 'essentials.essentials_dashboard',
+                'label' => __('essentials::lang.essentials_dashboard'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.essentials_work_cards_dashboard',
+                'label' => __('essentials::lang.essentials_work_cards_dashboard'),
+                'default' => false,
+            ],
+
         ];
     }
-    
+
     /**
      * Superadmin package permissions
      *
@@ -718,8 +728,6 @@ class DataController extends Controller
 
                             )],
                         )->order(11);
-
-
                     }
 
                     // if (auth()->user()->can('essentials.access_sales_target')) 
@@ -746,7 +754,6 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'settings'],
                         )->order(13);
                     }
-                  
                 },
                 [
                     'icon' => 'fa fas fa-users',
@@ -805,7 +812,7 @@ class DataController extends Controller
     {
         if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
             $business_id = session()->get('business.id');
-          
+
             $designations = Category::forDropdown($business_id, 'hrm_designation');
             $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
@@ -818,15 +825,13 @@ class DataController extends Controller
                     ->pluck('allowance_deduction_id')
                     ->toArray();
             }
-            
+
             if (!empty($user)) {
                 $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-               
+            } else {
+                $contract = null;
             }
-            else {
-                $contract=null;
-            }
-           
+
             $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
             $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
             $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
@@ -834,9 +839,8 @@ class DataController extends Controller
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
-            return view('essentials::partials.user_form_part', compact('contract','nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            return view('essentials::partials.user_form_part', compact('contract', 'nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
-
         } elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
             $user_department = EssentialsDepartment::find($user->essentials_department_id);
@@ -854,7 +858,7 @@ class DataController extends Controller
                 'essentials_employees_contracts.is_renewable',
 
             ])->first();
-            return view('essentials::partials.user_details_part', compact('contract','user_department', 'user_designstion', 'user', 'work_location'))
+            return view('essentials::partials.user_details_part', compact('contract', 'user_department', 'user_designstion', 'user', 'work_location'))
                 ->render();
         }
     }
@@ -868,7 +872,7 @@ class DataController extends Controller
     {
 
         if ($data['event'] == 'user_saved') {
-           
+
 
             $user = $data['model_instance'];
             $user->essentials_department_id = request()->input('essentials_department_id');
@@ -877,95 +881,90 @@ class DataController extends Controller
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->location_id = request()->input('location_id');
-            if (request()->input('health_insurance') != null){
-            $user->has_insurance= request()->input('health_insurance');
-                }
-             
+            if (request()->input('health_insurance') != null) {
+                $user->has_insurance = request()->input('health_insurance');
+            }
+
             $user->save();
 
 
-            if (request()->input('contract_number') != null ||request()->input('contract_type') != null
-            ||request()->input('contract_start_date') != null ||request()->input('contract_end_date') != null)
-                {
-                    
-                    $contractDuration =  request()->input('contract_duration') ;
-                    $contract_per_period=request()->input('contract_duration_unit');
-                    $contract = new EssentialsEmployeesContract();
-                    $contract->employee_id = $user->id;
-                    $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+            if (
+                request()->input('contract_number') != null || request()->input('contract_type') != null
+                || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
+            ) {
 
-        
-                    if ($latestRecord) {
-                        $latestRefNo = $latestRecord->contract_number;
-                        $numericPart = (int)substr($latestRefNo, 3); 
-                        $numericPart++;
-                        $contract->contract_number = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                    } else {
-        
-                        $contract->contract_number = 'EC0001';
-                    }
-                 
-                  //  $contract->contract_number = request()->input('contract_number');
-                    $contract->contract_start_date = request()->input('contract_start_date');
-                    $contract->contract_end_date = request()->input('contract_end_date');
-                    $contract->contract_duration = $contractDuration;
-                    $contract->contract_per_period = $contract_per_period;
-                    $contract->probation_period = request()->input('probation_period');
-                    $contract->is_renewable = request()->input('is_renewable');
-                    $contract->contract_type_id = request()->input('contract_type');
-                
-                
-               
+                $contractDuration =  request()->input('contract_duration');
+                $contract_per_period = request()->input('contract_duration_unit');
+                $contract = new EssentialsEmployeesContract();
+                $contract->employee_id = $user->id;
+                $latestRecord = EssentialsEmployeesContract::orderBy('contract_number', 'desc')->first();
+
+
+                if ($latestRecord) {
+                    $latestRefNo = $latestRecord->contract_number;
+                    $numericPart = (int)substr($latestRefNo, 3);
+                    $numericPart++;
+                    $contract->contract_number = 'EC' . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
+                } else {
+
+                    $contract->contract_number = 'EC0001';
+                }
+
+                //  $contract->contract_number = request()->input('contract_number');
+                $contract->contract_start_date = request()->input('contract_start_date');
+                $contract->contract_end_date = request()->input('contract_end_date');
+                $contract->contract_duration = $contractDuration;
+                $contract->contract_per_period = $contract_per_period;
+                $contract->probation_period = request()->input('probation_period');
+                $contract->is_renewable = request()->input('is_renewable');
+                $contract->contract_type_id = request()->input('contract_type');
+
+
+
                 if (request()->hasFile('contract_file')) {
                     $file = request()->file('contract_file');
                     $filePath = $file->store('/employee_contracts');
                     $contract->file_path = $filePath;
-                   
                 }
                 $contract->save();
-                }
+            }
 
 
-            
-        
-              
-              if( request()->input('qualification_type'))
-              {
+
+
+
+            if (request()->input('qualification_type')) {
                 $qualification2 = new EssentialsEmployeesQualification();
-                
-                $qualification2->qualification_type= request()->input('qualification_type');
+
+                $qualification2->qualification_type = request()->input('qualification_type');
                 $qualification2->major = request()->input('major');
                 $qualification2->graduation_year =  request()->input('graduation_year');
                 $qualification2->graduation_institution =  request()->input('graduation_institution');
                 $qualification2->employee_id = $user->id;
                 $qualification2->graduation_country = request()->input('graduation_country');
                 $qualification2->degree =  request()->input('degree');
-               
+
                 $qualification2->save();
+            }
 
-              }
 
 
-            
-           
-            if(request()->input('document_type')) 
-              {
+
+            if (request()->input('document_type')) {
                 $document2 = new EssentialsOfficialDocument();
                 $document2->type = request()->input('document_type');
                 $document2->employee_id =   $user->id;
                 $document2->status = 'valid';
-              
+
                 if (request()->hasFile('document_file')) {
                     $file = request()->file('document_file');
                     $filePath = $file->store('/officialDocuments');
-    
-                    $document2->file_path= $filePath;
+
+                    $document2->file_path = $filePath;
                 }
 
                 $document2->save();
-          
-    
-              }
+            }
 
 
 
@@ -975,22 +974,22 @@ class DataController extends Controller
                 $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
                 $travel_ticket_categorie->save();
             }
-            if (request()->input('essentials_department_id')){
-            $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
-            $essentials_employee_appointmets->employee_id = $user->id;
-            $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
-            $essentials_employee_appointmets->business_location_id = request()->input('location_id');
-            // $essentials_employee_appointmets->superior = "superior";
-            $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-            $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
-            $essentials_employee_appointmets->save();
+            if (request()->input('essentials_department_id')) {
+                $essentials_employee_appointmets = new EssentialsEmployeeAppointmet();
+                $essentials_employee_appointmets->employee_id = $user->id;
+                $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
+                $essentials_employee_appointmets->business_location_id = request()->input('location_id');
+                // $essentials_employee_appointmets->superior = "superior";
+                $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
+                $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+                $essentials_employee_appointmets->save();
             }
 
-            
+
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
                 foreach ($jsonData as $item) {
-           
+
 
                     try {
                         $userAllowancesAndDeduction = new EssentialsUserAllowancesAndDeduction();
@@ -1015,18 +1014,14 @@ class DataController extends Controller
                         error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                     }
                 }
-        
             }
-
-           
         }
 
 
 
         //update
-        if ($data['event'] == 'user_updated')
-        {
-           
+        if ($data['event'] == 'user_updated') {
+
 
             $user = $data['model_instance'];
 
@@ -1035,244 +1030,216 @@ class DataController extends Controller
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
-            $user->user_type= request()->input('user_type');
+            $user->user_type = request()->input('user_type');
             $user->location_id = request()->input('location_id');
 
-            if (request()->input('health_insurance') != null){
-                $user->has_insurance= request()->input('health_insurance');
+            if (request()->input('health_insurance') != null) {
+                $user->has_insurance = request()->input('health_insurance');
             }
             if (request()->input('border_no') == 3) {
-            
+
                 $user->border_no = null;
             }
-    
+
             if (request()->input('contact_number') == 05) {
-                
+
                 $user->contact_number = null;
             }
 
-           
 
 
-          $user->save();
-         
-        if(!empty(request()->input('expiration_date')))
-        { 
-          $id=$data['model_instance']['id'];
-          $doc = EssentialsOfficialDocument::where('employee_id', $id)->first();
-         
-          if($doc)
-          {
-            $doc->type= 'residence_permit';
-            $doc->status= 'vaild';
-            $doc->employee_id= $user->id;
-            $doc->number= request()->input('id_proof_number');
-            $doc->expiration_date= request()->input('expiration_date');
-            $doc->update();
-          
-          }
-          else
-          {
-            $doc = new EssentialsOfficialDocument();
-            $doc->type= 'residence_permit';
-            $doc->status= 'vaild';
-            $doc->employee_id= $user->id;
-            $doc->number= request()->input('id_proof_number');
-            $doc->expiration_date= request()->input('expiration_date');
-            $doc->save();
-          }
-         
-       
-         
-        }
 
-        $id=$data['model_instance']['id'];
-        if( request()->input('qualification_type') != null)
-        {
-          
-          $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
-          if( $qualification2)
-          {
-            $qualification2->qualification_type= request()->input('qualification_type');
-            $qualification2->major = request()->input('major');
-            $qualification2->graduation_year =  request()->input('graduation_year');
-            $qualification2->graduation_institution =  request()->input('graduation_institution');
-            $qualification2->employee_id = $user->id;
-            $qualification2->graduation_country = request()->input('graduation_country');
-            $qualification2->degree =  request()->input('degree');
-           
-            $qualification2->save();
-          }
-          else{
-            $qualification2 = new EssentialsEmployeesQualification();
-                
-                $qualification2->qualification_type= request()->input('qualification_type');
-                $qualification2->major = request()->input('major');
-                $qualification2->graduation_year =  request()->input('graduation_year');
-                $qualification2->graduation_institution =  request()->input('graduation_institution');
-                $qualification2->employee_id = $user->id;
-                $qualification2->graduation_country = request()->input('graduation_country');
-                $qualification2->degree =  request()->input('degree');
-                $qualification2->save();
-          }
-         
+            $user->save();
 
-        }
+            if (!empty(request()->input('expiration_date'))) {
+                $id = $data['model_instance']['id'];
+                $doc = EssentialsOfficialDocument::where('employee_id', $id)->first();
 
-         
-        if(request()->input('document_type')) 
-        {
-            $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();
-            if( $document2)
-            {
-                
-                $document2->type = request()->input('document_type');
-                $document2->employee_id =   $user->id;
-                $document2->status = 'valid';
-              
-                if (request()->hasFile('document_file')) {
-                    $file = request()->file('document_file');
-                    $filePath = $file->store('/officialDocuments');
-      
-                    $document2->file_path= $filePath;
+                if ($doc) {
+                    $doc->type = 'residence_permit';
+                    $doc->status = 'vaild';
+                    $doc->employee_id = $user->id;
+                    $doc->number = request()->input('id_proof_number');
+                    $doc->expiration_date = request()->input('expiration_date');
+                    $doc->update();
+                } else {
+                    $doc = new EssentialsOfficialDocument();
+                    $doc->type = 'residence_permit';
+                    $doc->status = 'vaild';
+                    $doc->employee_id = $user->id;
+                    $doc->number = request()->input('id_proof_number');
+                    $doc->expiration_date = request()->input('expiration_date');
+                    $doc->save();
                 }
-      
-                $document2->save();
             }
-            else{
-                $document2 = new EssentialsOfficialDocument();
-                $document2->type = request()->input('document_type');
-                $document2->employee_id =   $user->id;
-                $document2->status = 'valid';
-              
-                if (request()->hasFile('document_file')) {
-                    $file = request()->file('document_file');
-                    $filePath = $file->store('/officialDocuments');
-      
-                    $document2->file_path= $filePath;
+
+            $id = $data['model_instance']['id'];
+            if (request()->input('qualification_type') != null) {
+
+                $qualification2 = EssentialsEmployeesQualification::where('employee_id', $id)->first();
+                if ($qualification2) {
+                    $qualification2->qualification_type = request()->input('qualification_type');
+                    $qualification2->major = request()->input('major');
+                    $qualification2->graduation_year =  request()->input('graduation_year');
+                    $qualification2->graduation_institution =  request()->input('graduation_institution');
+                    $qualification2->employee_id = $user->id;
+                    $qualification2->graduation_country = request()->input('graduation_country');
+                    $qualification2->degree =  request()->input('degree');
+
+                    $qualification2->save();
+                } else {
+                    $qualification2 = new EssentialsEmployeesQualification();
+
+                    $qualification2->qualification_type = request()->input('qualification_type');
+                    $qualification2->major = request()->input('major');
+                    $qualification2->graduation_year =  request()->input('graduation_year');
+                    $qualification2->graduation_institution =  request()->input('graduation_institution');
+                    $qualification2->employee_id = $user->id;
+                    $qualification2->graduation_country = request()->input('graduation_country');
+                    $qualification2->degree =  request()->input('degree');
+                    $qualification2->save();
                 }
-      
-                $document2->save();
-          
             }
 
 
-        }
+            if (request()->input('document_type')) {
+                $document2 = EssentialsOfficialDocument::where('employee_id', $id)->first();
+                if ($document2) {
 
-            $id=$data['model_instance']['id'];
-            if (request()->input('contract_number') != null ||request()->input('contract_type') != null
-            ||request()->input('contract_start_date') != null ||request()->input('contract_end_date') != null)
-            {
-                $contractDuration =  request()->input('contract_duration') ;
-                $contract_per_period=request()->input('contract_duration_unit');
+                    $document2->type = request()->input('document_type');
+                    $document2->employee_id =   $user->id;
+                    $document2->status = 'valid';
+
+                    if (request()->hasFile('document_file')) {
+                        $file = request()->file('document_file');
+                        $filePath = $file->store('/officialDocuments');
+
+                        $document2->file_path = $filePath;
+                    }
+
+                    $document2->save();
+                } else {
+                    $document2 = new EssentialsOfficialDocument();
+                    $document2->type = request()->input('document_type');
+                    $document2->employee_id =   $user->id;
+                    $document2->status = 'valid';
+
+                    if (request()->hasFile('document_file')) {
+                        $file = request()->file('document_file');
+                        $filePath = $file->store('/officialDocuments');
+
+                        $document2->file_path = $filePath;
+                    }
+
+                    $document2->save();
+                }
+            }
+
+            $id = $data['model_instance']['id'];
+            if (
+                request()->input('contract_number') != null || request()->input('contract_type') != null
+                || request()->input('contract_start_date') != null || request()->input('contract_end_date') != null
+            ) {
+                $contractDuration =  request()->input('contract_duration');
+                $contract_per_period = request()->input('contract_duration_unit');
                 $contract = EssentialsEmployeesContract::where('employee_id', $id)->first();
 
-                if ($contract)
-                 {
-                        $contract->contract_number = request()->input('contract_number');
-                        $contract->contract_start_date = request()->input('contract_start_date');
-                        $contract->contract_end_date = request()->input('contract_end_date');
-                        $contract->contract_duration = $contractDuration;
-                        $contract->contract_per_period = $contract_per_period;
-                        $contract->probation_period = request()->input('probation_period');
-                        $contract->is_renewable = request()->input('is_renewable');
-                        $contract->contract_type_id = request()->input('contract_type');
+                if ($contract) {
+                    $contract->contract_number = request()->input('contract_number');
+                    $contract->contract_start_date = request()->input('contract_start_date');
+                    $contract->contract_end_date = request()->input('contract_end_date');
+                    $contract->contract_duration = $contractDuration;
+                    $contract->contract_per_period = $contract_per_period;
+                    $contract->probation_period = request()->input('probation_period');
+                    $contract->is_renewable = request()->input('is_renewable');
+                    $contract->contract_type_id = request()->input('contract_type');
 
-                        if (request()->hasFile('contract_file')) {
-                            $file = request()->file('contract_file');
-                            $filePath = $file->store('/employee_contracts');
-                            $contract->file_path = $filePath;
-                        }
-
-                        $contract->save();
-                    }
-                else
-                { 
-                    $contractDuration =  request()->input('contract_duration') ;
-                    $contract_per_period=request()->input('contract_duration_unit');
-                    
-                        $contract = new EssentialsEmployeesContract();
-                        $contract->employee_id = $user->id;
-                        $contract->contract_number = request()->input('contract_number');
-                        $contract->contract_start_date = request()->input('contract_start_date');
-                        $contract->contract_end_date = request()->input('contract_end_date');
-                        $contract->contract_duration = $contractDuration;
-                        $contract->contract_per_period = $contract_per_period;
-                        $contract->probation_period = request()->input('probation_period');
-                        $contract->is_renewable = request()->input('is_renewable');
-                        $contract->contract_type_id = request()->input('contract_type');
-                    
-                    
-                
                     if (request()->hasFile('contract_file')) {
                         $file = request()->file('contract_file');
                         $filePath = $file->store('/employee_contracts');
                         $contract->file_path = $filePath;
-                    
+                    }
+
+                    $contract->save();
+                } else {
+                    $contractDuration =  request()->input('contract_duration');
+                    $contract_per_period = request()->input('contract_duration_unit');
+
+                    $contract = new EssentialsEmployeesContract();
+                    $contract->employee_id = $user->id;
+                    $contract->contract_number = request()->input('contract_number');
+                    $contract->contract_start_date = request()->input('contract_start_date');
+                    $contract->contract_end_date = request()->input('contract_end_date');
+                    $contract->contract_duration = $contractDuration;
+                    $contract->contract_per_period = $contract_per_period;
+                    $contract->probation_period = request()->input('probation_period');
+                    $contract->is_renewable = request()->input('is_renewable');
+                    $contract->contract_type_id = request()->input('contract_type');
+
+
+
+                    if (request()->hasFile('contract_file')) {
+                        $file = request()->file('contract_file');
+                        $filePath = $file->store('/employee_contracts');
+                        $contract->file_path = $filePath;
                     }
                     $contract->save();
-
-            
                 }
             }
-        if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
-            
-            $travel_ticket_categorie = EssentialsEmployeeTravelCategorie::where('employee_id', $id)->first();
+            if (request()->input('can_add_category') == 1 && request()->input('travel_ticket_categorie')) {
 
-            if ($travel_ticket_categorie) {
-                $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
-                $travel_ticket_categorie->save();
-            }
-        }
+                $travel_ticket_categorie = EssentialsEmployeeTravelCategorie::where('employee_id', $id)->first();
 
-        if (request()->input('essentials_department_id')) {
-    
-        $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id)->first();
-
-            if ($essentials_employee_appointmets) {
-                $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
-                $essentials_employee_appointmets->business_location_id = request()->input('location_id');
-                // $essentials_employee_appointmets->superior = "superior";
-                $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-                $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
-                $essentials_employee_appointmets->save();
-            }
+                if ($travel_ticket_categorie) {
+                    $travel_ticket_categorie->categorie_id = request()->input('travel_ticket_categorie');
+                    $travel_ticket_categorie->save();
+                }
             }
 
-        if (request()->selectedData) {
-        $jsonData = json_decode(request()->selectedData, true);
+            if (request()->input('essentials_department_id')) {
 
-        foreach ($jsonData as $item) {
-            try {
-                $userAllowancesAndDeduction = EssentialsUserAllowancesAndDeduction::where('user_id', $id)
-                    ->where('allowance_deduction_id', (int)$item['salaryType'])
-                    ->first();
+                $essentials_employee_appointmets = EssentialsEmployeeAppointmet::where('employee_id', $id)->first();
 
-                if ($userAllowancesAndDeduction) {
-                    if ($item['amount'] !== null) {
-                        $userAllowancesAndDeduction->amount = $item['amount'];
-                    } else {
-                        $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
-                            ->where('id', $item['salaryType'])
+                if ($essentials_employee_appointmets) {
+                    $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
+                    $essentials_employee_appointmets->business_location_id = request()->input('location_id');
+                    // $essentials_employee_appointmets->superior = "superior";
+                    $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
+                    $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+                    $essentials_employee_appointmets->save();
+                }
+            }
+
+            if (request()->selectedData) {
+                $jsonData = json_decode(request()->selectedData, true);
+
+                foreach ($jsonData as $item) {
+                    try {
+                        $userAllowancesAndDeduction = EssentialsUserAllowancesAndDeduction::where('user_id', $id)
+                            ->where('allowance_deduction_id', (int)$item['salaryType'])
                             ->first();
 
-                        if ($allowanceDeduction) {
-                            $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                        if ($userAllowancesAndDeduction) {
+                            if ($item['amount'] !== null) {
+                                $userAllowancesAndDeduction->amount = $item['amount'];
+                            } else {
+                                $allowanceDeduction = Db::table('essentials_allowances_and_deductions')
+                                    ->where('id', $item['salaryType'])
+                                    ->first();
+
+                                if ($allowanceDeduction) {
+                                    $userAllowancesAndDeduction->amount = $allowanceDeduction->amount;
+                                }
+                            }
+                            $userAllowancesAndDeduction->save();
                         }
+                    } catch (\Exception $e) {
+                        \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+                        error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
                     }
-                    $userAllowancesAndDeduction->save();
                 }
-            } catch (\Exception $e) {
-                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-                error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             }
-        }
-        }
-
-
-
-
         }
     }
 
