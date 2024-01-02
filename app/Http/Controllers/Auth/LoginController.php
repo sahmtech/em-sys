@@ -138,7 +138,7 @@ class LoginController extends Controller
             return 'contact/contact-dashboard';
         }
         if (User::where('id', auth()->user()->id)->first()->user_type == 'customer') {
-            return '/agent_home';
+            return '/agent/home';
         }
         return '/home';
     }

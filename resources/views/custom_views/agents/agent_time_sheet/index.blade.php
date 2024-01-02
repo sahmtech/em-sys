@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('agent.workers'))
+@section('title', __('agent.time_sheet'))
 
 @section('content')
 
 
     <section class="content-header">
         <h1>
-            <span>@lang('agent.workers')</span>
+            <span>@lang('agent.time_sheet')</span>
         </h1>
     </section>
 
@@ -68,25 +68,14 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            <td style="width: 100px !important;">@lang('followup::lang.name')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.admissions_date')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.contract_end_date')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
-                            <td style="width: 100px !important;">@lang('business.email')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.department')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.profession')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.specialization')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.status')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.Basic_salary')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.total_salary')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.gender')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
+                            <td>@lang('followup::lang.name')</td>
+                            <td>@lang('followup::lang.eqama')</td>
+                            <td>@lang('followup::lang.project_name')</td>
+                            <td>@lang('followup::lang.specialization')</td>
+                            <td>@lang('followup::lang.status')</td>
+                            <td>@lang('followup::lang.Basic_salary')</td>
+                            <td>@lang('followup::lang.total_salary')</td>
+                            <td>@lang('messages.action')</td>
                         </tr>
                     </thead>
                 </table>
@@ -112,7 +101,7 @@
                 ajax: {
 
 
-                    url: "{{ route('agent_workers') }}",
+                    url: "{{ route('agentTimeSheet.index') }}",
 
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
@@ -151,31 +140,6 @@
                         data: 'contact_name'
                     },
                     {
-                        data: 'nationality'
-                    },
-                    {
-                        data: 'residence_permit_expiration'
-                    },
-                    {
-                        data: 'admissions_date'
-                    },
-                    {
-                        data: 'contract_end_date'
-                    },
-                    {
-                        data: "contact_number"
-                    },
-                    {
-                        data: "email"
-                    },
-                    {
-                        data: "essentials_department_id"
-                    },
-                    {
-                        data: "profession",
-                        name: 'profession'
-                    },
-                    {
                         data: "specialization",
                         name: 'specialization'
                     },
@@ -211,16 +175,7 @@
                     },
 
                     {
-                        data: 'gender'
-                    },
-                    {
-                        data: 'marital_status'
-                    },
-                    {
-                        data: 'blood_group'
-                    },
-                    {
-                        data: 'bank_code',
+                        data: 'action',
 
                     },
 
@@ -243,5 +198,13 @@
                     workers_table.ajax.reload();
                 });
         });
+        chooseFields = function() {
+            var selectedOptions = $('#choose_fields_select').val();
+            var dt = $('#workers_table').DataTable();
+            var fields = fields;
+            dt.columns(fields).visible(false);
+            dt.columns(selectedOptions).visible(true);
+
+        }
     </script>
 @endsection
