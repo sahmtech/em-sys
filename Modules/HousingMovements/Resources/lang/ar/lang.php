@@ -6,6 +6,8 @@ return [
     'movement_management' => 'إدارة الحركة',
     'buildings' => 'السكنات',
     'facilities' => 'المرافق',
+    'room_workers'=>'عمال الغرفة',
+    'show_room_workers'=>'عرض عمال الغرفة ',
     'rooms' => 'الغرف',
     'crud_buildings' => 'إضافة/حذف/تعديل السكنات',
     'building_name' => 'اسم السكن',

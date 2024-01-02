@@ -67,7 +67,13 @@ class RoomController extends Controller
                 function ($row) use ($is_admin) {
                     $html = '';
                     if ($is_admin) {
+                        $html .= '<a href="'. route('show_room_workers', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> '.__('housingmovements::lang.show_room_workers').'</a>
+
+                        &nbsp;';
+
                         $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+
+                        
                         $html .= '<button class="btn btn-xs btn-danger delete_room_button" data-href="' . route('room.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         
@@ -98,6 +104,32 @@ class RoomController extends Controller
 
     }
 
+
+    public function show_room_workers($id)
+    {
+        
+        $roomWorkersHistory = HtrRoomsWorkersHistory::where('room_id', $id)->get();
+    
+        
+        $userIds = $roomWorkersHistory->pluck('worker_id');
+    
+     
+        $users = User::whereIn('id', $userIds)
+            ->with([
+                'country',
+                'appointment.profession',
+                'UserallowancesAndDeductions',
+                'appointment.location',
+                'contract',
+                'OfficialDocument',
+                'workCard'
+            ])
+            ->get();
+    
+        return view('housingmovements::room_workers.index', ['users' => $users]);
+    }
+
+
     public function postRoomsData(Request $request)
     {
 
@@ -111,17 +143,17 @@ class RoomController extends Controller
         ->select('id as room_id', 'room_number as room_number' ,'beds_count')
         ->get();
 
-    $workers = User::where('user_type', 'worker')->select(
-        'id',
-        DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-     ' - ',COALESCE(id_proof_number,'')) as full_name")
-    )->pluck('full_name', 'id');
+        $workers = User::where('user_type', 'worker')->select(
+            'id',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name")
+        )->pluck('full_name', 'id');
 
-    $data = [
-        'rooms' => $rooms,
-        'workers' => $workers,
-    ];
-        return response()->json($data);
+        $data = [
+            'rooms' => $rooms,
+            'workers' => $workers,
+        ];
+            return response()->json($data);
     }
 
    
@@ -129,21 +161,7 @@ class RoomController extends Controller
     public function room_data(Request $request)
     {
         try {
-            
 
-          
-            
-            
-            
-        
-               
-            
-            
-            
-            
-            
-            
-            
  
             $jsonData = $request->input('roomData');
 
