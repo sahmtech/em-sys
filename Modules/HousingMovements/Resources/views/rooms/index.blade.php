@@ -255,23 +255,23 @@ $('#rooms-selected').on('click', function (e) {
                         required: true,
                         value: room.room_number
                     });                  
-var roomSelect = $('<select>', {
-    id: 'roomSelectId_' + index,  // Corrected ID generation
-    name: 'transfer_to_room_id[]',
-    class: inputClasses + ' select2',
-    style: 'height: 40px; width:220px; margin-right: 0; display: none;', // initially hidden
-});
+// var roomSelect = $('<select>', {
+//     id: 'roomSelectId_' + index,  // Corrected ID generation
+//     name: 'transfer_to_room_id[]',
+//     class: inputClasses + ' select2',
+//     style: 'height: 40px; width:220px; margin-right: 0; display: none;', // initially hidden
+// });
 
-// Populate room options for transfer
-$.each(data.rooms, function (transferIndex, transferRoom) {
-    if (transferRoom.room_id !== room.room_id) {
-        var option = $('<option>', {
-            value: transferRoom.room_id,
-            text: transferRoom.room_number
-        });
-        roomSelect.append(option);
-    }
-});
+// // Populate room options for transfer
+// $.each(data.rooms, function (transferIndex, transferRoom) {
+//     if (transferRoom.room_id !== room.room_id) {
+//         var option = $('<option>', {
+//             value: transferRoom.room_id,
+//             text: transferRoom.room_number
+//         });
+//         roomSelect.append(option);
+//     }
+// });
 
 
                     var workerSelect = $('<select>', {
@@ -308,7 +308,7 @@ $.each(data.rooms, function (transferIndex, transferRoom) {
                     row.append('<div class="col-md-6"></div>');
                     row.append(roomnumberInput);
                     row.append(workerSelect);
-                    row.append(roomSelect);
+                   // row.append(roomSelect);
                     $('.modal-body').append(row);
 
                     $('#workerSelectId_' + index).select2({
