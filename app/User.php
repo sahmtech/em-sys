@@ -353,8 +353,6 @@ class User extends Authenticatable
         return $this->belongsTo(EssentialsCountry::class, 'nationality_id');
     }
 
-
-
     public function contract()
     {
         return $this->hasOne(EssentialsEmployeesContract::class, 'employee_id');
@@ -404,7 +402,7 @@ class User extends Authenticatable
 
     public function calculateTotalSalary()
     {
-        $allowances = $this->UserallowancesAndDeductions;
+        $allowances = $this->userAllowancesAndDeductions;
 
 
         $totalSalary = $this->essentials_salary;
@@ -417,7 +415,7 @@ class User extends Authenticatable
         return $totalSalary;
     }
 
-    public function UserallowancesAndDeductions()
+    public function userAllowancesAndDeductions()
     {
         return $this->hasMany(\Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction::class, 'user_id');
     }

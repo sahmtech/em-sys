@@ -32,7 +32,7 @@ class CustomAdminSidebarMenu
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
-        if (Str::startsWith($currentPath, ['users', 'manage_user','roles'])) {
+        if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles'])) {
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
@@ -154,32 +154,37 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
-                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'],
+                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'home'],
             );
             $menu->url(
                 route('agent_projects'),
                 __('agent.projects'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_projects'],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'projects'],
             );
             $menu->url(
                 route('agent_contracts'),
                 __('agent.contracts'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent_contracts'],
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'contracts'],
             );
             $menu->url(
                 route('agent_workers'),
                 __('agent.workers'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent_workers'],
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'workers'],
             );
             $menu->url(
                 route('agentRequests'),
                 __('agent.requests'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agentRequests'],
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'requests'],
             );
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('agent.pills'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'workers'],
+            );
+            $menu->url(
+                route('agentTimeSheet.index'),
+                __('agent.time_sheet', [], 'en'),
+                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'time_sheet'],
             );
         });
     }
@@ -233,16 +238,16 @@ class CustomAdminSidebarMenu
                 __('user.users'),
                 ['icon' => 'fa fas fa-user', 'active' => request()->segment(1) == 'users' || request()->segment(1) == 'manage_user']
             );
-            if(auth()->user()->can('essentials.crud_all_roles')){
-                   $menu->url(
-                route('roles') ,
-                __('user.roles'),
-                ['icon' => 'fa fas fa-key', 'active' =>request()->segment(1) == 'roles' ]
-            );
+            if (auth()->user()->can('essentials.crud_all_roles')) {
+                $menu->url(
+                    route('roles'),
+                    __('user.roles'),
+                    ['icon' => 'fa fas fa-key', 'active' => request()->segment(1) == 'roles']
+                );
             }
-         
-           
-          
+
+
+
             //$menu->header("");
             //$menu->header("");
             //User management dropdown
