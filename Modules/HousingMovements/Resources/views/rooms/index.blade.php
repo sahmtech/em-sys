@@ -224,6 +224,9 @@ $('#rooms-selected').on('click', function (e) {
                 selectedRows: selectedRows
             },
             success: function (data) {
+
+                
+                console.log(data);
                 $('.modal-body').empty();
 
                 var inputClasses = 'form-group col-md-2';
@@ -256,12 +259,13 @@ $('#rooms-selected').on('click', function (e) {
                         name: 'worker_id[]',
                         class: inputClasses + ' select2',
                         style: 'height: 40px; width:220px; margin-right: 0;',
-                        required: true,
+                     
                         multiple: true,
                         disabled: room.beds_count === 0 
                     });
 
-                    $.each(data.workers, function (workerId, workerName) {
+                       // Populate worker options for the current room
+                    $.each(data.workers[room.room_id], function (workerId, workerName) {
                         var option = $('<option>', {
                             value: workerId,
                             text: workerName
@@ -276,12 +280,10 @@ $('#rooms-selected').on('click', function (e) {
                     row.append(workerSelect);
                     $('.modal-body').append(row);
 
-                    
                     $('#workerSelectId_' + index).select2({
                         dropdownParent: $('#roomsModal'),
                     });
 
-                    
                     if (room.beds_count === 0) {
                         swal({
                             text: translations.cantHoused + ' ' +
@@ -291,22 +293,24 @@ $('#rooms-selected').on('click', function (e) {
                             button: 'OK',
                         });
                         $('#room_form').modal('hide');
-                        
                         reloadDataTable();
                     }
                 });
 
-                
                 $('#roomsModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                // Handle the error, you can log it or show an alert
+                console.error('Error:', error);
+                swal({
+                    text: 'An error occurred while fetching data.',
+                    icon: 'error',
+                    button: 'OK',
+                });
             }
         });
-
-
-    } 
-    else {
+    } else {
         $('input#selected_rows').val('');
-        
-       
         swal({
             title: "@lang('lang_v1.no_row_selected')",
             icon: "warning",
@@ -314,6 +318,7 @@ $('#rooms-selected').on('click', function (e) {
         });
     }
 });
+
 
 
 
@@ -343,7 +348,7 @@ $('#bulk_edit').submit(function (e) {
         }
     }
 
-    console.log(roomData);
+    
 
     
     $.ajax({
@@ -354,7 +359,7 @@ $('#bulk_edit').submit(function (e) {
             
         },
         success: function (response) {
-            console.log(response);
+         
             $('#roomsModal').modal('hide');
             reloadDataTable();
         }
@@ -400,7 +405,7 @@ $('body').on('click', '.open-edit-modal', function() {
 
         var editUrl = '{{ route("room.edit", ":roomId") }}'
         editUrl = editUrl.replace(':roomId', roomId);
-        console.log(editUrl);
+     
 
         $.ajax({
             url: editUrl,
@@ -428,11 +433,11 @@ $('body').on('submit', '#editroomModal form', function (e) {
     e.preventDefault();
 
     var roomId = $('#roomIdInput').val();
-    console.log(roomId);
+ 
 
     var urlWithId = '{{ route("updateRoom", ":roomId") }}';
     urlWithId = urlWithId.replace(':roomId', roomId);
-    console.log(urlWithId);
+ 
 
     $.ajax({
         url: urlWithId,
@@ -442,13 +447,13 @@ $('body').on('submit', '#editroomModal form', function (e) {
         processData: false,
         success: function (response) {
             if (response.success) {
-                console.log(response);
+             
                 toastr.success(response.msg, 'Success');
                 reloadDataTable();
                 $('#editroomModal').modal('hide');
             } else {
                 toastr.error(response.msg);
-                console.log(response);
+            
             }
         },
         error: function (error) {
@@ -468,11 +473,11 @@ $('body').on('submit', '#editroomModal form', function (e) {
             $('.tblChk:checked').each(function() {
                 if ($(this).prop('checked')) {
                     const rec = "<strong>" + $(this).attr("data-id") + " </strong>";
-                    console.log(rec);
+                
                     $(".selectedDiv").append(rec);
                     selectedRows.push($(this).attr("data-id"));
 
-                    console.log(selectedRows);
+                
 
                 }
 

@@ -22,6 +22,7 @@
             <table class="table table-bordered table-striped">
                 <tr class="bg-green">
                     <th>{{ __('followup::lang.name') }}</th>
+                    <th>{{ __('housingmovements::lang.still_housed') }}</th>
                     <th>{{ __('followup::lang.sponsor') }}</th>
                     <th>{{ __('followup::lang.gender') }}</th>
                     <th>{{ __('followup::lang.nationality') }}</th>
@@ -42,6 +43,17 @@
                 @foreach ($users as $user)
                     <tr>
                         <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                        <td>
+                            @php
+                                $stillHoused = $roomWorkersHistory->where('worker_id', $user->id)->pluck('still_housed')->first();
+                            @endphp
+
+                            @if ($stillHoused)
+                                {{ __('housingmovements::lang.yes') }}
+                            @else
+                                {{ __('housingmovements::lang.no') }}
+                            @endif
+                        </td>
                         <td>{{ optional(optional($user->appointment)->location)->name }}</td>
                         <td>
                             @if ($user->gender == 'male')

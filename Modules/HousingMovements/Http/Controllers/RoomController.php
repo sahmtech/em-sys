@@ -107,13 +107,11 @@ class RoomController extends Controller
 
     public function show_room_workers($id)
     {
-        
-        $roomWorkersHistory = HtrRoomsWorkersHistory::where('room_id', $id)->get();
+        $roomWorkersHistory = HtrRoomsWorkersHistory::where('room_id', $id)
+            ->get();
     
-        
         $userIds = $roomWorkersHistory->pluck('worker_id');
     
-     
         $users = User::whereIn('id', $userIds)
             ->with([
                 'country',
@@ -126,8 +124,9 @@ class RoomController extends Controller
             ])
             ->get();
     
-        return view('housingmovements::room_workers.index', ['users' => $users]);
+        return view('housingmovements::room_workers.index', ['users' => $users, 'roomWorkersHistory' => $roomWorkersHistory]);
     }
+    
 
 
     public function postRoomsData(Request $request)
@@ -137,113 +136,115 @@ class RoomController extends Controller
     public function getSelectedroomsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
-        
+    
         $rooms = HtrRoom::whereIn('id', $selectedRows)
             ->select('id as room_id', 'room_number as room_number', 'beds_count')
             ->get();
     
-        
-        $existingWorkerIds = HtrRoomsWorkersHistory::pluck('worker_id')
-            ->toArray();
-    
-        
-        $workers = User::where('user_type', 'worker')
-            ->whereNotIn('id', $existingWorkerIds)
-            ->select(
-                'id',
-                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-            ' - ',COALESCE(id_proof_number,'')) as full_name")
-            )
-            ->pluck('full_name', 'id');
-    
         $data = [
-            'rooms' => $rooms,
-            'workers' => $workers,
+            'rooms' => [],
+            'workers' => [],
         ];
+    
+        foreach ($rooms as $room) {
+            $existingWorkerIds = HtrRoomsWorkersHistory::where('room_id', $room->room_id)
+                ->pluck('worker_id')
+                ->toArray();
+    
+            $workers = User::where('user_type', 'worker')
+                ->whereNotIn('id', $existingWorkerIds)
+                ->select(
+                    'id',
+                    DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+                        ' - ',COALESCE(id_proof_number,'')) as full_name")
+                )
+                ->pluck('full_name', 'id');
+    
+            $data['rooms'][] = [
+                'room_id' => $room->room_id,
+                'room_number' => $room->room_number,
+                'beds_count' => $room->beds_count,
+            ];
+    
+            $data['workers'][$room->room_id] = $workers;
+        }
     
         return response()->json($data);
     }
+    
 
    
    
     public function room_data(Request $request)
     {
         try {
-
- 
             $jsonData = $request->input('roomData');
-
-        
-        
-
-          
             \Log::info('JSON Data: ' . $jsonData);
     
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
-   
                 DB::beginTransaction();
-
+    
                 foreach ($selectedData as $roomNumber => $workerIds) {
-                   
-                  
-                    foreach ($workerIds as $workerId)
-                     {
-                         $room = DB::table('htr_rooms')
-                        ->where('room_number', $roomNumber)
-                        ->where('beds_count', '>', 0)
-                        ->select('id', 'beds_count')
-                        ->first();
-                      
-                        if($room)
-                            {
-                                $htrroom_histoty= new   HtrRoomsWorkersHistory();
-                                $htrroom_histoty->room_id =$room->id ;
-                                $htrroom_histoty->worker_id =$workerId;
-                                $htrroom_histoty->save();
-
-
-                                $user=User::where('id',$workerId);
-                                $user->update(['room_id' => $room->id]);
-          
-                                DB::table('htr_rooms')
-                                ->where('id',$room->id)
-                                ->decrement('beds_count');
-                            }
-        
-                            else {
+                    foreach ($workerIds as $workerId) {
+                        $room = DB::table('htr_rooms')
+                            ->where('room_number', $roomNumber)
+                            ->select('id', 'beds_count')
+                            ->first();
+    
+                        if ($room) {
+                            
+                            $existingHistory = HtrRoomsWorkersHistory::where('worker_id', $workerId)
+                                ->where('still_housed', 1)
+                                ->first();
+    
+                            if ($existingHistory) {
                                 
-                                DB::rollBack();
-                                $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
-                                return response()->json(['status' => $output]);
+                                $existingHistory->still_housed = 0;
+                                $existingHistory->save();
+    
+                                
+                                DB::table('htr_rooms')
+                                    ->where('id', $existingHistory->room_id)
+                                    ->increment('beds_count');
                             }
-                           
-
-                        
-                        
-                        
-                        
+    
+                            
+                            $htrroom_histoty = new HtrRoomsWorkersHistory();
+                            $htrroom_histoty->room_id = $room->id;
+                            $htrroom_histoty->worker_id = $workerId;
+                            $htrroom_histoty->still_housed = 1;
+                            $htrroom_histoty->save();
+    
+                            
+                            $user = User::find($workerId);
+                            $user->update(['room_id' => $room->id]);
+    
+                            
+                            DB::table('htr_rooms')
+                                ->where('id', $room->id)
+                                ->decrement('beds_count');
+                        } else {
+                            DB::rollBack();
+                            $output = ['success' => 0, 'msg' => __('lang_v1.no_available_beds')];
+                            return response()->json(['status' => $output]);
+                        }
                     }
                 }
-        
     
-            
                 DB::commit();
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
-            }
-            
-            else {
+            } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-   
         return response()->json(['status' => $output]);
     }
+    
     
 
     /**

@@ -1,14 +1,5 @@
-@extends('layouts.app')
-@section('title', __('housingmovements::lang.buildings'))
 
-@section('content')
-
-<section class="content-header">
-    <h1>
-        <span>@lang('housingmovements::lang.buildings')</span>
-    </h1>
-</section>
-
+<div class="modal fade"  id="editbuildingModal" tabindex="-1" role="dialog" aria-labelledby="editbuildingModal">
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         {!! Form::open(['route' => ['updateBuilding', $building->id], 'method' => 'put', 'id' => 'add_building_form']) !!}
@@ -61,4 +52,3 @@
   
     </div>
   </div>
-  @endsection
