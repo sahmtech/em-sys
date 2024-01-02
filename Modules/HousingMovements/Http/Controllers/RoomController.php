@@ -138,22 +138,30 @@ class RoomController extends Controller
     {
         $selectedRows = $request->input('selectedRows');
         
-       
         $rooms = HtrRoom::whereIn('id', $selectedRows)
-        ->select('id as room_id', 'room_number as room_number' ,'beds_count')
-        ->get();
-
-        $workers = User::where('user_type', 'worker')->select(
-            'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->pluck('full_name', 'id');
-
+            ->select('id as room_id', 'room_number as room_number', 'beds_count')
+            ->get();
+    
+        // Fetch user_ids from HtrRoomsWorkersHistory
+        $existingWorkerIds = HtrRoomsWorkersHistory::pluck('worker_id')
+            ->toArray();
+    
+        // Fetch users whose ids do not exist in HtrRoomsWorkersHistory
+        $workers = User::where('user_type', 'worker')
+            ->whereNotIn('id', $existingWorkerIds)
+            ->select(
+                'id',
+                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name")
+            )
+            ->pluck('full_name', 'id');
+    
         $data = [
             'rooms' => $rooms,
             'workers' => $workers,
         ];
-            return response()->json($data);
+    
+        return response()->json($data);
     }
 
    

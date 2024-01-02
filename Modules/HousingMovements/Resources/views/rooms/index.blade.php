@@ -257,7 +257,8 @@ $('#rooms-selected').on('click', function (e) {
                         class: inputClasses + ' select2',
                         style: 'height: 40px; width:220px; margin-right: 0;',
                         required: true,
-                        multiple: true, 
+                        multiple: true,
+                        disabled: room.beds_count === 0 
                     });
 
                     $.each(data.workers, function (workerId, workerName) {
@@ -290,7 +291,7 @@ $('#rooms-selected').on('click', function (e) {
                             button: 'OK',
                         });
                         $('#room_form').modal('hide');
-                         location.reload();
+                        // location.reload();
                         reloadDataTable();
                     }
                 });
@@ -301,7 +302,8 @@ $('#rooms-selected').on('click', function (e) {
         });
 
 
-    } else {
+    } 
+    else {
         $('input#selected_rows').val('');
         
        
