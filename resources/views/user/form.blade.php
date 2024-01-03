@@ -76,10 +76,10 @@
 
     <div class="clearfix"></div>
     <div class="form-group col-md-3">
-        {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
+        {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':') !!}
         {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
             'class' => 'form-control',
-            'require',
+          
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.mobile_number'),
             'oninput' => 'validateContactNumber(this)',
@@ -345,7 +345,7 @@
 
         </div>
         <div class="form-group col-md-3">
-            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
             {!! Form::text(
                 'bank_details[bank_code]',
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
@@ -371,7 +371,7 @@
         </div>
 
         <div class="form-group col-md-6">
-            {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':*') !!}
+            {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':') !!}
             {!! Form::file('Iban_file', null, [
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.Iban_file'),
@@ -398,7 +398,7 @@
         <h4>@lang('lang_v1.add_qualification'):</h4>
         <div class="form-group col-md-3">
 
-            {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':*') !!}
+            {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':') !!}
             {!! Form::select(
                 'qualification_type',
                 [
@@ -515,7 +515,7 @@
 
         </div>
         <div class="form-group col-md-3">
-            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
             {!! Form::text(
                 'bank_details[bank_code]',
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
