@@ -186,7 +186,7 @@ class FollowUpProjectController extends Controller
             ->with([
                 'country',
                 'appointment.profession',
-                'UserallowancesAndDeductions',
+                'userAllowancesAndDeductions',
                 'appointment.location',
 
                 'contract',

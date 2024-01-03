@@ -29,9 +29,9 @@ class EssentialsAllowanceAndDeduction extends Model
     public static function forDropdown($business_id)
     {
         $ads = EssentialsAllowanceAndDeduction::whereNull('applicable_date')
-                    ->where('business_id', $business_id)
-                    ->select('id', 'description', 'type', 'amount', 'amount_type')
-                    ->get();
+            ->where('business_id', $business_id)
+            ->select('id', 'description', 'type', 'amount', 'amount_type')
+            ->get();
 
         $util = new Util();
         $pay_components = [];
@@ -43,9 +43,15 @@ class EssentialsAllowanceAndDeduction extends Model
                 $amount .= '%';
             }
 
-            $pay_components[$ad->id] = $ad->description.' ('.$amount.' '.__('essentials::lang.'.$ad->type).')';
+            $pay_components[$ad->id] = $ad->description . ' (' . $amount . ' ' . __('essentials::lang.' . $ad->type) . ')';
         }
 
         return $pay_components;
+    }
+
+
+    public function essentialsUserAllowanceAndDeductions()
+    {
+        return $this->hasMany(EssentialsUserAllowancesAndDeduction::class, 'allowance_deduction_id');
     }
 }

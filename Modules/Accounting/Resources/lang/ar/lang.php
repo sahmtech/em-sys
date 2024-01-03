@@ -443,7 +443,9 @@ return [
     'receipt_type' => 'نوع السند: ',
     'customer_vouchers' => 'فواتير العميل',
     'print' => 'طباعة',
-    'acconuting'=>'طلبات',
+    "requests" => "الطلبات",
+    'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك',
+
     'all' => 'الكل',
     'payment_vouchers' => 'سندات الصرف',
     'supplier' => 'المورد',
@@ -586,9 +588,7 @@ return [
         "Accrued liabilities" => "التزامات مستحقة",
         "Accrued holiday payable" => "أجور الإجازات المستحقة",
         "Accounts Receivable (A/R)" => "المدينونيات التجارية (A/R)",
-        "requests" => "الطلبات",
-        'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك',
-     
+      
 
 
     ],

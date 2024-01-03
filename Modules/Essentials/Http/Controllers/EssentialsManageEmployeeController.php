@@ -140,7 +140,7 @@ class EssentialsManageEmployeeController extends Controller
             $user_businesses_ids = array_unique($userBusinesses);
         }
 
-        $users = User::with(['UserallowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+        $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
             $query->where(function ($query2) use ($user_businesses_ids) {
                 $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
             })->orWhere(function ($query3) use ($user_projects_ids) {

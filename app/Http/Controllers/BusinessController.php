@@ -288,7 +288,7 @@ class BusinessController extends Controller
     {
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
         if (!($isSuperAdmin || auth()->user()->can('business_settings.access'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
@@ -388,13 +388,13 @@ class BusinessController extends Controller
                     'action',
                     function ($row) use ($is_admin) {
                         $html = '';
-                        if ($is_admin) {
+                        // if ($is_admin) {
                         //     $html .= '<a href="' . route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-view"></i> ' . __('messages.view') . '</a>
                         // &nbsp;';
-                            $html .= '<a href="' . route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('business.view_business_docs') . '</a>
+                        $html .= '<a href="' . route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('business.view_business_docs') . '</a>
                         &nbsp;';
-                            $html .= '<a href="' . route('business_subscriptions.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.view_business_subscriptions') . '</a>';
-                        }
+                        $html .= '<a href="' . route('business_subscriptions.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.view_business_subscriptions') . '</a>';
+                        // }
 
                         return $html;
                     }
@@ -431,7 +431,7 @@ class BusinessController extends Controller
     public function show($id)
     {
         if (!auth()->user()->can('business_settings.access')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
@@ -504,7 +504,7 @@ class BusinessController extends Controller
     public function postBusinessSettings(Request $request)
     {
         if (!auth()->user()->can('business_settings.access')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
