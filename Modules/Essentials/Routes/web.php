@@ -216,8 +216,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeOfficialDoc', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'store'])->name('storeOfficialDoc');
         Route::delete('/official_documents/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'destroy'])->name('offDoc.destroy');
         Route::get('/official_documents.view/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'show'])->name('doc.view');
-        Route::put('/updateDoc/{id}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'update'])->name('updateDoc');
-        Route::get('/official_documents/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'edit'])->name('doc.edit');
+        Route::post('/updateDoc/{docId}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'update'])->name('updateDoc');
+        Route::get('/official_documents/edit/{docId}', [\Modules\Essentials\Http\Controllers\EssentialsOfficialDocumentController::class, 'edit'])->name('official_documents.edit');
 
         Route::get('/qualifications', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'index'])->name('qualifications');
         Route::post('/storeQualification', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeQualificationController::class, 'store'])->name('storeQualification');

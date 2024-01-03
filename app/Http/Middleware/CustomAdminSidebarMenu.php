@@ -1123,9 +1123,10 @@ class CustomAdminSidebarMenu
             }
             if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_all_salary_requests')) {
                 $menu->url(
-                    action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
+                    action([\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index']),
                     __('followup::lang.salary_requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allIrRequests']
+                    ['icon' => 'fa fas fa-plus-circle',
+                     'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests']
                 );
             }
         });
