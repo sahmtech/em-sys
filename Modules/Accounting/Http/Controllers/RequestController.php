@@ -133,7 +133,7 @@ class RequestController extends Controller
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('department_id', $departmentIds);
+                ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
         }
         else {
             $output = ['success' => false,
@@ -206,7 +206,7 @@ class RequestController extends Controller
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
             
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->first();
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->where('status','pending')->where('sub_status',null)->first();
    
             $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
 
@@ -217,10 +217,6 @@ class RequestController extends Controller
                 ];
                 return $output;
             }
-
-
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
-           
 
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;

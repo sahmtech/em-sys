@@ -120,4 +120,7 @@ return [
     'view_building_management' => 'عرض  إدارة السكن ',
     'added_success' => 'تم إضافة العنصر بنجاح ',
     'updated_success' => 'تم تعديل العنصر بنجاح',
+    'escalate_requests'=>'الطلبات المصعّدة',
+    'requests_by_sequential'=>'الطلبات حسب التسلسل',
+    'crud_requests'=>'إدارة الطلبات'
 ];

@@ -108,7 +108,7 @@
         @endif
     @endif
     <section class="content">
-
+        @include('generalmanagement::layouts.nav_requests')
 
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">

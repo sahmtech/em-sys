@@ -103,7 +103,9 @@ return [
 'Target_quantity_should_be_equal_to_or_less_than'=>' العدد المطلوب يجب أن يكون أصغر أو يساوي القيمة',
 'crud_all_reports'=>'إدارة التقارير',
 'crud_all_salary_requests'=>'إدارة طلبات الرواتب',
-'please_add_the_Ir_department'=>'قم بإضافة إدارة العلاقات الدولية من فضلك'
+'please_add_the_Ir_department'=>'قم بإضافة إدارة العلاقات الدولية من فضلك',
+'escalate_requests'=>'الطلبات المصعّدة',
+'requests_by_sequential'=>'الطلبات حسب التسلسل'
 
 // to here we have en file
 

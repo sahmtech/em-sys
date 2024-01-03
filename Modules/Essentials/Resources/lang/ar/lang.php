@@ -1120,5 +1120,7 @@ return [
   'escalates_after'=>'يُصعّد بعد',
   'in_hours'=>'بالساعات',
   'you_have_no_access_role' => 'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
+  'escalate_requests'=>'الطلبات المصعّدة',
+  'requests_by_sequential'=>'الطلبات حسب التسلسل'
 
 ];
