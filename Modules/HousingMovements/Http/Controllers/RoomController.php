@@ -28,7 +28,7 @@ class RoomController extends Controller
        $business_id = request()->session()->get('user.business_id');
 
 
-        $can_crud_rooms = auth()->user()->can('housingmovement_module.crud_rooms');
+        $can_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
         if (! $can_crud_rooms) {
            
         }
