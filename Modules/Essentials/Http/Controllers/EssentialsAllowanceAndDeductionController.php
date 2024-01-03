@@ -114,7 +114,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
                     'action',
                     function ($row) {
                         $html = '';
-                        $html .= '<a href="' . route('employee_allowance.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                        $html .= '<a href="' . route('feature.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                         &nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_employee_allowance_button" data-href="' . route('employee_allowance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
     
@@ -269,6 +269,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         return view('essentials::allowance_deduction.edit')
             ->with(compact('allowance', 'users', 'selected_users', 'applicable_date'));
     }
+   
     public function editAllowance($id)
     {
         $business_id = request()->session()->get('user.business_id');
