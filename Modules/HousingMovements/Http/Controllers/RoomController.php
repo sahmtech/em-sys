@@ -182,8 +182,7 @@ class RoomController extends Controller
 
                  else {
                     
-                    $workers = User::where('user_type', 'worker')
-                        ->whereNotIn('id', $existingWorkerIds)
+                    $workers = User::whereNotIn('id', $existingWorkerIds)
                         ->select(
                             'id',
                             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
