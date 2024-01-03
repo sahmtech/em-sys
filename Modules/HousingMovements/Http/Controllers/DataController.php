@@ -41,6 +41,11 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
+                'value' => 'housingmovements.crud_requests',
+                'label' => __('housingmovements::lang.crud_requests'),
+                'default' => false,
+            ],
+            [
                 'value' => 'housingmovements.view_movement_management',
                 'label' => __('housingmovements::lang.view_movement_management'),
                 'default' => false,

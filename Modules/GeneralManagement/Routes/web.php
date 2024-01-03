@@ -17,7 +17,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
    
         //requests
         Route::get('/president_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index'])->name('president_requests');
-
+        Route::get('/escalate_requests', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'escalateRequests'])->name('escalate_requests');
+        Route::post('/change-status', [\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'changeStatus'])->name('generalmanagement.changeStatus');
+        
    
     });
 });

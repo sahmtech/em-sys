@@ -161,7 +161,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']),
                     __('generalmanagement::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'generalmanagement' && request()->segment(2) == 'president_requests']
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'president_requests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
         });
@@ -361,6 +361,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 );
             }
+            if ($isSuperAdmin  || auth()->user()->can('essentials.crud_all_essentials_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
+                    __('essentials::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'sales.requests' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
             //employee reports 
             if ($isSuperAdmin  || auth()->user()->can('essentials.employees_reports_view')) {
                 $menu->dropdown(
@@ -379,13 +386,7 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($isSuperAdmin  || auth()->user()->can('essentials.crud_all_essentials_requests')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
-                    __('followup::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'allEssentialsRequests']
-                );
-            }
+          
 
             if ($isSuperAdmin  || auth()->user()->can('essentials.crud_essentials_recuirements_requests')) {
                 $menu->url(
@@ -826,8 +827,8 @@ class CustomAdminSidebarMenu
                     __('sales::lang.requests'),
                     [
                         'icon' => 'fa fas fa-plus-circle',
-                        'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales.requests'
-                    ],
+                        'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'sales.requests' || request()->segment(2) == 'escalate_requests')
+                        ],
                 );
             }
 
@@ -914,13 +915,14 @@ class CustomAdminSidebarMenu
                 ]
             );
 
-            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_buildings')) {
+            if ($isSuperAdmin  || auth()->user()->can('housingmovements.crud_requests')) {
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
                     __('housingmovements::lang.requests'),
                     [
                         'icon' => 'fa fas fa-plus-circle',
-                        'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'hm.requests'
+                        'active' => request()->segment(1) == 'housingmovements' &&
+                        (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests')
                     ],
                 );
             }
@@ -1219,7 +1221,8 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
                     __('followup::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'allIrRequests']
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && 
+                    (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
             if ($isSuperAdmin || auth()->user()->can('internationalrelations.crud_all_reports')) {

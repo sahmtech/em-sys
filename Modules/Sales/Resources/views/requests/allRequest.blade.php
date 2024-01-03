@@ -109,6 +109,7 @@
     @endif
     <section class="content">
 
+        @include('sales::layouts.nav_requests')
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
@@ -1009,8 +1010,7 @@
                     '#addRequestModal'),
                 width: '100%',
             });
-
-        });
+        });
     </script>
 
 @endsection

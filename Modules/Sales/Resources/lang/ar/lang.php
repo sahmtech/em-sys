@@ -349,11 +349,6 @@ return [
     'file_lead' => 'مرفق التأهيل',
     'note_lead' => 'ملاحظات',
     'file_contract_appendices' => 'مرفق ملحق العقود',
-
-
-
-
-
     'crud_sales_salary_requests' => 'إضافة\حذف\تعديل طلبات الرواتب',
     'salary_requests' => 'طلبات الرواتب',
     'worker_name' => 'اسم العامل',
@@ -362,6 +357,8 @@ return [
     'add_salary_request' => 'إضافة طلب راتب',
     'file' => 'المرفق',
     'openfile' => 'افتح المرفق',
+    'escalate_requests'=>'الطلبات المصعّدة',
+    'requests_by_sequential'=>'الطلبات حسب التسلسل'
 
 
 
