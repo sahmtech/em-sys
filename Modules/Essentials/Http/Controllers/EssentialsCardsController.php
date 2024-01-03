@@ -359,13 +359,16 @@ class EssentialsCardsController extends Controller
         'Payment_number as Payment_number',
         'fixnumber as fixnumber')->get();
    
-          $durationOptions = [
+        
+        $durationOptions = [
             '3' => __('essentials::lang.3_months'),
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
-            $data->pluck('workcard_duration')->unique()->first() => __('essentials::lang.workcard_duration'),
+           
         ];
+
+
         foreach ($data as $row) {
             $doc = $row->user->OfficialDocument
                 ->where('type', 'residence_permit')
@@ -377,7 +380,7 @@ class EssentialsCardsController extends Controller
             $row->fixnumber= $fixnumber ?  $fixnumber : null;
         }
       
-        return response()->json($data);
+        return response()->json(['data' => $data, 'durationOptions' => $durationOptions]);
     }
 
 

@@ -254,12 +254,14 @@ $('#renew-selected').on('click', function (e) {
                 url: '{{ route("getSelectedworkcardData") }}',
                 type: 'post',
                 data: { selectedRows: selectedRows },
-                success: function (data) {
-                  
+               
+                success: function (response) {
+                  var data = response.data;
+                  var durationOptions = response.durationOptions;
+                  console.log(durationOptions);
                   
                 $('.modal-body').empty();
 
-                    console.log(data);
                 var inputClasses = 'form-group';
                                 var labelsRow = $('<div>', {class: 'row'});
 
@@ -302,30 +304,16 @@ $('#renew-selected').on('click', function (e) {
                 $('.modal-body').append(labelsRow);
 
 
-                                    var options = {
-                                    
-                                        '3': '{{ __('essentials::lang.3_months') }}',
-                                        '6': '{{ __('essentials::lang.6_months') }}',
-                                        '9': '{{ __('essentials::lang.9_months') }}',
-                                        '12': '{{ __('essentials::lang.12_months') }}',
-                                    };
-
                                 
                                                     
-                                    $.each(data, function (index, row) {
+                $.each(data, function (index, row) {
                                         
-                                        var rowDiv = $('<div>', {
-                                                class: 'row'
-                                            });
+                    var rowDiv = $('<div>', {
+                           class: 'row'
+                      });
 
                             
-                                    var selectInput = $('<select>', {
-                                            name: 'renew_duration[]',
-                                            class: 'form-control',
-                                            style: 'height: 40px',
-                                            required: true,
-                                            id: 'renew_duration_' + index 
-                                        });
+                                
 
                                         var rowIDInput = $('<input>', {
                                             type: 'hidden',
@@ -371,53 +359,45 @@ $('#renew-selected').on('click', function (e) {
                                             value: row.expiration_date
                                         });
                                         rowDiv.append(expiration_dateInput);
+var renewDurationInput = $('<select>', {
+        id: 'renew_durationId_' + index,
+        name: 'renew_duration[]',
+        class: 'form-control ' + inputClasses + 'col-md-2',
+        style: 'height: 40px; width: 150px',
+        required: true,
+    });
 
-                                        var renewDurationInput = $('<select>', {
-                    name: 'renew_duration[]',
-                    class: 'form-control ' + inputClasses + 'col-md-2',
-                    style: 'height: 40px; width: 150px',
-                    required: true,
-                });
+    
+    Object.keys(durationOptions).forEach(function (value) {
+        var option = $('<option>', {
+            value: value,
+            text: durationOptions[value],
+        });
 
-                Object.keys(options).forEach(function (value) {
-                    var option = $('<option>', {
-                        value: value,
-                        text: options[value],
-                    });
+        renewDurationInput.append(option);
+    });
 
-                    renewDurationInput.append(option);
-                });
+    
+    renewDurationInput.val(row.workcard_duration);
 
+    
+    rowDiv.append(renewDurationInput);
 
+    
+    $('#renew_durationId_' + index).select2({
+        dropdownParent: $('#renewModal'),
+    });
 
-                console.log(renewDurationInput.val(row.workcard_duration));
+    
+    $('#renew_durationId_' + index).val(row.workcard_duration).trigger('change');
 
-                renewDurationInput.val(row.workcard_duration);
-
-
-                renewDurationInput.on('change', function () {
-                    renewDurationInput.val(row.workcard_duration);
-                    var selectedValue = $(this).val();
-                    var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
-                    var fees = calculateFees(selectedValue);
-                    console.log(fees);
-                    feesInput.val(fees);
-                    renewDurationInput.val(selectedValue);
-                    
-                    setTimeout(function () {
-                        console.log('Selected Option:', renewDurationInput.val());
-                    }, 0);
-                });
-
-
-                rowDiv.append(renewDurationInput);
-
-
-                setTimeout(function () {
-                    console.log('Selected Option after appending:', renewDurationInput.val());
-                }, 0);
-
-                rowDiv.append(renewDurationInput);
+    renewDurationInput.on('change', function () {
+        var selectedValue = $(this).val();
+        var feesInput = $(this).closest('.row').find('input[name="fees[]"]');
+        var fees = calculateFees(selectedValue);
+        feesInput.val(fees);
+    });
+              
 
 
                     var feesInput = $('<input>', {
