@@ -1,7 +1,7 @@
 <?php
 
 namespace Modules\Essentials\Http\Controllers;
-
+use App\Business;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -10,6 +10,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
+use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 
 class EssentialsWkProcedureController extends Controller
 {
@@ -53,7 +54,8 @@ class EssentialsWkProcedureController extends Controller
         $missingTypes = array_diff($requestsType, $actualTypes);
         $departments=EssentialsDepartment::where('business_id',$business_id)->pluck('name','id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
+       
+     
 
         if (request()->ajax()) {	
    
@@ -89,7 +91,8 @@ class EssentialsWkProcedureController extends Controller
         ->rawColumns(['steps','action'])
         ->make(true);
         }
-         return view('essentials::work_flow.index')->with(compact('departments','missingTypes'));
+        $businesses = Business::forDropdown();
+         return view('essentials::work_flow.index')->with(compact('departments','businesses','missingTypes'));
        
     }
 

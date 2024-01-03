@@ -65,11 +65,17 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/allIrRequests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index'])->name('allIrRequests');
         Route::post('/ir_change-status', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeStatus'])->name('ir_changeStatus');
+        Route::get('/escalate_requests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'escalateRequests'])->name('ir.escalate_requests');
+        Route::post('/changeEscalateRequestsStatus', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeEscalateRequestsStatus'])->name('ir.changeEscalateRequestsStatus');
+
+
 
         Route::post('/storeIrRequest', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'store'])->name('storeIrRequest');
         Route::get('/search/byproof_number', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'search'])->name('ir.search_byproof_number');
 
         Route::get('/get_order_nationlities', [\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'getNationalities'])->name('get_order_nationlities');
+
+        Route::get('/get-Irsalary-requests', [\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index'])->name('get_Irsalary_requests');
 
 
 
