@@ -26,9 +26,9 @@
                                 $img_src = '/uploads/'.$user->profile_image;
                             }
                         @endphp
-                        @if(auth()->user()->can('view_profile_photo'))
+                      
                         <img class="profile-user-img img-responsive img-circle" src="{{$img_src}}" alt="User profile picture">
-                        @endif
+                      
                         <h3 class="profile-username text-center">
                             {{$user->full_name}}
                         </h3>
@@ -59,12 +59,12 @@
                                 @endif
                             </li>
                         </ul>
-                        @can('user.update')
+                       
                             <a href="{{action( [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'edit'], [$user->id])}}" class="btn btn-primary btn-block">
                                 <i class="glyphicon glyphicon-edit"></i>
                                 @lang("messages.edit")
                             </a>
-                        @endcan
+                       
 
 
                        

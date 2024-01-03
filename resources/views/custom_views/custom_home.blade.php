@@ -66,7 +66,7 @@
 
                 <div class="col-md-10">
                     <div class="card-grid">
-                     
+
                         @foreach ($cards as $card)
                             <div class="col-md-3">
                                 <div class="card">
@@ -78,7 +78,6 @@
                                     </a>
                                 </div>
                             </div>
-                          
                         @endforeach
                     </div>
                 </div>
@@ -91,7 +90,8 @@
                         <img src="{{ asset('img/personAvatar.png') }}" alt="Employee Photo" class="employee-photo">
                         <div class="employee-info">
                             <h3>متعب الكبرى</h3>
-                            <p>مدير التشغيل</p>
+
+                            <p>مدير إدارة التشغيل</p>
                         </div>
                     </div>
                 </div>
@@ -127,9 +127,6 @@
 
 
     <script type="text/javascript">
-     
-
-
         $(document).ready(function() {
 
 

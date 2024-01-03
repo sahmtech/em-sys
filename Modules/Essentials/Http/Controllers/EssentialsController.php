@@ -12,6 +12,7 @@ use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use DB;
+
 class EssentialsController extends Controller
 {
     /**
@@ -22,6 +23,9 @@ class EssentialsController extends Controller
     public function index()
     {
 
+        if (!(auth()->user()->can('essentials.essentials_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
+            return redirect()->route('essentials_word_cards_dashboard');
+        }
         $business_id = request()->session()->get('user.business_id');
 
         $num_employee_staff = User::where('business_id', $business_id)->where(function ($query) {
@@ -52,6 +56,40 @@ class EssentialsController extends Controller
         return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
     }
 
+    public function word_cards_dashboard()
+    {
+
+        $business_id = request()->session()->get('user.business_id');
+
+        $num_employee_staff = User::where('business_id', $business_id)->where(function ($query) {
+            $types = ['worker', 'employee', 'manager'];
+
+            foreach ($types as $type) {
+                $query->orWhere('user_type', 'like', '%' . $type . '%');
+            }
+        })->count();
+        $num_workers = User::where('business_id', $business_id)->where('user_type', 'like', '%worker%')->count();
+        $num_employees = User::where('business_id', $business_id)->where('user_type', 'like', '%employee%')->count();
+
+
+        $num_managers = User::where('business_id', $business_id)->where('user_type', 'like', '%manager%')->count();
+        $chart = new CommonChart;
+        $colors = [
+            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
+            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
+            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+        ];
+        $labels = [__('user.worker'), __('user.employee'), __('user.manager')];
+        $values = [$num_workers, $num_employees, $num_managers];
+        $chart->labels($labels)
+            ->options($this->__chartOptions())
+            ->dataset(__('user.employee_staff'), 'pie', $values)
+            ->color($colors);
+
+        return view('essentials::work_cards_index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
+    }
+
+
     private function __chartOptions()
     {
         return [
@@ -76,49 +114,47 @@ class EssentialsController extends Controller
 
 
 
-    
+
     public function getLeaveStatusData()
     {
         $business_id = request()->session()->get('user.business_id');
-        
-      
-        $rawLeaveStatusData = FollowupWorkerRequest::where('type','leavesAndDepartures')
+
+
+        $rawLeaveStatusData = FollowupWorkerRequest::where('type', 'leavesAndDepartures')
             ->select(DB::raw('status, COUNT(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
             ->toArray();
-    
-      
+
+
         $leaveStatusData = [];
         foreach ($rawLeaveStatusData as $status => $count) {
-            $translatedLabel = trans('lang_v1.' . $status); 
+            $translatedLabel = trans('lang_v1.' . $status);
             $leaveStatusData[$translatedLabel] = $count;
         }
-    
+
         $data = [
             'labels' => array_keys($leaveStatusData),
             'values' => array_values($leaveStatusData),
         ];
-       // dd($data);
-    
+        // dd($data);
+
         return response()->json($data);
     }
-    
 
- 
+
+
     public function getContractStatusData()
     {
         $business_id = request()->session()->get('user.business_id');
-    
+
         $totalContracts = EssentialsEmployeesContract::count();
-    
-        $expiredContractsByEndDate = EssentialsEmployeesContract::
-            whereNotNull('contract_end_date')
+
+        $expiredContractsByEndDate = EssentialsEmployeesContract::whereNotNull('contract_end_date')
             ->whereDate('contract_end_date', '<', now())
             ->count();
-    
-        $expiredContractsByProbation = EssentialsEmployeesContract::
-            whereNotNull('probation_period')
+
+        $expiredContractsByProbation = EssentialsEmployeesContract::whereNotNull('probation_period')
             ->where(function ($query) {
                 $query->whereNull('contract_end_date')
                     ->orWhere(function ($endDateSubquery) {
@@ -127,7 +163,7 @@ class EssentialsController extends Controller
                     });
             })
             ->count();
-    
+
         $data = [
             'labels' => [
                 __('essentials::lang.expired_contracts'),
@@ -138,12 +174,12 @@ class EssentialsController extends Controller
                 ($totalContracts > 0) ? ($expiredContractsByProbation / $totalContracts * 100) : 0,
             ],
         ];
-    
+
         return response()->json($data);
     }
-    
-    
-    
+
+
+
 
 
     /**

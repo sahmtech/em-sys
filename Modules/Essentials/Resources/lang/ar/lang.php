@@ -1106,21 +1106,25 @@ return [
   'business_single' => 'الشركة',
   'please_add_the_essentials_department' => 'قم بإضافة إدارة الموارد البشرية من فضلك',
 
-  'crud_essentials_recuirements_requests'=>'حذف \ إضافة \ تعديل  طلبات التوظيف الداخلي ',
-  'recuirements_requests'=>' طلبات التوظيف الداخلي',
-  'under_study'=>'الطلبات قيد الدراسة ',
-  'accepted'=>'الطلبات المقبولة ',
-  'pending'=>'قيد الدراسة ',
-  'rejected'=>' مرفوض ',
-  'approved'=>' مقبول ',
-  'unacceptable'=>'الطلبات المرفوضة ',
-  'quantity_validation'=>'العدد المدخل يجب أن يكون أقل من ',
+  'crud_essentials_recuirements_requests' => 'حذف \ إضافة \ تعديل  طلبات التوظيف الداخلي ',
+  'recuirements_requests' => ' طلبات التوظيف الداخلي',
+  'under_study' => 'الطلبات قيد الدراسة ',
+  'accepted' => 'الطلبات المقبولة ',
+  'pending' => 'قيد الدراسة ',
+  'rejected' => ' مرفوض ',
+  'approved' => ' مقبول ',
+  'unacceptable' => 'الطلبات المرفوضة ',
+  'quantity_validation' => 'العدد المدخل يجب أن يكون أقل من ',
   'edit_docs' => 'تعديل ترخيص',
-  'escalates_to'=>'يُصعّد إلى',
-  'escalates_after'=>'يُصعّد بعد',
-  'in_hours'=>'بالساعات',
+  'escalates_to' => 'يُصعّد إلى',
+  'escalates_after' => 'يُصعّد بعد',
+  'in_hours' => 'بالساعات',
   'you_have_no_access_role' => 'ليس لديك صلاحية الوصول لأي شركة أو مشروع',
+
   'escalate_requests'=>'الطلبات المصعّدة',
-  'requests_by_sequential'=>'الطلبات حسب التسلسل'
+  'requests_by_sequential'=>'الطلبات حسب التسلسل',
+
+  'essentials_dashboard' => 'الصفحة الرئيسية للموارد البشرية',
+  'essentials_work_cards_dashboard' => 'الصفحة الرئيسية للعلاقات الحكومية',
 
 ];
