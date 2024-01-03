@@ -214,7 +214,7 @@
 
 
 
-.skin-black .main-sidebar,
+ .main-sidebar,
 .skin-blue .main-sidebar,
 .skin-green .main-sidebar,
 .skin-purple .main-sidebar,
@@ -225,9 +225,15 @@
     border-right: 0px !important;
 }
 
+.skin-black-light .main-sidebar, .skin-blue-light .main-sidebar, .skin-green-light .main-sidebar, .skin-purple-light .main-sidebar, .skin-red-light .main-sidebar, .skin-yellow-light .main-sidebar {
+    background: #12142e !important;
 
-.skin-black .main-header .logo,
-.skin-black-light .main-header .logo {
+    border-right: 0px !important;
+}
+
+
+.main-header .logo,
+ .main-header .logo {
     background: #fbbc16 !important;
     color:#12142e !important;
 }
@@ -243,3 +249,17 @@
     background: #b4b4b4 url('/img/emdadat-bg-img.jpg') !important;
 } */
 
+
+.sidebar a {
+    color: #b8c7ce !important;
+}
+
+
+
+
+.skin-blue-light .sidebar-menu>li.active>a{
+    background: #1d1f33!important;
+}
+.skin-blue-light .sidebar-menu>li:hover>a{
+    background: #1d1f33!important;
+}
