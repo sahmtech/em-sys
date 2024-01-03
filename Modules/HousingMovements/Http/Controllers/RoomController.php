@@ -28,7 +28,7 @@ class RoomController extends Controller
        $business_id = request()->session()->get('user.business_id');
 
 
-        $can_crud_rooms = auth()->user()->can('housingmovement_module.crud_rooms');
+        $can_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
         if (! $can_crud_rooms) {
            
         }
@@ -64,9 +64,9 @@ class RoomController extends Controller
             })
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row)  {
                     $html = '';
-                    if ($is_admin) {
+                  
                         $html .= '<a href="'. route('show_room_workers', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> '.__('housingmovements::lang.show_room_workers').'</a>
 
                         &nbsp;';
@@ -75,7 +75,7 @@ class RoomController extends Controller
 
                         
                         $html .= '<button class="btn btn-xs btn-danger delete_room_button" data-href="' . route('room.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    }
+                  
         
                     return $html;
                 }

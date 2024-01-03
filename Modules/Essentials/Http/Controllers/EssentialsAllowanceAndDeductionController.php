@@ -51,7 +51,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
         if (request()->ajax()) {
             $allowances = EssentialsAllowanceAndDeduction::where('business_id', $business_id)
-                ->with('employees');
+                ->with(['employees']);
 
             return Datatables::of($allowances)
                 ->addColumn(
@@ -86,65 +86,64 @@ class EssentialsAllowanceAndDeductionController extends Controller
     }
     public function featureIndex()
     {
-
         $business_id = request()->session()->get('user.business_id');
-
-
+    
         if (!auth()->user()->can('essentials.view_allowance_and_deduction')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
-        // $allowances=EssentialsAllowanceAndDeduction::where('type','allowance')->pluck('name','id');
+    
         if (request()->ajax()) {
             $userAllowances = EssentialsUserAllowancesAndDeduction::join(
-                'essentials_allowances_and_deductions as allawocnce',
-                'allawocnce.id',
+                'essentials_allowances_and_deductions as allowance',
+                'allowance.id',
                 '=',
                 'essentials_user_allowance_and_deductions.allowance_deduction_id'
             )
-                ->where('allawocnce.type', 'allowance')
+                ->where('allowance.type', 'allowance')
                 ->join('users as u', 'u.id', '=', 'essentials_user_allowance_and_deductions.user_id')
                 ->where('u.business_id', $business_id)
                 ->select([
-                    'allawocnce.id as id',
+                    'allowance.id as id',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'allawocnce.description',
+                    'allowance.description',
                     'essentials_user_allowance_and_deductions.amount',
-
                 ]);
-
-
+    
             return Datatables::of($userAllowances)
-
-
                 ->addColumn(
                     'action',
                     function ($row) {
                         $html = '';
-                        //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                        $html .= '<a href="' . route('employee_allowance.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
-                    &nbsp;';
+                        $html .= '<a href="' . route('feature.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
+                        &nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_employee_allowance_button" data-href="' . route('employee_allowance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
+    
                         return $html;
                     }
                 )
-
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
-
+                ->filterColumn('description', function ($query, $keyword) {
+                    $query->where('allowance.description', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('amount', function ($query, $keyword) {
+                    $query->where('essentials_user_allowance_and_deductions.amount', 'like', "%{$keyword}%");
+                })
                 ->rawColumns(['action'])
                 ->make(true);
         }
+    
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
-
+    
         return view('essentials::employee_affairs.employee_features.index')->with(compact('allowance_types', 'users'));
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -270,6 +269,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         return view('essentials::allowance_deduction.edit')
             ->with(compact('allowance', 'users', 'selected_users', 'applicable_date'));
     }
+   
     public function editAllowance($id)
     {
         $business_id = request()->session()->get('user.business_id');

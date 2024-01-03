@@ -154,6 +154,7 @@
             admissions_to_work_table  = $('#admissions_to_work_table').DataTable({
                 processing: true,
                 serverSide: true,
+                searching: true,
                 ajax: {
                     url: "{{ route('admissionToWork') }}",
                     data: function(d) {
@@ -175,8 +176,8 @@
                 },
                 
                 columns: [
-                        { data: 'user' },
-                        { data: 'id_proof_number' },
+                        { data: 'user' ,name: 'user' },
+                        { data: 'id_proof_number' , name: 'users.id_proof_number'},
                         { data: 'admissions_date' },
                  
                        
@@ -221,6 +222,11 @@
             $('#admissions_type_filter,#admissions_status_filter, #doc_filter_date_range').on('change', function() {
                 reloadDataTable();
             });
+
+ 
+
+   
+
             $(document).on('click', 'button.delete_admissionToWork_button', function () {
                 swal({
                     title: LANG.sure,
