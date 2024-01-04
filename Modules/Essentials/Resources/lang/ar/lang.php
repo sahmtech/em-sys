@@ -1126,5 +1126,10 @@ return [
 
   'essentials_dashboard' => 'الصفحة الرئيسية للموارد البشرية',
   'essentials_work_cards_dashboard' => 'الصفحة الرئيسية للعلاقات الحكومية',
+  'select_operation'=>'اختر نوع العملية ',
+  'add_new_data'=>'إضافة بيانات جديدة ',
+  'update_existing_data'=>'تحديث البيانات',
+  'file_to_update__import'=>'ملف التحديث',
+  'download_update_template_file'=>"تنزيل ملف قالب التحديث",
 
 ];
