@@ -85,7 +85,7 @@
                     {{ $contactSigners->identity_number }}
                 @endif
             </p>
-            <br>
+            {{-- <br>
             <p>
                 <strong>@lang('sales::lang.allow_login'):</strong>
                 @if (!empty($contactSigners->allow_login))
@@ -93,7 +93,7 @@
                 @else
                     <span>@lang('sales::lang.notallowlogin')</span>
                 @endif
-            </p>
+            </p> --}}
 
         </div>
 
@@ -149,7 +149,7 @@
             </div>
 
 
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
 
 
                 <p>
@@ -163,7 +163,7 @@
                         <span>@lang('sales::lang.notallowlogin')</span>
                     @endif
                 </p>
-            </div>
+            </div> --}}
             <br>
         </div>
     </div>

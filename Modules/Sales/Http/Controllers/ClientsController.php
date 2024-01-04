@@ -655,7 +655,7 @@ class ClientsController extends Controller
                 'type', 'contact_id',
                 'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
 
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf'
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 
             ]);
 
             // $input['allow_login_cs'] = $request->filled('allow_login_cs');

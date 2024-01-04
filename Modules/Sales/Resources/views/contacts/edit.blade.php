@@ -299,7 +299,7 @@
 
 
 
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('username_cs', __('sales::lang.username_cs') . ':') !!}
                             <div class="input-group">
@@ -323,9 +323,9 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('password_cs', __('sales::lang.password_cs') . ':') !!}
                             <div class="input-group">
@@ -351,7 +351,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
 
@@ -513,7 +513,7 @@
                     </div>
 
 
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('username_cf', __('sales::lang.username_cf') . ':') !!}
                             <div class="input-group">
@@ -538,9 +538,9 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('password_cf', __('sales::lang.password_cf') . ':') !!}
                             <div class="input-group">
@@ -567,7 +567,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
 
