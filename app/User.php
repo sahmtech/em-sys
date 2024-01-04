@@ -17,6 +17,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
+use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
 use Modules\Essentials\Entities\EssentialsWorkCard;
 use Modules\HousingMovements\Entities\Car;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
@@ -352,8 +353,6 @@ class User extends Authenticatable
         return $this->belongsTo(EssentialsCountry::class, 'nationality_id');
     }
 
-
-
     public function contract()
     {
         return $this->hasOne(EssentialsEmployeesContract::class, 'employee_id');
@@ -403,7 +402,7 @@ class User extends Authenticatable
 
     public function calculateTotalSalary()
     {
-        $allowances = $this->UserallowancesAndDeductions;
+        $allowances = $this->userAllowancesAndDeductions;
 
 
         $totalSalary = $this->essentials_salary;
@@ -416,7 +415,7 @@ class User extends Authenticatable
         return $totalSalary;
     }
 
-    public function UserallowancesAndDeductions()
+    public function userAllowancesAndDeductions()
     {
         return $this->hasMany(\Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction::class, 'user_id');
     }
@@ -443,5 +442,9 @@ class User extends Authenticatable
     public function Car()
     {
         return $this->belongsTo(Car::class);
+    }
+
+    public function employee_travle_categorie(){
+        return $this->hasOne(EssentialsEmployeeTravelCategorie::class,'employee_id');
     }
 }

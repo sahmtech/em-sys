@@ -19,5 +19,7 @@
     "InternationalRelations": true,
     "FollowUp": true,
     "Sells": true,
-    "Sales": true
+    "Sales": true,
+    "YourModuleName": true,
+    "GeneralManagement": true
 }

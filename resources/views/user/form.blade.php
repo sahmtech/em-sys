@@ -15,80 +15,82 @@
     @endphp
 
 
+    <div class="col-md-12 box box-primary">
+        <h4>@lang('essentials::lang.personal_info'):</h4>
+        <div class="form-group col-md-3">
+            {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
+            {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
+                'class' => 'form-control hijri-date-picker',
+                'style' => 'height:36px',
+                'placeholder' => __('lang_v1.hijri_dob'),
+                'readonly',
+                'id' => 'user_hijri_dob',
+            ]) !!}
+        </div>
 
-    <div class="form-group col-md-3">
-        {!! Form::label('user_hijri_dob', __('lang_v1.hijri_dob') . ':') !!}
-        {!! Form::text('hijrii_date', !empty($user->hijrii_date) ? $user->hijrii_date : null, [
-            'class' => 'form-control hijri-date-picker',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.hijri_dob'),
-            'readonly',
-            'id' => 'user_hijri_dob',
-        ]) !!}
-    </div>
-
-    <div class="form-group col-md-3">
-        {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
-        {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.dob'),
-            'readonly',
-            'id' => 'user_dob',
-        ]) !!}
-    </div>
-
-    <div class="form-group col-md-3">
-        {!! Form::label('gender', __('lang_v1.gender') . ':') !!}
-        {!! Form::select(
-            'gender',
-            ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')],
-            !empty($user->gender) ? $user->gender : null,
-            [
+        <div class="form-group col-md-3">
+            {!! Form::label('user_dob', __('lang_v1.dob') . ':') !!}
+            {!! Form::text('dob', !empty($user->dob) ? @format_date($user->dob) : null, [
                 'class' => 'form-control',
                 'style' => 'height:36px',
-                'id' => 'gender',
-                'placeholder' => __('messages.please_select'),
-            ],
-        ) !!}
-    </div>
+                'placeholder' => __('lang_v1.dob'),
+                'readonly',
+                'id' => 'user_dob',
+            ]) !!}
+        </div>
 
-    <div class="form-group col-md-3">
-        {!! Form::label('marital_status', __('lang_v1.marital_status') . ':') !!}
-        {!! Form::select(
-            'marital_status',
-            ['married' => __('lang_v1.married'), 'unmarried' => __('lang_v1.unmarried'), 'divorced' => __('lang_v1.divorced')],
-            !empty($user->marital_status) ? $user->marital_status : null,
-            ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('lang_v1.marital_status')],
-        ) !!}
-    </div>
-    <div class="form-group col-md-3">
-        {!! Form::label('blood_group', __('lang_v1.blood_group') . ':') !!}
-        <!-- {!! Form::text('blood_group', !empty($user->blood_group) ? $user->blood_group : null, [
-            'class' => 'form-control',
-            'placeholder' => __('lang_v1.blood_group'),
-        ]) !!} -->
-        {!! Form::select('blood_group', $blood_types, null, [
-            'class' => 'form-control',
-            'placeholder' => __('essentials::lang.blood_group'),
-        ]) !!}
-    </div>
+        <div class="form-group col-md-3">
+            {!! Form::label('gender', __('lang_v1.gender') . ':') !!}
+            {!! Form::select(
+                'gender',
+                ['male' => __('lang_v1.male'), 'female' => __('lang_v1.female'), 'others' => __('lang_v1.others')],
+                !empty($user->gender) ? $user->gender : null,
+                [
+                    'class' => 'form-control',
+                    'style' => 'height:36px',
+                    'id' => 'gender',
+                    'placeholder' => __('messages.please_select'),
+                ],
+            ) !!}
+        </div>
 
-    <div class="clearfix"></div>
-    <div class="form-group col-md-3">
-        {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':') !!}
-        {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
-            'class' => 'form-control',
-          
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.mobile_number'),
-            'oninput' => 'validateContactNumber(this)',
-            'maxlength' => '10',
-        ]) !!}
-        <span id="contactNumberError" class="text-danger"></span>
-    </div>
+        <div class="form-group col-md-3">
+            {!! Form::label('marital_status', __('lang_v1.marital_status') . ':') !!}
+            {!! Form::select(
+                'marital_status',
+                ['married' => __('lang_v1.married'), 'unmarried' => __('lang_v1.unmarried'), 'divorced' => __('lang_v1.divorced')],
+                !empty($user->marital_status) ? $user->marital_status : null,
+                ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('lang_v1.marital_status')],
+            ) !!}
+        </div>
+        <div class="form-group col-md-3">
+            {!! Form::label('blood_group', __('lang_v1.blood_group') . ':') !!}
+            <!-- {!! Form::text('blood_group', !empty($user->blood_group) ? $user->blood_group : null, [
+                'class' => 'form-control',
+                'placeholder' => __('lang_v1.blood_group'),
+            ]) !!} -->
+            {!! Form::select('blood_group', $blood_types, null, [
+                'class' => 'form-control',
+                'style' => 'height:36px',
+                'placeholder' => __('essentials::lang.blood_group'),
+            ]) !!}
+        </div>
 
-    <div class="form-group col-md-3">
+
+        <div class="form-group col-md-3">
+            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
+            {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
+                'class' => 'form-control',
+                'require',
+                'style' => 'height:36px',
+                'placeholder' => __('lang_v1.mobile_number'),
+                'oninput' => 'validateContactNumber(this)',
+                'maxlength' => '10',
+            ]) !!}
+            <span id="contactNumberError" class="text-danger"></span>
+        </div>
+
+        {{-- <div class="form-group col-md-3">
         {!! Form::label('alt_number', __('business.alternate_number') . ':') !!}
         {!! Form::text('alt_number', !empty($user->alt_number) ? $user->alt_number : null, [
             'class' => 'form-control',
@@ -102,20 +104,19 @@
             'style' => 'height:36px',
             'placeholder' => __('lang_v1.family_contact_number'),
         ]) !!}
-    </div>
+    </div> --}}
 
 
-    <div class="clearfix"></div>
-    <div class="form-group col-md-6">
-        {!! Form::label('permanent_address', __('lang_v1.permanent_address') . ':') !!}
-        {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, [
-            'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('lang_v1.permanent_address'),
-            'rows' => 3,
-        ]) !!}
-    </div>
-    <div class="form-group col-md-6">
+        <div class="form-group col-md-6">
+            {!! Form::label('permanent_address', __('lang_v1.address') . ':') !!}
+            {!! Form::text('permanent_address', !empty($user->permanent_address) ? $user->permanent_address : null, [
+                'class' => 'form-control',
+                'style' => 'height:36px',
+                'placeholder' => __('lang_v1.address'),
+                'rows' => 3,
+            ]) !!}
+        </div>
+        {{-- <div class="form-group col-md-6">
         {!! Form::label('current_address', __('lang_v1.current_address') . ':') !!}
         {!! Form::text('current_address', !empty($user->current_address) ? $user->current_address : null, [
             'class' => 'form-control',
@@ -123,178 +124,187 @@
             'placeholder' => __('lang_v1.current_address'),
             'rows' => 3,
         ]) !!}
-    </div>
+    </div> --}}
 
 
 
-    <div class="form-group col-md-3">
-        {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-        <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control"
-            onchange="updateNationalityOptions(this)">
-            <option value="">@lang('user.select_proof_name')</option>
-            <option value="national_id"
-                {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>
-                @lang('user.national_id')</option>
-            <option value="eqama"
-                {{ !empty($user->id_proof_name) && $user->id_proof_name == 'eqama' ? 'selected' : '' }}>
-                @lang('user.eqama')</option>
-        </select>
-    </div>
+        <div class="form-group col-md-3">
+            {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
+            <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control"
+                onchange="updateNationalityOptions(this)">
+                <option value="">@lang('user.select_proof_name')</option>
+                <option value="national_id"
+                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>
+                    @lang('user.national_id')</option>
+                <option value="eqama"
+                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'eqama' ? 'selected' : '' }}>
+                    @lang('user.eqama')</option>
+            </select>
+        </div>
 
-    <div id="eqamaEndDateInput" class="form-group col-md-3"
-        style="{{ !is_null($resident_doc) && !is_null($resident_doc->expiration_date) ? '' : 'display: none;' }}">
-        {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
-        {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
-            'class' => 'form-control',
-            'style' => 'height:40px',
-            'placeholder' => __('lang_v1.eqama_end_date'),
-            'id' => 'eqama_end_date',
-        ]) !!}
-    </div>
-
-    <div class="form-group col-md-3">
-        {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
-        {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
-            'class' => 'form-control',
-            'style' => 'height:40px',
-            'placeholder' => __('lang_v1.id_proof_number'),
-            'oninput' => 'validateIdProofNumber(this)',
-        ]) !!}
-        <span id="idProofNumberError" class="text-danger"></span>
-    </div>
-
-    <div class="form-group col-md-6" id="border_no_container"
-        style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
-        {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
-        {!! Form::text('border_no', optional($user)->border_no ?? '3', [
-            'class' => 'form-control',
-            'style' => 'height:40px',
-            'placeholder' => __('essentials::lang.border_number'),
-            'id' => 'border_no',
-            'maxlength' => '10',
-            'oninput' => 'validateBorderNumber()',
-        ]) !!}
-        <div id="border_no_error" class="text-danger"></div>
-    </div>
-
-    <div class="form-group col-md-3">
-        {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
-        {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
-            'class' => 'form-control select2',
-            'id' => 'nationalities_select',
-            'style' => 'height:40px',
-            'required',
-            'placeholder' => __('sales::lang.nationality'),
-        ]) !!}
-    </div>
-
-
-    <div class="form-group col-md-3">
-        {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
-        {!! Form::select(
-            'document_type',
-            [
-                'national_id' => __('essentials::lang.national_id'),
-                'passport' => __('essentials::lang.passport'),
-                'residence_permit' => __('essentials::lang.residence_permit'),
-                'drivers_license' => __('essentials::lang.drivers_license'),
-                'car_registration' => __('essentials::lang.car_registration'),
-                'international_certificate' => __('essentials::lang.international_certificate'),
-            ],
-            null,
-            [
+        <div id="eqamaEndDateInput" class="form-group col-md-3"
+            style="{{ !is_null($resident_doc) && !is_null($resident_doc->expiration_date) ? '' : 'display: none;' }}">
+            {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
+            {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
                 'class' => 'form-control',
                 'style' => 'height:40px',
-                'placeholder' => __('essentials::lang.select_type'),
-            ],
-        ) !!}
+                'placeholder' => __('lang_v1.eqama_end_date'),
+                'id' => 'eqama_end_date',
+            ]) !!}
+        </div>
+
+        <div class="form-group col-md-3">
+            {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
+            {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('lang_v1.id_proof_number'),
+                'oninput' => 'validateIdProofNumber(this)',
+            ]) !!}
+            <span id="idProofNumberError" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-6" id="border_no_container"
+            style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
+            {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
+            {!! Form::text('border_no', optional($user)->border_no ?? '3', [
+                'class' => 'form-control',
+                'style' => 'height:40px',
+                'placeholder' => __('essentials::lang.border_number'),
+                'id' => 'border_no',
+                'maxlength' => '10',
+                'oninput' => 'validateBorderNumber()',
+            ]) !!}
+            <div id="border_no_error" class="text-danger"></div>
+        </div>
+
+        <div class="form-group col-md-3">
+            {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
+            {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
+                'class' => 'form-control select2',
+                'id' => 'nationalities_select',
+                'style' => 'height:40px',
+                'required',
+                'placeholder' => __('sales::lang.nationality'),
+            ]) !!}
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group ">
+                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                {!! Form::select(
+                    'document_type',
+                    [
+                        'national_id' => __('essentials::lang.national_id'),
+                        'passport' => __('essentials::lang.passport'),
+                        'residence_permit' => __('essentials::lang.residence_permit'),
+                        'drivers_license' => __('essentials::lang.drivers_license'),
+                        'car_registration' => __('essentials::lang.car_registration'),
+                        'international_certificate' => __('essentials::lang.international_certificate'),
+                    ],
+                    null,
+                    [
+                        'class' => 'form-control ',
+                        'style' => 'height:40px',
+                        'placeholder' => __('essentials::lang.select_type'),
+                    ],
+                ) !!}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                {!! Form::label('document_file', __('essentials::lang.file') . ':*') !!}
+                {!! Form::file('document_file', [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.file'),
+                    'style' => 'height:40px',
+                ]) !!}
+            </div>
+        </div>
+    
     </div>
-
-    <div class="form-group col-md-6">
-        {!! Form::label('document_file', __('essentials::lang.file') . ':*') !!}
-        {!! Form::file('document_file', null, [
-            'class' => 'form-control',
-            'placeholder' => __('essentials::lang.file'),
-        
-            'style' => 'height:40px',
-        ]) !!}
-    </div>
-
-
-
-    {{--
-                <div class="clearfix"></div>
-            <div class="row">
-                        <div class="col-md-12 text-center">
-                        <button onclick="submitSection('section2')" class="btn btn-primary btn-big">@lang('messages.save')</button>
-                        </div>
-            </div> --}}
-
-
 
 
 
     <div class="col-md-12 box box-primary">
 
         <h4>@lang('lang_v1.add_qualification'):</h4>
-        <div class="form-group col-md-3">
 
-            {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':') !!}
-            {!! Form::select(
-                'qualification_type',
-                [
-                    'bachelors' => __('essentials::lang.bachelors'),
-                    'master' => __('essentials::lang.master'),
-                    'PhD' => __('essentials::lang.PhD'),
-                    'diploma' => __('essentials::lang.diploma'),
-                ],
-                !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
-                ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
-            ) !!}
+
+
+
+        <div class=" col-md-4">
+            <div class="form-group">
+
+                {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':') !!}
+                {!! Form::select(
+                    'qualification_type',
+                    [
+                        'bachelors' => __('essentials::lang.bachelors'),
+                        'master' => __('essentials::lang.master'),
+                        'PhD' => __('essentials::lang.PhD'),
+                        'diploma' => __('essentials::lang.diploma'),
+                    ],
+                    !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
+                    ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                ) !!}
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group ">
+                {!! Form::label('major', __('essentials::lang.major') . ':') !!}
+                {!! Form::select('major', $spacializations, null, [
+                    'class' => 'form-control',
+                    'style' => 'height:40px',
+                    'placeholder' => __('essentials::lang.major'),
+                ]) !!}
+            </div>
+
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
+                {!! Form::date(
+                    'graduation_year',
+                    !empty($qualification->graduation_year) ? $qualification->graduation_year : null,
+                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year')],
+                ) !!}
+            </div>
         </div>
 
-        <div class="form-group col-md-6">
-            {!! Form::label('major', __('essentials::lang.major') . ':') !!}
-            {!! Form::select('major', $spacializations, null, [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-                'placeholder' => __('essentials::lang.major'),
-            ]) !!}
+        <div class="clearfix"></div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
+                {!! Form::text(
+                    'graduation_institution',
+                    !empty($qualification->graduation_institution) ? $qualification->graduation_institution : null,
+                    ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_institution')],
+                ) !!}
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
+                {!! Form::select('graduation_country', $countries, null, [
+                    'class' => 'form-control',
+                    'style' => 'height:40px',
+                    'placeholder' => __('essentials::lang.select_country'),
+                ]) !!}
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
+                {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.degree'),
+                    'step' => 'any',
+                ]) !!}
+            </div>
         </div>
 
-        <div class="form-group col-md-6">
-            {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
-            {!! Form::date(
-                'graduation_year',
-                !empty($qualification->graduation_year) ? $qualification->graduation_year : null,
-                ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year')],
-            ) !!}
-        </div>
-        <div class="form-group col-md-6">
-            {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
-            {!! Form::text(
-                'graduation_institution',
-                !empty($qualification->graduation_institution) ? $qualification->graduation_institution : null,
-                ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_institution')],
-            ) !!}
-        </div>
 
-        <div class="form-group col-md-6">
-            {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
-            {!! Form::select('graduation_country', $countries, null, [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-                'placeholder' => __('essentials::lang.select_country'),
-            ]) !!}
-        </div>
-        <div class="form-group col-md-6">
-            {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-            {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null, [
-                'class' => 'form-control',
-                'placeholder' => __('essentials::lang.degree'),
-                'step' => 'any',
-            ]) !!}
-        </div>
     </div>
 
 
@@ -302,7 +312,7 @@
 
         <h4>@lang('lang_v1.bank_details'):</h4>
 
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-4">
             {!! Form::label('account_holder_name', __('lang_v1.account_holder_name') . ':') !!}
             {!! Form::text(
                 'bank_details[account_holder_name]',
@@ -315,7 +325,7 @@
                 ],
             ) !!}
         </div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-4">
             {!! Form::label('account_number', __('lang_v1.account_number') . ':') !!}
             {!! Form::text(
                 'bank_details[account_number]',
@@ -328,7 +338,7 @@
                 ],
             ) !!}
         </div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-4">
             {!! Form::label('bank_name', __('lang_v1.bank_name') . ':') !!}
 
             {!! Form::select(
@@ -344,8 +354,8 @@
             ) !!}
 
         </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+        <div class="form-group col-md-4">
+            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
             {!! Form::text(
                 'bank_details[bank_code]',
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
@@ -360,7 +370,7 @@
             ) !!}
             <span id="bankCodeError" class="text-danger"></span>
         </div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-4">
             {!! Form::label('branch', __('lang_v1.branch') . ':') !!}
             {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, [
                 'class' => 'form-control',
@@ -370,9 +380,9 @@
             ]) !!}
         </div>
 
-        <div class="form-group col-md-6">
-            {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':') !!}
-            {!! Form::file('Iban_file', null, [
+        <div class="form-group col-md-4">
+            {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':*') !!}
+            {!! Form::file('Iban_file', [
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.Iban_file'),
             
@@ -393,154 +403,6 @@
 
     </div>
 
-    {{-- <div class="col-md-12 box box-primary">
-
-        <h4>@lang('lang_v1.add_qualification'):</h4>
-        <div class="form-group col-md-3">
-
-            {!! Form::label('qualification_type', __('essentials::lang.qualification_type') . ':') !!}
-            {!! Form::select(
-                'qualification_type',
-                [
-                    'bachelors' => __('essentials::lang.bachelors'),
-                    'master' => __('essentials::lang.master'),
-                    'PhD' => __('essentials::lang.PhD'),
-                    'diploma' => __('essentials::lang.diploma'),
-                ],
-                !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
-                ['class' => 'form-control', 'required', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
-            ) !!}
-        </div>
-
-
-        <div class="form-group col-md-6">
-            {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-            {!! Form::select('major', $spacializations, !empty($qualification->major) ? $qualification->major : null, [
-                'class' => 'form-control',
-                'style' => 'height:40px',
-                'required',
-                'placeholder' => __('essentials::lang.major'),
-            ]) !!}
-        </div>
-
-
-
-
-
-        <div class="form-group col-md-6">
-            {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
-            {!! Form::date(
-                'graduation_year',
-                !empty($qualification->graduation_year) ? $qualification->graduation_year : null,
-                ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.graduation_year')],
-            ) !!}
-        </div>
-        <div class="form-group col-md-6">
-            {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
-            {!! Form::text(
-                'graduation_institution',
-                !empty($qualification->graduation_institution) ? $qualification->graduation_institution : null,
-                ['class' => 'form-control', 'required', 'placeholder' => __('essentials::lang.graduation_institution')],
-            ) !!}
-        </div>
-
-        <div class="form-group col-md-6">
-            {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
-            {!! Form::select(
-                'graduation_country',
-                $countries,
-                !empty($qualification->graduation_country) ? $qualification->graduation_country : null,
-                [
-                    'class' => 'form-control',
-                    'style' => 'height:40px',
-                    'required',
-                    'placeholder' => __('essentials::lang.select_country'),
-                ],
-            ) !!}
-        </div>
-        <div class="form-group col-md-6">
-            {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-            {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null, [
-                'class' => 'form-control',
-                'required',
-                'placeholder' => __('essentials::lang.degree'),
-                'step' => 'any',
-            ]) !!}
-        </div>
-    </div> --}}
-    {{-- <div class="col-md-12  box box-primary" id="section3">
-
-        <h4>@lang('lang_v1.bank_details'):</h4>
-
-        <div class="form-group col-md-3">
-            {!! Form::label('account_holder_name', __('lang_v1.account_holder_name') . ':') !!}
-            {!! Form::text(
-                'bank_details[account_holder_name]',
-                !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null,
-                [
-                    'class' => 'form-control',
-                    'style' => 'height:40px',
-                    'id' => 'account_holder_name',
-                    'placeholder' => __('lang_v1.account_holder_name'),
-                ],
-            ) !!}
-        </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('account_number', __('lang_v1.account_number') . ':') !!}
-            {!! Form::text(
-                'bank_details[account_number]',
-                !empty($bank_details['account_number']) ? $bank_details['account_number'] : null,
-                [
-                    'class' => 'form-control',
-                    'style' => 'height:40px',
-                    'id' => 'account_number',
-                    'placeholder' => __('lang_v1.account_number'),
-                ],
-            ) !!}
-        </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('bank_name', __('lang_v1.bank_name') . ':') !!}
-
-            {!! Form::select(
-                'bank_details[bank_name]',
-                $banks,
-                !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null,
-                [
-                    'class' => 'form-control',
-                    'style' => 'height:40px',
-                    'id' => 'bank_name',
-                    'placeholder' => __('lang_v1.bank_name'),
-                ],
-            ) !!}
-
-        </div>
-        <div class="form-group col-md-3">
-            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
-            {!! Form::text(
-                'bank_details[bank_code]',
-                !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
-                [
-                    'class' => 'form-control',
-                    'id' => 'Iban_file',
-                    'placeholder' => __('lang_v1.Iban_file'),
-                    'required',
-                    'style' => 'height:40px',
-                ],
-            ) !!}
-        </div>
-      
-    
-  
-  
-  
-            <div class="clearfix"></div>
-            <div class="row">
-                        <div class="col-md-12 text-center">
-                        <button onclick="submitSection('section3')" class="btn btn-primary btn-big">@lang('messages.save')</button>
-                         </div>
-            </div> 
-
-    </div> --}}
 
 
     <script>

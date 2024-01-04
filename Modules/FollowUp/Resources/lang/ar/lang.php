@@ -267,6 +267,9 @@ return [
     'manager' => 'مدير',
     'user'=>'مستخدم',
     'worker' => 'عامل',
+    'escalated_from'=>'تم التصعيد من',
+    'escalate_requests'=>'الطلبات المصعّدة',
+    'requests_by_sequential'=>'الطلبات حسب التسلسل'
 
 
 

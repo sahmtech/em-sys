@@ -28,6 +28,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
 
@@ -67,6 +68,7 @@ class FollowUpWorkerController extends Controller
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
         $users = User::where('user_type', 'worker')
@@ -147,6 +149,15 @@ class FollowUpWorkerController extends Controller
                     // return $this->getDocumentnumber($user, 'admissions_date');
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
+                ->addColumn('admissions_type', function ($user) {
+                    // return $this->getDocumentnumber($user, 'admissions_date');
+                    return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
+                })
+                ->addColumn('admissions_status', function ($user) {
+                    // return $this->getDocumentnumber($user, 'admissions_date');
+                    return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
+                })
+
 
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
@@ -177,13 +188,18 @@ class FollowUpWorkerController extends Controller
 
                     return $user->contact_name;
                 })
+                ->addColumn('categorie_id', function ($row) use ($travelCategories) {
+                    $item = $travelCategories[$row->categorie_id] ?? '';
+
+                    return $item;
+                })
                 ->filterColumn('worker', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker', 'categorie_id','admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 

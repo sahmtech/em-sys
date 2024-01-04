@@ -109,6 +109,7 @@
     @endif
     <section class="content">
 
+        @include('sales::layouts.nav_requests')
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
@@ -1001,50 +1002,14 @@
     </script>
 
 
+ 
     <script>
-        $(document).ready(function() {
+        $('#addRequestModal').on('shown.bs.modal', function(e) {
             $('#worker').select2({
-
-                ajax: {
-                    url: '{{ route('ir.search_byproof_number') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            q: params.term,
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data.results,
-                        };
-                    },
-                    cache: true,
-                },
-                minimumInputLength: 1,
-                templateResult: formatResult,
-                templateSelection: formatSelection,
-                escapeMarkup: function(markup) {
-                    return markup;
-                },
+                dropdownParent: $(
+                    '#addRequestModal'),
+                width: '100%',
             });
-
-            function formatResult(result) {
-                if (result.loading) return result.text;
-
-                var markup = "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
-
-                    "</div>";
-
-                return markup;
-            }
-
-            function formatSelection(result) {
-                return result.full_name || result.text;
-            }
-
-
         });
     </script>
 
