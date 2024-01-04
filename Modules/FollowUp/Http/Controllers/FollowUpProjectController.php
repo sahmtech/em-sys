@@ -33,7 +33,7 @@ class FollowUpProjectController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 

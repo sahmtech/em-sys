@@ -526,7 +526,7 @@ class ManageUserController extends Controller
         $roles_array = Role::where('business_id', $business_id)->get()->pluck('name', 'id');
         $roles = [];
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         foreach ($roles_array as $key => $value) {
             if (!$is_admin && $value == 'Admin#' . $business_id) {

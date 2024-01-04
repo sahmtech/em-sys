@@ -74,7 +74,7 @@ class RequestController extends Controller
         }
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {
@@ -546,7 +546,7 @@ class RequestController extends Controller
     public function escalateRequests()
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {

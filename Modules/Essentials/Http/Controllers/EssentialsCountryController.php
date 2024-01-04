@@ -31,7 +31,7 @@ class EssentialsCountryController extends Controller
         if (! $can_crud_countries) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         if (request()->ajax()) {
             $countries = DB::table('essentials_countries')->select(['id','name', 'nationality', 'details', 'is_active'])
@@ -82,7 +82,7 @@ class EssentialsCountryController extends Controller
     {   
        
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
        
         return view('essentials::settings.partials.countries.create');
@@ -95,7 +95,7 @@ class EssentialsCountryController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
     
  
@@ -137,7 +137,7 @@ class EssentialsCountryController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
    
 
@@ -152,7 +152,7 @@ class EssentialsCountryController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
    
 
@@ -186,7 +186,7 @@ class EssentialsCountryController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
      
 

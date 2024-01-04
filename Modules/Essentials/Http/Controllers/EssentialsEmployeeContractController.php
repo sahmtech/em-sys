@@ -2,6 +2,10 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleBusiness;
+use App\AccessRoleProject;
+use App\Business;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -12,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Sales\Entities\SalesProject;
 
 class EssentialsEmployeeContractController extends Controller
 {
@@ -32,6 +37,31 @@ class EssentialsEmployeeContractController extends Controller
         // if (! $can_crud_employee_contracts) {
         //    //temp  abort(403, 'Unauthorized action.');
         // }
+
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+
 
 
         $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
@@ -72,6 +102,8 @@ class EssentialsEmployeeContractController extends Controller
             $employees_contracts->whereDate('essentials_employees_contracts.contract_end_date', '>=', $start)
                 ->whereDate('essentials_employees_contracts.contract_end_date', '<=', $end);
         }
+
+
 
 
 
@@ -126,7 +158,7 @@ class EssentialsEmployeeContractController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 
@@ -223,7 +255,7 @@ class EssentialsEmployeeContractController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 

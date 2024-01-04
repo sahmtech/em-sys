@@ -376,11 +376,16 @@ class Util
      * @param  int  $business_id
      * @return bool
      */
-    public function is_admin($user, $business_id = null)
-    {
-        $business_id = empty($business_id) ? $user->business_id : $business_id;
+    // public function is_admin($user, $business_id = null)
+    // {
+    //     $business_id = empty($business_id) ? $user->business_id : $business_id;
 
-        return $user->hasRole('Admin#' . $business_id) ? true : false;
+    //     return $user->hasRole('Admin#' . $business_id) ? true : false;
+    // }
+
+    public function is_admin($user)
+    {
+        return $user->hasRole('Admin') ? true : false;
     }
 
     /**

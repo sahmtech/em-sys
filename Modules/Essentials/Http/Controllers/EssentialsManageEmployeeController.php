@@ -85,7 +85,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         if (!($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -142,7 +142,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
             $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
+                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager','worker']);
             })->orWhere(function ($query3) use ($user_projects_ids) {
                 $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
             });
@@ -970,7 +970,7 @@ error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->g
         $roles_array = Role::where('business_id', $business_id)->get()->pluck('name', 'id');
         $roles = [];
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         foreach ($roles_array as $key => $value) {
             if (!$is_admin && $value == 'Admin#' . $business_id) {

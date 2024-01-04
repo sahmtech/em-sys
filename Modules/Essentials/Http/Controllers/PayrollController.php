@@ -668,7 +668,7 @@ class PayrollController extends Controller
     public function payrollGroupDatatable(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
         if ($request->ajax()) {
@@ -774,7 +774,7 @@ class PayrollController extends Controller
     public function viewPayrollGroup($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         $payroll_group = PayrollGroup::where('business_id', $business_id)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
@@ -944,7 +944,7 @@ class PayrollController extends Controller
     public function addPayment($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         $payroll_group = PayrollGroup::where('business_id', $business_id)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
@@ -984,7 +984,7 @@ class PayrollController extends Controller
     public function postAddPayment(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         try {
             $payments = $request->input('payments');

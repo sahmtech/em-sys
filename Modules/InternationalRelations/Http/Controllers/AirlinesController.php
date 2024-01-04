@@ -70,7 +70,7 @@ class AirlinesController extends Controller
         if (! $can_crud_airlines) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
      
    
         $countries = EssentialsCountry::forDropdown();

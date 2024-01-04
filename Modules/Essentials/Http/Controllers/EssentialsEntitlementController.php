@@ -26,7 +26,7 @@ class EssentialsEntitlementController extends Controller
        if (! $can_crud_entitlements) {
           //temp  abort(403, 'Unauthorized action.');
        }
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
        if (request()->ajax()) {
            $entitlement_types = DB::table('essentials_entitlement_types')->select(['id', 'name','percentage','from', 'details', 'is_active']);
@@ -62,7 +62,7 @@ class EssentialsEntitlementController extends Controller
    {   
       
        $business_id = request()->session()->get('user.business_id');
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
     
       
@@ -76,7 +76,7 @@ class EssentialsEntitlementController extends Controller
    {
      
        $business_id = $request->session()->get('user.business_id');
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
  
 
@@ -119,7 +119,7 @@ class EssentialsEntitlementController extends Controller
    public function edit($id)
    {
        $business_id = request()->session()->get('user.business_id');
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
      
 
@@ -134,7 +134,7 @@ class EssentialsEntitlementController extends Controller
    {
      
        $business_id = $request->session()->get('user.business_id');
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
      
 
@@ -172,7 +172,7 @@ class EssentialsEntitlementController extends Controller
    public function destroy($id)
    {
        $business_id = request()->session()->get('user.business_id');
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
     
 

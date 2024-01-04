@@ -55,7 +55,7 @@ class ClientsController extends Controller
     public function lead_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
         $query = User::where('business_id', $business_id);
@@ -112,7 +112,7 @@ class ClientsController extends Controller
     public function qualified_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
@@ -168,7 +168,7 @@ class ClientsController extends Controller
     public function unqualified_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 
@@ -213,7 +213,7 @@ class ClientsController extends Controller
     public function converted_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 
@@ -786,7 +786,7 @@ class ClientsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $contact = Contact::where('business_id', $business_id)->findOrFail($id);
 
         if ($request->ajax()) {

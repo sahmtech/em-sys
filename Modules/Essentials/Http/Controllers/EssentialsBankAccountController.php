@@ -25,7 +25,7 @@ class EssentialsBankAccountController extends Controller
  
 
  
-         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+         $is_admin = $this->moduleUtil->is_admin(auth()->user());
  
          $can_crud_bank_accounts= auth()->user()->can('essentials.crud_bank_accounts');
          if (! $can_crud_bank_accounts) {
@@ -80,7 +80,7 @@ class EssentialsBankAccountController extends Controller
     {   
        
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
        
         return view('essentials::settings.partials.bank_accounts.create');
@@ -98,7 +98,7 @@ class EssentialsBankAccountController extends Controller
         
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
  
@@ -165,7 +165,7 @@ class EssentialsBankAccountController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
    
 
@@ -186,7 +186,7 @@ class EssentialsBankAccountController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
   
         try {
@@ -236,7 +236,7 @@ class EssentialsBankAccountController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
         try {

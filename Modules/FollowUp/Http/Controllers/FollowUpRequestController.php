@@ -128,7 +128,7 @@ class FollowUpRequestController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
@@ -350,7 +350,7 @@ class FollowUpRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
@@ -606,7 +606,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -689,7 +689,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
@@ -793,7 +793,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -875,7 +875,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -961,7 +961,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1048,7 +1048,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1131,7 +1131,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1214,7 +1214,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1294,7 +1294,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1375,7 +1375,7 @@ class FollowUpRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1452,7 +1452,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1531,7 +1531,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1611,7 +1611,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1696,7 +1696,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1777,7 +1777,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1859,7 +1859,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();
@@ -1943,7 +1943,7 @@ class FollowUpRequestController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
         $department = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%متابعة%')
             ->first();

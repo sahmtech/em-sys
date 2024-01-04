@@ -42,7 +42,7 @@ class ProposalController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         if ($request->ajax()) {
             $proposal = Proposal::join('contacts', 'crm_proposals.contact_id', '=', 'contacts.id')

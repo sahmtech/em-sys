@@ -101,7 +101,7 @@ class EssentialsEmployeeQualificationController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 
@@ -151,7 +151,7 @@ class EssentialsEmployeeQualificationController extends Controller
     public function edit(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
   
     
         try {
@@ -189,7 +189,7 @@ class EssentialsEmployeeQualificationController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
     
   
     
@@ -242,7 +242,7 @@ class EssentialsEmployeeQualificationController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 

@@ -29,7 +29,7 @@ class EssentialsJobTitleController extends Controller
 
     
    
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
     
         if (request()->ajax()) {
         
@@ -70,7 +70,7 @@ class EssentialsJobTitleController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
        
@@ -87,7 +87,7 @@ class EssentialsJobTitleController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
     
  
@@ -144,7 +144,7 @@ class EssentialsJobTitleController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
   
 
@@ -164,7 +164,7 @@ class EssentialsJobTitleController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
        
 
@@ -211,7 +211,7 @@ class EssentialsJobTitleController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
      
         try {

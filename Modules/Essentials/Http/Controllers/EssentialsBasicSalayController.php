@@ -30,7 +30,7 @@ class EssentialsBasicSalayController extends Controller
           //temp  abort(403, 'Unauthorized action.');
        }
        
-       $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+       $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
        if (request()->ajax()) {
            $types= DB::table('essentials_basic_salary_types')->select(['id','type', 'details', 'is_active']);
@@ -65,7 +65,7 @@ class EssentialsBasicSalayController extends Controller
     public function create()
     {   
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
        
        
@@ -76,7 +76,7 @@ class EssentialsBasicSalayController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
  
@@ -114,7 +114,7 @@ class EssentialsBasicSalayController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
  
 
@@ -129,7 +129,7 @@ class EssentialsBasicSalayController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
         try {
@@ -162,7 +162,7 @@ class EssentialsBasicSalayController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
    
 

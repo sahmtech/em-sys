@@ -30,7 +30,7 @@ class EssentialsOrganizationController extends Controller
 
     
    
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
        
         if (request()->ajax()) {
         
@@ -74,7 +74,7 @@ class EssentialsOrganizationController extends Controller
     {   
        
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
        
@@ -95,7 +95,7 @@ class EssentialsOrganizationController extends Controller
     {
     
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
  
 
@@ -154,7 +154,7 @@ class EssentialsOrganizationController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
      
 
@@ -176,7 +176,7 @@ class EssentialsOrganizationController extends Controller
     {
  
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
         try {
@@ -227,7 +227,7 @@ class EssentialsOrganizationController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
    
 

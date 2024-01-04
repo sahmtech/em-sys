@@ -115,7 +115,7 @@ class EssentialsOfficialDocumentController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 
@@ -203,7 +203,7 @@ class EssentialsOfficialDocumentController extends Controller
     public function edit($docId)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
     
         $doc = EssentialsOfficialDocument::where('essentials_official_documents.id', $docId)
             ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
@@ -246,7 +246,7 @@ class EssentialsOfficialDocumentController extends Controller
      public function update(Request $request, $docId)
      {
          $business_id = $request->session()->get('user.business_id');
-         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+         $is_admin = $this->moduleUtil->is_admin(auth()->user());
      
          try {
              $file2 = EssentialsOfficialDocument::where('id', $docId)->value('file_path');
@@ -298,7 +298,7 @@ class EssentialsOfficialDocumentController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
 
 

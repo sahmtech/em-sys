@@ -37,7 +37,7 @@ class IRsalaryRequestController extends Controller
         if (! $can_crud_sales_salary_requests) {
            
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = $this->moduleUtil->is_admin(auth()->user());
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $professions = EssentialsProfession::all()->pluck('name', 'id');
