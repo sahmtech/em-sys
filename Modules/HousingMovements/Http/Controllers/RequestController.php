@@ -127,7 +127,7 @@ class RequestController extends Controller
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('department_id', $departmentIds);
+                ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
         }
         else {
             $output = ['success' => false,
@@ -202,7 +202,7 @@ class RequestController extends Controller
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
             
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->first();
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->where('status','pending')->where('sub_status',null)->first();
    
             $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
 
@@ -215,8 +215,6 @@ class RequestController extends Controller
             }
 
 
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->first();
-           
 
             $requestProcess->status = $input['status'];
             $requestProcess->reason = $input['reason'] ?? null;
@@ -273,11 +271,7 @@ class RequestController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
-    {
-        return view('internationalrelations::create');
-    }
-
+   
     /**
      * Store a newly created resource in storage.
      * @param Request $request
@@ -536,6 +530,142 @@ class RequestController extends Controller
                     }
                 }
             }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+
+
+    public function escalateRequests()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+
+        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+        ->where('name', 'LIKE', '%سكن%')
+        ->pluck('id')->toArray();
+         
+        if (!empty($departmentIds)) {
+            $procedureIds = EssentialsWkProcedure::whereIn('escalates_to', $departmentIds)->pluck('id')->toArray();
+
+            $requestsProcess = FollowupWorkerRequest::where('sub_status', 'escalateRequest')->whereIn('procedure_id', $procedureIds)->select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests_process.id as process_id',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'essentials_wk_procedures.can_return',
+                'users.assigned_to'
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('followup_worker_requests_process.status','pending');
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.you_have_no_access_role'),
+            ];
+            return redirect()->action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->with('status', $output);
+        }
+
+        if (request()->ajax()) {
+         
+
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('status', function ($row) {
+                    $status = '';
+
+                    if ($row->status == 'pending') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . __($this->statuses[$row->status]['name']) . '</span>';
+
+                        if (auth()->user()->can('crudExitRequests')) {
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        }
+                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                        $status = trans('followup::lang.' . $row->status);
+                    }
+
+                    return $status;
+                })
+
+                ->rawColumns(['status'])
+
+
+                ->make(true);
+        }
+        $statuses = $this->statuses;
+        return view('housingmovements::requests.escalate_requests')->with(compact('statuses'));
+    }
+
+
+    public function changeEscalateRequestsStatus(Request $request)
+    {
+        try {
+            $input = $request->only(['status', 'reason', 'note', 'request_id']);
+
+            $requestProcesses = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->where('status','pending')->get();
+
+            foreach ($requestProcesses as $requestProcess) {
+
+                $requestProcess->status = $input['status'];
+                $requestProcess->reason = $input['reason'] ?? null;
+                $requestProcess->status_note = $input['note'] ?? null;
+                $requestProcess->updated_by = auth()->user()->id;
+
+                $requestProcess->save();
+            }
+
+
+            $mainRequest = FollowupWorkerRequest::find($input['request_id']);
+            $mainRequest->status = $input['status'];
+            $mainRequest->save();
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.updated_success'),
+            ];
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 

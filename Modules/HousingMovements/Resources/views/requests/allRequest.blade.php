@@ -109,7 +109,7 @@
     @endif
     <section class="content">
 
-
+        @include('housingmovements::layouts.nav_requests')
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
