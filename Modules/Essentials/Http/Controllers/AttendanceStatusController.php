@@ -31,7 +31,7 @@ class AttendanceStatusController extends Controller
         if (!$can_crud_attendance_status) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $attencancesStatuses = EssentialsAttendanceStatus::all();
         if (request()->ajax()) {
             return Datatables::of($attencancesStatuses)
@@ -73,7 +73,7 @@ class AttendanceStatusController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -110,7 +110,7 @@ class AttendanceStatusController extends Controller
     // {
 
     //     $business_id = $request->session()->get('user.business_id');
-    //     $is_admin = $this->moduleUtil->is_admin(auth()->user());
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -146,7 +146,7 @@ class AttendanceStatusController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

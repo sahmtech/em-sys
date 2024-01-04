@@ -65,7 +65,7 @@ class EssentialsCardsController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
         $business_name=Business::where('id', $business_id)->select('name','id')->first();
         $business_name = $business_name ? $business_name->name : null;

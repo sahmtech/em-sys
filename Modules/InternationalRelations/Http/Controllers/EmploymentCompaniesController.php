@@ -60,16 +60,16 @@ class EmploymentCompaniesController extends Controller
      */
     public function index(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_employment_companies = auth()->user()->can('internationalrelations.crud_employment_companies');
-        if (!($isSuperAdmin || $can_crud_employment_companies)) {
+        if (!($is_admin || $can_crud_employment_companies)) {
            //temp  abort(403, 'Unauthorized action.');
         }
       
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        
 
 
         $countries = EssentialsCountry::forDropdown();
@@ -132,12 +132,12 @@ class EmploymentCompaniesController extends Controller
 
     public function companyRequests($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_company_requests = auth()->user()->can('internationalrelations.view_company_requests');
-        if (!($isSuperAdmin || $can_view_company_requests)) {
+        if (!($is_admin || $can_view_company_requests)) {
            //temp  abort(403, 'Unauthorized action.');
         }
     
@@ -154,12 +154,12 @@ class EmploymentCompaniesController extends Controller
      */
     public function store(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_emoloyment_company = auth()->user()->can('internationalrelations.store_emoloyment_company');
-        if (!($isSuperAdmin || $can_store_emoloyment_company)) {
+        if (!($is_admin || $can_store_emoloyment_company)) {
            //temp  abort(403, 'Unauthorized action.');
         }
     

@@ -48,7 +48,7 @@ class ProjectWorkersController extends Controller
         //    //temp  abort(403, 'Unauthorized action.');
         // }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');

@@ -44,7 +44,7 @@ class FollowUpReportsController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
 
@@ -198,7 +198,7 @@ class FollowUpReportsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $contacts = Contact::whereIn('type', ['customer', 'lead'])

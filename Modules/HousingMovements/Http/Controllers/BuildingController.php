@@ -34,7 +34,7 @@ class BuildingController extends Controller
         if (! $can_crud_buildings) {
            
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
@@ -116,7 +116,7 @@ class BuildingController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         
@@ -166,7 +166,7 @@ class BuildingController extends Controller
     public function edit($buildingId)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
     
         $building = DB::table('htr_buildings')->find($buildingId);
       
@@ -183,7 +183,7 @@ class BuildingController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -218,7 +218,7 @@ class BuildingController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

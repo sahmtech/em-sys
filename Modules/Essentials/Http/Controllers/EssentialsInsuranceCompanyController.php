@@ -126,7 +126,7 @@ class EssentialsInsuranceCompanyController extends Controller
 
         $business_id = $request->session()->get('user.business_id');
         $user_id = $request->session()->get('user.id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -201,7 +201,7 @@ class EssentialsInsuranceCompanyController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

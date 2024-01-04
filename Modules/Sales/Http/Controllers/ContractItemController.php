@@ -30,7 +30,7 @@ class ContractItemController extends Controller
          if (! $can_crud_contract_items) {
             //temp  abort(403, 'Unauthorized action.');
          }
-         $is_admin = $this->moduleUtil->is_admin(auth()->user());
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
          if (request()->ajax()) {
              $items = DB::table('sales_contract_items')->where('type','basic')->select(['id','number_of_item', 'name_of_item', 'details', 'type']);
@@ -71,7 +71,7 @@ class ContractItemController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
  
@@ -114,7 +114,7 @@ class ContractItemController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
  
@@ -162,7 +162,7 @@ class ContractItemController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -182,7 +182,7 @@ class ContractItemController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -217,7 +217,7 @@ class ContractItemController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

@@ -43,7 +43,7 @@ class EssentialsDepartmentsController extends Controller
         if (!$can_crud_organizational_structure) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $departments = EssentialsDepartment::where('parent_department_id', '=', 0)
@@ -135,7 +135,7 @@ class EssentialsDepartmentsController extends Controller
         if (!$can_crud_depatments) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $parent_departments = EssentialsDepartment::where('is_main', '1')->pluck('name', 'id');
         if (request()->ajax()) {
@@ -214,7 +214,7 @@ class EssentialsDepartmentsController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -241,7 +241,7 @@ class EssentialsDepartmentsController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -304,7 +304,7 @@ class EssentialsDepartmentsController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -341,7 +341,7 @@ class EssentialsDepartmentsController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

@@ -38,7 +38,7 @@ class EssentialsEmployeeContractController extends Controller
         //    //temp  abort(403, 'Unauthorized action.');
         // }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
@@ -65,7 +65,14 @@ class EssentialsEmployeeContractController extends Controller
 
 
         $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
-            // ->where('u.business_id', $business_id)
+
+            ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                $query->where(function ($query2) use ($user_businesses_ids) {
+                    $query2->whereIn('u.business_id', $user_businesses_ids)->whereIn('u.user_type', ['employee', 'manager', 'worker']);
+                })->orWhere(function ($query3) use ($user_projects_ids) {
+                    $query3->where('u.user_type', 'worker')->whereIn('u.assigned_to', $user_projects_ids);
+                });
+            })
             ->select([
                 'essentials_employees_contracts.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -158,7 +165,7 @@ class EssentialsEmployeeContractController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -255,7 +262,7 @@ class EssentialsEmployeeContractController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

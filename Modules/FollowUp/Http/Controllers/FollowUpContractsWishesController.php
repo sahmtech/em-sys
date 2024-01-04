@@ -41,7 +41,7 @@ class FollowUpContractsWishesController extends Controller
         //     //temp  abort(403, 'Unauthorized action.');
         //  }
      
-         $is_admin = $this->moduleUtil->is_admin(auth()->user());
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         
          $workers = User::join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
          ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
@@ -157,7 +157,7 @@ class FollowUpContractsWishesController extends Controller
         $selectedEmployeeId = $request->input('employees');
         $employee_type= $request->input('employee_type');
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
   
         try {

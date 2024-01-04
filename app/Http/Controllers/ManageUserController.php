@@ -20,6 +20,8 @@ use Modules\Essentials\Entities\EssentialsCountry;
 
 class ManageUserController extends Controller
 {
+
+    protected $moduleUtil;
     /**
      * Constructor
      *
@@ -41,8 +43,8 @@ class ManageUserController extends Controller
      */
     public function index()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -66,9 +68,9 @@ class ManageUserController extends Controller
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
                     'action',
-                    function ($row) use ($isSuperAdmin) {
+                    function ($row) use ($is_admin) {
                         $html = '';
-                        if ($isSuperAdmin || auth()->user()->can('user.update')) {
+                        if ($is_admin || auth()->user()->can('user.update')) {
 
                             if ($row->allow_login == 0) {
                                 $html .= ' <a href="' . route('makeUser', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("messages.create_user") . '
@@ -79,7 +81,7 @@ class ManageUserController extends Controller
                                 &nbsp;';
                             }
                         }
-                        if ($isSuperAdmin || auth()->user()->can('user.delete')) {
+                        if ($is_admin || auth()->user()->can('user.delete')) {
                             $html .= '
                             <button data-href="' . URL::action('App\Http\Controllers\ManageUserController@destroy', [$row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                         ';
@@ -111,8 +113,8 @@ class ManageUserController extends Controller
      */
     public function create()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -147,8 +149,8 @@ class ManageUserController extends Controller
      */
     public function store(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.create'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -202,8 +204,8 @@ class ManageUserController extends Controller
      */
     public function show($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.view'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.view'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -229,8 +231,8 @@ class ManageUserController extends Controller
     public function makeUser($id)
     {
         try {
-            $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-            if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            if (!($is_admin || auth()->user()->can('user.update'))) {
                //temp  abort(403, 'Unauthorized action.');
             }
 
@@ -276,8 +278,8 @@ class ManageUserController extends Controller
      */
     public function edit($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.update'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -324,8 +326,8 @@ class ManageUserController extends Controller
             return $notAllowed;
         }
 
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.update'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.update'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -481,8 +483,8 @@ class ManageUserController extends Controller
             return $notAllowed;
         }
 
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('user.delete'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.delete'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -526,7 +528,7 @@ class ManageUserController extends Controller
         $roles_array = Role::where('business_id', $business_id)->get()->pluck('name', 'id');
         $roles = [];
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         foreach ($roles_array as $key => $value) {
             if (!$is_admin && $value == 'Admin#' . $business_id) {
@@ -544,9 +546,9 @@ class ManageUserController extends Controller
      */
     public function signInAsUser($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        if (!($isSuperAdmin || auth()->user()->can('superadmin')) && empty(session('previous_user_id'))) {
+        if (!($is_admin || auth()->user()->can('superadmin')) && empty(session('previous_user_id'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 

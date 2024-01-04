@@ -32,7 +32,7 @@ class RoomController extends Controller
         if (! $can_crud_rooms) {
            
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
         if (request()->ajax()) {
 
@@ -328,7 +328,7 @@ class RoomController extends Controller
     {
   
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
       
 
         
@@ -377,7 +377,7 @@ class RoomController extends Controller
     public function edit($roomId)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -400,7 +400,7 @@ class RoomController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -440,7 +440,7 @@ class RoomController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

@@ -70,7 +70,7 @@ class EssentialsAllowanceController extends Controller
     //     if (! $can_crud_allowances) {
     //        //temp  abort(403, 'Unauthorized action.');
     //     }
-    //     $is_admin = $this->moduleUtil->is_admin(auth()->user());
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
     //     if (request()->ajax()) {
     //         $types= DB::table('essentials_allowance_types')->select(['id','type', 'name','allowance_value','number_of_months','added_to_salary','details', 'is_active']);
@@ -108,7 +108,7 @@ class EssentialsAllowanceController extends Controller
     public function create()
     {   
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
     
        
@@ -125,7 +125,7 @@ class EssentialsAllowanceController extends Controller
     // {
     //   return $request;
     //     $business_id = $request->session()->get('user.business_id');
-    //     $is_admin = $this->moduleUtil->is_admin(auth()->user());
+    //     $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
     //     if (! (auth()->user()->can('superadmin') || ($business_id, 'essentials_module')) && ! $is_admin) {
     //        //temp  abort(403, 'Unauthorized action.');
@@ -209,7 +209,7 @@ class EssentialsAllowanceController extends Controller
      public function edit($id)
      {
          $business_id = request()->session()->get('user.business_id');
-         $is_admin = $this->moduleUtil->is_admin(auth()->user());
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
  
          $allowance = EssentialsAllowanceAndDeduction::findOrFail($id);
@@ -223,7 +223,7 @@ class EssentialsAllowanceController extends Controller
      {
        
          $business_id = $request->session()->get('user.business_id');
-         $is_admin = $this->moduleUtil->is_admin(auth()->user());
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
 
  
@@ -261,7 +261,7 @@ class EssentialsAllowanceController extends Controller
      public function destroy($id)
      {
          $business_id = request()->session()->get('user.business_id');
-         $is_admin = $this->moduleUtil->is_admin(auth()->user());
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
      
  

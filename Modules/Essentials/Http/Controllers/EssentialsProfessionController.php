@@ -29,7 +29,7 @@ class EssentialsProfessionController extends Controller
 
 
        
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
             $professions = EssentialsProfession::with('specializations')
@@ -157,7 +157,7 @@ class EssentialsProfessionController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
    
 

@@ -40,7 +40,7 @@ class ShiftController extends Controller
 
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
             $shifts = Shift::where('essentials_shifts.business_id', $business_id)
@@ -108,7 +108,7 @@ class ShiftController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -170,7 +170,7 @@ class ShiftController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $shift = Shift::where('business_id', $business_id)
@@ -192,7 +192,7 @@ class ShiftController extends Controller
     {
         try {
             $business_id = request()->session()->get('user.business_id');
-            $is_admin = $this->moduleUtil->is_admin(auth()->user());
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
        
 
@@ -253,7 +253,7 @@ class ShiftController extends Controller
     public function getAssignUsers($shift_id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $shift = Shift::where('business_id', $business_id)
@@ -280,7 +280,7 @@ class ShiftController extends Controller
     public function postAssignUsers(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

@@ -4,6 +4,7 @@ namespace Modules\Superadmin\Http\Controllers;
 
 use App\User;
 use App\Utils\BusinessUtil;
+use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -15,16 +16,17 @@ use Illuminate\Routing\Controller;
 class SuperadminSubscriptionsController extends BaseController
 {
     protected $businessUtil;
-
+    protected $moduleUtil;
     /**
      * Constructor
      *
      * @param  BusinessUtil  $businessUtil
      * @return void
      */
-    public function __construct(BusinessUtil $businessUtil)
+    public function __construct(BusinessUtil $businessUtil,ModuleUtil $moduleUtil)
     {
         $this->businessUtil = $businessUtil;
+        $this->moduleUtil = $moduleUtil;
     }
 
     /**
@@ -34,8 +36,8 @@ class SuperadminSubscriptionsController extends BaseController
      */
     public function index()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('superadmin'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('superadmin'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 

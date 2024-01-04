@@ -35,7 +35,7 @@ class SalesSalaryRequestsController extends Controller
         if (! $can_crud_sales_salary_requests) {
            
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $professions = EssentialsProfession::all()->pluck('name', 'id');
@@ -144,7 +144,7 @@ class SalesSalaryRequestsController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
  
@@ -206,7 +206,7 @@ class SalesSalaryRequestsController extends Controller
     public function edit(Request $request, $salaryId)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
@@ -262,7 +262,7 @@ class SalesSalaryRequestsController extends Controller
     {
         
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
     
   
     
@@ -319,7 +319,7 @@ class SalesSalaryRequestsController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

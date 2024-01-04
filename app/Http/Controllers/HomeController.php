@@ -351,7 +351,7 @@ class HomeController extends Controller
         ];
         $cards = [];
 
-        $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $user_id = auth()->user()->id;
 

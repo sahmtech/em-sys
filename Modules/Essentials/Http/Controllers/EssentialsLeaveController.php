@@ -502,7 +502,7 @@ class EssentialsLeaveController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $user_id = $is_admin ? request()->input('user_id') : auth()->user()->id;
 

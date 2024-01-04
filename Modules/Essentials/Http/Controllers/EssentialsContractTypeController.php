@@ -30,7 +30,7 @@ class EssentialsContractTypeController extends Controller
         if (! $can_crud_contract_types) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
             $contract_types = DB::table('essentials_contract_types')->select(['id','type', 'details', 'is_active']);
@@ -82,7 +82,7 @@ class EssentialsContractTypeController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
  
  
@@ -131,7 +131,7 @@ class EssentialsContractTypeController extends Controller
     public function edit($id)
     {   
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
   
 
@@ -144,7 +144,7 @@ class EssentialsContractTypeController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
   
 
@@ -178,7 +178,7 @@ class EssentialsContractTypeController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
    
 

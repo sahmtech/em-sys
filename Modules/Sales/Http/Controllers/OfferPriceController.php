@@ -1043,7 +1043,7 @@ class OfferPriceController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $offer_price = Transaction::find($id);
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name', 'id');

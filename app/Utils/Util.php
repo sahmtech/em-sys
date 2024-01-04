@@ -385,7 +385,7 @@ class Util
 
     public function is_admin($user)
     {
-        return $user->hasRole('Admin') ? true : false;
+        return $user->hasRole('Admin#1') ? true : false;
     }
 
     /**

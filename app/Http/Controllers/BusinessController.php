@@ -286,8 +286,8 @@ class BusinessController extends Controller
     //index
     public function getBusinessSettings()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('business_settings.access'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('business_settings.access'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -356,7 +356,7 @@ class BusinessController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user());
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $allLicenseTypes = [
             'COMMERCIALREGISTER',
             'Gosi',

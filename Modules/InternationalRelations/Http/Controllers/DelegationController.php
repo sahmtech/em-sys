@@ -31,12 +31,12 @@ class DelegationController extends Controller
     public function index(Request $request)
 
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_delegation = auth()->user()->can('internationalrelations.view_delegation');
-        if (!($isSuperAdmin || $can_view_delegation)) {
+        if (!($is_admin || $can_view_delegation)) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
