@@ -128,7 +128,7 @@ class FollowUpRecruitmentRequestController extends Controller
     {
        
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
    
  
@@ -140,7 +140,9 @@ class FollowUpRecruitmentRequestController extends Controller
             $input2['note'] = $input['note'];
             $input2['quantity'] = $input['quantity'];
             $input2['profession_id'] = $input['profession'];
+            $input2['assigned_to'] = 0;
             $input2['specialization_id'] = $input['specialization'];
+            
         
             if (isset($request->attachment) && !empty($request->attachment)) {
                 $attachmentPath = $request->attachment->store('/recruitmentRequests');

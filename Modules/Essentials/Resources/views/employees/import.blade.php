@@ -29,36 +29,74 @@
             </div>  
         </div>     
     @endif
-    
-    <div class="row">
-        <div class="col-sm-12">
-            @component('components.widget', ['class' => 'box-primary'])
+<div class="row">
+    <div class="col-sm-12">
+        @component('components.widget', ['class' => 'box-primary'])
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>@lang('essentials::lang.select_operation'):</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="operation" value="add" checked> @lang('essentials::lang.add_new_data')
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="operation" value="update"> @lang('essentials::lang.update_existing_data')
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="add-new-data">
                 {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'postImportEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
                         <div class="col-sm-6">
-                        <div class="col-sm-8">
-                            <div class="form-group">
-                                {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                                {!! Form::file('employee_csv', ['accept'=> '.xls', 'required' => 'required']); !!}
-                              </div>
-                        </div>
-                        <div class="col-sm-4">
-                        <br>
-                            <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
-                        </div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
+                                    {!! Form::file('employee_csv', ['accept'=> '.xls', 'required' => 'required']); !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <br>
+                                <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <a href="{{ asset('files/import_employee_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
+                            </div>
                         </div>
                     </div>
-
                 {!! Form::close() !!}
-                <br><br>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <a href="{{ asset('files/import_employee_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
+            </div>
+
+            <div class="update-existing-data" style="display: none;">
+            {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    {!! Form::label('name', __( 'essentials::lang.file_to_update__import' ) . ':') !!}
+                                    {!! Form::file('update_employee_csv', ['accept'=> '.xls' ]); !!}
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <br>
+                                <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <a href="{{ asset('files/import_update_employee_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('essentials::lang.download_update_template_file')</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            @endcomponent
-        </div>
+                {!! Form::close() !!}
+            </div>
+
+        @endcomponent
     </div>
+</div>
     <div class="row">
         <div class="col-sm-12">
             @component('components.widget', ['class' => 'box-primary', 'title' => __('lang_v1.instructions')])
@@ -267,4 +305,19 @@
 </section>
 <!-- /.content -->
 
+@endsection
+@section('javascript')
+<script>
+    $(document).ready(function() {
+        $('input[name="operation"]').change(function() {
+            if (this.value === 'add') {
+                $('.add-new-data').show();
+                $('.update-existing-data').hide();
+            } else if (this.value === 'update') {
+                $('.add-new-data').hide();
+                $('.update-existing-data').show();
+            }
+        });
+    });
+</script>
 @endsection

@@ -24,12 +24,7 @@
                         </li>
                     @endif
                     
-                    @if(auth()->user()->can('essentials.crud_all_roles'))
-                    <li @if((request()->segment(1) == 'hrm' && request()->segment(2) == 'roles')) class="active" @endif>
-                       
-                            <a href="{{ route('roles') }}">@lang('user.roles')</a>
-                        </li>
-                    @endif
+                   
 
                     @can('essentials.crud_employee_appointments')
                          <li @if(request()->segment(1) == 'hrm' && request()->segment(2) == 'appointment') class="active" @endif>

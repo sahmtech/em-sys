@@ -62,7 +62,7 @@ class ToDoController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $auth_id = auth()->user()->id;
 
         $task_statuses = ToDo::getTaskStatus();
@@ -305,7 +305,7 @@ class ToDoController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $query = ToDo::where('business_id', $business_id)
             ->with([
@@ -364,7 +364,7 @@ class ToDoController extends Controller
         $query = ToDo::where('business_id', $business_id);
 
         //Non admin can update only assigned tasks
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!$is_admin) {
             $query->where(function ($query) {
                 $query->where('created_by', auth()->user()->id)
@@ -496,7 +496,7 @@ class ToDoController extends Controller
                 $query = ToDo::where('business_id', $business_id);
 
                 //Non admin can update only assigned tasks
-                $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+                $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
                 if (!$is_admin) {
                     $query->where(function ($query) {
                         $query->where('created_by', auth()->user()->id)
@@ -548,7 +548,7 @@ class ToDoController extends Controller
 
         if (request()->ajax()) {
             try {
-                $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+                $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
                 $todo = ToDo::where('business_id', $business_id);
                 //Can destroy only own created tasks if not admin
@@ -594,7 +594,7 @@ class ToDoController extends Controller
                 $auth_id = auth()->user()->id;
 
                 //Non admin can add comment to only assigned tasks
-                $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+                $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
                 if (!$is_admin) {
                     $query->where(function ($query) {
                         $query->where('created_by', auth()->user()->id)
@@ -655,7 +655,7 @@ class ToDoController extends Controller
             $auth_id = auth()->user()->id;
 
             //Non admin can add comment to only assigned tasks
-            $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             if (!$is_admin) {
                 $query->where(function ($query) {
                     $query->where('created_by', auth()->user()->id)

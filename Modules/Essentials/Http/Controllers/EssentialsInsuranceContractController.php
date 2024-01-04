@@ -116,7 +116,7 @@ class EssentialsInsuranceContractController extends Controller
 
         $business_id = $request->session()->get('user.business_id');
         $user_id = $request->session()->get('user.id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -169,7 +169,7 @@ class EssentialsInsuranceContractController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
     
         $contract = EssentialsInsuranceContract::findOrFail($id);
@@ -186,7 +186,7 @@ class EssentialsInsuranceContractController extends Controller
      */
     public function update(Request $request, $id)
     {  $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
      
         try {
@@ -221,7 +221,7 @@ class EssentialsInsuranceContractController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

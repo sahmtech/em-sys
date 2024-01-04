@@ -39,9 +39,9 @@ class RoleController extends Controller
      */
     public function index()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('roles.view'))) {
+        if (!($is_admin || auth()->user()->can('roles.view'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -52,16 +52,16 @@ class RoleController extends Controller
                 ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
-                ->addColumn('action', function ($row) use ($isSuperAdmin) {
+                ->addColumn('action', function ($row) use ($is_admin) {
                     if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
-                        if (($isSuperAdmin  || auth()->user()->can('roles.update'))) {
+                        if (($is_admin  || auth()->user()->can('roles.update'))) {
                             $action .= '<a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateAccessRole'], [$row->id]) . '" class="btn btn-success btn-xs">' . __('messages.update_access_role') . '</a>';
 
                             $action .= '&nbsp
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                         }
-                        if (($isSuperAdmin  || auth()->user()->can('roles.delete'))) {
+                        if (($is_admin  || auth()->user()->can('roles.delete'))) {
                             $action .= '&nbsp
                                 <button data-href="' . action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]) . '" class="btn btn-xs btn-danger delete_role_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
@@ -86,13 +86,13 @@ class RoleController extends Controller
                 ->make(false);
         }
 
-        return view('essentials::employee_affairs.role.index');
+        return view('role.index');
     }
 
     public function editOrCreateAccessRole($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin  || auth()->user()->can('roles.create'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin  || auth()->user()->can('roles.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -147,8 +147,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin  || auth()->user()->can('roles.create'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin  || auth()->user()->can('roles.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -174,8 +174,8 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('roles.create'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('roles.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -260,8 +260,8 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('roles.update'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('roles.update'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -295,8 +295,8 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('roles.update'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('roles.update'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -383,8 +383,8 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('roles.delete'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('roles.delete'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 

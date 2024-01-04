@@ -25,75 +25,88 @@ class EssentialsAdmissionToWorkController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
-
-        $can_crud_employee_work_adminitions = auth()->user()->can('essentials.crud_employee_work_adminitions');
-        if (!$can_crud_employee_work_adminitions) {
-           //temp  abort(403, 'Unauthorized action.');
+    
+        $can_crud_employee_work_admissions = auth()->user()->can('essentials.crud_employee_work_admissions');
+        if (!$can_crud_employee_work_admissions) {
+            //temp  abort(403, 'Unauthorized action.');
         }
+    
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
+    
         if (request()->ajax()) {
-            $admissionToWork = EssentialsAdmissionToWork::join('users as u', 'u.id', '=', 'essentials_admission_to_works.employee_id')->where('u.business_id', $business_id)
-
-                ->select([
-                    'essentials_admission_to_works.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'u.id_proof_number',
-
-                    'essentials_admission_to_works.admissions_type',
-                    'essentials_admission_to_works.admissions_status',
-                    'essentials_admission_to_works.admissions_date',
-
-
-
-                ]);
-
+            $admissionToWork = EssentialsAdmissionToWork::with('user')
+                ->whereHas('user', function ($query) use ($business_id) {
+                    $query->where('business_id', $business_id)
+                        ->whereIn('user_type', ['employee', 'worker', 'manager']);
+                })
+                ->select('id', 'employee_id', 'admissions_type as admissions_type', 'admissions_status as admissions_status',
+                 'admissions_date as admissions_date');
+    
+               
+    
             if (!empty(request()->input('admissions_status')) && request()->input('admissions_status') !== 'all') {
                 $admissionToWork->where('essentials_admission_to_works.admissions_status', request()->input('admissions_status'));
             }
-
+    
             if (!empty(request()->input('admissions_type')) && request()->input('admissions_type') !== 'all') {
                 $admissionToWork->where('essentials_admission_to_works.admissions_type', request()->input('admissions_type'));
             }
+    
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end = request()->end_date;
                 $admissionToWork->whereDate('essentials_admission_to_works.admissions_date', '>=', $start)
                     ->whereDate('essentials_admission_to_works.admissions_date', '<=', $end);
             }
-
+    
             return Datatables::of($admissionToWork)
+            
+           ->addColumn('user', function ($row) {
+            return $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
+           })
 
+           ->addColumn('id_proof_number', function ($row) {
+            return $row->user->id_proof_number ?? '';
+           })
                 ->addColumn(
                     'action',
                     function ($row) {
                         $html = '';
-                        //    $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                        $html .= '<a  href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
+                        $html .= '<a href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
                         return $html;
                     }
                 )
-
                 ->filterColumn('user', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                    $query->whereHas('user', function ($query) use ($keyword) {
+                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%$keyword%"]);
+                    });
                 })
-                ->removeColumn('id')
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->where('users.id_proof_number', 'like', "%$keyword%");
+                })
+                ->filterColumn('admissions_type', function ($query, $keyword) {
+                    $query->where('essentials_admission_to_works.admissions_type', 'like', "%$keyword%");
+                })
+                ->filterColumn('admissions_status', function ($query, $keyword) {
+                    $query->where('essentials_admission_to_works.admissions_status', 'like', "%$keyword%");
+                })
+                ->filterColumn('admissions_date', function ($query, $keyword) {
+                    $query->whereDate('essentials_admission_to_works.admissions_date', '=', $keyword);
+                })
                 ->rawColumns(['action'])
                 ->make(true);
         }
+    
         $query = User::where('business_id', $business_id)
             ->whereIn('user_type', ['employee', 'worker', 'manager']);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-
-
-
+    
         return view('essentials::employee_affairs.admission_to_work.index')->with(compact('users', 'departments'));
     }
-
+    
     public function create()
     {
         return view('essentials::create');
@@ -107,7 +120,7 @@ class EssentialsAdmissionToWorkController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -154,7 +167,7 @@ class EssentialsAdmissionToWorkController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -198,7 +211,7 @@ class EssentialsAdmissionToWorkController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -217,7 +230,7 @@ class EssentialsAdmissionToWorkController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

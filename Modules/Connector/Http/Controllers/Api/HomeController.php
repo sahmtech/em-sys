@@ -58,7 +58,9 @@ class HomeController extends ApiController
             $user = Auth::user();
             $business_id = $user->business_id;
             $business = Business::where('id', $business_id)->first();
-            $shift = EssentialsUserShift::where('user_id', $user->id)->first()->shift;
+            $shift = EssentialsUserShift::where('user_id', $user->id)->first()?->shift ?? null;
+            error_log($user->id);
+            error_log($shift);
             $lastRequest = FollowupWorkerRequest::select([
                 'followup_worker_requests.request_no',
                 'followup_worker_requests.id',
@@ -127,8 +129,8 @@ class HomeController extends ApiController
 
             $res = [
                 'new_notifications' => 0,
-                'work_day_start' => Carbon::parse($shift->start_time)->format('h:i A'),
-                'work_day_end' => Carbon::parse($shift->end_time)->format('h:i A'),
+                'work_day_start' => $shift ? Carbon::parse($shift->start_time)->format('h:i A') : '',
+                'work_day_end' => $shift ? Carbon::parse($shift->end_time)->format('h:i A') : '',
                 'business_name' => $business->name,
                 'request' => $lastRequest,
                 'task' => $lastTask,
@@ -143,7 +145,7 @@ class HomeController extends ApiController
             return new CommonResource($res);
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             return $this->otherExceptions($e);
         }
     }
@@ -161,7 +163,7 @@ class HomeController extends ApiController
     public function removeNotification($id)
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -179,7 +181,7 @@ class HomeController extends ApiController
     public function readAllNotifications()
     {
         if (!$this->moduleUtil->isModuleInstalled('Essentials')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {

@@ -25,11 +25,9 @@ use App\InvoiceScheme;
 use App\TransactionSellLine;
 use App\TypesOfService;
 use Carbon\Carbon;
-use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\IOFactory;
-use Barryvdh\DomPDF\Facade\PDF;
+
 
 class OfferPriceController extends Controller
 {
@@ -140,29 +138,23 @@ class OfferPriceController extends Controller
                 ->addColumn(
                     'action',
                     function ($row) {
-                        $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                    data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <li>
-                                    <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
-                                    <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
-                                </a>
-
-                                    </li>
-               
-                                    ';
-
-
-
-
-
-                        $html .= '</ul></div>';
-
+                        // $html = '<div class="btn-group">
+                        //         <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                        //             data-toggle="dropdown" aria-expanded="false">' .
+                        //     __('messages.actions') .
+                        //     '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        //             </span>
+                        //         </button>
+                        //         <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        //             <li>
+                        //             <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
+                        //             <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>
+                        //             </li>
+                        //             ';
+                        // $html .= '</ul></div>';
+                        $html = '    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                        <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
+                        </a>';
                         return $html;
                     }
                 )
@@ -1015,11 +1007,11 @@ class OfferPriceController extends Controller
      */
     public function show($id)
     {
-
+        error_log($id);
+        return $id;
         $business_id = request()->session()->get('user.business_id');
 
-        $query = Transaction::where('business_id', $business_id)
-            ->where('id', $id)
+        $query = Transaction::where('id', $id)
             ->with(['contact:id,supplier_business_name,mobile', 'sell_lines', 'sell_lines.service'])
 
             ->select(
@@ -1051,7 +1043,7 @@ class OfferPriceController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $offer_price = Transaction::find($id);
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name', 'id');

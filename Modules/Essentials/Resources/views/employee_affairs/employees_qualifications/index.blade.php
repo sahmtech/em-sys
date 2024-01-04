@@ -293,7 +293,7 @@ $('body').on('click', '.open-edit-modal', function() {
         });
     });
 
-    $('body').on('submit', '#editQualificationModal form', function (e) {
+$('body').on('submit', '#editQualificationModal form', function (e) {
     e.preventDefault();
 
     var qualificationId = $('#qualificationIdInput').val(); // Retrieve qualificationId from the hidden input

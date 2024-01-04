@@ -102,7 +102,7 @@
                                     @if ($user->allowancesAndDeductions->isNotEmpty())
                                         {{ __('followup::lang.allowances') }}:
                                         <ul>
-                                            @foreach ($user->UserallowancesAndDeductions as $allowanceOrDeduction)
+                                            @foreach ($user->userAllowancesAndDeductions as $allowanceOrDeduction)
                                                 <li>{{ $allowanceOrDeduction->allowancedescription->description ?? '' }}:
                                                     {{ floor($allowanceOrDeduction->amount) }}</li>
                                             @endforeach

@@ -60,34 +60,6 @@
                             ]) !!}
                         </div>
                     </div>
-                    @php
-                        $default_fields = [$fields[0], $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6]];
-
-                        $default = array_keys($default_fields);
-
-                    @endphp
-
-                    <div style="row">
-                        <div class="col-md-11">
-                            <div class="form-group">
-                                {!! Form::label('choose_fields', __('followup::lang.choose_fields') . ' ') !!}
-                                {!! Form::select('choose_fields_select[]', $fields, $default, [
-                                    'class' => 'form-control select2',
-                                    'multiple',
-                                    'id' => 'choose_fields_select',
-                                ]) !!}
-                            </div>
-
-                        </div>
-
-                        <div class="col-md-1 ">
-                            <button class="btn btn-primary pull-right btn-flat" onclick="chooseFields();"
-                                style="margin-top: 24px;
-                        width: 62px;
-                        height: 36px;
-                        border-radius: 4px;">تطبيق</button>
-                        </div>
-                    </div>
                 @endcomponent
             </div>
         </div>
@@ -96,15 +68,6 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            {{-- <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.essentials_salary')</th>
-
-                            <th>@lang('followup::lang.nationality')</th>
-                            <th>@lang('followup::lang.eqama_end_date')</th>
-                            <th>@lang('followup::lang.contract_end_date')</th> --}}
-
                             <td style="width: 100px !important;">@lang('followup::lang.name')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
@@ -124,10 +87,6 @@
                             <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
-
-
-
-
                         </tr>
                     </thead>
                 </table>
@@ -179,7 +138,8 @@
                 columns: [{
                         data: 'worker',
                         render: function(data, type, row) {
-                            var link = '<a href="' + '{{ route('show_agent_worker', ['id' => ':id']) }}'
+                            var link = '<a href="' +
+                                '{{ route('show_agent_worker', ['id' => ':id']) }}'
                                 .replace(':id', row.id) + '">' + data + '</a>';
                             return link;
                         }
@@ -283,13 +243,5 @@
                     workers_table.ajax.reload();
                 });
         });
-        chooseFields = function() {
-            var selectedOptions = $('#choose_fields_select').val();
-            var dt = $('#workers_table').DataTable();
-            var fields = fields;
-            dt.columns(fields).visible(false);
-            dt.columns(selectedOptions).visible(true);
-
-        }
     </script>
 @endsection

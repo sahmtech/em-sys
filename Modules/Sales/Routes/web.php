@@ -30,6 +30,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         //requests 
         Route::get('/sales.requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'index'])->name('sales.requests');
         Route::post('/sales.returnReq', [\Modules\Sales\Http\Controllers\RequestController::class, 'returnReq'])->name('sales.returnReq');
+        Route::get('/escalate_requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'escalateRequests'])->name('sales.escalate_requests');
+        Route::post('/changeEscalateRequestsStatus', [\Modules\Sales\Http\Controllers\RequestController::class, 'changeEscalateRequestsStatus'])->name('sales.changeEscalateRequestsStatus');
+
 
         Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('price_offer');
         Route::get('/createOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create'])->name('createOfferPrice');
@@ -161,12 +164,12 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/store_salay_request', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'store'])->name('store_salay_request');
         Route::post('salary_request/update/{salaryId}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'update'])->name('salay_request.update');
         Route::delete('delete-salay-request/{id}', [Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'destroy'])->name('salay_request.destroy');
-        
-      
-       
+
+
+
         // Route::get('/preview-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'preview'])->name('preview.file');
 
         Route::get('/download-file/{id}', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'print'])->name('download.file');
-
+        Route::get('/download-contract/{id}', [\Modules\Sales\Http\Controllers\ContractsController::class, 'print'])->name('download.contract');
     });
 });

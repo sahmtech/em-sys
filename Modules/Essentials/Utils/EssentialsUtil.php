@@ -418,8 +418,8 @@ class EssentialsUtil extends Util
 
     public function getPayrollQuery($business_id)
     {
-        $payrolls = Transaction::where('transactions.business_id', $business_id)
-            ->where('type', 'payroll')
+        $payrolls = Transaction::
+            where('type', 'payroll')
             ->join('users as u', 'u.id', '=', 'transactions.expense_for')
             ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
             ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')

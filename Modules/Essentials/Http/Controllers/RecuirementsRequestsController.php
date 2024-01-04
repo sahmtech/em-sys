@@ -178,7 +178,7 @@ class RecuirementsRequestsController extends Controller
                 $req = followupRecruitmentRequest::where('assigned_to', $reqRequest->id)->first();
         
                 if ($req) {
-                    // Adjust this line based on your logic
+                    
                     $req->quantity = $req->quantity + $input['quantity'];
                     $req->save();
                 }
@@ -216,7 +216,7 @@ class RecuirementsRequestsController extends Controller
                 $req = followupRecruitmentRequest::where('assigned_to', $reqRequest->id)->first();
         
                 if ($req) {
-                    // Adjust this line based on your logic
+                    
                     $req->quantity = $req->quantity + $input['quantity'];
                     $req->save();
                 }
@@ -266,14 +266,14 @@ class RecuirementsRequestsController extends Controller
 
             return Datatables::of($recruitmentRequests)
 
-        //     ->editColumn('status', function ($row) {
+        
                   
-        //         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-        //             . $this->statuses[$row->status]['name'] . '</span>';
-        //         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '"       data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+        
+        
+        
           
-        //     return $status;
-        // })
+        
+        
 
 
             ->editColumn('nationality_id',function($row)use($nationalities){
@@ -346,14 +346,14 @@ class RecuirementsRequestsController extends Controller
             return Datatables::of($recruitmentRequests)
 
             
-        //     ->editColumn('status', function ($row) {
+        
                   
-        //         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-        //             . $this->statuses[$row->status]['name'] . '</span>';
-        //         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+        
+        
+        
           
-        //     return $status;
-        // })
+        
+        
 
             ->editColumn('nationality_id',function($row)use($nationalities){
                 $item = $nationalities[$row->nationality_id]??'';
@@ -413,7 +413,7 @@ class RecuirementsRequestsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -444,7 +444,7 @@ class RecuirementsRequestsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**
@@ -454,6 +454,6 @@ class RecuirementsRequestsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }

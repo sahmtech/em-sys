@@ -81,20 +81,21 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('city', __('housingmovements::lang.city') . ':*') !!}
                                 {!! Form::select('city', $cities, null,
-                                     ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
+                                     ['class' => 'form-control', 'style'=>' width:100%',
+                                      'placeholder' => __('housingmovements::lang.city'), 'required']) !!}
                             </div>
         
                         
                             <div class="form-group col-md-6">
                                 {!! Form::label('guard', __('housingmovements::lang.building_guard') . ':*') !!}
                                 {!! Form::select('guard', $users2, null,
-                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
+                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;', 'style'=>'height:40px; width:100%',  'multiple',
                                       'placeholder' => __('housingmovements::lang.building_guard'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('supervisor', __('housingmovements::lang.building_supervisor') . ':*') !!}
                                 {!! Form::select('supervisor', $users2, null,
-                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;',   'multiple',
+                                     ['class' => 'form-control select2','style'=>'width:100%;height:40px;','style'=>'height:40px; width:100%',   'multiple',
                                       'placeholder' => __('housingmovements::lang.building_supervisor'), 'required']) !!}
                             </div>
                             <div class="form-group col-md-6">
@@ -115,7 +116,7 @@
     </div>
 </section>
 <!-- /.content -->
-
+@include('housingmovements::buildings.edit')
 @endsection
 
 @section('javascript')
@@ -153,6 +154,77 @@
             reloadDataTable();
         });
 
+
+$('body').on('click', '.open-edit-modal', function() {
+    var buildingId = $(this).data('id'); 
+    $('#buildingIdInput').val(buildingId);
+
+    var editUrl = '{{ route("building.edit", ":buildingId") }}'
+    editUrl = editUrl.replace(':buildingId', buildingId);
+    console.log(editUrl);
+
+    $.ajax({
+        url: editUrl,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var data = response.data;
+
+            $('#editbuildingModal input[name="name"]').val(data.building.name);
+            $('#editbuildingModal input[name="address"]').val(data.building.address);
+            $('#editbuildingModal select[name="city"]').val(data.building.city_id).trigger('change');
+            $('#editbuildingModal select[name="guard"]').val(data.building.guard_id).trigger('change');
+            $('#editbuildingModal select[name="supervisor"]').val(data.building.supervisor_id).trigger('change');
+            $('#editbuildingModal select[name="cleaner"]').val(data.building.cleaner_id).trigger('change');
+
+            $('#editbuildingModal').modal('show');
+        },
+
+        error: function(error) {
+            console.error('Error fetching building data:', error);
+        }
+    });
+});
+
+
+
+
+$('body').on('submit', '#editbuildingModal form', function (e) {
+    e.preventDefault();
+
+    var buildingId = $('#buildingIdInput').val();
+    console.log(buildingId);
+
+    var urlWithId = '{{ route("updateBuilding", ":buildingId") }}';
+    urlWithId = urlWithId.replace(':buildingId', buildingId);
+    console.log(urlWithId);
+
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log(response); 
+            if (response.success) {
+                console.log(response);
+                buildings_table.ajax.reload();
+                toastr.success(response.msg);
+                $('#editbuildingModal').modal('hide');
+            } else {
+                toastr.error(response.msg);
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
+
         $(document).on('click', 'button.delete_building_button', function () {
              swal({
                 title: LANG.sure,
@@ -171,6 +243,7 @@
                             if (result.success == true) {
                                 toastr.success(result.msg);
                                 buildings_table.ajax.reload();
+                                $('#editbuildingModal').modal('hide');
                             } else {
                                 toastr.error(result.msg);
                             }

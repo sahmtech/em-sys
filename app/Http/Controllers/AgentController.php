@@ -158,7 +158,7 @@ class AgentController extends Controller
 
         $chart = new CommonChart;
         $colors = [
-            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
+            '#ec268f', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
             '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
             '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
         ];
@@ -458,10 +458,17 @@ class AgentController extends Controller
                 ->addColumn('worker', function ($user) {
                     return $user->worker;
                 })
+                ->addColumn('contact_name', function ($user) {
+                    return $user->contact_name;
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                })
 
-
-
-                ->rawColumns([
+                ->rawColumns(['contact_name',
                     'nationality', 'worker',
                     'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'
                 ])
@@ -711,7 +718,7 @@ class AgentController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
     
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
 
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');

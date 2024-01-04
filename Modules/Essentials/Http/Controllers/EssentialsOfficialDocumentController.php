@@ -74,7 +74,7 @@ class EssentialsOfficialDocumentController extends Controller
                     function ($row) {
                         $html = '';
                         $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                        $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
                         $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                         return $html;
@@ -115,7 +115,7 @@ class EssentialsOfficialDocumentController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -200,13 +200,12 @@ class EssentialsOfficialDocumentController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit($docId)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
-
-        $doc = EssentialsOfficialDocument::where('essentials_official_documents.id', $id)
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    
+        $doc = EssentialsOfficialDocument::where('essentials_official_documents.id', $docId)
             ->join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
             ->select([
                 'essentials_official_documents.id as id',
@@ -221,15 +220,21 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.file_path as file_path',
             ])
             ->firstOrFail();
-
+    
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
         $all_users = $query->select(['id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name")])->get();
         $users = $all_users->pluck('full_name', 'id');
-        $var = $users[$doc->employee_id];
-
-        return view('essentials::employee_affairs.official_docs.edit')->with(compact('users', 'doc', 'var'));
+    
+        $output = [
+            'data' => $doc,
+            'users' => $users,
+            // Add any other data you want to include in the JSON response
+        ];
+    
+        return response()->json($output);
     }
+    
 
     /**
      * Update the specified resource in storage.
@@ -238,66 +243,53 @@ class EssentialsOfficialDocumentController extends Controller
      * @return Renderable
      */
 
-    public function update(Request $request, $id)
-    {
-
-        $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
-
-
-
-
-        try {
-
-            $file2 = EssentialsOfficialDocument::where('id', $id)->get()[0]->file_path;
-            $employee2 = EssentialsOfficialDocument::where('id', $id)->get()[0]->employee_id;
-
-            $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status', 'expiration_date', 'file']);
-
-            $input2['type'] = $input['doc_type'];
-            $input2['number'] = $input['doc_number'];
-            $input2['issue_date'] = $input['issue_date'];
-            $input2['expiration_date'] = $input['expiration_date'];
-
-            $input2['status'] = $input['status'];
-            $input2['issue_place'] = $input['issue_place'];
-            if ($input['employee'] == null) {
-                $input2['file_path'] = $employee2;
-            } else {
-                $input2['employee_id'] = $input['employee'];
-            }
-            if ($input['file'] == null) {
-                $input2['file_path'] = $file2;
-            } else {
-                $file = request()->file('file');
-                $filePath = $file->store('/officialDocuments');
-
-                $input2['file_path'] = $filePath;
-            }
-
-            EssentialsOfficialDocument::where('id', $id)->update($input2);
-            $output = [
+     public function update(Request $request, $docId)
+     {
+         $business_id = $request->session()->get('user.business_id');
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+     
+         try {
+             $file2 = EssentialsOfficialDocument::where('id', $docId)->value('file_path');
+             $employee2 = EssentialsOfficialDocument::where('id', $docId)->value('employee_id');
+     
+             $input = $request->only(['employee', 'doc_type', 'doc_number', 'issue_date', 'issue_place', 'status', 'expiration_date']);
+     
+             $input2['type'] = $input['doc_type'];
+             $input2['number'] = $input['doc_number'];
+             $input2['issue_date'] = $input['issue_date'];
+             $input2['expiration_date'] = $input['expiration_date'];
+             $input2['status'] = $input['status'];
+             $input2['issue_place'] = $input['issue_place'];
+     
+             if ($input['employee'] != null) {
+                 $input2['employee_id'] = $input['employee'];
+             }
+     
+             if ($request->input('docfile') != null) {
+                 $file = $request->file('docfile');
+                 $filePath = $file->store('/officialDocuments');
+                 $input2['file_path'] = $filePath;
+             }
+     
+             $off=EssentialsOfficialDocument::where('id', $docId)->update($input2);
+             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
+         
+          
         } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+    
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
-        $users = $all_users->pluck('full_name', 'id');
-
-
-        return redirect()->route('official_documents')->with(compact('users'));
-    }
-
+    
+        return response()->json($output);
+     }
+     
     /**
      * Remove the specified resource from storage.
      * @param int $id
@@ -306,7 +298,7 @@ class EssentialsOfficialDocumentController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

@@ -65,7 +65,7 @@ class EssentialsCardsController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
         $business_name=Business::where('id', $business_id)->select('name','id')->first();
         $business_name = $business_name ? $business_name->name : null;
@@ -335,7 +335,7 @@ class EssentialsCardsController extends Controller
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
     
-        return redirect()->back()->with(['status' => $output]);
+        return redirect()->route('cards')->with(['output']);
     // return $output;
     }
 
@@ -359,13 +359,16 @@ class EssentialsCardsController extends Controller
         'Payment_number as Payment_number',
         'fixnumber as fixnumber')->get();
    
-          $durationOptions = [
+        
+        $durationOptions = [
             '3' => __('essentials::lang.3_months'),
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
-            $data->pluck('workcard_duration')->unique()->first() => __('essentials::lang.workcard_duration'),
+           
         ];
+
+
         foreach ($data as $row) {
             $doc = $row->user->OfficialDocument
                 ->where('type', 'residence_permit')
@@ -377,7 +380,7 @@ class EssentialsCardsController extends Controller
             $row->fixnumber= $fixnumber ?  $fixnumber : null;
         }
       
-        return response()->json($data);
+        return response()->json(['data' => $data, 'durationOptions' => $durationOptions]);
     }
 
 

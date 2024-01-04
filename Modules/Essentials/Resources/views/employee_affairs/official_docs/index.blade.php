@@ -219,7 +219,11 @@
 
         </div>
     </section>
+
+
+@include('essentials::employee_affairs.official_docs.edit')
 @endsection
+
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -322,6 +326,91 @@
                 function() {
                     reloadDataTable();
                 });
+$('body').on('click', '.open-edit-modal', function() {
+    var docId = $(this).data('id');
+    $('#docIdInput').val(docId);
+
+    var editUrl = '{{ route("official_documents.edit", ":docId") }}';
+    editUrl = editUrl.replace(':docId', docId);
+
+    $.ajax({
+        url: editUrl,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            var data = response.data;
+
+            // Set initial values in the modal
+            $('#editdocModal select[name="employee"]').val(data.employee_id).trigger('change');
+            $('#editdocModal select[name="doc_type"]').val(data.type).trigger('change');
+            $('#editdocModal input[name="doc_number"]').val(data.number);
+            $('#editdocModal input[name="issue_date"]').val(data.issue_date);
+            $('#editdocModal input[name="issue_place"]').val(data.issue_place);
+            $('#editdocModal select[name="status"]').val(data.status).trigger('change');
+            $('#editdocModal input[name="expiration_date"]').val(data.expiration_date);
+
+            // Handle file input
+            var fileInput = $('#editdocModal input[name="file"]');
+            var fileContainer = $('#editdocModal .file-container');
+
+            if (data.file_path) {
+                // If file exists, show a link to view the file
+                fileContainer.html('<p><a href="/uploads/' + data.file_path + '" target="_blank">{{ __("essentials::lang.view_doc") }}</a></p>');
+                fileInput.prop('disabled', true); // Disable the file input
+            } else {
+                // If file doesn't exist, show the file input for uploading
+                fileContainer.html('');
+                fileInput.prop('disabled', false); // Enable the file input
+            }
+
+            // Show the modal
+            $('#editdocModal').modal('show');
+        },
+        error: function(error) {
+            console.error('Error fetching document data:', error);
+        }
+    });
+});
+
+$('body').on('submit', '#editdocModal form', function (e) {
+    e.preventDefault();
+
+    var docId = $('#docIdInput').val(); // Retrieve docId from the hidden input
+    console.log(docId);
+
+    var urlWithId = '{{ route("updateDoc", ":docId") }}';
+    urlWithId = urlWithId.replace(':docId', docId);
+    console.log(urlWithId);
+
+    var formData = new FormData(this);
+
+    // Log FormData to check if 'file' is present
+    console.log('FormData:', formData);
+
+    $.ajax({
+        url: urlWithId,
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            if (response.success) {
+                console.log(response);
+                toastr.success(response.msg, 'Success');
+                $('#editdocModal').modal('hide');
+            } else {
+                toastr.error(response.msg);
+                console.log(response);
+            }
+        },
+        error: function (error) {
+            console.error('Error submitting form:', error);
+            // Show a generic error message
+            toastr.error('An error occurred while submitting the form.', 'Error');
+        },
+    });
+});
+
 
             $(document).on('click', 'button.delete_doc_button', function() {
                 swal({
