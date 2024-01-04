@@ -33,7 +33,7 @@ class ContractAppendixController extends Controller
         if (!$can_crud_contract_appendics) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $contracts = salesContract::all()->pluck('number_of_contract', 'id');
         $items = salesContractItem::all()->pluck('name_of_item', 'id');
 
@@ -95,7 +95,7 @@ class ContractAppendixController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -158,7 +158,7 @@ class ContractAppendixController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $contracts = salesContract::all()->pluck('number_of_contract', 'id');
@@ -173,7 +173,7 @@ class ContractAppendixController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -231,7 +231,7 @@ class ContractAppendixController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

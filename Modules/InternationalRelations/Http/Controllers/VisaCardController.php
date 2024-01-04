@@ -37,12 +37,12 @@ class VisaCardController extends Controller
      */
     public function index(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_visa_card = auth()->user()->can('internationalrelations.crud_visa_cards');
-        if (!($isSuperAdmin || $can_crud_visa_card)) {
+        if (!($is_admin || $can_crud_visa_card)) {
            //temp  abort(403, 'Unauthorized action.');
         }
         $visaCards = IrVisaCard::with(
@@ -134,7 +134,7 @@ class VisaCardController extends Controller
     // public function store(Request $request)
     // {
 
-    //     $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+    //     
 
     //     $business_id = request()->session()->get('user.business_id');
 
@@ -179,12 +179,12 @@ class VisaCardController extends Controller
 
     public function store(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
     
         $business_id = $request->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_visa_card = auth()->user()->can('internationalrelations.store_visa_card');
-        if (!($isSuperAdmin || $can_store_visa_card)) {
+        if (!($is_admin || $can_store_visa_card)) {
            //temp  abort(403, 'Unauthorized action.');
         }
     
@@ -238,12 +238,12 @@ class VisaCardController extends Controller
     public function viewVisaWorkers($visaId)
     {
 
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_visa_workers = auth()->user()->can('internationalrelations.view_visa_workers');
-        if (!($isSuperAdmin || $can_view_visa_workers)) {
+        if (!($is_admin || $can_view_visa_workers)) {
            //temp  abort(403, 'Unauthorized action.');
         }
         try {

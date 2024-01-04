@@ -45,7 +45,7 @@ class FollowUpOperationOrderController extends Controller
         if (!$can_crud_operation_orders) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $contracts = DB::table('sales_orders_operations')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')

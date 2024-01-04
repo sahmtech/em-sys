@@ -142,7 +142,7 @@ class EssentialsRequestController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
@@ -330,7 +330,7 @@ class EssentialsRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
@@ -409,7 +409,7 @@ class EssentialsRequestController extends Controller
         }
 
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
@@ -651,7 +651,7 @@ class EssentialsRequestController extends Controller
     {
       
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {

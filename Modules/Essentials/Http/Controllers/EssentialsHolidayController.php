@@ -43,7 +43,7 @@ class EssentialsHolidayController extends Controller
            //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
             $holidays = EssentialsHoliday::where('essentials_holidays.business_id', $business_id)
@@ -121,7 +121,7 @@ class EssentialsHolidayController extends Controller
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
   
 
@@ -139,7 +139,7 @@ class EssentialsHolidayController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
      
 
@@ -183,7 +183,7 @@ class EssentialsHolidayController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
    
 
@@ -204,7 +204,7 @@ class EssentialsHolidayController extends Controller
     public function update(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
       
 
@@ -240,7 +240,7 @@ class EssentialsHolidayController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
    
 

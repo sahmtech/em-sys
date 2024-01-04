@@ -69,15 +69,15 @@ class RequestController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!($isSuperAdmin || $crud_requests)) {
+        if (!($is_admin || $crud_requests)) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
 
 
