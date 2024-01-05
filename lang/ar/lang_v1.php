@@ -1452,6 +1452,6 @@ return [
     'accepted' => 'تم القبول',
     'the_passport_number_already_exists' => 'رقم جواز السفر المدخل موجود سابقاً',
     'address' => 'العنوان',
-   
+    'privacy_policy' => 'سياسة الخصوصية',
 
 ];

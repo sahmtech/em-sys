@@ -2,8 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\User;
-use App\Utils\ModuleUtil;
 use Closure;
 use Menu;
 use Illuminate\Support\Str;
@@ -211,7 +209,7 @@ class CustomAdminSidebarMenu
             );
             $menu->url(
                 route('agentTimeSheet.index'),
-                __('agent.time_sheet', [], 'en'),
+                __('agent.time_sheet'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'time_sheet'],
             );
         });
