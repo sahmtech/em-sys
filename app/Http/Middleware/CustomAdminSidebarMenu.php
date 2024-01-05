@@ -50,6 +50,8 @@ class CustomAdminSidebarMenu
             $this->followUpMenu();
         } elseif (Str::startsWith($currentPath, 'purchase')) {
             $this->purchasesMenu();
+        } elseif (Str::startsWith($currentPath, ['movment', 'dashboard-movment'])) {
+            $this->movmentMenu();
         } elseif (Str::startsWith($currentPath, [
             'superadmin',
             'subscription',
@@ -251,8 +253,8 @@ class CustomAdminSidebarMenu
     }
     public function userManagementMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -308,10 +310,117 @@ class CustomAdminSidebarMenu
             // }
         });
     }
+    public function movmentMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                [
+                    'icon' => 'fas fa-home  ',
+                    'active' => request()->segment(1) == 'home'
+                ]
+            );
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']),
+                __('housingmovements::lang.movement_management'),
+                ['icon' => 'fa fa-car', 'active' => request()->segment(2) == 'dashboard-movment']
+            );
+            if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
+
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
+                    __('housingmovements::lang.car_drivers'),
+                    ['icon' => 'fa fa-bullseye', 'active' => request()->segment(2) == 'car-drivers']
+                );
+            }
+            if ($is_admin || auth()->user()->can('essentials.cars')) {
+
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
+                    __('housingmovements::lang.cars'),
+                    ['icon' => 'fa fa-bullseye', 'active' => request()->segment(2) == 'cars']
+                );
+            }
+
+            if ($is_admin || auth()->user()->can('essentials.carsChangeOil')) {
+
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'index']),
+                    __('housingmovements::lang.carsChangeOil'),
+                    ['icon' => 'fa fa-bullseye', 'active' => request()->segment(2) == 'cars-change-oil']
+                );
+            }
+
+            if ($is_admin || auth()->user()->can('essentials.carMaintenances')) {
+
+                $menu->url(
+                    action(  [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'index']),
+                    __('housingmovements::lang.carMaintenances'),
+                    ['icon' => 'fa fa-bullseye', 'active' => request()->segment(2) == 'cars-maintenances']
+                );
+            }
+
+
+          
+           
+            if ($is_admin || auth()->user()->can('essentials.carTypes')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
+                    __('housingmovements::lang.carTypes'),
+                    ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-type']
+                );
+            }
+
+            if ($is_admin || auth()->user()->can('essentials.carModels')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
+                    __('housingmovements::lang.carModels'),
+                    ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-model']
+                );
+            }
+          
+            if ($is_admin  || auth()->user()->can('housingmovements.report')) {
+
+                $menu->dropdown(
+                    __('housingmovements::lang.report'),
+                    function ($report)  use ($is_admin) {
+
+                     
+                        if ($is_admin  || auth()->user()->can('housingmovements.carsChangeOilReport')) {
+
+                            $report->url(
+                                action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil']),
+                                __('housingmovements::lang.carsChangeOilReport'),
+                                ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-change-oil-report']
+                            );
+                        }
+                          if ($is_admin  || auth()->user()->can('housingmovements.carMaintenancesReport')) {
+
+                            $report->url(
+                                action( [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances']),
+                                __('housingmovements::lang.carMaintenancesReport'),
+                                ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-maintenances-report']
+                            );
+                        }
+
+                      
+                    },
+                    ['icon' => 'fa fa-bullseye',],
+                );
+            }   
+          
+        });
+    
+    }
     public function essentialsMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -386,7 +495,7 @@ class CustomAdminSidebarMenu
             }
 
 
-          
+
 
             if ($is_admin  || auth()->user()->can('essentials.crud_essentials_recuirements_requests')) {
                 $menu->url(
@@ -402,7 +511,7 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('essentials::lang.work_cards'),
-                    function ($sub)  use($is_admin){
+                    function ($sub)  use ($is_admin) {
 
                         if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
                             $sub->url(
@@ -423,44 +532,6 @@ class CustomAdminSidebarMenu
                                 action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
                                 __('essentials::lang.facilities_management'),
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
-                            );
-                        }
-                        if ($is_admin || auth()->user()->can('essentials.movement_management')) {
-                            $sub->dropdown(
-                                __('housingmovements::lang.movement_management'),
-                                function ($movement_management_SubMenu) use($is_admin)  {
-                                    if ($is_admin || auth()->user()->can('essentials.carTypes')) {
-                                        $movement_management_SubMenu->url(
-                                            action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
-                                            __('housingmovements::lang.carTypes'),
-                                            ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
-                                        );
-                                    }
-                                    if ($is_admin || auth()->user()->can('essentials.carModels')) {
-                                        $movement_management_SubMenu->url(
-                                            action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
-                                            __('housingmovements::lang.carModels'),
-                                            ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
-                                        );
-                                    }
-                                    if ($is_admin || auth()->user()->can('essentials.cars')) {
-                                        $movement_management_SubMenu->url(
-                                            action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
-                                            __('housingmovements::lang.cars'),
-                                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
-                                        );
-                                    }
-                                    if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
-                                        $movement_management_SubMenu->url(
-                                            action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
-                                            __('housingmovements::lang.car_drivers'),
-                                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
-                                        );
-                                    }
-                                },
-                                ['icon' => 'fa fas fa-plus-circle',],
-                                // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
-
                             );
                         }
                     },
@@ -495,44 +566,44 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
                     );
                 }
-                if ($is_admin || auth()->user()->can('essentials.movement_management')) {
-                    $menu->dropdown(
-                        __('housingmovements::lang.movement_management'),
-                        function ($movement_management_SubMenu) use($is_admin) {
-                            if ($is_admin || auth()->user()->can('essentials.carTypes')) {
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
-                                    __('housingmovements::lang.carTypes'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
-                                );
-                            }
-                            if ($is_admin || auth()->user()->can('essentials.carModels')) {
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
-                                    __('housingmovements::lang.carModels'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
-                                );
-                            }
-                            if ($is_admin || auth()->user()->can('essentials.cars')) {
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
-                                    __('housingmovements::lang.cars'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
-                                );
-                            }
-                            if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
-                                $movement_management_SubMenu->url(
-                                    action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
-                                    __('housingmovements::lang.car_drivers'),
-                                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
-                                );
-                            }
-                        },
-                        ['icon' => 'fa fas fa-plus-circle',],
-                        // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+                // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
+                //     $menu->dropdown(
+                //         __('housingmovements::lang.movement_management'),
+                //         function ($movement_management_SubMenu) use ($is_admin) {
+                //             if ($is_admin || auth()->user()->can('essentials.carTypes')) {
+                //                 $movement_management_SubMenu->url(
+                //                     action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
+                //                     __('housingmovements::lang.carTypes'),
+                //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
+                //                 );
+                //             }
+                //             if ($is_admin || auth()->user()->can('essentials.carModels')) {
+                //                 $movement_management_SubMenu->url(
+                //                     action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
+                //                     __('housingmovements::lang.carModels'),
+                //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
+                //                 );
+                //             }
+                //             if ($is_admin || auth()->user()->can('essentials.cars')) {
+                //                 $movement_management_SubMenu->url(
+                //                     action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
+                //                     __('housingmovements::lang.cars'),
+                //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
+                //                 );
+                //             }
+                //             if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
+                //                 $movement_management_SubMenu->url(
+                //                     action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
+                //                     __('housingmovements::lang.car_drivers'),
+                //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
+                //                 );
+                //             }
+                //         },
+                //         ['icon' => 'fa fas fa-plus-circle',],
+                //         // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
 
-                    );
-                }
+                //     );
+                // }
             }
 
             if ($is_admin  || auth()->user()->can('essentials.curd_contracts_end_reasons')) {
@@ -642,9 +713,9 @@ class CustomAdminSidebarMenu
     }
     public function followUpMenu()
     {
-        
 
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -752,8 +823,8 @@ class CustomAdminSidebarMenu
 
     public function CUS_salesMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
 
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
@@ -828,7 +899,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'sales.requests' || request()->segment(2) == 'escalate_requests')
-                        ],
+                    ],
                 );
             }
 
@@ -849,7 +920,7 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('sales.crud_settings')) {
                 $menu->dropdown(
                     __('sales::lang.sales_settings'),
-                    function ($sub) use($is_admin)  {
+                    function ($sub) use ($is_admin) {
                         if ($is_admin || auth()->user()->can('sales.crud_sale_sources')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index']),
@@ -891,9 +962,9 @@ class CustomAdminSidebarMenu
 
     public function houseMovementsMenu()
     {
-        
 
-        Menu::create('admin-sidebar-menu', function ($menu)   {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -922,7 +993,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'housingmovements' &&
-                        (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests')
+                            (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests')
                     ],
                 );
             }
@@ -948,45 +1019,37 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('housingmovements.view_building_management')) {
-
-                $menu->dropdown(
-                    __('housingmovements::lang.building_management'),
-                    function ($buildingSubMenu)  use($is_admin)  {
-
-                        if ($is_admin  || auth()->user()->can('housingmovements.crud_buildings')) {
-                            $buildingSubMenu->url(
-                                action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
-                                __('housingmovements::lang.buildings'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
-                            );
-                        }
-                        if ($is_admin  || auth()->user()->can('housingmovements.crud_rooms')) {
-
-                            $buildingSubMenu->url(
-                                action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
-                                __('housingmovements::lang.rooms'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
-                            );
-                        }
-
-                        if (false && ($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
-
-                            $buildingSubMenu->url(
-                                action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
-                                __('housingmovements::lang.facilities'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
-                            );
-                        }
-                    },
-                    ['icon' => 'fa fas fa-plus-circle',],
+            if ($is_admin  || auth()->user()->can('housingmovements.crud_buildings')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\BuildingController::class, 'index']),
+                    __('housingmovements::lang.buildings'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'buildings']
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('housingmovements.crud_rooms')) {
+
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index']),
+                    __('housingmovements::lang.rooms'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'rooms']
+                );
+            }
+
+            if (false && ($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
+
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
+                    __('housingmovements::lang.facilities'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
+                );
+            }
+         
             if ($is_admin  || auth()->user()->can('housingmovements.movement_management')) {
 
                 $menu->dropdown(
                     __('housingmovements::lang.movement_management'),
-                    function ($movement_management_SubMenu) use($is_admin)   {
+                    function ($movement_management_SubMenu) use ($is_admin) {
 
                         if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_car_types')) {
                             $movement_management_SubMenu->url(
@@ -1133,8 +1196,8 @@ class CustomAdminSidebarMenu
 
     public function getIRMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
@@ -1221,8 +1284,8 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
                     __('followup::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && 
-                    (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' &&
+                        (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
             if ($is_admin || auth()->user()->can('internationalrelations.crud_all_reports')) {
@@ -1236,8 +1299,10 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index']),
                     __('followup::lang.salary_requests'),
-                    ['icon' => 'fa fas fa-plus-circle',
-                     'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests']
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests'
+                    ]
                 );
             }
         });
@@ -1768,8 +1833,8 @@ class CustomAdminSidebarMenu
 
     public function superAdminMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];

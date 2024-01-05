@@ -659,5 +659,14 @@ return [
     'employees_reports_view' => 'employees reports view',
     'employees_information_report' => 'employees information report',
     'total_of_employees' => 'total of employees',
-    'please_add_the_essentials_department' => 'Add the HR department please'
+    'please_add_the_essentials_department' => 'Add the HR department please',
+    'request_number' => 'Request_number',
+    'worker_name' => 'Worker Name',
+    'residency_number' => 'Residency number',
+    'request_type' => 'Request Type',
+    'date_application' => 'Date application',
+    'Status' => 'Status',
+    'nots' => 'Nots',
+    'actions' => 'actions',
+    'requests'=>'Requests',
 ];

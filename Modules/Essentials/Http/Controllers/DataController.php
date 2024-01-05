@@ -541,6 +541,34 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.car_drivers'),
                 'default' => false,
             ],
+
+
+            [
+                'value' => 'essentials.carsChangeOil',
+                'label' => __('housingmovements::lang.carsChangeOil'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carMaintenances',
+                'label' => __('housingmovements::lang.carMaintenances'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.report',
+                'label' => __('housingmovements::lang.report'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carsChangeOilReport',
+                'label' => __('housingmovements::lang.carsChangeOilReport'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carMaintenancesReport',
+                'label' => __('housingmovements::lang.carMaintenancesReport'),
+                'default' => false,
+            ],
+            
             [
                 'value' => 'essentials.curd_contracts_end_reasons',
                 'label' => __('essentials::lang.contracts_end_reasons'),
