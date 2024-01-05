@@ -1131,5 +1131,14 @@ return [
   'update_existing_data'=>'تحديث البيانات',
   'file_to_update__import'=>'ملف التحديث',
   'download_update_template_file'=>"تنزيل ملف قالب التحديث",
+  'request_number'=>'رقم الطلب',
+  'worker_name'=>'اسم العامل',
+'residency_number'=>'رقم الاقامة',
+'request_type'=>'نوع الطلب',
+'date_application'=>'تاريخ التقديم',
+'Status'=>'الحالة',
+'nots'=>'ملاحظات',
+'actions'=>'العمليات',
+'requests'=>'الطلبات',
 
 ];

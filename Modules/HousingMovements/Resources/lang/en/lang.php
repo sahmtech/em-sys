@@ -61,7 +61,7 @@ return [
     'add_car' => 'Add Car',
     'edit_car' => 'Edit Car',
     'border_no' => 'Border Number',
-    'car_drivers' => 'Car Drivers',
+    'car_drivers' => 'Negotiations',
     'counter_number' => 'Counter Number',
     'delivery_date' => 'Delivery Date',
     'car' => 'Car',
