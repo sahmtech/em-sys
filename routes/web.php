@@ -86,6 +86,10 @@ include_once 'install_r.php';
 //     return $output;
 // });
 
+Route::get('/privacy-policy',function(){
+    return view('privacy_policy');
+});
+
 Route::get('/userFromContact', function () {
     $contacts = Contact::where('type', 'lead')->get();
     foreach ($contacts as $contact) {

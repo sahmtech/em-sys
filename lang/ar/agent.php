@@ -17,7 +17,7 @@ return [
     'total_salary' => 'إجمالي الراتب',
     'additional_allowances' => 'بدلات إضافية',
     'deductions' => 'الخصومات',
-
+    'time_sheet'=>'تايم شييت',
 ];
 
   //  ''=>'',

@@ -2,8 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\User;
-use App\Utils\ModuleUtil;
 use Closure;
 use Menu;
 use Illuminate\Support\Str;
@@ -209,7 +207,7 @@ class CustomAdminSidebarMenu
             );
             $menu->url(
                 route('agentTimeSheet.index'),
-                __('agent.time_sheet', [], 'en'),
+                __('agent.time_sheet'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'time_sheet'],
             );
         });
@@ -251,8 +249,8 @@ class CustomAdminSidebarMenu
     }
     public function userManagementMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -310,8 +308,8 @@ class CustomAdminSidebarMenu
     }
     public function essentialsMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -386,7 +384,7 @@ class CustomAdminSidebarMenu
             }
 
 
-          
+
 
             if ($is_admin  || auth()->user()->can('essentials.crud_essentials_recuirements_requests')) {
                 $menu->url(
@@ -402,7 +400,7 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('essentials::lang.work_cards'),
-                    function ($sub)  use($is_admin){
+                    function ($sub)  use ($is_admin) {
 
                         if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
                             $sub->url(
@@ -428,7 +426,7 @@ class CustomAdminSidebarMenu
                         if ($is_admin || auth()->user()->can('essentials.movement_management')) {
                             $sub->dropdown(
                                 __('housingmovements::lang.movement_management'),
-                                function ($movement_management_SubMenu) use($is_admin)  {
+                                function ($movement_management_SubMenu) use ($is_admin) {
                                     if ($is_admin || auth()->user()->can('essentials.carTypes')) {
                                         $movement_management_SubMenu->url(
                                             action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
@@ -498,7 +496,7 @@ class CustomAdminSidebarMenu
                 if ($is_admin || auth()->user()->can('essentials.movement_management')) {
                     $menu->dropdown(
                         __('housingmovements::lang.movement_management'),
-                        function ($movement_management_SubMenu) use($is_admin) {
+                        function ($movement_management_SubMenu) use ($is_admin) {
                             if ($is_admin || auth()->user()->can('essentials.carTypes')) {
                                 $movement_management_SubMenu->url(
                                     action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
@@ -642,9 +640,9 @@ class CustomAdminSidebarMenu
     }
     public function followUpMenu()
     {
-        
 
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -752,8 +750,8 @@ class CustomAdminSidebarMenu
 
     public function CUS_salesMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
 
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
@@ -828,7 +826,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'sales.requests' || request()->segment(2) == 'escalate_requests')
-                        ],
+                    ],
                 );
             }
 
@@ -849,7 +847,7 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('sales.crud_settings')) {
                 $menu->dropdown(
                     __('sales::lang.sales_settings'),
-                    function ($sub) use($is_admin)  {
+                    function ($sub) use ($is_admin) {
                         if ($is_admin || auth()->user()->can('sales.crud_sale_sources')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index']),
@@ -891,9 +889,9 @@ class CustomAdminSidebarMenu
 
     public function houseMovementsMenu()
     {
-        
 
-        Menu::create('admin-sidebar-menu', function ($menu)   {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
@@ -922,7 +920,7 @@ class CustomAdminSidebarMenu
                     [
                         'icon' => 'fa fas fa-plus-circle',
                         'active' => request()->segment(1) == 'housingmovements' &&
-                        (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests')
+                            (request()->segment(2) == 'hm.requests' || request()->segment(2) == 'escalate_requests')
                     ],
                 );
             }
@@ -952,7 +950,7 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('housingmovements::lang.building_management'),
-                    function ($buildingSubMenu)  use($is_admin)  {
+                    function ($buildingSubMenu)  use ($is_admin) {
 
                         if ($is_admin  || auth()->user()->can('housingmovements.crud_buildings')) {
                             $buildingSubMenu->url(
@@ -986,7 +984,7 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('housingmovements::lang.movement_management'),
-                    function ($movement_management_SubMenu) use($is_admin)   {
+                    function ($movement_management_SubMenu) use ($is_admin) {
 
                         if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_car_types')) {
                             $movement_management_SubMenu->url(
@@ -1133,8 +1131,8 @@ class CustomAdminSidebarMenu
 
     public function getIRMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
@@ -1221,8 +1219,8 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
                     __('followup::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && 
-                    (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' &&
+                        (request()->segment(2) == 'allIrRequests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
             if ($is_admin || auth()->user()->can('internationalrelations.crud_all_reports')) {
@@ -1236,8 +1234,10 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index']),
                     __('followup::lang.salary_requests'),
-                    ['icon' => 'fa fas fa-plus-circle',
-                     'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests']
+                    [
+                        'icon' => 'fa fas fa-plus-circle',
+                        'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'IrsalaryRequests'
+                    ]
                 );
             }
         });
@@ -1768,8 +1768,8 @@ class CustomAdminSidebarMenu
 
     public function superAdminMenu()
     {
-        
-        Menu::create('admin-sidebar-menu', function ($menu)  {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
