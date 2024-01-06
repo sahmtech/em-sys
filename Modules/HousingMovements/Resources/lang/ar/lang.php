@@ -143,9 +143,17 @@ return [
     'carMaintenances' => 'صيانة المركبات',
     'edit_carMaintenances' => 'تعديل صيانة مركبة',
     'add_carMaintenances' => 'إضافة مركبة للصيانة',
-    'carMaintenancesReport'=>'تقرير صيانة السيارات',
-    'carsChangeOilReport'=>'تقرير تغيير الزيت',
-    'report'=>'التقارير',
+    'carMaintenancesReport' => 'تقرير صيانة السيارات',
+    'carsChangeOilReport' => 'تقرير تغيير الزيت',
+    'report' => 'التقارير',
+    'available_shopping' => 'المتاحين للتسوق',
+    'reserved_shopping' => 'المحجوزين',
+    'final_exit' => 'الخروج النهائي',
+    'all_workers' => 'العمال',
+    'book' => 'حجز',
+    'worker' => 'العامل',
+    'book_worker' => 'حجز عامل',
+    'unbook' => 'فك الحجز',
 
 
 
