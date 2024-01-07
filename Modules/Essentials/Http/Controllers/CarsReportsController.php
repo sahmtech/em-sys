@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\HousingMovementsCarsChangeOil;
 use Modules\HousingMovements\Entities\HousingMovementsMaintenance;
 use Yajra\DataTables\Facades\DataTables;
@@ -22,11 +23,11 @@ class CarsReportsController extends Controller
 
         if (request()->ajax()) {
 
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+            if (!empty(request()->input('carSelect')) && request()->input('carSelect') !== 'all') {
 
 
-            //     $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
-            // }
+                $carsMaintenance = $carsMaintenance->where('car_id', request()->input('carSelect'));
+            }
 
 
             return DataTables::of($carsMaintenance)
@@ -63,7 +64,9 @@ class CarsReportsController extends Controller
                 ->rawColumns(['action', 'car'])
                 ->make(true);
         }
-        return view('essentials::movementMangment.reports.carMaintenances');
+      $cars= Car::all();
+
+        return view('essentials::movementMangment.reports.carMaintenances',compact('cars'));
     }
 
     public function CarsChangeOil(Request $request)
@@ -74,11 +77,11 @@ class CarsReportsController extends Controller
 
         if (request()->ajax()) {
 
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+            if (!empty(request()->input('carSelect')) && request()->input('carSelect') !== 'all') {
 
 
-            //     $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
-            // }
+                $CarsChangeOil = $CarsChangeOil->where('car_id', request()->input('carSelect'));
+            }
 
 
             return DataTables::of($CarsChangeOil)
@@ -114,7 +117,8 @@ class CarsReportsController extends Controller
                 ->rawColumns(['action', 'car'])
                 ->make(true);
         }
-        return view('essentials::movementMangment.reports.carsChangeOil');
+      $cars= Car::all();
+        return view('essentials::movementMangment.reports.carsChangeOil',compact('cars'));
     }
 
 
