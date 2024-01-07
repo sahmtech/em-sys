@@ -514,6 +514,7 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                             );
                         }
+                        
                         if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),

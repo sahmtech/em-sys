@@ -101,14 +101,12 @@ class EssentialsEmployeeUpdateImportController extends Controller
               
                 $emp_array['first_name'] = $value[1];                      
                 $emp_array['mid_name'] = $value[2];
+                $emp_array['last_name'] = $value[3];               
                                     
+              
+                 
                                     
-                if (!empty($value[3])) 
-                {
-                  $emp_array['last_name'] = $value[3];
-                 } 
-                                    
-                $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
+               // $emp_array['name'] = implode(' ', [ $emp_array['first_name'], $emp_array['mid_name'], $emp_array['last_name']]);
                 
                 if(!empty($value[4])){
                   $emp_array['user_type'] = $value[4];
@@ -534,46 +532,58 @@ class EssentialsEmployeeUpdateImportController extends Controller
                         
                          
                        
-                        //     if (in_array($emp_data['id_proof_number'], $processedIdProofNumbers)) {
-                        //         throw new \Exception(__('essentials::lang.duplicate_id_proof_number', ['id_proof_number' => $emp_data['id_proof_number']]));
-                        //     }
+                        $existingEmployee = User::find($emp_data['employee_id']);
+
+                        if ($existingEmployee) {
+                          
+                            $fieldsToUpdate = [
+                                'first_name',
+                                'mid_name',
+                                'last_name',
+                                'employee_type',
+                                'email',
+                                'dob',
+                                'gender',
+                                 'marital_status',
+                                 'blood_group',
+                                 'contact_number',	
+                                  'alt_number',	
+                                  'family_number',	
+                                  'current_address',					   
+                                  'permanent_address',
+                                  'id_proof_name',
+                                   'assigned_to',
+                                   'account_holder_name',
+                                   'account_number',
+                                   'bank_name',
+                                   'IBN_code',
+                                 'business_id',
+                                'nationality_id
+                                '];
                         
-                        //   $processedIdProofNumbers[] = $emp_data['id_proof_number'];             
-
-                         
-
-                            // $numericPart = (int)substr($business_id, 3);
-                            // $lastEmployee = User::where('business_id', $business_id)
-                            //     ->orderBy('emp_number', 'desc')
-                            //     ->first();
-
-                            // if ($lastEmployee) {
+                            foreach ($fieldsToUpdate as $field) {
                               
-                            //     $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-
-                        
-                               
-                            //     $nextNumericPart = $lastEmpNumber + 1;
-
-                            //     $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-                            // } 
-                        
-                            // else {
-                              
-                            //     $emp_data['emp_number'] =  $business_id .'000';
-
-                            // }
-        
-                            // Check if the employee with the given ID exists
-                            $existingEmployee = User::find($emp_data['employee_id']);
-
-                            if ($existingEmployee) {
-                                // Update existing employee data
-                                $existingEmployee->update($emp_data);
-                            } else {
-                                // Employee does not exist, create a new one
-                                $emp = User::create($emp_data);
+                                if (array_key_exists($field, $emp_data) && $emp_data[$field] !== null) {
+                                    $existingEmployee->$field = $emp_data[$field];
+                                }
                             }
+                        
+                            $existingEmployee->save();
+                        } 
+                        else
+                        {
+                           
+                            $emp = User::create($emp_data);
+                        }
+                        
+
+                            // if ($existingEmployee) {
+                            //     // Update existing employee data
+                            //     $existingEmployee->update($emp_data);
+                            // } else {
+                            //     // Employee does not exist, create a new one
+                            //     $emp = User::create($emp_data);
+                            // }
 
                     
                             $emp_data['business_id'] = $emp_data['business_id'];
