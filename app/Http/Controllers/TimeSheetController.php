@@ -76,162 +76,207 @@ class TimeSheetController extends Controller
      */
     public function index()
     {
-        $business_id = request()->session()->get('user.business_id');
-        $user = User::where('id', auth()->user()->id)->first();
-        $contact_id =  $user->crm_contact_id;
-        $contacts_fillter = SalesProject::where('contact_id', $contact_id)->pluck('name', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
-        $categories = Category::all()->pluck('name', 'id');
-        $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $status_filltetr = $this->moduleUtil->getUserStatus();
-        $fields = $this->moduleUtil->getWorkerFields();
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $users = User::where('user_type', 'worker')->whereIn('users.assigned_to',  $projectsIds)
-            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
-            ->with(['userAllowancesAndDeductions', 'country', 'contract', 'OfficialDocument'])->select(
-                'users.id',
+        $workers = User::with([ 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
+            ->whereIn('assigned_to', $projectsIds)
+            ->select(
                 'users.*',
-                'users.id_proof_number',
-                'users.nationality_id',
-                'users.essentials_salary',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-                'sales_projects.name as contact_name'
+              
+
+                'users.id as user_id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
+                'users.id_proof_number as eqama_number',
+                // 'users.location_id as location',
+                'users.essentials_salary as monthly_cost',
+                'users.essentials_pay_period as wd',
+                // 'as actual_work_days',
+                // 'as daily_work_hours',
+                // 'as absence_day',
+                // 'as absence_amount',
+                // 'as over_time_h',
+                // 'as over_time',
+                // 'transactions.essentials_allowances as other_deduction',
+                // 'transactions.essentials_deductions as other_addition',
+                'users.essentials_salary as cost2',
+                // 'transactions.total_before_tax as invoice_value',
+                // 'transactions.tax_amount as vat',
+                // 'transactions.final_total as total',
+                // 'transactions.business_id as sponser',
+                // 'transactions.essentials_amount_per_unit_duration as basic',
+                // 'as housing',
+                // 'as transport',
+                // 'as other_allowances',
+                // 'transactions.total_before_tax as total_salary',
+                // 'transactions.essentials_deductions as deductions',
+                // 'transactions.essentials_allowances as additions',
+                // 'transactions.final_total as final_salary',
             );
 
-
-        // $start_of_month = Carbon::parse($payroll->transaction_date);
-        // $end_of_month = Carbon::parse($payroll->transaction_date)->endOfMonth();
-
-        // $currentDateTime = Carbon::now('Asia/Riyadh');
-
-        // $month = $currentDateTime->month;
-        // $year = $currentDateTime->year;
-
-
-        // $users = $users->get()->map(function ($user) use ($month, $year) {
-        //     $attendances = EssentialsAttendance::where('user_id', $user->id)->whereMonth('created_at', '=', $month)
-        //         ->whereYear('created_at', '=', $year)->get();
-        //     $actual_work_days = 0;
-        //     $late_days = 0;
-        //     $out_of_site_days = 0;
-        //     $abcent_days = 0;
-        //     foreach ($attendances as $attendance) {
-        //         if ($attendance->status_id == 1) {
-        //             $actual_work_days++;
-        //         } else if ($attendance->status_id == 2) {
-        //             $late_days++;
-        //         } else if ($attendance->status_id == 3) {
-        //             $out_of_site_days++;
-        //         }
-        //     }
-
-        //     $user->actual_work_days = $attendance->status_id == 1;
-
-        //     return $user;
-        // });
+        $businessLocations = BusinessLocation::pluck('name','business_id', );
+        $currentDateTime = Carbon::now('Asia/Riyadh');
+        $month = $currentDateTime->month;
+        $year = $currentDateTime->year;
+        $start_of_month = $currentDateTime->copy()->startOfMonth();
+        $end_of_month = $currentDateTime->copy()->endOfMonth();
 
         if (request()->ajax()) {
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
-            }
-
-            if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
-
-                $users = $users->where('users.status', request()->input('status_fillter'));
-            }
-
-            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-                $start = request()->filter_start_date;
-                $end = request()->filter_end_date;
-
-                $users->whereHas('contract', function ($query) use ($start, $end) {
-                    $query->whereDate('contract_end_date', '>=', $start)
-                        ->whereDate('contract_end_date', '<=', $end);
-                });
-            }
-            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-                $users = $users->where('users.nationality_id', request()->nationality);
-            }
-
-
-
-            return Datatables::of($users)
-                ->addColumn('nationality', function ($user) {
-                    return optional($user->country)->nationality ?? ' ';
+            return Datatables::of($workers)
+                ->addColumn('name', function ($row) {
+                    return $row->name ?? '';
                 })
-                ->addColumn('residence_permit_expiration', function ($user) {
-                    $residencePermitDocument = $user->OfficialDocument
-                        ->where('type', 'residence_permit')
-                        ->first();
-                    if ($residencePermitDocument) {
-
-                        return optional($residencePermitDocument)->expiration_date ?? ' ';
+                ->addColumn('eqama_number', function ($row) {
+                    return $row->eqama_number ?? '';
+                })
+                ->addColumn('location', function ($row) use ($businessLocations) {
+                    if ($row->business_id) {
+                        return $businessLocations[$row->business_id];
                     } else {
-
-                        return ' ';
+                        return '';
                     }
                 })
-                ->addColumn('residence_permit', function ($user) {
-                    return $this->getDocumentnumber($user, 'residence_permit');
+                ->addColumn('nationality', function ($row) {
+                    return $row->user->country?->nationality ?? '';
                 })
-                ->addColumn('admissions_date', function ($user) {
+                ->addColumn('monthly_cost', function ($row) {
+                    return $row->monthly_cost ?? '';
+                })
+                ->addColumn('wd', function ($row) {
+                    if ($row->wd) {
+                        if ($row->wd == 'month') {
+                            return 30;
+                        }
+                    } else {
+                        return '';
+                    }
+                })
+                ->addColumn('actual_work_days', function ($row) {
+                    // $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                    //     ->whereYear('created_at', '=', $year)->get();
+                    // $actual_work_days = 0;
+                    // foreach ($attendances as $attendance) {
+                    //     if ($attendance->status_id == 1) {
+                    //         $actual_work_days++;
+                    //     }
+                    // }
+                    // return $actual_work_days;
+                    if ($row->wd) {
+                        if ($row->wd == 'month') {
+                            return 30;
+                        }
+                    } else {
+                        return '';
+                    }
+                })
+                ->addColumn('daily_work_hours', function ($row) {
+                    return $row->daily_work_hours;
+                })
+                ->addColumn('absence_day', function ($row) use ($month, $year) {
 
-                    return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
+                    if ($row->wd) {
+                        if ($row->wd == 'month') {
+                            $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                                ->whereYear('created_at', '=', $year)->get();
+                            $actual_work_days = 0;
+                            foreach ($attendances as $attendance) {
+                                if ($attendance->status_id == 1) {
+                                    $actual_work_days++;
+                                }
+                            }
+                            return 30 - $actual_work_days;
+                        }
+                    } else {
+                        return '';
+                    }
                 })
-                ->addColumn('contract_end_date', function ($user) {
-                    return optional($user->contract)->contract_end_date ?? ' ';
+                ->addColumn('absence_amount', function ($row) {
+                    return $row->absence_amount ?? '';
                 })
-                ->addColumn('profession', function ($row) use ($appointments, $professions) {
-                    $professionId = $appointments[$row->id] ?? '';
-
-                    $professionName = $professions[$professionId] ?? '';
-
-                    return $professionName;
+                ->addColumn('over_time_h', function ($row) {
+                    return $row->over_time_h ?? '';
                 })
-                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
-                    $specializationId = $appointments2[$row->id] ?? '';
-                    $specializationName = $specializations[$specializationId] ?? '';
-
-                    return $specializationName;
-                })->addColumn('bank_code', function ($user) {
-
-                    $bank_details = json_decode($user->bank_details);
-                    return $bank_details->bank_code ?? ' ';
+                ->addColumn('over_time', function ($row) {
+                    return $row->over_time ?? '';
                 })
-                ->addColumn('worker', function ($user) {
-                    return $user->worker;
+                ->addColumn('other_deduction', function ($row) use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->other_deduction ?? '';
                 })
-                ->addColumn('contact_name', function ($user) {
-                    return $user->contact_name;
+                ->addColumn('other_addition', function ($row) use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->other_addition ?? '';
                 })
-                ->filterColumn('worker', function ($query, $keyword) {
-                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                ->addColumn('cost2', function ($row) {
+                    return $row->cost2 ?? '';
                 })
-                ->filterColumn('residence_permit', function ($query, $keyword) {
-                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                ->addColumn('invoice_value', function ($row) use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->invoice_value ?? '';
                 })
-                ->addColumn('action', function ($query) {
-                    $html = '';
-                    $html = '<a href="' . route('agentTimeSheet.timeSheet', ['id' => $query->id]) . '" class="btn btn-success"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('agent.time_sheet') . '</a>';
-                    return $html;
+                ->addColumn('vat', function ($row) use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->vat ?? '';
                 })
-                ->rawColumns([
-                    'action',
-                    'contact_name',
-                    'nationality', 'worker',
-                    'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'
-                ])
-                ->make(true);
+                ->addColumn('total', function ($row)  use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->total ?? '';
+                    return $row->total ?? '';
+                })
+                ->addColumn('sponser', function ($row)  use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->sponser ?? '';
+                })
+                ->addColumn('basic', function ($row)  use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->basic ?? '';
+                })
+                ->addColumn('housing', function ($row) {
+                    return $row->housing ?? '';
+                })
+                ->addColumn('transport', function ($row) {
+                    return $row->transport ?? '';
+                })
+                ->addColumn('other_allowances', function ($row) {
+                    return $row->other_allowances ?? '';
+                })
+                ->addColumn('total_salary', function ($row)  use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->total_salary ?? '';
+                })
+                ->addColumn('deductions', function ($row) use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->deductions ?? '';
+                })
+                ->addColumn('additions', function ($row)  use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->additions ?? '';
+                })
+                ->addColumn('final_salary', function ($row) use ($month, $year) {
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->final_salary ?? '';
+                })->rawColumns([
+                    'name',
+                    'eqama_number',
+                    'location',
+                    'nationality',
+                    'monthly_cost',
+                    'wd',
+                    'actual_work_days',
+                    'daily_work_hours',
+                    'absence_day',
+                    'absence_amount',
+                    'over_time_h',
+                    'over_time',
+                    'other_deduction',
+                    'other_addition',
+                    'cost2',
+                    'invoice_value',
+                    'vat',
+                    'total',
+                    'sponser',
+                    'basic',
+                    'housing',
+                    'transport',
+                    'other_allowances',
+                    'total_salary',
+                    'deductions',
+                    'additions',
+                    'final_salary'
+                ])->make(true);
         }
-        return view('custom_views.agents.agent_time_sheet.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+
+        return view('custom_views.agents.agent_time_sheet.index');
     }
 
 

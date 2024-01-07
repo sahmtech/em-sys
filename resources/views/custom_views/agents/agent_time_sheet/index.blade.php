@@ -14,7 +14,7 @@
     <section class="content">
         <div class="row">
             <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
+                {{-- @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('project_name_filter', __('followup::lang.project_name') . ':') !!}
@@ -60,25 +60,45 @@
                             ]) !!}
                         </div>
                     </div>
-                @endcomponent
+                @endcomponent --}}
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
+                <table class="table table-bordered table-striped" id="workers_table_timesheet" style="table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            <td>@lang('followup::lang.name')</td>
-                            <td>@lang('followup::lang.eqama')</td>
-                            <td>@lang('followup::lang.project_name')</td>
-                            <td>@lang('followup::lang.specialization')</td>
-                            <td>@lang('followup::lang.status')</td>
-                            <td>@lang('followup::lang.Basic_salary')</td>
-                            <td>@lang('followup::lang.total_salary')</td>
-                            <td>@lang('messages.action')</td>
+                            <td style="width: 100px;">@lang('worker.name')</td>
+                            <td style="width: 100px;">@lang('worker.eqama_number')</td>
+                            <td style="width: 100px;">@lang('worker.location')</td>
+                            <td style="width: 100px;">@lang('worker.nationality')</td>
+                            <td style="width: 100px;">@lang('worker.monthly_cost')</td>
+                            <td style="width: 100px;">@lang('worker.wd')</td>
+                            <td style="width: 100px;">@lang('worker.actual_work_days')</td>
+                            <td style="width: 100px;">@lang('worker.daily_work_hours')</td>
+                            <td style="width: 100px;">@lang('worker.absence_day')</td>
+                            <td style="width: 100px;">@lang('worker.absence_amount')</td>
+                            <td style="width: 100px;">@lang('worker.over_time_h')</td>
+                            <td style="width: 100px;">@lang('worker.over_time')</td>
+                            <td style="width: 100px;">@lang('worker.other_deduction')</td>
+                            <td style="width: 100px;">@lang('worker.other_addition')</td>
+                            <td style="width: 100px;">@lang('worker.cost2')</td>
+                            <td style="width: 100px;">@lang('worker.invoice_value')</td>
+                            <td style="width: 100px;">@lang('worker.vat')</td>
+                            <td style="width: 100px;">@lang('worker.total')</td>
+                            <td style="width: 100px;">@lang('worker.sponser')</td>
+                            <td style="width: 100px;">@lang('worker.basic')</td>
+                            <td style="width: 100px;">@lang('worker.housing')</td>
+                            <td style="width: 100px;">@lang('worker.transport')</td>
+                            <td style="width: 100px;">@lang('worker.other_allowances')</td>
+                            <td style="width: 100px;">@lang('worker.total_salary')</td>
+                            <td style="width: 100px;">@lang('worker.deductions')</td>
+                            <td style="width: 100px;">@lang('worker.additions')</td>
+                            <td style="width: 100px;">@lang('worker.final_salary')</td>
                         </tr>
                     </thead>
                 </table>
+                
             </div>
         @endcomponent
 
@@ -94,7 +114,7 @@
         $(document).ready(function() {
 
 
-            var workers_table = $('#workers_table').DataTable({
+            var workers_table_timesheet = $('#workers_table_timesheet').DataTable({
                 processing: true,
                 serverSide: true,
 
@@ -103,81 +123,125 @@
 
                     url: "{{ route('agentTimeSheet.index') }}",
 
-                    data: function(d) {
-                        if ($('#project_name_filter').val()) {
-                            d.project_name = $('#project_name_filter').val();
+                    // data: function(d) {
+                    //     if ($('#project_name_filter').val()) {
+                    //         d.project_name = $('#project_name_filter').val();
+                    //     }
+                    //     if ($('#nationality_filter').val()) {
+                    //         d.nationality = $('#nationality_filter').val();
+                    //     }
+                    //     if ($('#status_fillter').val()) {
+                    //         d.status_fillter = $('#status_fillter').val();
+                    //     }
+                    //     if ($('#doc_filter_date_range').val()) {
+                    //         var start = $('#doc_filter_date_range').data('daterangepicker').startDate
+                    //             .format('YYYY-MM-DD');
+                    //         var end = $('#doc_filter_date_range').data('daterangepicker').endDate
+                    //             .format('YYYY-MM-DD');
+                    //         d.start_date = start;
+                    //         d.end_date = end;
+                    //     }
+                    // }
+                    dataSrc: function(json) {
+                        // Do something on success here
+                        console.log("Ajax request successful");
+                        console.log(json); // This logs the returned data from the server
+
+                        // For example, you can check the length of the data
+                        if (json.data.length > 0) {
+                            console.log("Data retrieved successfully");
+                        } else {
+                            console.log("No data found");
                         }
-                        if ($('#nationality_filter').val()) {
-                            d.nationality = $('#nationality_filter').val();
-                        }
-                        if ($('#status_fillter').val()) {
-                            d.status_fillter = $('#status_fillter').val();
-                        }
-                        if ($('#doc_filter_date_range').val()) {
-                            var start = $('#doc_filter_date_range').data('daterangepicker').startDate
-                                .format('YYYY-MM-DD');
-                            var end = $('#doc_filter_date_range').data('daterangepicker').endDate
-                                .format('YYYY-MM-DD');
-                            d.start_date = start;
-                            d.end_date = end;
-                        }
+
+                        // Return the data to populate the table
+                        return json.data;
                     }
                 },
 
                 columns: [{
-                        data: 'worker',
-                        render: function(data, type, row) {
-                            var link = '<a href="' +
-                                '{{ route('show_agent_worker', ['id' => ':id']) }}'
-                                .replace(':id', row.id) + '">' + data + '</a>';
-                            return link;
-                        }
+                        data: 'name'
                     },
                     {
-                        data: 'residence_permit'
+                        data: 'eqama_number'
                     },
                     {
-                        data: 'contact_name'
+                        data: 'location'
                     },
                     {
-                        data: "specialization",
-                        name: 'specialization'
+                        data: 'nationality'
+                    },
+                    
+                    {
+                        data: 'monthly_cost'
                     },
                     {
-                        data: 'status',
-                        render: function(data, type, row) {
-                            if (data === 'active') {
-                                return '@lang('essentials::lang.active')';
-                            } else if (data === 'vecation') {
-                                return '@lang('essentials::lang.vecation')';
-                            } else if (data === 'inactive') {
-                                return '@lang('essentials::lang.inactive')';
-                            } else if (data === 'terminated') {
-                                return '@lang('essentials::lang.terminated')';
-                            } else {
-                                return ' ';
-                            }
-                        }
+                        data: 'wd'
                     },
                     {
+                        data: 'actual_work_days'
+                    },
+                    {
+                        data: 'daily_work_hours'
+                    },
+                    {
+                        data: 'absence_day'
+                    },
+                    {
+                        data: 'absence_amount'
+                    },
+                    {
+                        data: 'over_time_h'
+                    },
+                    {
+                        data: 'over_time'
+                    },
+                    {
+                        data: 'other_deduction'
+                    },
+                    {
+                        data: 'other_addition'
+                    },
+                    {
+                        data: 'cost2'
+                    },
+                    {
+                        data: 'invoice_value'
+                    },
+                    {
+                        data: 'vat'
+                    },
+                    {
+                        data: 'total'
+                    },
+                    {
+                        data: 'sponser'
+                    },
+                    {
+                        data: 'basic'
+                    },
+                    {
+                        data: 'housing'
+                    },
+                    {
+                        data: 'transport'
+                    },
+                    {
+                        data: 'other_allowances'
+                    },
+                    {
+                        data: 'total_salary'
+                    },
+                    {
+                        data: 'deductions'
+                    },
+                    {
+                        data: 'additions'
+                    },
+                    {
+                        data: 'final_salary'
+                    }
 
-                        data: 'essentials_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
-
-                    },
-                    {
-                        data: 'total_salary',
-                        render: function(data, type, row) {
-                            return Math.floor(data);
-                        }
-                    },
-
-                    {
-                        data: 'action',
-
-                    },
 
                 ]
             });
@@ -195,12 +259,12 @@
             });
             $('#project_name_filter,#doc_filter_date_range,#nationality_filter,#status_fillter').on('change',
                 function() {
-                    workers_table.ajax.reload();
+                    workers_table_timesheet.ajax.reload();
                 });
         });
         chooseFields = function() {
             var selectedOptions = $('#choose_fields_select').val();
-            var dt = $('#workers_table').DataTable();
+            var dt = $('#workers_table_timesheet').DataTable();
             var fields = fields;
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);

@@ -18,6 +18,7 @@ use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\Essentials\Entities\WorkCard;
 use App\Contact;
 use Modules\Essentials\Entities\EssentialsEmployeeTravelCategorie;
+use Modules\Essentials\Entities\EssentialsUserShift;
 use Modules\Essentials\Entities\EssentialsWorkCard;
 use Modules\HousingMovements\Entities\Car;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
@@ -444,7 +445,17 @@ class User extends Authenticatable
         return $this->belongsTo(Car::class);
     }
 
-    public function employee_travle_categorie(){
-        return $this->hasOne(EssentialsEmployeeTravelCategorie::class,'employee_id');
+    public function employee_travle_categorie()
+    {
+        return $this->hasOne(EssentialsEmployeeTravelCategorie::class, 'employee_id');
+    }
+
+    public function essentialsUserShifts()
+    {
+        return $this->hasMany(EssentialsUserShift::class, 'user_id');
+    }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'expense_for');
     }
 }

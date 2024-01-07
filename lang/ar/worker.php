@@ -1,6 +1,6 @@
 <?php
 return [
-  
+
     'allowances' => 'البدلات',
     'full_name' => 'الاسم الكامل',
     'nationality' => 'الجنسية',
@@ -11,6 +11,31 @@ return [
     'out_of_site_days' => 'خارج نطاق العمل',
     'absence_days' => 'غياب',
     'leave_days' => 'إجازات',
-
-
+    "name" => "اسم العامل",
+    "eqama_number" => "رقم الإقامة",
+    "location" => "الموقع",
+    "nationality" => "الجنسية",
+    "monthly_cost" => "التكلفة المتفق عليها بالعقد",
+    "wd" => "أيام التعاقد",
+    "actual_work_days" => "أيام العمل الفعلي",
+    "daily_work_hours" => "ساعات العمل اليومي",
+    "absence_day" => "أيام الغياب",
+    "absence_amount" => "قيمة الخصومات",
+    "over_time_h" => "ساعات العمل الإضافي",
+    "over_time" => "قيمة العمل الإصافي",
+    "other_deduction" => "خصومات إخرى",
+    "other_addition" => "إضافات أخرى",
+    "cost2" => "قيمة التكلفة",
+    "invoice_value" => "الإجمالي قبل الضريبة",
+    "vat" => "الضريبة",
+    "total" => "الإجمالي شامل الضريبة",
+    "sponser" => "الراعي",
+    "basic" => "الراتب الأساسي",
+    "housing" => "التسكين",
+    "transport" => "المواصلات",
+    "other_allowances" => "إضافات أخرى",
+    "total_salary" => "إجمالي الراتب",
+    "deductions" => "الخصومات",
+    "additions" => "الإضافات",
+    "final_salary" => "الراتب النهائي",
 ];
