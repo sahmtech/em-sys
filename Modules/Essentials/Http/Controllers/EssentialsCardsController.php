@@ -62,6 +62,9 @@ class EssentialsCardsController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
+
+
+    
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -223,6 +226,25 @@ class EssentialsCardsController extends Controller
         return view('essentials::cards.index')->with(compact('sales_projects','proof_numbers'));
     }
 
+
+    public function work_cards_all_requests(Request $request)
+    {
+      return view('essentials::cards.allrequest');
+    }
+
+    
+    public function work_cards_vaction_requests(Request $request)
+    {
+      return view('essentials::cards.vactionrequest');
+    }
+
+    public function work_cards_operation(Request $request)
+    {
+      return view('essentials::cards.operations');
+    }
+
+
+    
     public function residencyreports(Request $request)
     {
         $sales_projects = SalesProject::pluck('name', 'id');
