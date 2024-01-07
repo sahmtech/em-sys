@@ -501,6 +501,25 @@ class DataController extends Controller
                 'label' => __('essentials::lang.view_work_cards'),
                 'default' => false,
             ],
+
+            [
+                'value' => 'essentials.work_cards_all_requests',
+                'label' => __('essentials::lang.work_cards_all_requests'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'essentials.work_cards_vaction_requests',
+                'label' => __('essentials::lang.work_cards_vaction_requests'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'essentials.work_cards_operation',
+                'label' => __('essentials::lang.work_cards_operation'),
+                'default' => false,
+            ],
+
             [
                 'value' => 'essentials.renewal_residence',
                 'label' => __('essentials::lang.renewal_residence'),
