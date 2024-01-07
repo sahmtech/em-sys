@@ -514,6 +514,7 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
                             );
                         }
+
                         if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
                             $sub->url(
                                 action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
@@ -533,11 +534,40 @@ class CustomAdminSidebarMenu
 
                 );
             } else if ($is_admin || (auth()->user()->can('essentials.essentials_work_cards_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
+               
+               
                 $menu->url(
                     route('essentials_word_cards_dashboard'),
                     __('essentials::lang.work_cards'),
                     ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_dashboard'],
                 );
+
+
+                if ($is_admin || auth()->user()->can('essentials.work_cards_all_requests')) {
+                $menu->url(
+                    route('work_cards_all_requests'),
+                    __('essentials::lang.workcards_allrequest'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
+                );
+            }
+                 
+            if ($is_admin || auth()->user()->can('essentials.work_cards_vaction_requests')) {
+                $menu->url(
+                    route('work_cards_vaction_requests'),
+                    __('essentials::lang.work_cards_vaction_requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
+                );
+            }
+
+                
+            if ($is_admin || auth()->user()->can('essentials.work_cards_operation')) {
+                $menu->url(
+                    route('work_cards_operation'),
+                    __('essentials::lang.work_cards_operation'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
+                );
+
+            }
 
                 if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
                     $menu->url(
