@@ -226,7 +226,7 @@
             $(document).on('change', '#car_type_id', function() {
                 if ($(this).val() !== '') {
                     $.ajax({
-                        url: '/hrm/carModel-by-carType_id/' + $(this).val(),
+                        url: '/movment/carModel-by-carType_id/' + $(this).val(),
                         dataType: 'json',
                         success: function(result) {
                             console.log(result);
