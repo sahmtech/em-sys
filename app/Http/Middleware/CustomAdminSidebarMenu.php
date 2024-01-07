@@ -357,15 +357,15 @@ class CustomAdminSidebarMenu
             if ($is_admin || auth()->user()->can('essentials.carMaintenances')) {
 
                 $menu->url(
-                    action(  [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'index']),
+                    action([\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'index']),
                     __('housingmovements::lang.carMaintenances'),
                     ['icon' => 'fa fa-bullseye', 'active' => request()->segment(2) == 'cars-maintenances']
                 );
             }
 
 
-          
-           
+
+
             if ($is_admin || auth()->user()->can('essentials.carTypes')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
@@ -381,14 +381,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-model']
                 );
             }
-          
+
             if ($is_admin  || auth()->user()->can('housingmovements.report')) {
 
                 $menu->dropdown(
                     __('housingmovements::lang.report'),
                     function ($report)  use ($is_admin) {
 
-                     
+
                         if ($is_admin  || auth()->user()->can('housingmovements.carsChangeOilReport')) {
 
                             $report->url(
@@ -397,23 +397,19 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-change-oil-report']
                             );
                         }
-                          if ($is_admin  || auth()->user()->can('housingmovements.carMaintenancesReport')) {
+                        if ($is_admin  || auth()->user()->can('housingmovements.carMaintenancesReport')) {
 
                             $report->url(
-                                action( [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances']),
+                                action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances']),
                                 __('housingmovements::lang.carMaintenancesReport'),
                                 ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-maintenances-report']
                             );
                         }
-
-                      
                     },
                     ['icon' => 'fa fa-bullseye',],
                 );
-            }   
-          
+            }
         });
-    
     }
     public function essentialsMenu()
     {
@@ -1012,10 +1008,22 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
                     __('housingmovements::lang.workers'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'workers'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'workers' &&request()->segment(3) == 'index'],
 
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('housingmovements.all_workers')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping']),
+                    __('housingmovements::lang.all_workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(3) == 'available-shopping'],
+
+                );
+            }
+
+
+
 
             if ($is_admin  || auth()->user()->can('housingmovements.crud_buildings')) {
                 $menu->url(
@@ -1042,7 +1050,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
                 );
             }
-         
+
             if ($is_admin  || auth()->user()->can('housingmovements.movement_management')) {
 
                 $menu->dropdown(
