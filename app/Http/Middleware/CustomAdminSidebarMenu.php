@@ -871,13 +871,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'lead_contacts'],
                 );
             }
-            if ($is_admin || auth()->user()->can('sales.crud_follow_ups')) {
-                $menu->url(
-                    action([\Modules\Sales\Http\Controllers\SalesScheduleController::class, 'index']),
-                    __('crm::lang.follow_ups'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_follow-ups'],
-                );
-            }
+           
             if ($is_admin || auth()->user()->can('sales.crud_sales_projects')) {
                 $menu->url(
                     route('sale.saleProjects'),
@@ -961,14 +955,14 @@ class CustomAdminSidebarMenu
                         }
 
 
-                        if ($is_admin || auth()->user()->can('sales.crud_sales_templates')) {
+                        // if ($is_admin || auth()->user()->can('sales.crud_sales_templates')) {
 
-                            $sub->url(
-                                action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
-                                __('sales::lang.sales_templates'),
-                                ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'first_choice_offer_price_template']
-                            );
-                        }
+                        //     $sub->url(
+                        //         action([\Modules\Sales\Http\Controllers\SalesTemplateController::class, 'first_choice_offer_price_template']),
+                        //         __('sales::lang.sales_templates'),
+                        //         ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'first_choice_offer_price_template']
+                        //     );
+                        // }
                         if ($is_admin || auth()->user()->can('sales.crud_sales_costs')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SalesCostController::class, 'index']),
