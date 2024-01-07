@@ -153,7 +153,7 @@ class EssentialsManageEmployeeController extends Controller
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
             ->select([
-                'users.id',
+                'users.id as id',
                 'users.emp_number',
                 'users.profile_image',
                 'users.username',
@@ -320,7 +320,7 @@ class EssentialsManageEmployeeController extends Controller
                         $subQuery->where('name', 'like', '%' . $keyword . '%');
                     });
                 })
-                ->removecolumn('id')
+                //->removecolumn('id')
                 ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view'])
                 ->make(true);
         }
