@@ -78,7 +78,9 @@
                         </div>
                     </div>
                 </a>
-                <a href="">
+
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'requestsFillter']) }}">
                     <div class="col-md-2">
                         <div class="custom_card">
                             <div class="widget widget-one_hybrid widget-engagement">
@@ -89,7 +91,7 @@
                                             <h5 style="color:#fff">الانتظار وطلبات الاجازة</h5>
                                         </div>
                                         <div>
-                                            <p class="w-value"></p>
+                                            <p class="w-value">{{ $leaves_count }}</p>
                                             <h4 style="color:#fff"></h4>
                                         </div>
                                     </div>

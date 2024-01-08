@@ -46,8 +46,6 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary'])
-                   
-
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="cars_table"
                             style="margin-bottom: 100px;table-layout: fixed !important;">
@@ -67,6 +65,9 @@
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.number_seats')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.color')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_status')</th>
+                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_company_id')</th>
+
+
                                     {{-- <th style="width: 100px !important;">@lang('messages.action')</th> --}}
                                 </tr>
                             </thead>
@@ -161,7 +162,10 @@
                     {
                         "data": "insurance_status"
                     },
-                   
+                    {
+                        "data": "insurance_company_id"
+                    },
+
                 ]
             });
 

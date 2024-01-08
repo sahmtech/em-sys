@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\Contact;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
+use Modules\HousingMovements\Entities\HousingMovmentInsurance;
 use Yajra\DataTables\Facades\DataTables;
 
 class CarController extends Controller
@@ -88,6 +90,10 @@ class CarController extends Controller
                 ->editColumn('insurance_status', function ($row) {
                     return __('housingmovements::lang.' . $row->insurance_status) ?? '';
                 })
+                ->editColumn('insurance_company_id', function ($row) {
+                    return $row->insurance->insurance_company_id ?? '';
+                })
+                
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -115,7 +121,7 @@ class CarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'car_typeModel', 'plate_number', 'number_seats', 'color'])
+                ->rawColumns(['action', 'car_typeModel','insurance_company_id', 'plate_number', 'number_seats', 'color'])
                 ->make(true);
         }
         return view('essentials::movementMangment.cars.index', compact('carTypes', 'Cars'));
@@ -130,8 +136,8 @@ class CarController extends Controller
 
 
         $carTypes = CarType::all();
-
-        return view('essentials::movementMangment.cars.create', compact('carTypes'));
+        $insurance_companies = Contact::where('type', 'insurance')->get();
+        return view('essentials::movementMangment.cars.create', compact('carTypes', 'insurance_companies'));
     }
 
     // 	
@@ -152,7 +158,7 @@ class CarController extends Controller
         try {
             DB::beginTransaction();
 
-            Car::create([
+            $car =  Car::create([
                 'plate_number' => $request->input('plate_number'),
                 'color' => $request->input('color'),
                 // 'user_id' => $request->input('user_id'),
@@ -171,6 +177,12 @@ class CarController extends Controller
 
             ]);
 
+            HousingMovmentInsurance::create([
+                'car_id' => $car->id,
+                'insurance_company_id' => $request->input('insurance_company_id'),
+                'insurance_start_Date' => $request->input('insurance_start_Date'),
+                'insurance_end_date' => $request->input('insurance_end_date'),
+            ]);
 
             DB::commit();
             return redirect()->back()
@@ -211,8 +223,8 @@ class CarController extends Controller
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
         }
-
-        return view('essentials::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes'));
+        $insurance_companies = Contact::where('type', 'insurance')->get();
+        return view('essentials::movementMangment.cars.edit', compact('car', 'insurance_companies', 'carModel', 'carModels', 'carTypes'));
     }
 
     /**
@@ -243,7 +255,12 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
-
+            if ($car->contact)
+                $car->contact->update([
+                    'insurance_company_id' => $request->input('insurance_company_id'),
+                    'insurance_start_Date' => $request->input('insurance_start_Date'),
+                    'insurance_end_date' => $request->input('insurance_end_date'),
+                ]);
             DB::commit();
             return redirect()->back()
                 ->with('status', [

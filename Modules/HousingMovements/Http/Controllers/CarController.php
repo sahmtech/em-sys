@@ -2,6 +2,7 @@
 
 namespace Modules\HousingMovements\Http\Controllers;
 
+use App\Contact;
 use App\User;
 use Carbon\Carbon;
 use Exception;
@@ -72,7 +73,7 @@ class CarController extends Controller
                 })
                 ->editColumn('expiry_date', function ($row) {
                     return $row->expiry_date ?? '';
-                })  
+                })
                 ->editColumn('test_end_date', function ($row) {
                     return $row->test_end_date ?? '';
                 })
@@ -88,6 +89,9 @@ class CarController extends Controller
                 })
                 ->editColumn('insurance_status', function ($row) {
                     return __('housingmovements::lang.' . $row->insurance_status) ?? '';
+                })
+                ->editColumn('insurance_company_id', function ($row) {
+                    return $row->insurance->insurance_company_id ?? '';
                 })
                 ->addColumn(
                     'action',
@@ -116,7 +120,7 @@ class CarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'car_typeModel', 'plate_number', 'number_seats', 'color'])
+                ->rawColumns(['action', 'car_typeModel', 'insurance_company_id', 'plate_number', 'number_seats', 'color'])
                 ->make(true);
         }
         return view('housingmovements::movementMangment.cars.index', compact('carTypes', 'Cars'));
@@ -131,8 +135,8 @@ class CarController extends Controller
 
 
         $carTypes = CarType::all();
-
-        return view('housingmovements::movementMangment.cars.create', compact('carTypes'));
+        $insurance_companies = Contact::where('type', 'insurance')->get();
+        return view('housingmovements::movementMangment.cars.create', compact('carTypes', 'insurance_companies'));
     }
 
     // 	
@@ -172,20 +176,20 @@ class CarController extends Controller
 
             ]);
 
-          
+
             DB::commit();
             return redirect()->back()
-            ->with('status', [
-                'success' => true,
-                'msg' => __('housingmovements::lang.added_success'),
-            ]);
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.added_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -212,8 +216,9 @@ class CarController extends Controller
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
         }
+        $insurance_companies = Contact::where('type', 'insurance')->get();
 
-        return view('housingmovements::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes'));
+        return view('housingmovements::movementMangment.cars.edit', compact('car', 'insurance_companies', 'carModel', 'carModels', 'carTypes'));
     }
 
     /**
@@ -244,20 +249,20 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
-       
+
             DB::commit();
             return redirect()->back()
-            ->with('status', [
-                'success' => true,
-                'msg' => __('housingmovements::lang.updated_success'),
-            ]);
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.updated_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -278,10 +283,10 @@ class CarController extends Controller
                 ];
             } catch (Exception $e) {
                 return redirect()->back()
-                ->with('status', [
-                    'success' => false,
-                    'msg' => __('messages.something_went_wrong'),
-                ]);
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong'),
+                    ]);
             }
             return $output;
         }

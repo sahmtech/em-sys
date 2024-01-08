@@ -52,7 +52,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('user-sales-targets', [Modules\Essentials\Http\Controllers\DashboardController::class, 'getUserSalesTargets']);
     });
-   
+
     Route::prefix('hrm')->group(function () {
         Route::get('/get-amount/{salaryType}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'getAmount'])->name('get-amount');
         Route::get('/dashboard', [Modules\Essentials\Http\Controllers\DashboardController::class, 'hrmDashboard'])->name('hrmDashboard');
@@ -322,7 +322,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('treeview/add/', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'store'])->name('hrm.treeview.add');
 
         Route::get('/getParentDepartments/{businessId}', [\Modules\Essentials\Http\Controllers\EssentialsDepartmentsController::class, 'getParentDepartments'])
-        ->name('getParentDepartments');
+            ->name('getParentDepartments');
 
 
 
@@ -366,8 +366,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/allEssentialsRequests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests'])->name('allEssentialsRequests');
         Route::get('/escalate_requests', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'escalateRequests'])->name('essentials.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'changeEscalateRequestsStatus'])->name('essentials.changeEscalateRequestsStatus');
-       
-    
+
+
         //reports
 
         Route::get('/employess-info-report', [\Modules\Essentials\Http\Controllers\EssentialsReportController::class, 'index'])->name('employess-info-report');
@@ -389,7 +389,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/save-attachment/{requestId}',  [\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'saveAttachment'])->name('saveAttachment');
 
 
-      
+
         //Recuirements Requests
         Route::get('/get-recuirements-requests', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'index'])->name('get-recuirements-requests');
         Route::get('/accepted-recuirements-requests', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'acceptedRequestIndex'])->name('accepted-recuirements-requests');
@@ -402,7 +402,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/latest-change-oil', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestChangeOil'])->name('essentials.latest-change-oil');
         Route::get('/latest-form', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestForm'])->name('essentials.latest-form');
         Route::get('/latest-maintenances', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestMaintenances'])->name('essentials.latest-maintenances');
-// Movments
+        Route::get('/latest-insurance', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestInsurance'])->name('essentials.latest-insurances');
+        // Movments
         // Routes Car Types
         Route::get('/cars-type', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index'])->name('essentials.car-types');
         Route::get('/cars-type-create', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'create'])->name('essentials.car-type-create');
@@ -440,7 +441,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cardrivers-search', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'search'])->name('essentials.cardrivers-search');
         Route::put('/cardrivers-update/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'update'])->name('essentials.cardrivers-update');
         Route::delete('/cardrivers-delete/{id}', [\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'])->name('essentials.cardrivers.delete');
-        
+
 
         Route::get('/cars-change-oil', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'index'])->name('essentials.cars-change-oil');
         Route::get('/cars-change-oil-create', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'create'])->name('essentials.cars-change-oil-create');
@@ -449,8 +450,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cars-change-oil-search', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'search'])->name('essentials.cars-change-oil-search');
         Route::put('/cars-change-oil-update/{id}', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'update'])->name('essentials.cars-change-oil-update');
         Route::delete('/cars-change-oil-delete/{id}', [\Modules\Essentials\Http\Controllers\CarsChangeOilController::class, 'destroy'])->name('essentials.cars-change-oil.delete');
-       
-        
+
+
         Route::get('/cars-maintenances', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'index'])->name('essentials.cars-maintenances');
         Route::get('/cars-maintenances-create', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'create'])->name('essentials.cars-maintenances-create');
         Route::get('/cars-maintenances-edit/{id}', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'edit'])->name('essentials.cars-maintenances.edit');
@@ -458,11 +459,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/cars-maintenances-search', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'search'])->name('essentials.cars-maintenances-search');
         Route::put('/cars-maintenances-update/{id}', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'update'])->name('essentials.cars-maintenances-update');
         Route::delete('/cars-maintenances-delete/{id}', [\Modules\Essentials\Http\Controllers\CarsMaintenanceController::class, 'destroy'])->name('essentials.cars-maintenances.delete');
-       
+
 
 
         Route::get('/cars-change-oil-report', [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil'])->name('essentials.cars-change-oil-report');
         Route::get('/cars-maintenances-report', [\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances'])->name('essentials.cars-maintenances-report');
-
     });
-});  
+});

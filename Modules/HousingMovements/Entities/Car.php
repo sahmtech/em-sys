@@ -28,4 +28,8 @@ class Car extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function insurance(){
+        return $this->hasOne(HousingMovmentInsurance::class,'insurance_company_id');
+    }
 }

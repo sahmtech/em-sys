@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\HousingMovements\Entities\HtrRoom;
 use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
@@ -27,8 +28,8 @@ class DashboardController extends Controller
         $empty_rooms_count = HtrRoom::whereNotIn('id',$HtrRoomsWorkersHistory_roomIds)->count();
         
         $available_shopping_count = User::where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids)->count();
-
-        return view('housingmovements::dashboard.hm_dashboard',compact('empty_rooms_count','available_shopping_count','reserved_shopping_count','final_exit_count'));
+        $leaves_count =FollowupWorkerRequest::where('type','leaves')->count();
+        return view('housingmovements::dashboard.hm_dashboard',compact('empty_rooms_count','leaves_count','available_shopping_count','reserved_shopping_count','final_exit_count'));
     }
 
     /**

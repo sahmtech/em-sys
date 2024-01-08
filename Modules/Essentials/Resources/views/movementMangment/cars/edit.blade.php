@@ -232,20 +232,73 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('insurance_status', __('housingmovements::lang.insurance_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::label('insurance_status', __('housingmovements::lang.insurance_status') . $car->insurance_status) !!}<span style="color: red; font-size:10px"> *</span>
 
                                     <select class="form-control" id="insurance_status" name="insurance_status"
                                         style="padding: 2px;" required>
                                         <option value="">@lang('messages.please_select')</option>
-                                        <option value="not_expired" @if ($car->insurance_status == 'not_expired') selected @endif>
-                                            {{ __('housingmovements::lang.not_expired') }}
+                                        <option value="not_expired">{{ __('housingmovements::lang.not_expired') }}
                                         </option>
-                                        <option value="expired" @if ($car->insurance_status == 'expired') selected @endif>
-                                            {{ __('housingmovements::lang.expired') }}</option>
+                                        <option value="expired">{{ __('housingmovements::lang.expired') }}</option>
 
 
                                     </select>
 
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+
+                                <div class="form-group">
+                                    {!! Form::label('insurance_company_id', __('housingmovements::lang.insurance_company_id') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+
+                                    <select class="form-control" id="insurance_company_id"
+                                        name="insurance_company_id" style="padding: 2px;">
+                                        <option value="">@lang('messages.please_select')</option>
+
+                                        @foreach ($insurance_companies as $insurance_company)
+                                            <option value="{{ $insurance_company->id }}"
+                                                @if ($insurance_company->id == $car->contact->insurance_company_id)  @endif>
+                                                {{ $insurance_company->name }}</option>
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+
+                                <div class="form-group">
+                                    {!! Form::label('insurance_start_Date', __('housingmovements::lang.insurance_start_Date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+
+                                    {!! Form::date(
+                                        'insurance_start_Date',
+                                        $car?->contact?->insurance_start_Date ? $car?->contact?->insurance_start_Date : '',
+                                        [
+                                            'class' => 'form-control',
+                                    
+                                            'placeholder' => __('housingmovements::lang.insurance_start_Date'),
+                                            'id' => 'insurance_start_Date',
+                                        ],
+                                    ) !!}
+
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+
+                                <div class="form-group">
+                                    {!! Form::label('insurance_end_date', __('housingmovements::lang.insurance_end_date') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+
+                                    {!! Form::date(
+                                        'insurance_end_date',
+                                        $car?->contact?->insurance_end_date ? $car?->contact?->insurance_end_date : '',
+                                        [
+                                            'class' => 'form-control',
+                                    
+                                            'placeholder' => __('housingmovements::lang.insurance_end_date'),
+                                            'id' => 'insurance_end_date',
+                                        ],
+                                    ) !!}
                                 </div>
                             </div>
 
