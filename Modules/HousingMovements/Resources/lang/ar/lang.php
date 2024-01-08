@@ -160,6 +160,10 @@ return [
     'latestMaintenances' => 'الفحص الدوري خلال 15 يوم',
     'latestChangeOil' => 'تغيير الزيت خلال 15 يوم',
     'created_by' => 'انشأ من قبل',
+    'insurance_company_id' => 'شركة التأمين',
+
+    'insurance_start_Date' => 'تاريخ بداية التأمين',
+    'insurance_end_date' => 'تاريخ نهاية التأمين',
 
 
 
