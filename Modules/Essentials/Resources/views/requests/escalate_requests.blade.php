@@ -116,7 +116,7 @@
                     <thead>
                         <tr>
                             <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.worker_name')</th>
+                            <th>@lang('followup::lang.name')</th>
                             <th>@lang('followup::lang.eqama_number')</th>
                             <th>@lang('followup::lang.project_name')</th>
                             <th>@lang('followup::lang.request_type')</th>

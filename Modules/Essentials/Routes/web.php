@@ -72,7 +72,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/post_return_visa_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_return_visa_data'])->name('post_return_visa_data');
         Route::post('/post_final_visa_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_final_visa_data'])->name('post_final_visa_data');
         Route::post('/post_absent_report_data',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'post_absent_report_data'])->name('post_absent_report_data');
-  
+        Route::post('/Wk_storeRequest', [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'storeRequest'])->name('Wk_storeRequest');
 
         Route::get('/expired_residencies',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'expired_residencies'])->name('expired.residencies');
         Route::get('/all_expired_residencies',  [\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'all_expired_residencies'])->name('all.expired.residencies');
