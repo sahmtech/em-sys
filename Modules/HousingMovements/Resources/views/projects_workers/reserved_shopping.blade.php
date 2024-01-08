@@ -74,8 +74,9 @@
                             <td style="width: 100px !important;">@lang('followup::lang.total_salary')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.gender')</td>
                             <td style="width: 100px !important;">@lang('essentials::lang.travel_categorie')</td>
+                            <td style="width: 100px !important;">@lang('housingmovements::lang.created_by')</td>
                             <th style="width: 100px !important;">@lang('messages.action')</th>
-
+                            
 
 
                         </tr>
@@ -163,6 +164,10 @@
                     },
                     {
                         data: 'categorie_id',
+
+                    }, 
+                    {
+                        data: 'created_by',
 
                     }, 
                     {

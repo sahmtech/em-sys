@@ -159,6 +159,7 @@ return [
     'latestInsurances' => 'تأمين مركبات ينتهي خلال 15 يوم',
     'latestMaintenances' => 'الفحص الدوري خلال 15 يوم',
     'latestChangeOil' => 'تغيير الزيت خلال 15 يوم',
+    'created_by' => 'انشأ من قبل',
 
 
 
