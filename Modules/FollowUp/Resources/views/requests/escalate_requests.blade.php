@@ -2,8 +2,7 @@
 @section('title', __('followup::lang.allRequests'))
 
 @section('content')
-    @include('followup::layouts.nav_requests')
-  
+@include('followup::layouts.nav_requests')
 
     <section class="content-header">
         <h1>
@@ -112,16 +111,6 @@
         @include('followup::layouts.nav_followup_requests')
 
         @component('components.widget', ['class' => 'box-primary'])
-            @slot('tool')
-                <div class="box-tools">
-
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#addRequestModal">
-                        <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
-                    </button>
-                </div>
-            @endslot
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -134,7 +123,7 @@
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-
+                            <th>@lang('followup::lang.action')</th>
 
 
                         </tr>
@@ -142,286 +131,10 @@
                 </table>
             </div>
         @endcomponent
-        <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    {!! Form::open(['route' => 'storeRequest', 'enctype' => 'multipart/form-data']) !!}
-
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                                {!! Form::select('worker_id[]', $workers, null, [
-                                    'class' => 'form-control select2',
-                                    'multiple',
-                                    'required',
-                                    'id' => 'worker',
-                                    'style' => 'height: 60px; width: 250px;',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
-                                {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
-                                        'WarningRequest' => __('followup::lang.WarningRequest'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="leaveType" style="display: none;">
-                                {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
-                                {!! Form::select('leaveType', $leaveTypes, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_leaveType'),
-                                    'id' => 'leaveType',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
-                                {!! Form::date('start_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.start_date'),
-                                    'id' => 'startDateField',
-                                ]) !!}
-                            </div>
 
 
-                            <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
-                                {!! Form::date('end_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.end_date'),
-                                    'id' => 'endDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="escape_time" style="display: none;">
-                                {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
-                                {!! Form::time('escape_time', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.escape_time'),
-                                    'id' => 'escapeTimeField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="exit_date" style="display: none;">
-                                {!! Form::label('exit_date', __('followup::lang.exit_date') . ':*') !!}
-                                {!! Form::date('exit_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.exit_date'),
-                                    'id' => 'exit_dateField',
-                                ]) !!}
-                            </div>
 
-                            <div class="form-group col-md-6" id="return_date" style="display: none;">
-                                {!! Form::label('return_date', __('followup::lang.return_date') . ':*') !!}
-                                {!! Form::date('return_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.return_date'),
-                                    'id' => 'return_dateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
-                                {!! Form::date('escape_date', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.escape_date'),
-                                    'id' => 'escapeDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="workInjuriesDate" style="display: none;">
-                                {!! Form::label('workInjuriesDate', __('followup::lang.workInjuriesDate') . ':*') !!}
-                                {!! Form::date('workInjuriesDate', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.workInjuriesDate'),
-                                    'id' => 'workInjuriesDateField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="resEditType" style="display: none;">
-                                {!! Form::label('resEditType', __('followup::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'resEditType',
-                                    [
-                                        'name' => __('followup::lang.name'),
-                                        'religion' => __('followup::lang.religion'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="atmType" style="display: none;">
-                                {!! Form::label('atmType', __('followup::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'atmType',
-                                    [
-                                        'release' => __('followup::lang.release'),
-                                        're_issuing' => __('followup::lang.re_issuing'),
-                                        'update' => __('followup::lang.update_info'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'atmType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="baladyType" style="display: none;">
-                                {!! Form::label('baladyType', __('followup::lang.request_type') . ':*') !!}
-                                {!! Form::select(
-                                    'baladyType',
-                                    [
-                                        'renew' => __('followup::lang.renew'),
-                                        'issuance' => __('followup::lang.issuance'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="ins_class" style="display: none;">
-                                {!! Form::label('ins_class', __('followup::lang.insurance_class') . ':*') !!}
-                                {!! Form::select('ins_class', $classes, null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_class'),
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="main_reason" style="display: none;">
-                                {!! Form::label('main_reason', __('followup::lang.main_reason') . ':*') !!}
-                                {!! Form::select('main_reason', $main_reasons, null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('followup::lang.select_reason'),
-                                    'id' => 'mainReasonSelect',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
-                                {!! Form::label('sub_reason', __('followup::lang.sub_reason') . ':*') !!}
-                                {!! Form::select('sub_reason', [], null, [
-                                    'class' => 'form-control',
-                                    'style' => 'height: 40px',
-                                    'placeholder' => __('followup::lang.select_sub_reason'),
-                                    'id' => 'subReasonSelect',
-                                ]) !!}
-                            </div>
-
-                            <div class="form-group col-md-6" id="amount" style="display: none;">
-                                {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
-                                {!! Form::number('amount', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.advSalaryAmount'),
-                                    'id' => 'advSalaryAmountField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="visa_number" style="display: none;">
-                                {!! Form::label('visa_number', __('followup::lang.visa_number') . ':*') !!}
-                                {!! Form::number('visa_number', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.visa_number'),
-                                    'id' => 'visa_numberField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
-                                {!! Form::label('installmentsNumber', __('followup::lang.installmentsNumber') . ':*') !!}
-                                {!! Form::number('installmentsNumber', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.installmentsNumber'),
-                                    'id' => 'installmentsNumberField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6" id="monthlyInstallment" style="display: none;">
-                                {!! Form::label('monthlyInstallment', __('followup::lang.monthlyInstallment') . ':*') !!}
-                                {!! Form::number('monthlyInstallment', null, [
-                                    'class' => 'form-control',
-                                    'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.monthlyInstallment'),
-                                    'id' => 'monthlyInstallmentField',
-                                ]) !!}
-                            </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('note', __('followup::lang.note') . ':') !!}
-                                {!! Form::textarea('note', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('followup::lang.note'),
-                                    'rows' => 3,
-                                ]) !!}
-                            </div>
-
-                            {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
-                            {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
-                        </div> --}}
-                            <div class="form-group col-md-6">
-                                {!! Form::label('attachment', __('followup::lang.attachment') . ':') !!}
-                                {!! Form::file('attachment', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('followup::lang.attachment'),
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
-
+        {{-- view request --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -440,36 +153,35 @@
 
 
                         </div>
-                       
-                     
+
+
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
                                 <ul id="worker-list">
-
+                                    <!-- Worker info will be dynamically added here -->
                             </div>
                             <div class="col-md-6">
 
                                 <h4>@lang('followup::lang.activites')</h4>
                                 <ul id="activities-list">
-
+                                    <!-- Activities will be dynamically added here -->
                                 </ul>
                             </div>
                             <div class="col-md-6">
 
                                 <h4>@lang('followup::lang.attachments')</h4>
-                                    <ul id="attachments-list">
-                                    
-                                    </ul>
+                                <ul id="attachments-list">
+
+                                </ul>
                             </div>
                         </div>
-                        <!-- Attachment Form -->
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <div class="form-group">
                                 <label for="attachment">
-                                    <h4>@lang('followup::lang.attachment')</h4>
+                                    <h4>@lang('followup::lang.add_attachment')</h4>
                                 </label>
                                 <input type="file" class="form-control" style="width: 250px;" id="attachment"
                                     name="attachment">
@@ -485,9 +197,34 @@
             </div>
         </div>
 
+        {{-- return request --}}
+        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="returnModalForm">
+                            <div class="form-group">
+                                <label for="reasonInput">@lang('followup::lang.reason')</label>
+                                <input type="text" class="form-control" id="reasonInput" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-
-
+        @include('generalmanagement::requests.change_status_modal')
 
     </section>
     <!-- /.content -->
@@ -495,17 +232,15 @@
 @endsection
 
 @section('javascript')
+    <script>
+        var langStrings = {
+            approved: '{{ __('followup::lang.approved') }}',
+            rejected: '{{ __('followup::lang.rejected') }}'
+        };
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
 
-            $('#addRequestModal').on('shown.bs.modal', function(e) {
-                $('#requestType').select2({
-                    dropdownParent: $(
-                        '#addRequestModal'),
-                    width: '100%',
-                });
-
-            });
 
 
             var requests_table = $('#requests_table').DataTable({
@@ -513,7 +248,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('allRequests') }}"
+                    url: "{{ route('followup.escalate_requests') }}"
                 },
 
                 columns: [
@@ -579,35 +314,104 @@
                     },
                     {
                         data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
 
-
-                                case 'approved':
-                                    return '{{ trans('followup::lang.approved') }}';
-                                case 'pending':
-                                    return '{{ trans('followup::lang.pending') }}';
-
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
-                            }
-                        }
                     },
                     {
                         data: 'note'
                     },
+                    {
+                   
+                        render: function(data, type, row) {
+                            var buttonsHtml = '';
 
+                            buttonsHtml += `
+                            <button class="btn btn-primary btn-sm btn-view-request" data-request-id="${row.id}">
+                                @lang('followup::lang.view_request')
+                            </button>`;
 
+                            return buttonsHtml;
+                        }
+                    }
 
 
                 ],
             });
 
-            $('#requests_table tbody').on('click', 'tr', function() {
-                var data = requests_table.row(this).data();
-                var requestId = data.id;
+            $(document).on('click', 'a.change_status', function(e) {
+                e.preventDefault();
+
+                $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value'))
+                    .change();
+                $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
+                $('#change_status_modal').modal('show');
+
+
+            });
+
+
+            $(document).on('submit', 'form#change_status_form', function(e) {
+                e.preventDefault();
+                var data = $(this).serialize();
+                var ladda = Ladda.create(document.querySelector('.update-offer-status'));
+                ladda.start();
+                $.ajax({
+                    method: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    dataType: 'json',
+                    data: data,
+                    success: function(result) {
+                        ladda.stop();
+                        if (result.success == true) {
+                            $('div#change_status_modal').modal('hide');
+                            toastr.success(result.msg);
+                            requests_table.ajax.reload();
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                });
+            });
+            $('#requests_table').on('click', '.btn-return', function() {
+                var requestId = $(this).data('request-id');
+                $('#returnModal').modal('show');
+                $('#returnModal').data('id', requestId);
+            });
+
+
+            $('#returnModalForm').submit(function(e) {
+                e.preventDefault();
+
+                var requestId = $('#returnModal').data('id');
+                var reason = $('#reasonInput').val();
+
+                $.ajax({
+                    url: "{{ route('ess_returnReq') }}",
+                    method: "POST",
+                    data: {
+                        requestId: requestId,
+                        reason: reason
+                    },
+                    success: function(result) {
+
+                        if (result.success == true) {
+                            $('#returnModal').modal('hide');
+                            toastr.success(result.msg);
+                            requests_table.ajax.reload();
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                });
+            });
+
+
+            $(document).on('click', '.btn-view-request', function() {
+                var requestId = $(this).data('request-id');
+
+                // var data = requests_table.row(this).data();
+                // var requestId = data.id;
 
                 if (requestId) {
                     $.ajax({
@@ -619,11 +423,9 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
                             var workerList = $('#worker-list');
 
-
-                            
                             workflowContainer.html('');
                             workerList.html('');
                             activitiesList.html('');
@@ -641,16 +443,12 @@
                                 workflowContainer.append(circle);
 
 
-
                                 if (i < response.workflow.length - 1) {
                                     workflowContainer.append(
                                         '<i class="fas fa-arrow-left workflow-arrow ' +
                                         status + '-arrow"></i>');
                                 }
                             }
-
-                         
-
 
                             //  worker info
                             workerList.append('<p class="worker-info">' +
@@ -717,20 +515,24 @@
 
                                 activitiesList.append(activity);
                             }
+
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
                                 attachment += '<p>';
 
-                               
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
-
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) + '</a>';
 
                                 attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
                             }
+
                             $('#attachmentForm').attr('action',
                                 '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
                                 .replace(':requestId', response.request_info.id));
@@ -752,6 +554,8 @@
 
         });
     </script>
+
+
     <script>
         $(document).ready(function() {
             var mainReasonSelect = $('#mainReasonSelect');
@@ -901,14 +705,50 @@
 
 
     <script>
-        $('#addRequestModal').on('shown.bs.modal', function(e) {
+        $(document).ready(function() {
             $('#worker').select2({
-                dropdownParent: $(
-                    '#addRequestModal'),
-                width: '100%',
+
+                ajax: {
+                    url: '{{ route('search_proofname') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term,
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.results,
+                        };
+                    },
+                    cache: true,
+                },
+                minimumInputLength: 1,
+                templateResult: formatResult,
+                templateSelection: formatSelection,
+                escapeMarkup: function(markup) {
+                    return markup;
+                },
             });
 
-            });
+            function formatResult(result) {
+                if (result.loading) return result.text;
+
+                var markup = "<div class='select2-result-repository clearfix'>" +
+                    "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
+
+                    "</div>";
+
+                return markup;
+            }
+
+            function formatSelection(result) {
+                return result.full_name || result.text;
+            }
+
+
+        });
     </script>
 
 @endsection
