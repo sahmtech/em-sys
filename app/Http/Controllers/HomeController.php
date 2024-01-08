@@ -283,7 +283,7 @@ class HomeController extends Controller
         $CRMPermissions = $CRMController->user_permissions();
 
 
-       // General Mangement 
+        // General Mangement 
         $GMControllerClass = \Modules\GeneralManagement\Http\Controllers\DataController::class;
         $GMController = new $GMControllerClass();
         $GMPermissions = $GMController->user_permissions();
@@ -322,6 +322,18 @@ class HomeController extends Controller
 
         ];
 
+        $workCardsPermissions = [
+            ['value' => 'essentials.essentials_work_cards_dashboard',],
+            ['value' => 'essentials.view_work_cards',],
+            ['value' => 'essentials.work_cards_all_requests',],
+            ['value' => 'essentials.work_cards_vaction_requests',],
+            ['value' => 'essentials.work_cards_operation',],
+        ];
+
+        $employeeAffairsPermissions = [
+            ['value' => 'essentials.view_employee_affairs',],
+        ];
+
 
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
@@ -329,6 +341,12 @@ class HomeController extends Controller
             // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
+
+            ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_word_cards_dashboard')],
+            ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fa fas fa-users', 'link' =>   route('employee_affairs_dashboard')],
+
+
+
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
@@ -342,11 +360,9 @@ class HomeController extends Controller
 
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
-// <<<<<<< Development
-            ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
-// =======
-//             ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fa fas fa-network-wired', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
-// >>>>>>> live
+
+            //  ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
+
             ['id' => 'settings',  'permissions' => [], 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
 
 

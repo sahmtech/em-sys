@@ -32,6 +32,10 @@ class CustomAdminSidebarMenu
         // Define logic to set the menuName based on the route
         if (Str::startsWith($currentPath, ['users', 'manage_user', 'roles'])) {
             $this->userManagementMenu();
+        } elseif (Str::startsWith($currentPath, ['work_cards'])) {
+            $this->workCardsMenu();
+        } elseif (Str::startsWith($currentPath, ['employee_affairs'])) {
+            $this->employeeAffairsMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
             $this->essentialsMenu();
         } elseif (Str::startsWith($currentPath, ['asset', 'taxonomies'])) {
@@ -411,6 +415,137 @@ class CustomAdminSidebarMenu
             }
         });
     }
+
+
+    public function workCardsMenu()
+    {
+
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(
+                route('essentials_word_cards_dashboard'),
+                __('essentials::lang.work_cards'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_dashboard'],
+            );
+
+
+
+            $menu->url(
+                route('work_cards_all_requests'),
+                __('essentials::lang.workcards_allrequest'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
+            );
+
+
+
+            $menu->url(
+                route('work_cards_vaction_requests'),
+                __('essentials::lang.work_cards_vaction_requests'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
+            );
+
+
+
+
+            $menu->url(
+                route('work_cards_operation'),
+                __('essentials::lang.work_cards_operation'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
+            );
+
+
+
+            if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+                    __('essentials::lang.renewal_residence'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+                );
+            }
+            if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+                    __('essentials::lang.residencyreports'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
+                );
+            }
+            if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
+                $menu->url(
+                    action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+                    __('essentials::lang.facilities_management'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
+                );
+            }
+            // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
+            //     $menu->dropdown(
+            //         __('housingmovements::lang.movement_management'),
+            //         function ($movement_management_SubMenu) use ($is_admin) {
+            //             if ($is_admin || auth()->user()->can('essentials.carTypes')) {
+            //                 $movement_management_SubMenu->url(
+            //                     action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
+            //                     __('housingmovements::lang.carTypes'),
+            //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
+            //                 );
+            //             }
+            //             if ($is_admin || auth()->user()->can('essentials.carModels')) {
+            //                 $movement_management_SubMenu->url(
+            //                     action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
+            //                     __('housingmovements::lang.carModels'),
+            //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
+            //                 );
+            //             }
+            //             if ($is_admin || auth()->user()->can('essentials.cars')) {
+            //                 $movement_management_SubMenu->url(
+            //                     action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
+            //                     __('housingmovements::lang.cars'),
+            //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
+            //                 );
+            //             }
+            //             if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
+            //                 $movement_management_SubMenu->url(
+            //                     action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
+            //                     __('housingmovements::lang.car_drivers'),
+            //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
+            //                 );
+            //             }
+            //         },
+            //         ['icon' => 'fa fas fa-plus-circle',],
+            //         // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
+
+            //     );
+            // }
+        });
+    }
+
+    public function employeeAffairsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs')) {
+                $menu->url(
+                    route('employees'),
+                    __('essentials::lang.employees_affairs'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
+                        request()->segment(2) == 'roles'
+                        || request()->segment(2) == 'appointments'
+                        || request()->segment(2) == 'admissionToWork'
+                        || request()->segment(2) == 'employeeContracts'
+                        || request()->segment(2) == 'qualifications'
+                        || request()->segment(2) == 'official_documents'
+                        || request()->segment(2) == 'featureIndex')],
+                );
+            }
+        });
+    }
     public function essentialsMenu()
     {
 
@@ -427,24 +562,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' || request()->segment(1) == 'hrm' || request()->segment(1) == 'roles'],
                 );
             }
-            //$menu->header("");
-            //$menu->header("");
-
-            if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs')) {
-                $menu->url(
-                    route('employees'),
-                    __('essentials::lang.employees_affairs'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
-                        request()->segment(2) == 'roles'
-                        || request()->segment(2) == 'appointments'
-                        || request()->segment(2) == 'admissionToWork'
-                        || request()->segment(2) == 'employeeContracts'
-                        || request()->segment(2) == 'qualifications'
-                        || request()->segment(2) == 'official_documents'
-                        || request()->segment(2) == 'featureIndex')],
-                );
-            }
-
 
             if ($is_admin  || auth()->user()->can('essentials.crud_all_attendance')) {
                 $menu->url(
@@ -488,9 +605,6 @@ class CustomAdminSidebarMenu
                 );
             }
 
-
-
-
             if ($is_admin  || auth()->user()->can('essentials.crud_essentials_recuirements_requests')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'index']),
@@ -501,134 +615,39 @@ class CustomAdminSidebarMenu
 
 
 
-            if ($is_admin || (auth()->user()->can('essentials.essentials_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
+            // if ($is_admin || (auth()->user()->can('essentials.essentials_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
 
-                $menu->dropdown(
-                    __('essentials::lang.work_cards'),
-                    function ($sub)  use ($is_admin) {
+            //     // $menu->dropdown(
+            //     //     __('essentials::lang.work_cards'),
+            //     //     function ($sub)  use ($is_admin) {
 
-                        if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
-                            $sub->url(
-                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
-                                __('essentials::lang.renewal_residence'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
-                            );
-                        }
+            //     //         if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
+            //     //             $sub->url(
+            //     //                 action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
+            //     //                 __('essentials::lang.renewal_residence'),
+            //     //                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
+            //     //             );
+            //     //         }
 
-                        if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
-                            $sub->url(
-                                action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
-                                __('essentials::lang.residencyreports'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
-                            );
-                        }
-                        if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
-                            $sub->url(
-                                action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                                __('essentials::lang.facilities_management'),
-                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
-                            );
-                        }
-                    },
-                    ['icon' => 'fa fas fa-plus-circle']
+            //     //         if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
+            //     //             $sub->url(
+            //     //                 action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
+            //     //                 __('essentials::lang.residencyreports'),
+            //     //                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
+            //     //             );
+            //     //         }
+            //     //         if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
+            //     //             $sub->url(
+            //     //                 action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
+            //     //                 __('essentials::lang.facilities_management'),
+            //     //                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
+            //     //             );
+            //     //         }
+            //     //     },
+            //     //     ['icon' => 'fa fas fa-plus-circle']
 
-                );
-            } else if ($is_admin || (auth()->user()->can('essentials.essentials_work_cards_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
-               
-               
-                $menu->url(
-                    route('essentials_word_cards_dashboard'),
-                    __('essentials::lang.work_cards'),
-                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_dashboard'],
-                );
-
-
-            
-                $menu->url(
-                    route('work_cards_all_requests'),
-                    __('essentials::lang.workcards_allrequest'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
-                );
-          
-                 
-          
-                $menu->url(
-                    route('work_cards_vaction_requests'),
-                    __('essentials::lang.work_cards_vaction_requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
-                );
-          
-
-                
-           
-                $menu->url(
-                    route('work_cards_operation'),
-                    __('essentials::lang.work_cards_operation'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
-                );
-
-          
-
-                if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
-                    $menu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'index']),
-                        __('essentials::lang.renewal_residence'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'cards'],
-                    );
-                }
-                if ($is_admin || auth()->user()->can('essentials.residencyreports')) {
-                    $menu->url(
-                        action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'residencyreports']),
-                        __('essentials::lang.residencyreports'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
-                    );
-                }
-                if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
-                    $menu->url(
-                        action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
-                        __('essentials::lang.facilities_management'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
-                    );
-                }
-                // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
-                //     $menu->dropdown(
-                //         __('housingmovements::lang.movement_management'),
-                //         function ($movement_management_SubMenu) use ($is_admin) {
-                //             if ($is_admin || auth()->user()->can('essentials.carTypes')) {
-                //                 $movement_management_SubMenu->url(
-                //                     action([\Modules\Essentials\Http\Controllers\CarTypeController::class, 'index']),
-                //                     __('housingmovements::lang.carTypes'),
-                //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-type']
-                //                 );
-                //             }
-                //             if ($is_admin || auth()->user()->can('essentials.carModels')) {
-                //                 $movement_management_SubMenu->url(
-                //                     action([\Modules\Essentials\Http\Controllers\CarModelController::class, 'index']),
-                //                     __('housingmovements::lang.carModels'),
-                //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
-                //                 );
-                //             }
-                //             if ($is_admin || auth()->user()->can('essentials.cars')) {
-                //                 $movement_management_SubMenu->url(
-                //                     action([\Modules\Essentials\Http\Controllers\CarController::class, 'index']),
-                //                     __('housingmovements::lang.cars'),
-                //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
-                //                 );
-                //             }
-                //             if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
-                //                 $movement_management_SubMenu->url(
-                //                     action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'index']),
-                //                     __('housingmovements::lang.car_drivers'),
-                //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
-                //                 );
-                //             }
-                //         },
-                //         ['icon' => 'fa fas fa-plus-circle',],
-                //         // ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'movement'],
-
-                //     );
-                // }
-            }
+            //     // );
+            // } 
 
             if ($is_admin  || auth()->user()->can('essentials.curd_contracts_end_reasons')) {
                 $menu->url(
@@ -735,6 +754,8 @@ class CustomAdminSidebarMenu
             }
         });
     }
+
+
     public function followUpMenu()
     {
 
@@ -871,7 +892,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'lead_contacts'],
                 );
             }
-           
+
             if ($is_admin || auth()->user()->can('sales.crud_sales_projects')) {
                 $menu->url(
                     route('sale.saleProjects'),
@@ -1032,7 +1053,7 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
                     __('housingmovements::lang.workers'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'workers' &&request()->segment(3) == 'index'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'workers' && request()->segment(3) == 'index'],
 
                 );
             }
