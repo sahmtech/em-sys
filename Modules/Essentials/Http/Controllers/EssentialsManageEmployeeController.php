@@ -398,6 +398,8 @@ class EssentialsManageEmployeeController extends Controller
                 })
                 ->whereDate('contract_end_date', '<=', $endDateThreshold)
                 ->count();
+
+                
     }
 
     /**
