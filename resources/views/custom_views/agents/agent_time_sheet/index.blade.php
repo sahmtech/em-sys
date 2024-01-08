@@ -80,8 +80,8 @@
                             <td style="width: 100px;">@lang('worker.absence_amount')</td>
                             <td style="width: 100px;">@lang('worker.over_time_h')</td>
                             <td style="width: 100px;">@lang('worker.over_time')</td>
-                            <td style="width: 100px;">@lang('worker.other_deduction')</td>
-                            <td style="width: 100px;">@lang('worker.other_addition')</td>
+                            <td style="width: 125px;">@lang('worker.other_deduction')</td>
+                            <td style="width: 125px;">@lang('worker.other_addition')</td>
                             <td style="width: 100px;">@lang('worker.cost2')</td>
                             <td style="width: 100px;">@lang('worker.invoice_value')</td>
                             <td style="width: 100px;">@lang('worker.vat')</td>
@@ -95,6 +95,7 @@
                             <td style="width: 100px;">@lang('worker.deductions')</td>
                             <td style="width: 100px;">@lang('worker.additions')</td>
                             <td style="width: 100px;">@lang('worker.final_salary')</td>
+                            <td style="width: 100px;">@lang('messages.action')</td>
                         </tr>
                     </thead>
                 </table>
@@ -240,6 +241,9 @@
                     },
                     {
                         data: 'final_salary'
+                    },
+                    {
+                        data: 'action'
                     }
 
 

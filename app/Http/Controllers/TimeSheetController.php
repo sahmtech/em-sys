@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Business;
 use App\BusinessLocation;
 use App\User;
 use App\Utils\BusinessUtil;
@@ -79,12 +80,10 @@ class TimeSheetController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $contact_id =  $user->crm_contact_id;
         $projectsIds = SalesProject::where('contact_id', $contact_id)->pluck('id')->unique()->toArray();
-        $workers = User::with([ 'essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
+        $workers = User::with(['essentialsUserShifts.shift', 'transactions', 'userAllowancesAndDeductions.essentialsAllowanceAndDeduction'])->where('user_type', 'worker')
             ->whereIn('assigned_to', $projectsIds)
             ->select(
                 'users.*',
-              
-
                 'users.id as user_id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
                 'users.id_proof_number as eqama_number',
@@ -114,7 +113,7 @@ class TimeSheetController extends Controller
                 // 'transactions.final_total as final_salary',
             );
 
-        $businessLocations = BusinessLocation::pluck('name','business_id', );
+        $businesses = Business::pluck('name', 'id',);
         $currentDateTime = Carbon::now('Asia/Riyadh');
         $month = $currentDateTime->month;
         $year = $currentDateTime->year;
@@ -130,20 +129,21 @@ class TimeSheetController extends Controller
                 ->addColumn('eqama_number', function ($row) {
                     return $row->eqama_number ?? '';
                 })
-                ->addColumn('location', function ($row) use ($businessLocations) {
+                ->addColumn('location', function ($row) use ($businesses) {
                     if ($row->business_id) {
-                        return $businessLocations[$row->business_id];
+                        return $businesses[$row->business_id] ?? '';
                     } else {
                         return '';
                     }
                 })
                 ->addColumn('nationality', function ($row) {
-                    return $row->user->country?->nationality ?? '';
+                    return  User::find($row->id)->country?->nationality ?? '';
                 })
                 ->addColumn('monthly_cost', function ($row) {
                     return $row->monthly_cost ?? '';
                 })
                 ->addColumn('wd', function ($row) {
+                    return $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
                     if ($row->wd) {
                         if ($row->wd == 'month') {
                             return 30;
@@ -162,6 +162,7 @@ class TimeSheetController extends Controller
                     //     }
                     // }
                     // return $actual_work_days;
+                    return $row->wd;
                     if ($row->wd) {
                         if ($row->wd == 'month') {
                             return 30;
@@ -201,29 +202,82 @@ class TimeSheetController extends Controller
                     return $row->over_time ?? '';
                 })
                 ->addColumn('other_deduction', function ($row) use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->other_deduction ?? '';
+                    $other_deductions = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->essentials_deductions;
+                    if ($other_deductions) {
+                        $deductions = json_decode($other_deductions);
+
+                        $html = '<ul>';
+                        foreach ($deductions->deduction_names as $key => $deduction) {
+                            $html .= '<li>' . $deduction . ' : ' . $deductions->deduction_amounts[$key] . '</li>';
+                        }
+                        $html .= '</ul>';
+                        return   $html;
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('other_addition', function ($row) use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->other_addition ?? '';
+                    $other_addition = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->essentials_allowances;
+                    if ($other_addition) {
+                        $additions = json_decode($other_addition);
+
+                        $html = '<ul>';
+                        foreach ($additions->allowance_names as $key => $allowance) {
+                            $html .= '<li>' . $allowance . ' : ' . $additions->allowance_amounts[$key] . '</li>';
+                        }
+                        $html .= '</ul>';
+                        return   $html;
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('cost2', function ($row) {
-                    return $row->cost2 ?? '';
+                    if ($row->cost2) {
+                        return number_format($row->cost2, 0, '.', '');
+                    } else {
+                        return  '';
+                    }
                 })
                 ->addColumn('invoice_value', function ($row) use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->invoice_value ?? '';
+                    $total_before_tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->total_before_tax;
+                    if ($total_before_tax) {
+                        return number_format($total_before_tax, 0, '.', '');
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('vat', function ($row) use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->vat ?? '';
+                    $tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->tax_amount;
+                    if ($tax) {
+                        return number_format($tax, 0, '.', '');
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('total', function ($row)  use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->total ?? '';
-                    return $row->total ?? '';
+                    $total = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->final_total;
+                    if ($total) {
+                        return number_format($total, 0, '.', '');
+                    } else {
+                        return '';
+                    }
                 })
-                ->addColumn('sponser', function ($row)  use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->sponser ?? '';
+                ->addColumn('sponser', function ($row)  use ($month, $year, $businesses) {
+                    $business_id = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->business_id;
+                    if ($business_id) {
+                        return  $businesses[$business_id] ?? '';
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('basic', function ($row)  use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->basic ?? '';
+
+                    $basic = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->essentials_amount_per_unit_duration;
+                    if ($basic) {
+                        return number_format($basic, 0, '.', '');
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('housing', function ($row) {
                     return $row->housing ?? '';
@@ -245,6 +299,8 @@ class TimeSheetController extends Controller
                 })
                 ->addColumn('final_salary', function ($row) use ($month, $year) {
                     return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->final_salary ?? '';
+                })->addColumn('action', function ($row) {
+                    return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-success">' . __("agent.edit_time_sheet") . '</a>';
                 })->rawColumns([
                     'name',
                     'eqama_number',
@@ -272,7 +328,8 @@ class TimeSheetController extends Controller
                     'total_salary',
                     'deductions',
                     'additions',
-                    'final_salary'
+                    'final_salary',
+                    'action'
                 ])->make(true);
         }
 
@@ -390,8 +447,7 @@ class TimeSheetController extends Controller
             ->get();
 
         $add_payroll_for = array_diff($employee_ids, $payrolls->pluck('expense_for')->toArray());
-
-        if (!empty($add_payroll_for)) {
+        if (!empty($payrolls) && !empty($add_payroll_for)) {
             $location = BusinessLocation::where('business_id', $business_id)
                 ->find($location_id);
 
@@ -479,6 +535,12 @@ class TimeSheetController extends Controller
             }
 
             $action = 'create';
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+
 
             return view('custom_views.agents.agent_time_sheet.time_sheet')
                 ->with(compact('user', 'attendance', 'allowances_and_deductions', 'essentialsAllowance', 'essentialsDeduction', 'month_name', 'transaction_date', 'year', 'payrolls', 'action', 'location'));
@@ -607,9 +669,11 @@ class TimeSheetController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-
-
-        return redirect()->route('agentTimeSheet.timeSheet', ['id' =>  $user->id])->with('status', $output);
+        return redirect()->route('agentTimeSheet.index')
+            ->with(
+                'status',
+                $output
+            );
     }
 
     private function getAllowanceAndDeductionJson($payroll)

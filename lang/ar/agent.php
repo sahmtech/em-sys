@@ -18,6 +18,7 @@ return [
     'additional_allowances' => 'بدلات إضافية',
     'deductions' => 'الخصومات',
     'time_sheet'=>'تايم شييت',
+    'edit_time_sheet'=>'إصدار / تعديل',
 ];
 
   //  ''=>'',
