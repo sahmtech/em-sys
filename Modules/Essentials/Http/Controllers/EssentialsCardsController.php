@@ -25,45 +25,83 @@ use Modules\Essentials\Entities\EssentialsResidencyHistory;
 use Modules\Essentials\Entities\EssentialsWorkCard;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 
+use App\AccessRole;
+use App\AccessRoleBusiness;
+use App\AccessRoleProject;
+use Spatie\Permission\Models\Permission;
+use Modules\Essentials\Http\RequestsempRequest;
+
+use Spatie\Permission\Models\Role;
+
+use App\Events\UserCreatedOrModified;
+use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+
+use Modules\Essentials\Entities\EssentialsContractType;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsCountry;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsAdmissionToWork;
+use Modules\Essentials\Entities\EssentialsBankAccounts;
+
+
+
+use Modules\Essentials\Entities\EssentialsLeaveType;
+use Modules\Essentials\Entities\EssentialsWkProcedure;
+use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
+
+use Modules\Essentials\Entities\EssentialsEmployeeOperation;
+
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
+
+use App\Category;
+use App\Transaction;
+
+use Modules\Sales\Entities\salesContractItem;
+
+
 class EssentialsCardsController extends Controller
 {
 
-    protected $commonUtil;
-
-    protected $contactUtil;
-
-    protected $transactionUtil;
-
     protected $moduleUtil;
+    protected $statuses;
+    protected $statuses2;
 
-    protected $notificationUtil;
 
-    /**
-     * Constructor
-     *
-     * @param  Util  $commonUtil
-     * @return void
-     */
-    public function __construct(
-        Util $commonUtil,
-        ModuleUtil $moduleUtil,
-        TransactionUtil $transactionUtil,
-        NotificationUtil $notificationUtil,
-        ContactUtil $contactUtil
-    ) 
+    public function __construct(ModuleUtil $moduleUtil)
     {
-        $this->commonUtil = $commonUtil;
-        $this->contactUtil = $contactUtil;
         $this->moduleUtil = $moduleUtil;
-        $this->transactionUtil = $transactionUtil;
-        $this->notificationUtil = $notificationUtil;
+        $this->statuses = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+            'rejected' => [
+                'name' => __('followup::lang.rejected'),
+                'class' => 'bg-red',
+            ],
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
+        $this->statuses2 = [
+            'approved' => [
+                'name' => __('followup::lang.approved'),
+                'class' => 'bg-green',
+            ],
+
+            'pending' => [
+                'name' => __('followup::lang.pending'),
+                'class' => 'bg-yellow',
+            ],
+        ];
     }
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-
-
     
     public function index(Request $request)
     {
@@ -233,17 +271,606 @@ class EssentialsCardsController extends Controller
     }
 
     
-    public function work_cards_vaction_requests(Request $request)
-    {
-      return view('essentials::cards.vactionrequest');
-    }
+   
 
     public function work_cards_operation(Request $request)
     {
-      return view('essentials::cards.operations');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
+           //temp  abort(403, 'Unauthorized action.');
+        }
+
+        $permissionName = 'essentials.view_profile_picture';
+
+
+        if (!Permission::where('name', $permissionName)->exists()) {
+            $permission = new Permission(['name' => $permissionName]);
+            $permission->save();
+        } else {
+
+            $permission = Permission::where('name', $permissionName)->first();
+        }
+
+        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+        $categories = Category::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $EssentialsProfession = EssentialsProfession::all()->pluck('name', 'id');
+        $EssentialsSpecialization = EssentialsSpecialization::all()->pluck('name', 'id');
+        $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+
+        $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
+
+
+        // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+               
+                if( $accessRole ){
+
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+                            
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+
+        $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+            $query->where(function ($query2) use ($user_businesses_ids) {
+                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager','worker']);
+            })->orWhere(function ($query3) use ($user_projects_ids) {
+                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+            });
+        })->where('users.is_cmmsn_agnt', 0)
+
+            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
+            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+            ->select([
+                'users.id as id',
+                'users.emp_number',
+                'users.profile_image',
+                'users.username',
+                'users.business_id',
+                'users.user_type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+                'users.id_proof_number',
+                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+
+                'essentials_admission_to_works.admissions_date as admissions_date',
+                'essentials_employees_contracts.contract_end_date as contract_end_date',
+                'users.email',
+                'users.allow_login',
+                'users.contact_number',
+                'users.essentials_department_id',
+                'users.status',
+                'users.essentials_salary',
+                'users.total_salary',
+                'essentials_employee_appointmets.profession_id as profession_id',
+
+                'essentials_employee_appointmets.specialization_id as specialization_id'
+            ])->orderby('id', 'desc');
+
+
+
+        // $userProjects = [];
+        // if (!$is_admin) {
+        //     $roles = auth()->user()->roles;
+        //     foreach ($roles as $role) {
+
+        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+        //         $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+        //         $userProjects = array_merge($userProjects, $userProjectsForRole);
+        //     }
+        //     $userProjects = array_unique($userProjects);
+        //     $users = $users->whereIn('assigned_to', $userProjects)
+        //         ->orWhere(function ($query) use ($business_id) {
+        //             $query->whereNull('assigned_to')->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
+        //         });
+        // }
+
+        // $users = $users->union($workers)->orderby('id', 'desc');
+
+
+        if (!empty($request->input('specialization'))) {
+
+            $users->where('essentials_employee_appointmets.specialization_id', $request->input('specialization'));
+        }
+
+
+        if (!empty($request->input('status-select'))) {
+            $users->where('users.status', $request->input('status'));
+        }
+
+        if (!empty($request->input('business'))) {
+
+            $users->where('users.business_id', $request->input('business'));
+        }
+
+        if (!empty($request->input('nationality'))) {
+
+            $users->where('users.nationality_id', $request->input('nationality'));
+            error_log("111");
+
+        }
+        if (request()->ajax()) {
+
+
+            return Datatables::of($users)
+
+                ->addColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
+                })
+
+                ->addColumn('total_salary', function ($row) {
+                    return $row->calculateTotalSalary();
+                })
+
+                ->editColumn('essentials_department_id', function ($row) use ($departments) {
+                    $item = $departments[$row->essentials_department_id] ?? '';
+
+                    return $item;
+                })
+
+
+                ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                    $professionId = $appointments[$row->id] ?? '';
+
+                    $professionName = $professions[$professionId] ?? '';
+
+                    return $professionName;
+                })
+
+
+
+                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
+                    $specializationId = $appointments2[$row->id] ?? '';
+                    $specializationName = $specializations[$specializationId] ?? '';
+
+                    return $specializationName;
+                })
+
+
+
+
+
+                ->addColumn(
+                    'action',
+                    function ($row) {
+                        $html = '<div class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                        data-toggle="dropdown" aria-expanded="false">' .
+                            __('messages.actions') .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li>
+                                        <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
+                                     
+                                        </a>
+                                        </li>';
+
+
+
+
+
+                        $html .= '<li>
+                                    <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
+                                </li>';
+
+                        $html .= '<li>
+                                <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
+                            </li>';
+
+                        $html .= '</ul></div>';
+
+                        return $html;
+                    }
+                )
+                ->addColumn('view', function ($row) {
+
+                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+
+                    return $html;
+                })
+
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->where('first_name', $keyword)->orWhere('last_name', $keyword);
+                })
+
+                ->filterColumn('nationality', function ($query, $keyword) {
+                    $query->whereRaw("COALESCE(essentials_countries.nationality, '')  like ?", ["%{$keyword}%"]);
+                })
+
+                ->filterColumn('admissions_date', function ($query, $keyword) {
+                    $query->whereRaw("admissions_date  like ?", ["%{$keyword}%"]);
+                })
+
+                ->filterColumn('contract_end_date', function ($query, $keyword) {
+                    $query->whereRaw("contract_end_date  like ?", ["%{$keyword}%"]);
+                })
+
+
+                ->filterColumn('profession', function ($query, $keyword) {
+                    $query->whereHas('appointment.profession', function ($subQuery) use ($keyword) {
+                        $subQuery->where('name', 'like', '%' . $keyword . '%');
+                    });
+                })
+                //->removecolumn('id')
+                ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view','checkbox'])
+                ->make(true);
+        }
+
+        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);;
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+        $countries = EssentialsCountry::forDropdown();
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+
+
+        $businesses = Business::forDropdown();
+        // $bl_attributes = $business_locations['attributes'];
+        // $business_locations = $business_locations['locations'];
+
+        // $default_location = null;
+        // foreach ($business_locations as $id => $name) {
+        //     $default_location = BusinessLocation::findOrFail($id);
+        //     break;
+        // }
+        $status = [
+            'active' => 'active',
+            'inactive' => 'inactive',
+            'terminated' => 'terminated',
+            'vecation' => 'vecation',
+        ];
+
+
+
+        $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
+            ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
+            ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no', 'transactions.id');
+        $items = salesContractItem::pluck('name_of_item', 'id');
+
+      
+      return view('essentials::cards.operations')
+      ->with(compact(
+        'contract_types',
+        'nationalities',
+        'specializations',
+        'professions',
+        'users',
+        'countries',
+        'spacializations',
+        'status',
+        'offer_prices',
+        'items',
+        'businesses',
+        // 'bl_attributes',
+        // 'default_location'
+    ));;
     }
 
 
+    public function post_return_visa_data(Request $request)
+    {
+        try {
+            $requestData = $request->only(['start_date', 'end_date', 'worker_id']);
+    
+            $commonStartDate = $requestData['start_date'];
+            $commonEndDate = $requestData['end_date'];
+    
+            $jsonData = [];
+    
+            foreach ($requestData['worker_id'] as $index => $workerId) {
+                $jsonObject = [
+                    'employee_id' => $workerId,
+                    'start_date' => $commonStartDate,
+                    'end_date' => $commonEndDate,
+                ];
+    
+                $jsonData[] = $jsonObject;
+            }
+    
+            $jsonData = json_encode($jsonData);
+    
+            \Log::info('JSON Data: ' . $jsonData);
+    
+            if (!empty($jsonData)) {
+                $selectedData = json_decode($jsonData, true);
+    
+                DB::beginTransaction();
+    
+                foreach ($selectedData as $data) {
+                    $operation = DB::table('essentails_employee_operations')->insert([
+                        'operation_type' => 'return_visa',
+                        'employee_id' =>  $data['employee_id'],
+                        'start_date' =>  $data['start_date'],
+                        'end_date' =>  $data['end_date'],
+                    ]);
+                }
+    
+                DB::commit();
+    
+                $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+            } else {
+                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+    
+       
+        return response()->json($output);
+    }
+
+    public function post_final_visa_data(Request $request)
+    {
+        try {
+            $requestData = $request->only([ 'end_date', 'worker_id']);
+    
+            $commonEndDate = $requestData['end_date'];
+          
+    
+            $jsonData = [];
+    
+            foreach ($requestData['worker_id'] as $index => $workerId) {
+                $jsonObject = [
+                    'employee_id' => $workerId,
+                   
+                    'end_date' => $commonEndDate,
+                ];
+    
+                $jsonData[] = $jsonObject;
+            }
+    
+            $jsonData = json_encode($jsonData);
+    
+            \Log::info('JSON Data: ' . $jsonData);
+    
+            if (!empty($jsonData)) {
+                $selectedData = json_decode($jsonData, true);
+    
+                DB::beginTransaction();
+    
+                foreach ($selectedData as $data) {
+                    $operation = DB::table('essentails_employee_operations')->insert([
+                        'operation_type' => 'final_visa',
+                        'employee_id' =>  $data['employee_id'],
+                        'end_date' =>  $data['end_date'],
+                    ]);
+                }
+    
+                DB::commit();
+    
+                $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+            } else {
+                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+    
+      // return  $requestData;
+       return response()->json($output);
+    }
+
+    public function post_absent_report_data(Request $request)
+    {
+        try {
+            $requestData = $request->only([ 'end_date', 'worker_id']);
+    
+            $commonEndDate = $requestData['end_date'];
+          
+    
+            $jsonData = [];
+    
+            foreach ($requestData['worker_id'] as $index => $workerId) {
+                $jsonObject = [
+                    'employee_id' => $workerId,
+                   
+                    'end_date' => $commonEndDate,
+                ];
+    
+                $jsonData[] = $jsonObject;
+            }
+    
+            $jsonData = json_encode($jsonData);
+    
+            \Log::info('JSON Data: ' . $jsonData);
+    
+            if (!empty($jsonData)) {
+                $selectedData = json_decode($jsonData, true);
+    
+                DB::beginTransaction();
+    
+                foreach ($selectedData as $data) {
+                    $operation = DB::table('essentails_employee_operations')->insert([
+                        'operation_type' => 'absent_report',
+                        'employee_id' =>  $data['employee_id'],
+                        'end_date' =>  $data['end_date'],
+                    ]);
+                }
+    
+                DB::commit();
+    
+                $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
+            } else {
+                $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+    
+            $output = ['success' => 0, 'msg' => $e->getMessage()];
+        }
+    
+      // return  $requestData;
+       return response()->json($output);
+    }
+
+
+
+    public function work_cards_vaction_requests()
+    {
+       
+
+        $business_id = request()->session()->get('user.business_id');
+
+
+
+        $crud_requests = auth()->user()->can('followup.crud_requests');
+        if (!$crud_requests) {
+           //temp  abort(403, 'Unauthorized action.');
+        }
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+    
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+               
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+
+
+        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+            ->where('name', 'LIKE', '%دولي%')
+            ->pluck('id')->toArray();
+      
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+
+        $requestsProcess = null;
+
+       
+        if (!empty($departmentIds)) {
+          
+
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests_process.id as process_id',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                 'essentials_wk_procedures.can_return',
+                'users.assigned_to'
+
+            ])->where('followup_worker_requests.type','leavesAndDepartures')
+
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->whereIn('essentials_wk_procedures.department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
+                
+        }
+       
+       
+        else {
+            $output = ['success' => false,
+            'msg' => __('internationalrelations::lang.please_add_the_Ir_department'),
+                ];
+            return redirect()->action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
+        }
+  
+       
+    
+        if (request()->ajax()) {
+
+      
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
+                    $item = $ContactsLocation[$row->assigned_to] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('status', function ($row) {
+                    $status = '';
+                
+                    if ($row->status == 'pending') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+                        
+                        if (auth()->user()->can('crudExitRequests')) {
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        }
+                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                        $status = trans('followup::lang.' . $row->status);
+                    }
+                
+                    return $status;
+                })
+
+                ->rawColumns(['status'])
+
+
+                ->make(true);
+        }
+        
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
+        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
+            'id',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+         ' - ',COALESCE(id_proof_number,'')) as full_name")
+        )->pluck('full_name', 'id');
+
+        $statuses = $this->statuses;
+ 
+
+
+        return view('essentials::cards.vactionrequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+    }
     
     public function residencyreports(Request $request)
     {

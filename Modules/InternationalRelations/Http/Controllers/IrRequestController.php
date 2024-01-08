@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
 class IrRequestController extends Controller
 {
     protected $moduleUtil;

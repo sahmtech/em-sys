@@ -18,11 +18,11 @@
                                 <div class="w-title">
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.end_residency') }}</h5>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.finsish_contract_duration') }}</h5>
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-0">{{$last15_expire_date_residence}}</h4>
+                                        <h4 style="color:#fff" id="counter-0"></h4>
                                     </div>
                                 </div>
                             </div>
@@ -39,11 +39,11 @@
                                    
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.all_finish_residency') }}</h5>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.finsish_contract_date') }}</h5>
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-1">{{$all_ended_residency_date}}</h4>
+                                        <h4 style="color:#fff" id="counter-1"></h4>
                                     </div>
                                 </div>
                             </div>
@@ -60,7 +60,7 @@
                                 <div class="w-title">
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.absentee_report') }}</h5>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.late_admission') }}</h5>
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
@@ -80,7 +80,7 @@
                                 <div class="w-title">
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.residency_Vacations') }}</h5>
+                                        <h5 style="color:#fff">{{ __('essentials::lang.uncomplemete_profiles') }}</h5>
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
@@ -93,48 +93,6 @@
                     </div>
                 </div>
 
-
-
-                <div class="col-md-3 ">
-                    <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.late_empolyee') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-3">0</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="col-md-3 ">
-                    <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">{{ __('essentials::lang.visa_employee') }}</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-3">0</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
 
 
             </div>

@@ -926,6 +926,16 @@ return [
   'workcards_allrequest'=>'الطلبات',
   'work_cards_vaction_requests'=>'طلبات الإجازات',
   'work_cards_operation'=>'العمليات',
+  
+  'finsish_contract_duration'=>'انتهاء الفترة  التجريبية',
+  'finsish_contract_date'=>'عقود تنتهي قريبا ًخلال ',
+  'late_admission'=>'مباشرة عمل متأخرة',
+  'uncomplemete_profiles'=>'نواقص الموظفين',
+
+  'absent_report'=>'رفع بلاغ هروب',
+  'final_visa'=>'تأشيرة خروج نهائي ',
+  'return_visa'=>'تأشسيرة خروج وعودة ',
+
   'absentee_report'=>'بلاغ تغيب العمال الذين تم الابلاغ عنهم خلال 60 يوم',
   'residency_Vacations'=>'إجازات المقيمين الطلبات الواردة من السكن أو الادارة أو المتابعة',
   'late_empolyee'=>'الموظفين المتأخرين من الإجازات أو خروج العودة',

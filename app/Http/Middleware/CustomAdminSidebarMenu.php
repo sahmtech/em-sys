@@ -543,31 +543,31 @@ class CustomAdminSidebarMenu
                 );
 
 
-                if ($is_admin || auth()->user()->can('essentials.work_cards_all_requests')) {
+            
                 $menu->url(
                     route('work_cards_all_requests'),
                     __('essentials::lang.workcards_allrequest'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
                 );
-            }
+          
                  
-            if ($is_admin || auth()->user()->can('essentials.work_cards_vaction_requests')) {
+          
                 $menu->url(
                     route('work_cards_vaction_requests'),
                     __('essentials::lang.work_cards_vaction_requests'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
                 );
-            }
+          
 
                 
-            if ($is_admin || auth()->user()->can('essentials.work_cards_operation')) {
+           
                 $menu->url(
                     route('work_cards_operation'),
                     __('essentials::lang.work_cards_operation'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
                 );
 
-            }
+          
 
                 if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
                     $menu->url(
