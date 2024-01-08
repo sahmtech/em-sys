@@ -15,6 +15,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\CarType;
+use Modules\HousingMovements\Entities\HousingMovmentInsurance;
 use Yajra\DataTables\Facades\DataTables;
 
 class CarController extends Controller
@@ -249,6 +250,20 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
+            if ($car->contact) {
+                $car->contact->update([
+                    'insurance_company_id' => $request->input('insurance_company_id'),
+                    'insurance_start_Date' => $request->input('insurance_start_Date'),
+                    'insurance_end_date' => $request->input('insurance_end_date'),
+                ]);
+            } else {
+                HousingMovmentInsurance::create([
+                    'car_id' => $car->id,
+                    'insurance_company_id' => $request->input('insurance_company_id'),
+                    'insurance_start_Date' => $request->input('insurance_start_Date'),
+                    'insurance_end_date' => $request->input('insurance_end_date'),
+                ]);
+            }
 
             DB::commit();
             return redirect()->back()

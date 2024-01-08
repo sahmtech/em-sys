@@ -93,7 +93,7 @@ class CarController extends Controller
                 ->editColumn('insurance_company_id', function ($row) {
                     return $row->insurance->insurance_company_id ?? '';
                 })
-                
+
                 ->addColumn(
                     'action',
                     function ($row) {
@@ -121,7 +121,7 @@ class CarController extends Controller
                     // }
                 })
 
-                ->rawColumns(['action', 'car_typeModel','insurance_company_id', 'plate_number', 'number_seats', 'color'])
+                ->rawColumns(['action', 'car_typeModel', 'insurance_company_id', 'plate_number', 'number_seats', 'color'])
                 ->make(true);
         }
         return view('essentials::movementMangment.cars.index', compact('carTypes', 'Cars'));
@@ -255,12 +255,21 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
-            if ($car->contact)
+            if ($car->contact) {
                 $car->contact->update([
                     'insurance_company_id' => $request->input('insurance_company_id'),
                     'insurance_start_Date' => $request->input('insurance_start_Date'),
                     'insurance_end_date' => $request->input('insurance_end_date'),
                 ]);
+            } else {
+                HousingMovmentInsurance::create([
+                    'car_id' => $car->id,
+                    'insurance_company_id' => $request->input('insurance_company_id'),
+                    'insurance_start_Date' => $request->input('insurance_start_Date'),
+                    'insurance_end_date' => $request->input('insurance_end_date'),
+                ]);
+            }
+
             DB::commit();
             return redirect()->back()
                 ->with('status', [
