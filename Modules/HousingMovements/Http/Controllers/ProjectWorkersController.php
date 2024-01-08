@@ -439,6 +439,7 @@ class ProjectWorkersController extends Controller
     public function final_exit()
     {
 
+        
         $business_id = request()->session()->get('user.business_id');
 
 

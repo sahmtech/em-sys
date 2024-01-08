@@ -11,7 +11,7 @@
             <div class="row widget-statistic">
 
 
-                <a href="">
+                <a href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestForm']) }}">
                     <div class="col-md-3">
                     <div class="custom_card">
 
@@ -20,12 +20,12 @@
                                 <div class="w-title">
                                     <div>
                                         <p class="w-value"></p>
-                                        <h5 style="color:#fff">استمارة تنتهي خالل 15 يوم</h5>
+                                        <h5 style="color:#fff">استمارات تنتهي خالل 15 يوم</h5>
                                     </div>
-                                    {{-- <div>
+                                    <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff">0</h4>
-                                    </div> --}}
+                                        <h4 style="color:#fff">{{$latestForm_count}}</h4>
+                                    </div>
                                 </div>
                             </div>
 
@@ -51,7 +51,8 @@
 </div>
                     </div>
                 </a>
-                <a href="">
+                
+                <a href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestChangeOil']) }}">
                     <div class="col-md-3">
                         <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -61,7 +62,11 @@
                                         <p class="w-value"></p>
                                         <h5 style="color:#fff">تغيير الزيت خلال 15 يوم </h5>
                                     </div>
-                                   
+                                    <div>
+                                        <p class="w-value"></p>
+                                        <h4 style="color:#fff">{{$latestChangeOil_count}}</h4>
+                                    </div>
+                                    
                                 </div>
                             </div>
 
@@ -69,7 +74,7 @@
  </div>
                     </div>
                 </a>
-                <a href="">
+                <a href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestMaintenances']) }}">
                     <div class="col-md-3">
                         <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -81,7 +86,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff"></h4>
+                                        <h4 style="color:#fff">{{$latestMaintenance_count}}</h4>
                                     </div>
                                 </div>
                             </div>

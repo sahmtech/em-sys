@@ -154,6 +154,11 @@ return [
     'worker' => 'العامل',
     'book_worker' => 'حجز عامل',
     'unbook' => 'فك الحجز',
+    'emptyRooms' => 'الغرف الشاغرة',
+    'latestForm' => 'استمارات تنتهي خلال 15 يوم',
+    'latestInsurances' => 'تأمين مركبات ينتهي خلال 15 يوم',
+    'latestMaintenances' => 'الفحص الدوري خلال 15 يوم',
+    'latestChangeOil' => 'تغيير الزيت خلال 15 يوم',
 
 
 

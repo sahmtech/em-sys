@@ -11,7 +11,8 @@
             <div class="row widget-statistic">
 
 
-                <a href="">
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'final_exit']) }}">
                     <div class="col-md-2">
                         <div class="custom_card">
 
@@ -22,10 +23,10 @@
                                             <p class="w-value"></p>
                                             <h5 style="color:#fff">خروج نهائي</h5>
                                         </div>
-                                        {{-- <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff">0</h4>
-                                    </div> --}}
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $final_exit_count }}</h4>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -33,7 +34,8 @@
                         </div>
                     </div>
                 </a>
-                <a href="">
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping']) }}">
                     <div class="col-md-2">
                         <div class="custom_card">
                             <div class="widget widget-one_hybrid widget-engagement">
@@ -43,7 +45,10 @@
                                             <p class="w-value"></p>
                                             <h5 style="color:#fff">المتاحين للتسوق</h5>
                                         </div>
-
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $available_shopping_count }}</h4>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -51,7 +56,8 @@
                         </div>
                     </div>
                 </a>
-                <a href="">
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'reserved_shopping']) }}">
                     <div class="col-md-2">
                         <div class="custom_card">
                             <div class="widget widget-one_hybrid widget-engagement">
@@ -61,7 +67,10 @@
                                             <p class="w-value"></p>
                                             <h5 style="color:#fff">الحجوزات</h5>
                                         </div>
-
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $reserved_shopping_count }}</h4>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -91,7 +100,7 @@
                     </div>
                 </a>
 
-                <a href="">
+                <a href="{{ action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'emptyRooms']) }}">
                     <div class="col-md-2">
                         <div class="custom_card">
                             <div class="widget widget-one_hybrid widget-engagement">
@@ -103,7 +112,7 @@
                                         </div>
                                         <div>
                                             <p class="w-value"></p>
-                                            <h4 style="color:#fff"></h4>
+                                            <h4 style="color:#fff">{{ $empty_rooms_count }}</h4>
                                         </div>
                                     </div>
                                 </div>
