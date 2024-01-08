@@ -38,6 +38,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         //Rooms
         Route::get('/rooms', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index'])->name('rooms');
+        Route::get('/empty-rooms', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'emptyRooms'])->name('empty-rooms');
         Route::get('/createRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'create'])->name('createRoom');
         Route::post('/storeRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'store'])->name('storeRoom');
         Route::get('/rooms/edit/{roomId}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'edit'])->name('room.edit');
