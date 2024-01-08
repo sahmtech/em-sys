@@ -577,14 +577,14 @@ class EssentialsManageEmployeeController extends Controller
             
             $query->whereNull('admissions_date');
         })
-        ->whereHas('essentialsEmployeeAppointmets', function ($query) {
+        ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
             
             $query->WhereNull('start_from')
             ->orWhereNull('end_at')
             ->orWhereNull('profession_id')
             ->orWhereNull('specialization_id');
         })
-        ->whereHas('essentials_qualification', function ($query) {
+        ->orwhereHas('essentials_qualification', function ($query) {
             
             $query->WhereNull('graduation_year')
             ->orWhereNull('graduation_institution')
