@@ -504,7 +504,7 @@ class DataController extends Controller
 
             [
                 'value' => 'essentials.work_cards_all_requests',
-                'label' => __('essentials::lang.work_cards_all_requests'),
+                'label' => __('essentials::lang.workcards_allrequest'),
                 'default' => false,
             ],
 
