@@ -23,6 +23,7 @@ use Modules\HousingMovements\Entities\Car;
 use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\HousingMovements\Entities\HtrRoom;
 
 class User extends Authenticatable
@@ -423,6 +424,11 @@ class User extends Authenticatable
     public function essentials_admission_to_works()
     {
         return $this->hasOne(EssentialsAdmissionToWork::class, 'employee_id');
+    }
+
+    public function essentials_qualification()
+    {
+        return $this->hasOne(EssentialsEmployeesQualification::class, 'employee_id');
     }
 
     public function essentialsEmployeeAppointmets()

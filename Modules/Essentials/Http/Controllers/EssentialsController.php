@@ -12,6 +12,8 @@ use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
+
 use DB;
 use Illuminate\Support\Carbon;
 
@@ -66,6 +68,7 @@ class EssentialsController extends Controller
     
 
         $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
+        $sixtyday=Carbon::now()->addDays(60)->toDateString();
 
         $last15_expire_date_residence = EssentialsOfficialDocument::where('type', 'residence_permit')
                 ->where('expiration_date', '<=', $expiryDateThreshold)
@@ -77,8 +80,44 @@ class EssentialsController extends Controller
                     ->where('expiration_date', '<', $today)
                     ->count();
 
+
+        $escapeRequest = FollowupWorkerRequest::with('user')->where('type', 'escapeRequest')
+        ->whereHas('user', function ($query) {
+            $query->where('user_type', 'worker');
+        })
+                    ->where('end_date', '<=', $sixtyday)
+                    ->count();
+
+
+        $vacationrequest = FollowupWorkerRequest::with('user')->where('type', 'leavesAndDepartures') 
+        ->whereHas('user', function ($query) {
+            $query->where('user_type', 'worker');
+        })
+        ->count();
+
+        $final_visa = EssentailsEmployeeOperation::where('operation_type', 'final_visa') 
+        ->whereHas('user', function ($query) {
+            $query->where('user_type', 'worker');
+        })
+        ->count();
+
+
+        $late_vacation = FollowupWorkerRequest::with(['user'])
+                    ->where('type', 'leavesAndDepartures')
+                    ->where('type', 'returnRequest') 
+                    ->whereHas('user', function ($query)  {
+                        
+                        $query->where('status', 'vecation');
+                    })
+                    ->where('end_date', '<', now()) 
+                    ->count();
+                
+
+
+
         return view('essentials::work_cards_index')
-        ->with(compact('last15_expire_date_residence' ,'all_ended_residency_date'
+        ->with(compact('last15_expire_date_residence' ,
+        'all_ended_residency_date','escapeRequest','vacationrequest','final_visa','late_vacation'
         ));
     }
 
@@ -130,7 +169,7 @@ class EssentialsController extends Controller
             'labels' => array_keys($leaveStatusData),
             'values' => array_values($leaveStatusData),
         ];
-        // dd($data);
+        
 
         return response()->json($data);
     }

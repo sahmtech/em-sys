@@ -48,6 +48,8 @@ class FollowUpController extends Controller
 
         return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));
     }
+
+    
     public function withinTwoMonthExpiryContracts()
     {
         // $business_id = request()->session()->get('user.business_id');

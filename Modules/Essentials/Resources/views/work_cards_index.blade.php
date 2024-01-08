@@ -10,7 +10,8 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
-                <div class="col-md-3 ">
+                <div class="col-md-3 " onclick="redirectToExpiredResidencies()" style="cursor: pointer;">
+              
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -30,7 +31,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 ">
+                <div class="col-md-3 " onclick="redirectToAllEndedResidency()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -64,7 +65,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-2">0</h4>
+                                        <h4 style="color:#fff" id="counter-2">{{$escapeRequest}}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +85,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-3">0</h4>
+                                        <h4 style="color:#fff" id="counter-3">{{$vacationrequest}}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -95,7 +96,7 @@
 
 
 
-                <div class="col-md-3 ">
+                <div class="col-md-3 "  onclick="redirectTolatevacation()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -106,7 +107,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-3">0</h4>
+                                        <h4 style="color:#fff" id="counter-3">{{$late_vacation}}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +117,7 @@
                 </div>
 
 
-                <div class="col-md-3 ">
+                <div class="col-md-3 " onclick="final_visa()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -127,7 +128,7 @@
                                     </div>
                                     <div>
                                         <p class="w-value"></p>
-                                        <h4 style="color:#fff" id="counter-3">0</h4>
+                                        <h4 style="color:#fff" id="counter-3">{{$final_visa}}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -154,5 +155,20 @@
 @stop
 
 @section('javascript')
-   
+<script>
+    function redirectToExpiredResidencies() {
+        window.location.href = "{{ route('expired.residencies') }}";
+    }
+
+    function redirectToAllEndedResidency() {
+       
+         window.location.href = "{{ route('all.expired.residencies') }}";
+    }
+
+    function redirectTolatevacation()
+    {  window.location.href = "{{ route('late_for_vacation') }}";}
+
+    function final_visa()
+    {  window.location.href = "{{ route('final_visa_index') }}";}
+</script>
 @endsection
