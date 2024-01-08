@@ -257,7 +257,7 @@
 
                                         @foreach ($insurance_companies as $insurance_company)
                                             <option value="{{ $insurance_company->id }}"
-                                                @if ($insurance_company->id == $car->contact->insurance_company_id)  @endif>
+                                                @if ($insurance_company->id == $car?->contact?->insurance_company_id)  @endif>
                                                 {{ $insurance_company->name }}</option>
                                         @endforeach
 

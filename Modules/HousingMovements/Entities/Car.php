@@ -30,6 +30,6 @@ class Car extends Model
     }
 
     public function insurance(){
-        return $this->hasOne(HousingMovmentInsurance::class,'insurance_company_id');
+        return $this->hasOne(HousingMovmentInsurance::class,'car_id');
     }
 }

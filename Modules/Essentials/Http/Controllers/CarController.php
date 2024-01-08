@@ -91,7 +91,7 @@ class CarController extends Controller
                     return __('housingmovements::lang.' . $row->insurance_status) ?? '';
                 })
                 ->editColumn('insurance_company_id', function ($row) {
-                    return $row->insurance->insurance_company_id ?? '';
+                    return $row->insurance->contact->supplier_business_name ?? '';
                 })
 
                 ->addColumn(
