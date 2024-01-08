@@ -388,7 +388,13 @@ class ProjectWorkersController extends Controller
                     $item = $travelCategories[$row->user->categorie_id] ?? '';
 
                     return $item;
-                })  ->addColumn(
+                    
+                }) 
+                ->addColumn('created_by', function ($row) use ($travelCategories) {
+                  
+                    return  $row->creator->first_name . ' ' . $row->user->last_name ?? '';
+                }) 
+                 ->addColumn(
                     'action',
                     function ($row) {
 
@@ -408,7 +414,7 @@ class ProjectWorkersController extends Controller
                 )
                
                
-                ->rawColumns(['action','contact_name','contact_number', 'worker', 'categorie_id', 'gender', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'total_salary', 'essentials_salary'])
+                ->rawColumns(['action','created_by','contact_name','contact_number', 'worker', 'categorie_id', 'gender', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'total_salary', 'essentials_salary'])
                 ->make(true);
         }
 
@@ -439,7 +445,7 @@ class ProjectWorkersController extends Controller
     public function final_exit()
     {
 
-        
+
         $business_id = request()->session()->get('user.business_id');
 
 

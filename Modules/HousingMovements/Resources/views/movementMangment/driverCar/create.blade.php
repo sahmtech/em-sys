@@ -86,7 +86,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}
                                     {!! Form::file('car_image', ['class' => 'form-control', 'accept' => 'image/*']) !!}
 
 
