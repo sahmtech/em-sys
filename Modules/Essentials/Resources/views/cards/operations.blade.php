@@ -107,7 +107,7 @@
                                 <th>@lang('business.email')</th>
                                 <th>@lang('essentials::lang.status')</th>
                                 <th>@lang('messages.view')</th>
-                                <th>@lang('messages.action')</th>
+                               
                             </tr>
                         </thead>
 
@@ -289,9 +289,7 @@
                     {
                         "data": "view"
                     },
-                    {
-                        "data": "action"
-                    }
+                   
                 ],
                 "createdRow": function(row, data, dataIndex) {
                     var contractEndDate = data.contract_end_date;

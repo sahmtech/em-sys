@@ -338,6 +338,7 @@ class EssentialsCardsController extends Controller
                 $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
             });
         })->where('users.is_cmmsn_agnt', 0)
+        ->where('nationality_id','!=',5)
 
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
@@ -452,40 +453,40 @@ class EssentialsCardsController extends Controller
 
 
 
-                ->addColumn(
-                    'action',
-                    function ($row) {
-                        $html = '<div class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                        data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                        <li>
-                                        <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
+                // ->addColumn(
+                //     'action',
+                //     function ($row) {
+                //         $html = '<div class="btn-group">
+                //                     <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                //                         data-toggle="dropdown" aria-expanded="false">' .
+                //             __('messages.actions') .
+                //             '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                //                         </span>
+                //                     </button>
+                //                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                //                         <li>
+                //                         <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
                                      
-                                        </a>
-                                        </li>';
+                //                         </a>
+                //                         </li>';
 
 
 
 
 
-                        $html .= '<li>
-                                    <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
-                                </li>';
+                //         $html .= '<li>
+                //                     <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
+                //                 </li>';
 
-                        $html .= '<li>
-                                <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
-                            </li>';
+                //         $html .= '<li>
+                //                 <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
+                //             </li>';
 
-                        $html .= '</ul></div>';
+                //         $html .= '</ul></div>';
 
-                        return $html;
-                    }
-                )
+                //         return $html;
+                //     }
+                // )
                 ->addColumn('view', function ($row) {
 
                     $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
