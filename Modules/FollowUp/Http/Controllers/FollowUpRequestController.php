@@ -654,9 +654,9 @@ class FollowUpRequestController extends Controller
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudExitRequests')) {
+                    
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                    }
+                    
                     return $status;
                 })
                 ->rawColumns(['status'])
