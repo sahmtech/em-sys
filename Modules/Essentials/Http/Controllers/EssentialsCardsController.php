@@ -57,6 +57,7 @@ use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
 use Modules\Essentials\Entities\EssentialsEmployeeOperation;
 
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 
 
 use App\Category;
@@ -570,6 +571,275 @@ class EssentialsCardsController extends Controller
         // 'default_location'
     ));;
     }
+
+     public function expired_residencies()
+     {
+       
+       
+        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
+        ->whereDate('expiration_date', '>=', now())
+        ->whereDate('expiration_date', '<=', now()->addDays(15))
+        ->whereHas('employee', function ($query) {
+            $query->where('user_type', 'worker');
+        })
+        ->get();
+
+        if (request()->ajax()) {
+
+        return DataTables::of($residencies)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->employee->first_name . ' ' . $row->employee->last_name;
+                }
+            )
+            ->addColumn(
+                'residency',
+                function ($row) {
+                    return $row->number;
+                }
+            )
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'end_date',
+                function ($row) {
+                    return $row->expiration_date;
+                }
+            )
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                //     return $html;
+                // }
+            )
+
+
+            ->removeColumn('id')
+            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+            ->make(true);
+                }
+
+        return view('essentials::cards.expired_residencies');
+     }
+
+
+     public function all_expired_residencies()
+     {
+       
+        $today = Carbon::now();
+       
+        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
+        ->whereDate('expiration_date', '<', now() )  // Adjusted to check for expiration dates in the past
+        ->whereHas('employee', function ($query) {
+            $query->where('user_type', 'worker');
+        });
+        
+       
+
+       // dd( $residencies->first());
+
+        if (request()->ajax()) {
+
+        return DataTables::of($residencies)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->employee->first_name . ' ' . $row->employee->last_name;
+                }
+            )
+            ->addColumn(
+                'residency',
+                function ($row) {
+                    return $row->number;
+                }
+            )
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'end_date',
+                function ($row) {
+                    return $row->expiration_date;
+                }
+            )
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                //     return $html;
+                // }
+            )
+
+
+            ->removeColumn('id')
+            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+            ->make(true);
+                }
+
+        return view('essentials::cards.all_expired_residencies');
+     }
+
+     public function late_for_vacation()
+     {
+       
+        $late_vacation = FollowupWorkerRequest::with(['user'])
+        ->where('type', 'leavesAndDepartures')
+        ->where('type', 'returnRequest') 
+        ->whereHas('user', function ($query)  {
+            
+            $query->where('status', 'vecation');
+        })
+        ->where('end_date', '<', now()) 
+        ->select('end_date');
+       
+        
+       
+
+       // dd( $residencies->first());
+
+        if (request()->ajax()) {
+
+        return DataTables::of($late_vacation)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->user->first_name . ' ' . $row->user->last_name;
+                }
+            )
+           
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'end_date',
+                function ($row) {
+                    return $row->end_date;
+                }
+            )
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                //     return $html;
+                // }
+            )
+
+
+            ->removeColumn('id')
+            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+            ->make(true);
+                }
+
+        return view('essentials::cards.late_for_vacation');
+     }
+
+     public function final_visa()
+     {
+        $final_visa = EssentailsEmployeeOperation::with('user')
+        ->where('operation_type', 'final_visa')
+        ->whereHas('user', function ($query) {
+            $query->where('user_type', 'worker');
+        })
+        ->select('end_date' ,'employee_id');
+       
+       
+
+       // dd( $residencies->first());
+
+        if (request()->ajax()) {
+
+        return DataTables::of($final_visa)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
+                }
+            )
+           
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->user?->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'end_date',
+                function ($row) {
+                    return $row->end_date;
+                }
+            )
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                //     return $html;
+                // }
+            )
+
+
+            ->removeColumn('id')
+            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+            ->make(true);
+                }
+
+        return view('essentials::cards.final_visa_index');
+     }
 
 
     public function post_return_visa_data(Request $request)

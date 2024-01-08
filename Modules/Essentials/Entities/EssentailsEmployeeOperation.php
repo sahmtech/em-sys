@@ -4,17 +4,22 @@ namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-class EssentialsEmployeeOperation extends Model
+use App\User;
+class EssentailsEmployeeOperation extends Model
 {
     use HasFactory;
-
+      
     protected $guarded = ['id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'employee_id');
+    }
 
     protected $fillable = [];
     
     protected static function newFactory()
     {
-        return \Modules\Essentials\Database\factories\EssentialsEmployeeOperationFactory::new();
+        return \Modules\Essentials\Database\factories\EssentailsEmployeeOperationFactory::new();
     }
 }

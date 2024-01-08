@@ -531,18 +531,81 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs')) {
+                // $menu->url(
+                //     route('employees'),
+                //     __('essentials::lang.employees_affairs'),
+                //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
+                //         request()->segment(2) == 'roles'
+                //         || request()->segment(2) == 'appointments'
+                //         || request()->segment(2) == 'admissionToWork'
+                //         || request()->segment(2) == 'employeeContracts'
+                //         || request()->segment(2) == 'qualifications'
+                //         || request()->segment(2) == 'official_documents'
+                //         || request()->segment(2) == 'featureIndex')],
+                // );
+
+              
                 $menu->url(
-                    route('employees'),
-                    __('essentials::lang.employees_affairs'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
-                        request()->segment(2) == 'roles'
-                        || request()->segment(2) == 'appointments'
-                        || request()->segment(2) == 'admissionToWork'
-                        || request()->segment(2) == 'employeeContracts'
-                        || request()->segment(2) == 'qualifications'
-                        || request()->segment(2) == 'official_documents'
-                        || request()->segment(2) == 'featureIndex')],
+                    route('employee_affairs_dashboard'),
+                    __('essentials::lang.employee_affairs_dashboard'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_dashboard'],
                 );
+
+                    $menu->url(
+                        route('employees'),
+                        __('essentials::lang.employees'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employees'],
+                    );
+
+                    $menu->url(
+                        route('appointments'),
+                        __('essentials::lang.appointment'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'appointments'],
+                    );
+
+                    $menu->url(
+                        route('admissionToWork'),
+                        __('essentials::lang.admissions_to_work'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'admissions_to_work'],
+                    );
+
+                    $menu->url(
+                        route('employeeContracts'),
+                        __('essentials::lang.employee_contracts'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_contracts'],
+                    );
+
+                    $menu->url(
+                        route('qualifications'),
+                        __('essentials::lang.qualifications'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'qualifications'],
+                    );
+
+                    $menu->url(
+                        route('official_documents'),
+                        __('essentials::lang.official_documents'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
+                    );
+
+                    $menu->url(
+                        route('employee_families'),
+                        __('essentials::lang.employee_families'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_families'],
+                    );
+
+                    $menu->url(
+                        route('featureIndex'),
+                        __('essentials::lang.features'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'features'],
+                    );
+
+                    $menu->url(
+                        route('import-employees'),
+                        __('essentials::lang.import_employees'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import'],
+                    );
+
+                
             }
         });
     }

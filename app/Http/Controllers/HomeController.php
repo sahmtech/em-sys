@@ -231,9 +231,11 @@ class HomeController extends Controller
             return redirect()->route('agent_home');
         }
         //essentials
-        $essentialsControllerClass = \Modules\Essentials\Http\Controllers\DataController::class;
-        $essentialsController = new $essentialsControllerClass();
-        $essentialsPermissions = $essentialsController->user_permissions();
+        // $essentialsControllerClass = \Modules\Essentials\Http\Controllers\DataController::class;
+        // $essentialsController = new $essentialsControllerClass();
+        //$essentialsPermissions = $essentialsController->user_permissions();
+
+        $essentialsPermissions = [ ['value'=>'essentials.essentials_dashboard']];
 
         //sales
         $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
