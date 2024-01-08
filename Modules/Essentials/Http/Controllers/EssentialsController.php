@@ -11,7 +11,9 @@ use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\EssentialsLeave;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
+use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use DB;
+use Illuminate\Support\Carbon;
 
 class EssentialsController extends Controller
 {
@@ -61,32 +63,23 @@ class EssentialsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $num_employee_staff = User::where('business_id', $business_id)->where(function ($query) {
-            $types = ['worker', 'employee', 'manager'];
+    
 
-            foreach ($types as $type) {
-                $query->orWhere('user_type', 'like', '%' . $type . '%');
-            }
-        })->count();
-        $num_workers = User::where('business_id', $business_id)->where('user_type', 'like', '%worker%')->count();
-        $num_employees = User::where('business_id', $business_id)->where('user_type', 'like', '%employee%')->count();
+        $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
 
+        $last15_expire_date_residence = EssentialsOfficialDocument::where('type', 'residence_permit')
+                ->where('expiration_date', '<=', $expiryDateThreshold)
+                ->count();
+        
+        $today = Carbon::now()->toDateString();
 
-        $num_managers = User::where('business_id', $business_id)->where('user_type', 'like', '%manager%')->count();
-        $chart = new CommonChart;
-        $colors = [
-            '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
-            '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce',
-            '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
-        ];
-        $labels = [__('user.worker'), __('user.employee'), __('user.manager')];
-        $values = [$num_workers, $num_employees, $num_managers];
-        $chart->labels($labels)
-            ->options($this->__chartOptions())
-            ->dataset(__('user.employee_staff'), 'pie', $values)
-            ->color($colors);
+        $all_ended_residency_date = EssentialsOfficialDocument::where('type', 'residence_permit')
+                    ->where('expiration_date', '<', $today)
+                    ->count();
 
-        return view('essentials::work_cards_index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
+        return view('essentials::work_cards_index')
+        ->with(compact('last15_expire_date_residence' ,'all_ended_residency_date'
+        ));
     }
 
 

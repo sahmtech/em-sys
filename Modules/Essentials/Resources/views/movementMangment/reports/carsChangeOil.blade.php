@@ -11,31 +11,27 @@
 
     <!-- Main content -->
     <section class="content">
-        {{-- <div class="row">
+        <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    {!! Form::open([
-                        'url' => action('\Modules\Essentials\Http\Controllers\CarsChangeOilController@search'),
-                        'method' => 'post',
-                        'id' => 'carType_search',
-                    ]) !!}
+                 
                     <div class="col-md-4">
-                        {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
+                        {!! Form::label('carType_label', __('housingmovements::lang.car')) !!}
 
-                        <select class="form-control" id="carTypeSelect" name="carTypeSelect" style="padding: 2px;">
+                        <select class="form-control" id="carSelect" name="carSelect" style="padding: 2px;">
                             <option value="all" selected>@lang('lang_v1.all')</option>
-                            @foreach ($carTypes as $type)
-                                <option value="{{ $type->id }}">
-                                    {{ $type->name_ar . ' - ' . $type->name_en }}</option>
+                            @foreach ($cars as $car)
+                                <option value="{{ $car->id }}">
+                                    {{ $car->plate_number . ' - ' .$car->CarModel->CarType->name_ar . ' - ' . $car->CarModel->name_ar }}</option>
                             @endforeach
                         </select>
-                   
+                         
                     </div>
                
                     {!! Form::close() !!}
                 @endcomponent
             </div>
-        </div> --}}
+        </div>
 
         <div class="row">
             <div class="col-md-12">
@@ -76,6 +72,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#car__type_id').select2();
+            $('#carSelect').select2();
 
             carsChangeOil_table = $('#carsChangeOil_table').DataTable({
                 processing: true,
@@ -83,12 +80,8 @@
                 ajax: {
                     url: '{{ route('essentials.cars-change-oil-report') }}',
                     data: function(d) {
-                        if ($('#carTypeSelect').val()) {
-                            d.carTypeSelect = $('#carTypeSelect').val();
-                            // console.log(d.project_name_filter);
-                        }
-                        if ($('#name').val()) {
-                            d.name = $('#name').val();
+                        if ($('#carSelect').val()) {
+                            d.carSelect = $('#carSelect').val();
                             // console.log(d.project_name_filter);
                         }
                     }
@@ -117,9 +110,9 @@
 
 
       
-            $('#carTypeSelect,#name').on('change',
+            $('#carSelect,#name').on('change',
                 function() {
-                    carsModel_table.ajax.reload();
+                    carsChangeOil_table.ajax.reload();
                 });
         });
     </script>

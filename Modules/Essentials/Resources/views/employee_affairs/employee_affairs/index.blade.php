@@ -99,6 +99,7 @@
                     <table class="table table-bordered table-striped" id="employees">
                         <thead>
                             <tr>
+                            <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_number')</th>
                                
@@ -516,6 +517,9 @@
 
 
                 "columns": [
+                    {
+                        "data": "id"
+                    },
                     {
                         "data": "profile_image",
                         "render": function(data, type, row) {

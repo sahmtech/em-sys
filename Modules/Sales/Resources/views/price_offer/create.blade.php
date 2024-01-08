@@ -339,7 +339,7 @@
                     <input type="hidden" id="productIds" name="productIds" value="">
                     <input type="hidden" id="quantityArr" name="quantityArr" value="">
                     <input type="hidden" id="quantityArrDisplay" name="quantityArrDisplay" value="">
-                    <input type="hidden" name="fees_input" id="fees_input" value="0">
+                    <input type="hidden" name="fees_input" id="fees_input_hidden" value="0">
                     <input type="hidden" id="total_amount_with_fees2" name="total_amount_with_fees" value="">
                     <input type="hidden" id="total_monthly_for_all_workers" name="total_monthly_for_all_workers2" value="">
                     <input type="hidden" id="total_contract_cost2" name="total_contract_cost" value="">
@@ -874,10 +874,12 @@
             });
 
             function updateTotalFees() {
-
+                
                 var totalSum = parseFloat($('#total_sum_value').text()) || 0;
                 var fees = parseFloat($('#fees_input').val()) || 0;
-
+console.log(totalSum);
+console.log(fees);
+console.log("fees:", fees);
                 totalAmountWithFees = totalSum + fees;
 
                 console.log("Grand Total:", totalAmountWithFees);

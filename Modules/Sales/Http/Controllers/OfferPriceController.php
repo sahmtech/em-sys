@@ -508,7 +508,13 @@ class OfferPriceController extends Controller
 
         $change_return = $this->dummyPaymentLine;
 
-        $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name', 'id');
+        $leads = Contact::where('type', 'qualified')
+        ->whereDoesntHave('transactions', function($query) {
+            $query->where('status', 'under_study');
+        })
+       
+        ->pluck('supplier_business_name', 'id');
+
 
         return view('sales::price_offer.create')
             ->with(compact(
@@ -699,7 +705,7 @@ class OfferPriceController extends Controller
 
         try {
             $business_id = $request->session()->get('user.business_id');
-            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date', 'final_total'];
+            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date'];
             $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
             $offer_details = $request->only($offer);
             //   $offer_details['location_id'] = $request->input('location_id');
@@ -711,6 +717,7 @@ class OfferPriceController extends Controller
             $offer_details['sub_type'] = 'service';
             $offer_details['is_quotation'] = 1;
             $offer_details['total_worker_number'] = $request->input('quantityArrDisplay');
+            $offer_details['final_total'] = $request->input('total_contract_cost');
             $offer_details['business_fees'] = $request->input('fees_input');
             $offer_details['total_worker_monthly'] = $request->input('total_monthly_for_all_workers2');
             $offer_details['contract_duration'] = $request->input('contract_duration');
@@ -735,6 +742,7 @@ class OfferPriceController extends Controller
 
 
             $client = Transaction::create($offer_details);
+            
             if ($request->contract_form == "monthly_cost") {
                 $updatedData = json_decode($request->input('updated_data'), true);
                 foreach ($updatedData as $data) {
@@ -748,9 +756,7 @@ class OfferPriceController extends Controller
                     ]);
                 }
             }
-            if ($request->input('status') == "approved") {
-                Contact::where('id', $request->contact_id)->update(['type' => 'converted']);
-            }
+         
             $productIds = json_decode($request->input('productIds'));
             $quantityArr = json_decode($request->input('quantityArr'));
             $productData = json_decode($request->input('productData'), true);
@@ -760,7 +766,7 @@ class OfferPriceController extends Controller
                     $data = $productData[$key];
                     $quantity = $quantityArr[$key];
 
-                    error_log($quantity);
+                    
 
                     $transactionSellLine = new TransactionSellLine;
                     $transactionSellLine->additional_allwances = json_encode($data);

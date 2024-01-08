@@ -1,440 +1,305 @@
 @extends('layouts.app')
 
+
 @section('content')
 
-<section class="content" style="font-size: calc(100%);">
-    
-        
-
-<div class="row">
-     
-            <div class="box-body">
-            
-            <div class="row">
-                <!-- /.col -->
-             
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">تسكين </span>
-                         
-                        <img src="{{ asset('img/house.png') }}"  style="width: 75px;  height: 75px;" alt="">
-                       
-                     </div>
-                 
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
 
 
-                
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="row widget-statistic">
 
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif"> الطلبات</span>
-                         
-                        <img src="{{ asset('img/request.png') }}"   style="width: 75px;  height: 75px;" alt="">
+
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'final_exit']) }}">
+                    <div class="col-md-2">
+                        <div class="custom_card">
+
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">خروج نهائي</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $final_exit_count }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-                     
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
+                    </div>
+                </a>
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping']) }}">
+                    <div class="col-md-2">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">المتاحين للتسوق</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $available_shopping_count }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-
-  
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">مهام الموظفين </span>
-                         
-                        <img src="{{ asset('img/planning.png') }}"  style="width: 75px;  height: 75px;" alt="">
+                            </div>
                         </div>
-                     
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
+                    </div>
+                </a>
+                <a
+                    href="{{ action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'reserved_shopping']) }}">
+                    <div class="col-md-2">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">الحجوزات</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $reserved_shopping_count }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-
-                
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">الشكاوي </span>
-                         
-                        <img src="{{ asset('img/complain.png') }}"   style="width: 75px;  height: 75px;" alt="">
+                            </div>
                         </div>
-                        
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
+                    </div>
+                </a>
+                <a href="">
+                    <div class="col-md-2">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">الانتظار وطلبات الاجازة</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff"></h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-                
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">شكاوي مدير القسم </span>
-                         
-                        <img src="{{ asset('img/complaint.png') }}"  style="width: 75px;  height: 75px;" alt="">
+                            </div>
                         </div>
-                        
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
+                    </div>
+                </a>
 
+                <a href="{{ action([\Modules\HousingMovements\Http\Controllers\RoomController::class, 'emptyRooms']) }}">
+                    <div class="col-md-2">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">الغرف الشاغرة</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $empty_rooms_count }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-                 
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">شكاوي مدير الدائرة </span>
-                         
-                        <img src="{{ asset('img/bad-review.png') }}"   style="width: 75px;  height: 75px;" alt="">
+                            </div>
                         </div>
-                     
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
+                    </div>
+                </a>
 
 
-                
-                 
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">طلب الوظيفة  </span>
-                         
-                        <img src="{{ asset('img/customer-care.png') }}"  style="width: 75px;  height: 75px;" alt="">
-                        </div>
-                     
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
-
-
-
-                   
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif">التقارير  </span>
-                         
-                        <img src="{{ asset('img/report.png') }}"  style="width: 75px;  height: 75px;" alt="">
-                        </div>
-                     
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
-
-
-                   
-                <div class="col-md-4 col-sm-20 col-xs-15" >
-               
-                   <div class="info-box">
-                      
-
-                        <div class="info-box-content" style=" background-color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                       
-                        <span class="info-box-text" style=" text-align: center; font-size:30px;font-family:Arabic Typesetting, sans-serif"> تنبيهات السكن والحركة  </span>
-                         
-                        <img src="{{ asset('img/notification.png') }}"   style="width: 75px;  height: 75px;" alt="">
-                        </div>
-                     
-                        <!-- /.info-box-content -->
-                   </div>
-                  <!-- /.info-box -->
-                </div>
-
-
-    	    <!-- /.col -->
             </div>
+            <br>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12 custom_table">
+                @component('components.widget', [
+                    'class' => 'box-solid',
+                    'title' => __('essentials::lang.requests'),
+                ])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="within_two_month_expiry_contracts_table">
+                            <thead>
+                                <tr>
+                                    <th>@lang('essentials::lang.request_number')</th>
+                                    <th>@lang('essentials::lang.worker_name')</th>
+                                    <th>@lang('essentials::lang.residency_number')</th>
+                                    <th>@lang('essentials::lang.request_type')</th>
+                                    <th>@lang('essentials::lang.date_application')</th>
+                                    <th>@lang('essentials::lang.Status')</th>
+                                    <th>@lang('essentials::lang.nots')</th>
+                                    <th>@lang('essentials::lang.actions')</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
             </div>
-    <!-- /.box-body -->
-</div>       
 
-</section>
 
+        </div>
+
+
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+
+
+
+    </section>
+    <!-- /.content -->
 @stop
+{{-- 
 @section('javascript')
-    <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
-    <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
-    @includeIf('sales_order.common_js')
-    @includeIf('purchase_order.common_js')
-    @if(!empty($all_locations))
-        {!! $sells_chart_1->script() !!}
-        {!! $sells_chart_2->script() !!}
-    @endif
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
-        $(document).ready( function(){
-        sales_order_table = $('#sales_order_table').DataTable({
-          processing: true,
-          serverSide: true,
-          scrollY: "75vh",
-          scrollX:        true,
-          scrollCollapse: true,
-          aaSorting: [[1, 'desc']],
-          "ajax": {
-              "url": '{{action([\App\Http\Controllers\SellController::class, 'index'])}}?sale_type=sales_order',
-              "data": function ( d ) {
-                    d.for_dashboard_sales_order = true;
+        $(document).ready(function() {
 
-                    if ($('#so_location').length > 0) {
-                        d.location_id = $('#so_location').val();
-                    }
-                }
-          },
-          columnDefs: [ {
-              "targets": 7,
-              "orderable": false,
-              "searchable": false
-          } ],
-          columns: [
-              { data: 'action', name: 'action'},
-              { data: 'transaction_date', name: 'transaction_date'  },
-              { data: 'invoice_no', name: 'invoice_no'},
-              { data: 'conatct_name', name: 'conatct_name'},
-              { data: 'mobile', name: 'contacts.mobile'},
-              { data: 'business_location', name: 'bl.name'},
-              { data: 'status', name: 'status'},
-              { data: 'shipping_status', name: 'shipping_status'},
-              { data: 'so_qty_remaining', name: 'so_qty_remaining', "searchable": false},
-              { data: 'added_by', name: 'u.first_name'},
-          ]
-        });
-
-        @if(auth()->user()->can('account.access') && config('constants.show_payments_recovered_today') == true)
-
-            // Cash Flow Table
-            cash_flow_table = $('#cash_flow_table').DataTable({
+            $('#within_two_month_expiry_contracts_table').DataTable({
                 processing: true,
                 serverSide: true,
-                "ajax": {
-                        "url": "{{action([\App\Http\Controllers\AccountController::class, 'cashFlow'])}}",
-                        "data": function ( d ) {
-                            d.type = 'credit';
-                            d.only_payment_recovered = true;
-                        }
-                    },
-                "ordering": false,
-                "searching": false,
-                columns: [
-                    {data: 'operation_date', name: 'operation_date'},
-                    {data: 'account_name', name: 'account_name'},
-                    {data: 'sub_type', name: 'sub_type'},
-                    {data: 'method', name: 'TP.method'},
-                    {data: 'payment_details', name: 'payment_details', searchable: false},
-                    {data: 'credit', name: 'amount'},
-                    {data: 'balance', name: 'balance'},
-                    {data: 'total_balance', name: 'total_balance'},
-                ],
-                "fnDrawCallback": function (oSettings) {
-                    __currency_convert_recursively($('#cash_flow_table'));
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('withinTwoMonthExpiryContracts') }}",
                 },
-                "footerCallback": function ( row, data, start, end, display ) {
-                    var footer_total_credit = 0;
+                columns: [{
+                        data: 'worker_name'
+                    },
+                    {
+                        data: 'residency'
+                    },
+                    {
+                        data: 'project'
+                    },
+                    {
+                        data: 'customer_name'
+                    },
+                    {
+                        data: 'end_date'
+                    },
 
-                    for (var r in data){
-                        footer_total_credit += $(data[r].credit).data('orig-value') ? parseFloat($(data[r].credit).data('orig-value')) : 0;
-                    }
-                    $('.footer_total_credit').html(__currency_trans_from_en(footer_total_credit));
-                }
+                    // {
+                    //     data: 'contract_form',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
+                    //             case 'monthly_cost':
+                    //                 return '{{ trans('sales::lang.monthly_cost') }}';
+                    //             case 'operating_fees':
+                    //                 return '{{ trans('sales::lang.operating_fees') }}';
+
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
+                ]
+
             });
-        @endif
+            $('#within_two_month_expiry_residency_table').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('withinTwoMonthExpiryResidency') }}",
+                },
+                columns: [{
+                        data: 'worker_name'
+                    },
+                    {
+                        data: 'residency'
+                    },
+                    {
+                        data: 'project'
+                    },
+                    {
+                        data: 'customer_name'
+                    },
+                    {
+                        data: 'end_date'
+                    },
 
-        $('#so_location').change( function(){
-            sales_order_table.ajax.reload();
+                    // {
+                    //     data: 'contract_form',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
+                    //             case 'monthly_cost':
+                    //                 return '{{ trans('sales::lang.monthly_cost') }}';
+                    //             case 'operating_fees':
+                    //                 return '{{ trans('sales::lang.operating_fees') }}';
+
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
+                ]
+
+            });
+            $('#within_two_month_expiry_work_cards_table').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{{ route('withinTwoMonthExpiryWorkCard') }}",
+                },
+                columns: [{
+                        data: 'worker_name'
+                    },
+                    {
+                        data: 'residency'
+                    },
+                    {
+                        data: 'work_card_no'
+                    },
+                    {
+                        data: 'project'
+                    },
+                    {
+                        data: 'customer_name'
+                    },
+                    {
+                        data: 'end_date'
+                    },
+
+                    // {
+                    //     data: 'contract_form',
+                    //     render: function(data, type, full, meta) {
+                    //         switch (data) {
+                    //             case 'monthly_cost':
+                    //                 return '{{ trans('sales::lang.monthly_cost') }}';
+                    //             case 'operating_fees':
+                    //                 return '{{ trans('sales::lang.operating_fees') }}';
+
+                    //             default:
+                    //                 return data;
+                    //         }
+                    //     }
+                    // },
+                ]
+
+            });
+
+
+
         });
-        @if(!empty($common_settings['enable_purchase_order']))
-          //Purchase table
-          purchase_order_table = $('#purchase_order_table').DataTable({
-              processing: true,
-              serverSide: true,
-              aaSorting: [[1, 'desc']],
-              scrollY: "75vh",
-              scrollX:        true,
-              scrollCollapse: true,
-              ajax: {
-                  url: '{{action([\App\Http\Controllers\PurchaseOrderController::class, 'index'])}}',
-                  data: function(d) {
-                      d.from_dashboard = true;
-
-                        if ($('#po_location').length > 0) {
-                            d.location_id = $('#po_location').val();
-                        }
-                  },
-              },
-              columns: [
-                  { data: 'action', name: 'action', orderable: false, searchable: false },
-                  { data: 'transaction_date', name: 'transaction_date' },
-                  { data: 'ref_no', name: 'ref_no' },
-                  { data: 'location_name', name: 'BS.name' },
-                  { data: 'name', name: 'contacts.name' },
-                  { data: 'status', name: 'transactions.status' },
-                  { data: 'po_qty_remaining', name: 'po_qty_remaining', "searchable": false},
-                  { data: 'added_by', name: 'u.first_name' }
-              ]
-            })
-
-            $('#po_location').change( function(){
-                purchase_order_table.ajax.reload();
-            });
-        @endif
-
-        @if(!empty($common_settings['enable_purchase_requisition']))
-          //Purchase table
-          purchase_requisition_table = $('#purchase_requisition_table').DataTable({
-              processing: true,
-              serverSide: true,
-              aaSorting: [[1, 'desc']],
-              scrollY: "75vh",
-              scrollX:        true,
-              scrollCollapse: true,
-              ajax: {
-                  url: '{{action([\App\Http\Controllers\PurchaseRequisitionController::class, 'index'])}}',
-                  data: function(d) {
-                      d.from_dashboard = true;
-
-                        if ($('#pr_location').length > 0) {
-                            d.location_id = $('#pr_location').val();
-                        }
-                  },
-              },
-              columns: [
-                    { data: 'action', name: 'action', orderable: false, searchable: false },
-                    { data: 'transaction_date', name: 'transaction_date' },
-                    { data: 'ref_no', name: 'ref_no' },
-                    { data: 'location_name', name: 'BS.name' },
-                    { data: 'status', name: 'status' },
-                    { data: 'delivery_date', name: 'delivery_date' },
-                    { data: 'added_by', name: 'u.first_name' },
-              ]
-            })
-
-            $('#pr_location').change( function(){
-                purchase_requisition_table.ajax.reload();
-            });
-
-            $(document).on('click', 'a.delete-purchase-requisition', function(e) {
-                e.preventDefault();
-                swal({
-                    title: LANG.sure,
-                    icon: 'warning',
-                    buttons: true,
-                    dangerMode: true,
-                }).then(willDelete => {
-                    if (willDelete) {
-                        var href = $(this).attr('href');
-                        $.ajax({
-                            method: 'DELETE',
-                            url: href,
-                            dataType: 'json',
-                            success: function(result) {
-                                if (result.success == true) {
-                                    toastr.success(result.msg);
-                                    purchase_requisition_table.ajax.reload();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            },
-                        });
-                    }
-                });
-            });
-        @endif
-
-        sell_table = $('#shipments_table').DataTable({
-            processing: true,
-            serverSide: true,
-            aaSorting: [[1, 'desc']],
-            scrollY:        "75vh",
-            scrollX:        true,
-            scrollCollapse: true,
-            "ajax": {
-                "url": '{{action([\App\Http\Controllers\SellController::class, 'index'])}}',
-                "data": function ( d ) {
-                    d.only_pending_shipments = true;
-                    if ($('#pending_shipments_location').length > 0) {
-                        d.location_id = $('#pending_shipments_location').val();
-                    }
-                }
-            },
-            columns: [
-                { data: 'action', name: 'action', searchable: false, orderable: false},
-                { data: 'transaction_date', name: 'transaction_date'  },
-                { data: 'invoice_no', name: 'invoice_no'},
-                { data: 'conatct_name', name: 'conatct_name'},
-                { data: 'mobile', name: 'contacts.mobile'},
-                { data: 'business_location', name: 'bl.name'},
-                { data: 'shipping_status', name: 'shipping_status'},
-                @if(!empty($custom_labels['shipping']['custom_field_1']))
-                    { data: 'shipping_custom_field_1', name: 'shipping_custom_field_1'},
-                @endif
-                @if(!empty($custom_labels['shipping']['custom_field_2']))
-                    { data: 'shipping_custom_field_2', name: 'shipping_custom_field_2'},
-                @endif
-                @if(!empty($custom_labels['shipping']['custom_field_3']))
-                    { data: 'shipping_custom_field_3', name: 'shipping_custom_field_3'},
-                @endif
-                @if(!empty($custom_labels['shipping']['custom_field_4']))
-                    { data: 'shipping_custom_field_4', name: 'shipping_custom_field_4'},
-                @endif
-                @if(!empty($custom_labels['shipping']['custom_field_5']))
-                    { data: 'shipping_custom_field_5', name: 'shipping_custom_field_5'},
-                @endif
-                { data: 'payment_status', name: 'payment_status'},
-                { data: 'waiter', name: 'ss.first_name', @if(empty($is_service_staff_enabled)) visible: false @endif }
-            ],
-            "fnDrawCallback": function (oSettings) {
-                __currency_convert_recursively($('#sell_table'));
-            },
-            createdRow: function( row, data, dataIndex ) {
-                $( row ).find('td:eq(4)').attr('class', 'clickable_td');
-            }
-        });
-
-        $('#pending_shipments_location').change( function(){
-            sell_table.ajax.reload();
-        });
-    });
     </script>
-@endsection
-
+@endsection --}}

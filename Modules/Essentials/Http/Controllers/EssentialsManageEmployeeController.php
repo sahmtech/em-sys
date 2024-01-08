@@ -152,7 +152,7 @@ class EssentialsManageEmployeeController extends Controller
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
             ->select([
-                'users.id',
+                'users.id as id',
                 'users.emp_number',
                 'users.profile_image',
                 'users.username',
@@ -319,7 +319,7 @@ class EssentialsManageEmployeeController extends Controller
                         $subQuery->where('name', 'like', '%' . $keyword . '%');
                     });
                 })
-                ->removecolumn('id')
+                //->removecolumn('id')
                 ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view'])
                 ->make(true);
         }
@@ -371,6 +371,33 @@ class EssentialsManageEmployeeController extends Controller
                 // 'bl_attributes',
                 // 'default_location'
             ));
+    }
+
+
+    public function employee_affairs_dashboard()
+    {
+        $today = now();
+        $endDateThreshold = $today->copy()->addDays(14);
+        
+        $probation_period = EssentialsEmployeesContract::where('probation_period', 3)
+            ->where(function ($query) use ($today) {
+                $query->whereDate('contract_start_date', '<=', $today)
+                      ->orWhereNull('contract_start_date'); // Handle cases where contract_start_date is null
+            })
+            ->whereDate(DB::raw('DATE_ADD(contract_start_date, INTERVAL probation_period MONTH)'), '>', $endDateThreshold)
+            ->count();
+
+
+            $today = now();
+            $endDateThreshold = $today->copy()->addDays(60);
+
+            $contract_end_date = EssentialsEmployeesContract::where('probation_period', 3)
+                ->where(function ($query) use ($today) {
+                    $query->whereDate('contract_start_date', '<=', $today)
+                        ->orWhereNull('contract_start_date'); // Handle cases where contract_start_date is null
+                })
+                ->whereDate('contract_end_date', '<=', $endDateThreshold)
+                ->count();
     }
 
     /**
