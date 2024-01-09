@@ -11,88 +11,96 @@
             <div class="row widget-statistic">
 
 
-                <a href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestForm']) }}">
-                    <div class="col-md-3">
-                    <div class="custom_card">
-
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">استمارات تنتهي خالل 15 يوم</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{$latestForm_count}}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
- </div>
-                    </div>
-                </a>
-                <a href="">
+                <a
+                    href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestForm']) }}">
                     <div class="col-md-3">
                         <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">تأمين مركبات ينتهي خلال 15 يوم</h5>
-                                    </div>
-                                   
-                                </div>
-                            </div>
 
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">استمارات تنتهي خالل 15 يوم</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $latestForm_count }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-</div>
                     </div>
                 </a>
-                
-                <a href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestChangeOil']) }}">
+
+                <a
+                    href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestInsurance']) }}">
                     <div class="col-md-3">
                         <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">تغيير الزيت خلال 15 يوم </h5>
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">تأمين مركبات ينتهي خلال 15 يوم</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $latestInsurance_count }}</h4>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{$latestChangeOil_count}}</h4>
-                                    </div>
-                                    
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
- </div>
                     </div>
                 </a>
-                <a href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestMaintenances']) }}">
+
+                <a
+                    href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestChangeOil']) }}">
                     <div class="col-md-3">
                         <div class="custom_card">
-                        <div class="widget widget-one_hybrid widget-engagement">
-                            <div class="widget-heading">
-                                <div class="w-title">
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h5 style="color:#fff">الفحص الدوري خلال 15 يوم</h5>
-                                    </div>
-                                    <div>
-                                        <p class="w-value"></p>
-                                        <h4 style="color:#fff">{{$latestMaintenance_count}}</h4>
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">تغيير الزيت خلال 15 يوم </h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $latestChangeOil_count }}</h4>
+                                        </div>
+
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
- </div>
+                    </div>
+                </a>
+                <a
+                    href="{{ action([Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestMaintenances']) }}">
+                    <div class="col-md-3">
+                        <div class="custom_card">
+                            <div class="widget widget-one_hybrid widget-engagement">
+                                <div class="widget-heading">
+                                    <div class="w-title">
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h5 style="color:#fff">الفحص الدوري خلال 15 يوم</h5>
+                                        </div>
+                                        <div>
+                                            <p class="w-value"></p>
+                                            <h4 style="color:#fff">{{ $latestMaintenance_count }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </a>
 
@@ -107,7 +115,6 @@
                     'class' => 'box-solid',
                     'title' => __('essentials::lang.requests'),
                 ])
-           
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="within_two_month_expiry_contracts_table">
                             <thead>
@@ -131,7 +138,7 @@
 
         </div>
 
-       
+
     </section>
 
     <!-- Main content -->

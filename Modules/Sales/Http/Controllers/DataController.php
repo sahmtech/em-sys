@@ -8,10 +8,11 @@ use Illuminate\Routing\Controller;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Menu;
+
 class DataController extends Controller
 {
 
-       /**
+    /**
      * Superadmin package permissions
      *
      * @return array
@@ -30,8 +31,13 @@ class DataController extends Controller
     public function user_permissions()
     {
         return [
-           
-             [
+            // [
+            //     'value' => 'sales.sales_dashboard',
+            //     'label' => __('sales::lang.dashboard'),
+            //     'default' => false,
+            // ],
+
+            [
                 'value' => 'sales.crud_contacts',
                 'label' => __('sales::lang.crud_contacts'),
                 'default' => false,
@@ -115,9 +121,10 @@ class DataController extends Controller
                 'default' => false,
             ],
 
+
         ];
     }
-    
+
     /**
      * Adds followup menus
      *
@@ -133,7 +140,7 @@ class DataController extends Controller
         if ($is_sales_enabled) {
             Menu::create('custom_admin-sidebar-menu', function ($menu) {
 
-                $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ','active' => request()->segment(1) == 'home'])->order(5);
+                $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
                 $menu->dropdown(
                     __('sales::lang.sales'),
                     function ($subMenu) {
@@ -147,15 +154,15 @@ class DataController extends Controller
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create']),
-                             __('sales::lang.add_offer_price'),
-                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
-                               )->order(2);
+                            __('sales::lang.add_offer_price'),
+                            ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'createOfferPrice'],
+                        )->order(2);
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                             __('sales::lang.offer_price'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'offer-price'],
-                         
+
                         )->order(3);
 
 
@@ -165,7 +172,7 @@ class DataController extends Controller
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'cotracts'],
                         )->order(4);
 
-                        
+
 
                         $subMenu->url(
                             action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
@@ -183,15 +190,13 @@ class DataController extends Controller
                             __('sales::lang.sale_operation_orders'),
                             ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sale_operation_order'],
                         )->order(7);
-                      },
+                    },
                     [
                         'icon' => 'fa fas fa-users',
                         'active' => request()->segment(1) == 'sales',
                         'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                     ]
                 )->order(10);
-             
-              
             });
         }
     }

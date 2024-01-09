@@ -62,6 +62,9 @@
                     @endif
                
 
+                        {{-- <li @if(request()->segment(2) == 'health_insurance') class="active" @endif>
+                            <a href="{{ route('employee_insurance') }}">@lang('essentials::lang.health_insurance')</a>
+                        </li> --}}
 
                  
 

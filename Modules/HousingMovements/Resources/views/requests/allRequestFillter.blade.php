@@ -108,22 +108,24 @@
         @endif
     @endif
     <section class="content">
-       @include('essentials::layouts.nav_requests')
 
+        {{-- @include('housingmovements::layouts.nav_requests') --}}
         @component('components.widget', ['class' => 'box-primary'])
+          
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
                             <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.name')</th>
+                            <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.eqama_number')</th>
                             <th>@lang('followup::lang.project_name')</th>
                             <th>@lang('followup::lang.request_type')</th>
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.action')</th>
+                            {{-- <th>@lang('followup::lang.action')</th> --}}
 
 
                         </tr>
@@ -133,122 +135,31 @@
         @endcomponent
 
 
-
-        {{-- view request --}}
-        <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('followup::lang.view_request')</h4>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="row">
-
-                            <div class="workflow-container" id="workflow-container">
-                                <!-- Workflow circles will be dynamically added here -->
-                            </div>
-
-
-                        </div>
-
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>@lang('followup::lang.worker_details')</h4>
-                                <ul id="worker-list">
-                                    <!-- Worker info will be dynamically added here -->
-                            </div>
-                            <div class="col-md-6">
-
-                                <h4>@lang('followup::lang.activites')</h4>
-                                <ul id="activities-list">
-                                    <!-- Activities will be dynamically added here -->
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-
-                                <h4>@lang('followup::lang.attachments')</h4>
-                                <ul id="attachments-list">
-
-                                </ul>
-                            </div>
-                        </div>
-                        <form id="attachmentForm" method="POST" enctype="multipart/form-data">
-                            @csrf
-
-                            <div class="form-group">
-                                <label for="attachment">
-                                    <h4>@lang('followup::lang.add_attachment')</h4>
-                                </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
-                                    name="attachment">
-                            </div>
-                            <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        </form>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- return request --}}
-        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="returnModalForm">
-                            <div class="form-group">
-                                <label for="reasonInput">@lang('followup::lang.reason')</label>
-                                <input type="text" class="form-control" id="reasonInput" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @include('essentials::requests.change_escalate_requests_status_modal')
-
+     
     </section>
     <!-- /.content -->
 
 @endsection
 
 @section('javascript')
-    <script>
-        var langStrings = {
-            approved: '{{ __('followup::lang.approved') }}',
-            rejected: '{{ __('followup::lang.rejected') }}'
-        };
-    </script>
     <script type="text/javascript">
         $(document).ready(function() {
 
 
+            $('#addRequestModal').on('shown.bs.modal', function(e) {
+                $('#requestType').select2({
+                    dropdownParent: $(
+                        '#addRequestModal'),
+                    width: '100%',
+                });
+            });
 
             var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('essentials.escalate_requests') }}"
+                    url: "{{ route('hm.requestsFillter') }}"
                 },
 
                 columns: [
@@ -302,9 +213,9 @@
                                 return '@lang('followup::lang.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('followup::lang.cancleContractRequest')';
-                            } else if (data === 'WarningRequest') {
+                            }  else if (data === 'WarningRequest') {
                                 return '@lang('followup::lang.WarningRequest')';
-                            } else {
+                            }else {
                                 return data;
                             }
                         }
@@ -319,20 +230,6 @@
                     {
                         data: 'note'
                     },
-                    {
-                   
-                        render: function(data, type, row) {
-                            var buttonsHtml = '';
-
-                            buttonsHtml += `
-                            <button class="btn btn-primary btn-sm btn-view-request" data-request-id="${row.id}">
-                                @lang('followup::lang.view_request')
-                            </button>`;
-
-                            return buttonsHtml;
-                        }
-                    }
-
 
                 ],
             });
@@ -386,7 +283,7 @@
                 var reason = $('#reasonInput').val();
 
                 $.ajax({
-                    url: "{{ route('ess_returnReq') }}",
+                    url: "{{ route('hm.returnReq') }}",
                     method: "POST",
                     data: {
                         requestId: requestId,
@@ -413,6 +310,7 @@
                 // var data = requests_table.row(this).data();
                 // var requestId = data.id;
 
+            
                 if (requestId) {
                     $.ajax({
                         url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
@@ -423,7 +321,7 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList = $('#attachments-list');
+                            var attachmentsList= $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
@@ -519,15 +417,11 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                attachment += '<p>';
-
-                                attachment += '<a href="{{ url('uploads') }}/' + response
-                                    .attachments[j].file_path +
-                                    '" target="_blank" onclick="openAttachment(\'' + response
-                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
-                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) + '</a>';
-
-                                attachment += '</p>';
+                                    attachment += '<p>';
+                                   
+                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+                               
+                                 attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
@@ -703,52 +597,14 @@
         });
     </script>
 
-
-    <script>
-        $(document).ready(function() {
-            $('#worker').select2({
-
-                ajax: {
-                    url: '{{ route('search_proofname') }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
-                            q: params.term,
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data.results,
-                        };
-                    },
-                    cache: true,
-                },
-                minimumInputLength: 1,
-                templateResult: formatResult,
-                templateSelection: formatSelection,
-                escapeMarkup: function(markup) {
-                    return markup;
-                },
-            });
-
-            function formatResult(result) {
-                if (result.loading) return result.text;
-
-                var markup = "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__title'>" + result.full_name + "</div>" +
-
-                    "</div>";
-
-                return markup;
-            }
-
-            function formatSelection(result) {
-                return result.full_name || result.text;
-            }
-
-
+<script>
+    $('#addRequestModal').on('shown.bs.modal', function(e) {
+        $('#worker').select2({
+            dropdownParent: $(
+                '#addRequestModal'),
+            width: '100%',
         });
-    </script>
 
+        });
+</script>
 @endsection

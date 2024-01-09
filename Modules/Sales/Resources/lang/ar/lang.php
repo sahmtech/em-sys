@@ -357,9 +357,9 @@ return [
     'add_salary_request' => 'إضافة طلب راتب',
     'file' => 'المرفق',
     'openfile' => 'افتح المرفق',
-    'escalate_requests'=>'الطلبات المصعّدة',
-    'requests_by_sequential'=>'الطلبات حسب التسلسل'
-
+    'escalate_requests' => 'الطلبات المصعّدة',
+    'requests_by_sequential' => 'الطلبات حسب التسلسل',
+    'dashboard' => 'الصفحة الرئيسية للمبيعات',
 
 
 
@@ -373,3 +373,5 @@ return [
 
 
 ];
+
+// ''=>'',

@@ -10,6 +10,7 @@ use Modules\HousingMovements\Entities\Car;
 use Modules\HousingMovements\Entities\CarModel;
 use Modules\HousingMovements\Entities\HousingMovementsCarsChangeOil;
 use Modules\HousingMovements\Entities\HousingMovementsMaintenance;
+use Modules\HousingMovements\Entities\HousingMovmentInsurance;
 use Yajra\DataTables\Facades\DataTables;
 
 class MovmentDashboardController extends Controller
@@ -26,7 +27,8 @@ class MovmentDashboardController extends Controller
         $latestForm_count = Car::whereBetween('expiry_date',[Carbon::now(), $to_15_days])->count();
         $latestChangeOil_count = HousingMovementsCarsChangeOil::where('date', '>=', $last_15_days)->count();
         $latestMaintenance_count = HousingMovementsMaintenance::where('date', '>=', $last_15_days)->count();
-        return view('essentials::dashboard.movment_dashboard', compact('latestMaintenance_count', 'latestForm_count', 'latestChangeOil_count'));
+        $latestInsurance_count = HousingMovmentInsurance::where('insurance_end_date', '>=', $last_15_days)->count();
+        return view('essentials::dashboard.movment_dashboard', compact('latestMaintenance_count','latestInsurance_count', 'latestForm_count', 'latestChangeOil_count'));
     }
 
 
@@ -260,6 +262,106 @@ class MovmentDashboardController extends Controller
                 ->make(true);
         }
         return view('essentials::movementMangment.fillters.latestMaintenances');
+    }
+
+    public function latestInsurance(){
+        $last_15_days = Carbon::now()->subDays(15);
+        $latestInsurance_ids = HousingMovmentInsurance::where('insurance_end_date', '>=', $last_15_days)->pluck('car_id');
+
+        $Cars = Car::whereIn('id',$latestInsurance_ids)->get();
+        $carTypes = CarModel::all();
+
+
+        if (request()->ajax()) {
+
+            if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
+
+
+                $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
+            }
+
+
+
+            return DataTables::of($Cars)
+
+
+                ->editColumn('car_typeModel', function ($row) {
+                    return $row->CarModel->CarType->name_ar . ' - ' . $row->CarModel->name_ar ?? '';
+                })
+
+                ->editColumn('plate_number', function ($row) {
+                    return $row->plate_number ?? '';
+                })
+                ->editColumn('plate_registration_type', function ($row) {
+                    return __('housingmovements::lang.' . $row->plate_registration_type) ?? '';
+                })
+                ->editColumn('serial_number', function ($row) {
+                    return $row->serial_number ?? '';
+                })
+                ->editColumn('structure_no', function ($row) {
+                    return $row->structure_no ?? '';
+                })
+                ->editColumn('manufacturing_year', function ($row) {
+                    $manufacturingYear = $row->manufacturing_year ?? '';
+                    $year = '';
+                    if (!empty($manufacturingYear)) {
+                        $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $manufacturingYear);
+                        $year = $carbonDate->year;
+                    }
+                    return $year;
+                })
+                ->editColumn('vehicle_status', function ($row) {
+                    return $row->vehicle_status ?? '';
+                })
+                ->editColumn('expiry_date', function ($row) {
+                    return $row->expiry_date ?? '';
+                })
+                ->editColumn('test_end_date', function ($row) {
+                    return $row->test_end_date ?? '';
+                })
+                ->editColumn('examination_status', function ($row) {
+                    return __('housingmovements::lang.' . $row->examination_status) ?? '';
+                })
+
+                ->editColumn('number_seats', function ($row) {
+                    return  $row->number_seats ?? '';
+                })
+                ->editColumn('color', function ($row) {
+                    return $row->color ?? '';
+                })
+                ->editColumn('insurance_status', function ($row) {
+                    return __('housingmovements::lang.' . $row->insurance_status) ?? '';
+                })
+                ->editColumn('insurance_company_id', function ($row) {
+                    return $row->insurance->insurance_company_id ?? '';
+                })
+                
+                ->addColumn(
+                    'action',
+                    function ($row) {
+
+                        $html = '';
+
+                        $html .= '
+                        <a href="' . route('essentials.car.edit', ['id' => $row->id])  . '"
+                        data-href="' . route('essentials.car.edit', ['id' => $row->id])  . ' "
+                         class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_car_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
+                    ';
+                        $html .= '
+                    <button data-href="' .  route('essentials.car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
+                ';
+
+
+                        return $html;
+                    }
+                )
+
+              
+
+                ->rawColumns(['action', 'car_typeModel','insurance_company_id', 'plate_number', 'number_seats', 'color'])
+                ->make(true);
+        }
+        return view('essentials::movementMangment.fillters.latestInsurances', compact('carTypes', 'Cars'));
     }
     /**
      * Show the form for creating a new resource.

@@ -43,10 +43,15 @@
                         <div class="clearfix"></div>
                         <hr>
                         <div class="col-md-12">
-                            <p>@lang('worker.full_name'): {{ $user->first_name }} {{ $user->last_name }}</p>
-                            <p>@lang('worker.nationality'): {{ $user->country->nationality }}</p>
-                            <p>@lang('worker.residency'): {{ $user->id_proof_number }}</p>
-                            <p>Monthly Cost: </p>
+                            <div class="col-md-12">
+                                <p>@lang('worker.full_name'): {{ $user->first_name }} {{ $user->last_name }}</p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>@lang('worker.nationality'): {{ $user->country->nationality }}</p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>@lang('worker.residency'): {{ $user->id_proof_number }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,17 +63,26 @@
                         <div class="clearfix"></div>
                         <hr>
                         <div class="col-md-12">
-                            <p>@lang('worker.work_days'): {{ $attendance->work_days }} </p>
+                            <div class="col-md-6">
+                                <p>@lang('worker.work_days'): {{ $attendance->work_days }} </p>
+                            </div>
 
-                            <p>@lang('worker.actual_work_days'): {{ $attendance->actual_work_days }}</p>
+                            <div class="col-md-6">
+                                <p>@lang('worker.actual_work_days'): {{ $attendance->actual_work_days }}</p>
+                            </div>
 
-                            <p>@lang('worker.late_days'): {{ $attendance->late_days }}</p>
-
-                            <p>@lang('worker.out_of_site_days'): {{ $attendance->out_of_site_days }}</p>
-
-                            <p>@lang('worker.absence_days'): {{ $attendance->absence_days }}</p>
-
-                            <p>@lang('worker.leave_days'): {{ $attendance->leave_days }}</p>
+                            <div class="col-md-6">
+                                <p>@lang('worker.late_days'): {{ $attendance->late_days }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>@lang('worker.out_of_site_days'): {{ $attendance->out_of_site_days }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>@lang('worker.absence_days'): {{ $attendance->absence_days }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>@lang('worker.leave_days'): {{ $attendance->leave_days }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -82,14 +96,23 @@
                         <div class="clearfix"></div>
                         <hr>
                         <div class="col-md-12">
-                            <p>@lang('agent.basic_salary'): {{ number_format($user->essentials_salary ?? 0, 0) }} </p>
+                            <div class="col-md-6">
+
+                                <p>@lang('agent.basic_salary'): {{ number_format($user->essentials_salary ?? 0, 0) }} </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>@lang('agent.absence_deductions'): {{ number_format($absence_deductions ?? 0, 0) }} </p>
+                            </div>
                             @foreach ($allowances_and_deductions->allowances as $key => $allowance)
-                                <p>{{ $allowance->essentialsAllowanceAndDeduction->description }}:
-                                    {{ number_format($allowance->amount ?? 0, 0) }} </p>
+                                <div class="col-md-6">
+                                    <p>{{ $allowance->essentialsAllowanceAndDeduction->description }}:
+                                        {{ number_format($allowance->amount ?? 0, 0) }} </p>
+                                </div>
                             @endforeach
+
                         </div>
                         <div class="col-md-12">
-                            <h4>@lang('agent.total'): {{ number_format($user->total_salary ?? 0) }}
+                            <h4 style="float: left">@lang('agent.total'): {{ number_format($cost2 ?? 0) }}
                             </h4>
                         </div>
                     </div>
@@ -177,305 +200,7 @@
 
         </div>
         {!! Form::close() !!}
-        {{-- {!! Form::open(['url' => $action_url, 'method' => 'post', 'id' => 'add_payroll_form']) !!}
-        {!! Form::hidden('transaction_date', $transaction_date) !!}
-        @if ($action == 'edit')
-            {!! Form::hidden('payroll_group_id', $payroll_group->id) !!}
-        @endif
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box box-solid">
-                    <div class="box-body">
 
-                        <table class="table" id="payroll_table">
-                            <tr>
-                                <th>
-                                    @lang('essentials::lang.employee')
-                                </th>
-                                <th>
-                                    @lang('essentials::lang.salary')
-                                </th>
-                                <th>
-                                    @lang('essentials::lang.allowances')
-                                </th>
-                                <th>
-                                    @lang('essentials::lang.deductions')
-                                </th>
-                                <th>
-                                    @lang('essentials::lang.gross_amount')
-                                </th>
-                            </tr>
-                            @foreach ($payrolls as $employee => $payroll)
-                                @php
-                                    if ($action != 'edit') {
-                                        $amount_per_unit_duration = (float) $payroll['essentials_salary'];
-                                        $total_work_duration = 1;
-                                        $duration_unit = __('lang_v1.month');
-                                        if ($payroll['essentials_pay_period'] == 'week') {
-                                            $total_work_duration = 4;
-                                            $duration_unit = __('essentials::lang.week');
-                                        } elseif ($payroll['essentials_pay_period'] == 'day') {
-                                            $total_work_duration = \Carbon::parse($transaction_date)->daysInMonth;
-                                            $duration_unit = __('lang_v1.day');
-                                        }
-                                        $total = $total_work_duration * $amount_per_unit_duration;
-                                    } else {
-                                        $amount_per_unit_duration = $payroll['essentials_amount_per_unit_duration'];
-                                        $total_work_duration = $payroll['essentials_duration'];
-                                        $duration_unit = $payroll['essentials_duration_unit'];
-                                        $total = $total_work_duration * $amount_per_unit_duration;
-                                    }
-                                @endphp
-                                <tr data-id="{{ $employee }}">
-                                    <input type="hidden" name="payrolls[{{ $employee }}][expense_for]"
-                                        value="{{ $employee }}">
-                                    @if ($action == 'edit')
-                                        {!! Form::hidden('payrolls[' . $employee . '][transaction_id]', $payroll['transaction_id']) !!}
-                                    @endif
-                                    <td>
-                                        {{ $payroll['name'] }}
-                                        <br><br>
-                                        <b>{{ __('essentials::lang.leaves') }} :</b>
-                                        {{ __('essentials::lang.total_leaves_days', ['total_leaves' => $payroll['total_leaves']]) }}
-                                        <br><br>
-                                        <b>{{ __('essentials::lang.work_duration') }} :</b>
-                                        {{ __('essentials::lang.work_duration_hour', ['duration' => $payroll['total_work_duration']]) }}
-                                        <br><br>
-                                        <b>
-                                            {{ __('essentials::lang.attendance') }}:
-                                        </b>
-                                        {{ $payroll['total_days_worked'] }} @lang('lang_v1.days')
-                                    </td>
-                                    <td>
-                                        {!! Form::label('essentials_duration_' . $employee, __('essentials::lang.total_work_duration') . ':*') !!}
-                                        {!! Form::text('payrolls[' . $employee . '][essentials_duration]', $total_work_duration, [
-                                            'class' => 'form-control input_number essentials_duration',
-                                            'placeholder' => __('essentials::lang.total_work_duration'),
-                                            'required',
-                                            'data-id' => $employee,
-                                            'id' => 'essentials_duration_' . $employee,
-                                        ]) !!}
-                                        <br>
-
-                                        {!! Form::label('essentials_duration_unit_' . $employee, __('essentials::lang.duration_unit') . ':') !!}
-                                        {!! Form::text('payrolls[' . $employee . '][essentials_duration_unit]', $duration_unit, [
-                                            'class' => 'form-control',
-                                            'placeholder' => __('essentials::lang.duration_unit'),
-                                            'data-id' => $employee,
-                                            'id' => 'essentials_duration_unit_' . $employee,
-                                        ]) !!}
-
-                                        <br>
-
-                                        {!! Form::label(
-                                            'essentials_amount_per_unit_duration_' . $employee,
-                                            __('essentials::lang.amount_per_unit_duartion') . ':*',
-                                        ) !!}
-                                        {!! Form::text('payrolls[' . $employee . '][essentials_amount_per_unit_duration]', $amount_per_unit_duration, [
-                                            'class' => 'form-control input_number essentials_amount_per_unit_duration',
-                                            'placeholder' => __('essentials::lang.amount_per_unit_duartion'),
-                                            'required',
-                                            'data-id' => $employee,
-                                            'id' => 'essentials_amount_per_unit_duration_' . $employee,
-                                        ]) !!}
-
-                                        <br>
-                                        {!! Form::label('total_' . $employee, __('sale.total') . ':') !!}
-                                        {!! Form::text('payrolls[' . $employee . '][total]', $total, [
-                                            'class' => 'form-control input_number total',
-                                            'placeholder' => __('sale.total'),
-                                            'data-id' => $employee,
-                                            'id' => 'total_' . $employee,
-                                        ]) !!}
-                                    </td>
-                                    <td>
-                                        @component('components.widget')
-                                            <table class="table table-condenced allowance_table"
-                                                id="allowance_table_{{ $employee }}" data-id="{{ $employee }}">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="col-md-5">@lang('essentials::lang.description')</th>
-                                                        <th class="col-md-3">@lang('essentials::lang.amount_type')</th>
-                                                        <th class="col-md-3">@lang('sale.amount')</th>
-                                                        <th class="col-md-1">&nbsp;</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @php
-                                                        $total_allowances = 0;
-                                                    @endphp
-                                                    @if (!empty($payroll['allowances']))
-                                                        @foreach ($payroll['allowances']['allowance_names'] as $key => $value)
-                                                            @include(
-                                                                'essentials::payroll.allowance_and_deduction_row',
-                                                                [
-                                                                    'add_button' =>
-                                                                        $loop->index == 0 ? true : false,
-                                                                    'type' => 'allowance',
-                                                                    'name' => $value,
-                                                                    'value' =>
-                                                                        $payroll['allowances'][
-                                                                            'allowance_amounts'
-                                                                        ][$key],
-                                                                    'amount_type' =>
-                                                                        $payroll['allowances']['allowance_types'][
-                                                                            $key
-                                                                        ],
-                                                                    'percent' =>
-                                                                        $payroll['allowances'][
-                                                                            'allowance_percents'
-                                                                        ][$key],
-                                                                ]
-                                                            )
-
-                                                            @php
-                                                                $total_allowances += $payroll['allowances']['allowance_amounts'][$key];
-                                                            @endphp
-                                                        @endforeach
-                                                    @else
-                                                        @include(
-                                                            'essentials::payroll.allowance_and_deduction_row',
-                                                            ['add_button' => true, 'type' => 'allowance']
-                                                        )
-                                                        @include(
-                                                            'essentials::payroll.allowance_and_deduction_row',
-                                                            ['type' => 'allowance']
-                                                        )
-                                                        @include(
-                                                            'essentials::payroll.allowance_and_deduction_row',
-                                                            ['type' => 'allowance']
-                                                        )
-                                                    @endif
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <th colspan="2">@lang('sale.total')</th>
-                                                        <td><span id="total_allowances_{{ $employee }}"
-                                                                class="display_currency"
-                                                                data-currency_symbol="true">{{ $total_allowances }}</span>
-                                                        </td>
-                                                        <td>&nbsp;</td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        @endcomponent
-                                    </td>
-                                    <td>
-                                        @component('components.widget')
-                                            <table class="table table-condenced deductions_table"
-                                                id="deductions_table_{{ $employee }}" data-id="{{ $employee }}">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="col-md-5">@lang('essentials::lang.description')</th>
-                                                        <th class="col-md-3">@lang('essentials::lang.amount_type')</th>
-                                                        <th class="col-md-3">@lang('sale.amount')</th>
-                                                        <th class="col-md-1">&nbsp;</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @php
-                                                        $total_deductions = 0;
-                                                    @endphp
-                                                    @if (!empty($payroll['deductions']))
-                                                        @foreach ($payroll['deductions']['deduction_names'] as $key => $value)
-                                                            @include(
-                                                                'essentials::payroll.allowance_and_deduction_row',
-                                                                [
-                                                                    'add_button' =>
-                                                                        $loop->index == 0 ? true : false,
-                                                                    'type' => 'deduction',
-                                                                    'name' => $value,
-                                                                    'value' =>
-                                                                        $payroll['deductions'][
-                                                                            'deduction_amounts'
-                                                                        ][$key],
-                                                                    'amount_type' =>
-                                                                        $payroll['deductions']['deduction_types'][
-                                                                            $key
-                                                                        ],
-                                                                    'percent' =>
-                                                                        $payroll['deductions'][
-                                                                            'deduction_percents'
-                                                                        ][$key],
-                                                                ]
-                                                            )
-
-                                                            @php
-                                                                $total_deductions += $payroll['deductions']['deduction_amounts'][$key];
-                                                            @endphp
-                                                        @endforeach
-                                                    @else
-                                                        @include(
-                                                            'essentials::payroll.allowance_and_deduction_row',
-                                                            ['add_button' => true, 'type' => 'deduction']
-                                                        )
-                                                        @include(
-                                                            'essentials::payroll.allowance_and_deduction_row',
-                                                            ['type' => 'deduction']
-                                                        )
-                                                        @include(
-                                                            'essentials::payroll.allowance_and_deduction_row',
-                                                            ['type' => 'deduction']
-                                                        )
-                                                    @endif
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <th colspan="2">@lang('sale.total')</th>
-                                                        <td><span id="total_deductions_{{ $employee }}"
-                                                                class="display_currency"
-                                                                data-currency_symbol="true">{{ $total_deductions }}</span>
-                                                        </td>
-                                                        <td>&nbsp;</td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        @endcomponent
-                                    </td>
-                                    <td>
-                                        <strong>
-                                            <span id="gross_amount_text_{{ $employee }}">0</span>
-                                        </strong>
-                                        <br>
-                                        {!! Form::hidden('payrolls[' . $employee . '][final_total]', 0, [
-                                            'id' => 'gross_amount_' . $employee,
-                                            'class' => 'gross_amount',
-                                        ]) !!}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5">
-                                        <div class="form-group">
-                                            {!! Form::label('note_' . $employee, __('brand.note') . ':') !!}
-                                            {!! Form::textarea('payrolls[' . $employee . '][staff_note]', $payroll['staff_note'] ?? null, [
-                                                'class' => 'form-control',
-                                                'placeholder' => __('sale.total'),
-                                                'id' => 'note_' . $employee,
-                                                'rows' => 3,
-                                            ]) !!}
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                {!! Form::hidden('total_gross_amount', 0, ['id' => 'total_gross_amount']) !!}
-                <button type="submit" class="btn btn-primary pull-right m-8" id="submit_user_button">
-                    {{ $submit_btn_text }}
-                </button>
-                <div class="form-group pull-right m-8 mt-15">
-                    <label>
-                        {!! Form::checkbox('notify_employee', 1, 0, ['class' => 'input-icheck']) !!} {{ __('essentials::lang.notify_employee') }}
-                    </label>
-                </div>
-            </div>
-        </div>
-        {!! Form::close() !!}  --}}
     @stop
     @section('javascript')
         <script type="text/javascript">
@@ -486,7 +211,89 @@
                 var essentialsDeductionRowCount = 0;
                 var essentialsAllowance = <?php echo json_encode($essentialsAllowance); ?>;
                 var essentialsDeduction = <?php echo json_encode($essentialsDeduction); ?>;
-                var totalSalary = parseFloat('{{ $user->total_salary ?? 0 }}');
+                var totalSalary = parseFloat('{{ $cost2 ?? 0 }}');
+                var deductions = @json($deductions);
+
+                var additions = @json($additions);
+
+                check_additions_deductions();
+
+                function check_additions_deductions() {
+                    if (additions) {
+                        additions = JSON.parse(@json($additions));
+                        additions.allowance_names.forEach((allowance, key) => {
+                            var newRow = '<tr id="row-' + essentialsAllowanceAndDeductionRow + '">' +
+                                '<td>' +
+                                '<div class="row">' +
+                                '<div class="col-md-6">' +
+                                '<select name="allowances[]" class="form-control pull-left" style="height:40px">';
+
+                            // Add options to select and set the selected value
+                            $.each(essentialsAllowance, function(allowanceKey, allowanceValue) {
+                                newRow += '<option value="' + allowanceKey + '"' +
+                                    (allowance === allowanceValue ? ' selected' : '') +
+                                    '>' + allowanceValue + '</option>';
+                            });
+
+                            newRow += '</select>' +
+                                '</div>' +
+                                '<div class="col-md-4">' +
+                                '<input type="text" name="allowances_amount[]" class="form-control pull-left" style="height:40px" placeholder="{{ __('essentials::lang.amount') }}" value="' +
+                                additions.allowance_amounts[key] + '">' +
+                                '</div>' +
+                                '<div class="col-md-1 button_container">' +
+                                '<button type="button" class="btn btn-danger btn-xs allowance_remove_tr" data-id="row-' +
+                                essentialsAllowanceAndDeductionRow + '"><i class="fa fa-minus"></i></button>' +
+                                '</div>' +
+                                '</div>' +
+                                '</td>' +
+                                '</tr>';
+
+                            $('#essentialsAllowanceTable').append(newRow);
+                            essentialsAllowanceAndDeductionRow++;
+                        });
+                        updateTotalSalary();
+                    }
+
+                    if (deductions) {
+                        deductions = JSON.parse(@json($deductions));
+                        deductions.deduction_names.forEach((deduction, key) => {
+                            var newRow = '<tr id="deduction-row-' + essentialsDeductionRowCount + '">' +
+                                '<td>' +
+                                '<div class="row">' +
+                                '<div class="col-md-6">' +
+                                '<select name="deductions[]" class="form-control pull-left" style="height:40px">';
+
+                            // Add options to select and set the selected value
+                            $.each(essentialsDeduction, function(deductionKey, deductionValue) {
+                                newRow += '<option value="' + deductionKey + '"' +
+                                    (deduction === deductionValue ? ' selected' : '') +
+                                    '>' + deductionValue + '</option>';
+                            });
+
+                            newRow += '</select>' +
+                                '</div>' +
+                                '<div class="col-md-4">' +
+                                '<input type="text" name="deductions_amount[]" class="form-control pull-left" style="height:40px" placeholder="{{ __('essentials::lang.amount') }}" value="' +
+                                deductions.deduction_amounts[key] + '">' +
+                                '</div>' +
+                                '<div class="col-md-1 button_container">' +
+                                '<button type="button" class="btn btn-danger btn-xs deduction_remove_tr" data-id="deduction-row-' +
+                                essentialsDeductionRowCount + '"><i class="fa fa-minus"></i></button>' +
+                                '</div>' +
+                                '</div>' +
+                                '</td>' +
+                                '</tr>';
+
+                            $('#essentialsDeductionTable').append(newRow);
+                            essentialsDeductionRowCount++;
+                        });
+                        updateTotalSalary();
+                    }
+
+
+
+                }
 
 
                 $('#essentialsAllowanceAddRow').click(function() {
