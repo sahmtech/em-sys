@@ -33,7 +33,7 @@ class EssentialsRegionController extends Controller
         if (! $can_crud_regoins) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
             
@@ -101,7 +101,7 @@ class EssentialsRegionController extends Controller
     {
      
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
  
  
@@ -151,7 +151,7 @@ class EssentialsRegionController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
      
 
@@ -174,7 +174,7 @@ class EssentialsRegionController extends Controller
     {
    
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
      
 
@@ -216,7 +216,7 @@ class EssentialsRegionController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
     
 

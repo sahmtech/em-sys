@@ -3,6 +3,7 @@
 
 @section('content')
     @include('followup::layouts.nav_requests')
+  
 
     <section class="content-header">
         <h1>
@@ -108,7 +109,7 @@
         @endif
     @endif
     <section class="content">
-
+        @include('followup::layouts.nav_followup_requests')
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')

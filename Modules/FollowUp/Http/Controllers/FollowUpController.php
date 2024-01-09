@@ -48,6 +48,8 @@ class FollowUpController extends Controller
 
         return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));
     }
+
+    
     public function withinTwoMonthExpiryContracts()
     {
         // $business_id = request()->session()->get('user.business_id');
@@ -182,7 +184,7 @@ class FollowUpController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business = Business::where('id', $business_id)->first();
         $contracts = User::where('user_type', 'worker')->whereHas('contract', function ($qu) use ($business) {
             $qu->whereDate('contract_end_date', '>=', Carbon::now($business->time_zone))

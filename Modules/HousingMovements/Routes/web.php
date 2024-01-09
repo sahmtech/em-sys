@@ -15,9 +15,11 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
     Route::prefix('housingmovements')->group(function () {
         Route::get('/dashboard', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
+        Route::get('/dashboard-movment', [Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->name('housingmovements.dashboard');
 
         //requests 
         Route::get('/hm.requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index'])->name('hm.requests');
+        Route::get('/hm.requestsFillter', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'requestsFillter'])->name('hm.requestsFillter');
         Route::post('/hm.returnReq', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'returnReq'])->name('hm.returnReq');
         Route::post('/hm.returnReq.store', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'store'])->name('hm.returnReq.store');
         Route::get('/escalate_requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'escalateRequests'])->name('hm.escalate_requests');
@@ -37,6 +39,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         //Rooms
         Route::get('/rooms', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'index'])->name('rooms');
+        Route::get('/empty-rooms', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'emptyRooms'])->name('empty-rooms');
         Route::get('/createRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'create'])->name('createRoom');
         Route::post('/storeRoom', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'store'])->name('storeRoom');
         Route::get('/rooms/edit/{roomId}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'edit'])->name('room.edit');
@@ -47,7 +50,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/room_data', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'room_data'])->name('room_data');
 
         Route::get('/show_rooms/workers/{id}', [\Modules\HousingMovements\Http\Controllers\RoomController::class, 'show_room_workers'])->name('show_room_workers');
-        
+
         //facilities
         Route::get('/facilities', [\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index'])->name('facilities');
 
@@ -61,6 +64,16 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/housed-workers', [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_workers_index'])->name('housed_workers');
         Route::get('/workers/index/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index'])->name('workers.index');
         Route::get('/workers/show/{id}', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'show'])->name('htr.show.workers');
+
+
+        // Workers 
+        Route::get('/workers/available-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'available_shopping'])->name('workers.available_shopping');
+        Route::get('/workers/reserved-shopping/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'reserved_shopping'])->name('workers.reserved_shopping');
+        Route::get('/workers/final-exit/', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'final_exit'])->name('workers.final_exit');
+        Route::get('/workers/book/{id}', [\Modules\HousingMovements\Http\Controllers\WorkerBookingController::class, 'create'])->name('worker.book');
+        Route::delete('/workers/unbook/{id}', [\Modules\HousingMovements\Http\Controllers\WorkerBookingController::class, 'destroy'])->name('worker.unbook');
+        Route::post('/save-book', [\Modules\HousingMovements\Http\Controllers\WorkerBookingController::class, 'store'])->name('worker.book-store');
+
 
         Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
         Route::post('/housed',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'housed_data'])->name('housed');

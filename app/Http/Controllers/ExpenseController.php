@@ -157,7 +157,7 @@ class ExpenseController extends Controller
                 }
             }
 
-            $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             if (! $is_admin && ! auth()->user()->can('all_expense.access')) {
                 $user_id = auth()->user()->id;
                 $expenses->where(function ($query) use ($user_id) {

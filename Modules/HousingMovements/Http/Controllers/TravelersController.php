@@ -462,7 +462,9 @@ class TravelersController extends Controller
             return response()->json(['shifts' => $shifts]);
         }
 
-    public function postarrivaldata(Request $request)
+   
+   
+        public function postarrivaldata(Request $request)
         {
             try {
             $requestData = $request->only([

@@ -175,7 +175,9 @@
         </div>
         @include('home.todays_profit_modal')
         <!-- /.content-wrapper -->
-        @include('layouts.custom_layouts.custom_footer')
+        {{-- @include('layouts.custom_layouts.custom_footer') --}}
+        @include('layouts.partials.footer')
+        
         {{-- @if (!$pos_layout)
             @include('layouts.partials.footer')
         @else

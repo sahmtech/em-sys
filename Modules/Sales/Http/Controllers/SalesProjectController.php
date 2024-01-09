@@ -29,7 +29,7 @@ class SalesProjectController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $SalesProjects = SalesProject::with(['contact']);
@@ -125,7 +125,7 @@ class SalesProjectController extends Controller
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -177,7 +177,7 @@ class SalesProjectController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
@@ -200,7 +200,7 @@ class SalesProjectController extends Controller
     {
 
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -234,7 +234,7 @@ class SalesProjectController extends Controller
     {
        
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

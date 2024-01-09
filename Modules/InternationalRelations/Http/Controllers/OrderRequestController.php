@@ -40,13 +40,13 @@ class OrderRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_orders_operations = auth()->user()->can('internationalrelations.crud_orders_operations');
-        if (!($isSuperAdmin || $can_crud_orders_operations)) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!($is_admin || $can_crud_orders_operations)) {
+            //temp  abort(403, 'Unauthorized action.');
         }
         $operations = DB::table('sales_orders_operations')
             ->join('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
@@ -127,13 +127,13 @@ class OrderRequestController extends Controller
 
     public function Delegation($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_delegate_order = auth()->user()->can('internationalrelations.delegate_order');
-        if (!($isSuperAdmin || $can_delegate_order)) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!($is_admin || $can_delegate_order)) {
+            //temp  abort(403, 'Unauthorized action.');
         }
         $operation = SalesOrdersOperation::with('salesContract.transaction')
             ->where('id', $id)
@@ -164,13 +164,13 @@ class OrderRequestController extends Controller
 
     public function viewDelegation($id)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_delegation_info = auth()->user()->can('internationalrelations.view_delegation_info');
-        if (!($isSuperAdmin || $can_view_delegation_info)) {
-           //temp  abort(403, 'Unauthorized action.');
+        if (!($is_admin || $can_view_delegation_info)) {
+            //temp  abort(403, 'Unauthorized action.');
         }
         $operation = SalesOrdersOperation::with('salesContract.transaction')
             ->where('id', $id)
@@ -190,7 +190,7 @@ class OrderRequestController extends Controller
     public function saveRequest(Request $request)
     {
 
-      
+
         try {
 
 
@@ -217,18 +217,18 @@ class OrderRequestController extends Controller
                 $order->Status = 'under_process';
                 $order->save();
             }
-         
+
             foreach ($data_array as $index => $item) {
                 if (isset($item['target_quantity'])) {
                     $filePath = null;
-                   
+
 
                     if ($request->hasFile('attachments') && $request->file('attachments')[$index]->isValid()) {
 
                         $file = $request->file('attachments')[$index];
                         $filePath = $file->store('/delegations_validation_files');
                     }
-                    $sellLine=TransactionSellLine::where('service_id', $item['product_id'])->first();
+                    $sellLine = TransactionSellLine::where('service_id', $item['product_id'])->first();
 
                     $delegation = IrDelegation::where('transaction_sell_line_id', $sellLine->id)
                         ->where('agency_id', $item['agency_name'])
@@ -241,12 +241,11 @@ class OrderRequestController extends Controller
                                 'targeted_quantity' => DB::raw('targeted_quantity + ' . $item['target_quantity']),
                                 'validationFile' => $filePath ?? null
                             ]);
-                            
-                        TransactionSellLine::where('id', $sellLine->id)->update([
-                            'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
-                       
-                        ]);
 
+                        TransactionSellLine::where('id', $sellLine->id)->update([
+                            'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),
+
+                        ]);
                     } else {
 
 
@@ -258,8 +257,8 @@ class OrderRequestController extends Controller
                         ]);
 
                         TransactionSellLine::where('id', $sellLine->id)->update([
-                                'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),        
-                           
+                            'operation_remaining_quantity' => \DB::raw('operation_remaining_quantity - ' . $item['target_quantity']),
+
                         ]);
                     }
                 }
@@ -319,20 +318,20 @@ class OrderRequestController extends Controller
                 'sell_lines' => function ($query) {
                     $query->with([
                         'service' => function ($query) {
-                            $query->with('nationality'); 
+                            $query->with('nationality');
                         }
                     ]);
                 }
             ])
             ->first();
 
-     
+
         $nationalities = collect($transaction->sell_lines)
             ->pluck('service.nationality')
             ->unique()
             ->values()
             ->all();
-        
+
         return response()->json(['success' => true, 'data' => ['nationalities' => $nationalities]]);
     }
 

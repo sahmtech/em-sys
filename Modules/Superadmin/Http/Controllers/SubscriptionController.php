@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Session;
 class SubscriptionController extends BaseController
 {
     protected $provider;
+    protected $moduleUtil;
 
     public function __construct(ModuleUtil $moduleUtil = null)
     {
@@ -42,6 +43,7 @@ class SubscriptionController extends BaseController
         }
 
         $this->moduleUtil = $moduleUtil;
+        $this->moduleUtil = $moduleUtil;
     }
 
     /**
@@ -51,8 +53,8 @@ class SubscriptionController extends BaseController
      */
     public function index()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('superadmin.access_package_subscriptions'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('superadmin.access_package_subscriptions'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -712,8 +714,8 @@ class SubscriptionController extends BaseController
      */
     public function allSubscriptions()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('superadmin.access_package_subscriptions'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('superadmin.access_package_subscriptions'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 

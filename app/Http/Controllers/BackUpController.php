@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Illuminate\Support\Facades\Artisan;
 use Log;
@@ -14,10 +15,12 @@ class BackUpController extends Controller
      * All Utils instance.
      */
     protected $commonUtil;
+    protected $moduleUtil;
 
-    public function __construct(Util $commonUtil)
+    public function __construct(Util $commonUtil, ModuleUtil $moduleUtil)
     {
         $this->commonUtil = $commonUtil;
+        $this->moduleUtil = $moduleUtil;
     }
 
     /**
@@ -27,9 +30,9 @@ class BackUpController extends Controller
      */
     public function index()
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('backup'))) {
-           //temp  abort(403, 'Unauthorized action.');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('backup'))) {
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
@@ -67,7 +70,7 @@ class BackUpController extends Controller
     public function create()
     {
         if (!auth()->user()->can('backup')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -106,7 +109,7 @@ class BackUpController extends Controller
     public function download($file_name)
     {
         if (!auth()->user()->can('backup')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo
@@ -144,7 +147,7 @@ class BackUpController extends Controller
     public function delete($file_name)
     {
         if (!auth()->user()->can('backup')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo

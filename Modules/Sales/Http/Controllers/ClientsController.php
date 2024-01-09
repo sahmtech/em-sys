@@ -55,7 +55,7 @@ class ClientsController extends Controller
     public function lead_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $query = User::where('business_id', $business_id);
@@ -112,7 +112,7 @@ class ClientsController extends Controller
     public function qualified_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
@@ -168,7 +168,7 @@ class ClientsController extends Controller
     public function unqualified_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -213,7 +213,7 @@ class ClientsController extends Controller
     public function converted_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -408,7 +408,7 @@ class ClientsController extends Controller
     public function changeStatus(Request $request)
     {
         $user = auth()->user();
-        $isSuperAdmin = $user->user_type == 'superadmin';
+      
         $businessId = $request->session()->get('user.business_id');
 
         $todayDate = Carbon::now();
@@ -464,7 +464,7 @@ class ClientsController extends Controller
     public function changeStatusContact(Request $request, $id)
     {
         $user = auth()->user();
-        $isSuperAdmin = $user->user_type == 'superadmin';
+       
         $businessId = $request->session()->get('user.business_id');
 
         $todayDate = Carbon::now();
@@ -655,7 +655,7 @@ class ClientsController extends Controller
                 'type', 'contact_id',
                 'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
 
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 'username_cf', 'password_cf'
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 
             ]);
 
             // $input['allow_login_cs'] = $request->filled('allow_login_cs');
@@ -786,7 +786,7 @@ class ClientsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $contact = Contact::where('business_id', $business_id)->findOrFail($id);
 
         if ($request->ajax()) {
@@ -842,7 +842,7 @@ class ClientsController extends Controller
 
     public function change_to_converted_client(Request $request)
     {
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        
 
         $business_id = request()->session()->get('user.business_id');
 

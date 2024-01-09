@@ -33,8 +33,8 @@ class ModulesController extends Controller
     public function index()
     {
 
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
-        if (!($isSuperAdmin || auth()->user()->can('manage_modules'))) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('manage_modules'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
