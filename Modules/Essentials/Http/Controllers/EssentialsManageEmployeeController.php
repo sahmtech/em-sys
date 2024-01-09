@@ -333,7 +333,7 @@ class EssentialsManageEmployeeController extends Controller
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
 
-        $businesses = Business::forDropdown();
+        $businesses = Business::whereIn('id',$user_businesses_ids)->pluck('name', 'id');
         // $bl_attributes = $business_locations['attributes'];
         // $business_locations = $business_locations['locations'];
 
