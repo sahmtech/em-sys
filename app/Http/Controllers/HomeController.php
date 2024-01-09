@@ -235,12 +235,13 @@ class HomeController extends Controller
         // $essentialsController = new $essentialsControllerClass();
         //$essentialsPermissions = $essentialsController->user_permissions();
 
-        $essentialsPermissions = [ ['value'=>'essentials.essentials_dashboard']];
+        $essentialsPermissions = [['value' => 'essentials.essentials_dashboard'],];
 
         //sales
         $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
         $salesController = new $salesControllerClass();
         $salesPermissions = $salesController->user_permissions();
+        // $salesPermissions = [['value'=>'sales.sales_dashboard']];
 
         //internationalRelations
         $irControllerClass = \Modules\InternationalRelations\Http\Controllers\DataController::class;
@@ -325,17 +326,21 @@ class HomeController extends Controller
         ];
 
         $workCardsPermissions = [
-            ['value' => 'essentials.essentials_work_cards_dashboard',],
-            ['value' => 'essentials.view_work_cards',],
-            ['value' => 'essentials.work_cards_all_requests',],
-            ['value' => 'essentials.work_cards_vaction_requests',],
-            ['value' => 'essentials.work_cards_operation',],
+            ['value' => 'essentials.essentials_work_cards_dashboard'],
+            ['value' => 'essentials.view_work_cards'],
+            ['value' => 'essentials.work_cards_all_requests'],
+            ['value' => 'essentials.work_cards_vaction_requests'],
+            ['value' => 'essentials.work_cards_operation'],
         ];
 
         $employeeAffairsPermissions = [
-            ['value' => 'essentials.view_employee_affairs',],
+            ['value' => 'essentials.view_employee_affairs'],
         ];
 
+
+        $medicalInsurancePermissions = [
+             ['value' => 'essentials.view_medical_insurance'],
+        ];
 
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
@@ -347,12 +352,12 @@ class HomeController extends Controller
             ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_word_cards_dashboard')],
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fa fas fa-users', 'link' =>   route('employee_affairs_dashboard')],
 
-
+            ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('employee_insurance')],
 
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
-            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'movements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],

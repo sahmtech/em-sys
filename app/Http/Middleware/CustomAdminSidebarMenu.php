@@ -26,7 +26,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
         $currentPath = $request->path();
         // Define logic to set the menuName based on the route
@@ -34,6 +34,8 @@ class CustomAdminSidebarMenu
             $this->userManagementMenu();
         } elseif (Str::startsWith($currentPath, ['work_cards'])) {
             $this->workCardsMenu();
+        } elseif (Str::startsWith($currentPath, ['medicalInsurance'])) {
+            $this->medicalInsuranceMenu();
         } elseif (Str::startsWith($currentPath, ['employee_affairs'])) {
             $this->employeeAffairsMenu();
         } elseif (Str::startsWith($currentPath, ['essentials', 'hrm'])) {
@@ -117,7 +119,7 @@ class CustomAdminSidebarMenu
             $menu->url(action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']), __('crm::lang.crm'), ['icon' => 'fas fa fa-broadcast-tower', 'style' => config('app.env') == 'demo' ? 'background-color: #8CAFD4;' : '', 'active' => request()->segment(1) == 'crm' || request()->get('type') == 'life_stage' || request()->get('type') == 'source']);
             //$menu->header("");
             //$menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->url(
                 action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
                 __('crm::lang.order_request'),
@@ -143,7 +145,7 @@ class CustomAdminSidebarMenu
             );
             //$menu->header("");
             //$menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
         });
     }
 
@@ -151,7 +153,7 @@ class CustomAdminSidebarMenu
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
 
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
                 action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index']),
@@ -184,7 +186,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
-                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'home'],
+                ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'agent' &&  request()->segment(2) == 'home'],
             );
             $menu->url(
                 route('agent_projects'),
@@ -232,7 +234,7 @@ class CustomAdminSidebarMenu
             );
             //$menu->header("");
             //$menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->dropdown(
                 __('connector::lang.connector'),
                 function ($sub) {
@@ -261,7 +263,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
                 action([\App\Http\Controllers\ManageUserController::class, 'index']),
@@ -323,7 +325,7 @@ class CustomAdminSidebarMenu
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
                 [
-                    'icon' => 'fas fa-home  ',
+                    'icon' => 'fa fas fa-home  ',
                     'active' => request()->segment(1) == 'home'
                 ]
             );
@@ -416,6 +418,38 @@ class CustomAdminSidebarMenu
         });
     }
 
+    public function medicalInsuranceMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home', 'active' => request()->segment(1) == 'home']);
+            if ($is_admin  || auth()->user()->can('essentials.view_medical_insurance')) {
+                $menu->url(
+                    route('employee_insurance'),
+                    __('essentials::lang.health_insurance'),
+                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
+                $menu->url(
+                    route('insurance_contracts'),
+                    __('essentials::lang.insurance_contracts'),
+                    ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_contracts'],
+                );
+            }
+            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_companies')) {
+                $menu->url(
+                    route('insurance_companies'),
+                    __('essentials::lang.insurance_companies'),
+                    ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_companies'],
+                );
+            }
+        });
+    }
+
 
     public function workCardsMenu()
     {
@@ -425,7 +459,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             $menu->url(
                 route('essentials_word_cards_dashboard'),
                 __('essentials::lang.work_cards'),
@@ -528,7 +562,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs')) {
                 // $menu->url(
@@ -544,68 +578,66 @@ class CustomAdminSidebarMenu
                 //         || request()->segment(2) == 'featureIndex')],
                 // );
 
-              
+
                 $menu->url(
                     route('employee_affairs_dashboard'),
                     __('essentials::lang.employee_affairs_dashboard'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_dashboard'],
                 );
 
-                    $menu->url(
-                        route('employees'),
-                        __('essentials::lang.employees'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employees'],
-                    );
+                $menu->url(
+                    route('employees'),
+                    __('essentials::lang.employees'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employees'],
+                );
 
-                    $menu->url(
-                        route('appointments'),
-                        __('essentials::lang.appointment'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'appointments'],
-                    );
+                $menu->url(
+                    route('appointments'),
+                    __('essentials::lang.appointment'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'appointments'],
+                );
 
-                    $menu->url(
-                        route('admissionToWork'),
-                        __('essentials::lang.admissions_to_work'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'admissions_to_work'],
-                    );
+                $menu->url(
+                    route('admissionToWork'),
+                    __('essentials::lang.admissions_to_work'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'admissions_to_work'],
+                );
 
-                    $menu->url(
-                        route('employeeContracts'),
-                        __('essentials::lang.employee_contracts'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_contracts'],
-                    );
+                $menu->url(
+                    route('employeeContracts'),
+                    __('essentials::lang.employee_contracts'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_contracts'],
+                );
 
-                    $menu->url(
-                        route('qualifications'),
-                        __('essentials::lang.qualifications'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'qualifications'],
-                    );
+                $menu->url(
+                    route('qualifications'),
+                    __('essentials::lang.qualifications'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'qualifications'],
+                );
 
-                    $menu->url(
-                        route('official_documents'),
-                        __('essentials::lang.official_documents'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
-                    );
+                $menu->url(
+                    route('official_documents'),
+                    __('essentials::lang.official_documents'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
+                );
 
-                    $menu->url(
-                        route('employee_families'),
-                        __('essentials::lang.employee_families'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_families'],
-                    );
+                $menu->url(
+                    route('employee_families'),
+                    __('essentials::lang.employee_families'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_families'],
+                );
 
-                    $menu->url(
-                        route('featureIndex'),
-                        __('essentials::lang.features'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'features'],
-                    );
+                $menu->url(
+                    route('featureIndex'),
+                    __('essentials::lang.features'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'features'],
+                );
 
-                    $menu->url(
-                        route('import-employees'),
-                        __('essentials::lang.import_employees'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import'],
-                    );
-
-                
+                $menu->url(
+                    route('import-employees'),
+                    __('essentials::lang.import_employees'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import'],
+                );
             }
         });
     }
@@ -617,7 +649,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
             if ($is_admin  || auth()->user()->can('essentials.essentials_dashboard')) {
                 $menu->url(
                     route('essentials_landing'),
@@ -751,20 +783,7 @@ class CustomAdminSidebarMenu
             //     );
             // }
 
-            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceContractController::class, 'index']),
-                    __('essentials::lang.insurance_contracts'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_contracts'],
-                );
-            }
-            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_companies')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsInsuranceCompanyController::class, 'index']),
-                    __('essentials::lang.insurance_companies'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'insurance_companies'],
-                );
-            }
+
             if ($is_admin  || auth()->user()->can('essentials.crud_system_settings')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
@@ -832,7 +851,7 @@ class CustomAdminSidebarMenu
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
                 [
-                    'icon' => 'fas fa-home  ',
+                    'icon' => 'fa fas fa-home  ',
                     'active' => request()->segment(1) == 'home'
                 ]
             );
@@ -939,13 +958,14 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            // if ($is_admin || auth()->user()->can('sales.sales_dashboard')) {
             $menu->url(
                 route('sales_landing'),
                 __('sales::lang.sales'),
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
             );
+            //  }
             //$menu->header("");
             //$menu->header("");
             if ($is_admin || auth()->user()->can('sales.crud_contacts')) {
@@ -1075,7 +1095,7 @@ class CustomAdminSidebarMenu
             $menu->url(
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
-                ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']
+                ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']
             );
             $menu->url(
                 action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
@@ -1215,7 +1235,7 @@ class CustomAdminSidebarMenu
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
                 [
-                    'icon' => 'fas fa-home  ',
+                    'icon' => 'fa fas fa-home  ',
                     'active' => request()->segment(1) == 'home'
                 ]
             );
@@ -1317,7 +1337,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(
                 action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index']),
@@ -1433,7 +1453,7 @@ class CustomAdminSidebarMenu
                 action([\App\Http\Controllers\HomeController::class, 'index']),
                 __('home.home'),
                 [
-                    'icon' => 'fas fa-home  ',
+                    'icon' => 'fa fas fa-home  ',
                     'active' => request()->segment(1) == 'home'
                 ]
             );
@@ -1778,7 +1798,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(route('purchases.index'),   __('purchase.purchases'), ['icon' => 'fas fa-cart-plus']);
             //$menu->header("");
@@ -1840,7 +1860,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(action([\App\Http\Controllers\ProductController::class, 'index']), __('sale.products'), ['icon' => 'fas fa-chart-pie']);
             //$menu->header("");
@@ -1953,7 +1973,7 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index']), __('superadmin::lang.superadmin'), ['icon' => 'fa fas fa-users-cog', 'active' => request()->segment(1) == 'superadmin']);
 

@@ -13,7 +13,7 @@
        <ul class="sidebar-menu tree">
     
         <li class="treeview">
-         <a  href="{{ route('home') }}"><i class="fas fa-home "></i> <span>الرئيسية</span></a>
+         <a  href="{{ route('home') }}"><i class="fa fas fa-home "></i> <span>الرئيسية</span></a>
         </li>
         
         <li class="treeview">
