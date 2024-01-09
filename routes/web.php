@@ -1,5 +1,6 @@
 <?php
 
+use App\Business;
 use App\Contact;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountReportsController;
@@ -66,7 +67,7 @@ use App\Http\Controllers\WarrantyController;
 use App\User;
 use Illuminate\Support\Facades\Route;
 use Modules\FollowUp\Http\Controllers\FollowUpRequestController;
-
+use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -86,7 +87,28 @@ include_once 'install_r.php';
 //     return $output;
 // });
 
-Route::get('/privacy-policy',function(){
+Route::get('/db_fix', function () {
+    $businesses = Business::all();
+    $numbersArray = $businesses->mapWithKeys(function ($business) {
+        return [$business->id => $business->id . '000001'];
+    })->toArray();
+    $users = User::all();
+    foreach ($users as $user) {
+        // Check if the user's business_id is in numbersArray
+        if (array_key_exists($user->business_id, $numbersArray)) {
+            // Set emp_number for the user
+            $user->emp_number = $numbersArray[$user->business_id];
+
+            // Increment the number in numbersArray for the next user
+            $numbersArray[$user->business_id] = ++$numbersArray[$user->business_id];
+
+            // Save the user with the updated emp_number
+            $user->save();
+        }
+    }
+});
+
+Route::get('/privacy-policy', function () {
     return view('privacy_policy');
 });
 
