@@ -88,7 +88,7 @@ class EssentialsManageEmployeeController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $permissionName = 'essentials.view_profile_picture';
@@ -126,8 +126,8 @@ class EssentialsManageEmployeeController extends Controller
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-               
-                if( $accessRole ){
+
+                if ($accessRole) {
 
                     $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                     $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
@@ -135,7 +135,6 @@ class EssentialsManageEmployeeController extends Controller
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-                            
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
@@ -143,9 +142,9 @@ class EssentialsManageEmployeeController extends Controller
 
         $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
             $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager','worker']);
-            })->orWhere(function ($query3) use ($user_projects_ids) {
-                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager', 'worker']);
+            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
+                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->whereIn('users.business_id', $user_businesses_ids);
             });
         })->where('users.is_cmmsn_agnt', 0)
 
@@ -219,7 +218,6 @@ class EssentialsManageEmployeeController extends Controller
 
             $users->where('users.nationality_id', $request->input('nationality'));
             error_log("111");
-
         }
         if (request()->ajax()) {
 
@@ -380,62 +378,64 @@ class EssentialsManageEmployeeController extends Controller
     {
         $today = now();
         $endDateThreshold = $today->copy()->addDays(14);
-        
+
         $probation_period = EssentialsEmployeesContract::where('probation_period', 3)
             ->where(function ($query) use ($today) {
                 $query->whereDate('contract_start_date', '<=', $today)
-                      ->orWhereNull('contract_start_date'); 
+                    ->orWhereNull('contract_start_date');
             })
             ->whereDate(DB::raw('DATE_ADD(contract_start_date, INTERVAL probation_period MONTH)'), '>', $endDateThreshold)
             ->count();
 
 
-            $today = now();
-            $endDateThreshold = $today->copy()->addDays(60);
+        $today = now();
+        $endDateThreshold = $today->copy()->addDays(60);
 
-            $contract_end_date = EssentialsEmployeesContract::
-                where(function ($query) use ($today) {
-                    $query->whereDate('contract_start_date', '<=', $today)
-                        ->orWhereNull('contract_start_date'); 
-                })
-                ->whereDate('contract_end_date', '<=', $endDateThreshold)
-                ->count();
+        $contract_end_date = EssentialsEmployeesContract::where(function ($query) use ($today) {
+            $query->whereDate('contract_start_date', '<=', $today)
+                ->orWhereNull('contract_start_date');
+        })
+            ->whereDate('contract_end_date', '<=', $endDateThreshold)
+            ->count();
 
         $late_vacation = FollowupWorkerRequest::with(['user'])
-                ->where('type', 'leavesAndDepartures')
-                ->where('type', 'returnRequest') 
-                ->whereHas('user', function ($query)  {
-                    
-                    $query->where('status', 'vecation');
-                })
-                ->where('end_date', '<', now()) 
-                ->count();
-             
-                $nullCount= User::with(['essentials_admission_to_works','essentialsEmployeeAppointmets','essentials_qualification'])
-                ->whereHas('essentials_admission_to_works', function ($query) {
-                    
-                    $query->whereNull('admissions_date');
-                })
-                ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
-                    
-                    $query->WhereNull('start_from')
+            ->where('type', 'leavesAndDepartures')
+            ->where('type', 'returnRequest')
+            ->whereHas('user', function ($query) {
+
+                $query->where('status', 'vecation');
+            })
+            ->where('end_date', '<', now())
+            ->count();
+
+        $nullCount = User::with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+            ->whereHas('essentials_admission_to_works', function ($query) {
+
+                $query->whereNull('admissions_date');
+            })
+            ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
+
+                $query->WhereNull('start_from')
                     ->orWhereNull('end_at')
                     ->orWhereNull('profession_id')
                     ->orWhereNull('specialization_id');
-                })
-                ->orwhereHas('essentials_qualification', function ($query) {
-                    
-                    $query->WhereNull('graduation_year')
+            })
+            ->orwhereHas('essentials_qualification', function ($query) {
+
+                $query->WhereNull('graduation_year')
                     ->orWhereNull('graduation_institution')
                     ->orWhereNull('graduation_country')
                     ->orWhereNull('degree');
-                    
-                })
-                ->count();
-             
-          return view('essentials::employee_affairs.dashboard')
-          ->with(compact('probation_period',
-          'contract_end_date' ,'late_vacation','nullCount'));   
+            })
+            ->count();
+
+        return view('essentials::employee_affairs.dashboard')
+            ->with(compact(
+                'probation_period',
+                'contract_end_date',
+                'late_vacation',
+                'nullCount'
+            ));
     }
 
 
@@ -443,271 +443,270 @@ class EssentialsManageEmployeeController extends Controller
     {
         $today = now();
         $endDateThreshold = $today->copy()->addDays(14);
-        
+
         $probation_period = EssentialsEmployeesContract::with('user')
-       
-        ->where('probation_period', 3)
+
+            ->where('probation_period', 3)
             ->where(function ($query) use ($today) {
                 $query->whereDate('contract_start_date', '<=', $today)
-                      ->orWhereNull('contract_start_date'); 
+                    ->orWhereNull('contract_start_date');
             })
             ->whereDate(DB::raw('DATE_ADD(contract_start_date, INTERVAL probation_period MONTH)'), '>', $endDateThreshold)
-            ->select('contract_end_date' ,'employee_id');
+            ->select('contract_end_date', 'employee_id');
 
 
-       // dd( $residencies->first());
+        // dd( $residencies->first());
 
         if (request()->ajax()) {
 
-        return DataTables::of($probation_period)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                }
-            )
-           
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->user?->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'end_date',
-                function ($row) {
-                    return $row->contract_end_date;
-                }
-            )
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            return DataTables::of($probation_period)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
 
-                //     return $html;
-                // }
-            )
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->contract_end_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
-            
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
         return view('essentials::employee_affairs.statistics.finsish_contract_duration');
-     }
+    }
 
-     public function finish_contracts()
-     {
+    public function finish_contracts()
+    {
         $today = now();
         $endDateThreshold = $today->copy()->addDays(60);
 
         $contract_end_date = EssentialsEmployeesContract::with(['user'])
-        ->whereHas('user', function ($query) {
-            $query->where('user_type', 'worker');
-        })
+            ->whereHas('user', function ($query) {
+                $query->where('user_type', 'worker');
+            })
             ->whereDate('contract_end_date', '<=', $endDateThreshold)
-            ->select('contract_end_date' ,'employee_id');
- 
-   //  dd( $contract_end_date->first());
- 
-         if (request()->ajax()) {
- 
-         return DataTables::of($contract_end_date)
-             ->addColumn(
-                 'worker_name',
-                 function ($row) {
-                     return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                 }
-             )
-            
-             ->addColumn(
-                 'project',
-                 function ($row) {
-                     return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                 }
-             )
-             ->addColumn(
-                 'customer_name',
-                 function ($row) {
-                     return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                 }
-             )
-             ->addColumn(
-                 'end_date',
-                 function ($row) {
-                     return $row->contract_end_date;
-                 }
-             )
-             ->addColumn(
-                 'action',
-                 ''
-                 // function ($row) {
-                 //     $html = '';
-                 //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                 //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                 //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
- 
-                 //     return $html;
-                 // }
-             )
- 
- 
-             ->removeColumn('id')
-             ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-             ->make(true);
-                 }
-             
-         return view('essentials::employee_affairs.statistics.finish_contracts');
-      }
+            ->select('contract_end_date', 'employee_id');
 
-      public function uncomplete_profiles()
-      {
-        
-        $usersWithNullAdmission = User::with(['essentials_admission_to_works','essentialsEmployeeAppointmets','essentials_qualification'])
-        ->whereHas('essentials_admission_to_works', function ($query) {
-            
-            $query->whereNull('admissions_date');
-        })
-        ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
-            
-            $query->WhereNull('start_from')
-            ->orWhereNull('end_at')
-            ->orWhereNull('profession_id')
-            ->orWhereNull('specialization_id');
-        })
-        ->orwhereHas('essentials_qualification', function ($query) {
-            
-            $query->WhereNull('graduation_year')
-            ->orWhereNull('graduation_institution')
-            ->orWhereNull('graduation_country')
-            ->orWhereNull('degree');
-            
-        })
-        ->get();
-       // dd($usersWithNullAdmission);
+        //  dd( $contract_end_date->first());
 
         if (request()->ajax()) {
 
-        return DataTables::of($usersWithNullAdmission)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->first_name . ' ' . $row->last_name ?? '';
-                }
-            )
-           
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->assignedTo?->contact?->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-           
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            return DataTables::of($contract_end_date)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
 
-                //     return $html;
-                // }
-            )
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->contract_end_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
-            
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
+        return view('essentials::employee_affairs.statistics.finish_contracts');
+    }
+
+    public function uncomplete_profiles()
+    {
+
+        $usersWithNullAdmission = User::with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+            ->whereHas('essentials_admission_to_works', function ($query) {
+
+                $query->whereNull('admissions_date');
+            })
+            ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
+
+                $query->WhereNull('start_from')
+                    ->orWhereNull('end_at')
+                    ->orWhereNull('profession_id')
+                    ->orWhereNull('specialization_id');
+            })
+            ->orwhereHas('essentials_qualification', function ($query) {
+
+                $query->WhereNull('graduation_year')
+                    ->orWhereNull('graduation_institution')
+                    ->orWhereNull('graduation_country')
+                    ->orWhereNull('degree');
+            })
+            ->get();
+        // dd($usersWithNullAdmission);
+
+        if (request()->ajax()) {
+
+            return DataTables::of($usersWithNullAdmission)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->first_name . ' ' . $row->last_name ?? '';
+                    }
+                )
+
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
+
+
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
         return view('essentials::employee_affairs.statistics.uncomplete_profies');
-      }
+    }
 
 
-      public function late_admission()
-      {
-        
-       
+    public function late_admission()
+    {
+
+
         $late_vacation = FollowupWorkerRequest::with(['user'])
-                ->where('type', 'leavesAndDepartures')
-                ->where('type', 'returnRequest') 
-                ->whereHas('user', function ($query)  {
-                    
-                    $query->where('status', 'vecation');
-                })
-                ->where('end_date', '<', now());
-                
+            ->where('type', 'leavesAndDepartures')
+            ->where('type', 'returnRequest')
+            ->whereHas('user', function ($query) {
+
+                $query->where('status', 'vecation');
+            })
+            ->where('end_date', '<', now());
+
 
         if (request()->ajax()) {
 
-        return DataTables::of($late_vacation)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->user->first_name . ' ' . $row->user->last_name ?? '';
-                }
-            )
-           
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->user->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
+            return DataTables::of($late_vacation)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                    }
+                )
 
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->user->status ?? null;
-                }
-            )
-           
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
 
-                //     return $html;
-                // }
-            )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user->status ?? null;
+                    }
+                )
+
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
-            
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
+
         return view('essentials::employee_affairs.statistics.late_vacaction');
-      }
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -717,7 +716,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -783,7 +782,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
@@ -844,7 +843,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -915,7 +914,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -972,7 +971,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.view'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1086,7 +1085,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -1187,7 +1186,7 @@ class EssentialsManageEmployeeController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.update'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         try {
             $user_data = $request->only([
@@ -1281,7 +1280,7 @@ class EssentialsManageEmployeeController extends Controller
             DB::rollBack();
 
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => $e->getMessage(),
