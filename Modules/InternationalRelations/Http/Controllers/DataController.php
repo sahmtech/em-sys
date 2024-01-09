@@ -221,7 +221,7 @@ class DataController extends Controller
         if ($is_internationalRelations_enabled) {
 
             Menu::create('custom_admin-sidebar-menu', function ($menu) {
-                $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
+                $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
 
                 $menu->dropdown(
                     __('internationalrelations::lang.International'),

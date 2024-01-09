@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employees'))
 
 @section('content')
-    @include('essentials::layouts.nav_employee_affairs')
+    {{-- @include('essentials::layouts.nav_employee_affairs') --}}
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
@@ -99,6 +99,7 @@
                     <table class="table table-bordered table-striped" id="employees">
                         <thead>
                             <tr>
+                            <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_number')</th>
                                
@@ -516,6 +517,9 @@
 
 
                 "columns": [
+                    {
+                        "data": "id"
+                    },
                     {
                         "data": "profile_image",
                         "render": function(data, type, row) {

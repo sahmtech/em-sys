@@ -32,7 +32,7 @@ class EssentialsEmployeeInsuranceController extends Controller
 
         $can_crud_employees_insurances = auth()->user()->can('essentials.crud_employees_insurances');
         if (!$can_crud_employees_insurances) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
         $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
@@ -41,12 +41,12 @@ class EssentialsEmployeeInsuranceController extends Controller
 
 
             $insurances = EssentialsEmployeesInsurance::join('users as u', 'u.id', '=', 'essentials_employees_insurances.employee_id')->select([
-                    'essentials_employees_insurances.id as id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'essentials_employees_insurances.insurance_classes_id as insurance_classes_id',
-                    'essentials_employees_insurances.insurance_company_id as insurance_company_id',
-                    'essentials_employees_insurances.status as status'
-                ]);
+                'essentials_employees_insurances.id as id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_employees_insurances.insurance_classes_id as insurance_classes_id',
+                'essentials_employees_insurances.insurance_company_id as insurance_company_id',
+                'essentials_employees_insurances.status as status'
+            ]);
 
 
 
@@ -82,9 +82,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 ->make(true);
         }
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as 
- full_name"))->get();
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         return view('essentials::employee_affairs.employee_insurance.index')->with(compact('insurance_companies', 'insurance_classes', 'users'));
     }
@@ -191,7 +189,7 @@ class EssentialsEmployeeInsuranceController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

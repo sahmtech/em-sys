@@ -148,26 +148,26 @@ class DriverCarController extends Controller
     {
         try {
             DB::beginTransaction();
+        $carImage_name = null;
+        if ($request->hasFile('car_image')) {
+            $image = $request->file('car_image');
+            $carImage_name = $image->store('/cars_image');
+        }
+        DriverCar::create([
+            'car_id' => $request->input('car_id'),
+            'counter_number' => $request->input('counter_number'),
+            'user_id' => $request->input('user_id'),
+            'delivery_date' => $request->input('delivery_date'),
+            'car_image' => $carImage_name,
 
-            if ($request->hasFile('car_image')) {
-                $image = $request->file('car_image');
-                $carImage_name = $image->store('/cars_image');
-            }
-            DriverCar::create([
-                'car_id' => $request->input('car_id'),
-                'counter_number' => $request->input('counter_number'),
-                'user_id' => $request->input('user_id'),
-                'delivery_date' => $request->input('delivery_date'),
-                'car_image' => $carImage_name,
+        ]);
 
+        DB::commit();
+        return redirect()->back()
+            ->with('status', [
+                'success' => true,
+                'msg' => __('housingmovements::lang.added_success'),
             ]);
-
-            DB::commit();
-            return redirect()->back()
-                ->with('status', [
-                    'success' => true,
-                    'msg' => __('housingmovements::lang.added_success'),
-                ]);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()

@@ -469,7 +469,7 @@ $('body').on('submit', '#editroomModal form', function (e) {
         success: function (response) {
             if (response.success) {
                 console.log(response);
-                toastr.success(response.msg, 'Success');
+                toastr.success(response.msg);
                 reloadDataTable();
                 $('#editroomModal').modal('hide');
             } else {

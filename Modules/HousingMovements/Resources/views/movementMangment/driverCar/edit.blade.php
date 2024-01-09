@@ -22,12 +22,15 @@
                             'id' => 'carType_add_form',
                         ]) !!}
 
-                        <div style="display: flex; justify-content: flex-start; align-items: center; ">
-                            <div style="width: 400px; height: 200px; border-radius: 3px; overflow: hidden;">
-                                <img src="{{ url('uploads/' . $driver->car_image) }}" alt="Image"
-                                    style="width: 100%; height: 100%; object-fit: cover;">
+                        @if (!empty($driver->car_image))
+                            <div style="display: flex; justify-content: flex-start; align-items: center; ">
+                                <div style="width: 400px; height: 200px; border-radius: 3px; overflow: hidden;">
+                                    <img src="{{ url('uploads/' . $driver->car_image) }}" alt="Image"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
                             </div>
-                        </div>
+                        @endif
+
                         <div class="row" style="margin-top: 8px">
                             <div class="col-sm-12" style="margin-top: 0px;">
                                 {!! Form::label('carType_label', __('housingmovements::lang.driver')) !!}<span style="color: red; font-size:10px"> *</span>
@@ -93,7 +96,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
+                                    {!! Form::label('car_image', __('housingmovements::lang.car_image') . '  ') !!}
                                     {!! Form::file('car_image', ['class' => 'form-control', 'accept' => 'image/*']) !!}
 
 

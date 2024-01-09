@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use App\ContactLocation;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
 class IrRequestController extends Controller
 {
     protected $moduleUtil;
@@ -72,7 +73,7 @@ class IrRequestController extends Controller
            //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
     
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
@@ -174,9 +175,9 @@ class IrRequestController extends Controller
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
                         
-                        if (auth()->user()->can('crudExitRequests')) {
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        }
+                 
+                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
@@ -522,7 +523,7 @@ class IrRequestController extends Controller
     public function escalateRequests()
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {
@@ -597,9 +598,8 @@ class IrRequestController extends Controller
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . __($this->statuses[$row->status]['name']) . '</span>';
 
-                        if (auth()->user()->can('crudExitRequests')) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        }
+                        
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }

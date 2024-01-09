@@ -329,11 +329,7 @@ class DataController extends Controller
                 'label' => __('essentials::lang.view_employee_settings'),
                 'default' => false,
             ],
-            [
-                'value' => 'essentials.view_employee_affairs',
-                'label' => __('essentials::lang.view_employee_affairs'),
-                'default' => false,
-            ],
+
             [
                 'value' => 'essentials.access_sales_target',
                 'label' => __('essentials::lang.access_sales_target'),
@@ -501,6 +497,25 @@ class DataController extends Controller
                 'label' => __('essentials::lang.view_work_cards'),
                 'default' => false,
             ],
+
+            [
+                'value' => 'essentials.work_cards_all_requests',
+                'label' => __('essentials::lang.workcards_allrequest'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'essentials.work_cards_vaction_requests',
+                'label' => __('essentials::lang.work_cards_vaction_requests'),
+                'default' => false,
+            ],
+
+            [
+                'value' => 'essentials.work_cards_operation',
+                'label' => __('essentials::lang.work_cards_operation'),
+                'default' => false,
+            ],
+
             [
                 'value' => 'essentials.renewal_residence',
                 'label' => __('essentials::lang.renewal_residence'),
@@ -541,6 +556,34 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.car_drivers'),
                 'default' => false,
             ],
+
+
+            [
+                'value' => 'essentials.carsChangeOil',
+                'label' => __('housingmovements::lang.carsChangeOil'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carMaintenances',
+                'label' => __('housingmovements::lang.carMaintenances'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.report',
+                'label' => __('housingmovements::lang.report'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carsChangeOilReport',
+                'label' => __('housingmovements::lang.carsChangeOilReport'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.carMaintenancesReport',
+                'label' => __('housingmovements::lang.carMaintenancesReport'),
+                'default' => false,
+            ],
+
             [
                 'value' => 'essentials.curd_contracts_end_reasons',
                 'label' => __('essentials::lang.contracts_end_reasons'),
@@ -578,7 +621,16 @@ class DataController extends Controller
                 'label' => __('essentials::lang.essentials_work_cards_dashboard'),
                 'default' => false,
             ],
-
+            [
+                'value' => 'essentials.view_employee_affairs',
+                'label' => __('essentials::lang.view_employee_affairs'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.view_medical_insurance',
+                'label' => __('essentials::lang.view_medical_insurance'),
+                'default' => false,
+            ],
         ];
     }
 
@@ -613,7 +665,7 @@ class DataController extends Controller
         // if ($is_essentials_enabled) {
         Menu::create('custom_admin-sidebar-menu', function ($menu) {
 
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home'])->order(5);
             $menu->dropdown(
                 __('essentials::lang.hrm'),
                 function ($subMenu) {

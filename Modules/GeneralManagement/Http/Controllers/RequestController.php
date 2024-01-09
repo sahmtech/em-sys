@@ -69,15 +69,15 @@ class RequestController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $isSuperAdmin = User::where('id', auth()->user()->id)->first()->user_type == 'superadmin';
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!($isSuperAdmin || $crud_requests)) {
+        if (!($is_admin || $crud_requests)) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
 
 
@@ -298,9 +298,9 @@ class RequestController extends Controller
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . __($this->statuses[$row->status]['name']) . '</span>';
 
-                        if (auth()->user()->can('crudExitRequests')) {
+                       
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        }
+                        
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }

@@ -32,7 +32,7 @@ class RoomController extends Controller
         if (! $can_crud_rooms) {
            
         }
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
         if (request()->ajax()) {
 
@@ -104,6 +104,65 @@ class RoomController extends Controller
 
     }
 
+    public function emptyRooms() {
+    
+        $business_id = request()->session()->get('user.business_id');
+ 
+ 
+         $can_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
+         if (! $can_crud_rooms) {
+            
+         }
+         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+         $buildings=DB::table('htr_buildings')->get()->pluck('name','id');
+         if (request()->ajax()) {
+ 
+            $HtrRoomsWorkersHistory_roomIds= HtrRoomsWorkersHistory::all()->pluck('room_id');
+            $empty_rooms= HtrRoom::whereNotIn('id',$HtrRoomsWorkersHistory_roomIds);
+            
+             if (!empty(request()->input('htr_building')) && request()->input('htr_building') !== 'all') {
+                 $empty_rooms->where('htr_building_id', request()->input('htr_building'));
+             }
+ 
+             if (!empty(request()->input('room_status')) && request()->input('room_status') !== 'all') {
+                 if (request()->input('room_status') === 'busy') {
+                     $empty_rooms->where('beds_count', '=', 0);
+                 }
+                 else{ $empty_rooms->where('beds_count', '>', 0);}
+                
+             }
+             return Datatables::of($empty_rooms)
+ 
+ 
+             ->editColumn('htr_building_id',function($row)use($buildings){
+                 $item = $buildings[$row->htr_building_id]??'';
+ 
+                 return $item;
+             })
+             
+             ->filterColumn('number', function ($query, $keyword) {
+                 $query->where('number', 'like', "%{$keyword}%");
+             })
+           
+             ->rawColumns(['action'])
+             ->make(true);
+         
+         
+             }
+          
+             $workers = User::where('user_type', 'worker')->select(
+                 'id',
+                 DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
+              ' - ',COALESCE(id_proof_number,'')) as full_name")
+             )->pluck('full_name', 'id');
+ 
+             $roomStatusOptions = [
+                 'busy' => __('housingmovements::lang.busy_rooms'),
+                 'available' => __('housingmovements::lang.available_rooms'),
+             ];
+             return view('housingmovements::rooms.emptyRooms')->with(compact('buildings','workers','roomStatusOptions'));
+ 
+     }
 
     public function show_room_workers($id)
     {
@@ -328,7 +387,7 @@ class RoomController extends Controller
     {
   
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
       
 
         
@@ -377,7 +436,7 @@ class RoomController extends Controller
     public function edit($roomId)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -400,7 +459,7 @@ class RoomController extends Controller
     {
       
         $business_id = $request->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
@@ -440,7 +499,7 @@ class RoomController extends Controller
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 

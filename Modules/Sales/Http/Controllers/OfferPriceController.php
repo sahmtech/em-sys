@@ -25,11 +25,9 @@ use App\InvoiceScheme;
 use App\TransactionSellLine;
 use App\TypesOfService;
 use Carbon\Carbon;
-use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Entities\salesOfferPricesCost;
 use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\IOFactory;
-use Barryvdh\DomPDF\Facade\PDF;
+
 
 class OfferPriceController extends Controller
 {
@@ -140,28 +138,23 @@ class OfferPriceController extends Controller
                 ->addColumn(
                     'action',
                     function ($row) {
-                        $html = '<div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                    data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                    </span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <li>
-                                    <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
-                                    <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>
-
-                                    </li>
-               
-                                    ';
-
-
-
-
-
-                        $html .= '</ul></div>';
-
+                        // $html = '<div class="btn-group">
+                        //         <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                        //             data-toggle="dropdown" aria-expanded="false">' .
+                        //     __('messages.actions') .
+                        //     '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                        //             </span>
+                        //         </button>
+                        //         <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        //             <li>
+                        //             <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
+                        //             <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>
+                        //             </li>
+                        //             ';
+                        // $html .= '</ul></div>';
+                        $html = '    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                        <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
+                        </a>';
                         return $html;
                     }
                 )
@@ -515,7 +508,13 @@ class OfferPriceController extends Controller
 
         $change_return = $this->dummyPaymentLine;
 
-        $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name', 'id');
+        $leads = Contact::where('type', 'qualified')
+        ->whereDoesntHave('transactions', function($query) {
+            $query->where('status', 'under_study');
+        })
+       
+        ->pluck('supplier_business_name', 'id');
+
 
         return view('sales::price_offer.create')
             ->with(compact(
@@ -706,7 +705,7 @@ class OfferPriceController extends Controller
 
         try {
             $business_id = $request->session()->get('user.business_id');
-            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date', 'final_total'];
+            $offer = ['contract_form', 'location_id', 'down_payment', 'transaction_date'];
             $transactionDate = Carbon::createFromFormat('m/d/Y h:i A', $request->input('transaction_date'));
             $offer_details = $request->only($offer);
             //   $offer_details['location_id'] = $request->input('location_id');
@@ -718,6 +717,7 @@ class OfferPriceController extends Controller
             $offer_details['sub_type'] = 'service';
             $offer_details['is_quotation'] = 1;
             $offer_details['total_worker_number'] = $request->input('quantityArrDisplay');
+            $offer_details['final_total'] = $request->input('total_contract_cost');
             $offer_details['business_fees'] = $request->input('fees_input');
             $offer_details['total_worker_monthly'] = $request->input('total_monthly_for_all_workers2');
             $offer_details['contract_duration'] = $request->input('contract_duration');
@@ -742,6 +742,7 @@ class OfferPriceController extends Controller
 
 
             $client = Transaction::create($offer_details);
+            
             if ($request->contract_form == "monthly_cost") {
                 $updatedData = json_decode($request->input('updated_data'), true);
                 foreach ($updatedData as $data) {
@@ -755,9 +756,7 @@ class OfferPriceController extends Controller
                     ]);
                 }
             }
-            if ($request->input('status') == "approved") {
-                Contact::where('id', $request->contact_id)->update(['type' => 'converted']);
-            }
+         
             $productIds = json_decode($request->input('productIds'));
             $quantityArr = json_decode($request->input('quantityArr'));
             $productData = json_decode($request->input('productData'), true);
@@ -767,7 +766,7 @@ class OfferPriceController extends Controller
                     $data = $productData[$key];
                     $quantity = $quantityArr[$key];
 
-                    error_log($quantity);
+                    
 
                     $transactionSellLine = new TransactionSellLine;
                     $transactionSellLine->additional_allwances = json_encode($data);
@@ -1014,7 +1013,8 @@ class OfferPriceController extends Controller
      */
     public function show($id)
     {
-
+        error_log($id);
+        return $id;
         $business_id = request()->session()->get('user.business_id');
 
         $query = Transaction::where('id', $id)
@@ -1049,7 +1049,7 @@ class OfferPriceController extends Controller
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $offer_price = Transaction::find($id);
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $leads = Contact::where('type', 'qualified')->pluck('supplier_business_name', 'id');

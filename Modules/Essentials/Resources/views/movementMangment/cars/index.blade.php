@@ -75,6 +75,8 @@
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.number_seats')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.color')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_status')</th>
+                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_company_id')</th>
+
                                     <th style="width: 100px !important;">@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -168,6 +170,9 @@
                     },
                     {
                         "data": "insurance_status"
+                    }, 
+                    {
+                        "data": "insurance_company_id"
                     },
                     {
                         data: 'action'
@@ -226,7 +231,7 @@
             $(document).on('change', '#car_type_id', function() {
                 if ($(this).val() !== '') {
                     $.ajax({
-                        url: '/hrm/carModel-by-carType_id/' + $(this).val(),
+                        url: '/movment/carModel-by-carType_id/' + $(this).val(),
                         dataType: 'json',
                         success: function(result) {
                             console.log(result);
