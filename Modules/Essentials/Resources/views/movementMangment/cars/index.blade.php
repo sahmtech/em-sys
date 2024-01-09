@@ -74,7 +74,7 @@
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.examination_status')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.number_seats')</th>
                                     <th style="width: 100px !important;">@lang('housingmovements::lang.color')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_status')</th>
+                                    {{-- <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_status')</th> --}}
                                     {{-- <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_company_id')</th> --}}
 
                                     <th style="width: 100px !important;">@lang('messages.action')</th>
@@ -168,9 +168,9 @@
                     {
                         "data": "color"
                     },
-                    {
-                        "data": "insurance_status"
-                    }, 
+                    // {
+                    //     "data": "insurance_status"
+                    // }, 
                     // {
                     //     "data": "insurance_company_id"
                     // },

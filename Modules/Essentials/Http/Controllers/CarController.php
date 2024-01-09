@@ -78,7 +78,7 @@ class CarController extends Controller
                     return $row->test_end_date ?? '';
                 })
                 ->editColumn('examination_status', function ($row) {
-                    return __('housingmovements::lang.' . $row->examination_status) ?? '';
+                    return $row->examination_status ? __('housingmovements::lang.' . $row->examination_status) : '';
                 })
 
                 ->editColumn('number_seats', function ($row) {
