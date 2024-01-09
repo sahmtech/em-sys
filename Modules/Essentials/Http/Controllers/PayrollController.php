@@ -2,7 +2,10 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleBusiness;
 use App\AccountTransaction;
+use App\Business;
 use App\BusinessLocation;
 use App\Category;
 use App\Events\TransactionPaymentAdded;
@@ -66,10 +69,28 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $can_view_all_payroll = auth()->user()->can('essentials.view_all_payroll');
 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
 
         if (request()->ajax()) {
-            $payrolls = $this->essentialsUtil->getPayrollQuery($business_id);
+            $payrolls = $this->essentialsUtil->getPayrollQuery($user_businesses_ids);
             error_log(($payrolls->count()));
             if ($can_view_all_payroll) {
                 if (!empty(request()->input('user_id'))) {
@@ -670,10 +691,27 @@ class PayrollController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
         if ($request->ajax()) {
-            $payroll_groups = PayrollGroup::where('essentials_payroll_groups.business_id', $business_id)
-                ->join('users as u', 'u.id', '=', 'essentials_payroll_groups.created_by')
+            $payroll_groups = PayrollGroup::whereIn('essentials_payroll_groups.business_id', $user_businesses_ids)
+                ->leftjoin('users as u', 'u.id', '=', 'essentials_payroll_groups.created_by')
                 ->leftJoin('business_locations as BL', 'essentials_payroll_groups.location_id', '=', 'BL.id')
                 ->select(
                     'essentials_payroll_groups.id as id',
@@ -775,8 +813,25 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
-        $payroll_group = PayrollGroup::where('business_id', $business_id)
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+        $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
             ->findOrFail($id);
 
@@ -810,8 +865,26 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
-        $payroll_group = PayrollGroup::where('business_id', $business_id)
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+        $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation'])
             ->findOrFail($id);
 
@@ -892,8 +965,28 @@ class PayrollController extends Controller
             $pg_input['status'] = $request->input('payroll_group_status');
             $pg_input['gross_total'] = $this->transactionUtil->num_uf($request->input('total_gross_amount'));
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+    
+            if (!$is_admin) {
+                $userProjects = [];
+                $userBusinesses = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+    
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+    
+                    if ($accessRole) {
+                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+    
+                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    }
+                }
+                $user_businesses_ids = array_unique($userBusinesses);
+            }
+
             DB::beginTransaction();
-            $payroll_group = PayrollGroup::where('business_id', $business_id)
+            $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
                 ->findOrFail($payroll_group_id);
 
             $payroll_group->update($pg_input);
@@ -945,8 +1038,25 @@ class PayrollController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
-        $payroll_group = PayrollGroup::where('business_id', $business_id)
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+        $payroll_group = PayrollGroup::whereIn('business_id', $user_businesses_ids)
             ->with(['payrollGroupTransactions', 'payrollGroupTransactions.transaction_for', 'businessLocation', 'business'])
             ->findOrFail($id);
 
@@ -989,9 +1099,28 @@ class PayrollController extends Controller
         try {
             $payments = $request->input('payments');
             $payroll_group_id = $request->input('payroll_group_id');
+      
+            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+    
+            if (!$is_admin) {
+                $userProjects = [];
+                $userBusinesses = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+    
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+    
+                    if ($accessRole) {
+                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+    
+                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    }
+                }
+                $user_businesses_ids = array_unique($userBusinesses);
+            }
 
             foreach ($payments as $employee_id => $payment) {
-                $transaction = Transaction::where('business_id', $business_id)->findOrFail($payment['transaction_id']);
+                $transaction = Transaction::whereIn('business_id', $user_businesses_ids)->findOrFail($payment['transaction_id']);
                 $transaction_before = $transaction->replicate();
                 if ($transaction->payment_status != 'paid' && !empty($payment['final_total']) && !empty($payment['method'])) {
                     $input['method'] = $payment['method'];
@@ -1063,8 +1192,7 @@ class PayrollController extends Controller
 
     protected function _updatePayrollGroupPaymentStatus($payroll_group_id, $business_id)
     {
-        $payroll_group = PayrollGroup::where('business_id', $business_id)
-            ->with(['payrollGroupTransactions'])
+        $payroll_group = PayrollGroup::with(['payrollGroupTransactions'])
             ->findOrFail($payroll_group_id);
 
         $total_transaction = count($payroll_group->payrollGroupTransactions);

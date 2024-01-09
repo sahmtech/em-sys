@@ -2,6 +2,7 @@
 
 namespace Modules\Essentials\Entities;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Essentials\Entities\essentialsAllowanceType;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
@@ -38,5 +39,10 @@ class EssentialsUserAllowancesAndDeduction extends Model
     public function essentialsAllowanceAndDeduction()
     {
         return $this->belongsTo(EssentialsAllowanceAndDeduction::class, 'allowance_deduction_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
