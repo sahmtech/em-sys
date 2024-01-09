@@ -943,7 +943,7 @@ return [
 
   'absentee_report'=>'بلاغ تغيب العمال ',
   'residency_Vacations'=>'إجازات المقيمين ',
-  'late_empolyee'=>'الموظفين المتأخرين من الإجازات أو خروج العودة',
+  'late_empolyee'=>'الموظفين المتأخرين من الإجازات ',
   'visa_employee'=>'العمال الذين تم تصدير تأشيرة خروج نهائي',
   'is_profile_complete' => 'استكمال بيانات الموظف',
   'border_number' => 'رقم الحدود',
