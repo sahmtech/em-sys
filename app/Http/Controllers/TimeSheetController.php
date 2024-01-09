@@ -27,6 +27,7 @@ use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsUserAllowancesAndDeduction;
 use Modules\Essentials\Entities\EssentialsUserSalesTarget;
 use Modules\Essentials\Entities\PayrollGroup;
+use Modules\Essentials\Entities\PayrollGroupTransaction;
 use Modules\Essentials\Utils\EssentialsUtil;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 
@@ -87,7 +88,7 @@ class TimeSheetController extends Controller
                 'users.id as user_id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"),
                 'users.id_proof_number as eqama_number',
-                // 'users.location_id as location',
+                'users.essentials_pay_period',
                 'users.essentials_salary as monthly_cost',
                 'users.essentials_pay_period as wd',
                 // 'as actual_work_days',
@@ -98,7 +99,7 @@ class TimeSheetController extends Controller
                 // 'as over_time',
                 // 'transactions.essentials_allowances as other_deduction',
                 // 'transactions.essentials_deductions as other_addition',
-                'users.essentials_salary as cost2',
+                // 'users.essentials_salary as cost2',
                 // 'transactions.total_before_tax as invoice_value',
                 // 'transactions.tax_amount as vat',
                 // 'transactions.final_total as total',
@@ -119,7 +120,10 @@ class TimeSheetController extends Controller
         $year = $currentDateTime->year;
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
-
+        // $temp=$workers->first()->userAllowancesAndDeductions;
+        // foreach($temp as $t){
+        //     return json_decode(json_encode($t))->essentials_allowance_and_deduction;
+        // }
         if (request()->ajax()) {
 
             return Datatables::of($workers)
@@ -140,60 +144,199 @@ class TimeSheetController extends Controller
                     return  User::find($row->id)->country?->nationality ?? '';
                 })
                 ->addColumn('monthly_cost', function ($row) {
-                    return $row->monthly_cost ?? '';
+                    return number_format($row->calculateTotalSalary(), 0, '.', '');
                 })
                 ->addColumn('wd', function ($row) {
-                    return $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
-                    if ($row->wd) {
-                        if ($row->wd == 'month') {
-                            return 30;
+                    //essentialsUserShifts()->orderBy('id', 'desc')->first();
+                    if ($row->essentials_pay_period) {
+                        if ($row->essentials_pay_period == 'month') {
+                            return Carbon::now()->daysInMonth;
                         }
                     } else {
                         return '';
                     }
                 })
                 ->addColumn('actual_work_days', function ($row) {
-                    // $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
-                    //     ->whereYear('created_at', '=', $year)->get();
-                    // $actual_work_days = 0;
-                    // foreach ($attendances as $attendance) {
-                    //     if ($attendance->status_id == 1) {
-                    //         $actual_work_days++;
-                    //     }
-                    // }
-                    // return $actual_work_days;
-                    return $row->wd;
-                    if ($row->wd) {
-                        if ($row->wd == 'month') {
-                            return 30;
+                    $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                    if ($userShift) {
+                        $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                        $holidays = [];
+                        $holidayCounts = 0;
+                        foreach ($holidays_temp as $holiday_temp) {
+                            $holidays[] = strtolower($holiday_temp);
+                        }
+                        $start = Carbon::now()->startOfMonth();
+                        $end = Carbon::now()->endOfMonth();
+                        while ($start->lte($end)) {
+                            $dayName = strtolower($start->englishDayOfWeek);
+
+                            if (in_array($dayName, $holidays)) {
+                                $holidayCounts++;
+                            }
+                            $start->addDay();
+                        }
+                        if ($row->essentials_pay_period) {
+                            if ($row->essentials_pay_period == 'month') {
+                                return Carbon::now()->daysInMonth - $holidayCounts;
+                            } else {
+                                return '';
+                            }
                         }
                     } else {
                         return '';
                     }
                 })
                 ->addColumn('daily_work_hours', function ($row) {
-                    return $row->daily_work_hours;
+                    $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                    if ($userShift) {
+                        $shift = $userShift->shift;
+                        $start = Carbon::parse($shift->start_time);
+                        $end = Carbon::parse($shift->end_time);
+                        $hoursDifference = $end->diffInHours($start);
+                        // $result = $hoursDifference . ' ' . __('worker.hours');
+                        return $hoursDifference;
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('absence_day', function ($row) use ($month, $year) {
 
                     if ($row->wd) {
                         if ($row->wd == 'month') {
-                            $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
-                                ->whereYear('created_at', '=', $year)->get();
-                            $actual_work_days = 0;
-                            foreach ($attendances as $attendance) {
-                                if ($attendance->status_id == 1) {
-                                    $actual_work_days++;
+                            $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                            if ($userShift) {
+                                $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                                    ->whereYear('created_at', '=', $year)->get();
+                                $actual_work_days = 0;
+                                foreach ($attendances as $attendance) {
+                                    if ($attendance->status_id == 1) {
+                                        $actual_work_days++;
+                                    }
                                 }
+                                $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                                $holidays = [];
+                                $holidayCounts = 0;
+                                foreach ($holidays_temp as $holiday_temp) {
+                                    $holidays[] = strtolower($holiday_temp);
+                                }
+                                $start = Carbon::now()->startOfMonth();
+                                $end = Carbon::now();
+                                while ($start->lte($end)) {
+                                    $dayName = strtolower($start->englishDayOfWeek);
+
+                                    if (in_array($dayName, $holidays)) {
+                                        $holidayCounts++;
+                                    }
+                                    $start->addDay();
+                                }
+                                return Carbon::now()->day - $holidayCounts - $actual_work_days;
+                            } else {
+                                return  '';
                             }
-                            return 30 - $actual_work_days;
+                        } else {
+                            return '';
                         }
                     } else {
                         return '';
                     }
                 })
-                ->addColumn('absence_amount', function ($row) {
-                    return $row->absence_amount ?? '';
+                ->addColumn('basic', function ($row)  use ($month, $year) {
+                    $basic =  $row->monthly_cost;
+                    if ($basic) {
+                        return number_format($basic, 0, '.', '');
+                    } else {
+                        return '';
+                    }
+                })
+                ->addColumn('absence_amount', function ($row) use ($month, $year) {
+
+                    if ($row->wd && $row->essentials_pay_period) {
+                        if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+                            $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                            if ($userShift) {
+                                $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                                    ->whereYear('created_at', '=', $year)->get();
+                                $actual_work_days = 0;
+                                foreach ($attendances as $attendance) {
+                                    if ($attendance->status_id == 1) {
+                                        $actual_work_days++;
+                                    }
+                                }
+                                $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                                $holidays = [];
+                                $holidayCounts = 0;
+                                foreach ($holidays_temp as $holiday_temp) {
+                                    $holidays[] = strtolower($holiday_temp);
+                                }
+                                $start = Carbon::now()->startOfMonth();
+                                $end = Carbon::now();
+                                while ($start->lte($end)) {
+                                    $dayName = strtolower($start->englishDayOfWeek);
+
+                                    if (in_array($dayName, $holidays)) {
+                                        $holidayCounts++;
+                                    }
+                                    $start->addDay();
+                                }
+                                $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+                                $basic =  $row->monthly_cost;
+                                $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+                                return ceil($dayPay * $absenceDays);
+                            } else {
+                                return  '';
+                            }
+                        } else {
+                            return '';
+                        }
+                    } else {
+                        return '';
+                    }
+                })
+                ->addColumn('cost2', function ($row) use ($month, $year) {
+                    $total_before_absent_days = number_format($row->calculateTotalSalary(), 0, '.', '');
+                    if ($row->wd && $row->essentials_pay_period) {
+                        if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+                            $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                            if ($userShift) {
+                                $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                                    ->whereYear('created_at', '=', $year)->get();
+                                $actual_work_days = 0;
+                                foreach ($attendances as $attendance) {
+                                    if ($attendance->status_id == 1) {
+                                        $actual_work_days++;
+                                    }
+                                }
+                                $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                                $holidays = [];
+                                $holidayCounts = 0;
+                                foreach ($holidays_temp as $holiday_temp) {
+                                    $holidays[] = strtolower($holiday_temp);
+                                }
+                                $start = Carbon::now()->startOfMonth();
+                                $end = Carbon::now();
+                                while ($start->lte($end)) {
+                                    $dayName = strtolower($start->englishDayOfWeek);
+
+                                    if (in_array($dayName, $holidays)) {
+                                        $holidayCounts++;
+                                    }
+                                    $start->addDay();
+                                }
+                                $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+                                $basic =  $row->monthly_cost;
+                                $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+                                return $total_before_absent_days - ceil($dayPay * $absenceDays);
+                            } else {
+                                return  '';
+                            }
+                        } else {
+                            return '';
+                        }
+                    } else {
+                        return '';
+                    }
                 })
                 ->addColumn('over_time_h', function ($row) {
                     return $row->over_time_h ?? '';
@@ -202,7 +345,7 @@ class TimeSheetController extends Controller
                     return $row->over_time ?? '';
                 })
                 ->addColumn('other_deduction', function ($row) use ($month, $year) {
-                    $other_deductions = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->essentials_deductions;
+                    $other_deductions = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->essentials_deductions;
                     if ($other_deductions) {
                         $deductions = json_decode($other_deductions);
 
@@ -217,7 +360,7 @@ class TimeSheetController extends Controller
                     }
                 })
                 ->addColumn('other_addition', function ($row) use ($month, $year) {
-                    $other_addition = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->essentials_allowances;
+                    $other_addition = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->essentials_allowances;
                     if ($other_addition) {
                         $additions = json_decode($other_addition);
 
@@ -231,23 +374,102 @@ class TimeSheetController extends Controller
                         return '';
                     }
                 })
-                ->addColumn('cost2', function ($row) {
-                    if ($row->cost2) {
-                        return number_format($row->cost2, 0, '.', '');
-                    } else {
-                        return  '';
-                    }
-                })
+
                 ->addColumn('invoice_value', function ($row) use ($month, $year) {
-                    $total_before_tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->total_before_tax;
+                    // $total_before_absent_days = number_format($row->calculateTotalSalary(), 0, '.', '');
+                    // if ($row->wd && $row->essentials_pay_period) {
+                    //     if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+                    //         $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                    //         if ($userShift) {
+                    //             $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                    //                 ->whereYear('created_at', '=', $year)->get();
+                    //             $actual_work_days = 0;
+                    //             foreach ($attendances as $attendance) {
+                    //                 if ($attendance->status_id == 1) {
+                    //                     $actual_work_days++;
+                    //                 }
+                    //             }
+                    //             $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                    //             $holidays = [];
+                    //             $holidayCounts = 0;
+                    //             foreach ($holidays_temp as $holiday_temp) {
+                    //                 $holidays[] = strtolower($holiday_temp);
+                    //             }
+                    //             $start = Carbon::now()->startOfMonth();
+                    //             $end = Carbon::now();
+                    //             while ($start->lte($end)) {
+                    //                 $dayName = strtolower($start->englishDayOfWeek);
+
+                    //                 if (in_array($dayName, $holidays)) {
+                    //                     $holidayCounts++;
+                    //                 }
+                    //                 $start->addDay();
+                    //             }
+                    //             $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+                    //             $basic =  $row->monthly_cost;
+                    //             $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+                    //             return $total_before_absent_days - ceil($dayPay * $absenceDays);
+                    //         } else {
+                    //             return  '';
+                    //         }
+                    //     } else {
+                    //         return '';
+                    //     }
+                    // } else {
+                    //     return '';
+                    // }
+                    $total_before_tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->total_before_tax;
                     if ($total_before_tax) {
                         return number_format($total_before_tax, 0, '.', '');
                     } else {
-                        return '';
+                        $total_before_absent_days = number_format($row->calculateTotalSalary(), 0, '.', '');
+                        if ($row->wd && $row->essentials_pay_period) {
+                            if ($row->wd == 'month' && $row->essentials_pay_period == 'month' && $row->monthly_cost) {
+                                $userShift = $row->essentialsUserShifts()->orderBy('id', 'desc')->first();
+                                if ($userShift) {
+                                    $attendances = EssentialsAttendance::where('user_id', $row->user_id)->whereMonth('created_at', '=', $month)
+                                        ->whereYear('created_at', '=', $year)->get();
+                                    $actual_work_days = 0;
+                                    foreach ($attendances as $attendance) {
+                                        if ($attendance->status_id == 1) {
+                                            $actual_work_days++;
+                                        }
+                                    }
+                                    $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                                    $holidays = [];
+                                    $holidayCounts = 0;
+                                    foreach ($holidays_temp as $holiday_temp) {
+                                        $holidays[] = strtolower($holiday_temp);
+                                    }
+                                    $start = Carbon::now()->startOfMonth();
+                                    $end = Carbon::now();
+                                    while ($start->lte($end)) {
+                                        $dayName = strtolower($start->englishDayOfWeek);
+
+                                        if (in_array($dayName, $holidays)) {
+                                            $holidayCounts++;
+                                        }
+                                        $start->addDay();
+                                    }
+                                    $absenceDays = Carbon::now()->day - $holidayCounts - $actual_work_days;
+                                    $basic =  $row->monthly_cost;
+                                    $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+                                    return $total_before_absent_days - ceil($dayPay * $absenceDays);
+                                } else {
+                                    return  '';
+                                }
+                            } else {
+                                return '';
+                            }
+                        } else {
+                            return '';
+                        }
                     }
                 })
                 ->addColumn('vat', function ($row) use ($month, $year) {
-                    $tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->tax_amount;
+                    $tax = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->tax_amount;
                     if ($tax) {
                         return number_format($tax, 0, '.', '');
                     } else {
@@ -255,52 +477,105 @@ class TimeSheetController extends Controller
                     }
                 })
                 ->addColumn('total', function ($row)  use ($month, $year) {
-                    $total = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->final_total;
+                    $total = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->final_total;
                     if ($total) {
                         return number_format($total, 0, '.', '');
                     } else {
                         return '';
                     }
                 })
+
+
+
                 ->addColumn('sponser', function ($row)  use ($month, $year, $businesses) {
-                    $business_id = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->business_id;
+                    $business_id = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->business_id;
                     if ($business_id) {
                         return  $businesses[$business_id] ?? '';
                     } else {
                         return '';
                     }
                 })
-                ->addColumn('basic', function ($row)  use ($month, $year) {
 
-                    $basic = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->essentials_amount_per_unit_duration;
-                    if ($basic) {
-                        return number_format($basic, 0, '.', '');
-                    } else {
-                        return '';
-                    }
-                })
-                ->addColumn('housing', function ($row) {
-                    return $row->housing ?? '';
-                })
-                ->addColumn('transport', function ($row) {
-                    return $row->transport ?? '';
-                })
+                // ->addColumn('housing', function ($row) {
+                //     return $row->housing ?? '';
+                // })
+                // ->addColumn('transport', function ($row) {
+                //     return $row->transport ?? '';
+                // })
                 ->addColumn('other_allowances', function ($row) {
                     return $row->other_allowances ?? '';
                 })
                 ->addColumn('total_salary', function ($row)  use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->total_salary ?? '';
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->total_salary ?? '';
                 })
-                ->addColumn('deductions', function ($row) use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->deductions ?? '';
+
+
+
+                ->addColumn('deductions', function ($row) {
+                    $userAllowancesAndDeductions = $row->userAllowancesAndDeductions;
+                    if ($userAllowancesAndDeductions) {
+                        $deduction_arr = [];
+                        foreach ($userAllowancesAndDeductions as $userAllowancesAndDeduction) {
+                            $deduction = json_decode(json_encode($userAllowancesAndDeduction));
+                            if ($deduction->essentials_allowance_and_deduction->type == 'deduction') {
+                                $deduction_arr[] = $deduction;
+                            }
+                        }
+                        $deductions = collect($deduction_arr);
+                        if (!empty($deductions)) {
+                            $html = '<ul>';
+                            foreach ($deductions as $deduction) {
+                                $html .= '<li>' . $deduction->essentials_allowance_and_deduction->description . ' : ' . number_format($deduction->amount, 0, '.', '') . '</li>';
+                            }
+                            $html .= '</ul>';
+                            return $html;
+                        } else {
+                            return '';
+                        }
+                    } else {
+                        return '';
+                    }
                 })
-                ->addColumn('additions', function ($row)  use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->additions ?? '';
+                ->addColumn('additions', function ($row) {
+                    $userAllowancesAndDeductions = $row->userAllowancesAndDeductions;
+                    if ($userAllowancesAndDeductions) {
+                        $addition_arr = [];
+                        foreach ($userAllowancesAndDeductions as $userAllowancesAndDeduction) {
+                            $addition = json_decode(json_encode($userAllowancesAndDeduction));
+                            if ($addition->essentials_allowance_and_deduction->type == 'allowance') {
+                                $addition_arr[] = $addition;
+                            }
+                        }
+                        $additions = collect($addition_arr);
+                        if (!empty($additions)) {
+                            $html = '<ul>';
+                            foreach ($additions as $addition) {
+                                $html .= '<li>' . $addition->essentials_allowance_and_deduction->description . ' : ' . number_format($addition->amount, 0, '.', '') . '</li>';
+                            }
+                            $html .= '</ul>';
+                            return $html;
+                        } else {
+                            return '';
+                        }
+                    } else {
+                        return '';
+                    }
                 })
+
+
+
                 ->addColumn('final_salary', function ($row) use ($month, $year) {
-                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->orderBy('id', 'desc')->first()?->final_salary ?? '';
-                })->addColumn('action', function ($row) {
-                    return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-success">' . __("agent.edit_time_sheet") . '</a>';
+                    return $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->final_salary ?? '';
+                })->addColumn('action', function ($row) use ($month, $year) {
+                    $trans = $row->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first();
+                    if ($trans) {
+                        if ($trans->payment_status == 'paid') {
+                            return 'paid';
+                        }
+                        return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-primary">' . __("agent.edit_time_sheet") . '</a>';
+                    } else {
+                        return  ' <a href="' . route('agentTimeSheet.timeSheet', [$row->id]) . '" class="btn btn-xs btn-success">' . __("agent.add_time_sheet") . '</a>';
+                    }
                 })->rawColumns([
                     'name',
                     'eqama_number',
@@ -352,23 +627,6 @@ class TimeSheetController extends Controller
         $start_of_month = $currentDateTime->copy()->startOfMonth();
         $end_of_month = $currentDateTime->copy()->endOfMonth();
 
-        $attendances = EssentialsAttendance::where('user_id', $user->id)->whereMonth('created_at', '=', $month)
-            ->whereYear('created_at', '=', $year)->get();
-        $work_days = 0;
-        $actual_work_days = 0;
-        $late_days = 0;
-        $out_of_site_days = 0;
-        $absence_days = 0;
-        foreach ($attendances as $attendance) {
-            if ($attendance->status_id == 1) {
-                $actual_work_days++;
-            } else if ($attendance->status_id == 2) {
-                $late_days++;
-            } else if ($attendance->status_id == 3) {
-                $out_of_site_days++;
-            }
-        }
-
         $leaves = FollowupWorkerRequest::where('worker_id', $id)
             ->where('type', 'leavesAndDepartures')
             ->whereDate('start_date', '>=', $start_of_month)
@@ -384,6 +642,83 @@ class TimeSheetController extends Controller
             $diff += 1;
             $leave_days += $diff;
         }
+
+
+        $work_days = 0;
+        if ($user->essentials_pay_period) {
+            if ($user->essentials_pay_period == 'month') {
+                $work_days = Carbon::now()->daysInMonth;
+            }
+        }
+        $actual_work_days = 0;
+        $absence_days = 0;
+        $late_days = 0;
+        $out_of_site_days = 0;
+        $absence_deductions = 0;
+        if ($user->essentials_pay_period && $user->essentials_pay_period == 'month' && $user->essentials_salary) {
+            $userShift = $user->essentialsUserShifts()->orderBy('id', 'desc')->first();
+            if ($userShift) {
+                $holidays_temp = json_decode(json_encode($userShift->shift->holidays));
+                $holidays = [];
+                $holidayCounts = 0;
+                foreach ($holidays_temp as $holiday_temp) {
+                    $holidays[] = strtolower($holiday_temp);
+                }
+                $start = Carbon::now()->startOfMonth();
+                $end = Carbon::now()->endOfMonth();
+                while ($start->lte($end)) {
+                    $dayName = strtolower($start->englishDayOfWeek);
+
+                    if (in_array($dayName, $holidays)) {
+                        $holidayCounts++;
+                    }
+                    $start->addDay();
+                }
+                if ($user->essentials_pay_period) {
+                    if ($user->essentials_pay_period == 'month') {
+                        $actual_work_days = Carbon::now()->daysInMonth - $holidayCounts;
+                    }
+                }
+                $attendances = EssentialsAttendance::where('user_id', $user->id)->whereMonth('created_at', '=', $month)
+                    ->whereYear('created_at', '=', $year)->get();
+                $attended_days = 0;
+                foreach ($attendances as $attendance) {
+                    if ($attendance->status_id == 1) {
+                        $attended_days++;
+                    } else if ($attendance->status_id == 2) {
+                        $late_days++;
+                    } else if ($attendance->status_id == 3) {
+                        $out_of_site_days++;
+                    }
+                }
+                $holidayCounts = 0;
+                $start = Carbon::now()->startOfMonth();
+                $end = Carbon::now();
+                while ($start->lte($end)) {
+                    $dayName = strtolower($start->englishDayOfWeek);
+
+                    if (in_array($dayName, $holidays)) {
+                        $holidayCounts++;
+                    }
+                    $start->addDay();
+                }
+                $absence_days = Carbon::now()->day - $holidayCounts - $attended_days;
+                $basic =  $user->essentials_salary;
+                $dayPay =  $basic /  Carbon::now()->daysInMonth;
+
+                $absence_deductions = ceil($dayPay * $absence_days);
+            }
+        }
+
+        $cost2 =  $user->calculateTotalSalary() - $absence_deductions;
+
+
+
+
+
+
+
+
         $attendance = (object)[
             'work_days' => $work_days,
             'actual_work_days' => $actual_work_days,
@@ -440,14 +775,14 @@ class TimeSheetController extends Controller
         $transaction_date = $year . '-' . $month . '-01';
 
         //check if payrolls exists for the month year
-        $payrolls = Transaction::where('business_id', $business_id)
-            ->where('type', 'payroll')
-            ->whereIn('expense_for', $employee_ids)
-            ->whereDate('transaction_date', $transaction_date)
-            ->get();
+        // $payrolls = Transaction::where('business_id', $business_id)
+        //     ->where('type', 'payroll')
+        //     ->whereIn('expense_for', $employee_ids)
+        //     ->whereDate('transaction_date', $transaction_date)
+        //     ->get();
 
-        $add_payroll_for = array_diff($employee_ids, $payrolls->pluck('expense_for')->toArray());
-        if (!empty($payrolls) && !empty($add_payroll_for)) {
+        // $add_payroll_for = $employee_ids;
+        if (!empty($employee_ids)) {
             $location = BusinessLocation::where('business_id', $business_id)
                 ->find($location_id);
 
@@ -457,82 +792,68 @@ class TimeSheetController extends Controller
             $month_name = $end_date->format('F');
 
             $employees = User::where('business_id', $business_id)
-                ->find($add_payroll_for);
+                ->find($employee_ids);
 
-            $payrolls = [];
-            foreach ($employees as $employee) {
+            // $payrolls = [];
+            // foreach ($employees as $employee) {
 
-                //get employee info
-                $payrolls[$employee->id]['name'] = $employee->user_full_name;
-                $payrolls[$employee->id]['essentials_salary'] = $employee->essentials_salary;
-                $payrolls[$employee->id]['essentials_pay_period'] = $employee->essentials_pay_period;
-                $payrolls[$employee->id]['total_leaves'] = $this->essentialsUtil->getTotalLeavesForGivenDateOfAnEmployee($business_id, $employee->id, $start_date, $end_date->format('Y-m-d'));
-                $payrolls[$employee->id]['total_days_worked'] = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee($business_id, $employee->id, $start_date, $end_date);
+            //     //get employee info
+            //     $payrolls[$employee->id]['name'] = $employee->user_full_name;
+            //     $payrolls[$employee->id]['essentials_salary'] = $employee->essentials_salary;
+            //     $payrolls[$employee->id]['essentials_pay_period'] = $employee->essentials_pay_period;
+            //     $payrolls[$employee->id]['total_leaves'] = $this->essentialsUtil->getTotalLeavesForGivenDateOfAnEmployee($business_id, $employee->id, $start_date, $end_date->format('Y-m-d'));
+            //     $payrolls[$employee->id]['total_days_worked'] = $this->essentialsUtil->getTotalDaysWorkedForGivenDateOfAnEmployee($business_id, $employee->id, $start_date, $end_date);
 
-                //get total work duration of employee(attendance)
-                $payrolls[$employee->id]['total_work_duration'] = $this->essentialsUtil->getTotalWorkDuration('hour', $employee->id, $business_id, $start_date, $end_date->format('Y-m-d'));
+            //     //get total work duration of employee(attendance)
+            //     $payrolls[$employee->id]['total_work_duration'] = $this->essentialsUtil->getTotalWorkDuration('hour', $employee->id, $business_id, $start_date, $end_date->format('Y-m-d'));
 
-                //get total earned commission for employee
-                $business_details = $this->businessUtil->getDetails($business_id);
-                $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
+            //     //get total earned commission for employee
+            //     $business_details = $this->businessUtil->getDetails($business_id);
+            //     $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
 
-                $commsn_calculation_type = empty($pos_settings['cmmsn_calculation_type']) || $pos_settings['cmmsn_calculation_type'] == 'invoice_value' ? 'invoice_value' : $pos_settings['cmmsn_calculation_type'];
+            //     $commsn_calculation_type = empty($pos_settings['cmmsn_calculation_type']) || $pos_settings['cmmsn_calculation_type'] == 'invoice_value' ? 'invoice_value' : $pos_settings['cmmsn_calculation_type'];
 
-                $total_commission = 0;
-                if ($commsn_calculation_type == 'payment_received') {
-                    $payment_details = $this->transactionUtil->getTotalPaymentWithCommission($business_id, $start_date, $end_date, null, $employee->id);
-                    //Get Commision
-                    $total_commission = $employee->cmmsn_percent * $payment_details['total_payment_with_commission'] / 100;
-                } else {
-                    $sell_details = $this->transactionUtil->getTotalSellCommission($business_id, $start_date, $end_date, null, $employee->id);
-                    $total_commission = $employee->cmmsn_percent * $sell_details['total_sales_with_commission'] / 100;
-                }
+            //     $total_commission = 0;
+            //     if ($commsn_calculation_type == 'payment_received') {
+            //         $payment_details = $this->transactionUtil->getTotalPaymentWithCommission($business_id, $start_date, $end_date, null, $employee->id);
+            //         //Get Commision
+            //         $total_commission = $employee->cmmsn_percent * $payment_details['total_payment_with_commission'] / 100;
+            //     } else {
+            //         $sell_details = $this->transactionUtil->getTotalSellCommission($business_id, $start_date, $end_date, null, $employee->id);
+            //         $total_commission = $employee->cmmsn_percent * $sell_details['total_sales_with_commission'] / 100;
+            //     }
 
-                if ($total_commission > 0) {
-                    $payrolls[$employee->id]['allowances']['allowance_names'][] = __('essentials::lang.sale_commission');
-                    $payrolls[$employee->id]['allowances']['allowance_amounts'][] = $total_commission;
-                    $payrolls[$employee->id]['allowances']['allowance_types'][] = 'fixed';
-                    $payrolls[$employee->id]['allowances']['allowance_percents'][] = 0;
-                }
-                $settings = $this->essentialsUtil->getEssentialsSettings();
-                //get total sales added by the employee
-                $sale_totals = $this->transactionUtil->getUserTotalSales($business_id, $employee->id, $start_date, $end_date);
+            //     if ($total_commission > 0) {
+            //         $payrolls[$employee->id]['allowances']['allowance_names'][] = __('essentials::lang.sale_commission');
+            //         $payrolls[$employee->id]['allowances']['allowance_amounts'][] = $total_commission;
+            //         $payrolls[$employee->id]['allowances']['allowance_types'][] = 'fixed';
+            //         $payrolls[$employee->id]['allowances']['allowance_percents'][] = 0;
+            //     }
+            //     $settings = $this->essentialsUtil->getEssentialsSettings();
+            //     //get total sales added by the employee
+            //     $sale_totals = $this->transactionUtil->getUserTotalSales($business_id, $employee->id, $start_date, $end_date);
 
-                $total_sales = !empty($settings['calculate_sales_target_commission_without_tax']) && $settings['calculate_sales_target_commission_without_tax'] == 1 ? $sale_totals['total_sales_without_tax'] : $sale_totals['total_sales'];
+            //     $total_sales = !empty($settings['calculate_sales_target_commission_without_tax']) && $settings['calculate_sales_target_commission_without_tax'] == 1 ? $sale_totals['total_sales_without_tax'] : $sale_totals['total_sales'];
 
-                //get sales target if exists
-                $sales_target = EssentialsUserSalesTarget::where('user_id', $employee->id)
-                    ->where('target_start', '<=', $total_sales)
-                    ->where('target_end', '>=', $total_sales)
-                    ->first();
+            //     //get sales target if exists
+            //     $sales_target = EssentialsUserSalesTarget::where('user_id', $employee->id)
+            //         ->where('target_start', '<=', $total_sales)
+            //         ->where('target_end', '>=', $total_sales)
+            //         ->first();
 
-                $total_sales_target_commission_percent = !empty($sales_target) ? $sales_target->commission_percent : 0;
+            //     $total_sales_target_commission_percent = !empty($sales_target) ? $sales_target->commission_percent : 0;
 
-                $total_sales_target_commission = $this->transactionUtil->calc_percentage($total_sales, $total_sales_target_commission_percent);
+            //     $total_sales_target_commission = $this->transactionUtil->calc_percentage($total_sales, $total_sales_target_commission_percent);
 
-                if ($total_sales_target_commission > 0) {
-                    $payrolls[$employee->id]['allowances']['allowance_names'][] = __('essentials::lang.sales_target_commission');
-                    $payrolls[$employee->id]['allowances']['allowance_amounts'][] = $total_sales_target_commission;
-                    $payrolls[$employee->id]['allowances']['allowance_types'][] = 'fixed';
-                    $payrolls[$employee->id]['allowances']['allowance_percents'][] = 0;
-                }
+            //     if ($total_sales_target_commission > 0) {
+            //         $payrolls[$employee->id]['allowances']['allowance_names'][] = __('essentials::lang.sales_target_commission');
+            //         $payrolls[$employee->id]['allowances']['allowance_amounts'][] = $total_sales_target_commission;
+            //         $payrolls[$employee->id]['allowances']['allowance_types'][] = 'fixed';
+            //         $payrolls[$employee->id]['allowances']['allowance_percents'][] = 0;
+            //     }
 
-                //get earnings & deductions of employee
-                // $allowances_and_deductions = $this->essentialsUtil->getEmployeeAllowancesAndDeductions($business_id, $employee->id, $start_date, $end_date);
-                // foreach ($allowances_and_deductions as $ad) {
-                //     if ($ad->type == 'allowance') {
-                //         $payrolls[$employee->id]['allowances']['allowance_names'][] = $ad->description;
-                //         $payrolls[$employee->id]['allowances']['allowance_amounts'][] = $ad->amount_type == 'fixed' ? $ad->amount : 0;
-                //         $payrolls[$employee->id]['allowances']['allowance_types'][] = $ad->amount_type;
-                //         $payrolls[$employee->id]['allowances']['allowance_percents'][] = $ad->amount_type == 'percent' ? $ad->amount : 0;
-                //     } else {
-                //         $payrolls[$employee->id]['deductions']['deduction_names'][] = $ad->description;
-                //         $payrolls[$employee->id]['deductions']['deduction_amounts'][] = $ad->amount_type == 'fixed' ? $ad->amount : 0;
-                //         $payrolls[$employee->id]['deductions']['deduction_types'][] = $ad->amount_type;
-                //         $payrolls[$employee->id]['deductions']['deduction_percents'][] = $ad->amount_type == 'percent' ? $ad->amount : 0;
-                //     }
-                // }
-            }
+
+            // }
 
             $action = 'create';
 
@@ -541,24 +862,30 @@ class TimeSheetController extends Controller
                 'msg' => __('lang_v1.added_success'),
             ];
 
+            $deductions = $user->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->essentials_deductions ?? null;
+
+            $additions = $user->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first()?->essentials_allowances ?? null;
+
 
             return view('custom_views.agents.agent_time_sheet.time_sheet')
-                ->with(compact('user', 'attendance', 'allowances_and_deductions', 'essentialsAllowance', 'essentialsDeduction', 'month_name', 'transaction_date', 'year', 'payrolls', 'action', 'location'));
-        } else {
-            return redirect()->route('agentTimeSheet.index')
-                ->with(
-                    'status',
-                    [
-                        'success' => true,
-                        'msg' => __('essentials::lang.payroll_already_added_for_given_user'),
-                    ]
-                );
+                ->with(compact('additions', 'deductions', 'cost2', 'absence_deductions', 'user', 'attendance', 'allowances_and_deductions', 'essentialsAllowance', 'essentialsDeduction', 'month_name', 'transaction_date', 'year', 'action', 'location'));
         }
+        //  else {
+        //     return redirect()->route('agentTimeSheet.index')
+        //         ->with(
+        //             'status',
+        //             [
+        //                 'success' => true,
+        //                 'msg' => __('essentials::lang.payroll_already_added_for_given_user'),
+        //             ]
+        //         );
+        // }
     }
 
 
     public function storeTimeSheet(Request $request)
     {
+
         try {
             $user = json_decode($request->user);
             $attendance = json_decode($request->attendance);
@@ -570,15 +897,12 @@ class TimeSheetController extends Controller
             $year = $currentDateTime->year;
             $month_name = $currentDateTime->format('F');
 
-            $payroll_group['business_id'] = $business_id;
-            $payroll_group['name'] = strip_tags(__('essentials::lang.payroll_for_month', ['date' => $month_name . ' ' . $year]));
-            //status should be either final or draft, final for now
-            //  $payroll_group['status'] = $request->input('payroll_group_status');
-            $payroll_group['status'] = "final";
-            $payroll_group['gross_total'] = $this->transactionUtil->num_uf($request->input('total_salary'));
-            $payroll_group['created_by'] = auth()->user()->id;
+            $trans = User::where('id', $user->id)->first()->transactions()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->where('type', 'payroll')->orderBy('id', 'desc')->first();
 
-            $payroll_group = PayrollGroup::create($payroll_group);
+
+
+
+
 
 
 
@@ -599,16 +923,16 @@ class TimeSheetController extends Controller
             $payroll['final_total'] = $this->transactionUtil->num_uf($request->input('total_salary'));
             $payroll['essentials_amount_per_unit_duration'] = $this->moduleUtil->num_uf($user->essentials_salary);
 
-            $allowances_and_deductions = json_decode($request->allowances_and_deductions);
+            // $allowances_and_deductions = json_decode($request->allowances_and_deductions);
 
-            foreach ($allowances_and_deductions->allowances as $ad) {
+            // foreach ($allowances_and_deductions->allowances as $ad) {
 
-                $payroll['allowances']['allowance_names'][] = $ad->essentials_allowance_and_deduction->description;
-                $payroll['allowances']['allowance_amounts'][] = $ad->essentials_allowance_and_deduction->amount_type == 'fixed' ? $ad->amount : 0;
-                $payroll['allowances']['allowance_types'][] = $ad->essentials_allowance_and_deduction->amount_type;
-                $payroll['allowances']['allowance_percents'][] = $ad->essentials_allowance_and_deduction->amount_type == 'percent' ? $ad->amount : 0;
-            }
-            if ($request->allowances) {
+            //     $payroll['allowances']['allowance_names'][] = $ad->essentials_allowance_and_deduction->description;
+            //     $payroll['allowances']['allowance_amounts'][] = $ad->essentials_allowance_and_deduction->amount_type == 'fixed' ? $ad->amount : 0;
+            //     $payroll['allowances']['allowance_types'][] = $ad->essentials_allowance_and_deduction->amount_type;
+            //     $payroll['allowances']['allowance_percents'][] = $ad->essentials_allowance_and_deduction->amount_type == 'percent' ? $ad->amount : 0;
+            // }
+            if (!empty($request->allowances)) {
                 foreach ($request->allowances as $key => $ad) {
                     $allowance = EssentialsAllowanceAndDeduction::where('id', $ad)->first();
                     $payroll['allowances']['allowance_names'][] = $allowance->description;
@@ -619,16 +943,16 @@ class TimeSheetController extends Controller
             }
 
 
-            foreach ($allowances_and_deductions->deductions as $de) {
+            // foreach ($allowances_and_deductions->deductions as $de) {
 
-                $payroll['deductions']['deduction_names'][] = $de->essentials_allowance_and_deduction->description;
-                $payroll['deductions']['deduction_amounts'][] = $de->essentials_allowance_and_deduction->amount_type == 'fixed' ? $de->amount : 0;
-                $payroll['deductions']['deduction_types'][] = $de->essentials_allowance_and_deduction->amount_type;
-                $payroll['deductions']['deduction_percents'][] = $de->essentials_allowance_and_deduction->amount_type == 'percent' ? $de->amount : 0;
-            }
-            if ($request->deductions) {
+            //     $payroll['deductions']['deduction_names'][] = $de->essentials_allowance_and_deduction->description;
+            //     $payroll['deductions']['deduction_amounts'][] = $de->essentials_allowance_and_deduction->amount_type == 'fixed' ? $de->amount : 0;
+            //     $payroll['deductions']['deduction_types'][] = $de->essentials_allowance_and_deduction->amount_type;
+            //     $payroll['deductions']['deduction_percents'][] = $de->essentials_allowance_and_deduction->amount_type == 'percent' ? $de->amount : 0;
+            // }
+            if (!empty($request->deductions)) {
                 foreach ($request->deductions as $key => $de) {
-                    $deduction = EssentialsAllowanceAndDeduction::where('id', $ad)->first();
+                    $deduction = EssentialsAllowanceAndDeduction::where('id', $de)->first();
                     $payroll['deductions']['deduction_names'][] = $deduction->description;
                     $payroll['deductions']['deduction_amounts'][] = $request->deductions_amount[$key];
                     $payroll['deductions']['deduction_types'][] = $deduction->amount_type;
@@ -653,8 +977,35 @@ class TimeSheetController extends Controller
             }
             unset($payroll['allowance_names'], $payroll['allowance_types'], $payroll['allowance_percent'], $payroll['allowance_amounts'], $payroll['deduction_names'], $payroll['deduction_types'], $payroll['deduction_percent'], $payroll['deduction_amounts'], $payroll['total']);
 
-            $transaction = Transaction::create($payroll);
-            $transaction_ids[] = $transaction->id;
+            $transaction = $trans ? Transaction::where('id', $trans->id)
+                ->update([
+                    'essentials_allowances' => $allowances_and_deductions['essentials_allowances'] ?? null,
+                    'essentials_deductions' => $allowances_and_deductions['essentials_deductions'] ?? null,
+                    'total_before_tax' => $this->transactionUtil->num_uf($request->input('total_salary')),
+                    'final_total' => $this->transactionUtil->num_uf($request->input('total_salary')),
+
+                ]) : Transaction::create($payroll);
+
+            $transaction_ids[] = $transaction->id ?? $trans->id;
+
+
+
+            $payroll_group['business_id'] = $business_id;
+            $payroll_group['name'] = strip_tags(__('essentials::lang.payroll_for_month', ['date' => $month_name . ' ' . $year]));
+            //status should be either final or draft, final for now
+            //  $payroll_group['status'] = $request->input('payroll_group_status');
+            $payroll_group['status'] = "final";
+            $payroll_group['gross_total'] = $this->transactionUtil->num_uf($request->input('total_salary'));
+            $payroll_group['created_by'] = auth()->user()->id;
+
+            $payrollGroupId = 0;
+            if ($trans) {
+                $payrollGroupId = PayrollGroupTransaction::where('transaction_id', $trans->id)->orderBy('payroll_group_id', 'desc')->first()->payroll_group_id;
+            }
+            $payroll_group = $trans ? PayrollGroup::where('id', $payrollGroupId)->update($payroll_group) : PayrollGroup::create($payroll_group);
+            if ($trans) {
+                $payroll_group =  PayrollGroup::where('id', $payrollGroupId)->first();
+            }
             $payroll_group->payrollGroupTransactions()->sync($transaction_ids);
             $output = [
                 'success' => true,
@@ -676,8 +1027,11 @@ class TimeSheetController extends Controller
             );
     }
 
+
+
     private function getAllowanceAndDeductionJson($payroll)
     {
+        $output = [];
         if ($payroll['allowances'] ?? false && $payroll['allowances']['allowance_names'] ?? false) {
             $allowance_names = $payroll['allowances']['allowance_names'];
             $allowance_types = $payroll['allowances']['allowance_types'];

@@ -65,41 +65,38 @@
         </div>
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="workers_table_timesheet" style="table-layout: fixed !important;">
+                <table class="table table-bordered table-striped" id="workers_table_timesheet"
+                    style="table-layout: fixed !important;">
                     <thead>
                         <tr>
                             <td style="width: 100px;">@lang('worker.name')</td>
                             <td style="width: 100px;">@lang('worker.eqama_number')</td>
                             <td style="width: 100px;">@lang('worker.location')</td>
                             <td style="width: 100px;">@lang('worker.nationality')</td>
+                            <td style="width: 100px;">@lang('worker.sponser')</td>
+                            <td style="width: 100px;">@lang('worker.basic')</td>
+                            <td style="width: 130px;">@lang('worker.additions')</td>
+                            <td style="width: 130px;">@lang('worker.deductions')</td>
                             <td style="width: 100px;">@lang('worker.monthly_cost')</td>
                             <td style="width: 100px;">@lang('worker.wd')</td>
                             <td style="width: 100px;">@lang('worker.actual_work_days')</td>
                             <td style="width: 100px;">@lang('worker.daily_work_hours')</td>
                             <td style="width: 100px;">@lang('worker.absence_day')</td>
                             <td style="width: 100px;">@lang('worker.absence_amount')</td>
+                            <td style="width: 100px;">@lang('worker.cost2')</td>
                             <td style="width: 100px;">@lang('worker.over_time_h')</td>
                             <td style="width: 100px;">@lang('worker.over_time')</td>
-                            <td style="width: 125px;">@lang('worker.other_deduction')</td>
-                            <td style="width: 125px;">@lang('worker.other_addition')</td>
-                            <td style="width: 100px;">@lang('worker.cost2')</td>
+                            <td style="width: 130px;">@lang('worker.other_addition')</td>
+                            <td style="width: 130px;">@lang('worker.other_deduction')</td>
                             <td style="width: 100px;">@lang('worker.invoice_value')</td>
                             <td style="width: 100px;">@lang('worker.vat')</td>
                             <td style="width: 100px;">@lang('worker.total')</td>
-                            <td style="width: 100px;">@lang('worker.sponser')</td>
-                            <td style="width: 100px;">@lang('worker.basic')</td>
-                            <td style="width: 100px;">@lang('worker.housing')</td>
-                            <td style="width: 100px;">@lang('worker.transport')</td>
-                            <td style="width: 100px;">@lang('worker.other_allowances')</td>
-                            <td style="width: 100px;">@lang('worker.total_salary')</td>
-                            <td style="width: 100px;">@lang('worker.deductions')</td>
-                            <td style="width: 100px;">@lang('worker.additions')</td>
-                            <td style="width: 100px;">@lang('worker.final_salary')</td>
                             <td style="width: 100px;">@lang('messages.action')</td>
+
                         </tr>
                     </thead>
                 </table>
-                
+
             </div>
         @endcomponent
 
@@ -172,7 +169,18 @@
                     {
                         data: 'nationality'
                     },
-                    
+                    {
+                        data: 'sponser'
+                    },
+                    {
+                        data: 'basic'
+                    },
+                    {
+                        data: 'additions'
+                    },
+                    {
+                        data: 'deductions'
+                    },
                     {
                         data: 'monthly_cost'
                     },
@@ -192,20 +200,21 @@
                         data: 'absence_amount'
                     },
                     {
+                        data: 'cost2'
+                    },
+                    {
                         data: 'over_time_h'
                     },
                     {
                         data: 'over_time'
                     },
                     {
-                        data: 'other_deduction'
-                    },
-                    {
                         data: 'other_addition'
                     },
                     {
-                        data: 'cost2'
+                        data: 'other_deduction'
                     },
+
                     {
                         data: 'invoice_value'
                     },
@@ -216,36 +225,8 @@
                         data: 'total'
                     },
                     {
-                        data: 'sponser'
-                    },
-                    {
-                        data: 'basic'
-                    },
-                    {
-                        data: 'housing'
-                    },
-                    {
-                        data: 'transport'
-                    },
-                    {
-                        data: 'other_allowances'
-                    },
-                    {
-                        data: 'total_salary'
-                    },
-                    {
-                        data: 'deductions'
-                    },
-                    {
-                        data: 'additions'
-                    },
-                    {
-                        data: 'final_salary'
-                    },
-                    {
                         data: 'action'
-                    }
-
+                    },
 
                 ]
             });

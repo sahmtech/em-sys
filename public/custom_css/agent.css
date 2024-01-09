@@ -28,8 +28,8 @@
 }
 
 .custom_box {
-    height: 50vh !important;
-    max-height: 50vh !important;
+    height: 30vh !important;
+    max-height: 30vh !important;
     overflow-y: auto;
     overflow-x: hidden;
 }

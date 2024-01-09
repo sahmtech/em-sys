@@ -416,10 +416,9 @@ class EssentialsUtil extends Util
         return count($attendances);
     }
 
-    public function getPayrollQuery($business_id)
+    public function getPayrollQuery($business_ids)
     {
-        $payrolls = Transaction::
-            where('type', 'payroll')
+        $payrolls = Transaction::whereIn('transactions.business_id', $business_ids)->where('type', 'payroll')
             ->join('users as u', 'u.id', '=', 'transactions.expense_for')
             ->leftJoin('categories as dept', 'u.essentials_department_id', '=', 'dept.id')
             ->leftJoin('categories as dsgn', 'u.essentials_designation_id', '=', 'dsgn.id')
