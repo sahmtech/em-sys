@@ -507,6 +507,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
                 );
             }
+          
             if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
                 $menu->url(
                     action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
@@ -514,6 +515,8 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
                 );
             }
+
+
             // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
             //     $menu->dropdown(
             //         __('housingmovements::lang.movement_management'),

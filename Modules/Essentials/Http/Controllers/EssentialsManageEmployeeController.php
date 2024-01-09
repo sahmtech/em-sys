@@ -410,26 +410,26 @@ class EssentialsManageEmployeeController extends Controller
                 ->where('end_date', '<', now()) 
                 ->count();
              
-        $nullCount = EssentialsAdmissionToWork::
-                 orWhereNull('admissions_date')
-              
-                ->count();
-            
-            $nullCount += EssentialsEmployeeAppointmet::
-                orWhereNull('start_from')
-                ->orWhereNull('end_at')
-                ->orWhereNull('profession_id')
-                ->orWhereNull('specialization_id')
-                // Add more columns as needed
-                ->count();
-            
-            $nullCount += EssentialsEmployeesQualification::
-                orWhereNull('graduation_year')
-                ->orWhereNull('graduation_institution')
-                ->orWhereNull('graduation_country')
-                ->orWhereNull('degree')
-                
-                // Add more columns as needed
+                $nullCount= User::with(['essentials_admission_to_works','essentialsEmployeeAppointmets','essentials_qualification'])
+                ->whereHas('essentials_admission_to_works', function ($query) {
+                    
+                    $query->whereNull('admissions_date');
+                })
+                ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
+                    
+                    $query->WhereNull('start_from')
+                    ->orWhereNull('end_at')
+                    ->orWhereNull('profession_id')
+                    ->orWhereNull('specialization_id');
+                })
+                ->orwhereHas('essentials_qualification', function ($query) {
+                    
+                    $query->WhereNull('graduation_year')
+                    ->orWhereNull('graduation_institution')
+                    ->orWhereNull('graduation_country')
+                    ->orWhereNull('degree');
+                    
+                })
                 ->count();
              
           return view('essentials::employee_affairs.dashboard')
@@ -573,7 +573,8 @@ class EssentialsManageEmployeeController extends Controller
       public function uncomplete_profiles()
       {
         
-        $usersWithNullAdmission = User::whereHas('essentials_admission_to_works', function ($query) {
+        $usersWithNullAdmission = User::with(['essentials_admission_to_works','essentialsEmployeeAppointmets','essentials_qualification'])
+        ->whereHas('essentials_admission_to_works', function ($query) {
             
             $query->whereNull('admissions_date');
         })
@@ -638,6 +639,73 @@ class EssentialsManageEmployeeController extends Controller
                 }
             
         return view('essentials::employee_affairs.statistics.uncomplete_profies');
+      }
+
+
+      public function late_admission()
+      {
+        
+       
+        $late_vacation = FollowupWorkerRequest::with(['user'])
+                ->where('type', 'leavesAndDepartures')
+                ->where('type', 'returnRequest') 
+                ->whereHas('user', function ($query)  {
+                    
+                    $query->where('status', 'vecation');
+                })
+                ->where('end_date', '<', now());
+                
+
+        if (request()->ajax()) {
+
+        return DataTables::of($late_vacation)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                }
+            )
+           
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->user->assignedTo?->contact?->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->user->status ?? null;
+                }
+            )
+           
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                //     return $html;
+                // }
+            )
+
+
+            ->removeColumn('id')
+            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+            ->make(true);
+                }
+            
+        return view('essentials::employee_affairs.statistics.late_vacaction');
       }
 
     /**
