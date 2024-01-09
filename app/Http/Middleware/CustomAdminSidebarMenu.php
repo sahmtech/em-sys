@@ -1053,48 +1053,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            // if ($is_admin  || auth()->user()->can('housingmovements.movement_management')) {
-
-            //     $menu->dropdown(
-            //         __('housingmovements::lang.movement_management'),
-            //         function ($movement_management_SubMenu) use ($is_admin) {
-
-            //             if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_car_types')) {
-            //                 $movement_management_SubMenu->url(
-            //                     action([\Modules\HousingMovements\Http\Controllers\CarTypeController::class, 'index']),
-            //                     __('housingmovements::lang.carTypes'),
-            //                     ['icon' => 'fa fas fa-plus-circle',  'active' =>  request()->segment(2) == 'cars-type']
-            //                 );
-            //             }
-
-            //             if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_car_models')) {
-            //                 $movement_management_SubMenu->url(
-            //                     action([\Modules\HousingMovements\Http\Controllers\CarModelController::class, 'index']),
-            //                     __('housingmovements::lang.carModels'),
-            //                     ['icon' => 'fa fas fa-plus-circle', 'active' =>  request()->segment(2) == 'cars-model']
-            //                 );
-            //             }
-            //             if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_cars')) {
-            //                 $movement_management_SubMenu->url(
-            //                     action([\Modules\HousingMovements\Http\Controllers\CarController::class, 'index']),
-            //                     __('housingmovements::lang.cars'),
-            //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cars']
-            //                 );
-            //             }
-
-            //             if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_drivers')) {
-            //                 $movement_management_SubMenu->url(
-            //                     action([\Modules\HousingMovements\Http\Controllers\DriverCarController::class, 'index']),
-            //                     __('housingmovements::lang.car_drivers'),
-            //                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'car-drivers']
-            //                 );
-            //             }
-            //         },
-            //         ['icon' => 'fa fas fa-plus-circle',],
-
-
-            //     );
-            // }
+         
         });
     }
 

@@ -413,6 +413,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/cars-type-update/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'update'])->name('essentials.car-type-update');
         Route::delete('/cars-type-delete/{id}', [\Modules\Essentials\Http\Controllers\CarTypeController::class, 'destroy'])->name('essentials.cartype.delete');
         // Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('cars-model');
+
+
+        Route::get('/cars-insurance', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'index'])->name('essentials.car-insurance');
+        Route::get('/cars-insurance-create/{id}', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'create'])->name('essentials.car-insurance-create');
+        Route::get('/cars-insurance-edit/{id}', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'edit'])->name('essentials.car.insurance.edit');
+        Route::post('/cars-insurance-store', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'store'])->name('essentials.carinsurance-store');
+        Route::put('/cars-insurance-update/{id}', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'update'])->name('essentials.car-insurance-update');
+        Route::delete('/cars-insurance-delete/{id}', [\Modules\Essentials\Http\Controllers\CarInsuranceController::class, 'destroy'])->name('essentials.carinsurance.delete');
+        
         // Route Car Models
         Route::get('/cars-model', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'index'])->name('essentials.car-models');
         Route::get('/cars-model-create', [\Modules\Essentials\Http\Controllers\CarModelController::class, 'create'])->name('essentials.car-model-create');

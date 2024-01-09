@@ -1,47 +1,16 @@
 @extends('layouts.app')
-@section('title', __('housingmovements::lang.cars'))
+@section('title', __('essentials::lang.insurance'))
 
 @section('content')
-
     <section class="content-header">
         <h1>
-            <span>@lang('housingmovements::lang.cars')</span>
+            <span>@lang('essentials::lang.insurance')</span>
         </h1>
     </section>
 
     <!-- Main content -->
     <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    {!! Form::open([
-                        'url' => action('\Modules\Essentials\Http\Controllers\CarController@search'),
-                        'method' => 'post',
-                        'id' => 'carType_search',
-                    ]) !!}
-                    <div class="row">
-                        <div class="col-sm-4">
-                            {!! Form::label('carType_label', __('housingmovements::lang.carModel')) !!}
 
-                            <select class="form-control" name="car_type_id" id='carTypeSelect' style="padding: 2px;">
-                                <option value="all" selected>@lang('lang_v1.all')</option>
-                                @foreach ($carTypes as $type)
-                                    <option value="{{ $type->id }}">
-                                        {{ $type->name_ar . ' - ' . $type->name_en }}</option>
-                                @endforeach
-                            </select>
-
-                        </div>
-
-                        <div class="col-sm-4" style="margin-top: 0px;">
-
-                        </div>
-                    </div>
-
-                    {!! Form::close() !!}
-                @endcomponent
-            </div>
-        </div>
 
         <div class="row">
             <div class="col-md-12">
@@ -49,9 +18,9 @@
                     @slot('tool')
                         <div class="box-tools">
                             <a class="btn btn-primary pull-right m-5 btn-modal"
-                                href="{{ action('Modules\Essentials\Http\Controllers\CarController@create') }}"
-                                data-href="{{ action('Modules\Essentials\Http\Controllers\CarController@create') }}"
-                                data-container="#add_car_model">
+                                href="{{ route('essentials.car-insurance-create', ['id' => $car_id]) }}"
+                                data-href="{{ route('essentials.car-insurance-create', ['id' => $car_id]) }}"
+                                data-container="#add_insurance_model">
                                 <i class="fas fa-plus"></i> @lang('messages.add')</a>
                         </div>
                     @endslot
@@ -62,21 +31,10 @@
                             <thead>
                                 <tr>
                                     {{-- <th>@lang('housingmovements::lang.driver')</th> --}}
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.car_typeModel')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.plate_number')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.plate_registration_type')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.serial_number')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.structure_no')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.manufacturing_year')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.vehicle_status')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.expiry_date')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.test_end_date')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.examination_status')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.number_seats')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.color')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_status')</th>
-                                    {{-- <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_company_id')</th> --}}
 
+                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_company_id')</th>
+                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_start_Date')</th>
+                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_end_date')</th>
                                     <th style="width: 100px !important;">@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -88,8 +46,8 @@
                     </div>
 
 
-                    <div class="modal fade" id="add_car_model" tabindex="-1" role="dialog"></div>
-                    <div class="modal fade" id="edit_car_model" tabindex="-1" role="dialog">
+                    <div class="modal fade" id="add_insurance_model" tabindex="-1" role="dialog"></div>
+                    <div class="modal fade" id="edit_insurance_model" tabindex="-1" role="dialog">
                     </div>
                 @endcomponent
             </div>
@@ -112,13 +70,17 @@
             $('#driver_select').select2();
             $('#carModel_id').select2();
             $('#worker_select').select2();
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
 
             cars_table = $('#cars_table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('essentials.cars') }}',
+                    url: '{{ route('essentials.car-insurance') }}',
                     data: function(d) {
+                        d.id = id;
+
                         if ($('#carTypeSelect').val()) {
                             d.carTypeSelect = $('#carTypeSelect').val();
                             // console.log(d.project_name_filter);
@@ -133,47 +95,14 @@
                     // { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
 
                     {
-                        "data": "car_typeModel"
+                        "data": "insurance_company_id"
                     },
                     {
-                        "data": "plate_number"
+                        "data": "insurance_start_Date"
                     },
                     {
-                        "data": "plate_registration_type"
+                        "data": "insurance_end_date"
                     },
-                    {
-                        "data": "serial_number"
-                    },
-                    {
-                        "data": "structure_no"
-                    },
-                    {
-                        "data": "manufacturing_year"
-                    },
-                    {
-                        "data": "vehicle_status"
-                    },
-                    {
-                        "data": "expiry_date"
-                    },
-                    {
-                        "data": "test_end_date"
-                    },
-                    {
-                        "data": "examination_status"
-                    },
-                    {
-                        "data": "number_seats"
-                    },
-                    {
-                        "data": "color"
-                    },
-                    {
-                        "data": "insurance_status"
-                    }, 
-                    // {
-                    //     "data": "insurance_company_id"
-                    // },
                     {
                         data: 'action'
                     }

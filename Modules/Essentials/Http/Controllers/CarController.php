@@ -108,6 +108,9 @@ class CarController extends Controller
                         $html .= '
                     <button data-href="' .  route('essentials.car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
+                        $html .= '
+                <a href="' .  route('essentials.car-insurance', ['id' => $row->id]) . '" style="margin-top: 2px;" class="btn btn-xs btn-info">' . __("essentials::lang.insurance") . '</a>
+            ';
 
 
                         return $html;
@@ -136,8 +139,8 @@ class CarController extends Controller
 
 
         $carTypes = CarType::all();
-        $insurance_companies = Contact::where('type', 'insurance')->get();
-        return view('essentials::movementMangment.cars.create', compact('carTypes', 'insurance_companies'));
+        // $insurance_companies = Contact::where('type', 'insurance')->get();
+        return view('essentials::movementMangment.cars.create', compact('carTypes'));
     }
 
     // 	
@@ -172,17 +175,17 @@ class CarController extends Controller
                 'expiry_date' => $request->input('expiry_date'),
                 'test_end_date' => $request->input('test_end_date'),
                 'examination_status' => $request->input('examination_status'),
-                'insurance_status' => $request->input('insurance_status'),
+                // 'insurance_status' => $request->input('insurance_status'),
 
 
             ]);
 
-            HousingMovmentInsurance::create([
-                'car_id' => $car->id,
-                'insurance_company_id' => $request->input('insurance_company_id'),
-                'insurance_start_Date' => $request->input('insurance_start_Date'),
-                'insurance_end_date' => $request->input('insurance_end_date'),
-            ]);
+            // HousingMovmentInsurance::create([
+            //     'car_id' => $car->id,
+            //     'insurance_company_id' => $request->input('insurance_company_id'),
+            //     'insurance_start_Date' => $request->input('insurance_start_Date'),
+            //     'insurance_end_date' => $request->input('insurance_end_date'),
+            // ]);
 
             DB::commit();
             return redirect()->back()
@@ -223,8 +226,8 @@ class CarController extends Controller
             $carModels = CarModel::where('car_type_id', $carModel->car_type_id)->get();
             $carTypes = CarType::all();
         }
-        $insurance_companies = Contact::where('type', 'insurance')->get();
-        return view('essentials::movementMangment.cars.edit', compact('car', 'insurance_companies', 'carModel', 'carModels', 'carTypes'));
+        // $insurance_companies = Contact::where('type', 'insurance')->get();
+        return view('essentials::movementMangment.cars.edit', compact('car', 'carModel', 'carModels', 'carTypes'));
     }
 
     /**
@@ -255,20 +258,20 @@ class CarController extends Controller
                 'insurance_status' => $request->input('insurance_status'),
             ]);
 
-            if ($car->contact) {
-                $car->contact->update([
-                    'insurance_company_id' => $request->input('insurance_company_id'),
-                    'insurance_start_Date' => $request->input('insurance_start_Date'),
-                    'insurance_end_date' => $request->input('insurance_end_date'),
-                ]);
-            } else {
-                HousingMovmentInsurance::create([
-                    'car_id' => $car->id,
-                    'insurance_company_id' => $request->input('insurance_company_id'),
-                    'insurance_start_Date' => $request->input('insurance_start_Date'),
-                    'insurance_end_date' => $request->input('insurance_end_date'),
-                ]);
-            }
+            // if ($car->contact) {
+            //     $car->contact->update([
+            //         'insurance_company_id' => $request->input('insurance_company_id'),
+            //         'insurance_start_Date' => $request->input('insurance_start_Date'),
+            //         'insurance_end_date' => $request->input('insurance_end_date'),
+            //     ]);
+            // } else {
+            //     HousingMovmentInsurance::create([
+            //         'car_id' => $car->id,
+            //         'insurance_company_id' => $request->input('insurance_company_id'),
+            //         'insurance_start_Date' => $request->input('insurance_start_Date'),
+            //         'insurance_end_date' => $request->input('insurance_end_date'),
+            //     ]);
+            // }
 
             DB::commit();
             return redirect()->back()
