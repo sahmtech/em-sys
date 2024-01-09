@@ -37,7 +37,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Sales\Entities\SalesProject;
-use Modules\Followup\Entities\followupWorkerRequest;
+use Modules\Followup\Entities\FollowupWorkerRequest;
 
 
 
