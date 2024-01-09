@@ -579,9 +579,6 @@ class EssentialsCardsController extends Controller
         $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
         ->whereDate('expiration_date', '>=', now())
         ->whereDate('expiration_date', '<=', now()->addDays(15))
-        ->whereHas('employee', function ($query) {
-            $query->where('user_type', 'worker');
-        })
         ->get();
 
         if (request()->ajax()) {
@@ -646,10 +643,8 @@ class EssentialsCardsController extends Controller
         $today = Carbon::now();
        
         $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-        ->whereDate('expiration_date', '<', now() )  // Adjusted to check for expiration dates in the past
-        ->whereHas('employee', function ($query) {
-            $query->where('user_type', 'worker');
-        });
+        ->where('expiration_date', '<', $today );  // Adjusted to check for expiration dates in the past
+      
         
        
 

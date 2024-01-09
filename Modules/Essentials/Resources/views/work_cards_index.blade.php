@@ -10,7 +10,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
-                <div class="col-md-3 " onclick="redirectToExpiredResidencies()" style="cursor: pointer;">
+                <div class="col-md-3 " onclick="redirectToExpiredResidencies()" style="cursor: pointer; padding:15px;">
               
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -31,7 +31,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 " onclick="redirectToAllEndedResidency()" style="cursor: pointer;">
+             
+
+                <div class="col-md-3 " onclick="redirectToAllEndedResidency()" style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -53,8 +55,8 @@
                     </div>
                 </div>
 
-
-                <div class="col-md-3 ">
+              
+                <div class="col-md-3 " style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -73,8 +75,8 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-3 ">
+             
+                <div class="col-md-3 " style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -93,10 +95,10 @@
                         </div>
                     </div>
                 </div>
+                <br>
 
 
-
-                <div class="col-md-3 "  onclick="redirectTolatevacation()" style="cursor: pointer;">
+                <div class="col-md-3 "  onclick="redirectTolatevacation()" style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -116,8 +118,8 @@
                     </div>
                 </div>
 
-
-                <div class="col-md-3 " onclick="final_visa()" style="cursor: pointer;">
+              
+                <div class="col-md-3 " onclick="final_visa()" style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
                             <div class="widget-heading">
@@ -137,6 +139,36 @@
                     </div>
                 </div>
 
+
+
+        <div class="row">
+            <div class="col-md-12 custom_table">
+                @component('components.widget', [
+                    'class' => 'box-solid',
+                    'title' => __('essentials::lang.requests'),
+                ])
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="">
+                            <thead>
+                                <tr>
+                                    <th>@lang('essentials::lang.request_number')</th>
+                                    <th>@lang('essentials::lang.worker_name')</th>
+                                    <th>@lang('essentials::lang.residency_number')</th>
+                                    <th>@lang('essentials::lang.request_type')</th>
+                                    <th>@lang('essentials::lang.date_application')</th>
+                                    <th>@lang('essentials::lang.Status')</th>
+                                    <th>@lang('essentials::lang.nots')</th>
+                                    <th>@lang('essentials::lang.actions')</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                @endcomponent
+            </div>
+
+
+        </div>
 
             </div>
         </div>
