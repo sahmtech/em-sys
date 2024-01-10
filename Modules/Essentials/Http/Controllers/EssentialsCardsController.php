@@ -5,17 +5,13 @@ namespace Modules\Essentials\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Notifications\CustomerNotification;
-use Spatie\Activitylog\Models\Activity;
+
 use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ContactUtil;
+
 use App\Utils\ModuleUtil;
-use App\Utils\NotificationUtil;
-use App\Utils\TransactionUtil;
-use App\BusinessLocation;
-use App\Utils\Util;
+
 use App\Business;
-use App\Contact;
+
 use DB;
 use App\User;
 use Carbon\Carbon;
@@ -29,37 +25,20 @@ use App\AccessRole;
 use App\AccessRoleBusiness;
 use App\AccessRoleProject;
 use Spatie\Permission\Models\Permission;
-use Modules\Essentials\Http\RequestsempRequest;
 
-use Spatie\Permission\Models\Role;
-
-use App\Events\UserCreatedOrModified;
 use Modules\Essentials\Entities\EssentialsDepartment;
-use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
-
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsEmployeesQualification;
-use Modules\Essentials\Entities\EssentialsAdmissionToWork;
-use Modules\Essentials\Entities\EssentialsBankAccounts;
-
-
-
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
-
-use Modules\Essentials\Entities\EssentialsEmployeeOperation;
-
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentailsEmployeeOperation;
-
-
 use App\Category;
 use App\Transaction;
 
@@ -103,170 +82,169 @@ class EssentialsCardsController extends Controller
             ],
         ];
     }
-    
+
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
- 
-        $business_name=Business::where('id', $business_id)->select('name','id')->first();
+
+        $business_name = Business::where('id', $business_id)->select('name', 'id')->first();
         $business_name = $business_name ? $business_name->name : null;
         $responsible_client = null;
 
-        $card = EssentialsWorkCard::with([ 'user',
-        // 'user.assignedTo.contact.responsibleClients',
-          'user.OfficialDocument'])
-        ->select('id', 'employee_id', 'work_card_no as card_no', 'fees as fees', 'Payment_number as Payment_number');
-    
-   //dd($card->first()->user->assignedTo);
+        $card = EssentialsWorkCard::with([
+            'user',
+            // 'user.assignedTo.contact.responsibleClients',
+            'user.OfficialDocument'
+        ])
+            ->select('id', 'employee_id', 'work_card_no as card_no', 'fees as fees', 'Payment_number as Payment_number');
 
-    if (!empty($request->input('project'))) {
-        $card->whereHas('user.assignedTo', function ($query) use ($request) {
-            $query->where('id', $request->input('project'));
-        });
-    }
+        //dd($card->first()->user->assignedTo);
 
-    if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
-        $card->whereHas('user', function ($query) use ($request) {
-            $query->whereIn('id', $request->input('proof_numbers'));
-        });
-    }
+        if (!empty($request->input('project'))) {
+            $card->whereHas('user.assignedTo', function ($query) use ($request) {
+                $query->where('id', $request->input('project'));
+            });
+        }
 
-
-    $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-    $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-    $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-      
-       if (request()->ajax()) 
-       {
-          
+        if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
+            $card->whereHas('user', function ($query) use ($request) {
+                $query->whereIn('id', $request->input('proof_numbers'));
+            });
+        }
 
 
-        
-           return Datatables::of($card)
-           
+        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
 
-           ->addColumn('checkbox', function ($row) {
-               return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
-           })
-
-         
-
-           ->editColumn('company_name', function ($row) {
-            return $row->user->business?->name ?? '';
-           })
+        if (request()->ajax()) {
 
 
-           
-           ->editColumn('fixnumber', function ($row) {
-            return $row->user->business?->documents?->where('licence_type','COMMERCIALREGISTER')->first()->unified_number ?? '';
-           })
 
-           ->editColumn('user', function ($row) {
-            return $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
-           })
 
-           ->editColumn('project', function ($row) {
-            return $row->user->assignedTo?->name ?? '';
-            })
-            
-            ->addColumn(
-                'responsible_client',
-                function ($row) use ($name_in_charge_choices) {
-                    $names = "";
-                    
-                    $userIds = json_decode($row->user->assignedTo->assigned_to, true);
-            
-                    if ($userIds) {
-                        $lastUserId = end($userIds);
-            
-                        foreach ($userIds as $user_id) {
-                            $names .= $name_in_charge_choices[$user_id];
-            
-                            if ($user_id !== $lastUserId) {
-                                $names .= ', ';
+            return Datatables::of($card)
+
+
+                ->addColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" name="tblChk[]" class="tblChk" data-id="' . $row->id . '" />';
+                })
+
+
+
+                ->editColumn('company_name', function ($row) {
+                    return $row->user->business?->name ?? '';
+                })
+
+
+
+                ->editColumn('fixnumber', function ($row) {
+                    return $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')->first()->unified_number ?? '';
+                })
+
+                ->editColumn('user', function ($row) {
+                    return $row->user->first_name . ' ' . $row->user->mid_name . ' ' . $row->user->last_name ?? '';
+                })
+
+                ->editColumn('project', function ($row) {
+                    return $row->user->assignedTo?->name ?? '';
+                })
+
+                ->addColumn(
+                    'responsible_client',
+                    function ($row) use ($name_in_charge_choices) {
+                        $names = "";
+
+                        $userIds = json_decode($row->user->assignedTo->assigned_to, true);
+
+                        if ($userIds) {
+                            $lastUserId = end($userIds);
+
+                            foreach ($userIds as $user_id) {
+                                $names .= $name_in_charge_choices[$user_id];
+
+                                if ($user_id !== $lastUserId) {
+                                    $names .= ', ';
+                                }
                             }
                         }
+
+                        return $names;
                     }
-            
-                    return $names;
-                }
-            )
-            // ->editColumn('responsible_client', function ($row) {
-            //     $user = $row->user;
-            
-            //     if ($user && $user->assignedTo) {
-            //         $assignedToFirst = $user->assignedTo->first();
-            
-            //         if ($assignedToFirst) {
-            //             $responsibleClients = $assignedToFirst->users;
-            
-            //             if ($responsibleClients != null) {
-                           
-            //                 $userNames = $responsibleClients->pluck('first_name')->implode(', ');
-            
-            //                 return $userNames;
-            //             }
-            //         }
-            //     }
-            
-            //     return '';
-            // })
-            
+                )
+                // ->editColumn('responsible_client', function ($row) {
+                //     $user = $row->user;
+
+                //     if ($user && $user->assignedTo) {
+                //         $assignedToFirst = $user->assignedTo->first();
+
+                //         if ($assignedToFirst) {
+                //             $responsibleClients = $assignedToFirst->users;
+
+                //             if ($responsibleClients != null) {
+
+                //                 $userNames = $responsibleClients->pluck('first_name')->implode(', ');
+
+                //                 return $userNames;
+                //             }
+                //         }
+                //     }
+
+                //     return '';
+                // })
 
 
-            ->editColumn('proof_number', function ($row) {
-                $residencePermitDocument = $row->user->OfficialDocument
-                    ->where('type', 'residence_permit')
-                    ->first();
-            
-                return $residencePermitDocument ? $residencePermitDocument->number : '';
-            })
 
-            ->editColumn('expiration_date', function ($row) {
-                $residencePermitDocument = $row->user->OfficialDocument
-                    ->where('type', 'residence_permit')
-                    ->first();
-            
-                return $residencePermitDocument ? $residencePermitDocument->expiration_date : '';
-            })
+                ->editColumn('proof_number', function ($row) {
+                    $residencePermitDocument = $row->user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
 
-            ->editColumn('nationality', function ($row) {
-                return $row->user->country?->nationality ?? '';
-            })
-           ->addColumn('action', function ($row) {
-             $html='';
-              
-               return $html;
-           })
-           ->filter(function ($query) use ($request) {
-            
-               if (!empty($request->input('full_name'))) {
-                   $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
-               }
-           })
+                    return $residencePermitDocument ? $residencePermitDocument->number : '';
+                })
 
-         
-         
-           ->rawColumns(['action', 'profession', 'nationality','checkbox'])
-           ->make(true);
-       
+                ->editColumn('expiration_date', function ($row) {
+                    $residencePermitDocument = $row->user->OfficialDocument
+                        ->where('type', 'residence_permit')
+                        ->first();
 
-       }
-    
-    
+                    return $residencePermitDocument ? $residencePermitDocument->expiration_date : '';
+                })
+
+                ->editColumn('nationality', function ($row) {
+                    return $row->user->country?->nationality ?? '';
+                })
+                ->addColumn('action', function ($row) {
+                    $html = '';
+
+                    return $html;
+                })
+                ->filter(function ($query) use ($request) {
+
+                    if (!empty($request->input('full_name'))) {
+                        $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('full_name')}%"]);
+                    }
+                })
+
+
+
+                ->rawColumns(['action', 'profession', 'nationality', 'checkbox'])
+                ->make(true);
+        }
+
+
         $sales_projects = SalesProject::pluck('name', 'id');
-        
-        $proof_numbers=User::where('users.user_type', 'worker')
-        ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id')->get();
+
+        $proof_numbers = User::where('users.user_type', 'worker')
+            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+        ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
 
-        return view('essentials::cards.index')->with(compact('sales_projects','proof_numbers'));
+        return view('essentials::cards.index')->with(compact('sales_projects', 'proof_numbers'));
     }
 
 
-    public function work_cards_all_requests(Request $request)
+    public function work_cards_all_requests()
     {
         $business_id = request()->session()->get('user.business_id');
 
@@ -377,9 +355,8 @@ class EssentialsCardsController extends Controller
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . __($this->statuses[$row->status]['name']) . '</span>';
 
-                      
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                    
+
+                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
@@ -394,16 +371,27 @@ class EssentialsCardsController extends Controller
         }
 
 
-        $workers = User::whereIn('user_type', ['employee', 'manager'])->whereIn('business_id', $user_businesses_ids)->select(
-            'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-         ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->pluck('full_name', 'id');
+        $workers = User::with(['userAllowancesAndDeductions'])
+            ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                $query->where(function ($query2) use ($user_businesses_ids) {
+                    $query2->whereIn('users.business_id', $user_businesses_ids)
+                        ->whereIn('user_type', ['employee', 'manager', 'worker']);
+                })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
+                    $query3->where('user_type', 'worker')
+                        ->whereIn('assigned_to', $user_projects_ids)
+                        ->whereIn('users.business_id', $user_businesses_ids);
+                });
+            })
+            ->select(
+                'id',
+                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name")
+            )
+            ->pluck('full_name', 'id');
 
         $statuses = $this->statuses;
 
 
-      return view('essentials::cards.allrequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        return view('essentials::cards.allrequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
 
@@ -559,8 +547,8 @@ class EssentialsCardsController extends Controller
             return redirect()->route('work_cards_all_requests')->withErrors([$output['msg']]);
         }
     }
-    
-   
+
+
     private function generateRequestNo($type)
     {
         $latestRecord = FollowupWorkerRequest::where('type', $type)->orderBy('request_no', 'desc')->first();
@@ -583,7 +571,7 @@ class EssentialsCardsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $permissionName = 'essentials.view_profile_picture';
@@ -621,8 +609,8 @@ class EssentialsCardsController extends Controller
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-               
-                if( $accessRole ){
+
+                if ($accessRole) {
 
                     $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                     $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
@@ -630,7 +618,6 @@ class EssentialsCardsController extends Controller
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-                            
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
@@ -638,12 +625,12 @@ class EssentialsCardsController extends Controller
 
         $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
             $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager','worker']);
+                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager', 'worker']);
             })->orWhere(function ($query3) use ($user_projects_ids) {
                 $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
             });
         })->where('users.is_cmmsn_agnt', 0)
-        ->where('nationality_id','!=',5)
+            ->where('nationality_id', '!=', 5)
 
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
@@ -715,7 +702,6 @@ class EssentialsCardsController extends Controller
 
             $users->where('users.nationality_id', $request->input('nationality'));
             error_log("111");
-
         }
         if (request()->ajax()) {
 
@@ -771,7 +757,7 @@ class EssentialsCardsController extends Controller
                 //                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                 //                         <li>
                 //                         <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
-                                     
+
                 //                         </a>
                 //                         </li>';
 
@@ -822,7 +808,7 @@ class EssentialsCardsController extends Controller
                     });
                 })
                 //->removecolumn('id')
-                ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view','checkbox'])
+                ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view', 'checkbox'])
                 ->make(true);
         }
 
@@ -857,319 +843,319 @@ class EssentialsCardsController extends Controller
             ->whereNull('sales_contracts.offer_price_id')->pluck('transactions.ref_no', 'transactions.id');
         $items = salesContractItem::pluck('name_of_item', 'id');
 
-      
-      return view('essentials::cards.operations')
-      ->with(compact(
-        'contract_types',
-        'nationalities',
-        'specializations',
-        'professions',
-        'users',
-        'countries',
-        'spacializations',
-        'status',
-        'offer_prices',
-        'items',
-        'businesses',
-        // 'bl_attributes',
-        // 'default_location'
-    ));;
+
+        return view('essentials::cards.operations')
+            ->with(compact(
+                'contract_types',
+                'nationalities',
+                'specializations',
+                'professions',
+                'users',
+                'countries',
+                'spacializations',
+                'status',
+                'offer_prices',
+                'items',
+                'businesses',
+                // 'bl_attributes',
+                // 'default_location'
+            ));;
     }
 
-     public function expired_residencies()
-     {
-       
-       
+    public function expired_residencies()
+    {
+
+
         $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-        ->whereDate('expiration_date', '>=', now())
-        ->whereDate('expiration_date', '<=', now()->addDays(15))
-        ->get();
+            ->whereDate('expiration_date', '>=', now())
+            ->whereDate('expiration_date', '<=', now()->addDays(15))
+            ->get();
 
         if (request()->ajax()) {
 
-        return DataTables::of($residencies)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->employee->first_name . ' ' . $row->employee->last_name;
-                }
-            )
-            ->addColumn(
-                'residency',
-                function ($row) {
-                    return $row->number;
-                }
-            )
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'end_date',
-                function ($row) {
-                    return $row->expiration_date;
-                }
-            )
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            return DataTables::of($residencies)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->employee->first_name . ' ' . $row->employee->last_name;
+                    }
+                )
+                ->addColumn(
+                    'residency',
+                    function ($row) {
+                        return $row->number;
+                    }
+                )
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->expiration_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
-                //     return $html;
-                // }
-            )
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
 
         return view('essentials::cards.expired_residencies');
-     }
+    }
 
 
-     public function all_expired_residencies()
-     {
-       
+    public function all_expired_residencies()
+    {
+
         $today = Carbon::now();
-       
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-        ->where('expiration_date', '<', $today );  // Adjusted to check for expiration dates in the past
-      
-        
-       
 
-       // dd( $residencies->first());
+        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
+            ->where('expiration_date', '<', $today);  // Adjusted to check for expiration dates in the past
+
+
+
+
+        // dd( $residencies->first());
 
         if (request()->ajax()) {
 
-        return DataTables::of($residencies)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->employee->first_name . ' ' . $row->employee->last_name;
-                }
-            )
-            ->addColumn(
-                'residency',
-                function ($row) {
-                    return $row->number;
-                }
-            )
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'end_date',
-                function ($row) {
-                    return $row->expiration_date;
-                }
-            )
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            return DataTables::of($residencies)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->employee->first_name . ' ' . $row->employee->last_name;
+                    }
+                )
+                ->addColumn(
+                    'residency',
+                    function ($row) {
+                        return $row->number;
+                    }
+                )
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->expiration_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
-                //     return $html;
-                // }
-            )
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
 
         return view('essentials::cards.all_expired_residencies');
-     }
+    }
 
-     public function late_for_vacation()
-     {
-       
+    public function late_for_vacation()
+    {
+
         $late_vacation = FollowupWorkerRequest::with(['user'])
-        ->where('type', 'leavesAndDepartures')
-        ->where('type', 'returnRequest') 
-        ->whereHas('user', function ($query)  {
-            
-            $query->where('status', 'vecation');
-        })
-        ->where('end_date', '<', now()) 
-        ->select('end_date');
-       
-        
-       
+            ->where('type', 'leavesAndDepartures')
+            ->where('type', 'returnRequest')
+            ->whereHas('user', function ($query) {
 
-       // dd( $residencies->first());
+                $query->where('status', 'vecation');
+            })
+            ->where('end_date', '<', now())
+            ->select('end_date');
+
+
+
+
+        // dd( $residencies->first());
 
         if (request()->ajax()) {
 
-        return DataTables::of($late_vacation)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->user->first_name . ' ' . $row->user->last_name;
-                }
-            )
-           
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->user->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->user->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'end_date',
-                function ($row) {
-                    return $row->end_date;
-                }
-            )
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            return DataTables::of($late_vacation)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user->first_name . ' ' . $row->user->last_name;
+                    }
+                )
 
-                //     return $html;
-                // }
-            )
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->end_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
 
         return view('essentials::cards.late_for_vacation');
-     }
+    }
 
-     public function final_visa()
-     {
+    public function final_visa()
+    {
         $final_visa = EssentailsEmployeeOperation::with('user')
-        ->where('operation_type', 'final_visa')
-        ->whereHas('user', function ($query) {
-            $query->where('user_type', 'worker');
-        })
-        ->select('end_date' ,'employee_id');
-       
-       
+            ->where('operation_type', 'final_visa')
+            ->whereHas('user', function ($query) {
+                $query->where('user_type', 'worker');
+            })
+            ->select('end_date', 'employee_id');
 
-       // dd( $residencies->first());
+
+
+        // dd( $residencies->first());
 
         if (request()->ajax()) {
 
-        return DataTables::of($final_visa)
-            ->addColumn(
-                'worker_name',
-                function ($row) {
-                    return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
-                }
-            )
-           
-            ->addColumn(
-                'project',
-                function ($row) {
-                    return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'customer_name',
-                function ($row) {
-                    return $row->user?->assignedTo?->contact->supplier_business_name ?? null;
-                }
-            )
-            ->addColumn(
-                'end_date',
-                function ($row) {
-                    return $row->end_date;
-                }
-            )
-            ->addColumn(
-                'action',
-                ''
-                // function ($row) {
-                //     $html = '';
-                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            return DataTables::of($final_visa)
+                ->addColumn(
+                    'worker_name',
+                    function ($row) {
+                        return $row->user?->first_name . ' ' . $row->user?->last_name ?? '';
+                    }
+                )
 
-                //     return $html;
-                // }
-            )
+                ->addColumn(
+                    'project',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact?->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'customer_name',
+                    function ($row) {
+                        return $row->user?->assignedTo?->contact->supplier_business_name ?? null;
+                    }
+                )
+                ->addColumn(
+                    'end_date',
+                    function ($row) {
+                        return $row->end_date;
+                    }
+                )
+                ->addColumn(
+                    'action',
+                    ''
+                    // function ($row) {
+                    //     $html = '';
+                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
+                    //     return $html;
+                    // }
+                )
 
 
-            ->removeColumn('id')
-            ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
-            ->make(true);
-                }
+                ->removeColumn('id')
+                ->rawColumns(['worker_name', 'residency', 'project', 'end_date', 'action'])
+                ->make(true);
+        }
 
         return view('essentials::cards.final_visa_index');
-     }
+    }
 
 
     public function post_return_visa_data(Request $request)
     {
         try {
             $requestData = $request->only(['start_date', 'end_date', 'worker_id']);
-    
+
             $commonStartDate = $requestData['start_date'];
             $commonEndDate = $requestData['end_date'];
-    
+
             $jsonData = [];
-    
+
             foreach ($requestData['worker_id'] as $index => $workerId) {
                 $jsonObject = [
                     'employee_id' => $workerId,
                     'start_date' => $commonStartDate,
                     'end_date' => $commonEndDate,
                 ];
-    
+
                 $jsonData[] = $jsonObject;
             }
-    
+
             $jsonData = json_encode($jsonData);
-    
+
             \Log::info('JSON Data: ' . $jsonData);
-    
+
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
-    
+
                 DB::beginTransaction();
-    
+
                 foreach ($selectedData as $data) {
                     $operation = DB::table('essentails_employee_operations')->insert([
                         'operation_type' => 'return_visa',
@@ -1178,52 +1164,52 @@ class EssentialsCardsController extends Controller
                         'end_date' =>  $data['end_date'],
                     ]);
                 }
-    
+
                 DB::commit();
-    
+
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-    
-       
+
+
         return response()->json($output);
     }
 
     public function post_final_visa_data(Request $request)
     {
         try {
-            $requestData = $request->only([ 'end_date', 'worker_id']);
-    
+            $requestData = $request->only(['end_date', 'worker_id']);
+
             $commonEndDate = $requestData['end_date'];
-          
-    
+
+
             $jsonData = [];
-    
+
             foreach ($requestData['worker_id'] as $index => $workerId) {
                 $jsonObject = [
                     'employee_id' => $workerId,
-                   
+
                     'end_date' => $commonEndDate,
                 ];
-    
+
                 $jsonData[] = $jsonObject;
             }
-    
+
             $jsonData = json_encode($jsonData);
-    
+
             \Log::info('JSON Data: ' . $jsonData);
-    
+
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
-    
+
                 DB::beginTransaction();
-    
+
                 foreach ($selectedData as $data) {
                     $operation = DB::table('essentails_employee_operations')->insert([
                         'operation_type' => 'final_visa',
@@ -1231,52 +1217,52 @@ class EssentialsCardsController extends Controller
                         'end_date' =>  $data['end_date'],
                     ]);
                 }
-    
+
                 DB::commit();
-    
+
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-    
-      // return  $requestData;
-       return response()->json($output);
+
+        // return  $requestData;
+        return response()->json($output);
     }
 
     public function post_absent_report_data(Request $request)
     {
         try {
-            $requestData = $request->only([ 'end_date', 'worker_id']);
-    
+            $requestData = $request->only(['end_date', 'worker_id']);
+
             $commonEndDate = $requestData['end_date'];
-          
-    
+
+
             $jsonData = [];
-    
+
             foreach ($requestData['worker_id'] as $index => $workerId) {
                 $jsonObject = [
                     'employee_id' => $workerId,
-                   
+
                     'end_date' => $commonEndDate,
                 ];
-    
+
                 $jsonData[] = $jsonObject;
             }
-    
+
             $jsonData = json_encode($jsonData);
-    
+
             \Log::info('JSON Data: ' . $jsonData);
-    
+
             if (!empty($jsonData)) {
                 $selectedData = json_decode($jsonData, true);
-    
+
                 DB::beginTransaction();
-    
+
                 foreach ($selectedData as $data) {
                     $operation = DB::table('essentails_employee_operations')->insert([
                         'operation_type' => 'absent_report',
@@ -1284,28 +1270,28 @@ class EssentialsCardsController extends Controller
                         'end_date' =>  $data['end_date'],
                     ]);
                 }
-    
+
                 DB::commit();
-    
+
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-    
-      // return  $requestData;
-       return response()->json($output);
+
+        // return  $requestData;
+        return response()->json($output);
     }
 
 
 
     public function work_cards_vaction_requests()
     {
-       
+
 
         $business_id = request()->session()->get('user.business_id');
 
@@ -1313,12 +1299,12 @@ class EssentialsCardsController extends Controller
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-    
+
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {
@@ -1336,7 +1322,6 @@ class EssentialsCardsController extends Controller
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-               
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
@@ -1346,15 +1331,15 @@ class EssentialsCardsController extends Controller
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%دولي%')
             ->pluck('id')->toArray();
-      
+
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
         $requestsProcess = null;
 
-       
+
         if (!empty($departmentIds)) {
-          
+
 
             $requestsProcess = FollowupWorkerRequest::select([
                 'followup_worker_requests.request_no',
@@ -1368,31 +1353,28 @@ class EssentialsCardsController extends Controller
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
-                 'essentials_wk_procedures.can_return',
+                'essentials_wk_procedures.can_return',
                 'users.assigned_to'
 
-            ])->where('followup_worker_requests.type','leavesAndDepartures')
+            ])->where('followup_worker_requests.type', 'leavesAndDepartures')
 
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->whereIn('essentials_wk_procedures.department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
-                
-        }
-       
-       
-        else {
-            $output = ['success' => false,
-            'msg' => __('internationalrelations::lang.please_add_the_Ir_department'),
-                ];
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('internationalrelations::lang.please_add_the_Ir_department'),
+            ];
             return redirect()->action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
         }
-  
-       
-    
+
+
+
         if (request()->ajax()) {
 
-      
+
             return DataTables::of($requestsProcess ?? [])
 
                 ->editColumn('created_at', function ($row) {
@@ -1407,18 +1389,17 @@ class EssentialsCardsController extends Controller
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
-                        
-                       
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        
+
+
+                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -1427,7 +1408,7 @@ class EssentialsCardsController extends Controller
 
                 ->make(true);
         }
-        
+
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
             'id',
@@ -1436,21 +1417,21 @@ class EssentialsCardsController extends Controller
         )->pluck('full_name', 'id');
 
         $statuses = $this->statuses;
- 
+
 
 
         return view('essentials::cards.vactionrequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
-    
+
     public function residencyreports(Request $request)
     {
         $sales_projects = SalesProject::pluck('name', 'id');
-        
+
         $proof_numbers = User::where('users.user_type', 'worker')
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
             ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')
             ->get();
-    
+
         $report = EssentialsResidencyHistory::with(['worker'])->select('*');
         if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
             $report->whereHas('worker', function ($query) use ($request) {
@@ -1464,127 +1445,130 @@ class EssentialsCardsController extends Controller
                 })
                 ->make(true);
         }
-    
+
         return view('essentials::cards.reports.residenceReport')->with(compact('sales_projects', 'proof_numbers'));
     }
     public function postRenewData(Request $request)
     {
         try {
-        $requestData = $request->only([
-        'id',
-        'employee_id',
-        'number',
-        'expiration_date',
-        'renew_duration',
-        'fees',
-        'Payment_number',
-        
-    ]);
+            $requestData = $request->only([
+                'id',
+                'employee_id',
+                'number',
+                'expiration_date',
+                'renew_duration',
+                'fees',
+                'Payment_number',
 
-    $jsonData = [];
+            ]);
 
-    foreach ($requestData['id'] as $index => $workerId) {
-        $jsonObject = [
-            'id' => $requestData['id'][$index],
-            'employee_id' => $requestData['employee_id'][$index],
-            'number' => $requestData['number'][$index],
-            'expiration_date' => $requestData['expiration_date'][$index],
-            'renew_duration' => $requestData['renew_duration'][$index],
-            'fees' => $requestData['fees'][$index],
-            'Payment_number'=>$requestData['Payment_number'][$index],
-        ];
-    
-        $jsonData[] = $jsonObject;
-    }
-    
-    $jsonData = json_encode($jsonData);
-  
-    if (!empty($jsonData)) {
-        $business_id = $request->session()->get('user.business_id');
-        $selectedData = json_decode($jsonData, true); 
+            $jsonData = [];
 
-        DB::beginTransaction();
-        foreach ($selectedData as $data) {
-         
-            $card = EssentialsWorkCard::with(['user.OfficialDocument'])->find($data['id']);
-            
-            $renewStartDate = Carbon::parse($data['expiration_date']);
-            $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
-            
-         
-            if ($card) {
+            foreach ($requestData['id'] as $index => $workerId) {
+                $jsonObject = [
+                    'id' => $requestData['id'][$index],
+                    'employee_id' => $requestData['employee_id'][$index],
+                    'number' => $requestData['number'][$index],
+                    'expiration_date' => $requestData['expiration_date'][$index],
+                    'renew_duration' => $requestData['renew_duration'][$index],
+                    'fees' => $requestData['fees'][$index],
+                    'Payment_number' => $requestData['Payment_number'][$index],
+                ];
 
-                EssentialsResidencyHistory::create([
-                    'worker_id' => $data['employee_id'],
-                    'renew_start_date' => $data['expiration_date'],
-                    'residency_number' => $data['number'],
-                    'duration' => $data['renew_duration'],
-                    'renew_end_date' => $renewEndDate,
-                ]);
-
-                $newDuration = $card->workcard_duration + $data['renew_duration'];
-               
-                $card->update(['workcard_duration' => $newDuration]);
-              
-              
-                $card->update(['fees' => $data['fees']]);
-
-                $card->update(['Payment_number' => $data['Payment_number']]);
-
-              
-               $document=EssentialsOfficialDocument::where('type', 'residence_permit')
-               ->where('employee_id', $data['employee_id'])
-               ->first();
-                
-               $document->update(['expiration_date' => $renewEndDate]);
+                $jsonData[] = $jsonObject;
             }
-           
-        }
-      
 
-        DB::commit();
-    
+            $jsonData = json_encode($jsonData);
+
+            if (!empty($jsonData)) {
+                $business_id = $request->session()->get('user.business_id');
+                $selectedData = json_decode($jsonData, true);
+
+                DB::beginTransaction();
+                foreach ($selectedData as $data) {
+
+                    $card = EssentialsWorkCard::with(['user.OfficialDocument'])->find($data['id']);
+
+                    $renewStartDate = Carbon::parse($data['expiration_date']);
+                    $renewEndDate = $renewStartDate->addMonths($data['renew_duration']);
+
+
+                    if ($card) {
+
+                        EssentialsResidencyHistory::create([
+                            'worker_id' => $data['employee_id'],
+                            'renew_start_date' => $data['expiration_date'],
+                            'residency_number' => $data['number'],
+                            'duration' => $data['renew_duration'],
+                            'renew_end_date' => $renewEndDate,
+                        ]);
+
+                        $newDuration = $card->workcard_duration + $data['renew_duration'];
+
+                        $card->update(['workcard_duration' => $newDuration]);
+
+
+                        $card->update(['fees' => $data['fees']]);
+
+                        $card->update(['Payment_number' => $data['Payment_number']]);
+
+
+                        $document = EssentialsOfficialDocument::where('type', 'residence_permit')
+                            ->where('employee_id', $data['employee_id'])
+                            ->first();
+
+                        $document->update(['expiration_date' => $renewEndDate]);
+                    }
+                }
+
+
+                DB::commit();
+
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
             } else {
                 $output = ['success' => 0, 'msg' => __('lang_v1.no_data_received')];
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-    
+
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }
-    
+
         return redirect()->route('cards')->with(['output']);
-    // return $output;
+        // return $output;
     }
 
 
-   
+
     public function getSelectedRowsData(Request $request)
     {
         $selectedRows = $request->input('selectedRows');
-         
-       
+
+
         $data = EssentialsWorkCard::whereIn('id', $selectedRows)
-        ->with([ 'user',
-         'user.assignedTo.contact.responsibleClients',
-         'user.OfficialDocument'])
-       
-         ->select('id',
-        'employee_id',
-        'work_card_no as card_no',
-        'fees as fees',
-         'workcard_duration',
-        'Payment_number as Payment_number',
-        'fixnumber as fixnumber')->get();
-   
-        
+            ->with([
+                'user',
+                'user.assignedTo.contact.responsibleClients',
+                'user.OfficialDocument'
+            ])
+
+            ->select(
+                'id',
+                'employee_id',
+                'work_card_no as card_no',
+                'fees as fees',
+                'workcard_duration',
+                'Payment_number as Payment_number',
+                'fixnumber as fixnumber'
+            )->get();
+
+
         $durationOptions = [
             '3' => __('essentials::lang.3_months'),
             '6' => __('essentials::lang.6_months'),
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
-           
+
         ];
 
 
@@ -1592,13 +1576,13 @@ class EssentialsCardsController extends Controller
             $doc = $row->user->OfficialDocument
                 ->where('type', 'residence_permit')
                 ->first();
-            $fixnumber=  $row->user->business?->documents?->where('licence_type','COMMERCIALREGISTER')->first()->unified_number;
+            $fixnumber =  $row->user->business?->documents?->where('licence_type', 'COMMERCIALREGISTER')->first()->unified_number;
 
             $row->expiration_date = $doc ? $doc->expiration_date : null;
             $row->number = $doc ? $doc->number : null;
-            $row->fixnumber= $fixnumber ?  $fixnumber : null;
+            $row->fixnumber = $fixnumber ?  $fixnumber : null;
         }
-      
+
         return response()->json(['data' => $data, 'durationOptions' => $durationOptions]);
     }
 
@@ -1608,14 +1592,16 @@ class EssentialsCardsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
-       
-        $residencyData = User::where('users.id','=', $employeeId)
-        ->join('essentials_official_documents as doc','doc.employee_id','=','users.id')
-            ->select('doc.id',
-             'users.border_no as border_no',
-             'users.id_proof_number as residency_no',
-             'doc.expiration_date as residency_end_date')->first();
-        
+
+        $residencyData = User::where('users.id', '=', $employeeId)
+            ->join('essentials_official_documents as doc', 'doc.employee_id', '=', 'users.id')
+            ->select(
+                'doc.id',
+                'users.border_no as border_no',
+                'users.id_proof_number as residency_no',
+                'doc.expiration_date as residency_end_date'
+            )->first();
+
         return response()->json($residencyData);
     }
 
@@ -1624,117 +1610,115 @@ class EssentialsCardsController extends Controller
      * @return Renderable
      */
 
-     public function get_responsible_data(Request $request)
-     {
-         $employeeId = $request->get('employeeId');
-         $business_id = request()->session()->get('user.business_id');
-         
-         $userType = User::where('id', $employeeId)->value('user_type');
-     
-         if ($userType !== 'worker') {
-             $professionId = 56;
-             
-             $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
-                     $query->where('profession_id', $professionId);
-                 })
-                 ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
-                 ->get();
-     
-             return response()->json([
-                 'all_responsible_users' => [
-                     'id' => null,
-                     'name' => trans('essentials::lang.management'),
-                 ],
-                 'responsible_client' => $responsible_clients,
-             ]);
-         } else 
-         {
-          
-            $projects = User::with(['assignedTo'])
-            ->find($employeeId);
-        
-        $assignedProject = $projects->assignedTo;
-        
-        $projectName = $assignedProject->name ?? '';
-        $projectId = $assignedProject->id ?? '';
-        
-        $all_responsible_users = [
-            'id' => $projectId,
-            'name' => $projectName,
-        ];
-        
-        if (!$all_responsible_users) {
-            return response()->json(['error' => 'No responsible users found for the given employee ID']);
-        }
-        
-        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
-        $name_in_charge_choices = $all_users->pluck('full_name', 'id');
-        
-        $userIds = json_decode($projects->assignedTo->assigned_to, true);
-        $assignedresponibleClient = [];
-        
-        if ($userIds) {
-            foreach ($userIds as $user_id) {
-                $assignedresponibleClient[] = [
-                    'id' => $user_id,
-                    'name' => $name_in_charge_choices[$user_id],
-                ];
-            }
-        }
-    
-   
-            $b_id=user::where('id', $employeeId)->select('business_id')->get();
-            $business=Business::where('id', 1)->select('name as name','id as id')->get();
-            
+    public function get_responsible_data(Request $request)
+    {
+        $employeeId = $request->get('employeeId');
+        $business_id = request()->session()->get('user.business_id');
+
+        $userType = User::where('id', $employeeId)->value('user_type');
+
+        if ($userType !== 'worker') {
+            $professionId = 56;
+
+            $responsible_clients = User::whereHas('appointment', function ($query) use ($professionId) {
+                $query->where('profession_id', $professionId);
+            })
+                ->select('id', DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as name"))
+                ->get();
+
             return response()->json([
-                 'all_responsible_users' => $all_responsible_users,
-                 
-                 'responsible_client' => $assignedresponibleClient,
-                 'business' => $business,
-             ]);
-         }
-     }
-     
-     
-     
+                'all_responsible_users' => [
+                    'id' => null,
+                    'name' => trans('essentials::lang.management'),
+                ],
+                'responsible_client' => $responsible_clients,
+            ]);
+        } else {
+
+            $projects = User::with(['assignedTo'])
+                ->find($employeeId);
+
+            $assignedProject = $projects->assignedTo;
+
+            $projectName = $assignedProject->name ?? '';
+            $projectId = $assignedProject->id ?? '';
+
+            $all_responsible_users = [
+                'id' => $projectId,
+                'name' => $projectName,
+            ];
+
+            if (!$all_responsible_users) {
+                return response()->json(['error' => 'No responsible users found for the given employee ID']);
+            }
+
+            $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+            $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
+            $name_in_charge_choices = $all_users->pluck('full_name', 'id');
+
+            $userIds = json_decode($projects->assignedTo->assigned_to, true);
+            $assignedresponibleClient = [];
+
+            if ($userIds) {
+                foreach ($userIds as $user_id) {
+                    $assignedresponibleClient[] = [
+                        'id' => $user_id,
+                        'name' => $name_in_charge_choices[$user_id],
+                    ];
+                }
+            }
+
+
+            $b_id = user::where('id', $employeeId)->select('business_id')->get();
+            $business = Business::where('id', 1)->select('name as name', 'id as id')->get();
+
+            return response()->json([
+                'all_responsible_users' => $all_responsible_users,
+
+                'responsible_client' => $assignedresponibleClient,
+                'business' => $business,
+            ]);
+        }
+    }
+
+
+
     public function create(Request $request)
     {
 
         $business_id = request()->session()->get('user.business_id');
         $employeeId = $request->input('employee_id');
-        
+
         $all_users = User::where(function ($query) {
             $query->whereNotNull('users.border_no')
                 ->orWhere('users.id_proof_name', 'eqama');
-
         })
-        ->where('users.user_type', 'worker')
-        ->select( DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
-        ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id')->get();
+            ->where('users.user_type', 'worker')
+            ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
+        ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
-   
 
-        $responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id') 
-        ->where('users.id', '=', $employeeId)
-        ->select('contact_locations.name', 'contact_locations.id')
-        ->get();
- 
 
-            
+        $responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
+            ->where('users.id', '=', $employeeId)
+            ->select('contact_locations.name', 'contact_locations.id')
+            ->get();
+
+
+
         // $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
         // ->where('users.id','=', $employeeId)
         // ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
         // ->get();
 
-    
+
         $employees = $all_users->pluck('full_name', 'id');
-        $all_responsible_users=$responsible_users->pluck('name', 'id');
+        $all_responsible_users = $responsible_users->pluck('name', 'id');
 
 
-       
-        $employee=user::with('business') ->where('id','=', $employeeId)
-        ->first();
+
+        $employee = user::with('business')->where('id', '=', $employeeId)
+            ->first();
 
         $durationOptions = [
             '3' => __('essentials::lang.3_months'),
@@ -1742,16 +1726,17 @@ class EssentialsCardsController extends Controller
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
         ];
-        $business=Business::pluck('name','id');
-       
+        $business = Business::pluck('name', 'id');
+
         return view('essentials::cards.create')
             ->with(compact(
-            'employees',
-            'all_responsible_users',
-         //  'responsible_client',
-            'business',
-            'employee',
-            'durationOptions'));
+                'employees',
+                'all_responsible_users',
+                //  'responsible_client',
+                'business',
+                'employee',
+                'durationOptions'
+            ));
     }
 
     /**
@@ -1766,53 +1751,49 @@ class EssentialsCardsController extends Controller
         // }
         try {
             $data = $request->only([
-             
+
                 'Residency_no',
-            
+
                 'project',
                 'workcard_duration',
                 'Payment_number',
                 'fees',
                 'company_name',
                 'employee_id',
-             
+
 
             ]);
 
- 
+
 
             $business_id = request()->session()->get('user.business_id');
 
             $data['employee_id'] = (int)$request->input('employee_id');
-           
-         
 
-          
-           $lastrecord = EssentialsWorkCard::orderBy('work_card_no', 'desc')->first();
 
-           if ($lastrecord) {
-             
-               $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
 
-       
-              
-               $nextNumericPart = $lastEmpNumber + 1;
 
-               $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
-           } 
-       
-           else
-            {
-             
-               $data['work_card_no'] = 'WC' .'000';
+            $lastrecord = EssentialsWorkCard::orderBy('work_card_no', 'desc')->first();
 
-           }
+            if ($lastrecord) {
+
+                $lastEmpNumber = (int)substr($lastrecord->work_card_no, 3);
+
+
+
+                $nextNumericPart = $lastEmpNumber + 1;
+
+                $data['work_card_no'] = 'WC' . str_pad($nextNumericPart, 3, '0', STR_PAD_LEFT);
+            } else {
+
+                $data['work_card_no'] = 'WC' . '000';
+            }
 
 
             $data['fixnumber'] = 700646447;
- 
+
             $workcard = EssentialsWorkCard::create($data);
-       
+
 
 
 
@@ -1831,8 +1812,8 @@ class EssentialsCardsController extends Controller
             ];
         }
 
-   
-     return redirect()->route('cards');
+
+        return redirect()->route('cards');
     }
 
     /**
@@ -1863,7 +1844,6 @@ class EssentialsCardsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
     }
 
     /**
@@ -1873,6 +1853,5 @@ class EssentialsCardsController extends Controller
      */
     public function destroy($id)
     {
-        
     }
 }

@@ -109,7 +109,7 @@
     @endif
     <section class="content">
 
-        @include('sales::layouts.nav_requests')
+        {{-- @include('sales::layouts.nav_requests') --}}
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')

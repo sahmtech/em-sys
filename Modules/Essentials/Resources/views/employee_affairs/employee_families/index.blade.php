@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employee_families'))
 
 @section('content')
-    @include('essentials::layouts.nav_employee_affairs')
+    {{-- @include('essentials::layouts.nav_employee_affairs') --}}
     <section class="content-header">
         <h1>@lang('essentials::lang.employee_families')</h1>
     </section>

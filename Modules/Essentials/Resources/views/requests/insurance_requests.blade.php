@@ -108,8 +108,8 @@
         @endif
     @endif
     <section class="content">
+      
 
-        {{-- @include('housingmovements::layouts.nav_requests') --}}
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')
                 <div class="box-tools">
@@ -126,9 +126,8 @@
                     <thead>
                         <tr>
                             <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.worker_name')</th>
+                            <th>@lang('followup::lang.name')</th>
                             <th>@lang('followup::lang.eqama_number')</th>
-                            <th>@lang('followup::lang.project_name')</th>
                             <th>@lang('followup::lang.request_type')</th>
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
@@ -146,7 +145,7 @@
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'hm.returnReq.store', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'insurance_storeRequest', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -157,7 +156,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
+                                {!! Form::label('worker_id', __('essentials::lang.employee_name') . ':*') !!}
                                 {!! Form::select('worker_id[]', $workers, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
@@ -189,7 +188,6 @@
                                         'chamberRequest' => __('followup::lang.chamberRequest'),
                                         'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
                                         'WarningRequest' => __('followup::lang.WarningRequest'),
-
                                     ],
                                     null,
                                     [
@@ -429,28 +427,25 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         <h4 class="modal-title">@lang('followup::lang.view_request')</h4>
                     </div>
-
+        
                     <div class="modal-body">
                         <div class="row">
-
                             <div class="workflow-container" id="workflow-container">
-                           
+                                <!-- Workflow content here -->
                             </div>
-
-
                         </div>
-
-
-                        
+        
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
                                 <ul id="worker-list">
-                                    <!-- Worker info will be dynamically added here -->
+                                    <!-- Worker details content here -->
+                                </ul>
                             </div>
                             <div class="col-md-6">
 
@@ -467,25 +462,29 @@
                                 </ul>
                             </div>
                         </div>
+        
+                        <!-- Attachment Form -->
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
                         
                             <div class="form-group">
                                 <label for="attachment">
-                                    <h4>@lang('followup::lang.add_attachment')</h4>
+                                    <h4>@lang('followup::lang.attachment')</h4>
                                 </label>
                                 <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
+                        
                     </div>
-
+        
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
                 </div>
             </div>
         </div>
+        
 
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
@@ -514,7 +513,7 @@
             </div>
         </div>
 
-        @include('housingmovements::requests.change_status_modal')
+        @include('essentials::requests.change_status_modal')
 
     </section>
     <!-- /.content -->
@@ -534,12 +533,16 @@
                 });
             });
 
+
+
+
+
             var requests_table = $('#requests_table').DataTable({
                 processing: true,
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('hm.requests') }}"
+                    url: "{{ route('insurance_requests') }}"
                 },
 
                 columns: [
@@ -554,9 +557,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                    {
-                        data: 'assigned_to'
-                    },
+                  
                     {
                         data: 'type',
                         render: function(data, type, row) {
@@ -591,11 +592,12 @@
                                 return '@lang('followup::lang.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
                                 return '@lang('followup::lang.chamberRequest')';
-                            } else if (data === 'cancleContractRequest') {
-                                return '@lang('followup::lang.cancleContractRequest')';
-                            }  else if (data === 'WarningRequest') {
+                            } else if (data === 'WarningRequest') {
                                 return '@lang('followup::lang.WarningRequest')';
-                            }else {
+                            }  else if (data === 'cancleContractRequest') {
+                                return '@lang('followup::lang.cancleContractRequest')';
+                            } 
+                            else {
                                 return data;
                             }
                         }
@@ -672,7 +674,9 @@
                     },
                 });
             });
+
             $('#requests_table').on('click', '.btn-return', function() {
+                
                 var requestId = $(this).data('request-id');
                 $('#returnModal').modal('show');
                 $('#returnModal').data('id', requestId);
@@ -686,7 +690,7 @@
                 var reason = $('#reasonInput').val();
 
                 $.ajax({
-                    url: "{{ route('hm.returnReq') }}",
+                    url: "{{ route('ess_returnReq') }}",
                     method: "POST",
                     data: {
                         requestId: requestId,
@@ -709,10 +713,7 @@
 
             $(document).on('click', '.btn-view-request', function() {
                 var requestId = $(this).data('request-id');
-
-                // var data = requests_table.row(this).data();
-                // var requestId = data.id;
-
+                console.log(requestId);
             
                 if (requestId) {
                     $.ajax({
@@ -724,8 +725,8 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
                             var workerList = $('#worker-list');
+                            var attachmentsList= $('#attachments-list');
 
                             workflowContainer.html('');
                             workerList.html('');
@@ -816,27 +817,24 @@
 
                                 activitiesList.append(activity);
                             }
-
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
                                     attachment += '<p>';
                                    
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+                           
+                                 attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
                                
                                  attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
                             }
-
-                            $('#attachmentForm').attr('action',
-                                '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
-                                .replace(':requestId', response.request_info.id));
+                            $('#attachmentForm').attr('action', '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'.replace(':requestId', response.request_info.id));
 
                             $('#attachmentForm input[name="requestId"]').val(requestId);
-
-
+                         
+                            
                             $('#requestModal').modal('show');
                         },
                         error: function(error) {
@@ -1000,6 +998,7 @@
         });
     </script>
 
+
 <script>
     $('#addRequestModal').on('shown.bs.modal', function(e) {
         $('#worker').select2({
@@ -1010,4 +1009,5 @@
 
         });
 </script>
+
 @endsection

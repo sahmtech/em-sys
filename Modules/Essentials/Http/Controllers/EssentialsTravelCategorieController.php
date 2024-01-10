@@ -97,7 +97,7 @@ class EssentialsTravelCategorieController extends Controller
                         $html = '';
                         //         $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         //     $html .= '<a  href="'. route('cancleActivition', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.cancleActivition').'</a>';
-                        $html .= '<button class="btn btn-xs btn-danger delete_employee_travel_categorie_button" data-href="' . route('userTravelCat.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                       $html .= '<button class="btn btn-xs btn-danger delete_employee_travel_categorie_button" data-href="' . route('userTravelCat.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                         return $html;
                     }

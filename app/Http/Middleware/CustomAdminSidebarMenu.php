@@ -440,6 +440,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_contracts'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\InsuranceRequestController::class, 'index']),
+                    __('essentials::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'insurance_requests']
+                );
+            }
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_companies')) {
                 $menu->url(
                     route('insurance_companies'),
@@ -466,7 +473,7 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_dashboard'],
             );
 
-
+            if ($is_admin  || auth()->user()->can('essentials.crud_workcards_request')) {
 
             $menu->url(
                 route('work_cards_all_requests'),
@@ -474,13 +481,13 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
             );
 
+        }
 
-
-            $menu->url(
-                route('work_cards_vaction_requests'),
-                __('essentials::lang.work_cards_vaction_requests'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
-            );
+            // $menu->url(
+            //     route('work_cards_vaction_requests'),
+            //     __('essentials::lang.work_cards_vaction_requests'),
+            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
+            // );
 
 
 
@@ -679,11 +686,11 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 );
             }
-            if ($is_admin  || auth()->user()->can('essentials.crud_all_essentials_requests')) {
+            if ($is_admin  || auth()->user()->can('essentials.crud_HR_requests')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
                     __('essentials::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'sales.requests' || request()->segment(2) == 'escalate_requests')]
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'allEssentialsRequests' || request()->segment(2) == 'escalate_requests')]
                 );
             }
             //employee reports 

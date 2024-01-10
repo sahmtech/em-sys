@@ -375,6 +375,13 @@ class FollowUpRequestController extends Controller
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
         }
+        if (empty($user_businesses_ids)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.you_have_no_access_role'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%متابعة%')
             ->pluck('id')->toArray();

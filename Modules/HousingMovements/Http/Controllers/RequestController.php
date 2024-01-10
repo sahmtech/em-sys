@@ -97,6 +97,13 @@ class RequestController extends Controller
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
         }
+        if (empty($user_businesses_ids)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.you_have_no_access_role'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
@@ -182,11 +189,22 @@ class RequestController extends Controller
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
+        $workers = User::with(['userAllowancesAndDeductions'])
+        ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+            $query->where(function ($query2) use ($user_businesses_ids) {
+                $query2->whereIn('users.business_id', $user_businesses_ids)
+                       ->whereIn('user_type', ['employee', 'manager', 'worker']);
+            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
+                $query3->where('user_type', 'worker')
+                       ->whereIn('assigned_to', $user_projects_ids)
+                       ->whereIn('users.business_id', $user_businesses_ids);
+            });
+        })
+        ->select(
             'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-         ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->pluck('full_name', 'id');
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name")
+        )
+        ->pluck('full_name', 'id');
 
 
         $statuses = $this->statuses;
