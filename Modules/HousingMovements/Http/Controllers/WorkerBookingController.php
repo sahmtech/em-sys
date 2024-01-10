@@ -27,11 +27,11 @@ class WorkerBookingController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create($id)
     {
-        $workers = User::where('user_type', 'worker')->whereNull('assigned_to')->get();
+        $worker = User::find($id);
         $projects = SalesProject::all();
-        return view('housingmovements::projects_workers.bookWorker', compact('workers', 'projects'));
+        return view('housingmovements::projects_workers.bookWorker', compact('worker', 'projects'));
     }
 
     /**
@@ -48,7 +48,10 @@ class WorkerBookingController extends Controller
                 'project_id' => $request->input('project_id'),
                 'created_by' => Auth::user()->id,
                 'user_id' => $request->input('user_id'),
+                'booking_start_Date' => $request->input('booking_start_Date'),
+                'booking_end_Date' => $request->input('booking_end_Date')
             ]);
+            
 
 
             DB::commit();

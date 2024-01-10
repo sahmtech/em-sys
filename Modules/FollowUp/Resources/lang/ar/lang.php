@@ -258,18 +258,22 @@ return [
     'document_delivery' => 'سندات التسليم',
     'nots' => 'الملاحظات',
     'no_document_delivery_to_show' => 'لا يوجد سندات',
-    'please_add_the_followup_department'=>'قم بإضافة إدارة المتابعة من فضلك',
+    'please_add_the_followup_department' => 'قم بإضافة إدارة المتابعة من فضلك',
     'user_type' => 'نوع المستخدم',
     'admin' => 'أدمن',
     'customer' => 'العميل',
     'customer_user' => ' موقع / متابع العقد',
     'employee' => 'موظف',
     'manager' => 'مدير',
-    'user'=>'مستخدم',
+    'user' => 'مستخدم',
     'worker' => 'عامل',
-    'escalated_from'=>'تم التصعيد من',
-    'escalate_requests'=>'الطلبات المصعّدة',
-    'requests_by_sequential'=>'الطلبات حسب التسلسل'
+    'escalated_from' => 'تم التصعيد من',
+    'escalate_requests' => 'الطلبات المصعّدة',
+    'requests_by_sequential' => 'الطلبات حسب التسلسل',
+    'is_booking' => 'هل محجوز؟',
+    'booking' => 'محجوز',
+    'not_booking' => 'غير محجوز',
+    'booking_details' => 'معلومات الحجز',
 
 
 

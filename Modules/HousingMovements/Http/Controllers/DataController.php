@@ -45,12 +45,7 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.crud_requests'),
                 'default' => false,
             ],
-            [
-                'value' => 'housingmovements.view_movement_management',
-                'label' => __('housingmovements::lang.view_movement_management'),
-                'default' => false,
-            ],
-
+            
 
             [
                 'value' => 'housingmovements.crud_rooms',
@@ -80,30 +75,6 @@ class DataController extends Controller
             ],
 
             [
-                'value' => 'housingmovements.crud_htr_car_types',
-                'label' => __('housingmovements::lang.crud_htr_car_types'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_car_models',
-                'label' => __('housingmovements::lang.crud_htr_car_models'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_cars',
-                'label' => __('housingmovements::lang.crud_htr_cars'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_drivers',
-                'label' => __('housingmovements::lang.crud_htr_drivers'),
-                'default' => false,
-            ],
-
-            [
                 'value' => 'housingmovements.crud_htr_trevelers',
                 'label' => __('housingmovements::lang.crud_htr_trevelers'),
                 'default' => false,
@@ -121,11 +92,7 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.view_building_management'),
                 'default' => false,
             ],
-            [
-                'value' => 'housingmovements.movement_management',
-                'label' => __('housingmovements::lang.movement_management'),
-                'default' => false,
-            ],
+          
 
 
         ];
