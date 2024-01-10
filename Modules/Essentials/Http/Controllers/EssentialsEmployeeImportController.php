@@ -233,6 +233,18 @@ class EssentialsEmployeeImportController extends Controller
                                         $emp_array['id_proof_name'] = $value[14];
                                         
                                         $emp_array['id_proof_number'] = $value[15];
+
+                                        if ($emp_array['id_proof_number'] !== null) {
+                                    
+                                            $proof_number = user::where('id_proof_number',$emp_array['id_proof_number'])->first();
+                                           // dd( $proof_number);
+                                            if ($proof_number) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = __('essentials::lang.proof_number_validated' ) .$row_no;
+                                                break;
+                                            }
+                                        }
                                         
                                        
 
