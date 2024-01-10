@@ -531,11 +531,7 @@ class DataController extends Controller
                 'label' => __('essentials::lang.facilities_management'),
                 'default' => false,
             ],
-            [
-                'value' => 'essentials.movement_management',
-                'label' => __('housingmovements::lang.movement_management'),
-                'default' => false,
-            ],
+           
             [
                 'value' => 'essentials.carTypes',
                 'label' => __('housingmovements::lang.carTypes'),
@@ -557,7 +553,12 @@ class DataController extends Controller
                 'default' => false,
             ],
 
-
+            
+            [
+                'value' => 'essentials.movement_management',
+                'label' => __('housingmovements::lang.movement_management_dashbord'),
+                'default' => false,
+            ],
             [
                 'value' => 'essentials.carsChangeOil',
                 'label' => __('housingmovements::lang.carsChangeOil'),

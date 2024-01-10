@@ -161,10 +161,15 @@ return [
     'latestChangeOil' => 'تغيير الزيت خلال 15 يوم',
     'created_by' => 'انشأ من قبل',
     'insurance_company_id' => 'شركة التأمين',
-
+    'movement_management_dashbord' => 'الصفحة الرئيسية لإدارة الحركة',
     'insurance_start_Date' => 'تاريخ بداية التأمين',
     'insurance_end_date' => 'تاريخ نهاية التأمين',
-
+    'add_insurance' => 'إضافة تامين',
+    'edit_insurance' => 'تعديل تامين',
+    'insurance_end_date' => 'تاريخ نهاية التأمين',
+    'booking_start_Date' => 'تاريخ بداية الحجز',
+    'booking_end_Date' => 'تاريخ نهاية الحجز',
+    'all_workers_view' => 'عرض العمال',
 
 
 

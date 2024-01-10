@@ -67,6 +67,8 @@
                             <td style="width: 100px !important;">@lang('followup::lang.name')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
+                            <td style="width: 100px !important;">@lang('housingmovements::lang.booking_start_Date')</td>
+                            <td style="width: 100px !important;">@lang('housingmovements::lang.booking_end_Date')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
                             <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
                             <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
@@ -124,7 +126,7 @@
                         render: function(data, type, row) {
                             var link = '<a href="' +
                                 '{{ route('htr.show.workers', ['id' => ':id']) }}'
-                                .replace(':id', row.id) + '">' + data + '</a>';
+                                .replace(':id', row.user_id) + '">' + data + '</a>';
                             return link;
                         }
                     },
@@ -133,6 +135,12 @@
                     },
                     {
                         data: 'contact_name'
+                    },
+                    {
+                        data: 'booking_start_Date'
+                    }, 
+                    {
+                        data: 'booking_end_Date'
                     },
                     {
                         data: 'nationality'

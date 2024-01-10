@@ -25,6 +25,7 @@ use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\HousingMovements\Entities\HtrRoom;
 
 class User extends Authenticatable
@@ -469,4 +470,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class, 'expense_for');
     }
+
+    public function booking(){
+        return $this->hasOne(HousingMovementsWorkerBooking::class,'user_id');
+    }
+    
 }

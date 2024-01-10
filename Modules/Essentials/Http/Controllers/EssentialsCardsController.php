@@ -1231,7 +1231,7 @@ class EssentialsCardsController extends Controller
                         'end_date' =>  $data['end_date'],
                     ]);
                 }
-    
+                
                 DB::commit();
     
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];

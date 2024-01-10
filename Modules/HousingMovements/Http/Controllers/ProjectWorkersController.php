@@ -23,8 +23,11 @@ use Modules\Essentials\Entities\EssentialsBankAccounts;
 use App\Contact;
 use App\ContactLocation;
 use App\User;
+use Carbon\Carbon;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\Sales\Entities\SalesProject;
 
@@ -178,6 +181,9 @@ class ProjectWorkersController extends Controller
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
+        $days = 3;
+        $fillterDate = now()->subDays($days)->toDateString();
+        HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
         $users = User::with(['rooms'])
             ->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
@@ -312,6 +318,11 @@ class ProjectWorkersController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
+
+        $days = 3;
+        $fillterDate = now()->subDays($days)->toDateString();
+        HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
+
         $users = HousingMovementsWorkerBooking::all();
 
 
@@ -349,7 +360,7 @@ class ProjectWorkersController extends Controller
 
             return Datatables::of($users)
                 ->editColumn('worker', function ($row) {
-                    return $row->user->id_proof_number . ' - ' . $row->user->first_name . ' ' . $row->user->last_name ?? '';
+                    return  $row->user->first_name . ' ' . $row->user->last_name ?? '';
                 })
                 ->addColumn('nationality', function ($row) {
                     return optional($row->user->country)->nationality ?? ' ';
@@ -372,8 +383,17 @@ class ProjectWorkersController extends Controller
                 })
 
                 ->addColumn('contact_name', function ($row) {
-                    return $row->saleProject->name;
+                    return $row->saleProject?->name;
                 })
+                ->addColumn('booking_start_Date', function ($row) {
+                    return $row->booking_start_Date;
+                })
+                ->addColumn('booking_end_Date', function ($row) {
+                    return $row->booking_end_Date;
+                })
+
+
+
                 ->addColumn('essentials_salary', function ($row) {
                     return $row->user->essentials_salary;
                 })->addColumn('contact_number', function ($row) {
@@ -381,20 +401,19 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn('total_salary', function ($row) {
                     return $row->user->total_salary;
-                }) ->addColumn('gender', function ($row) {
+                })->addColumn('gender', function ($row) {
                     return $row->user->gender;
                 })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->user->categorie_id] ?? '';
 
                     return $item;
-                    
-                }) 
+                })
                 ->addColumn('created_by', function ($row) use ($travelCategories) {
-                  
-                    return  $row->creator->first_name . ' ' . $row->user->last_name ?? '';
-                }) 
-                 ->addColumn(
+
+                    return  $row->creator->first_name . ' ' . $row->creator->last_name ?? '';
+                })
+                ->addColumn(
                     'action',
                     function ($row) {
 
@@ -405,16 +424,16 @@ class ProjectWorkersController extends Controller
                         // data-href="' . route('worker.unbook', ['id' => $row->id])  . ' "
                         //  class="btn btn-xs btn-modal btn-danger delete_book_worker_button" style="width: 60px;"  ><i class="fa fa-minus-circle cursor-pointer" style="
                         //  font-size: smaller;"></i>' . __("housingmovements::lang.unbook") . '</a>';
-                       
-                         $html .= '
+
+                        $html .= '
                     <button data-href="' .  route('worker.unbook', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_book_worker_button"><i class="fa fa-minus-circle cursor-pointer"></i>' . __("housingmovements::lang.unbook") . '</button>
                 ';
-                         return $html;
+                        return $html;
                     }
                 )
-               
-               
-                ->rawColumns(['action','created_by','contact_name','contact_number', 'worker', 'categorie_id', 'gender', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'total_salary', 'essentials_salary'])
+
+
+                ->rawColumns(['action', 'created_by', 'contact_name', 'contact_number', 'worker', 'categorie_id', 'gender', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'total_salary', 'essentials_salary'])
                 ->make(true);
         }
 
@@ -449,34 +468,14 @@ class ProjectWorkersController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        // $can_crud_workers = auth()->user()->can('followup.crud_workers');
-        // if (!$can_crud_workers) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
+        $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
+        $users = User::whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
 
-        $users = User::where('user_type', 'worker')->where('status', 'inactive');
-
-
-        // if (!$is_admin) {
-        //     $userProjects = [];
-        //     $roles = auth()->user()->roles;
-        //     foreach ($roles as $role) {
-
-        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
-        //         if ($accessRole) {
-        //             $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        //             $userProjects = array_merge($userProjects, $userProjectsForRole);
-        //         }
-        //     }
-        //     $userProjects = array_unique($userProjects);
-        //     $users = $users->whereIn('users.assigned_to',   $userProjects);
-        // }
 
 
         if (request()->ajax()) {
@@ -600,7 +599,7 @@ class ProjectWorkersController extends Controller
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
+        $deliveryDocument =  FollowupDeliveryDocument::where('user_id', $user->id)->get();
 
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
 
@@ -640,7 +639,7 @@ class ProjectWorkersController extends Controller
         }
 
 
-
+        $bookedInfo =  HousingMovementsWorkerBooking::where('user_id', $user->id)->first();
 
         return view('housingmovements::projects_workers.show')->with(compact(
             'user',
@@ -654,6 +653,8 @@ class ProjectWorkersController extends Controller
             'nationalities',
             'nationality',
             'documents',
+            'deliveryDocument',
+            'bookedInfo',
         ));
     }
 

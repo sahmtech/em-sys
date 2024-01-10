@@ -45,11 +45,6 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.crud_requests'),
                 'default' => false,
             ],
-            [
-                'value' => 'housingmovements.view_movement_management',
-                'label' => __('housingmovements::lang.view_movement_management'),
-                'default' => false,
-            ],
 
 
             [
@@ -78,28 +73,9 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.crud_htr_workers_projects'),
                 'default' => false,
             ],
-
             [
-                'value' => 'housingmovements.crud_htr_car_types',
-                'label' => __('housingmovements::lang.crud_htr_car_types'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_car_models',
-                'label' => __('housingmovements::lang.crud_htr_car_models'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_cars',
-                'label' => __('housingmovements::lang.crud_htr_cars'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_drivers',
-                'label' => __('housingmovements::lang.crud_htr_drivers'),
+                'value' => 'housingmovements.all_workers',
+                'label' => __('housingmovements::lang.all_workers_view'),
                 'default' => false,
             ],
 
@@ -121,11 +97,7 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.view_building_management'),
                 'default' => false,
             ],
-            [
-                'value' => 'housingmovements.movement_management',
-                'label' => __('housingmovements::lang.movement_management'),
-                'default' => false,
-            ],
+
 
 
         ];
