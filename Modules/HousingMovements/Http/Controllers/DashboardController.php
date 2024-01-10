@@ -13,6 +13,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Essentials\Entities\EssentailsEmployeeOperation;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsLeaveType;
@@ -65,7 +66,9 @@ class DashboardController extends Controller
     
     public function index()
     {
-        $final_exit_count = User::where('user_type', 'worker')->where('status', 'inactive')->count();
+        $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
+        $final_exit_count = User::whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive')->count();
+
         $reserved_shopping_count = HousingMovementsWorkerBooking::all()->count();
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
         $HtrRoomsWorkersHistory_roomIds= HtrRoomsWorkersHistory::all()->pluck('room_id');
