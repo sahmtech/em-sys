@@ -18,8 +18,5 @@ class EssentailsEmployeeOperation extends Model
 
     protected $fillable = [];
     
-    protected static function newFactory()
-    {
-        return \Modules\Essentials\Database\factories\EssentailsEmployeeOperationFactory::new();
-    }
+   
 }

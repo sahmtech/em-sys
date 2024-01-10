@@ -329,11 +329,13 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            if ($is_admin || auth()->user()->can('essentials.movement_management')) {
             $menu->url(
                 action([\Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']),
                 __('housingmovements::lang.movement_management'),
                 ['icon' => 'fa fa-car', 'active' => request()->segment(2) == 'dashboard-movment']
             );
+        }
             if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
 
                 $menu->url(

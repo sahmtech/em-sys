@@ -149,6 +149,8 @@ return [
     'latestMaintenances' => 'Latest maintenances',
     'latestChangeOil' => 'Latest changeOil',
     'created_by' => 'Created by',
+    'movement_management_dashbord'=>'Traffic management home page',
+
 
 
 ];
