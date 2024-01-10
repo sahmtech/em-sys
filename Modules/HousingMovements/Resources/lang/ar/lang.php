@@ -169,7 +169,7 @@ return [
     'insurance_end_date' => 'تاريخ نهاية التأمين',
     'booking_start_Date' => 'تاريخ بداية الحجز',
     'booking_end_Date' => 'تاريخ نهاية الحجز',
-
+    'all_workers_view' => 'عرض العمال',
 
 
 
