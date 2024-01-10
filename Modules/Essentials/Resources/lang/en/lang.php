@@ -668,5 +668,8 @@ return [
     'Status' => 'Status',
     'nots' => 'Nots',
     'actions' => 'actions',
-    'requests'=>'Requests',
+    'requests' => 'Requests',
+    'insurance' => 'Insurance',
+    'add_insurance' => 'Add insurance',
+    'edit_insurance' => 'Edit insurance',
 ];

@@ -1166,5 +1166,8 @@ return [
   'actions' => 'العمليات',
   'requests' => 'الطلبات',
   'view_medical_insurance' => 'الصفحة الرئيسية للتأمين الطبي',
+  'insurance' => 'التأمينات',
+  'add_insurance' => 'إضافة تأمين',
+  'edit_insurance' => 'تعديل التأمين',
 
 ];
