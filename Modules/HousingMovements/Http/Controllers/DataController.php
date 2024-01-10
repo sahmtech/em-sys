@@ -45,7 +45,7 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.crud_requests'),
                 'default' => false,
             ],
-            
+
 
             [
                 'value' => 'housingmovements.crud_rooms',
@@ -73,6 +73,11 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.crud_htr_workers_projects'),
                 'default' => false,
             ],
+            [
+                'value' => 'housingmovements.all_workers',
+                'label' => __('housingmovements::lang.all_workers_view'),
+                'default' => false,
+            ],
 
             [
                 'value' => 'housingmovements.crud_htr_trevelers',
@@ -92,7 +97,7 @@ class DataController extends Controller
                 'label' => __('housingmovements::lang.view_building_management'),
                 'default' => false,
             ],
-          
+
 
 
         ];
