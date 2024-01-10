@@ -113,7 +113,9 @@
         @endcomponent   
     </div>
     @endif 
+    
 @stop
+
 @section('javascript')
 <script type="text/javascript">
     $(document).ready(function(){
