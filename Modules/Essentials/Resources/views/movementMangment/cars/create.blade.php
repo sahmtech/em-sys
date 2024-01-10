@@ -149,7 +149,7 @@
                         <div class="row">
 
 
-                            <div class="col-sm-6">
+                            {{-- <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('test_end_date', __('housingmovements::lang.test_end_date') . '  ') !!}
                                     {!! Form::date('test_end_date', '', [
@@ -159,8 +159,8 @@
                                         'id' => 'test_end_date',
                                     ]) !!}
                                 </div>
-                            </div>
-                            <div class="col-sm-6">
+                            </div> --}}
+                            {{-- <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('examination_status', __('housingmovements::lang.examination_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
                                     <select class="form-control" id="examination_status" name="examination_status"
@@ -175,7 +175,7 @@
                                     </select>
 
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="row">
@@ -217,7 +217,7 @@
                                     ]) !!}
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            {{-- <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('insurance_status', __('housingmovements::lang.insurance_status') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
 
@@ -278,7 +278,7 @@
                                         'id' => 'insurance_end_date',
                                     ]) !!}
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="row" style="margin-top: 220px;">
                                 <div class="col-sm-12"
