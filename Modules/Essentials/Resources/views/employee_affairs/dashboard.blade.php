@@ -8,7 +8,7 @@
 
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-            <div class="row ">
+            <div class="row widget-statistic">
 
                 <div class="col-md-3 " onclick="finsish_contract_duration()" style="cursor: pointer;">
                     <div class="custom_card">
@@ -98,53 +98,146 @@
       
      
 
-        </div>
-        </div>
-        <div class="row">
-            <div class="col-md-11 custom_table">
-                @component('components.widget', [
-                    'class' => 'box-solid',
-                    'title' => __('essentials::lang.requests'),
-                ])
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="">
-                            <thead>
-                                <tr>
-                                    <th>@lang('essentials::lang.request_number')</th>
-                                    <th>@lang('essentials::lang.worker_name')</th>
-                                    <th>@lang('essentials::lang.residency_number')</th>
-                                    <th>@lang('essentials::lang.request_type')</th>
-                                    <th>@lang('essentials::lang.date_application')</th>
-                                    <th>@lang('essentials::lang.Status')</th>
-                                    <th>@lang('essentials::lang.nots')</th>
-                                 
-                                  
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                @endcomponent
             </div>
         </div>
-            </div>
-
-       
-    
+      
 
     </section>
 
-    <!-- Main content -->
-    <section class="content">
+<div class="clearfix"></div>
+     <!-- Main content -->
+<section class="content">
+
+<div class="row">
+    <div class="col-md-12 ">
+        @component('components.widget', [
+            'class' => 'box-primary',
+            'title' => __('essentials::lang.requests'),
+        ])
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="requests_table">
+                    <thead>
+                        <tr>
+                            <th>@lang('followup::lang.request_number')</th>
+                            <th>@lang('followup::lang.worker_name')</th>
+                            <th>@lang('followup::lang.eqama_number')</th>
+                            <th>@lang('followup::lang.project_name')</th>
+                            <th>@lang('followup::lang.request_type')</th>
+                            <th>@lang('followup::lang.request_date')</th>
+                            <th>@lang('followup::lang.status')</th>
+                            <th>@lang('followup::lang.note')</th>
+                            {{-- <th>@lang('followup::lang.action')</th> --}}
+
+
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        @endcomponent
+    </div>
+
+
+</div>
 
 
 
-
-    </section>
-    <!-- /.content -->
+</section>
+<!-- /.content -->
 @stop
 
 
+
+
 @section('javascript')
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var requests_table = $('#requests_table').DataTable({
+                processing: true,
+                serverSide: true,
+
+                ajax: {
+                    url: "{{ route('housingmovements.dashboard') }}"
+                },
+
+                columns: [
+
+                    {
+                        data: 'request_no'
+                    },
+
+                    {
+                        data: 'user'
+                    },
+                    {
+                        data: 'id_proof_number'
+                    },
+                    {
+                        data: 'assigned_to'
+                    },
+                    {
+                        data: 'type',
+                        render: function(data, type, row) {
+                            if (data === 'exitRequest') {
+                                return '@lang('followup::lang.exitRequest')';
+
+                            } else if (data === 'returnRequest') {
+                                return '@lang('followup::lang.returnRequest')';
+                            } else if (data === 'escapeRequest') {
+                                return '@lang('followup::lang.escapeRequest')';
+                            } else if (data === 'advanceSalary') {
+                                return '@lang('followup::lang.advanceSalary')';
+                            } else if (data === 'leavesAndDepartures') {
+                                return '@lang('followup::lang.leavesAndDepartures')';
+                            } else if (data === 'atmCard') {
+                                return '@lang('followup::lang.atmCard')';
+                            } else if (data === 'residenceRenewal') {
+                                return '@lang('followup::lang.residenceRenewal')';
+                            } else if (data === 'workerTransfer') {
+                                return '@lang('followup::lang.workerTransfer')';
+                            } else if (data === 'residenceCard') {
+                                return '@lang('followup::lang.residenceCard')';
+                            } else if (data === 'workInjuriesRequest') {
+                                return '@lang('followup::lang.workInjuriesRequest')';
+                            } else if (data === 'residenceEditRequest') {
+                                return '@lang('followup::lang.residenceEditRequest')';
+                            } else if (data === 'baladyCardRequest') {
+                                return '@lang('followup::lang.baladyCardRequest')';
+                            } else if (data === 'mofaRequest') {
+                                return '@lang('followup::lang.mofaRequest')';
+                            } else if (data === 'insuranceUpgradeRequest') {
+                                return '@lang('followup::lang.insuranceUpgradeRequest')';
+                            } else if (data === 'chamberRequest') {
+                                return '@lang('followup::lang.chamberRequest')';
+                            } else if (data === 'cancleContractRequest') {
+                                return '@lang('followup::lang.cancleContractRequest')';
+                            } else if (data === 'WarningRequest') {
+                                return '@lang('followup::lang.WarningRequest')';
+                            } else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'status',
+
+                    },
+                    {
+                        data: 'note'
+                    },
+
+
+                ],
+            });
+
+
+        });
+    </script>
 <script>
     function finsish_contract_duration() {
         window.location.href = "{{ route('finsish_contract_duration') }}";
