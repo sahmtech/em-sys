@@ -86,7 +86,21 @@
                         @show_tooltip(__('lang_v1.tooltip_enable_user_active'))
                     </div>
                 </div>
+                
             </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            {!! Form::checkbox('allow_login', 1, !empty($user->allow_login), [
+                                'class' => 'input-icheck',
+                                'id' => 'allow_login',
+                            ]) !!} {{ __('lang_v1.allow_login') }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
 
             <div class="clearfix"></div>
             <div style="display:none">
