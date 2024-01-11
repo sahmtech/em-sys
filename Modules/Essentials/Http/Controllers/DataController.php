@@ -466,8 +466,8 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
-                'value' => 'essentials.crud_all_essentials_requests',
-                'label' => __('essentials::lang.crud_all_essentials_requests'),
+                'value' => 'essentials.crud_HR_requests',
+                'label' => __('essentials::lang.crud_HR_requests'),
                 'default' => false,
             ],
 
@@ -503,7 +503,11 @@ class DataController extends Controller
                 'label' => __('essentials::lang.workcards_allrequest'),
                 'default' => false,
             ],
-
+            [
+                'value' => 'essentials.crud_workcards_request',
+                'label' => __('essentials::lang.crud_workcards_request'),
+                'default' => false,
+            ],
             [
                 'value' => 'essentials.work_cards_vaction_requests',
                 'label' => __('essentials::lang.work_cards_vaction_requests'),
@@ -630,6 +634,11 @@ class DataController extends Controller
             [
                 'value' => 'essentials.view_medical_insurance',
                 'label' => __('essentials::lang.view_medical_insurance'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.crud_insurance_requests',
+                'label' => __('essentials::lang.crud_insurance_requests'),
                 'default' => false,
             ],
         ];

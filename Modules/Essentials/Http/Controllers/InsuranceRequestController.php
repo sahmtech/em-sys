@@ -1,31 +1,35 @@
 <?php
 
-namespace Modules\InternationalRelations\Http\Controllers;
+namespace Modules\Essentials\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use App\User;
 use App\AccessRole;
 use App\AccessRoleBusiness;
 use App\AccessRoleProject;
 use App\Business;
-use Modules\Sales\Entities\SalesProject;
-use Yajra\DataTables\Facades\DataTables;
+use App\ContactLocation;
 use App\Utils\ModuleUtil;
+use App\User;
+use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Essentials\Entities\EssentialsWkProcedure;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\FollowUp\Entities\FollowupWorkerRequestProcess;
-use Carbon\Carbon;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use App\ContactLocation;
-use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Sales\Entities\SalesProject;
 
-class IrRequestController extends Controller
+class InsuranceRequestController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * @return Renderable
+     */
     protected $moduleUtil;
     protected $statuses;
     protected $statuses2;
@@ -60,23 +64,16 @@ class IrRequestController extends Controller
             ],
         ];
     }
-    public function index()
-    {
-       
-
-        $business_id = request()->session()->get('user.business_id');
-
-
-
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
     
+    public function index(){  
+        
+        $business_id = request()->session()->get('user.business_id');
+       
+        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
         if (!$is_admin) {
             $userProjects = [];
@@ -93,12 +90,10 @@ class IrRequestController extends Controller
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-               
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
         }
-
         if (empty($user_businesses_ids)) {
             $output = [
                 'success' => false,
@@ -107,17 +102,18 @@ class IrRequestController extends Controller
             return redirect()->back()->with('status', $output);
         }
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
-            ->where('name', 'LIKE', '%دولي%')
+            ->where('name', 'LIKE', '%تأمين%')
             ->pluck('id')->toArray();
-      
+     
+        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
+
         $requestsProcess = null;
 
-       
         if (!empty($departmentIds)) {
-          
+
 
             $requestsProcess = FollowupWorkerRequest::select([
                 'followup_worker_requests.request_no',
@@ -131,25 +127,26 @@ class IrRequestController extends Controller
                 'followup_worker_requests.reason',
                 'essentials_wk_procedures.department_id as department_id',
                 'users.id_proof_number',
-                 'essentials_wk_procedures.can_return',
+                'essentials_wk_procedures.can_return',
                 'users.assigned_to'
 
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('essentials_wk_procedures.department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
-                
+                ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null)
+                ->where('followup_worker_requests_process.status', 'pending');
+             
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.there_is_no_insurance_dep'),
+            ];
+            return redirect()->back()->with('status', $output);
         }
-        else {
-            $output = ['success' => false,
-            'msg' => __('internationalrelations::lang.please_add_the_Ir_department'),
-                ];
-            return redirect()->action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
-        }
-  
+
         if (!$is_admin) {
-      
+
             $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
                 $query->where(function ($query2) use ($user_businesses_ids) {
                     $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
@@ -158,10 +155,10 @@ class IrRequestController extends Controller
                 });
             });
         }
-    
+
         if (request()->ajax()) {
 
-      
+
             return DataTables::of($requestsProcess ?? [])
 
                 ->editColumn('created_at', function ($row) {
@@ -176,18 +173,18 @@ class IrRequestController extends Controller
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
-                        
-                 
-                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        
+                            . __($this->statuses[$row->status]['name']) . '</span>';
+
+                      
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                    
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -196,109 +193,34 @@ class IrRequestController extends Controller
 
                 ->make(true);
         }
-        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
+
+
+        $workers = User::with(['userAllowancesAndDeductions'])
+        ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+            $query->where(function ($query2) use ($user_businesses_ids) {
+                $query2->whereIn('users.business_id', $user_businesses_ids)
+                       ->whereIn('user_type', ['employee', 'manager', 'worker']);
+            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
+                $query3->where('user_type', 'worker')
+                       ->whereIn('assigned_to', $user_projects_ids)
+                       ->whereIn('users.business_id', $user_businesses_ids);
+            });
+        })
+        ->select(
             'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-         ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )->pluck('full_name', 'id');
-
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name")
+        )
+        ->pluck('full_name', 'id');
         $statuses = $this->statuses;
- 
 
 
-        return view('internationalrelations::requests.allRequest')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+      return view('essentials::requests.insurance_requests')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
-    
-    public function changeStatus(Request $request)
-    {
 
-        try {
-            $input = $request->only(['status', 'reason', 'note', 'request_id']);
-            
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->where('status','pending')->where('sub_status',null)->first();
-            
-            $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
-          
-          
-            if($procedure == 0 && $input['status']=='rejected'){
-                $output = [
-                    'success' => false,
-                    'msg' => __('lang_v1.this_department_cant_reject_this_request'),
-                ];
-                return $output;
-            }
-
-            $requestProcess->status = $input['status'];
-            $requestProcess->reason = $input['reason'] ?? null;
-            $requestProcess->status_note = $input['note'] ?? null;
-            $requestProcess->updated_by = auth()->user()->id;
-
-            $requestProcess->save();
-
-            if ($input['status'] == 'approved') {
-                $procedure = EssentialsWkProcedure::find($requestProcess->procedure_id);
-
-
-                if ($procedure && $procedure->end == 1) {
-                    $requestProcess->followupWorkerRequest->status = 'approved';
-                    $requestProcess->followupWorkerRequest->save();
-                } else {
-                    $nextDepartmentId = $procedure->next_department_id;
-                    $nextProcedure = EssentialsWkProcedure::where('department_id', $nextDepartmentId)
-                        ->where('type', $requestProcess->followupWorkerRequest->type)
-                        ->first();
-
-                    if ($nextProcedure) {
-                        $newRequestProcess = new FollowupWorkerRequestProcess();
-                        $newRequestProcess->worker_request_id = $requestProcess->worker_request_id;
-                        $newRequestProcess->procedure_id = $nextProcedure->id;
-                        $newRequestProcess->status = 'pending';
-                        $newRequestProcess->save();
-                    }
-                }
-            }
-            if ($input['status'] == 'rejected') {
-                $requestProcess->followupWorkerRequest->status = 'rejected';
-                $requestProcess->followupWorkerRequest->save();
-            }
-
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ];
-        } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
-        }
-
-        return $output;
-    }
-    
-   
-    
-
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('internationalrelations::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
     public function store(Request $request)
     {
+
 
         $attachmentPath = null;
 
@@ -328,7 +250,7 @@ class IrRequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.no_contract_found'),
                 ];
-                return redirect()->route('allIrRequests')->withErrors([$output['msg']]);
+                return redirect()->route('insurance_requests')->withErrors([$output['msg']]);
             }
 
 
@@ -337,7 +259,7 @@ class IrRequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.no_wishes_found'),
                 ];
-                return redirect()->route('allIrRequests')->withErrors([$output['msg']]);
+                return redirect()->route('insurance_requests')->withErrors([$output['msg']]);
             }
 
             $contractEndDate = Carbon::parse($contract->contract_end_date);
@@ -348,39 +270,42 @@ class IrRequestController extends Controller
                     'success' => false,
                     'msg' => __('followup::lang.contract_expired'),
                 ];
-                return redirect()->route('allIrRequests')->withErrors([$output['msg']]);
+                return redirect()->route('insurance_requests')->withErrors([$output['msg']]);
             }
         }
-      
+
         $success = 1;
 
         foreach ($request->worker_id as $workerId) {
+            
             if ($workerId !== null) {
-                $business_id=User::where('id',$workerId)->first()->business_id;
-                $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$business_id);
+                $business_id = User::where('id', $workerId)->first()->business_id;
+                error_log($business_id);
+
+                $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id', $business_id);
                 if ($procedure->count() == 0) {
-                    $is_main=Business::where('id',$business_id)->first()->is_main;
-                    if($is_main){
+
+                    $is_main = Business::where('id', $business_id)->first()->is_main;
+                    if ($is_main) {
                         $output = [
                             'success' => false,
                             'msg' => __('followup::lang.this_type_has_not_procedure'),
                         ];
-                        return redirect()->route('allIrRequests')->withErrors([$output['msg']]);
-                    }
-                    else{
-                        $parentBusiness=Business::where('id',$business_id)->first()->parent_business_id;
-                        $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$parentBusiness);
+                        return redirect()->route('insurance_requests')->withErrors([$output['msg']]);
+                    } else {
+                        $parentBusiness = Business::where('id', $business_id)->first()->parent_business_id;
+                        $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id', $parentBusiness);
                         if ($procedure->count() == 0) {
                             $output = [
                                 'success' => false,
                                 'msg' => __('followup::lang.this_type_has_not_procedure'),
                             ];
-                            return redirect()->route('allIrRequests')->withErrors([$output['msg']]);
+                            return redirect()->route('insurance_requests')->withErrors([$output['msg']]);
                         }
                     }
                 }
                 if ($request->type == "exitRequest") {
-                    $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $workerId)->first()->contract_end_date;
+                    $startDate = DB::table('essentials_employees_contracts')->where('employee_id', $workerId)->first()->contract_end_date ?? null;
                 }
 
                 $workerRequest = new FollowupWorkerRequest;
@@ -410,7 +335,7 @@ class IrRequestController extends Controller
                 $workerRequest->save();
 
 
-                $procedure=$procedure->where('start', 1)->first();
+                $procedure = $procedure->where('start', 1)->first();
                 if ($workerRequest) {
                     $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
@@ -429,7 +354,6 @@ class IrRequestController extends Controller
                 } else {
 
                     $success = 0;
-                   
                 }
             }
         }
@@ -438,22 +362,15 @@ class IrRequestController extends Controller
                 'success' => 1,
                 'msg' => __('messages.added_success'),
             ];
-            return redirect()->route('allIrRequests')->with('success', $output['msg']);
+            return redirect()->route('insurance_requests')->with('success', $output['msg']);
         } else {
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
-            return redirect()->route('allIrRequests')->withErrors([$output['msg']]);
+            return redirect()->route('insurance_requests')->withErrors([$output['msg']]);
         }
     }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-   
     private function generateRequestNo($type)
     {
         $latestRecord = FollowupWorkerRequest::where('type', $type)->orderBy('request_no', 'desc')->first();
@@ -470,6 +387,10 @@ class IrRequestController extends Controller
 
         return $input['request_no'];
     }
+    /**
+     * Show the form for creating a new resource.
+     * @return Renderable
+     */
     private function getTypePrefix($type)
     {
 
@@ -495,6 +416,28 @@ class IrRequestController extends Controller
 
         return $typePrefixMap[$type];
     }
+    public function create()
+    {
+        return view('essentials::create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Renderable
+     */
+ 
+
+    /**
+     * Show the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function show($id)
+    {
+        return view('essentials::show');
+    }
+
     /**
      * Show the form for editing the specified resource.
      * @param int $id
@@ -502,7 +445,7 @@ class IrRequestController extends Controller
      */
     public function edit($id)
     {
-        return view('internationalrelations::edit');
+        return view('essentials::edit');
     }
 
     /**
@@ -524,140 +467,5 @@ class IrRequestController extends Controller
     public function destroy($id)
     {
         //
-    }
-      
-    public function escalateRequests()
-    {
-        $business_id = request()->session()->get('user.business_id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
-        if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
-        }
-
-        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
-        ->where('name', 'LIKE', '%دولي%')
-        ->pluck('id')->toArray();
-
-         
-        if (!empty($departmentIds)) {
-            $procedureIds = EssentialsWkProcedure::whereIn('escalates_to', $departmentIds)->pluck('id')->toArray();
-
-            $requestsProcess = FollowupWorkerRequest::where('sub_status', 'escalateRequest')->whereIn('procedure_id', $procedureIds)->select([
-                'followup_worker_requests.request_no',
-                'followup_worker_requests_process.id as process_id',
-                'followup_worker_requests.id',
-                'followup_worker_requests.type as type',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
-                'followup_worker_requests.created_at',
-                'followup_worker_requests_process.status',
-                'followup_worker_requests_process.status_note as note',
-                'followup_worker_requests.reason',
-                'essentials_wk_procedures.department_id as department_id',
-                'users.id_proof_number',
-                'essentials_wk_procedures.can_return',
-                'users.assigned_to'
-
-            ])
-                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
-                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id') ->where('followup_worker_requests_process.status','pending');
-        } else {
-            $output = [
-                'success' => false,
-                'msg' => __('internationalrelations::lang.you_have_no_access_role'),
-            ];
-            return redirect()->action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index'])->with('status', $output);
-        }
-
-        if (request()->ajax()) {
-         
-
-            return DataTables::of($requestsProcess ?? [])
-
-                ->editColumn('created_at', function ($row) {
-
-
-                    return Carbon::parse($row->created_at);
-                })
-                ->editColumn('status', function ($row) {
-                    $status = '';
-
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . __($this->statuses[$row->status]['name']) . '</span>';
-
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                        $status = trans('followup::lang.' . $row->status);
-                    }
-
-                    return $status;
-                })
-
-                ->rawColumns(['status'])
-
-
-                ->make(true);
-        }
-        $statuses = $this->statuses;
-        return view('internationalrelations::requests.escalate_requests')->with(compact('statuses'));
-    }
-
-
-    public function changeEscalateRequestsStatus(Request $request)
-    {
-        try {
-            $input = $request->only(['status', 'reason', 'note', 'request_id']);
-
-            $requestProcesses = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->where('status','pending')->get();
-
-            foreach ($requestProcesses as $requestProcess) {
-
-                $requestProcess->status = $input['status'];
-                $requestProcess->reason = $input['reason'] ?? null;
-                $requestProcess->status_note = $input['note'] ?? null;
-                $requestProcess->updated_by = auth()->user()->id;
-
-                $requestProcess->save();
-            }
-
-
-            $mainRequest = FollowupWorkerRequest::find($input['request_id']);
-            $mainRequest->status = $input['status'];
-            $mainRequest->save();
-
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ];
-        } catch (\Exception $e) {
-            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
-
-            $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
-        }
-
-        return $output;
     }
 }

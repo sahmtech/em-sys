@@ -73,7 +73,7 @@ class EssentialsAdmissionToWorkController extends Controller
                     function ($row) {
                         $html = '';
                         $html .= '<a href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                   //     $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         return $html;
                     }
                 )

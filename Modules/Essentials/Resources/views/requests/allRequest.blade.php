@@ -108,7 +108,7 @@
         @endif
     @endif
     <section class="content">
-        @include('essentials::layouts.nav_requests')
+        {{-- @include('essentials::layouts.nav_requests') --}}
 
         @component('components.widget', ['class' => 'box-primary'])
             @slot('tool')

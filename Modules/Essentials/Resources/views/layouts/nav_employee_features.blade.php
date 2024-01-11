@@ -9,7 +9,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])}}"><i class="fa fas fa-users"></i> {{__('essentials::lang.employees_affairs')}}</a>
+                {{-- <a class="navbar-brand" href="{{action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'index'])}}"><i class="fa fas fa-users"></i> {{__('essentials::lang.employees_affairs')}}</a> --}}
                 
             </div>
 
