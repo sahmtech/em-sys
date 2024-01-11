@@ -6,7 +6,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            <span>@lang('helpdesk::lang.tickets_of_number', ['number' => $ticket->ticket_number])</span>
+            <span>@lang('helpdesk::lang.tickets_of_number', ['number' => $ticket->id])</span>
         </h1>
     </section>
 
