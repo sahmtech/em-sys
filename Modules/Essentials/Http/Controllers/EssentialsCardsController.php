@@ -944,12 +944,12 @@ class EssentialsCardsController extends Controller
      public function all_expired_residencies()
      {
        
-        $today = Carbon::now();
+        $today = today()->format('Y-m-d');
        
         $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-        ->where('expiration_date', '<', $today );  // Adjusted to check for expiration dates in the past
+        ->whereDate('expiration_date', '<=', $today )->orderby('id','desc');  // Adjusted to check for expiration dates in the past
       
-        
+       
        
 
        // dd( $residencies->first());

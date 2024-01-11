@@ -432,7 +432,7 @@ return [
   'emp_eqama_required'=>'رقم الإقامة للموظف مطلوبة في السطر رقم ',
   'family_eqama_required'=>"رقم الإقامة للمرافق مطلوب في السطر رقم ",
   'nationality_id_not_found'=>'رقم الجنسية غير موجود',
-  'emp_eqama_no_not_found'=>'رقم الاقامة فير موجود',
+  'emp_eqama_no_not_found'=>'رقم الاقامة غير موجود في السطر رقم ',
   'emp_eqama_no'=>'رقم اقامة الموظف',
   'family_member_eqama'=>'رقم اقامة المرافق',
   'relation'=>'صلة القرابة ',
