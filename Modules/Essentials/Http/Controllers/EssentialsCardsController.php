@@ -627,7 +627,7 @@ class EssentialsCardsController extends Controller
             $query->where(function ($query2) use ($user_businesses_ids) {
                 $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager', 'worker']);
             })->orWhere(function ($query3) use ($user_projects_ids) {
-                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->whereIn('users.business_id', $user_businesses_ids);
             });
         })->where('users.is_cmmsn_agnt', 0)
             ->where('nationality_id', '!=', 5)
