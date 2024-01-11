@@ -1173,5 +1173,5 @@ return [
   'crud_workcards_request'=>'إدارة طلبات العلاقات الحكومية',
   'crud_HR_requests'=>'إدارة طلبات الموارد البشرية',
   'insurance_settings'=>'إعدادات التأمين',
-
+  'toDo_dash'=>'إدارة المهام اليومية',
 ];

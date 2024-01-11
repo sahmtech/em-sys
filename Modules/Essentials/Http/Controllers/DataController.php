@@ -305,6 +305,11 @@ class DataController extends Controller
                 'default' => false,
             ],
             [
+                'value' => 'essentials.toDo_dash',
+                'label' => __('essentials::lang.toDo_dash'),
+                'default' => false,
+            ],
+            [
                 'value' => 'essentials.edit_todos',
                 'label' => __('essentials::lang.edit_todos'),
                 'default' => false,
