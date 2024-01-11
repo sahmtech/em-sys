@@ -56,7 +56,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <a href="#" class="btn btn-danger">@lang('helpdesk::lang.close_ticket')</a>
+                                <a href="{{ route('tickets.index') }}" class="btn btn-danger">@lang('helpdesk::lang.close_ticket')</a>
                             </div>
                         </div>
                         <div class="clearfix"></div>
