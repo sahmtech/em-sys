@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.insurance_categories'))
 
 @section('content')
-@include('essentials::layouts.nav_hrm_setting')
+{{-- @include('essentials::layouts.nav_hrm_setting') --}}
 <section class="content-header">
     <h1>@lang('essentials::lang.insurance_categories')</h1>
 </section>

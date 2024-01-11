@@ -1168,5 +1168,6 @@ return [
   'insurance' => 'التأمينات',
   'add_insurance' => 'إضافة تأمين',
   'edit_insurance' => 'تعديل التأمين',
+  'insurance_settings'=>'إعدادات التأمين',
 
 ];
