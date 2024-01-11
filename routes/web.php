@@ -68,6 +68,8 @@ use App\User;
 use Illuminate\Support\Facades\Route;
 use Modules\FollowUp\Http\Controllers\FollowUpRequestController;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -86,6 +88,45 @@ include_once 'install_r.php';
 //     exec('composer upgrade --working-dir=/home/974206.cloudwaysapps.com/bysznmnkcv/public_html', $output);
 //     return $output;
 // });
+
+// Route::get(
+//     '/xlsx',
+//     function () {
+
+//         $reader = new Xlsx();
+//         $filePath = public_path('xls.xlsx');
+//         $spreadsheet = $reader->load($filePath);
+//         $worksheet = $spreadsheet->getActiveSheet();
+
+//         $valuesA = [];
+//         $valuesC = [];
+//         $i = 1;
+//         foreach ($worksheet->getRowIterator() as $row) {
+//             $cellIterator = $row->getCellIterator();
+//             $cellIterator->setIterateOnlyExistingCells(true);
+
+//             $cells = [];
+//             foreach ($cellIterator as $cell) {
+//                 $cells[] = $cell->getValue();
+//             }
+
+//             $valueA = substr($cells[0], 0, -3); // Modify column A value
+//             $valueC = $cells[2];
+
+//             if (array_key_exists($valueA, $valuesA)) {
+//                 $worksheet->getCell('B' . $row->getRowIndex())->setValue($valuesC[$valueA]);
+//             } else {
+//                 $valuesA[$valueA] = true;
+//                 $valuesC[$valueA] = $valueC;
+//             }
+//             $i++;
+//         }
+
+//         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+//         $writer->save(public_path('result.xlsx'));
+//     }
+
+// );
 
 // Route::get('/db_fix', function () {
 //     $businesses = Business::all();

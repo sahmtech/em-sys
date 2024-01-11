@@ -91,6 +91,8 @@ class CustomAdminSidebarMenu
             $this->crmMenu();
         } elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
+        } elseif (Str::startsWith($currentPath, ['helpdesk','tickets'])) {
+            $this->helpdeskMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -124,6 +126,16 @@ class CustomAdminSidebarMenu
                 action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
                 __('crm::lang.order_request'),
                 ['icon' => 'fa fas fa-sync', 'active' => request()->segment(2) == 'order-request']
+            );
+        });
+    }
+    public function helpdeskMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']
             );
         });
     }
@@ -330,12 +342,12 @@ class CustomAdminSidebarMenu
                 ]
             );
             if ($is_admin || auth()->user()->can('essentials.movement_management')) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']),
-                __('housingmovements::lang.movement_management'),
-                ['icon' => 'fa fa-car', 'active' => request()->segment(2) == 'dashboard-movment']
-            );
-        }
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']),
+                    __('housingmovements::lang.movement_management'),
+                    ['icon' => 'fa fa-car', 'active' => request()->segment(2) == 'dashboard-movment']
+                );
+            }
             if ($is_admin || auth()->user()->can('essentials.car_drivers')) {
 
                 $menu->url(
@@ -456,6 +468,24 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_companies'],
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_classes')) {
+                $menu->dropdown(
+                    __('essentials::lang.insurance_settings'),
+                    function ($report)  use ($is_admin) {
+
+                        if ($is_admin  || auth()->user()->can('essentials.crud_insurance_classes')) {
+
+                            $report->url(
+                                route('insurance_categories'),
+                                __('essentials::lang.insurance_categories'),
+                                ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_categories']
+                            );
+                        }
+                    },
+                    ['icon' => 'fa fas fa-cog',],
+                );
+            }
         });
     }
 
@@ -516,7 +546,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'get_residency_report'],
                 );
             }
-          
+
             if ($is_admin || auth()->user()->can('essentials.facilities_management')) {
                 $menu->url(
                     action([\App\Http\Controllers\BusinessController::class, 'getBusiness']),
@@ -1190,8 +1220,6 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'housingmovements' && request()->segment(2) == 'facilities']
                 );
             }
-
-         
         });
     }
 
