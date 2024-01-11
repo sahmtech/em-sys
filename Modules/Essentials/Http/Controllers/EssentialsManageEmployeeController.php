@@ -223,7 +223,9 @@ class EssentialsManageEmployeeController extends Controller
 
 
             return Datatables::of($users)
-
+                ->addColumn('business_id', function ($row) {
+                    return $row->business_id;
+                })
                 ->addColumn('total_salary', function ($row) {
                     return $row->calculateTotalSalary();
                 })
@@ -332,7 +334,7 @@ class EssentialsManageEmployeeController extends Controller
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
 
-        $businesses = Business::whereIn('id',$user_businesses_ids)->pluck('name', 'id');
+        $businesses = Business::whereIn('id', $user_businesses_ids)->pluck('name', 'id');
         // $bl_attributes = $business_locations['attributes'];
         // $business_locations = $business_locations['locations'];
 
