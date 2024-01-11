@@ -2,10 +2,21 @@
 
 
 @section('content')
+<style>
+    .widget-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Adjust the gap between columns as needed */
+}
 
+.custom_card {
+    flex: 1;
+    min-width: 0; /* Allow cards to shrink beyond their minimum content width */
+}
+</style>
     <!-- Content Header (Page header) -->
     <section class="content-header">
-
+    <div class="widget-container">
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
@@ -146,7 +157,7 @@
             </div>
         </div>
            
-
+    </div>
     </section>
 
      <!-- Main content -->

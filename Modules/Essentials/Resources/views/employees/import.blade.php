@@ -2,7 +2,7 @@
 @section('title', __( 'essentials::lang.import_employees' ))
 
 @section('content')
-@include('essentials::layouts.nav_employee_affairs')
+
 <!-- Content Header (Page header) -->
 
 
@@ -57,7 +57,7 @@
                             <div class="col-sm-8">
                                 <div class="form-group">
                                     {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                                    {!! Form::file('employee_csv', ['accept'=> '.xls', 'required' => 'required']); !!}
+                                    {!! Form::file('employee_csv', ['accept'=> '.xls']); !!}
                                 </div>
                             </div>
                             <div class="col-sm-4">
