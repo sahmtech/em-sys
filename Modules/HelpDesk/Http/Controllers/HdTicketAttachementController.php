@@ -5,6 +5,7 @@ namespace Modules\HelpDesk\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\HelpDesk\Entities\HdAttachment;
 
 class HdTicketAttachementController extends Controller
 {
@@ -14,16 +15,33 @@ class HdTicketAttachementController extends Controller
      */
     public function index()
     {
-        return view('helpdesk::index');
-    }
+     
+      
+            $attachments = HdAttachment::where('ticket_id',request()->id)->get();
+    
+            if (! $attachments){
+                return response()->json(['error' => 'attachment not found'], 404);
+            }
+    
+
+            return response()->json($attachments);
+        }
+    
 
     /**
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function replyAttachIndex()
     {
-        return view('helpdesk::create');
+        $attachments = HdAttachment::where('reply_id',request()->id)->get();
+    
+        if (! $attachments){
+            return response()->json(['error' => 'attachment not found'], 404);
+        }
+
+
+        return response()->json($attachments);
     }
 
     /**

@@ -77,9 +77,17 @@
                                             <p>{{ $reply->created_at }}</p>
                                             <p>{{ $reply->user->first_name }}</p>
                                             <p>{{ $reply->message }}</p>
+                                         
+                                        
                                             @if (isset($reply->attachments) && count($reply->attachments) > 0)
-                                                <p><a href="#" class="btn btn-xs btn-info ">@lang('helpdesk::lang.view_attachments')</a></p>
-                                            @endif
+                                            <p>
+                                                <button type="button" class="btn btn-xs btn-primary btn-view-reply_attachment"
+                                                data-replay-attachment-id="{{ $reply->id }}">
+                                                    @lang('helpdesk::lang.view_attachments')
+                                                </button>
+                                            </p>
+                                        @endif
+
                                             <br>
                                         </td>
                                     </tr>
@@ -91,7 +99,12 @@
                                         <p>{{ $ticket->user->first_name }}</p>
                                         <p>{{ $ticket->message }}</p>
                                         @if (isset($ticket->attachments) && count($ticket->attachments) > 0)
-                                            <p><a href="#" class="btn btn-xs btn-info ">@lang('helpdesk::lang.view_attachments')</a></p>
+                                            <p>
+                                                <button type="button" class="btn btn-xs btn-primary btn-view-attachment"
+                                                    data-attachment-id="{{ $ticket->id }}">
+                                                    @lang('helpdesk::lang.view_attachments')
+                                                </button>
+                                            </p>
                                         @endif
                                         <br>
                                     </td>
@@ -155,6 +168,33 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="attachModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">@lang('helpdesk::lang.view_attachments')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <h4>@lang('followup::lang.attachments')</h4>
+                            <ul id="attachments-list">
+
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </section>
 @endsection
 @section('javascript')
@@ -197,6 +237,113 @@
                 ],
             });
 
+
+            $(document).on('click', '.btn-view-attachment', function() {
+                var id = $(this).data('attachment-id');
+                console.log(id);
+
+                if (id) {
+
+                    let url =
+                        "{{ action([Modules\HelpDesk\Http\Controllers\HdTicketAttachementController::class, 'index']) }}";
+                    $.ajax({
+                        'url': url,
+                        method: 'GET',
+                        data: {
+                            id: id
+                        },
+                        success: function(response) {
+                            console.log(response);
+
+                            var attachmentsList = $('#attachments-list');
+                            attachmentsList.html('');
+
+
+                            if (Array.isArray(response) && response.length) {
+                                for (var j = 0; j < response.length; j++) {
+                                    var attachment = '<li>';
+                                    attachment += '<p>';
+
+
+                                    var attachText = 'Attach ';
+                                    attachment += '<a href="{{ url('uploads') }}/' + response[
+                                            j].path +
+                                        '" target="_blank" onclick="openAttachment(\'' +
+                                        response[j].path + '\', ' + (j + 1) + ')">' +
+                                        attachText + ' ' + (j + 1) + '</a>';
+                                    attachment += '</p>';
+                                    attachment += '</li>';
+
+
+                                    attachmentsList.append(attachment);
+                                }
+                            }
+
+
+                            $('#attachmentForm input[name="ticketId"]').val(id);
+
+
+                            $('#attachModal').modal('show');
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+            $(document).on('click', '.btn-view-reply_attachment', function() {
+                var id = $(this).data('replay-attachment-id');
+                console.log(id);
+
+                if (id) {
+
+                    let url =
+                        "{{ action([Modules\HelpDesk\Http\Controllers\HdTicketAttachementController::class, 'replyAttachIndex']) }}";
+                    $.ajax({
+                        'url': url,
+                        method: 'GET',
+                        data: {
+                            id: id
+                        },
+                        success: function(response) {
+                            console.log(response);
+
+                            var attachmentsList = $('#attachments-list');
+                            attachmentsList.html('');
+
+
+                            if (Array.isArray(response) && response.length) {
+                                for (var j = 0; j < response.length; j++) {
+                                    var attachment = '<li>';
+                                    attachment += '<p>';
+
+
+                                    var attachText = 'Attach ';
+                                    attachment += '<a href="{{ url('uploads') }}/' + response[
+                                            j].path +
+                                        '" target="_blank" onclick="openAttachment(\'' +
+                                        response[j].path + '\', ' + (j + 1) + ')">' +
+                                        attachText + ' ' + (j + 1) + '</a>';
+                                    attachment += '</p>';
+                                    attachment += '</li>';
+
+
+                                    attachmentsList.append(attachment);
+                                }
+                            }
+
+
+                            $('#attachmentForm input[name="ticketId"]').val(id);
+
+
+                            $('#attachModal').modal('show');
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
 
         });
     </script>
