@@ -9,6 +9,7 @@
 # Homestead.yaml
 # npm-debug.log
 # .env
+
 # /public/uploads/business_logos
 # /public/uploads/documents
 # /public/uploads/business_documents
@@ -50,15 +51,16 @@ storage/framework/sessions/
 storage/framework/views/
 storage/debugbar/
 storage/*.key
-uploads/business_documents/
-uploads/employee_contracts/
-uploads/insuranceContracts/
-uploads/officalDocuments/
+public/uploads/business_documents/
+public/uploads/employee_contracts/
+public/uploads/insuranceContracts/
+public/uploads/officalDocuments/
 public/uploads/contracts/*
-uploads/contracts/*
-uploads/lead_files/
-uploads/*
-uploads/*/*
+public/uploads/contracts/*
+public/uploads/lead_files/
+public/uploads/*
+public/uploads/*/*
+public/uploads/tickets_attachments/
 .env
 Homestead.yaml
 Homestead.json

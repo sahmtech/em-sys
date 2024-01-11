@@ -21,5 +21,6 @@
     "Sells": true,
     "Sales": true,
     "YourModuleName": true,
-    "GeneralManagement": true
+    "GeneralManagement": true,
+    "HelpDesk": true
 }

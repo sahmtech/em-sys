@@ -91,6 +91,8 @@ class CustomAdminSidebarMenu
             $this->crmMenu();
         } elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
+        } elseif (Str::startsWith($currentPath, ['helpdesk','tickets'])) {
+            $this->helpdeskMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
         } else {
@@ -124,6 +126,16 @@ class CustomAdminSidebarMenu
                 action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
                 __('crm::lang.order_request'),
                 ['icon' => 'fa fas fa-sync', 'active' => request()->segment(2) == 'order-request']
+            );
+        });
+    }
+    public function helpdeskMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $menu->url(
+                action([\App\Http\Controllers\HomeController::class, 'index']),
+                __('home.home'),
+                ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']
             );
         });
     }
