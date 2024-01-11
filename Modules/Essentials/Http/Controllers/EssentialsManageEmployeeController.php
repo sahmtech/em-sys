@@ -975,24 +975,28 @@ class EssentialsManageEmployeeController extends Controller
 
             $business_id = request()->session()->get('user.business_id');
 
-            $numericPart = (int)substr($business_id, 3);
-            $lastEmployee = User::orderBy('emp_number', 'desc')
+            // $numericPart = (int)substr($business_id, 3);
+            // $lastEmployee = User::orderBy('emp_number', 'desc')
+            //     ->first();
+
+                $latestRecord = User::
+                orderBy('emp_number', 'desc')
                 ->first();
-
-
-            if ($lastEmployee) {
-
-                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-
-
-
-                $nextNumericPart = $lastEmpNumber + 1;
-
-                $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+            
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->emp_number;
+              
+              //  $numericPart = (int)substr($latestRefNo, 3);
+            
+                $latestRefNo++;
+               
+                $emp_data['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+               
             } else {
-
-                $request['emp_number'] =  $business_id . '000';
+               
+                $emp_data['emp_number'] =  $business_id . '000';
             }
+
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();

@@ -680,7 +680,7 @@ class EssentialsEmployeeImportController extends Controller
                          
                       } else {
                          
-                          $emp_data['emp_number'] = $emp_data['business_id'] . '0001';
+                          $emp_data['emp_number'] = $emp_data['business_id'] . '000';
                       }
         
 
