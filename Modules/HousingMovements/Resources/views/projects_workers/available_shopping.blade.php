@@ -70,6 +70,7 @@
 
                         </tr>
                     </thead>
+
                 </table>
             </div>
         @endcomponent
@@ -150,6 +151,7 @@
 
                 ]
             });
+
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
