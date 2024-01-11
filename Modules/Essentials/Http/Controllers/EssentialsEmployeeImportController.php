@@ -665,19 +665,23 @@ class EssentialsEmployeeImportController extends Controller
                          
 
                            
-                    //     $latestRecord = User::
-                    //       orderBy('emp_number', 'desc')
-                    //       ->first();
+                        $latestRecord = User::where('business_id', $emp_data['business_id'])
+                          ->orderBy('emp_number', 'desc')
+                          ->first();
                       
-                    //   if ($latestRecord) {
-                    //       $latestRefNo = $latestRecord->emp_number;
-                    //       $numericPart = (int)substr($latestRefNo, 3);
-                    //       $numericPart++;
-                    //       $emp_data['emp_number'] = $emp_data['business_id'] . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
-                    //   } else {
+                      if ($latestRecord) {
+                          $latestRefNo = $latestRecord->emp_number;
+                        
+                        //  $numericPart = (int)substr($latestRefNo, 3);
+                      
+                          $latestRefNo++;
                          
-                    //       $emp_data['emp_number'] = $emp_data['business_id'] . '0001';
-                    //   }
+                          $emp_data['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+                         
+                      } else {
+                         
+                          $emp_data['emp_number'] = $emp_data['business_id'] . '0001';
+                      }
         
 
                         $emp = User::create($emp_data);
