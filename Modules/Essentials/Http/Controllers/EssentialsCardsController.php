@@ -1225,11 +1225,15 @@ class EssentialsCardsController extends Controller
                 DB::beginTransaction();
     
                 foreach ($selectedData as $data) {
+                  
                     $operation = DB::table('essentails_employee_operations')->insert([
                         'operation_type' => 'final_visa',
                         'employee_id' =>  $data['employee_id'],
                         'end_date' =>  $data['end_date'],
                     ]);
+
+                    $user=user::where('id', $data['employee_id'])->first();
+                    $user->update(['status' ,'inactive']);
                 }
     
                 DB::commit();
@@ -1283,6 +1287,8 @@ class EssentialsCardsController extends Controller
                         'employee_id' =>  $data['employee_id'],
                         'end_date' =>  $data['end_date'],
                     ]);
+                    $user=user::where('id', $data['employee_id'])->first();
+                    $user->update(['status' ,'inactive']);
                 }
     
                 DB::commit();

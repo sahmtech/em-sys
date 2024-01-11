@@ -177,9 +177,9 @@ class EssentialsController extends Controller
                 }
                 else {
                     $output = ['success' => false,
-                    'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
+                    'msg' => __('housingmovements::lang.please_add_the_word_cards_department'),
                         ];
-                    return redirect()->action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
+                    return redirect()->action( [Modules\Essentials\Http\Controllers\EssentialsController::class, 'word_cards_dashboard'])->with('status', $output);
                 }
                 if (!$is_admin) {
               

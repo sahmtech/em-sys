@@ -940,7 +940,8 @@ return [
   'absent_report' => 'رفع بلاغ هروب',
   'final_visa' => 'تأشيرة خروج نهائي ',
   'return_visa' => 'تأشسيرة خروج وعودة ',
-
+'insurance_classes_id_not_found'=>'فئة التأمين غير موجودة ',
+'insurance_cخةحشىغ_id_not_found'=>'شركة التأمين غير موجودة ',
   'absentee_report'=>'بلاغ تغيب العمال ',
   'residency_Vacations'=>'إجازات المقيمين ',
   'late_empolyee'=>'الموظفين المتأخرين من الإجازات ',

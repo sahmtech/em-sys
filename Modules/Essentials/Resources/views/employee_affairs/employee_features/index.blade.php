@@ -3,7 +3,7 @@
 
 
 @section('content')
-    @include('essentials::layouts.nav_employee_features')
+   
     <section class="content-header">
 
         <h1>@lang('essentials::lang.employee_features')

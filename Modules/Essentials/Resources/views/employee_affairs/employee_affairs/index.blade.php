@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employees'))
 
 @section('content')
-    {{-- @include('essentials::layouts.nav_employee_affairs') --}}
+   
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
