@@ -48,7 +48,6 @@
                             <a
                                 href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index']) }}">@lang('essentials::lang.holiday')</a>
                         </li>
-                        </li>
                     @endif
 
                     @if (auth()->user()->can('essentials.crud_travel_categories'))
@@ -82,11 +81,11 @@
                         </li>
                     @endif
 
-                    @if (auth()->user()->can('essentials.crud_insurance_classes'))
+                    {{-- @if (auth()->user()->can('essentials.crud_insurance_classes'))
                         <li @if (request()->segment(2) == 'insurance_categories') class="active" @endif>
                             <a href="{{ route('insurance_categories') }}">@lang('essentials::lang.insurance_categories')</a>
                         </li>
-                    @endif
+                    @endif --}}
 
                     @if (auth()->user()->can('essentials.crud_attendance_status'))
                         <li @if (request()->segment(2) == 'attendanceStatus') class="active" @endif>

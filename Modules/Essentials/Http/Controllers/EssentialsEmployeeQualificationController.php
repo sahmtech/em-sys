@@ -73,7 +73,7 @@ class EssentialsEmployeeQualificationController extends Controller
                 function ($row) {
                     $html = '';
                     $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-                    $html .= '<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+               //     $html .= '<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     return $html;
                 }
             )

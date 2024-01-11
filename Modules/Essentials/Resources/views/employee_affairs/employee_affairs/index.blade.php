@@ -102,7 +102,7 @@
                             <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_number')</th>
-                               
+                                <th>bid</th>
                                 <th>@lang('essentials::lang.employee_name')</th>
                              
                                 <th>@lang('essentials::lang.Identity_proof_id')</th>
@@ -535,6 +535,9 @@
                     },
                     {
                         "data": "emp_number"
+                    },
+                    {
+                        "data": "business_id"
                     },
 
                     {

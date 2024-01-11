@@ -128,7 +128,13 @@ class RequestController extends Controller
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
         }
-
+        if (empty($user_businesses_ids)) {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.you_have_no_access_role'),
+            ];
+            return redirect()->back()->with('status', $output);
+        }
         if (request()->ajax()) {
 
 

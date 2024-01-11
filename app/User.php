@@ -25,6 +25,8 @@ use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\HelpDesk\Entities\HdTicket;
+use Modules\HelpDesk\Entities\HdTicketReply;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\HousingMovements\Entities\HtrRoom;
 
@@ -471,8 +473,16 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class, 'expense_for');
     }
 
-    public function booking(){
-        return $this->hasOne(HousingMovementsWorkerBooking::class,'user_id');
+    public function booking()
+    {
+        return $this->hasOne(HousingMovementsWorkerBooking::class, 'user_id');
     }
-    
+    public function tickets()
+    {
+        return $this->hasMany(HdTicket::class, 'user_id');
+    }
+    public function ticketReplies()
+    {
+        return $this->hasMany(HdTicketReply::class, 'user_id');
+    }
 }

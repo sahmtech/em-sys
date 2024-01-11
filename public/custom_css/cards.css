@@ -283,3 +283,8 @@
 }
 
 
+
+.custom_ticket_container{
+    height: 77vh !important;
+    overflow-y: auto;
+}
