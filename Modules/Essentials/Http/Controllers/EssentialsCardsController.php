@@ -946,13 +946,13 @@ class EssentialsCardsController extends Controller
        
         $today = today()->format('Y-m-d');
        
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-        ->whereDate('expiration_date', '<=', $today )->orderby('id','desc');  // Adjusted to check for expiration dates in the past
+        $residencies = EssentialsOfficialDocument::with(['employee'])->where('type', 'residence_permit')
+        ->whereDate('expiration_date', '<=', Carbon::now() )->orderby('id','desc'); 
       
        
        
 
-       // dd( $residencies->first());
+       //dd( $residencies->first());
 
         if (request()->ajax()) {
 
@@ -960,7 +960,7 @@ class EssentialsCardsController extends Controller
             ->addColumn(
                 'worker_name',
                 function ($row) {
-                    return $row->employee->first_name . ' ' . $row->employee->last_name;
+                    return $row->employee?->first_name . ' ' . $row->employee?->last_name;
                 }
             )
             ->addColumn(
@@ -972,7 +972,7 @@ class EssentialsCardsController extends Controller
             ->addColumn(
                 'project',
                 function ($row) {
-                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                    return $row->employee?->assignedTo?->contact->supplier_business_name ?? null;
                 }
             )
             ->addColumn(
