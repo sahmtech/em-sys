@@ -140,7 +140,7 @@
                 },
 
                 columns: [{
-                        data: 'ticket_number'
+                        data: 'id'
                     },
                     {
                         data: 'title'
