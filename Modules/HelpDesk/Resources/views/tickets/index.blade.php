@@ -31,6 +31,7 @@
                         <table class="table table-bordered table-striped" id="tickets_table">
                             <thead>
                                 <tr>
+                                    <th>@lang('helpdesk::lang.ticket_number')</th>
                                     <th>@lang('helpdesk::lang.title')</th>
                                     <th>@lang('helpdesk::lang.status')</th>
                                     <th>@lang('helpdesk::lang.last_update_date')</th>
@@ -139,6 +140,9 @@
                 },
 
                 columns: [{
+                        data: 'ticket_number'
+                    },
+                    {
                         data: 'title'
                     },
                     {

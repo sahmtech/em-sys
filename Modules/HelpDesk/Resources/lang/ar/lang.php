@@ -19,6 +19,7 @@ return [
     'add_reply' => 'أضف رد',
     'close_ticket' => 'أغلق التذكرة',
     'view_attachments' => 'عرض المرفقات',
+    'ticket_number'=>'رقم التذكرة'
 
 
 ];

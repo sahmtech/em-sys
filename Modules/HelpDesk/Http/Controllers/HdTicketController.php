@@ -29,6 +29,9 @@ class HdTicketController extends Controller
 
         if (request()->ajax()) {
             return Datatables::of($tickets)
+                ->addColumn('ticket_number', function ($row) {
+                    return $row->ticket_number;
+                })
                 ->addColumn('title', function ($row) {
                     return $row->title;
                 })
