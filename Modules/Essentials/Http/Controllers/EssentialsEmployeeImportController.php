@@ -671,11 +671,11 @@ class EssentialsEmployeeImportController extends Controller
                       
                       if ($latestRecord) {
                           $latestRefNo = $latestRecord->emp_number;
-                          $numericPart = (int)substr($latestRefNo, strlen($emp_data['business_id']));
+                          $numericPart = (int)substr($latestRefNo, 3);
                           $numericPart++;
                           $emp_data['emp_number'] = $emp_data['business_id'] . str_pad($numericPart, 4, '0', STR_PAD_LEFT);
                       } else {
-                          // If no record is found, start with '0001'
+                         
                           $emp_data['emp_number'] = $emp_data['business_id'] . '0001';
                       }
         
