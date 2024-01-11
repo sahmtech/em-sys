@@ -947,7 +947,7 @@ class EssentialsCardsController extends Controller
         $today = today()->format('Y-m-d');
        
         $residencies = EssentialsOfficialDocument::with(['employee'])->where('type', 'residence_permit')
-        ->whereDate('expiration_date', '<=', Carbon::now() )->orderby('id','desc'); 
+        ->whereDate('expiration_date', '<=', Carbon::now() )->orderby('id','desc')->get(); 
       
        
        

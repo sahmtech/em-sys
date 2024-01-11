@@ -86,9 +86,8 @@ class EssentialsController extends Controller
         $today = Carbon::now()->toDateString();
 
      
-        $all_ended_residency_date = EssentialsOfficialDocument::where('type', 'residence_permit')
-                    ->where('expiration_date', '<', $today )  // Adjusted to check for expiration dates in the past
-                   ->count();
+        $all_ended_residency_date = EssentialsOfficialDocument::with(['employee'])->where('type', 'residence_permit')
+        ->whereDate('expiration_date', '<=',  $today  )->count();
 
         $escapeRequest = FollowupWorkerRequest::with('user')->where('type', 'escapeRequest')
         ->whereHas('user', function ($query) {
