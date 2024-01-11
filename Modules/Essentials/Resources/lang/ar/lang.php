@@ -1168,13 +1168,10 @@ return [
   'insurance' => 'التأمينات',
   'add_insurance' => 'إضافة تأمين',
   'edit_insurance' => 'تعديل التأمين',
-<<<<<<< HEAD
   "there_is_no_insurance_dep"=>'لا يوجد إدارة خاصة بالتأمين في الهيكل التنظيمي لوصول الطلبات إليها',
   'crud_insurance_requests'=>'إدارة طلبات التأمينات',
   'crud_workcards_request'=>'إدارة طلبات العلاقات الحكومية',
   'crud_HR_requests'=>'إدارة طلبات الموارد البشرية',
-=======
   'insurance_settings'=>'إعدادات التأمين',
->>>>>>> 53709d03fbf7c562963d08e77621c16303a68e92
 
 ];
