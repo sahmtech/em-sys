@@ -50,7 +50,7 @@ class EssentialsEmployeeFamilyController extends Controller
        
     }
 
-    public function postImportEmployee(Request $request)
+    public function familypostImportEmployee(Request $request)
     {
         $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_familiy');
         if (! $can_crud_import_employee) {
@@ -62,7 +62,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
             //Set maximum php execution time
             ini_set('max_execution_time', 0);
-
+          
 
             if ($request->hasFile('employee_familiy_csv'))
              {
@@ -84,11 +84,13 @@ class EssentialsEmployeeFamilyController extends Controller
                 $row_no = $key + 1;
                 $emp_array = [];     
                 
-                     
+             
                  if (!empty($value[0])) 
                  {
                      $emp_array['emp_eqama_no'] = $value[0];
-                     $business = user::find($emp_array['emp_eqama_no']);
+                    
+                     $business = user::where('id_proof_number',$emp_array['emp_eqama_no'])->first();
+                    
                      if (!$business) {
                      
                          $is_valid = false;
@@ -138,13 +140,14 @@ class EssentialsEmployeeFamilyController extends Controller
                 $emp_array['nationality_id']=null;
             } 
 
-
+            
             $formated_data[] = $emp_array;                      
-                                      
+                              
                                                   
                                          
              }
-                      
+             
+                   
              if (!$is_valid) 
              {
                  throw new \Exception($error_msg);
@@ -159,17 +162,21 @@ class EssentialsEmployeeFamilyController extends Controller
                      
                           
                           $user= user::where('id_proof_number',$emp_data['emp_eqama_no'])->first();
-
-                          $family =new EssentialsEmployeesFamily();
-                          $family->full_name=$emp_data['full_name'];
-                          $family->mobile_number=$emp_data['mobile'];
-                          $family->relative_relation=$emp_data['relation'];
-                          $family->eqama_number=$emp_data['family_eqama_no'];
-                          $family->nationality_id=$emp_data['nationality_id'];
-                          $family->gender=$emp_data['gender'];
-                          $family->employee_id =$user->id;
-                          $family->save();
-
+                          
+                       
+                            $family =new EssentialsEmployeesFamily();
+                            $family->full_name=$emp_data['full_name'];
+                            $family->mobile_number=$emp_data['mobile'];
+                            $family->relative_relation=$emp_data['relation'];
+                            $family->eqama_number=$emp_data['family_eqama_no'];
+                            $family->nationality_id=$emp_data['nationality_id'];
+                            $family->gender=$emp_data['gender'];
+                            $family->employee_id =$user->id;
+                            $family->save();
+  
+                        
+                        
+                         
 
 
                     }
@@ -192,7 +199,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 'msg' => $e->getMessage(),
             ];
 
-            return redirect()->route('employee_families')->with('notification', $output);
+            return redirect()->route('import-employees-familiy')->with('notification', $output);
         }
        // $type = ! empty($contact->type) && $contact->type != 'both' ? $contact->type : 'supplier';
 

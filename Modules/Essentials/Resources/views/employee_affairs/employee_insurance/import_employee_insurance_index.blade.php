@@ -37,7 +37,7 @@
            
 
             <div class="add-new-data">
-                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'postImportEmployee']),
+                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostImportEmployee']),
                      'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
                         <div class="col-sm-6">
@@ -52,34 +52,14 @@
                                 <button type="submit" class="btn btn-primary">@lang('messages.submit')</button>
                             </div>
                             <div class="col-sm-6">
-                                <a href="{{ asset('files/import_insurance_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
+                                <a href="{{ asset('files/employee_insurance_csv.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
                             </div>
                         </div>
                     </div>
                 {!! Form::close() !!}
             </div>
 
-            <div class="update-existing-data" style="display: none;">
-            {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeUpdateImportController::class, 'postImportupdateEmployee']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="col-sm-8">
-                                <div class="form-group">
-                                    {!! Form::label('name', __( 'essentials::lang.file_to_update__import' ) . ':') !!}
-                                    {!! Form::file('update_employee_csv', ['accept'=> '.xls' ]); !!}
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <br>
-                                <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
-                            </div>
-                            <div class="col-sm-6">
-                                <a href="{{ asset('files/import_update_employee_template.xls') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('essentials::lang.download_update_template_file')</a>
-                            </div>
-                        </div>
-                    </div>
-                {!! Form::close() !!}
-            </div>
+           
 
         @endcomponent
     </div>

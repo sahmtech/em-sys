@@ -37,7 +37,7 @@
            
 
             <div class="add-new-data">
-                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'postImportEmployee']),
+                {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'familypostImportEmployee']),
                      'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
                         <div class="col-sm-6">

@@ -1,1 +1,2 @@
-employee_id,insurance_class_id,insurance_company_id
+employee_id,insurance_class_id,insurance_company_id,,status
+5974,1,,,

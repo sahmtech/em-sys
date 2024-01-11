@@ -152,7 +152,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::put('/updateEmployeeFamily/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'update'])->name('updateEmployeeFamily');
         Route::get('/employee_families/{id}/edit', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'edit'])->name('employee_families.edit');
         Route::get('/import-employees-familiy', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'import_index'])->name('import-employees-familiy');
-        Route::post('/send-employee-familiy-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'postImportEmployee'])->name('send-employee-familiy-file');
+        Route::post('/send-employee-familiy-file', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeFamilyController::class, 'familypostImportEmployee'])->name('send-employee-familiy-file');
 
         Route::get('featureIndex', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'featureIndex'])->name('featureIndex');
         Route::post('storeUserAllowance', [\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'storeUserAllowance'])->name('storeUserAllowance');
@@ -172,7 +172,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
 
         Route::get('/import_employees_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'import_employee_insurance_index'])->name('import_employees_insurance');
-        Route::post('/send_import_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'postImportEmployee'])->name('send_import_employee_insurance');
+        Route::post('/send_import_employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'insurancepostImportEmployee'])->name('send_import_employee_insurance');
 
 
 

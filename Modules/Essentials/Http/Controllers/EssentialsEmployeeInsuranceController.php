@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
-
+use Excel;
 
 
 class EssentialsEmployeeInsuranceController extends Controller
@@ -55,7 +55,7 @@ class EssentialsEmployeeInsuranceController extends Controller
         
      }
  
-     public function postImportEmployee(Request $request)
+     public function insurancepostImportEmployee(Request $request)
      {
          $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_insurance');
          if (! $can_crud_import_employee) {
@@ -93,7 +93,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                   if (!empty($value[0])) 
                   {
                       $emp_array['employee_id'] = $value[0];
-                      $business = user::find($emp_array['employee_id']);
+                      $business = user::where('id',$emp_array['employee_id'])->first();
                       if (!$business) {
                       
                           $is_valid = false;
@@ -111,7 +111,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                  if (!empty($value[1])) 
                  {
                      $emp_array['insurance_class_id'] = $value[1];
-                     $business = EssentialsInsuranceClass::find($emp_array['insurance_class_id']);
+                     $business = EssentialsInsuranceClass::where('id',$emp_array['insurance_class_id'])->first();
                      if (!$business) {
                      
                          $is_valid = false;
@@ -128,7 +128,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 if (!empty($value[2])) 
                 {
                     $emp_array['insurance_company_id'] = $value[2];
-                    $business = EssentialsInsuranceCompany::find($emp_array['insurance_company_id']);
+                    $business = EssentialsInsuranceCompany::where('id',$emp_array['insurance_company_id'])->first();
                     if (!$business) {
                     
                         $is_valid = false;
@@ -136,9 +136,13 @@ class EssentialsEmployeeInsuranceController extends Controller
                         break;
                     }
                 }
+                else{ $emp_array['insurance_company_id'] = null;}
                
- 
-                      
+                if (!empty($value[3])) {
+                    $emp_array['status'] = $value[3]; 
+                }
+                else{$emp_array['status'] = null;}
+                    
                 
  
              $formated_data[] = $emp_array;                      
@@ -146,7 +150,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                                                    
                                           
               }
-                       
+                //dd(  $formated_data);       
               if (!$is_valid) 
               {
                   throw new \Exception($error_msg);
@@ -161,12 +165,16 @@ class EssentialsEmployeeInsuranceController extends Controller
                       
                            
                         
- 
+                       
                            $insurance =new EssentialsEmployeesInsurance();
-                           $insurance->insurance_classes_id=$emp_data['insurance_classes_id'];
-                           $insurance->iinsurance_company_id=$emp_data['iinsurance_company_id'];
+                         
+                           $insurance->insurance_classes_id=$emp_data['insurance_class_id'];
+                           $insurance->insurance_company_id=$emp_data['insurance_company_id'];
                            $insurance->employee_id=$emp_data['employee_id'];
+                           $insurance->status=$emp_data['status'];
                            $insurance->save();
+                          
+                            
  
  
  
@@ -190,11 +198,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                  'msg' => $e->getMessage(),
              ];
  
-             return redirect()->route('employee_families')->with('notification', $output);
+             return redirect()->route('import_employees_insurance')->with('notification', $output);
          }
         // $type = ! empty($contact->type) && $contact->type != 'both' ? $contact->type : 'supplier';
  
-         return redirect()->route('employee_families')->with('notification', 'success insert');
+         return redirect()->route('employee_insurance')->with('notification', 'success insert');
      }
     public function index()
     {
