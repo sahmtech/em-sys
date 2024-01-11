@@ -319,9 +319,8 @@ class HomeController extends Controller
         ];
 
         $ToPermissions = [
-            ['value' => 'edit_todos'],
-            ['value' => 'delete_todos'],
-            ['value' => 'assign_todos'],
+            
+            ['value' => 'essentials.toDo_dash'],
 
         ];
 
