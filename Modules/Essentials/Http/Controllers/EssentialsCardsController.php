@@ -1217,11 +1217,8 @@ class EssentialsCardsController extends Controller
                         'end_date' =>  $data['end_date'],
                     ]);
                 }
-<<<<<<< HEAD
                 
-=======
 
->>>>>>> 101fb8aaf2c701e83f4bec4586065ed3ba701aea
                 DB::commit();
 
                 $output = ['success' => 1, 'msg' => __('lang_v1.added_success')];
