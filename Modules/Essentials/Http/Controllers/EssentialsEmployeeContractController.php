@@ -69,8 +69,8 @@ class EssentialsEmployeeContractController extends Controller
             ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
                 $query->where(function ($query2) use ($user_businesses_ids) {
                     $query2->whereIn('u.business_id', $user_businesses_ids)->whereIn('u.user_type', ['employee', 'manager', 'worker']);
-                })->orWhere(function ($query3) use ($user_projects_ids) {
-                    $query3->where('u.user_type', 'worker')->whereIn('u.assigned_to', $user_projects_ids);
+                })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
+                    $query3->where('u.user_type', 'worker')->whereIn('u.assigned_to', $user_projects_ids)->whereIn('u.business_id', $user_businesses_ids);
                 });
             })
             ->select([
@@ -137,7 +137,7 @@ class EssentialsEmployeeContractController extends Controller
                         }
 
 
-                     //   $html .= '<button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        //   $html .= '<button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                         return $html;
                     }
