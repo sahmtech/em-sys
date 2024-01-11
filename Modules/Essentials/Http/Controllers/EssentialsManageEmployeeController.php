@@ -990,11 +990,11 @@ class EssentialsManageEmployeeController extends Controller
             
                 $latestRefNo++;
                
-                $emp_data['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+                 $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
                
             } else {
                
-                $emp_data['emp_number'] =  $business_id . '000';
+                $request['emp_number'] =  $business_id . '000';
             }
 
 
