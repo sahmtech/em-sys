@@ -979,8 +979,7 @@ class EssentialsManageEmployeeController extends Controller
             // $lastEmployee = User::orderBy('emp_number', 'desc')
             //     ->first();
 
-                $latestRecord = User::
-                orderBy('emp_number', 'desc')
+                $latestRecord = User::where('business_id', $business_id )->orderBy('emp_number', 'desc')
                 ->first();
             
             if ($latestRecord) {
