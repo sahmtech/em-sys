@@ -12,13 +12,16 @@ class DataController extends Controller
     {
         return [
             [
-                'value' => 'generalmanagement.president_requests',
-                'label' => __('generalmanagement::lang.crud_president_requests'),
-                'default' => false,
+                'group_name' => __('generalmanagement::lang.general_management'),
+                'group_permissions' =>
+                [
+                    [
+                        'value' => 'generalmanagement.president_requests',
+                        'label' => __('generalmanagement::lang.crud_president_requests'),
+                        'default' => false,
+                    ],
+                ],
             ],
-          
-            
         ];
     }
-    
 }

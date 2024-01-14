@@ -30,99 +30,107 @@ class DataController extends Controller
 
     public function user_permissions()
     {
+
         return [
-            // [
-            //     'value' => 'sales.sales_dashboard',
-            //     'label' => __('sales::lang.dashboard'),
-            //     'default' => false,
-            // ],
-
             [
-                'value' => 'sales.crud_contacts',
-                'label' => __('sales::lang.crud_contacts'),
-                'default' => false,
+                'group_name' => __('sales::lang.sales'),
+                'group_permissions' =>[
+                    // [
+                    //     'value' => 'sales.sales_dashboard',
+                    //     'label' => __('sales::lang.dashboard'),
+                    //     'default' => false,
+                    // ],
+        
+                    [
+                        'value' => 'sales.crud_contacts',
+                        'label' => __('sales::lang.crud_contacts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.create_offer_price',
+                        'label' => __('sales::lang.create_offer_price'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_offer_price',
+                        'label' => __('sales::lang.crud_offer_price'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_contract',
+                        'label' => __('sales::lang.crud_contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_contract_itmes',
+                        'label' => __('sales::lang.crud_contract_itmes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_contract_appendics',
+                        'label' => __('sales::lang.crud_contract_appendics'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'sales.crud_sale_operation_orders',
+                        'label' => __('sales::lang.crud_sale_operation_orders'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'sales.crud_follow_ups',
+                        'label' => __('sales::lang.crud_follow_ups'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_sales_projects',
+                        'label' => __('sales::lang.crud_sales_projects'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_requests',
+                        'label' => __('sales::lang.crud_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_settings',
+                        'label' => __('sales::lang.crud_settings'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_sale_sources',
+                        'label' => __('sales::lang.crud_sale_sources'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_sales_templates',
+                        'label' => __('sales::lang.crud_sales_templates'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_sales_costs',
+                        'label' => __('sales::lang.crud_sales_costs'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.crud_contracts',
+                        'label' => __('sales::lang.contracts'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'sales.crud_sales_salary_requests',
+                        'label' => __('sales::lang.crud_sales_salary_requests'),
+                        'default' => false,
+                    ],
+        
+        
+                ]
+                
             ],
-            [
-                'value' => 'sales.create_offer_price',
-                'label' => __('sales::lang.create_offer_price'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_offer_price',
-                'label' => __('sales::lang.crud_offer_price'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_contract',
-                'label' => __('sales::lang.crud_contract'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_contract_itmes',
-                'label' => __('sales::lang.crud_contract_itmes'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_contract_appendics',
-                'label' => __('sales::lang.crud_contract_appendics'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'sales.crud_sale_operation_orders',
-                'label' => __('sales::lang.crud_sale_operation_orders'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'sales.crud_follow_ups',
-                'label' => __('sales::lang.crud_follow_ups'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_sales_projects',
-                'label' => __('sales::lang.crud_sales_projects'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_requests',
-                'label' => __('sales::lang.crud_requests'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_settings',
-                'label' => __('sales::lang.crud_settings'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_sale_sources',
-                'label' => __('sales::lang.crud_sale_sources'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_sales_templates',
-                'label' => __('sales::lang.crud_sales_templates'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_sales_costs',
-                'label' => __('sales::lang.crud_sales_costs'),
-                'default' => false,
-            ],
-            [
-                'value' => 'sales.crud_contracts',
-                'label' => __('sales::lang.contracts'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'sales.crud_sales_salary_requests',
-                'label' => __('sales::lang.crud_sales_salary_requests'),
-                'default' => false,
-            ],
-
-
         ];
+
     }
 
     /**

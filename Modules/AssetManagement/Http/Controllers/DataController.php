@@ -26,40 +26,47 @@ class DataController extends Controller
      */
     public function user_permissions()
     {
+
         return [
             [
-                'value' => 'asset.view',
-                'label' => __('assetmanagement::lang.view_asset'),
-                'default' => false,
-            ],
-            [
-                'value' => 'asset.create',
-                'label' => __('assetmanagement::lang.add_asset'),
-                'default' => false,
-            ],
-            [
-                'value' => 'asset.update',
-                'label' => __('assetmanagement::lang.edit_asset'),
-                'default' => false,
-            ],
-            [
-                'value' => 'asset.delete',
-                'label' => __('assetmanagement::lang.delete_asset'),
-                'default' => false,
-            ],
-            [
-                'value' => 'asset.view_all_maintenance',
-                'label' => __('assetmanagement::lang.view_all_maintenance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'view_maintenance',
-            ],
-            [
-                'value' => 'asset.view_own_maintenance',
-                'label' => __('assetmanagement::lang.view_own_maintenance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'view_maintenance',
+                'group_name' => __('assetmanagement::lang.assetManagement'),
+                'group_permissions' => [
+                    [
+                        'value' => 'asset.view',
+                        'label' => __('assetmanagement::lang.view_asset'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'asset.create',
+                        'label' => __('assetmanagement::lang.add_asset'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'asset.update',
+                        'label' => __('assetmanagement::lang.edit_asset'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'asset.delete',
+                        'label' => __('assetmanagement::lang.delete_asset'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'asset.view_all_maintenance',
+                        'label' => __('assetmanagement::lang.view_all_maintenance'),
+                        'default' => false,
+                        'is_radio' => true,
+                        'radio_input_name' => 'view_maintenance',
+                    ],
+                    [
+                        'value' => 'asset.view_own_maintenance',
+                        'label' => __('assetmanagement::lang.view_own_maintenance'),
+                        'default' => false,
+                        'is_radio' => true,
+                        'radio_input_name' => 'view_maintenance',
+                    ],
+                ]
+
             ],
         ];
     }
@@ -74,7 +81,7 @@ class DataController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $module_util = new ModuleUtil();
-        if (! (auth()->user()->can('superadmin') || $module_util->hasThePermissionInSubscription($business_id, 'assetmanagement_module'))) {
+        if (!(auth()->user()->can('superadmin') || $module_util->hasThePermissionInSubscription($business_id, 'assetmanagement_module'))) {
             return ['asset' => []];
         }
 
@@ -109,11 +116,11 @@ class DataController extends Controller
         if ($is_asset_enabled && (auth()->user()->can('superadmin') || auth()->user()->can('asset.view') || auth()->user()->can('asset.view_own_maintenance') || auth()->user()->can('asset.view_all_maintenance'))) {
             Menu::modify('admin-sidebar-menu', function ($menu) use ($background_color) {
                 $menu->url(
-                            action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard']),
-                            __('assetmanagement::lang.asset_management'),
-                            ['icon' => 'fas fa fa-boxes', 'active' => request()->segment(1) == 'asset', 'style' => 'background-color:'.$background_color]
-                        )
-                ->order(87);
+                    action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard']),
+                    __('assetmanagement::lang.asset_management'),
+                    ['icon' => 'fas fa fa-boxes', 'active' => request()->segment(1) == 'asset', 'style' => 'background-color:' . $background_color]
+                )
+                    ->order(87);
             });
         }
     }
@@ -126,9 +133,11 @@ class DataController extends Controller
     public function parse_notification($notification)
     {
         $notification_data = [];
-        if ($notification->type ==
+        if (
+            $notification->type ==
             'Modules\AssetManagement\Notifications\AssetSentForMaintenance' || $notification->type ==
-            'Modules\AssetManagement\Notifications\AssetAssignedForMaintenance') {
+            'Modules\AssetManagement\Notifications\AssetAssignedForMaintenance'
+        ) {
             $notification_data = [
                 'msg' => $notification->data['msg'],
                 'icon_class' => 'fas fa-tools bg-green',

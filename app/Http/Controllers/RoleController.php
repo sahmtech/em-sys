@@ -42,7 +42,7 @@ class RoleController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (!($is_admin || auth()->user()->can('roles.view'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -93,7 +93,7 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin  || auth()->user()->can('roles.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $accessRole = AccessRole::where('role_id', $id)->first();
@@ -149,7 +149,7 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin  || auth()->user()->can('roles.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -158,8 +158,13 @@ class RoleController extends Controller
             ->active()
             ->get();
 
-        $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
+        $temp = $this->moduleUtil->getModuleData('user_permissions');
+        $module_permissions = [];
 
+        foreach ($temp as $key => $temp_item) {
+            $module_permissions[] = $temp_item[0];
+        }
+      //  return $module_permissions;
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         return view('role.create')
@@ -176,7 +181,7 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('roles.create'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         try {
@@ -262,7 +267,7 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('roles.update'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
@@ -297,7 +302,7 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('roles.update'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
 
@@ -385,7 +390,7 @@ class RoleController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('roles.delete'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {

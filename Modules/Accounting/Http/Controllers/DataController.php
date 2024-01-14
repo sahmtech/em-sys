@@ -54,71 +54,78 @@ class DataController extends Controller
     {
         return [
             [
-                'value' => 'accounting.access_accounting_module',
-                'label' => __('accounting::lang.access_accounting_module'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.manage_accounts',
-                'label' => __('accounting::lang.manage_accounts'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.view_journal',
-                'label' => __('accounting::lang.view_journal'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.add_journal',
-                'label' => __('accounting::lang.add_journal'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.edit_journal',
-                'label' => __('accounting::lang.edit_journal'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.delete_journal',
-                'label' => __('accounting::lang.delete_journal'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.map_transactions',
-                'label' => __('accounting::lang.map_transactions'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.view_transfer',
-                'label' => __('accounting::lang.view_transfer'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.add_transfer',
-                'label' => __('accounting::lang.add_transfer'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.edit_transfer',
-                'label' => __('accounting::lang.edit_transfer'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.delete_transfer',
-                'label' => __('accounting::lang.delete_transfer'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.manage_budget',
-                'label' => __('accounting::lang.manage_budget'),
-                'default' => false
-            ],
-            [
-                'value' => 'accounting.view_reports',
-                'label' => __('accounting::lang.view_reports'),
-                'default' => false
+                'group_name' => __('accounting::lang.accounting'),
+                'group_permissions' =>[
+                    [
+                        'value' => 'accounting.access_accounting_module',
+                        'label' => __('accounting::lang.access_accounting_module'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.manage_accounts',
+                        'label' => __('accounting::lang.manage_accounts'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.view_journal',
+                        'label' => __('accounting::lang.view_journal'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.add_journal',
+                        'label' => __('accounting::lang.add_journal'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.edit_journal',
+                        'label' => __('accounting::lang.edit_journal'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.delete_journal',
+                        'label' => __('accounting::lang.delete_journal'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.map_transactions',
+                        'label' => __('accounting::lang.map_transactions'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.view_transfer',
+                        'label' => __('accounting::lang.view_transfer'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.add_transfer',
+                        'label' => __('accounting::lang.add_transfer'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.edit_transfer',
+                        'label' => __('accounting::lang.edit_transfer'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.delete_transfer',
+                        'label' => __('accounting::lang.delete_transfer'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.manage_budget',
+                        'label' => __('accounting::lang.manage_budget'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.view_reports',
+                        'label' => __('accounting::lang.view_reports'),
+                        'default' => false
+                    ],
+                ]
+                
             ],
         ];
+       
     }
    
 }
