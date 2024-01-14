@@ -187,13 +187,25 @@ class DataController extends Controller
                 'group_name' => __('followup::lang.followUp'),
                 'group_permissions' =>[
                     [
-                        'value' => 'followup.crud_workers',
-                        'label' => __('followup::lang.crud_workers'),
+                        'value' => 'followup.followup_dashboard',
+                        'label' => __('followup::lang.followup_dashboard'),
                         'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.crud_contact_locations',
+                        'label' => __('followup::lang.crud_contact_locations'),
+                        'default' => false,
+        
                     ],
                     [
                         'value' => 'followup.crud_projects',
                         'label' => __('followup::lang.crud_projects'),
+                        'default' => false,
+        
+                    ],
+                    [
+                        'value' => 'followup.crud_workers',
+                        'label' => __('followup::lang.crud_workers'),
                         'default' => false,
         
                     ],
@@ -204,295 +216,55 @@ class DataController extends Controller
         
                     ],
                     [
-                        'value' => 'followup.create_order',
-                        'label' => __('followup::lang.create_order'),
+                        'value' => 'followup.crud_requests',
+                        'label' => __('followup::lang.crud_requests'),
                         'default' => false,
         
                     ],
                     [
-                        'value' => 'followup.return_request',
-                        'label' => __('followup::lang.return_request'),
+                        'value' => 'followup.crud_recruitmentRequests',
+                        'label' => __('followup::lang.crud_recruitmentRequests'),
                         'default' => false,
         
                     ],
                     [
-                        'value' => 'followup.viewExitRequests',
-                        'label' => __('followup::lang.viewExitRequests'),
+                        'value' => 'followup.crud_documents',
+                        'label' => __('followup::lang.crud_documents'),
                         'default' => false,
         
                     ],
                     [
-                        'value' => 'followup.crudExitRequests',
-                        'label' => __('followup::lang.crudExitRequests'),
+                        'value' => 'followup.crud_document_delivery',
+                        'label' => __('followup::lang.crud_document_delivery'),
+                        'default' => false,
+        
+                    ],
+                    
+                    [
+                        'value' => 'followup.crud_projectsReports',
+                        'label' => __('followup::lang.crud_projectsReports'),
                         'default' => false,
         
                     ],
                     [
-                        'value' => 'followup.view_requests',
-                        'label' => __('followup::lang.view_requests'),
+                        'value' => 'followup.crud_projectWorkersReports',
+                        'label' => __('followup::lang.crud_projectWorkersReports'),
                         'default' => false,
         
                     ],
                     [
-                        'value' => 'followup.viewReturnRequest',
-                        'label' => __('followup::lang.viewReturnRequest'),
+                        'value' => 'followup.reports.crud_contrascts_wishes',
+                        'label' => __('followup::lang.crud_contrascts_wishes'),
                         'default' => false,
         
                     ],
                     [
-                        'value' => 'followup.crudReturnRequest',
-                        'label' => __('followup::lang.crudReturnRequest'),
+                        'value' => 'followup.crud_shifts',
+                        'label' => __('followup::lang.crud_shifts'),
                         'default' => false,
         
                     ],
-                    [
-                        'value' => 'followup.viewEscapeRequest',
-                        'label' => __('followup::lang.viewEscapeRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudEscapeRequest',
-                        'label' => __('followup::lang.crudEscapeRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.viewAdvanceSalary',
-                        'label' => __('followup::lang.viewAdvanceSalary'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudAdvanceSalary',
-                        'label' => __('followup::lang.crudAdvanceSalary'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.viewLeavesAndDepartures',
-                        'label' => __('followup::lang.viewLeavesAndDepartures'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudLeavesAndDepartures',
-                        'label' => __('followup::lang.crudLeavesAndDepartures'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.viewAtmCard',
-                        'label' => __('followup::lang.viewAtmCard'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudAtmCard',
-                        'label' => __('followup::lang.crudAtmCard'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.viewResidenceRenewal',
-                        'label' => __('followup::lang.viewResidenceRenewal'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudResidenceRenewal',
-                        'label' => __('followup::lang.crudResidenceRenewal'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.viewResidenceCard',
-                        'label' => __('followup::lang.viewResidenceCard'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudResidenceCard',
-                        'label' => __('followup::lang.crudResidenceCard'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.viewWorkerTransfer',
-                        'label' => __('followup::lang.viewWorkerTransfer'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.crudWorkerTransfer',
-                        'label' => __('followup::lang.crudWorkerTransfer'),
-                        'default' => false,
-        
-                    ],
-        
-                    [
-                        'value' => 'followup.curd_contracts_wishes',
-                        'label' => __('followup::lang.curd_contracts_wishes'),
-                        'default' => false,
-        
-                    ],
-                
-                    [
-        
-        
-                        'value' => 'followup.viewWorkInjuriesRequest',
-                        'label' => __('followup::lang.viewWorkInjuriesRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.viewResidenceEditRequest',
-                        'label' => __('followup::lang.viewResidenceEditRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.viewBaladyCardRequest',
-                        'label' => __('followup::lang.viewBaladyCardRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.viewRecruitmentRequest',
-                        'label' => __('followup::lang.viewRecruitmentRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-                        'value' => 'followup.viewInsuranceUpgradeRequest',
-                        'label' => __('followup::lang.viewInsuranceUpgradeRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.viewMofaRequest',
-                        'label' => __('followup::lang.viewMofaRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.viewChamberRequest',
-                        'label' => __('followup::lang.viewChamberRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-                        
-        
-                        'value' => 'followup.contact_locations',
-                        'label' => __('followup::lang.contact_locations'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.projects',
-                        'label' => __('followup::lang.projects'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.workers',
-                        'label' => __('followup::lang.workers'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.operation_orders',
-                        'label' => __('followup::lang.operation_orders'),
-                        'default' => false,
-        
-                    ],
-                     [
-        
-        
-                        'value' => 'followup.requests',
-                        'label' => __('followup::lang.requests'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.recruitmentRequests',
-                        'label' => __('followup::lang.recruitmentRequests'),
-                        'default' => false,
-        
-                    ],
-        
-                    [
-        
-        
-                        'value' => 'followup.document_delivery',
-                        'label' => __('followup::lang.document_delivery'),
-                        'default' => false,
-        
-                    ],
-        
-                    [
-        
-        
-                        'value' => 'followup.documents',
-                        'label' => __('followup::lang.documents'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.reports.projects',
-                        'label' => __('followup::lang.reports.projectsReports'),
-                        'default' => false,
-        
-                    ],
-                    [
-        
-        
-                        'value' => 'followup.reports.projectWorkers',
-                        'label' => __('followup::lang.reports.projectWorkersReports'),
-                        'default' => false,
-        
-                    ],
-        
-                    [
-        
-        
-                        'value' => 'followup.contrascts_wishes',
-                        'label' => __('followup::lang.contrascts_wishes'),
-                        'default' => false,
-        
-                    ],
-        
-                    [
-        
-        
-                        'value' => 'followup.shifts',
-                        'label' => __('followup::lang.shifts'),
-                        'default' => false,
-        
-                    ],
+
         
                 ]
                 

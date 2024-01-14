@@ -235,38 +235,33 @@ class HomeController extends Controller
         // $essentialsController = new $essentialsControllerClass();
         //$essentialsPermissions = $essentialsController->user_permissions();
 
-        $essentialsPermissions = [['value' => 'essentials.essentials_dashboard'],];
 
         //sales
-        $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
-        $salesController = new $salesControllerClass();
-        $salesPermissions = $salesController->user_permissions();
-        // $salesPermissions = [['value'=>'sales.sales_dashboard']];
+        // $salesControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
+        // $salesController = new $salesControllerClass();
+        // $salesPermissions = $salesController->user_permissions();
+        // // $salesPermissions = [['value'=>'sales.sales_dashboard']];
 
-        //internationalRelations
-        $irControllerClass = \Modules\InternationalRelations\Http\Controllers\DataController::class;
-        $irController = new $irControllerClass();
-        $irPermissions = $irController->user_permissions();
+        // //internationalRelations
+        // $irControllerClass = \Modules\InternationalRelations\Http\Controllers\DataController::class;
+        // $irController = new $irControllerClass();
+        // $irPermissions = $irController->user_permissions();
 
-        //housingMovements
-        $houseingMovementControllerClass = \Modules\HousingMovements\Http\Controllers\DataController::class;
-        $houseingMovementController = new $houseingMovementControllerClass();
-        $houseingMovementPermissions = $houseingMovementController->user_permissions();
+        // //housingMovements
+        // $houseingMovementControllerClass = \Modules\HousingMovements\Http\Controllers\DataController::class;
+        // $houseingMovementController = new $houseingMovementControllerClass();
+        // $houseingMovementPermissions = $houseingMovementController->user_permissions();
 
-        //superadmin
-        $superadminControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
-        $superadminController = new $superadminControllerClass();
-        $superadminPermissions = $superadminController->user_permissions();
+        // //superadmin
+        // $superadminControllerClass = \Modules\Sales\Http\Controllers\DataController::class;
+        // $superadminController = new $superadminControllerClass();
+        // $superadminPermissions = $superadminController->user_permissions();
 
-        //accounting
-        $accountingControllerClass = \Modules\Accounting\Http\Controllers\DataController::class;
-        $accountingController = new $accountingControllerClass();
-        $accountingPermissions = $accountingController->user_permissions();
+        // //accounting
+        // $accountingControllerClass = \Modules\Accounting\Http\Controllers\DataController::class;
+        // $accountingController = new $accountingControllerClass();
+        // $accountingPermissions = $accountingController->user_permissions();
 
-        //followUp
-        $FollowUpControllerClass = \Modules\FollowUp\Http\Controllers\DataController::class;
-        $FollowUpController = new $FollowUpControllerClass();
-        $FollowUpPermissions = $FollowUpController->user_permissions();
 
         // //connector
         // $ConnectorControllerClass = \Modules\Connector\Http\Controllers\DataController::class;
@@ -280,93 +275,90 @@ class HomeController extends Controller
         $AssetManagementPermissions = $AssetManagementController->user_permissions();
 
 
-        //CRM
-        $CRMControllerClass = \Modules\Crm\Http\Controllers\DataController::class;
-        $CRMController = new $CRMControllerClass();
-        $CRMPermissions = $CRMController->user_permissions();
+        // //CRM
+        // $CRMControllerClass = \Modules\Crm\Http\Controllers\DataController::class;
+        // $CRMController = new $CRMControllerClass();
+        // $CRMPermissions = $CRMController->user_permissions();
 
 
-        // General Mangement 
-        $GMControllerClass = \Modules\GeneralManagement\Http\Controllers\DataController::class;
-        $GMController = new $GMControllerClass();
-        $GMPermissions = $GMController->user_permissions();
-
-
+        $generalManagmentDashPermission = [
+            ['value' => 'generalmanagement.generalmanagement_dashboard'],
+        ];
         $userManagementPermissions = [
             ['value' => 'user.view'],
             ['value' => 'user.create'],
             ['value' => 'user.update'],
             ['value' => 'user.delete'],
         ];
-
-
-        $settingsPermissions = [
-            ['value' => 'business_settings.access'],
-            ['value' => 'barcode_settings.access'],
-            ['value' => 'invoice_settings.access'],
-            ['value' => 'tax_rate.view'],
-            ['value' => 'tax_rate.create'],
-            ['value' => 'access_package_subscriptions'],
-
-            ['value' => 'purchase_n_sell_report.view'],
-            ['value' => 'contacts_report.view'],
-            ['value' => 'stock_report.view'],
-            ['value' => 'tax_report.view'],
-            ['value' => 'trending_product_report.view'],
-            ['value' => 'sales_representative.view'],
-            ['value' => 'expense_report.view'],
-            ['value' => 'backup'],
+        $essentialsPermissions = [
+            ['value' => 'essentials.essentials_dashboard'],
         ];
-
-        $ToPermissions = [
-
-            ['value' => 'essentials.toDo_dash'],
-
-        ];
-
         $workCardsPermissions = [
             ['value' => 'essentials.essentials_work_cards_dashboard'],
-        
         ];
-
         $employeeAffairsPermissions = [
             ['value' => 'essentials.view_employee_affairs_dashboard'],
         ];
-
-
         $medicalInsurancePermissions = [
-            ['value' => 'essentials.view_medical_insurance'],
+            ['value' => 'essentials.medicalInsurance_dashboard'],
         ];
-
-        $movmentsPermissions = [
-            ['value' => 'essentials.movement_management'],
+        $ToPermissions = [
+            ['value' => 'essentials.toDo_dash'],
+        ];
+        $salesDashPermission = [
+            ['value' => 'sales.sales_dashboard'],
+        ];
+        $followupDashPermission = [
+            ['value' => 'followup.followup_dashboard'],
         ];
         $housingPermissions = [
             ['value' => 'housingmovements.housing_move_dashbord'],
+        ];
+        $movmentsPermissions = [
+            ['value' => 'essentials.movement_management'],
+        ];
+        $internationalrelationsDashPermission = [
+            ['value' => 'internationalrelations.internationalrelations_dashboard'],
         ];
         $accountingPermissions = [
             ['value' => 'accounting.accounting_dashboard'],
         ];
 
 
+        // $settingsPermissions = [
+        //     ['value' => 'business_settings.access'],
+        //     ['value' => 'barcode_settings.access'],
+        //     ['value' => 'invoice_settings.access'],
+        //     ['value' => 'tax_rate.view'],
+        //     ['value' => 'tax_rate.create'],
+        //     ['value' => 'access_package_subscriptions'],
+
+        //     ['value' => 'purchase_n_sell_report.view'],
+        //     ['value' => 'contacts_report.view'],
+        //     ['value' => 'stock_report.view'],
+        //     ['value' => 'tax_report.view'],
+        //     ['value' => 'trending_product_report.view'],
+        //     ['value' => 'sales_representative.view'],
+        //     ['value' => 'expense_report.view'],
+        //     ['value' => 'backup'],
+        // ];
+
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
-            ['id' => 'general_management',  'permissions' => $GMPermissions, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'general_management',  'permissions' => $generalManagmentDashPermission, 'title' => __('generalmanagement::lang.GeneralManagement'), 'icon' => "fas fa-sitemap", 'link' => action([\Modules\GeneralManagement\Http\Controllers\DashboardController::class, 'index'])],
             // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
 
             ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' =>   route('essentials_word_cards_dashboard')],
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
-
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('employee_insurance')],
-
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
-            ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
-            ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
+            ['id' => 'sales',  'permissions' => $salesDashPermission, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
+            ['id' => 'FollowUp',  'permissions' => $followupDashPermission, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
             ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'movements',  'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
-            ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'internationalrelations',  'permissions' => $internationalrelationsDashPermission, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'assetManagement',  'permissions' => $AssetManagementPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],

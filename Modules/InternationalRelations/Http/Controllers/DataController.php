@@ -27,8 +27,34 @@ class DataController extends Controller
                 'group_name' => __('internationalrelations::lang.International'),
                 'group_permissions' =>[
                     [
-                        'value' => 'internationalrelations.view_dashboard',
-                        'label' => __('internationalrelations::lang.view_dashboard'),
+                        'value' => 'internationalrelations.internationalrelations_dashboard',
+                        'label' => __('internationalrelations::lang.internationalrelations_dashboard'),
+                        'default' => false,
+                    ],
+                    
+                    [
+                        'value' => 'internationalrelations.crud_orders_operations',
+                        'label' => __('internationalrelations::lang.crud_orders_operations'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.crud_employment_companies',
+                        'label' => __('internationalrelations::lang.crud_employment_companies'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.view_delegation',
+                        'label' => __('internationalrelations::lang.view_delegation'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.view_proposed_labors',
+                        'label' => __('internationalrelations::lang.view_proposed_labors'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.crud_visa_cards',
+                        'label' => __('internationalrelations::lang.crud_visa_cards'),
                         'default' => false,
                     ],
                     [
@@ -37,15 +63,28 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'internationalrelations.crud_all_ir_requests',
+                        'label' => __('internationalrelations::lang.crud_all_ir_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.crud_all_reports',
+                        'label' => __('internationalrelations::lang.crud_all_reports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'internationalrelations.crud_all_salary_requests',
+                        'label' => __('internationalrelations::lang.crud_all_salary_requests'),
+                        'default' => false,
+                    ],  
+                  
+                    
+                    [
                         'value' => 'internationalrelations.crud_airlines',
                         'label' => __('internationalrelations::lang.crud_airlines'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'internationalrelations.crud_employment_companies',
-                        'label' => __('internationalrelations::lang.crud_employment_companies'),
-                        'default' => false,
-                    ],
+                 
                     [
                         'value' => 'internationalrelations.view_company_requests',
                         'label' => __('internationalrelations::lang.view_company_requests'),
@@ -57,11 +96,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
                   
-                    [
-                        'value' => 'internationalrelations.crud_orders_operations',
-                        'label' => __('internationalrelations::lang.crud_orders_operations'),
-                        'default' => false,
-                    ],
+                 
                     [
                         'value' => 'internationalrelations.delegate_order',
                         'label' => __('internationalrelations::lang.delegate_order'),
@@ -72,16 +107,8 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.view_delegation_info'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'internationalrelations.view_delegation',
-                        'label' => __('internationalrelations::lang.view_delegation'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'internationalrelations.crud_visa_cards',
-                        'label' => __('internationalrelations::lang.crud_visa_cards'),
-                        'default' => false,
-                    ],
+               
+                
                     [
                         'value' => 'internationalrelations.store_visa_card',
                         'label' => __('internationalrelations::lang.store_visa_card'),
@@ -93,11 +120,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
         
-                    [
-                        'value' => 'internationalrelations.view_proposed_labors',
-                        'label' => __('internationalrelations::lang.view_proposed_labors'),
-                        'default' => false,
-                    ],
+                 
                     [
                         'value' => 'internationalrelations.view_worker_info',
                         'label' => __('internationalrelations::lang.view_worker_info'),
@@ -158,36 +181,7 @@ class DataController extends Controller
                         'label' => __('internationalrelations::lang.change_worker_status'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'internationalrelations.crud_all_reports',
-                        'label' => __('internationalrelations::lang.crud_all_reports'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'internationalrelations.crud_all_salary_requests',
-                        'label' => __('internationalrelations::lang.crud_all_salary_requests'),
-                        'default' => false,
-                    ],
-                      [
-                        'value' => 'internationalrelations.crud_all_ir_requests',
-                        'label' => __('internationalrelations::lang.crud_all_ir_requests'),
-                        'default' => false,
-                    ],
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                 
                     
                 ]
                 

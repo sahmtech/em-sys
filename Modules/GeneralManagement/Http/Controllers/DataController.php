@@ -15,6 +15,12 @@ class DataController extends Controller
                 'group_name' => __('generalmanagement::lang.GeneralManagement'),
                 'group_permissions' =>
                 [
+                    
+                    [
+                        'value' => 'generalmanagement.generalmanagement_dashboard',
+                        'label' => __('generalmanagement::lang.generalmanagement_dashboard'),
+                        'default' => false,
+                    ],
                     [
                         'value' => 'generalmanagement.president_requests',
                         'label' => __('generalmanagement::lang.crud_president_requests'),
