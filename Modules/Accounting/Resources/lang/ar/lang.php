@@ -444,6 +444,7 @@ return [
     'customer_vouchers' => 'فواتير العميل',
     'print' => 'طباعة',
     "requests" => "الطلبات",
+    'crud_requests'=>'إدارة الطلبات',
     'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك',
 
     'all' => 'الكل',
@@ -588,6 +589,7 @@ return [
         "Accrued liabilities" => "التزامات مستحقة",
         "Accrued holiday payable" => "أجور الإجازات المستحقة",
         "Accounts Receivable (A/R)" => "المدينونيات التجارية (A/R)",
+        
       
 
 

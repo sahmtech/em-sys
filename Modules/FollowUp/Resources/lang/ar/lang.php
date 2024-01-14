@@ -274,6 +274,7 @@ return [
     'booking' => 'محجوز',
     'not_booking' => 'غير محجوز',
     'booking_details' => 'معلومات الحجز',
+    'viewRecruitmentRequest'=>'عرض طلبات التوظيف الداخلي'
 
 
 

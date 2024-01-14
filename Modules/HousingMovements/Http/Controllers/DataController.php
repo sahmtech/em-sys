@@ -30,14 +30,13 @@ class DataController extends Controller
     {
         return [
             [
-                'group_name' => __('housingmovements::lang.housingmovements'),
+                'group_name' => __('housingmovements::lang.housing_move'),
                 'group_permissions' => [
                     [
-                        'value' => 'housingmovements.view_htr_dashboard',
-                        'label' => __('housingmovements::lang.view_htr_dashboard'),
+                        'value' => 'housingmovements.view_building_management',
+                        'label' => __('housingmovements::lang.view_building_management'),
                         'default' => false,
                     ],
-
                     [
                         'value' => 'housingmovements.crud_buildings',
                         'label' => __('housingmovements::lang.crud_buildings'),
@@ -95,11 +94,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    [
-                        'value' => 'housingmovements.view_building_management',
-                        'label' => __('housingmovements::lang.view_building_management'),
-                        'default' => false,
-                    ],
+                   
 
 
 

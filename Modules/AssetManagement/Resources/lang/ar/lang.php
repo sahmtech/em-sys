@@ -93,4 +93,5 @@ return [
     'asset_sent_for_maintenance' => 'Asset :asset_code sent for maintenance',
     'send_for_maintenance_details' => 'رد الصيانة',
     'maintenance_note' => 'ملاحظة الطلب',
+    'delete_asset' => 'حذف العهدة',
 ];
