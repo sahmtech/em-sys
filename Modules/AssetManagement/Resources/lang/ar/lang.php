@@ -94,4 +94,5 @@ return [
     'send_for_maintenance_details' => 'رد الصيانة',
     'maintenance_note' => 'ملاحظة الطلب',
     'delete_asset' => 'حذف العهدة',
+    'assetManagement_dashboard'=>'الصفحة الرئيسية لإدارة العُهد',
 ];

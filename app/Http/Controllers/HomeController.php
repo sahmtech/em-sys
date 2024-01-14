@@ -270,9 +270,9 @@ class HomeController extends Controller
 
 
         //AssetManagement
-        $AssetManagementControllerClass = \Modules\AssetManagement\Http\Controllers\DataController::class;
-        $AssetManagementController = new $AssetManagementControllerClass();
-        $AssetManagementPermissions = $AssetManagementController->user_permissions();
+        // $AssetManagementControllerClass = \Modules\AssetManagement\Http\Controllers\DataController::class;
+        // $AssetManagementController = new $AssetManagementControllerClass();
+        // $AssetManagementPermissions = $AssetManagementController->user_permissions();
 
 
         // //CRM
@@ -323,7 +323,9 @@ class HomeController extends Controller
         $accountingPermissions = [
             ['value' => 'accounting.accounting_dashboard'],
         ];
-
+        $assetPermissions = [
+            ['value' => 'assetmanagement.assetManagement_dashboard'],
+        ];
 
         // $settingsPermissions = [
         //     ['value' => 'business_settings.access'],
@@ -361,7 +363,7 @@ class HomeController extends Controller
             ['id' => 'internationalrelations',  'permissions' => $internationalrelationsDashPermission, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
-            ['id' => 'assetManagement',  'permissions' => $AssetManagementPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
+            ['id' => 'assetManagement',  'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
             //  ['id' => 'crm',  'permissions' => $CRMPermissions, 'title' => __('crm::lang.crm'),'icon' =>'fas fa fa-broadcast-tower', 'link' => action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']),],
 
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
