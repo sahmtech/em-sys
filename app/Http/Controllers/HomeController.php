@@ -326,14 +326,11 @@ class HomeController extends Controller
 
         $workCardsPermissions = [
             ['value' => 'essentials.essentials_work_cards_dashboard'],
-            ['value' => 'essentials.view_work_cards'],
-            ['value' => 'essentials.work_cards_all_requests'],
-            ['value' => 'essentials.work_cards_vaction_requests'],
-            ['value' => 'essentials.work_cards_operation'],
+        
         ];
 
         $employeeAffairsPermissions = [
-            ['value' => 'essentials.view_employee_affairs'],
+            ['value' => 'essentials.view_employee_affairs_dashboard'],
         ];
 
 

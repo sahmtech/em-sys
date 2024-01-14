@@ -458,7 +458,7 @@ return [
     'crud_travel_categories' => 'Add / Edit / View / Delete Travel Categories',
     'crud_contract_types' => 'Add/Modify/View/Delete Contract Types',
     'view_employee_settings' => 'View Employee Settings',
-    'view_employee_affairs' => 'View Employee Affairs',
+    'view_employee_affairs_dashboard' => 'View Employee Affairs',
     'crud_official_documents' => 'Add/Modify/View/Delete Official Documents',
     'contract_types' => 'Contract Types',
     'employee_contracts' => 'Employee Contracts',
