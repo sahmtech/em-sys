@@ -27,6 +27,7 @@
                     <table class="table table-bordered table-striped" id="insurance_companies_table">
                         <thead>
                             <tr>
+                            <th>@lang('essentials::lang.id' )</th>
                                 <th>@lang('essentials::lang.insurance_category_name' )</th>
                                 <th>@lang('essentials::lang.insurance_company' )</th>
 
@@ -62,15 +63,25 @@
                                 'C+'=>'C+',
                                 'C'=>'C',
                                 'CR+'=>'CR+',
-                                'CR'=>'CR'],
+                                'CR'=>'CR',
+                                 'VVIP'=>"VVIP",
+                                 'A+S'=>'A+S',
+                                 'VIP+S'=>'VIP+S',
+                                 'C6'=>'C6',
+                                 'C4'=>'C4',
+                                 'C6S'=>'C6S',
+                                
+                                  ],
                                  null, ['class' => 'form-control', 'required']) !!}
                             </div>        
-                        </div>
+                      
                         <div class="form-group col-md-6">
                             {!! Form::label('insurance_company', __('essentials::lang.insurance_company') . ':*') !!}
                  
-                            {!! Form::select('insurance_company', $insurance_companies, null, ['class' => 'form-control','placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
+                            {!! Form::select('insurance_company', $insurance_companies, null, ['class' => 'form-control','style'=>'height:36px;',
+                                'placeholder' => __('essentials::lang.insurance_company'),  'required']) !!}
                         </div>
+                            </div>
                     </div>
         
                     <div class="modal-footer">
@@ -102,6 +113,7 @@
                 },
                 
                 columns: [
+                    { data: 'id' },
                     { data: 'name' },
                     { data: 'insurance_company_id' },
                     { data: 'action' },

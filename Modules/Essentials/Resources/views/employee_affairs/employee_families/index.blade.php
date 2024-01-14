@@ -98,6 +98,7 @@
                                             'sibling' => __('essentials::lang.sibling'),
                                             'spouse' => __('essentials::lang.spouse'),
                                             'child' => __('essentials::lang.child'),
+                                            'wife' => __('essentials::lang.wife'),
                                             'other' => __('essentials::lang.other'),
                                         ],
                                         null,
@@ -193,6 +194,9 @@
                                 return '@lang('essentials::lang.spouse')';
                             } else if (data === 'child') {
                                 return '@lang('essentials::lang.child')';
+                            }
+                            else if (data === 'wife') {
+                                return '@lang('essentials::lang.wife')';
                             } else {
                                 return '@lang('essentials::lang.other')';
                             }

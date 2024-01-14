@@ -734,6 +734,15 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 );
             }
+
+            //workers:
+            $menu->url(
+                 route('get-essentials-workers'),
+                __('essentials::lang.workers'),
+                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'essentailsworkers' || request()->segment(2) == 'escalate_requests')]
+            );
+
+
             if ($is_admin  || auth()->user()->can('essentials.crud_HR_requests')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
