@@ -30,7 +30,7 @@
                                  @endphp
                                  <div class="col-md-4">
                                      <div class="checkbox">
-                                         <label>
+                                         <label class="custom_permission_lable">
                                              @if (!empty($module_permission['is_radio']))
                                                  {!! Form::radio(
                                                      'radio_option[' . $module_permission['radio_input_name'] . ']',
