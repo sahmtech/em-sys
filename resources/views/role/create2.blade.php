@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', __('role.edit_role'))
+@section('title', __('role.add_role'))
 
 @section('content')
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1>@lang('role.edit_role')</h1>
+        <h1>@lang('role.add_role')</h1>
     </section>
 
     <!-- Main content -->
@@ -13,11 +13,11 @@
         @php
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
         @endphp
-        @component('components.widget', ['class' => 'box-primary'])
+        @component('components.widget')
             {!! Form::open([
-                'url' => action([\App\Http\Controllers\RoleController::class, 'update'], [$role->id]),
-                'method' => 'PUT',
-                'id' => 'role_form',
+                'url' => action([\App\Http\Controllers\RoleController::class, 'store']),
+                'method' => 'post',
+                'id' => 'role_add_form',
             ]) !!}
 
 
@@ -76,7 +76,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::checkbox('is_service_staff', 1, $role->is_service_staff, ['class' => 'input-icheck']) !!} {{ __('restaurant.service_staff') }}
+                                            {!! Form::checkbox('is_service_staff', 1,   $role->is_service_staff, ['class' => 'input-icheck']) !!} {{ __('restaurant.service_staff') }}
                                         </label>
                                         @show_tooltip(__('restaurant.tooltip_service_staff'))
                                     </div>
@@ -86,9 +86,7 @@
                             <div class="col-md-12">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::checkbox('permissions[]', 'view_export_buttons', in_array('view_export_buttons', $role_permissions), [
-                                            'class' => 'input-icheck',
-                                        ]) !!} {{ __('lang_v1.view_export_buttons') }}
+                                        {!! Form::checkbox('permissions[]', 'view_export_buttons',  in_array('view_export_buttons', $role_permissions), ['class' => 'input-icheck']) !!} {{ __('lang_v1.view_export_buttons') }}
                                     </label>
                                 </div>
                             </div>
@@ -298,9 +296,7 @@
                                 <div class="col-md-4">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[supplier_view]', 'supplier.view', in_array('supplier.view', $role_permissions), [
-                                                'class' => 'input-icheck',
-                                            ]) !!}
+                                            {!! Form::radio('radio_option[supplier_view]', 'supplier.view',  in_array('supplier.view', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_all_supplier') }}
                                         </label>
                                     </div>
@@ -308,12 +304,7 @@
                                 <div class="col-md-4">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[supplier_view]',
-                                                'supplier.view_own',
-                                                in_array('supplier.view_own', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[supplier_view]', 'supplier.view_own',  in_array('supplier.view_own', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_own_supplier') }}
                                         </label>
                                     </div>
@@ -370,9 +361,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio('radio_option[customer_view]', 'customer.view', in_array('customer.view', $role_permissions), [
-                                            'class' => 'input-icheck',
-                                        ]) !!}
+                                        {!! Form::radio('radio_option[customer_view]', 'customer.view',  in_array('customer.view', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.view_all_customer') }}
                                     </label>
                                 </div>
@@ -380,12 +369,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[customer_view]',
-                                            'customer.view_own',
-                                            in_array('customer.view_own', $role_permissions),
-                                            ['class' => 'input-icheck'],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[customer_view]', 'customer.view_own',  in_array('customer.view_own', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.view_own_customer') }}
                                     </label>
                                 </div>
@@ -394,14 +378,9 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[customer_view_by_sell]',
-                                            'customer_with_no_sell_one_month',
-                                            in_array('customer_with_no_sell_one_month', $role_permissions),
-                                            [
-                                                'class' => 'input-icheck',
-                                            ],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[customer_view_by_sell]', 'customer_with_no_sell_one_month',  in_array('customer_with_no_sell_one_month', $role_permissions), [
+                                            'class' => 'input-icheck',
+                                        ]) !!}
                                         {{ __('lang_v1.customer_with_no_sell_one_month') }}
                                     </label>
                                 </div>
@@ -409,14 +388,9 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[customer_view_by_sell]',
-                                            'customer_with_no_sell_three_month',
-                                            in_array('customer_with_no_sell_three_month', $role_permissions),
-                                            [
-                                                'class' => 'input-icheck',
-                                            ],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[customer_view_by_sell]', 'customer_with_no_sell_three_month',  in_array('customer_with_no_sell_three_month', $role_permissions), [
+                                            'class' => 'input-icheck',
+                                        ]) !!}
                                         {{ __('lang_v1.customer_with_no_sell_three_month') }}
                                     </label>
                                 </div>
@@ -424,14 +398,9 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[customer_view_by_sell]',
-                                            'customer_with_no_sell_six_month',
-                                            in_array('customer_with_no_sell_six_month', $role_permissions),
-                                            [
-                                                'class' => 'input-icheck',
-                                            ],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[customer_view_by_sell]', 'customer_with_no_sell_six_month',  in_array('customer_with_no_sell_six_month', $role_permissions), [
+                                            'class' => 'input-icheck',
+                                        ]) !!}
                                         {{ __('lang_v1.customer_with_no_sell_six_month') }}
                                     </label>
                                 </div>
@@ -439,14 +408,9 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[customer_view_by_sell]',
-                                            'customer_with_no_sell_one_year',
-                                            in_array('customer_with_no_sell_one_year', $role_permissions),
-                                            [
-                                                'class' => 'input-icheck',
-                                            ],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[customer_view_by_sell]', 'customer_with_no_sell_one_year',  in_array('customer_with_no_sell_one_year', $role_permissions), [
+                                            'class' => 'input-icheck',
+                                        ]) !!}
                                         {{ __('lang_v1.customer_with_no_sell_one_year') }}
                                     </label>
                                 </div>
@@ -454,14 +418,9 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[customer_view_by_sell]',
-                                            'customer_irrespective_of_sell',
-                                            in_array('customer_irrespective_of_sell', $role_permissions),
-                                            [
-                                                'class' => 'input-icheck',
-                                            ],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[customer_view_by_sell]', 'customer_irrespective_of_sell',  in_array('customer_irrespective_of_sell', $role_permissions), [
+                                            'class' => 'input-icheck',
+                                        ]) !!}
                                         {{ __('lang_v1.customer_irrespective_of_sell') }}
                                     </label>
                                 </div>
@@ -600,9 +559,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[purchase_view]', 'purchase.view', in_array('purchase.view', $role_permissions), [
-                                                'class' => 'input-icheck',
-                                            ]) !!}
+                                            {!! Form::radio('radio_option[purchase_view]', 'purchase.view',  in_array('purchase.view', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_all_purchase_n_stock_adjustment') }}
                                         </label>
                                     </div>
@@ -610,12 +567,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[purchase_view]',
-                                                'view_own_purchase',
-                                                in_array('view_own_purchase', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[purchase_view]', 'view_own_purchase',  in_array('view_own_purchase', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_own_purchase_n_stock_adjustment') }}
                                         </label>
                                     </div>
@@ -724,14 +676,9 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[purchase_requisition_view]',
-                                                'purchase_requisition.view_all',
-                                                in_array('purchase_requisition.view_all', $role_permissions),
-                                                [
-                                                    'class' => 'input-icheck',
-                                                ],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[purchase_requisition_view]', 'purchase_requisition.view_all',  in_array('purchase_requisition.view_all', $role_permissions), [
+                                                'class' => 'input-icheck',
+                                            ]) !!}
                                             {{ __('lang_v1.view_all_purchase_requisition') }}
                                         </label>
                                     </div>
@@ -739,14 +686,9 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[purchase_requisition_view]',
-                                                'purchase_requisition.view_own',
-                                                in_array('purchase_requisition.view_own', $role_permissions),
-                                                [
-                                                    'class' => 'input-icheck',
-                                                ],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[purchase_requisition_view]', 'purchase_requisition.view_own',  in_array('purchase_requisition.view_own', $role_permissions), [
+                                                'class' => 'input-icheck',
+                                            ]) !!}
                                             {{ __('lang_v1.view_own_purchase_requisition') }}
                                         </label>
                                     </div>
@@ -803,14 +745,9 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[purchase_order_view]',
-                                                'purchase_order.view_all',
-                                                in_array('purchase_order.view_all', $role_permissions),
-                                                [
-                                                    'class' => 'input-icheck',
-                                                ],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[purchase_order_view]', 'purchase_order.view_all',  in_array('purchase_order.view_all', $role_permissions), [
+                                                'class' => 'input-icheck',
+                                            ]) !!}
                                             {{ __('lang_v1.view_all_purchase_order') }}
                                         </label>
                                     </div>
@@ -818,14 +755,9 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[purchase_order_view]',
-                                                'purchase_order.view_own',
-                                                in_array('purchase_order.view_own', $role_permissions),
-                                                [
-                                                    'class' => 'input-icheck',
-                                                ],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[purchase_order_view]', 'purchase_order.view_own',  in_array('purchase_order.view_own', $role_permissions), [
+                                                'class' => 'input-icheck',
+                                            ]) !!}
                                             {{ __('lang_v1.view_own_purchase_order') }}
                                         </label>
                                     </div>
@@ -879,8 +811,8 @@
                 <div class="box box-primary">
                     <div class="row check_group">
                         {{-- <div class="col-md-12">
-                  <h4>@lang( 'sale.pos_sale' )</h4>
-              </div> --}}
+                        <h4>@lang( 'sale.pos_sale' )</h4>
+                    </div> --}}
                         <div class="col-md-12">
                             <div class="checkbox">
                                 <label class="custom_permission_lable">
@@ -1004,9 +936,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[sell_view]', 'direct_sell.view', in_array('direct_sell.view', $role_permissions), [
-                                                'class' => 'input-icheck',
-                                            ]) !!}
+                                            {!! Form::radio('radio_option[sell_view]', 'direct_sell.view',  in_array('direct_sell.view', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_all_sale') }}
                                         </label>
                                     </div>
@@ -1014,12 +944,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[sell_view]',
-                                                'view_own_sell_only',
-                                                in_array('view_own_sell_only', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[sell_view]', 'view_own_sell_only',  in_array('view_own_sell_only', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_own_sell_only') }}
                                         </label>
                                     </div>
@@ -1259,9 +1184,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[so_view]', 'so.view_all', in_array('so.view_all', $role_permissions), [
-                                                'class' => 'input-icheck',
-                                            ]) !!}
+                                            {!! Form::radio('radio_option[so_view]', 'so.view_all',  in_array('so.view_all', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_all_so') }}
                                         </label>
                                     </div>
@@ -1269,9 +1192,7 @@
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio('radio_option[so_view]', 'so.view_own', in_array('so.view_own', $role_permissions), [
-                                                'class' => 'input-icheck',
-                                            ]) !!}
+                                            {!! Form::radio('radio_option[so_view]', 'so.view_own',  in_array('so.view_own', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_own_so') }}
                                         </label>
                                     </div>
@@ -1330,9 +1251,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio('radio_option[draft_view]', 'draft.view_all', in_array('draft.view_all', $role_permissions), [
-                                            'class' => 'input-icheck',
-                                        ]) !!}
+                                        {!! Form::radio('radio_option[draft_view]', 'draft.view_all',  in_array('draft.view_all', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.view_all_drafts') }}
                                     </label>
                                 </div>
@@ -1340,9 +1259,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio('radio_option[draft_view]', 'draft.view_own', in_array('draft.view_own', $role_permissions), [
-                                            'class' => 'input-icheck',
-                                        ]) !!}
+                                        {!! Form::radio('radio_option[draft_view]', 'draft.view_own',  in_array('draft.view_own', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.view_own_drafts') }}
                                     </label>
                                 </div>
@@ -1390,12 +1307,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[quotation_view]',
-                                            'quotation.view_all',
-                                            in_array('quotation.view_all', $role_permissions),
-                                            ['class' => 'input-icheck'],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[quotation_view]', 'quotation.view_all',  in_array('quotation.view_all', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.view_all_quotations') }}
                                     </label>
                                 </div>
@@ -1403,12 +1315,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[quotation_view]',
-                                            'quotation.view_own',
-                                            in_array('quotation.view_own', $role_permissions),
-                                            ['class' => 'input-icheck'],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[quotation_view]', 'quotation.view_own',  in_array('quotation.view_own', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.view_own_quotations') }}
                                     </label>
                                 </div>
@@ -1457,12 +1364,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[shipping_view]',
-                                            'access_shipping',
-                                            in_array('access_shipping', $role_permissions),
-                                            ['class' => 'input-icheck'],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[shipping_view]', 'access_shipping',  in_array('access_shipping', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.access_all_shipments') }}
                                     </label>
                                 </div>
@@ -1470,12 +1372,7 @@
                             <div class="col-md-4">
                                 <div class="checkbox">
                                     <label class="custom_permission_lable">
-                                        {!! Form::radio(
-                                            'radio_option[shipping_view]',
-                                            'access_own_shipping',
-                                            in_array('access_own_shipping', $role_permissions),
-                                            ['class' => 'input-icheck'],
-                                        ) !!}
+                                        {!! Form::radio('radio_option[shipping_view]', 'access_own_shipping',  in_array('access_own_shipping', $role_permissions), ['class' => 'input-icheck']) !!}
                                         {{ __('lang_v1.access_own_shipping') }}
                                     </label>
                                 </div>
@@ -1961,12 +1858,7 @@
                                 <div class="col-md-4">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[expense_view]',
-                                                'all_expense.access',
-                                                in_array('all_expense.access', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[expense_view]', 'all_expense.access',  in_array('all_expense.access', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.access_all_expense') }}
                                         </label>
                                     </div>
@@ -1974,12 +1866,7 @@
                                 <div class="col-md-4">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[expense_view]',
-                                                'view_own_expense',
-                                                in_array('view_own_expense', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[expense_view]', 'view_own_expense',  in_array('view_own_expense', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('lang_v1.view_own_expense') }}
                                         </label>
                                     </div>
@@ -2091,12 +1978,7 @@
                                 <div class="col-md-4">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[bookings_view]',
-                                                'crud_all_bookings',
-                                                in_array('crud_all_bookings', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[bookings_view]', 'crud_all_bookings',  in_array('crud_all_bookings', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('restaurant.add_edit_view_all_booking') }}
                                         </label>
                                     </div>
@@ -2104,12 +1986,7 @@
                                 <div class="col-md-4">
                                     <div class="checkbox">
                                         <label class="custom_permission_lable">
-                                            {!! Form::radio(
-                                                'radio_option[bookings_view]',
-                                                'crud_own_bookings',
-                                                in_array('crud_own_bookings', $role_permissions),
-                                                ['class' => 'input-icheck'],
-                                            ) !!}
+                                            {!! Form::radio('radio_option[bookings_view]', 'crud_own_bookings',  in_array('crud_own_bookings', $role_permissions), ['class' => 'input-icheck']) !!}
                                             {{ __('restaurant.add_edit_view_own_booking') }}
                                         </label>
                                     </div>
@@ -2140,14 +2017,9 @@
                                     <div class="col-md-4">
                                         <div class="checkbox">
                                             <label class="custom_permission_lable">
-                                                {!! Form::checkbox(
-                                                    'spg_permissions[]',
-                                                    'selling_price_group.' . $selling_price_group->id,
-                                                    in_array('selling_price_group.' . $selling_price_group->id, $role_permissions),
-                                                    [
-                                                        'class' => 'input-icheck',
-                                                    ],
-                                                ) !!}
+                                                {!! Form::checkbox('spg_permissions[]', 'selling_price_group.' . $selling_price_group->id,  in_array('selling_price_group.' . $selling_price_group->id, $role_permissions), [
+                                                    'class' => 'input-icheck',
+                                                ]) !!}
                                                 {{ $selling_price_group->name }}
                                             </label>
                                         </div>
