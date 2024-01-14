@@ -183,7 +183,8 @@ class DataController extends Controller
     {
         return [
             [
-                'group_name' => " __('followup::lang.followup')",
+                
+                'group_name' => __('followup::lang.followUp'),
                 'group_permissions' =>[
                     [
                         'value' => 'followup.crud_workers',
@@ -335,9 +336,7 @@ class DataController extends Controller
                         'default' => false,
         
                     ],
-        
-        
-        
+                
                     [
         
         

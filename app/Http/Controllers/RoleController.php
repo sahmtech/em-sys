@@ -160,9 +160,12 @@ class RoleController extends Controller
 
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
-
-        foreach ($temp as $key => $temp_item) {
-            $module_permissions[] = $temp_item[0];
+  
+        foreach ($temp as $temp_item) {
+            foreach($temp_item as $permission_item ){
+                 $module_permissions[] = $permission_item;
+            }
+           
         }
       //  return $module_permissions;
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];

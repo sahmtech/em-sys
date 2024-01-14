@@ -170,6 +170,7 @@ return [
     'booking_start_Date' => 'تاريخ بداية الحجز',
     'booking_end_Date' => 'تاريخ نهاية الحجز',
     'all_workers_view' => 'عرض العمال',
+    'view_housing_dashboard'=>'عرض الصفحة الرئيسية للسكن'
 
 
 

@@ -24,7 +24,7 @@ class DataController extends Controller
     {
         return [
             [
-                'group_name' => __('internationalrelations::lang.internationalrelations'),
+                'group_name' => __('internationalrelations::lang.International'),
                 'group_permissions' =>[
                     [
                         'value' => 'internationalrelations.view_dashboard',

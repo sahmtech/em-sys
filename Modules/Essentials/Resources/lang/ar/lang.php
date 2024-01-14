@@ -696,7 +696,7 @@ return [
   'crud_official_documents' => 'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
   'crud_import_employee' => ' استيراد الموظفين',
   'crud_insurance_companies' => 'إضافة/تعديل/حذف شركات التأمين ',
-  'view_facilities_management' => ' إدارة المنشآت ',
+  
   'crud_insurance_contracts' => 'إضافة/تعديل/حذف عقود التأمين ',
   'crud_employee_appointments' => 'إضافة/تعديل/حذف تعيينات الموظفين',
   'crud_employee_work_adminitions' => 'إضافة/تعديل/حذف مباشرة العمل للموظفين',
@@ -861,7 +861,7 @@ return [
   'crud_official_documents' => 'إضافة/تعديل/حذف الوثائق الرسمية للموظفين',
   'crud_import_employee' => ' استيراد الموظفين',
   'crud_insurance_companies' => 'إضافة/تعديل/حذف شركات التأمين ',
-  'view_facilities_management' => ' إدارة المنشآت ',
+
   'crud_insurance_contracts' => 'إضافة/تعديل/حذف عقود التأمين ',
   'crud_employee_appointments' => 'إضافة/تعديل/حذف تعيينات الموظفين',
   'crud_employee_work_adminitions' => 'إضافة/تعديل/حذف مباشرة العمل للموظفين',
@@ -1200,4 +1200,14 @@ return [
   'crud_HR_requests'=>'إدارة طلبات الموارد البشرية',
   'insurance_settings'=>'إعدادات التأمين',
   'toDo_dash'=>'إدارة المهام اليومية',
+  'add_todos'=>'إضافة مهام',
+  'delete_todos'=>'حذف مهام',
+  'edit_todos'=>'تعديل مهام',
+  'crud_attendances_status'=>'إدارة حالات الحضور ',
+  'view_all_payroll'=>'عرض جميع الرواتب',
+  'crud_all_roles'=>'عرض جميع الصلاحيات',
+  'delete_payroll'=>'حذف راتب',
+  'view_employees'=>'عرض الموظفين'
+
+
 ];
