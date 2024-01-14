@@ -927,60 +927,60 @@ class EssentialsCardsController extends Controller
     }
 
 
-    public function all_expired_residencies()
-    {
+     public function all_expired_residencies()
+     {
+       
+        $today = today()->format('Y-m-d');
+       
+        $residencies = EssentialsOfficialDocument::with(['employee'])->where('type', 'residence_permit')
+        ->whereDate('expiration_date', '<=', Carbon::now() )->orderby('id','desc')->get(); 
+      
+       
+       
 
-        $today = Carbon::now();
-
-        $residencies = EssentialsOfficialDocument::where('type', 'residence_permit')
-            ->where('expiration_date', '<', $today);  // Adjusted to check for expiration dates in the past
-
-
-
-
-        // dd( $residencies->first());
+       //dd( $residencies->first());
 
         if (request()->ajax()) {
 
-            return DataTables::of($residencies)
-                ->addColumn(
-                    'worker_name',
-                    function ($row) {
-                        return $row->employee->first_name . ' ' . $row->employee->last_name;
-                    }
-                )
-                ->addColumn(
-                    'residency',
-                    function ($row) {
-                        return $row->number;
-                    }
-                )
-                ->addColumn(
-                    'project',
-                    function ($row) {
-                        return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'customer_name',
-                    function ($row) {
-                        return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
-                    }
-                )
-                ->addColumn(
-                    'end_date',
-                    function ($row) {
-                        return $row->expiration_date;
-                    }
-                )
-                ->addColumn(
-                    'action',
-                    ''
-                    // function ($row) {
-                    //     $html = '';
-                    //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                    //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
-                    //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+        return DataTables::of($residencies)
+            ->addColumn(
+                'worker_name',
+                function ($row) {
+                    return $row->employee?->first_name . ' ' . $row->employee?->last_name;
+                }
+            )
+            ->addColumn(
+                'residency',
+                function ($row) {
+                    return $row->number;
+                }
+            )
+            ->addColumn(
+                'project',
+                function ($row) {
+                    return $row->employee?->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'customer_name',
+                function ($row) {
+                    return $row->employee->assignedTo?->contact->supplier_business_name ?? null;
+                }
+            )
+            ->addColumn(
+                'end_date',
+                function ($row) {
+                    return $row->expiration_date;
+                }
+            )
+            ->addColumn(
+                'action',
+                ''
+                // function ($row) {
+                //     $html = '';
+                //     $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                //     $html .= '<a  href="' . route('doc.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a> &nbsp;';
+                //     $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                     //     return $html;
                     // }
@@ -1211,11 +1211,15 @@ class EssentialsCardsController extends Controller
                 DB::beginTransaction();
 
                 foreach ($selectedData as $data) {
+                  
                     $operation = DB::table('essentails_employee_operations')->insert([
                         'operation_type' => 'final_visa',
                         'employee_id' =>  $data['employee_id'],
                         'end_date' =>  $data['end_date'],
                     ]);
+
+                    $user=user::where('id', $data['employee_id'])->first();
+                    $user->update(['status' ,'inactive']);
                 }
 
 
@@ -1270,6 +1274,8 @@ class EssentialsCardsController extends Controller
                         'employee_id' =>  $data['employee_id'],
                         'end_date' =>  $data['end_date'],
                     ]);
+                    $user=user::where('id', $data['employee_id'])->first();
+                    $user->update(['status' ,'inactive']);
                 }
 
                 DB::commit();

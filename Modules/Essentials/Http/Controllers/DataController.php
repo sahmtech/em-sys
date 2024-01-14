@@ -646,6 +646,18 @@ class DataController extends Controller
                 'label' => __('essentials::lang.crud_insurance_requests'),
                 'default' => false,
             ],
+
+            [
+                'value' => 'essentials.view_import_employees_familiy',
+                'label' => __('essentials::lang.view_import_employees_familiy'),
+                'default' => false,
+            ],
+            [
+                'value' => 'essentials.view_import_employees_insurance',
+                'label' => __('essentials::lang.view_import_employees_insurance'),
+                'default' => false,
+            ],
+            
         ];
     }
 

@@ -486,6 +486,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-cog',],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.view_import_employees_insurance')) {
+                $menu->url(
+                    route('import_employees_insurance'),
+                    __('essentials::lang.import_employees_insurance'),
+                    ['icon' => 'fa fas fa-plus', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'import_employees_insurance'],
+                );
+            }
         });
     }
 
@@ -514,6 +521,7 @@ class CustomAdminSidebarMenu
             );
 
         }
+
 
             // $menu->url(
             //     route('work_cards_vaction_requests'),
@@ -680,6 +688,14 @@ class CustomAdminSidebarMenu
                     __('essentials::lang.import_employees'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import'],
                 );
+
+             if ($is_admin  || auth()->user()->can('essentials.view_import_employees_familiy')) {
+                $menu->url(
+                    route('import-employees-familiy'),
+                    __('essentials::lang.import_employees_families'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import_employees_families'],
+                );
+                }
             }
         });
     }

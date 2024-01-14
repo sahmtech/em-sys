@@ -115,7 +115,9 @@
 
                         @if (!empty($documents))
                             <div class="checkbox-group">
-                                @foreach ($documents as $document)
+                                @foreach($documents as $document)
+                                
+                                @if(isset($document->file_path) ||isset( $document->attachment))
                                     <div class="checkbox">
                                         <label>
                                             @if ($document->file_path || $document->attachment)
@@ -128,6 +130,7 @@
                                             @endif
                                         </label>
                                     </div>
+                                @endif
                                 @endforeach
                             </div>
                         @else

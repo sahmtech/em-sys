@@ -30,25 +30,14 @@
                         ]) !!}
                     </div>
                     <div class="form-group col-md-6">
-                        {!! Form::label('first_name', __('essentials::lang.first_name') . ':*') !!}
-                        {!! Form::text('first_name', $family->first_name, [
+                        {!! Form::label('full_name', __('essentials::lang.full_name') . ':*') !!}
+                        {!! Form::text('full_name', $family->full_name, [
                             'class' => 'form-control',
-                            'placeholder' => __('essentials::lang.first_name'),
+                            'placeholder' => __('essentials::lang.full_name'),
                             'required',
                         ]) !!}
                     </div>
-                    <div class="form-group col-md-6">
-                        {!! Form::label('last_name', __('essentials::lang.last_name') . ':*') !!}
-                        {!! Form::text('last_name', $family->last_name, [
-                            'class' => 'form-control',
-                            'placeholder' => __('essentials::lang.last_name'),
-                            'required',
-                        ]) !!}
-                    </div>
-                    <div class="form-group col-md-6">
-                        {!! Form::label('age', __('essentials::lang.age') . ':*') !!}
-                        {!! Form::number('age', $family->age, ['class' => 'form-control', 'placeholder' => __('essentials::lang.age')]) !!}
-                    </div>
+                  
 
                     <div class="form-group col-md-6">
                         {!! Form::label('gender', __('essentials::lang.gender') . ':*') !!}
@@ -99,7 +88,7 @@
 
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary">@lang('messages.update')</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+              
             </div>
 
             {!! Form::close() !!}

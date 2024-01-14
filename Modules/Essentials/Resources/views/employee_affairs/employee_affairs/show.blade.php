@@ -111,8 +111,10 @@
                         @if(!empty($documents))
                             <div class="checkbox-group">
                                 @foreach($documents as $document)
+                                @if(isset($document->file_path) || isset($document->attachment))
                                     <div class="checkbox">
                                         <label>
+
                                         @if($document->file_path || $document->attachment)
                                             <a href="/uploads/{{ $document->file_path ?? $document->attachment }}" data-file-url="{{ $document->file_path ?? $document->attachment }}">
                                                 {{ trans('followup::lang.' . $document->type) }}
@@ -122,6 +124,7 @@
                                         @endif
                                         </label>
                                     </div>
+                                    @endif
                                 @endforeach
                             </div>
                         @else

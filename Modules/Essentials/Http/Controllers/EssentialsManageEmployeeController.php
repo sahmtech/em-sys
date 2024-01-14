@@ -42,6 +42,11 @@ use Modules\Sales\Entities\SalesProject;
 
 
 
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+
+
+
+
 class EssentialsManageEmployeeController extends Controller
 {
     protected $moduleUtil;
@@ -430,6 +435,115 @@ class EssentialsManageEmployeeController extends Controller
                     ->orWhereNull('degree');
             })
             ->count();
+            $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+            $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+            if (!$is_admin) {
+                $userProjects = [];
+                $userBusinesses = [];
+                $roles = auth()->user()->roles;
+                foreach ($roles as $role) {
+    
+                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+    
+                    if ($accessRole) {
+                        $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+    
+                        $userProjects = array_merge($userProjects, $userProjectsForRole);
+                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    }
+                   
+                }
+                $user_projects_ids = array_unique($userProjects);
+                $user_businesses_ids = array_unique($userBusinesses);
+            }
+
+            $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+            ->where('name', 'LIKE', '%سكن%')
+            ->pluck('id')->toArray();
+       
+        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
+
+        $requestsProcess = null;
+     
+        if (!empty($departmentIds)) {
+
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no',
+                'followup_worker_requests_process.id as process_id',
+                'followup_worker_requests.id',
+                'followup_worker_requests.type as type',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.created_at',
+                'followup_worker_requests_process.status',
+                'followup_worker_requests_process.status_note as note',
+                'followup_worker_requests.reason',
+                'essentials_wk_procedures.department_id as department_id',
+                'users.id_proof_number',
+                'essentials_wk_procedures.can_return',
+                'users.assigned_to'
+
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
+        }
+        else {
+            $output = ['success' => false,
+            'msg' => __('essentials::lang.please_add_the_employee_affairs_department'),
+                ];
+            return redirect()->route('home')->with('status', $output);
+        }
+        if (!$is_admin) {
+      
+            $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                $query->where(function ($query2) use ($user_businesses_ids) {
+                    $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
+                })->orWhere(function ($query3) use ($user_projects_ids) {
+                    $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
+                });
+            });
+        }
+        if (request()->ajax()) {
+
+
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+                    return Carbon::parse($row->created_at);
+                })
+                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
+                    $item = $ContactsLocation[$row->assigned_to] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('status', function ($row) {
+                    $status = '';
+                
+                    if ($row->status == 'pending') {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+                        
+                        if (auth()->user()->can('crudExitRequests')) {
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        }
+                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                        $status = trans('followup::lang.' . $row->status);
+                    }
+                
+                    return $status;
+                })
+
+                ->rawColumns(['status'])
+
+
+                ->make(true);
+        }
 
         return view('essentials::employee_affairs.dashboard')
             ->with(compact(
@@ -863,24 +977,27 @@ class EssentialsManageEmployeeController extends Controller
 
             $business_id = request()->session()->get('user.business_id');
 
-            $numericPart = (int)substr($business_id, 3);
-            $lastEmployee = User::orderBy('emp_number', 'desc')
+            // $numericPart = (int)substr($business_id, 3);
+            // $lastEmployee = User::orderBy('emp_number', 'desc')
+            //     ->first();
+
+                $latestRecord = User::where('business_id', $business_id )->orderBy('emp_number', 'desc')
                 ->first();
-
-
-            if ($lastEmployee) {
-
-                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-
-
-
-                $nextNumericPart = $lastEmpNumber + 1;
-
-                $request['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
+            
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->emp_number;
+              
+              //  $numericPart = (int)substr($latestRefNo, 3);
+            
+                $latestRefNo++;
+               
+                 $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+               
             } else {
-
+               
                 $request['emp_number'] =  $business_id . '000';
             }
+
 
 
             $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();

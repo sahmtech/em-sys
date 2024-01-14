@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employees'))
 
 @section('content')
-    {{-- @include('essentials::layouts.nav_employee_affairs') --}}
+   
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
@@ -609,9 +609,9 @@
                         var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
 
                         if (daysRemaining <= 0) {
-                            $('td', row).eq(7).addClass('text-danger'); 
+                            $('td', row).eq(8).addClass('text-danger'); 
                         } else if (daysRemaining <= 25) {
-                            $('td', row).eq(7).addClass(
+                            $('td', row).eq(8).addClass(
                                 'text-warning'); 
                         }
                     }
@@ -620,7 +620,13 @@
             });
 
 
-
+            $('#employees tbody').on('click', 'tr', function() {
+            var data = users_table.row(this).data();
+            console.log(data);
+            if (data) {
+                window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data.id);
+            }
+        });
 
             $('#specializations-select, #nationalities_select, #status-select, #select_business_id').change(
                 function() {

@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
+use Excel;
+
 
 class EssentialsEmployeeInsuranceController extends Controller
 {
@@ -25,6 +27,183 @@ class EssentialsEmployeeInsuranceController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
+
+   
+     public function import_employee_insurance_index()
+     {
+         $business_id = request()->session()->get('user.business_id');
+ 
+         $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_insurance');
+         if (! $can_crud_import_employee) {
+            //temp  abort(403, 'Unauthorized action.');
+         }
+         $zip_loaded = extension_loaded('zip') ? true : false;
+ 
+         //Check if zip extension it loaded or not.
+         if ($zip_loaded === false) {
+             $output = ['success' => 0,
+                 'msg' => 'Please install/enable PHP Zip archive for import',
+             ];
+           
+           
+             return view('essentials::employee_affairs.employee_insurance.import_employee_insurance_index')
+                 ->with('notification', $output);
+         } else {
+             return view('essentials::employee_affairs.employee_insurance.import_employee_insurance_index');
+         }
+ 
+        
+     }
+ 
+     public function insurancepostImportEmployee(Request $request)
+     {
+         $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_insurance');
+         if (! $can_crud_import_employee) {
+            //temp  abort(403, 'Unauthorized action.');
+         }
+     
+         try {
+            
+ 
+             //Set maximum php execution time
+             ini_set('max_execution_time', 0);
+ 
+ 
+             if ($request->hasFile('employee_insurance_csv'))
+              {
+                 $file = $request->file('employee_insurance_csv');
+                 $parsed_array = Excel::toArray([], $file);
+                 $imported_data = array_splice($parsed_array[0], 1);
+                 $business_id = $request->session()->get('user.business_id');
+                 $user_id = $request->session()->get('user.id');
+                 $processedIdProofNumbers = [];
+                 $formated_data = [];
+                 $is_valid = true;
+                 $error_msg = '';
+ 
+              
+               
+             DB::beginTransaction();
+             foreach ($imported_data as $key => $value)
+              {
+                 $row_no = $key + 1;
+                 $emp_array = [];     
+                 
+                      
+                  if (!empty($value[0])) 
+                  {
+                      $emp_array['employee_id'] = $value[0];
+                      $business = user::where('id',$emp_array['employee_id'])->first();
+                      if (!$business) {
+                      
+                          $is_valid = false;
+                          $error_msg = __('essentials::lang.employee_id_not_found').$row_no;
+                          break;
+                      }
+                  }
+                  else {
+                     $is_valid = false;
+                     $error_msg = __('essentials::lang.employee_id_required') .$row_no;
+                     break;
+                 }
+
+
+                 if (!empty($value[1])) 
+                 {
+                     $emp_array['insurance_class_id'] = $value[1];
+                     $business = EssentialsInsuranceClass::where('id',$emp_array['insurance_class_id'])->first();
+                     if (!$business) {
+                     
+                         $is_valid = false;
+                         $error_msg = __('essentials::lang.insurance_class_id_not_found').$row_no;
+                         break;
+                     }
+                 }
+                 else {
+                    $is_valid = false;
+                    $error_msg = __('essentials::lang.insurance_class_id_required') .$row_no;
+                    break;
+                }
+
+                if (!empty($value[2])) 
+                {
+                    $emp_array['insurance_company_id'] = $value[2];
+                    $business = EssentialsInsuranceCompany::where('id',$emp_array['insurance_company_id'])->first();
+                    if (!$business) {
+                    
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.insurance_company_id_not_found').$row_no;
+                        break;
+                    }
+                }
+                else{ $emp_array['insurance_company_id'] = null;}
+               
+                if (!empty($value[3])) {
+                    $emp_array['status'] = $value[3]; 
+                }
+                else{$emp_array['status'] = null;}
+                    
+                
+ 
+             $formated_data[] = $emp_array;                      
+                                       
+                                                   
+                                          
+              }
+                //dd(  $formated_data);       
+              if (!$is_valid) 
+              {
+                  throw new \Exception($error_msg);
+              }                    
+       
+                 if (! empty($formated_data)) 
+                 {
+                  
+ 
+ 
+                     foreach ($formated_data as $emp_data) {
+                      
+                           
+                        
+                       
+                           $insurance =new EssentialsEmployeesInsurance();
+                         
+                           $insurance->insurance_classes_id=$emp_data['insurance_class_id'];
+                           $insurance->insurance_company_id=$emp_data['insurance_company_id'];
+                           $insurance->employee_id=$emp_data['employee_id'];
+                           $insurance->status=$emp_data['status'];
+                           $insurance->save();
+                          
+                            
+ 
+ 
+ 
+                     }
+                 }
+                 
+       
+                
+                 $output = ['success' => 1,
+                     'msg' => __('product.file_imported_successfully'),
+                 ];
+ 
+                 DB::commit();
+             }
+         } catch (\Exception $e) {
+ 
+             DB::rollBack();
+             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+ 
+             $output = ['success' => 0,
+                 'msg' => $e->getMessage(),
+             ];
+ 
+             return redirect()->route('import_employees_insurance')->with('notification', $output);
+         }
+        // $type = ! empty($contact->type) && $contact->type != 'both' ? $contact->type : 'supplier';
+ 
+         return redirect()->route('employee_insurance')->with('notification', 'success insert');
+     }
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');

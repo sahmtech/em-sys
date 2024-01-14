@@ -2,7 +2,7 @@
 @section('title', __('essentials::lang.employee_families'))
 
 @section('content')
-    {{-- @include('essentials::layouts.nav_employee_affairs') --}}
+  
     <section class="content-header">
         <h1>@lang('essentials::lang.employee_families')</h1>
     </section>
@@ -30,7 +30,9 @@
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.family')</th>
                                     <th>@lang('essentials::lang.gender')</th>
-                                    <th>@lang('essentials::lang.age')</th>
+                                    <th>@lang('essentials::lang.mobile_number')</th>
+                                    <th>@lang('essentials::lang.nationality')</th>
+                                   
                                     <th>@lang('essentials::lang.relative_relation')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
                                     <th>@lang('essentials::lang.address')</th>
@@ -67,25 +69,15 @@
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('first_name', __('essentials::lang.first_name') . ':*') !!}
-                                    {!! Form::text('first_name', null, [
+                                    {!! Form::label('full_name', __('essentials::lang.full_name') . ':*') !!}
+                                    {!! Form::text('full_name', null, [
                                         'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.first_name'),
+                                        'placeholder' => __('essentials::lang.full_name'),
                                         'required',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('last_name', __('essentials::lang.last_name') . ':*') !!}
-                                    {!! Form::text('last_name', null, [
-                                        'class' => 'form-control',
-                                        'placeholder' => __('essentials::lang.last_name'),
-                                        'required',
-                                    ]) !!}
-                                </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('age', __('essentials::lang.age') . ':*') !!}
-                                    {!! Form::number('age', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.age')]) !!}
-                                </div>
+                               
+                              
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('gender', __('essentials::lang.gender') . ':*') !!}
@@ -123,7 +115,7 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('address', __('essentials::lang.address') . ':*') !!}
+                                    {!! Form::label('address', __('essentials::lang.address') . ':') !!}
                                     {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.address')]) !!}
                                 </div>
 
@@ -169,6 +161,7 @@
                         data: 'family'
                     },
 
+                    
                     {
                         data: 'gender',
                         render: function(data, type, row) {
@@ -180,8 +173,13 @@
                         }
                     },
                     {
-                        data: 'age'
+                        data: 'mobile_number'
                     },
+                    {
+                        data: 'nationality'
+                    },
+                    
+                  
                     {
                         data: 'relative_relation',
                         render: function(data, type, row) {

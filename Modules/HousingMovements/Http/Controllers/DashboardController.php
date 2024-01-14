@@ -112,6 +112,7 @@ class DashboardController extends Controller
                 $user_projects_ids = array_unique($userProjects);
                 $user_businesses_ids = array_unique($userBusinesses);
             }
+           
             $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
                 ->where('name', 'LIKE', '%سكن%')
                 ->pluck('id')->toArray();

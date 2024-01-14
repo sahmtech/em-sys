@@ -29,6 +29,9 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
+use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
+use Modules\Essentials\Entities\EssentialsInsuranceClass;
+use Modules\Essentials\Entities\EssentialsInsuranceCompany;
 
 use App\Utils\TransactionUtil;
 use App\Utils\ModuleUtil;
@@ -233,6 +236,18 @@ class EssentialsEmployeeImportController extends Controller
                                         $emp_array['id_proof_name'] = $value[14];
                                         
                                         $emp_array['id_proof_number'] = $value[15];
+
+                                        if ($emp_array['id_proof_number'] !== null) {
+                                    
+                                            $proof_number = user::where('id_proof_number',$emp_array['id_proof_number'])->first();
+                                           // dd( $proof_number);
+                                            if ($proof_number) {
+                                            
+                                                $is_valid = false;
+                                                $error_msg = __('essentials::lang.proof_number_validated' ) .$row_no;
+                                                break;
+                                            }
+                                        }
                                         
                                        
 
@@ -573,18 +588,43 @@ class EssentialsEmployeeImportController extends Controller
                               
 
 
-                                        $travelcategoryname=$value[47];
-                                        $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
-                                        if ($traveltype) {
+                                        // $travelcategoryname=$value[47];
+                                        // $traveltype = EssentialsTravelTicketCategorie::where('name', $travelcategoryname)->first();
+                                        // if ($traveltype) {
                                             
-                                            $traveltypeId = $traveltype->id;
-                                            $emp_array['travel_ticket_categorie']=$traveltypeId;
-                                        }
-                                        else{ $emp_array['travel_ticket_categorie']=null;}
+                                        //     $traveltypeId = $traveltype->id;
+                                        //     $emp_array['travel_ticket_categorie']=$traveltypeId;
+                                        // }
+                                        // else{ $emp_array['travel_ticket_categorie']=null;}
 
                                         
 
-                                        $emp_array['has_insurance'] = $value[48]; 
+                                    $emp_array['insurance_classes_id'] = $value[47]; 
+
+                                    if ($value[47] !== null) {
+                                        
+                                        $insurance_classes_id = EssentialsInsuranceClass::find($value[47]);
+                                      
+                                        if (!$insurance_classes_id) {
+                                        
+                                            $is_valid = false;
+                                            $error_msg = __('essentials::lang.insurance_classes_id_not_found') .$row_no;
+                                            break;
+                                        }
+                                    } 
+                                  
+                                    $emp_array['insurance_company_id'] = $value[48]; 
+                                    if ($value[48] !== null) {
+                                        
+                                        $insurance_classes_id = EssentialsInsuranceCompany::find($value[48]);
+                                      
+                                        if (!$insurance_classes_id) {
+                                        
+                                            $is_valid = false;
+                                            $error_msg = __('essentials::lang.insurance_company_id_not_found') .$row_no;
+                                            break;
+                                        }
+                                    } 
                                       
                                     $formated_data[] = $emp_array;
                                          
@@ -624,27 +664,24 @@ class EssentialsEmployeeImportController extends Controller
 
                          
 
-                            $numericPart = (int)substr($business_id, 3);
-                            $lastEmployee = User::where('business_id', $business_id)
-                                ->orderBy('emp_number', 'desc')
-                                ->first();
-
-                            if ($lastEmployee) {
-                              
-                                $lastEmpNumber = (int)substr($lastEmployee->emp_number, 3);
-
+                           
+                        $latestRecord = User::where('business_id', $emp_data['business_id'])
+                          ->orderBy('emp_number', 'desc')
+                          ->first();
+                      
+                      if ($latestRecord) {
+                          $latestRefNo = $latestRecord->emp_number;
                         
-                               
-                                $nextNumericPart = $lastEmpNumber + 1;
-
-                                $emp_data['emp_number'] = $business_id . str_pad($nextNumericPart, 6, '0', STR_PAD_LEFT);
-                            } 
-                        
-                            else {
-                              
-                                $emp_data['emp_number'] =  $business_id .'000';
-
-                            }
+                        //  $numericPart = (int)substr($latestRefNo, 3);
+                      
+                          $latestRefNo++;
+                         
+                          $emp_data['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+                         
+                      } else {
+                         
+                          $emp_data['emp_number'] = $emp_data['business_id'] . '000';
+                      }
         
 
                         $emp = User::create($emp_data);
@@ -742,12 +779,21 @@ class EssentialsEmployeeImportController extends Controller
                         // $userAllowancesAndDeduction->amount = $emp_data['amount']; 
                         // $userAllowancesAndDeduction->save();
                         // }
-                        if ($emp_data['travel_ticket_categorie']!=null){
-                        $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
-                        $travel_ticket_categorie->employee_id = $user_id;
-                        $travel_ticket_categorie->categorie_id=(int)$emp_data['travel_ticket_categorie'];
-                        $travel_ticket_categorie->save();
-                        }
+
+                        // if ($emp_data['travel_ticket_categorie']!=null){
+                        // $travel_ticket_categorie=new EssentialsEmployeeTravelCategorie();
+                        // $travel_ticket_categorie->employee_id = $user_id;
+                        // $travel_ticket_categorie->categorie_id=(int)$emp_data['travel_ticket_categorie'];
+                        // $travel_ticket_categorie->save();
+                        // }
+
+                        if ($emp_data['insurance_classes_id']!=null){
+                            $insurance_data=new EssentialsEmployeesInsurance();
+                            $insurance_data->employee_id = $user_id;
+                            $insurance_data->insurance_classes_id=(int)$emp_data['insurance_classes_id'];
+                            $insurance_data->insurance_company_id=(int)$emp_data['insurance_company_id'];
+                            $insurance_data->save();
+                            }
                     }
                 }
                 
