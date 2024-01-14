@@ -284,7 +284,11 @@
 
 
 
-.custom_ticket_container{
+.custom_ticket_container {
     height: 77vh !important;
     overflow-y: auto;
+}
+
+.custom_permission_lable {
+    color: #000 !important;
 }
