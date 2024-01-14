@@ -319,7 +319,7 @@ class HomeController extends Controller
         ];
 
         $ToPermissions = [
-            
+
             ['value' => 'essentials.toDo_dash'],
 
         ];
@@ -338,12 +338,19 @@ class HomeController extends Controller
 
 
         $medicalInsurancePermissions = [
-             ['value' => 'essentials.view_medical_insurance'],
+            ['value' => 'essentials.view_medical_insurance'],
         ];
 
         $movmentsPermissions = [
             ['value' => 'essentials.movement_management'],
-       ];
+        ];
+        $housingPermissions = [
+            ['value' => 'housingmovements.housing_move_dashbord'],
+        ];
+        $accountingPermissions = [
+            ['value' => 'accounting.accounting_dashboard'],
+        ];
+
 
         //action([\App\Http\Controllers\ManageUserController::class, 'index'])
         $cardsPack = [
@@ -360,7 +367,7 @@ class HomeController extends Controller
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
-            ['id' => 'houseingMovements',  'permissions' => $houseingMovementPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'movements',  'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
             ['id' => 'internationalrelations',  'permissions' => $irPermissions, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
@@ -388,7 +395,7 @@ class HomeController extends Controller
             if (!empty($card['permissions'])) {
                 $canAccessCard = false;
                 foreach ($card['permissions'] as $permission) {
-                    if ($isSuperAdmin || $is_admin || auth()->user()->can($permission['value']) ) {
+                    if ($isSuperAdmin || $is_admin || auth()->user()->can($permission['value'])) {
                         $canAccessCard = true;
                         break;
                     }

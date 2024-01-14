@@ -371,25 +371,25 @@ return [
     'export_to_excel' => 'Export to Excel',
     'transactions' => 'العمليات',
     'sales_payments' => 'مدفوعات المبيعات',
-    'map_transaction' => 'Map Transaction',
+    'map_transaction' => 'ربط العمليات',
     'edit_mapping' => 'Edit Mapping',
     'edit_settings' => 'تعدبل الإعداد',
     'deposit_to' => 'Deposit to',
     'payment_account' => 'Payment account',
     'purchase_payments' => 'مدفوعات المشتريات',
-    'access_accounting_module' => 'Access Accounting Module',
-    'manage_accounts' => 'Manage Accounts',
+    'access_accounting_module' => 'الصفحة الرئيسية للمحاسبة',
+    'manage_accounts' => 'إدارة المحاسبة',
     'view_journal' => 'عرض قيد',
     'add_journal' => 'إضافة قيد',
     'edit_journal' => 'تعديل قيد',
-    'delete_journal' => 'حذف قسد',
-    'map_transactions' => 'Map Transactions',
-    'view_transfer' => 'View Transfer',
-    'add_transfer' => 'Add Transfer',
-    'edit_transfer' => 'Edit Transfer',
-    'delete_transfer' => 'Delete Transfer',
-    'manage_budget' => 'Manage Budget',
-    'view_reports' => 'View Reports',
+    'delete_journal' => 'حذف قيد',
+    'map_transactions' => 'ربط العمليات',
+    'view_transfer' => 'عرض التحويلات',
+    'add_transfer' => 'إضافة تحويل',
+    'edit_transfer' => 'تعديل تحويل',
+    'delete_transfer' => 'حذف تحويل',
+    'manage_budget' => 'إدارة الميزانية',
+    'view_reports' => 'عرض التقارير',
     'journal_entry_prefix' => 'Journal Entry Prefix',
     'transfer_prefix' => 'Transfer Prefix',
     'account_recievable_ageing_report' => 'تقرير تقادم الحسابات المدينة (ملخص)',
@@ -444,8 +444,8 @@ return [
     'customer_vouchers' => 'فواتير العميل',
     'print' => 'طباعة',
     "requests" => "الطلبات",
-    'crud_requests'=>'إدارة الطلبات',
-    'please_add_the_accounting_department'=>'قم بإضافة إدارة المحاسبة من فضلك',
+    'crud_requests' => 'إدارة الطلبات',
+    'please_add_the_accounting_department' => 'قم بإضافة إدارة المحاسبة من فضلك',
 
     'all' => 'الكل',
     'payment_vouchers' => 'سندات الصرف',
@@ -546,7 +546,7 @@ return [
         "Meals and entertainment" => "تكاليف الوجبات والترفيه",
         "Materials - COS" => "المواد - تكلفة المبيعات",
         "Management compensation" => "تعويضات الإدارة",
-       
+
         "Loss on disposal of assets" => "خسارة عند التخلص من الأصول",
         "Loss on discontinued operations, net of tax" => "خسارة عن العمليات المتوقفة، بعد الضرائب",
         "Long-term investments" => "استثمارات طويلة الأجل",
@@ -589,10 +589,13 @@ return [
         "Accrued liabilities" => "التزامات مستحقة",
         "Accrued holiday payable" => "أجور الإجازات المستحقة",
         "Accounts Receivable (A/R)" => "المدينونيات التجارية (A/R)",
-        
-      
+
+
 
 
     ],
+
+    'accounting_dashboard' => 'الصفحة الرئيسية لإدارة المحاسبة ',
+    'settings' => 'الاعدادات',
 
 ];

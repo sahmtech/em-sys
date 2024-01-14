@@ -33,20 +33,21 @@ class DataController extends Controller
                 'group_name' => __('housingmovements::lang.housing_move'),
                 'group_permissions' => [
                     [
-                        'value' => 'housingmovements.view_building_management',
-                        'label' => __('housingmovements::lang.view_building_management'),
+                        'value' => 'housingmovements.housing_move_dashbord',
+                        'label' => __('housingmovements::lang.housing_move_dashbord'),
                         'default' => false,
                     ],
+                    
                     [
                         'value' => 'housingmovements.crud_buildings',
                         'label' => __('housingmovements::lang.crud_buildings'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'housingmovements.crud_requests',
-                        'label' => __('housingmovements::lang.crud_requests'),
-                        'default' => false,
-                    ],
+                    // [
+                    //     'value' => 'housingmovements.crud_requests',
+                    //     'label' => __('housingmovements::lang.crud_requests'),
+                    //     'default' => false,
+                    // ],
 
 
                     [
@@ -71,8 +72,8 @@ class DataController extends Controller
                     ],
 
                     [
-                        'value' => 'housingmovements.crud_htr_workers_projects',
-                        'label' => __('housingmovements::lang.crud_htr_workers_projects'),
+                        'value' => 'housingmovements.workers',
+                        'label' => __('housingmovements::lang.view_workers'),
                         'default' => false,
                     ],
                     [
@@ -94,15 +95,10 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                   
-
-
-
                 ]
 
             ],
         ];
-       
     }
 
     /**
