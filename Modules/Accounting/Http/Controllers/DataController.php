@@ -57,15 +57,67 @@ class DataController extends Controller
                 'group_name' => __('accounting::lang.accounting'),
                 'group_permissions' =>[
                     [
-                        'value' => 'accounting.access_accounting_module',
-                        'label' => __('accounting::lang.access_accounting_module'),
+                        'value' => 'accounting.accounting_dashboard',
+                        'label' => __('accounting::lang.accounting_dashboard'),
+                        'default' => false
+                    ],
+                    
+                    [
+                        'value' => 'accounting.chart_of_accounts',
+                        'label' => __('accounting::lang.chart_of_accounts'),
                         'default' => false
                     ],
                     [
-                        'value' => 'accounting.manage_accounts',
-                        'label' => __('accounting::lang.manage_accounts'),
+                        'value' => 'accounting.cost_center',
+                        'label' => __('accounting::lang.cost_center'),
                         'default' => false
                     ],
+                    [
+                        'value' => 'accounting.opening_balances',
+                        'label' => __('accounting::lang.opening_balances'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.receipt_vouchers',
+                        'label' => __('accounting::lang.receipt_vouchers'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.payment_vouchers',
+                        'label' => __('accounting::lang.payment_vouchers'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.journal_entry',
+                        'label' => __('accounting::lang.journal_entry'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.automatedMigration',
+                        'label' => __('accounting::lang.automatedMigration'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.transfer',
+                        'label' => __('accounting::lang.transfer'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.transactions',
+                        'label' => __('accounting::lang.transactions'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.reports',
+                        'label' => __('accounting::lang.reports'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.settings',
+                        'label' => __('accounting::lang.settings'),
+                        'default' => false
+                    ],
+                      
                     [
                         'value' => 'accounting.view_journal',
                         'label' => __('accounting::lang.view_journal'),

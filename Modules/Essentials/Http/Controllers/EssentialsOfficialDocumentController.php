@@ -123,7 +123,7 @@ class EssentialsOfficialDocumentController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);
+        $query = User::whereIn('user_type', ['employee', 'worker', 'manager']);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as
  full_name"))->get();

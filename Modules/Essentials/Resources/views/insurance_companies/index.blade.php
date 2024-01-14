@@ -76,6 +76,7 @@
                         <table class="table table-bordered table-striped" id="insurance_companies_table">
                             <thead>
                                 <tr>
+                                   <th>@lang('essentials::lang.id')</th>
                                     <th>@lang('essentials::lang.business_name')</th>
                                     <th>@lang('essentials::lang.insurance_company')</th>
                                     <th>@lang('essentials::lang.city')</th>
@@ -252,7 +253,11 @@
                     // }
                 },
 
-                columns: [{
+                columns: [
+                    {
+                        data: 'id'
+                    },
+                    {
                         data: 'name'
                     },
                     {

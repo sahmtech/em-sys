@@ -91,7 +91,7 @@ class CustomAdminSidebarMenu
             $this->crmMenu();
         } elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        } elseif (Str::startsWith($currentPath, ['helpdesk','tickets'])) {
+        } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
@@ -506,21 +506,22 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-            $menu->url(
-                route('essentials_word_cards_dashboard'),
-                __('essentials::lang.work_cards'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_dashboard'],
-            );
+            if ($is_admin  || auth()->user()->can('essentials.essentials_work_cards_dashboard')) {
+                $menu->url(
+                    route('essentials_word_cards_dashboard'),
+                    __('essentials::lang.work_cards'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_dashboard'],
+                );
+            }
 
             if ($is_admin  || auth()->user()->can('essentials.crud_workcards_request')) {
 
-            $menu->url(
-                route('work_cards_all_requests'),
-                __('essentials::lang.workcards_allrequest'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
-            );
-
-        }
+                $menu->url(
+                    route('work_cards_all_requests'),
+                    __('essentials::lang.workcards_allrequest'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_all_requests'],
+                );
+            }
 
 
             // $menu->url(
@@ -530,15 +531,14 @@ class CustomAdminSidebarMenu
             // );
 
 
+            if ($is_admin  || auth()->user()->can('essentials.work_cards_operation')) {
 
-
-            $menu->url(
-                route('work_cards_operation'),
-                __('essentials::lang.work_cards_operation'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
-            );
-
-
+                $menu->url(
+                    route('work_cards_operation'),
+                    __('essentials::lang.work_cards_operation'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_operation'],
+                );
+            }
 
             if ($is_admin || auth()->user()->can('essentials.renewal_residence')) {
                 $menu->url(
@@ -614,7 +614,7 @@ class CustomAdminSidebarMenu
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
-            if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs')) {
+            if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs_dashboard')) {
                 // $menu->url(
                 //     route('employees'),
                 //     __('essentials::lang.employees_affairs'),
@@ -635,66 +635,79 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_dashboard'],
                 );
 
-                $menu->url(
-                    route('employees'),
-                    __('essentials::lang.employees'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employees'],
-                );
+                if ($is_admin  || auth()->user()->can('essentials.crud_import_employee')) {
+                    $menu->url(
+                        route('employees'),
+                        __('essentials::lang.employees'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employees'],
+                    );
+                }
 
-                $menu->url(
-                    route('appointments'),
-                    __('essentials::lang.appointment'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'appointments'],
-                );
+                if ($is_admin  || auth()->user()->can('essentials.crud_employee_appointments')) {
+                    $menu->url(
+                        route('appointments'),
+                        __('essentials::lang.appointment'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'appointments'],
+                    );
+                }
 
-                $menu->url(
-                    route('admissionToWork'),
-                    __('essentials::lang.admissions_to_work'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'admissions_to_work'],
-                );
+                if ($is_admin  || auth()->user()->can('essentials.crud_employee_work_adminitions')) {
+                    $menu->url(
+                        route('admissionToWork'),
+                        __('essentials::lang.admissions_to_work'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'admissions_to_work'],
+                    );
+                }
+                if ($is_admin  || auth()->user()->can('essentials.crud_employee_contracts')) {
+                    $menu->url(
+                        route('employeeContracts'),
+                        __('essentials::lang.employee_contracts'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_contracts'],
+                    );
+                }
 
-                $menu->url(
-                    route('employeeContracts'),
-                    __('essentials::lang.employee_contracts'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_contracts'],
-                );
+                if ($is_admin  || auth()->user()->can('essentials.crud_employee_qualifications')) {
+                    $menu->url(
+                        route('qualifications'),
+                        __('essentials::lang.qualifications'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'qualifications'],
+                    );
+                }
+                if ($is_admin  || auth()->user()->can('essentials.crud_official_documents')) {
+                    $menu->url(
+                        route('official_documents'),
+                        __('essentials::lang.official_documents'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
+                    );
+                }
+                if ($is_admin  || auth()->user()->can('essentials.crud_employee_families')) {
+                    $menu->url(
+                        route('employee_families'),
+                        __('essentials::lang.employee_families'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_families'],
+                    );
+                }
+                if ($is_admin  || auth()->user()->can('essentials.crud_employee_features')) {
+                    $menu->url(
+                        route('featureIndex'),
+                        __('essentials::lang.features'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'features'],
+                    );
+                }
 
-                $menu->url(
-                    route('qualifications'),
-                    __('essentials::lang.qualifications'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'qualifications'],
-                );
-
-                $menu->url(
-                    route('official_documents'),
-                    __('essentials::lang.official_documents'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'official_documents'],
-                );
-
-                $menu->url(
-                    route('employee_families'),
-                    __('essentials::lang.employee_families'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_families'],
-                );
-
-                $menu->url(
-                    route('featureIndex'),
-                    __('essentials::lang.features'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'features'],
-                );
-
-                $menu->url(
-                    route('import-employees'),
-                    __('essentials::lang.import_employees'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import'],
-                );
-
-             if ($is_admin  || auth()->user()->can('essentials.view_import_employees_familiy')) {
-                $menu->url(
-                    route('import-employees-familiy'),
-                    __('essentials::lang.import_employees_families'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import_employees_families'],
-                );
+                if ($is_admin  || auth()->user()->can('essentials.crud_import_employee')) {
+                    $menu->url(
+                        route('import-employees'),
+                        __('essentials::lang.import_employees'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import'],
+                    );
+                }
+                if ($is_admin  || auth()->user()->can('essentials.view_import_employees_familiy')) {
+                    $menu->url(
+                        route('import-employees-familiy'),
+                        __('essentials::lang.import_employees_families'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import_employees_families'],
+                    );
                 }
             }
         });
@@ -707,7 +720,9 @@ class CustomAdminSidebarMenu
             $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
             if ($is_admin  || auth()->user()->can('essentials.essentials_dashboard')) {
                 $menu->url(
                     route('essentials_landing'),
@@ -734,6 +749,17 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('essentials.view_all_essentials_workers')) {
+                //workers:
+                $menu->url(
+                    route('get-essentials-workers'),
+                    __('essentials::lang.workers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'essentailsworkers' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
+
+
             if ($is_admin  || auth()->user()->can('essentials.crud_HR_requests')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
@@ -743,6 +769,7 @@ class CustomAdminSidebarMenu
             }
             //employee reports 
             if ($is_admin  || auth()->user()->can('essentials.employees_reports_view')) {
+
                 $menu->dropdown(
                     __('essentials::lang.reports'),
                     function ($sub) use ($enabled_modules) {
@@ -869,13 +896,13 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('essentials.crud_import_employee')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
-                    __('essentials::lang.import_employees'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import-employees'],
-                );
-            }
+            // if ($is_admin  || auth()->user()->can('essentials.crud_import_employee')) {
+            //     $menu->url(
+            //         action([\Modules\Essentials\Http\Controllers\EssentialsEmployeeImportController::class, 'index']),
+            //         __('essentials::lang.import_employees'),
+            //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'import-employees'],
+            //     );
+            // }
 
             if ($is_admin  || auth()->user()->can('essentials.curd_organizational_structure')) {
                 $menu->url(
@@ -1155,18 +1182,19 @@ class CustomAdminSidebarMenu
                 __('home.home'),
                 ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']
             );
-            $menu->url(
-                action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
-                __('housingmovements::lang.housing_move'),
+            if ($is_admin || auth()->user()->can('housingmovements.housing_move_dashbord')) {
+                $menu->url(
+                    action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index']),
+                    __('housingmovements::lang.housing_move'),
 
-                [
-                    'icon' => 'fa fas fa-users',
-                    'active' => request()->segment(1) == 'housingmovements',
+                    [
+                        'icon' => 'fa fas fa-users',
+                        'active' => request()->segment(1) == 'housingmovements',
 
-                ]
-            );
-
-            if ($is_admin  || auth()->user()->can('housingmovements.crud_requests')) {
+                    ]
+                );
+            }
+            if ($is_admin  || auth()->user()->can('housingmovements.crud_htr_requests')) {
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\RequestController::class, 'index']),
                     __('housingmovements::lang.requests'),
@@ -1190,7 +1218,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('housingmovements.crud_rooms')) {
+            if ($is_admin  || auth()->user()->can('housingmovements.workers')) {
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'index']),
                     __('housingmovements::lang.workers'),
@@ -1228,7 +1256,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if (false && ($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
+            if (($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
 
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
@@ -1257,91 +1285,127 @@ class CustomAdminSidebarMenu
             // //$menu->header("");
 
             // //$menu->header("");
-            $menu->url(
-                action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
-                __('accounting::lang.accounting'),
-                [
-                    'icon' => 'fas fa-money-check fa',
-                    'style' => config('app.env') == 'demo' ? 'background-color: #D483D9;' : '',
-                    'active' => request()->segment(1) == 'accounting'
-                ]
-            );
+            if (($is_admin  || auth()->user()->can('accounting.accounting_dashboard'))) {
 
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
-                __('accounting::lang.chart_of_accounts'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'chart-of-accounts']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index']),
-                __('accounting::lang.cost_center'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
-                __('accounting::lang.opening_balances'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index']),
-                __('accounting::lang.receipt_vouchers'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'receipt_vouchers']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index']),
-                __('accounting::lang.payment_vouchers'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'payment_vouchers']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index']),
-                __('accounting::lang.journal_entry'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
-            );
-            if ($is_admin  || auth()->user()->can('accounting.crud_requests'))
-                { 
-                    $menu->url(
+                $menu->url(
+                    action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
+                    __('accounting::lang.accounting'),
+                    [
+                        'icon' => 'fas fa-money-check fa',
+                        'style' => config('app.env') == 'demo' ? 'background-color: #D483D9;' : '',
+                        'active' => request()->segment(1) == 'accounting'
+                    ]
+                );
+            }
+            if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
 
-                        action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
-                        __('accounting::lang.requests'),
-                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
-                    );
-                }
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
+                    __('accounting::lang.chart_of_accounts'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'chart-of-accounts']
+                );
+            }
+            if (($is_admin  || auth()->user()->can('accounting.cost_center'))) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index']),
+                    __('accounting::lang.cost_center'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
+                );
+            }
+            if (($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
+                    __('accounting::lang.opening_balances'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
+                );
+            }
+            if (($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index']),
+                    __('accounting::lang.receipt_vouchers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'receipt_vouchers']
+                );
+            }
+            if (($is_admin  || auth()->user()->can('accounting.payment_vouchers'))) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index']),
+                    __('accounting::lang.payment_vouchers'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'payment_vouchers']
+                );
+            }
+            if (($is_admin  || auth()->user()->can('accounting.journal_entry'))) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index']),
+                    __('accounting::lang.journal_entry'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
+                );
+            }
+
+            if ($is_admin  || auth()->user()->can('accounting.crud_requests')) {
+                $menu->url(
+
+                    action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
+                    __('accounting::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
+                );
+            }
 
 
 
 
+            if ($is_admin  || auth()->user()->can('accounting.automatedMigration')) {
 
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
-                __('accounting::lang.automatedMigration'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'automated-migration']
-            );
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\AutomatedMigrationController::class, 'index']),
+                    __('accounting::lang.automatedMigration'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'automated-migration']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.transfer')) {
 
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
-                __('accounting::lang.transfer'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transfer']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index']),
-                __('accounting::lang.transactions'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
-                __('accounting::lang.budget'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'budget']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index']),
-                __('accounting::lang.reports'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'reports']
-            );
-            $menu->url(
-                action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
-                __('messages.settings'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
-            );
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\TransferController::class, 'index']),
+                    __('accounting::lang.transfer'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transfer']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.transactions')) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\TransactionController::class, 'index']),
+                    __('accounting::lang.transactions'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.budget')) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
+                    __('accounting::lang.budget'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'budget']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.reports')) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\ReportController::class, 'index']),
+                    __('accounting::lang.reports'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'reports']
+                );
+            }
+            if ($is_admin  || auth()->user()->can('accounting.settings')) {
+
+                $menu->url(
+                    action([\Modules\Accounting\Http\Controllers\SettingsController::class, 'index']),
+                    __('messages.settings'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'settings']
+                );
+            }
         });
     }
 

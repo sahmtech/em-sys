@@ -624,7 +624,7 @@
             var data = users_table.row(this).data();
             console.log(data);
             if (data) {
-                window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data.id);
+                window.location = '{{ route('showEmployee', ['id' => ':id']) }}'.replace(':id', data.id);
             }
         });
 

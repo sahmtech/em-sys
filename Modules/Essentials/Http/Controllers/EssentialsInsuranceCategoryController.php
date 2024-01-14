@@ -65,7 +65,7 @@ class EssentialsInsuranceCategoryController extends Controller
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->where('name',"LIKE", "%{$keyword}%");
                 })
-                ->removeColumn('id')
+             
                 ->rawColumns(['action'])
                 ->make(true);
         }
