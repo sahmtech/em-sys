@@ -371,7 +371,14 @@ class DataController extends Controller
             ];
         }
 
-        return $permissions;
+        return [
+            [
+                'group_name' => __('crm::lang.crm'),
+                'group_permissions' =>$permissions,
+                
+            ],
+        ];
+        
     }
 
     /**

@@ -206,459 +206,466 @@ class DataController extends Controller
     {
         return [
             [
-                'value' => 'essentials.crud_leave_type',
-                'label' => __('essentials::lang.crud_leave_type'),
-                'default' => false,
+                'group_name' => __('essentials::lang.essentials'),
+                'group_permissions' =>[
+                    [
+                        'value' => 'essentials.crud_leave_type',
+                        'label' => __('essentials::lang.crud_leave_type'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_all_leave',
+                        'label' => __('essentials::lang.crud_all_leave'),
+                        'default' => false,
+                        'is_radio' => true,
+                        'radio_input_name' => 'leave_crud',
+                    ],
+                    [
+                        'value' => 'essentials.crud_own_leave',
+                        'label' => __('essentials::lang.crud_own_leave'),
+                        'default' => false,
+                        'is_radio' => true,
+                        'radio_input_name' => 'leave_crud',
+                    ],
+                    [
+                        'value' => 'essentials.approve_leave',
+                        'label' => __('essentials::lang.approve_leave'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_all_attendance',
+                        'label' => __('essentials::lang.crud_all_attendance'),
+                        'default' => false,
+                        'is_radio' => true,
+                        'radio_input_name' => 'attendance_crud',
+                    ],
+                    [
+                        'value' => 'essentials.view_own_attendance',
+                        'label' => __('essentials::lang.view_own_attendance'),
+                        'default' => false,
+                        'is_radio' => true,
+                        'radio_input_name' => 'attendance_crud',
+                    ],
+                    [
+                        'value' => 'essentials.allow_users_for_attendance_from_web',
+                        'label' => __('essentials::lang.allow_users_for_attendance_from_web'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.allow_users_for_attendance_from_api',
+                        'label' => __('essentials::lang.allow_users_for_attendance_from_api'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_allowance_and_deduction',
+                        'label' => __('essentials::lang.view_pay_component'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_allowance_and_deduction',
+                        'label' => __('essentials::lang.add_pay_component'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_department',
+                        'label' => __('essentials::lang.crud_department'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_designation',
+                        'label' => __('essentials::lang.crud_designation'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.view_all_payroll',
+                        'label' => __('essentials::lang.view_all_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.create_payroll',
+                        'label' => __('essentials::lang.add_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.update_payroll',
+                        'label' => __('essentials::lang.edit_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_payroll',
+                        'label' => __('essentials::lang.delete_payroll'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.assign_todos',
+                        'label' => __('essentials::lang.assign_todos'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_todos',
+                        'label' => __('essentials::lang.add_todos'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.toDo_dash',
+                        'label' => __('essentials::lang.toDo_dash'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_todos',
+                        'label' => __('essentials::lang.edit_todos'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_todos',
+                        'label' => __('essentials::lang.delete_todos'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.create_message',
+                        'label' => __('essentials::lang.create_message'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_message',
+                        'label' => __('essentials::lang.view_message'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_employee_settings',
+                        'label' => __('essentials::lang.view_employee_settings'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.access_sales_target',
+                        'label' => __('essentials::lang.access_sales_target'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_user_travel_categorie',
+                        'label' => __('essentials::lang.view_user_travel_categorie'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_holidays',
+                        'label' => __('essentials::lang.crud_holidays'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_countries',
+                        'label' => __('essentials::lang.crud_countries'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_cities',
+                        'label' => __('essentials::lang.crud_cities'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_allowances',
+                        'label' => __('essentials::lang.crud_allowances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_bank_accounts',
+                        'label' => __('essentials::lang.crud_bank_accounts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_organizational_structure',
+                        'label' => __('essentials::lang.crud_Organizational_Chart'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.crud_contract_types',
+                        'label' => __('essentials::lang.crud_contract_types'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_all_roles',
+                        'label' => __('essentials::lang.crud_all_roles'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_employees',
+                        'label' => __('essentials::lang.view_employees'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_official_documents',
+                        'label' => __('essentials::lang.crud_official_documents'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.crud_import_employee',
+                        'label' => __('essentials::lang.crud_import_employee'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_insurance_companies',
+                        'label' => __('essentials::lang.crud_insurance_companies'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_facilities_management',
+                        'label' => __('essentials::lang.view_facilities_management'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_insurance_contracts',
+                        'label' => __('essentials::lang.crud_insurance_contracts'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.crud_employee_appointments',
+                        'label' => __('essentials::lang.crud_employee_appointments'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_employee_work_adminitions',
+                        'label' => __('essentials::lang.crud_employee_work_adminitions'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_employee_contracts',
+                        'label' => __('essentials::lang.crud_employee_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_employee_qualifications',
+                        'label' => __('essentials::lang.crud_employee_qualifications'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.crud_employee_features',
+                        'label' => __('essentials::lang.crud_employee_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_employee_families',
+                        'label' => __('essentials::lang.crud_employee_families'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.crud_employees_insurances',
+                        'label' => __('essentials::lang.crud_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_regions',
+                        'label' => __('essentials::lang.crud_regions'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_profile_picture',
+                        'label' => __('essentials::lang.view_profile_picture'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_all_procedures',
+                        'label' => __('essentials::lang.crud_all_procedures'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_HR_requests',
+                        'label' => __('essentials::lang.crud_HR_requests'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.employees_reports_view',
+                        'label' => __('essentials::lang.employees_reports_view'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.employees_information_report',
+                        'label' => __('essentials::lang.employees_information_report'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.curd_wishes',
+                        'label' => __('essentials::lang.curd_wishes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_attendances_status',
+                        'label' => __('essentials::lang.crud_attendances_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_work_cards',
+                        'label' => __('essentials::lang.view_work_cards'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.work_cards_all_requests',
+                        'label' => __('essentials::lang.workcards_allrequest'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_workcards_request',
+                        'label' => __('essentials::lang.crud_workcards_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.work_cards_vaction_requests',
+                        'label' => __('essentials::lang.work_cards_vaction_requests'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.work_cards_operation',
+                        'label' => __('essentials::lang.work_cards_operation'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.renewal_residence',
+                        'label' => __('essentials::lang.renewal_residence'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.residencyreports',
+                        'label' => __('essentials::lang.residencyreports'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.facilities_management',
+                        'label' => __('essentials::lang.facilities_management'),
+                        'default' => false,
+                    ],
+                   
+                    [
+                        'value' => 'essentials.carTypes',
+                        'label' => __('housingmovements::lang.carTypes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.carModels',
+                        'label' => __('housingmovements::lang.carModels'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.cars',
+                        'label' => __('housingmovements::lang.cars'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.car_drivers',
+                        'label' => __('housingmovements::lang.car_drivers'),
+                        'default' => false,
+                    ],
+        
+                    
+                    [
+                        'value' => 'essentials.movement_management',
+                        'label' => __('housingmovements::lang.movement_management_dashbord'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.carsChangeOil',
+                        'label' => __('housingmovements::lang.carsChangeOil'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.carMaintenances',
+                        'label' => __('housingmovements::lang.carMaintenances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.report',
+                        'label' => __('housingmovements::lang.report'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.carsChangeOilReport',
+                        'label' => __('housingmovements::lang.carsChangeOilReport'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.carMaintenancesReport',
+                        'label' => __('housingmovements::lang.carMaintenancesReport'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.curd_contracts_end_reasons',
+                        'label' => __('essentials::lang.contracts_end_reasons'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_all_leave',
+                        'label' => __('essentials::lang.system_settings'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.curd_organizational_structure',
+                        'label' => __('essentials::lang.organizational_structure'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.essentials',
+                        'label' => __('essentials::lang.essentials'),
+                        'default' => false,
+                    ],
+        
+        
+                    [
+                        'value' => 'essentials.crud_essentials_recuirements_requests',
+                        'label' => __('essentials::lang.crud_essentials_recuirements_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.essentials_dashboard',
+                        'label' => __('essentials::lang.essentials_dashboard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.essentials_work_cards_dashboard',
+                        'label' => __('essentials::lang.essentials_work_cards_dashboard'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_employee_affairs',
+                        'label' => __('essentials::lang.view_employee_affairs'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_medical_insurance',
+                        'label' => __('essentials::lang.view_medical_insurance'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.crud_insurance_requests',
+                        'label' => __('essentials::lang.crud_insurance_requests'),
+                        'default' => false,
+                    ],
+        
+                    [
+                        'value' => 'essentials.view_import_employees_familiy',
+                        'label' => __('essentials::lang.view_import_employees_familiy'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_import_employees_insurance',
+                        'label' => __('essentials::lang.view_import_employees_insurance'),
+                        'default' => false,
+                    ],
+                    
+                ]
+                
             ],
-            [
-                'value' => 'essentials.crud_all_leave',
-                'label' => __('essentials::lang.crud_all_leave'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'leave_crud',
-            ],
-            [
-                'value' => 'essentials.crud_own_leave',
-                'label' => __('essentials::lang.crud_own_leave'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'leave_crud',
-            ],
-            [
-                'value' => 'essentials.approve_leave',
-                'label' => __('essentials::lang.approve_leave'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_all_attendance',
-                'label' => __('essentials::lang.crud_all_attendance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'attendance_crud',
-            ],
-            [
-                'value' => 'essentials.view_own_attendance',
-                'label' => __('essentials::lang.view_own_attendance'),
-                'default' => false,
-                'is_radio' => true,
-                'radio_input_name' => 'attendance_crud',
-            ],
-            [
-                'value' => 'essentials.allow_users_for_attendance_from_web',
-                'label' => __('essentials::lang.allow_users_for_attendance_from_web'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.allow_users_for_attendance_from_api',
-                'label' => __('essentials::lang.allow_users_for_attendance_from_api'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_allowance_and_deduction',
-                'label' => __('essentials::lang.view_pay_component'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.add_allowance_and_deduction',
-                'label' => __('essentials::lang.add_pay_component'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_department',
-                'label' => __('essentials::lang.crud_department'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_designation',
-                'label' => __('essentials::lang.crud_designation'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.view_all_payroll',
-                'label' => __('essentials::lang.view_all_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.create_payroll',
-                'label' => __('essentials::lang.add_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.update_payroll',
-                'label' => __('essentials::lang.edit_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.delete_payroll',
-                'label' => __('essentials::lang.delete_payroll'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.assign_todos',
-                'label' => __('essentials::lang.assign_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.add_todos',
-                'label' => __('essentials::lang.add_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.toDo_dash',
-                'label' => __('essentials::lang.toDo_dash'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.edit_todos',
-                'label' => __('essentials::lang.edit_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.delete_todos',
-                'label' => __('essentials::lang.delete_todos'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.create_message',
-                'label' => __('essentials::lang.create_message'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_message',
-                'label' => __('essentials::lang.view_message'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_employee_settings',
-                'label' => __('essentials::lang.view_employee_settings'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.access_sales_target',
-                'label' => __('essentials::lang.access_sales_target'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_user_travel_categorie',
-                'label' => __('essentials::lang.view_user_travel_categorie'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_holidays',
-                'label' => __('essentials::lang.crud_holidays'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_countries',
-                'label' => __('essentials::lang.crud_countries'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_cities',
-                'label' => __('essentials::lang.crud_cities'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_allowances',
-                'label' => __('essentials::lang.crud_allowances'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_bank_accounts',
-                'label' => __('essentials::lang.crud_bank_accounts'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_organizational_structure',
-                'label' => __('essentials::lang.crud_Organizational_Chart'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.crud_contract_types',
-                'label' => __('essentials::lang.crud_contract_types'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_all_roles',
-                'label' => __('essentials::lang.crud_all_roles'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_employees',
-                'label' => __('essentials::lang.view_employees'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_official_documents',
-                'label' => __('essentials::lang.crud_official_documents'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.crud_import_employee',
-                'label' => __('essentials::lang.crud_import_employee'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_insurance_companies',
-                'label' => __('essentials::lang.crud_insurance_companies'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_facilities_management',
-                'label' => __('essentials::lang.view_facilities_management'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_insurance_contracts',
-                'label' => __('essentials::lang.crud_insurance_contracts'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.crud_employee_appointments',
-                'label' => __('essentials::lang.crud_employee_appointments'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_employee_work_adminitions',
-                'label' => __('essentials::lang.crud_employee_work_adminitions'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_employee_contracts',
-                'label' => __('essentials::lang.crud_employee_contracts'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_employee_qualifications',
-                'label' => __('essentials::lang.crud_employee_qualifications'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.crud_employee_features',
-                'label' => __('essentials::lang.crud_employee_features'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_employee_families',
-                'label' => __('essentials::lang.crud_employee_families'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.crud_employees_insurances',
-                'label' => __('essentials::lang.crud_employees_insurances'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_regions',
-                'label' => __('essentials::lang.crud_regions'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_profile_picture',
-                'label' => __('essentials::lang.view_profile_picture'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_all_procedures',
-                'label' => __('essentials::lang.crud_all_procedures'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_HR_requests',
-                'label' => __('essentials::lang.crud_HR_requests'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.employees_reports_view',
-                'label' => __('essentials::lang.employees_reports_view'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.employees_information_report',
-                'label' => __('essentials::lang.employees_information_report'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.curd_wishes',
-                'label' => __('essentials::lang.curd_wishes'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_attendances_status',
-                'label' => __('essentials::lang.crud_attendances_status'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_work_cards',
-                'label' => __('essentials::lang.view_work_cards'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.work_cards_all_requests',
-                'label' => __('essentials::lang.workcards_allrequest'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_workcards_request',
-                'label' => __('essentials::lang.crud_workcards_request'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.work_cards_vaction_requests',
-                'label' => __('essentials::lang.work_cards_vaction_requests'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.work_cards_operation',
-                'label' => __('essentials::lang.work_cards_operation'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.renewal_residence',
-                'label' => __('essentials::lang.renewal_residence'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.residencyreports',
-                'label' => __('essentials::lang.residencyreports'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.facilities_management',
-                'label' => __('essentials::lang.facilities_management'),
-                'default' => false,
-            ],
-           
-            [
-                'value' => 'essentials.carTypes',
-                'label' => __('housingmovements::lang.carTypes'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.carModels',
-                'label' => __('housingmovements::lang.carModels'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.cars',
-                'label' => __('housingmovements::lang.cars'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.car_drivers',
-                'label' => __('housingmovements::lang.car_drivers'),
-                'default' => false,
-            ],
-
-            
-            [
-                'value' => 'essentials.movement_management',
-                'label' => __('housingmovements::lang.movement_management_dashbord'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.carsChangeOil',
-                'label' => __('housingmovements::lang.carsChangeOil'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.carMaintenances',
-                'label' => __('housingmovements::lang.carMaintenances'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.report',
-                'label' => __('housingmovements::lang.report'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.carsChangeOilReport',
-                'label' => __('housingmovements::lang.carsChangeOilReport'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.carMaintenancesReport',
-                'label' => __('housingmovements::lang.carMaintenancesReport'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.curd_contracts_end_reasons',
-                'label' => __('essentials::lang.contracts_end_reasons'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_all_leave',
-                'label' => __('essentials::lang.system_settings'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.curd_organizational_structure',
-                'label' => __('essentials::lang.organizational_structure'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.essentials',
-                'label' => __('essentials::lang.essentials'),
-                'default' => false,
-            ],
-
-
-            [
-                'value' => 'essentials.crud_essentials_recuirements_requests',
-                'label' => __('essentials::lang.crud_essentials_recuirements_requests'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.essentials_dashboard',
-                'label' => __('essentials::lang.essentials_dashboard'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.essentials_work_cards_dashboard',
-                'label' => __('essentials::lang.essentials_work_cards_dashboard'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_employee_affairs',
-                'label' => __('essentials::lang.view_employee_affairs'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_medical_insurance',
-                'label' => __('essentials::lang.view_medical_insurance'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.crud_insurance_requests',
-                'label' => __('essentials::lang.crud_insurance_requests'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'essentials.view_import_employees_familiy',
-                'label' => __('essentials::lang.view_import_employees_familiy'),
-                'default' => false,
-            ],
-            [
-                'value' => 'essentials.view_import_employees_insurance',
-                'label' => __('essentials::lang.view_import_employees_insurance'),
-                'default' => false,
-            ],
-            
         ];
+       
     }
 
     /**

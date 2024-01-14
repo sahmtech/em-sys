@@ -30,77 +30,84 @@ class DataController extends Controller
     {
         return [
             [
-                'value' => 'housingmovements.view_htr_dashboard',
-                'label' => __('housingmovements::lang.view_htr_dashboard'),
-                'default' => false,
+                'group_name' => __('housingmovements::lang.housingmovements'),
+                'group_permissions' => [
+                    [
+                        'value' => 'housingmovements.view_htr_dashboard',
+                        'label' => __('housingmovements::lang.view_htr_dashboard'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'housingmovements.crud_buildings',
+                        'label' => __('housingmovements::lang.crud_buildings'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.crud_requests',
+                        'label' => __('housingmovements::lang.crud_requests'),
+                        'default' => false,
+                    ],
+
+
+                    [
+                        'value' => 'housingmovements.crud_rooms',
+                        'label' => __('housingmovements::lang.crud_rooms'),
+                        'default' => false,
+                    ],
+
+
+
+                    [
+                        'value' => 'housingmovements.crud_facilities',
+                        'label' => __('housingmovements::lang.crud_facilities'),
+                        'default' => false,
+                    ],
+
+
+                    [
+                        'value' => 'housingmovements.crud_htr_requests',
+                        'label' => __('housingmovements::lang.crud_htr_requests'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'housingmovements.crud_htr_workers_projects',
+                        'label' => __('housingmovements::lang.crud_htr_workers_projects'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.all_workers',
+                        'label' => __('housingmovements::lang.all_workers_view'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'housingmovements.crud_htr_trevelers',
+                        'label' => __('housingmovements::lang.crud_htr_trevelers'),
+                        'default' => false,
+                    ],
+
+
+                    [
+                        'value' => 'housingmovements.crud_htr_housed_trevelers',
+                        'label' => __('housingmovements::lang.crud_htr_housed_trevelers'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'housingmovements.view_building_management',
+                        'label' => __('housingmovements::lang.view_building_management'),
+                        'default' => false,
+                    ],
+
+
+
+                ]
+
             ],
-
-            [
-                'value' => 'housingmovements.crud_buildings',
-                'label' => __('housingmovements::lang.crud_buildings'),
-                'default' => false,
-            ],
-            [
-                'value' => 'housingmovements.crud_requests',
-                'label' => __('housingmovements::lang.crud_requests'),
-                'default' => false,
-            ],
-
-
-            [
-                'value' => 'housingmovements.crud_rooms',
-                'label' => __('housingmovements::lang.crud_rooms'),
-                'default' => false,
-            ],
-
-
-
-            [
-                'value' => 'housingmovements.crud_facilities',
-                'label' => __('housingmovements::lang.crud_facilities'),
-                'default' => false,
-            ],
-
-
-            [
-                'value' => 'housingmovements.crud_htr_requests',
-                'label' => __('housingmovements::lang.crud_htr_requests'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_workers_projects',
-                'label' => __('housingmovements::lang.crud_htr_workers_projects'),
-                'default' => false,
-            ],
-            [
-                'value' => 'housingmovements.all_workers',
-                'label' => __('housingmovements::lang.all_workers_view'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.crud_htr_trevelers',
-                'label' => __('housingmovements::lang.crud_htr_trevelers'),
-                'default' => false,
-            ],
-
-
-            [
-                'value' => 'housingmovements.crud_htr_housed_trevelers',
-                'label' => __('housingmovements::lang.crud_htr_housed_trevelers'),
-                'default' => false,
-            ],
-
-            [
-                'value' => 'housingmovements.view_building_management',
-                'label' => __('housingmovements::lang.view_building_management'),
-                'default' => false,
-            ],
-
-
-
         ];
+       
     }
 
     /**

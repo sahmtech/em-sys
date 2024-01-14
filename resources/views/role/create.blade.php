@@ -13,12 +13,16 @@
         @php
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
         @endphp
-        @component('components.widget', ['class' => 'box-primary'])
+        @component('components.widget', )
             {!! Form::open([
                 'url' => action([\App\Http\Controllers\RoleController::class, 'store']),
                 'method' => 'post',
                 'id' => 'role_add_form',
             ]) !!}
+
+
+
+
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">

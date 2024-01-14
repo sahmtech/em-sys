@@ -142,10 +142,17 @@ class DataController extends Controller
     {
         return [
             [
-                'value' => 'superadmin.access_package_subscriptions',
-                'label' => __('superadmin::lang.access_package_subscriptions'),
-                'default' => false,
+                'group_name' => __('superadmin::lang.superadmin'),
+                'group_permissions' =>[
+                    [
+                        'value' => 'superadmin.access_package_subscriptions',
+                        'label' => __('superadmin::lang.access_package_subscriptions'),
+                        'default' => false,
+                    ],
+                ]
+                
             ],
         ];
+        
     }
 }
