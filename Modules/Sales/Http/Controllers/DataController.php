@@ -35,11 +35,11 @@ class DataController extends Controller
             [
                 'group_name' => __('sales::lang.sales'),
                 'group_permissions' =>[
-                    // [
-                    //     'value' => 'sales.sales_dashboard',
-                    //     'label' => __('sales::lang.dashboard'),
-                    //     'default' => false,
-                    // ],
+                    [
+                        'value' => 'sales.sales_dashboard',
+                        'label' => __('sales::lang.sales_dashboard'),
+                        'default' => false,
+                    ],
         
                     [
                         'value' => 'sales.crud_contacts',
@@ -47,20 +47,21 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.create_offer_price',
-                        'label' => __('sales::lang.create_offer_price'),
+                        'value' => 'sales.crud_sales_projects',
+                        'label' => __('sales::lang.crud_sales_projects'),
                         'default' => false,
-                    ],
+                    ],      
                     [
                         'value' => 'sales.crud_offer_price',
                         'label' => __('sales::lang.crud_offer_price'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.crud_contract',
-                        'label' => __('sales::lang.crud_contract'),
+                        'value' => 'sales.crud_contracts',
+                        'label' => __('sales::lang.crud_contracts'),
                         'default' => false,
                     ],
+                   
                     [
                         'value' => 'sales.crud_contract_itmes',
                         'label' => __('sales::lang.crud_contract_itmes'),
@@ -78,16 +79,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
         
-                    [
-                        'value' => 'sales.crud_follow_ups',
-                        'label' => __('sales::lang.crud_follow_ups'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'sales.crud_sales_projects',
-                        'label' => __('sales::lang.crud_sales_projects'),
-                        'default' => false,
-                    ],
+
                     [
                         'value' => 'sales.crud_requests',
                         'label' => __('sales::lang.crud_requests'),
@@ -113,11 +105,7 @@ class DataController extends Controller
                         'label' => __('sales::lang.crud_sales_costs'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'sales.crud_contracts',
-                        'label' => __('sales::lang.contracts'),
-                        'default' => false,
-                    ],
+                   
         
                     [
                         'value' => 'sales.crud_sales_salary_requests',

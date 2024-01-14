@@ -440,13 +440,13 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home', 'active' => request()->segment(1) == 'home']);
-            if ($is_admin  || auth()->user()->can('essentials.view_medical_insurance')) {
+           
                 $menu->url(
                     route('employee_insurance'),
                     __('essentials::lang.health_insurance'),
                     ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
                 );
-            }
+         
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
                 $menu->url(
                     route('insurance_contracts'),
@@ -949,7 +949,7 @@ class CustomAdminSidebarMenu
             //$menu->header("");
 
 
-            if ($is_admin  || auth()->user()->can('followup.contact_locations')) {
+            if ($is_admin  || auth()->user()->can('followup.crud_contact_locations')) {
                 $menu->url(
                     action([\App\Http\Controllers\ContactLocationController::class, 'index']),
                     __('followup::lang.contact_locations'),
@@ -957,40 +957,45 @@ class CustomAdminSidebarMenu
 
                 );
             }
-            if ($is_admin  || auth()->user()->can('followup.projects')) {
+            if ($is_admin  || auth()->user()->can('followup.crud_projects')) {
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index']), __('followup::lang.projects'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'projects2']);
             }
 
-            if ($is_admin  || auth()->user()->can('followup.workers')) {
+            if ($is_admin  || auth()->user()->can('followup.crud_workers')) {
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']), __('followup::lang.workers'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'workers']);
             }
-            if ($is_admin  || auth()->user()->can('followup.operation_orders')) {
+
+            if ($is_admin  || auth()->user()->can('followup.crud_operation_orders')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'operation_orders']);
             }
-            if ($is_admin  || auth()->user()->can('followup.requests')) {
+
+            if ($is_admin  || auth()->user()->can('followup.crud_requests')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'allRequests']);
             }
-            if ($is_admin  || auth()->user()->can('followup.recruitmentRequests')) {
+
+            if ($is_admin  || auth()->user()->can('followup.crud_recruitmentRequests')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRecruitmentRequestController::class, 'index']), __('followup::lang.recruitmentRequests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'recruitmentRequests']);
             }
-            if ($is_admin  || auth()->user()->can('followup.documents')) {
+
+            if ($is_admin  || auth()->user()->can('followup.crud_documents')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDocumentController::class, 'index']), __('followup::lang.documents'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents']);
             }
-            if ($is_admin  || auth()->user()->can('followup.document_delivery')) {
+
+            if ($is_admin  || auth()->user()->can('followup.crud_document_delivery')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowupDeliveryDocumentController::class, 'index']), __('followup::lang.document_delivery'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'documents-delivery']);
             }
 
-            if ($is_admin  || auth()->user()->can('followup.reports.projects') || auth()->user()->can('followup.reports.projectWorkers')) {
+            if ($is_admin  || auth()->user()->can('followup.crud_projectWorkersReports') || auth()->user()->can('followup.crud_projectsReports')) {
 
                 $menu->dropdown(
                     __('followup::lang.reports.title'),
                     function ($sub) use ($enabled_modules) {
-                        if (auth()->user()->can('followup.reports.projects')) {
+                        if (auth()->user()->can('followup.crud_projectsReports')) {
                             $sub->url(
                                 action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
                                 __('followup::lang.reports.projects'),
@@ -998,7 +1003,7 @@ class CustomAdminSidebarMenu
                             );
                         }
 
-                        if (auth()->user()->can('followup.reports.projectWorkers')) {
+                        if (auth()->user()->can('followup.crud_projectWorkersReports')) {
                             $sub->url(
                                 action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
                                 __('followup::lang.reports.projectWorkers'),
@@ -1010,7 +1015,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('followup.contrascts_wishes')) {
+            if ($is_admin  || auth()->user()->can('followup.crud_contrascts_wishes')) {
 
                 $menu->url(
                     action([\Modules\FollowUp\Http\Controllers\FollowUpContractsWishesController::class, 'index']),
@@ -1018,7 +1023,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'contracts_wishes']
                 );
             }
-            if ($is_admin  || auth()->user()->can('followup.shifts')) {
+            if ($is_admin  || auth()->user()->can('followup.crud_shifts')) {
 
                 $menu->url(
                     action([\Modules\FollowUp\Http\Controllers\ShiftController::class, 'index']),
@@ -1044,13 +1049,13 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-            // if ($is_admin || auth()->user()->can('sales.sales_dashboard')) {
+         
             $menu->url(
                 route('sales_landing'),
                 __('sales::lang.sales'),
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
             );
-            //  }
+           
             //$menu->header("");
             //$menu->header("");
             if ($is_admin || auth()->user()->can('sales.crud_contacts')) {

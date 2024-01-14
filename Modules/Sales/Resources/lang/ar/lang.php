@@ -360,6 +360,7 @@ return [
     'escalate_requests' => 'الطلبات المصعّدة',
     'requests_by_sequential' => 'الطلبات حسب التسلسل',
     'dashboard' => 'الصفحة الرئيسية للمبيعات',
+    'sales_dashboard'=>'الصفحة الرئيسية للمبيعات'
 
 
 
