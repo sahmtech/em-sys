@@ -1237,7 +1237,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if (false && ($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
+            if (($is_admin  || auth()->user()->can('housingmovements.crud_facilities'))) {
 
                 $menu->url(
                     action([\Modules\HousingMovements\Http\Controllers\FacitityController::class, 'index']),
@@ -1266,7 +1266,7 @@ class CustomAdminSidebarMenu
             // //$menu->header("");
 
             // //$menu->header("");
-            if (false && ($is_admin  || auth()->user()->can('accounting.accounting_dashboard'))) {
+            if (($is_admin  || auth()->user()->can('accounting.accounting_dashboard'))) {
 
                 $menu->url(
                     action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),
@@ -1278,7 +1278,7 @@ class CustomAdminSidebarMenu
                     ]
                 );
             }
-            if (false && ($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
+            if (($is_admin  || auth()->user()->can('accounting.chart_of_accounts'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\CoaController::class, 'index']),
@@ -1286,7 +1286,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'chart-of-accounts']
                 );
             }
-            if (false && ($is_admin  || auth()->user()->can('accounting.cost_center'))) {
+            if (($is_admin  || auth()->user()->can('accounting.cost_center'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\CostCenterController::class, 'index']),
@@ -1294,7 +1294,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'cost_centers']
                 );
             }
-            if (false && ($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
+            if (($is_admin  || auth()->user()->can('accounting.opening_balances'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\OpeningBalanceController::class, 'index']),
@@ -1302,7 +1302,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'opening_balances']
                 );
             }
-            if (false && ($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {
+            if (($is_admin  || auth()->user()->can('accounting.receipt_vouchers'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\ReceiptVouchersController::class, 'index']),
@@ -1310,7 +1310,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'receipt_vouchers']
                 );
             }
-            if (false && ($is_admin  || auth()->user()->can('accounting.payment_vouchers'))) {
+            if (($is_admin  || auth()->user()->can('accounting.payment_vouchers'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\PaymentVouchersController::class, 'index']),
@@ -1318,7 +1318,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'payment_vouchers']
                 );
             }
-            if (false && ($is_admin  || auth()->user()->can('accounting.journal_entry'))) {
+            if (($is_admin  || auth()->user()->can('accounting.journal_entry'))) {
 
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\JournalEntryController::class, 'index']),
