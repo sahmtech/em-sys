@@ -315,7 +315,7 @@ class HomeController extends Controller
             ['value' => 'housingmovements.housing_move_dashbord'],
         ];
         $movmentsPermissions = [
-            ['value' => 'essentials.movement_management'],
+            ['value' => 'essentials.movement_management_dashbord'],
         ];
         $internationalrelationsDashPermission = [
             ['value' => 'internationalrelations.internationalrelations_dashboard'],
