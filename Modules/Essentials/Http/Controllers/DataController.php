@@ -207,13 +207,13 @@ class DataController extends Controller
         return [
             [
                 'group_name' => __('essentials::lang.hrm'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'essentials.essentials_dashboard',
                         'label' => __('essentials::lang.essentials_dashboard'),
                         'default' => false,
                     ],
-                   
+
 
                     // [
                     //     'value' => 'essentials.crud_all_leave',
@@ -249,7 +249,7 @@ class DataController extends Controller
                         'is_radio' => true,
                         'radio_input_name' => 'attendance_crud',
                     ],
-                    
+
 
                     [
                         'value' => 'essentials.allow_users_for_attendance_from_web',
@@ -320,7 +320,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                     
+
                     [
                         'value' => 'essentials.curd_contracts_end_reasons',
                         'label' => __('essentials::lang.contracts_end_reasons'),
@@ -333,7 +333,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
+
                     [
                         'value' => 'essentials.crud_all_leave',
                         'label' => __('essentials::lang.crud_all_leave'),
@@ -346,13 +346,13 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
+
                     [
                         'value' => 'essentials.add_allowance_and_deduction',
                         'label' => __('essentials::lang.add_pay_component'),
                         'default' => false,
                     ],
-                  
+
                     [
                         'value' => 'essentials.crud_department',
                         'label' => __('essentials::lang.crud_department'),
@@ -363,7 +363,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_designation'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.view_all_payroll',
                         'label' => __('essentials::lang.view_all_payroll'),
@@ -384,7 +384,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_payroll'),
                         'default' => false,
                     ],
-                   
+
                     [
                         'value' => 'essentials.create_message',
                         'label' => __('essentials::lang.create_message'),
@@ -406,7 +406,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_document'),
                         'default' => false,
                     ],
-                    
+
                     [
                         'value' => 'essentials.view_memos',
                         'label' => __('essentials::lang.view_memos'),
@@ -423,14 +423,14 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_knowledge_base'),
                         'default' => false,
                     ],
-                    
-                    
+
+
                     [
                         'value' => 'essentials.view_employee_settings',
                         'label' => __('essentials::lang.view_employee_settings'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.access_sales_target',
                         'label' => __('essentials::lang.access_sales_target'),
@@ -466,7 +466,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_bank_accounts'),
                         'default' => false,
                     ],
-                         
+
                     [
                         'value' => 'essentials.crud_contract_types',
                         'label' => __('essentials::lang.crud_contract_types'),
@@ -477,7 +477,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_all_roles'),
                         'default' => false,
                     ],
-                   
+
 
                     [
                         'value' => 'essentials.crud_regions',
@@ -489,45 +489,45 @@ class DataController extends Controller
                         'label' => __('essentials::lang.organizational_structure'),
                         'default' => false,
                     ],
-                   
-                 
+
+
                     [
                         'value' => 'essentials.report',
                         'label' => __('essentials::lang.reports'),
                         'default' => false,
                     ],
-                   
-        
+
+
                     [
                         'value' => 'essentials.employees_information_report',
                         'label' => __('essentials::lang.employees_information_report'),
                         'default' => false,
                     ],
-                   
+
                     [
                         'value' => 'essentials.crud_attendances_status',
                         'label' => __('essentials::lang.crud_attendances_status'),
                         'default' => false,
                     ],
-                     
-                  
-                   
-                  
-                
-        
-                 
-                  
-                  
-                
-                   
-                    
+
+
+
+
+
+
+
+
+
+
+
+
                 ]
-                
+
             ],
             [
                 'group_name' => __('essentials::lang.essentials'),
-                'group_permissions' =>[
-                   [
+                'group_permissions' => [
+                    [
                         'value' => 'essentials.toDo_dash',
                         'label' => __('essentials::lang.toDo_dash'),
                         'default' => false,
@@ -542,7 +542,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_todos'),
                         'default' => false,
                     ],
-                   
+
                     [
                         'value' => 'essentials.edit_todos',
                         'label' => __('essentials::lang.edit_todos'),
@@ -553,20 +553,20 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_todos'),
                         'default' => false,
                     ],
-                   
-                   
+
+
                 ]
-                
+
             ],
             [
                 'group_name' => __('essentials::lang.health_insurance'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'essentials.medicalInsurance_dashboard',
                         'label' => __('essentials::lang.medicalInsurance_dashboard'),
                         'default' => false,
                     ],
-                 
+
                     [
                         'value' => 'essentials.crud_insurance_contracts',
                         'label' => __('essentials::lang.crud_insurance_contracts'),
@@ -593,13 +593,13 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_import_employees_insurance'),
                         'default' => false,
                     ],
-             
+
                 ]
-                
+
             ],
             [
                 'group_name' => __('essentials::lang.employees_affairs'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'essentials.view_employee_affairs_dashboard',
                         'label' => __('essentials::lang.view_employee_affairs_dashboard'),
@@ -610,8 +610,8 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_import_employee'),
                         'default' => false,
                     ],
-                  
-                  
+
+
                     [
                         'value' => 'essentials.crud_employee_appointments',
                         'label' => __('essentials::lang.crud_employee_appointments'),
@@ -632,7 +632,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_employee_qualifications'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.crud_employee_features',
                         'label' => __('essentials::lang.crud_employee_features'),
@@ -663,13 +663,13 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_profile_picture'),
                         'default' => false,
                     ],
-                    
+
                 ]
-                
+
             ],
             [
                 'group_name' => __('essentials::lang.work_cards'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'essentials.essentials_work_cards_dashboard',
                         'label' => __('essentials::lang.essentials_work_cards_dashboard'),
@@ -695,14 +695,14 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_final_empolyee_visa'),
                         'default' => false,
                     ],
-                    
-                    
+
+
                     [
                         'value' => 'essentials.view_work_cards',
                         'label' => __('essentials::lang.view_work_cards'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.work_cards_all_requests',
                         'label' => __('essentials::lang.workcards_allrequest'),
@@ -713,13 +713,13 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_workcards_request'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.work_cards_operation',
                         'label' => __('essentials::lang.work_cards_operation'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.renewal_residence',
                         'label' => __('essentials::lang.renewal_residence'),
@@ -735,15 +735,15 @@ class DataController extends Controller
                         'label' => __('essentials::lang.facilities_management'),
                         'default' => false,
                     ],
-                    
+
                 ]
-                
+
             ],
             [
                 'group_name' => __('housingmovements::lang.movement_management'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
-                        'value' => 'essentials.movement_management',
+                        'value' => 'essentials.movement_management_dashbord',
                         'label' => __('housingmovements::lang.movement_management_dashbord'),
                         'default' => false,
                     ],
@@ -768,9 +768,9 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.car_drivers'),
                         'default' => false,
                     ],
-        
-                    
-                  
+
+
+
                     [
                         'value' => 'essentials.carsChangeOil',
                         'label' => __('housingmovements::lang.carsChangeOil'),
@@ -781,7 +781,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.carMaintenances'),
                         'default' => false,
                     ],
-                 
+
                     [
                         'value' => 'essentials.carsChangeOilReport',
                         'label' => __('housingmovements::lang.carsChangeOilReport'),
@@ -792,13 +792,12 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.carMaintenancesReport'),
                         'default' => false,
                     ],
-        
-                    
+
+
                 ]
-                
+
             ],
         ];
-       
     }
 
     /**

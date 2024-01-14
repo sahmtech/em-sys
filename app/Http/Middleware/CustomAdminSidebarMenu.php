@@ -341,7 +341,7 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
-            if ($is_admin || auth()->user()->can('essentials.movement_management')) {
+            if ($is_admin || auth()->user()->can('essentials.movement_management_dashbord')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']),
                     __('housingmovements::lang.movement_management'),
@@ -402,14 +402,14 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('housingmovements.report')) {
+            // if ($is_admin  || auth()->user()->can('housingmovements.report')) {
 
                 $menu->dropdown(
                     __('housingmovements::lang.report'),
                     function ($report)  use ($is_admin) {
 
 
-                        if ($is_admin  || auth()->user()->can('housingmovements.carsChangeOilReport')) {
+                        if ($is_admin  || auth()->user()->can('essentials.carsChangeOilReport')) {
 
                             $report->url(
                                 action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil']),
@@ -417,7 +417,7 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-change-oil-report']
                             );
                         }
-                        if ($is_admin  || auth()->user()->can('housingmovements.carMaintenancesReport')) {
+                        if ($is_admin  || auth()->user()->can('essentials.carMaintenancesReport')) {
 
                             $report->url(
                                 action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances']),
@@ -428,7 +428,7 @@ class CustomAdminSidebarMenu
                     },
                     ['icon' => 'fa fa-bullseye',],
                 );
-            }
+            // }
         });
     }
 
