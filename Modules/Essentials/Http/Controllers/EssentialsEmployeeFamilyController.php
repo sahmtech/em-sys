@@ -114,6 +114,15 @@ class EssentialsEmployeeFamilyController extends Controller
                 if (!empty($value[2])) 
                 {
                     $emp_array['family_eqama_no'] = $value[2];
+
+                    $business = EssentialsEmployeesFamily::where('eqama_number',$emp_array['family_eqama_no'])->first();
+                    
+                    if ($business) {
+                    
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.family_eqama_no_exist').$row_no;
+                        break;
+                    }
                 }
                 else {
                    $is_valid = false;

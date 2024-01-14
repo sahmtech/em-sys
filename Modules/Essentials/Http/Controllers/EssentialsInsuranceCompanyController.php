@@ -90,7 +90,7 @@ class EssentialsInsuranceCompanyController extends Controller
                 ->filterColumn('supplier_business_name', function ($query, $keyword) {
                     $query->where('supplier_business_name', "LIKE", "%{$keyword}%");
                 })
-                ->removeColumn('id')
+              
                 ->rawColumns(['action'])
                 ->make(true);
         }
