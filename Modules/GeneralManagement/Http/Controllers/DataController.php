@@ -12,7 +12,7 @@ class DataController extends Controller
     {
         return [
             [
-                'group_name' => __('generalmanagement::lang.general_management'),
+                'group_name' => __('generalmanagement::lang.GeneralManagement'),
                 'group_permissions' =>
                 [
                     [

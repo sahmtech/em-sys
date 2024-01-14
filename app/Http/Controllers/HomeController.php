@@ -388,7 +388,7 @@ class HomeController extends Controller
             if (!empty($card['permissions'])) {
                 $canAccessCard = false;
                 foreach ($card['permissions'] as $permission) {
-                    if ($isSuperAdmin || auth()->user()->can($permission['value']) || $is_admin) {
+                    if ($isSuperAdmin || $is_admin || auth()->user()->can($permission['value']) ) {
                         $canAccessCard = true;
                         break;
                     }

@@ -29,7 +29,7 @@ class DataController extends Controller
 
         return [
             [
-                'group_name' => __('assetmanagement::lang.assetManagement'),
+                'group_name' => __('assetmanagement::lang.asset_management'),
                 'group_permissions' => [
                     [
                         'value' => 'asset.view',

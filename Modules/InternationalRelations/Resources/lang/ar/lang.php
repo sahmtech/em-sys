@@ -105,10 +105,11 @@ return [
 'crud_all_salary_requests'=>'إدارة طلبات الرواتب',
 'please_add_the_Ir_department'=>'قم بإضافة إدارة العلاقات الدولية من فضلك',
 'escalate_requests'=>'الطلبات المصعّدة',
-'requests_by_sequential'=>'الطلبات حسب التسلسل'
+'requests_by_sequential'=>'الطلبات حسب التسلسل',
 
 // to here we have en file
 
+'crud_all_ir_requests'=>'إدارة الطلبات'
 
 
 ];

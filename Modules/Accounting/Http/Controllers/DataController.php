@@ -121,6 +121,11 @@ class DataController extends Controller
                         'label' => __('accounting::lang.view_reports'),
                         'default' => false
                     ],
+                    [
+                        'value' => 'accounting.crud_requests',
+                        'label' => __('accounting::lang.crud_requests'),
+                        'default' => false
+                    ],
                 ]
                 
             ],

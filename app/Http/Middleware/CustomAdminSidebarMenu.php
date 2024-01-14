@@ -1297,13 +1297,15 @@ class CustomAdminSidebarMenu
                 __('accounting::lang.journal_entry'),
                 ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'journal-entry']
             );
+            if ($is_admin  || auth()->user()->can('accounting.crud_requests'))
+                { 
+                    $menu->url(
 
-            $menu->url(
-
-                action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
-                __('accounting::lang.requests'),
-                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
-            );
+                        action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),
+                        __('accounting::lang.requests'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'accounting-requests']
+                    );
+                }
 
 
 
