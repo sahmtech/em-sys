@@ -180,14 +180,20 @@
                     }
                 },
 
-                columns: [{
+                columns: [
+                    {
                         data: 'worker',
                         render: function(data, type, row) {
-                            var link = '<a href="' + '{{ route('show-essentials-workers', ['id' => ':id']) }}'
-                                .replace(':id', row.id) + '">' + data + '</a>';
-                            return link;
+                            @can('essentials.show_essentials_worker')
+                                var link = '<a href="' + '{{ route('show-essentials-workers', ['id' => ':id']) }}'
+                                    .replace(':id', row.id) + '">' + data + '</a>';
+                                return link;
+                            @else
+                                return data;
+                            @endcan
                         }
                     },
+
                     {
                         data: 'residence_permit'
                     },

@@ -21,6 +21,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
 
+            @if (auth()->user()->can('essentials.view_all_expire_resdiency_by_fiften'))
                 <div class="col-md-3 " onclick="redirectToExpiredResidencies()" style="cursor: pointer; padding:15px;">
               
                     <div class="custom_card">
@@ -43,7 +44,9 @@
                     </div>
                 </div>
              
+            @endif
 
+            @if (auth()->user()->can('essentials.view_all_expire_resdiency'))
                 <div class="col-md-3 " onclick="redirectToAllEndedResidency()" style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -65,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-
+                @endif
               
                 <div class="col-md-3 " style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
@@ -108,7 +111,7 @@
                 </div>
                 <br>
 
-
+                @if (auth()->user()->can('essentials.view_late_empolyee'))
                 <div class="col-md-3 "  onclick="redirectTolatevacation()" style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -129,7 +132,9 @@
                     </div>
                 </div>
 
-              
+              @endif
+
+              @if (auth()->user()->can('essentials.view_final_empolyee_visa'))
                 <div class="col-md-3 " onclick="final_visa()" style="cursor: pointer; padding:15px;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -150,7 +155,7 @@
                     </div>
                 </div>
 
-
+                @endif
 
       
 

@@ -24,21 +24,35 @@
                     </div>
                   
                 </div>
+                @if(auth()->user()->can('essentials.crud_all_leave'))
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.leave_settings')
                 </div>
+                @endif
+
+                @if(auth()->user()->can('essentials.view_all_payroll'))
+              
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.payroll_settings')
                 </div>
+                @endif
+
+                @if(auth()->user()->can('essentials.crud_all_attendance'))
+                
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.attendance_settings')
                 </div>
+                @endif
+
                 {{-- <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.sales_target_settings')
                 </div> --}}
+                @if(auth()->user()->can('essentials.crud_system_settings'))
+                
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 pos-tab">
                     @include('essentials::settings.partials.essentials_settings')
                 </div>
+                @endif
               
             </div>
         </div>

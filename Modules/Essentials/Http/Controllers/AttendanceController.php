@@ -202,7 +202,7 @@ class AttendanceController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
 
         try {
@@ -259,7 +259,7 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
 
         $attendance = EssentialsAttendance::where('business_id', $business_id)
@@ -279,7 +279,7 @@ class AttendanceController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
 
         try {
@@ -317,7 +317,7 @@ class AttendanceController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
+        $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
 
         if (request()->ajax()) {
             try {
