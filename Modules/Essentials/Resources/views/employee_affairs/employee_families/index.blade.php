@@ -98,6 +98,7 @@
                                             'sibling' => __('essentials::lang.sibling'),
                                             'spouse' => __('essentials::lang.spouse'),
                                             'child' => __('essentials::lang.child'),
+                                            'wife' => __('essentials::lang.wife'),
                                             'other' => __('essentials::lang.other'),
                                         ],
                                         null,
