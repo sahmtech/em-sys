@@ -351,12 +351,9 @@ class HomeController extends Controller
             // ['id' => 'superAdmin',  'permissions' => [], 'title' => __('superadmin::lang.superadmin'), 'icon' => 'fa fas fa-users-cog', 'link' => action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])],
             ['id' => 'user_management', 'permissions' =>  $userManagementPermissions, 'title' => __('user.user_management'), 'icon' => 'fas fa-user-tie ', 'link' =>   route('users.index')],
             ['id' => 'hrm',  'permissions' => $essentialsPermissions, 'title' => __('essentials::lang.hrm'), 'icon' => 'fa fas fa-users', 'link' =>   route('essentials_landing')],
-
             ['id' => 'workCards',  'permissions' => $workCardsPermissions, 'title' => __('essentials::lang.work_cards'), 'icon' => '	far fa-handshake', 'link' =>   route('essentials_word_cards_dashboard')],
             ['id' => 'employeeAffairs',  'permissions' => $employeeAffairsPermissions, 'title' => __('essentials::lang.employees_affairs'), 'icon' => 'fas fa-address-book', 'link' =>   route('employee_affairs_dashboard')],
-
             ['id' => 'medical_insurance',  'permissions' => $medicalInsurancePermissions, 'title' => __('essentials::lang.health_insurance'), 'icon' => 'fa-solid fa-briefcase-medical', 'link' => route('employee_insurance')],
-
             ['id' => 'essentials',  'permissions' => $ToPermissions, 'title' => __('essentials::lang.essentials'), 'icon' => 'fa fas fa-check-circle', 'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])],
             ['id' => 'sales',  'permissions' => $salesPermissions, 'title' =>  __('sales::lang.sales'), 'icon' => 'fas fa-dollar-sign', 'link' =>  route('sales_landing')],
             ['id' => 'FollowUp',  'permissions' => $FollowUpPermissions, 'title' =>  __('followup::lang.followUp'), 'icon' => 'fa fas fa-meteor', 'link' => action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index'])],
@@ -367,15 +364,10 @@ class HomeController extends Controller
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'assetManagement',  'permissions' => $AssetManagementPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],
             //  ['id' => 'crm',  'permissions' => $CRMPermissions, 'title' => __('crm::lang.crm'),'icon' =>'fas fa fa-broadcast-tower', 'link' => action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']),],
-
             //  ['id' => 'contacts',  'permissions' => [], 'title' => __('contact.contacts'), 'icon' => 'fas fa-id-card ', 'link' => ''],
             ['id' => 'products',  'permissions' => [], 'title' => __('sale.products'), 'icon' => 'fas fa-chart-pie', 'link' =>  action([\App\Http\Controllers\ProductController::class, 'index']),],
-
             //  ['id' => 'connector',  'permissions' => [], 'title' => __('connector::lang.clients'), 'icon' => 'fas fa-user-circle', 'link' =>   action([\Modules\Connector\Http\Controllers\ClientController::class, 'index'])],
-
             ['id' => 'settings',  'permissions' => [], 'title' =>  __('business.settings'), 'icon' => 'fa fas fa-cog', 'link' => action([\App\Http\Controllers\BusinessController::class, 'getBusinessSettings'])],
-
-
         ];
         $cards = [];
 
