@@ -162,6 +162,7 @@ return [
     'created_by' => 'انشأ من قبل',
     'insurance_company_id' => 'شركة التأمين',
     'movement_management_dashbord' => 'الصفحة الرئيسية لإدارة الحركة',
+    'housing_move_dashbord'=>'الصفحة الرئيسية لإدارة السكن',
     'insurance_start_Date' => 'تاريخ بداية التأمين',
     'insurance_end_date' => 'تاريخ نهاية التأمين',
     'add_insurance' => 'إضافة تامين',
@@ -169,8 +170,9 @@ return [
     'insurance_end_date' => 'تاريخ نهاية التأمين',
     'booking_start_Date' => 'تاريخ بداية الحجز',
     'booking_end_Date' => 'تاريخ نهاية الحجز',
-    'all_workers_view' => 'عرض العمال',
-    'view_housing_dashboard'=>'عرض الصفحة الرئيسية للسكن'
+    'all_workers_view' => 'عرض العمال المتاحيين للتسوق/المحجوزين/الخروج النهائي',
+    'view_housing_dashboard'=>'عرض الصفحة الرئيسية للسكن',
+    'view_workers'=>'عرض عمال المشاريع'
 
 
 

@@ -150,6 +150,8 @@ return [
     'latestChangeOil' => 'Latest changeOil',
     'created_by' => 'Created by',
     'movement_management_dashbord'=>'Traffic management home page',
+    'housing_move_dashbord'=>'Housing home page',
+
 
 
 
