@@ -235,8 +235,10 @@ class EssentialsEmployeeFamilyController extends Controller
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                   //  DB::raw("CONCAT(COALESCE(essentials_employees_families.first_name, ''), ' ', COALESCE(essentials_employees_families.last_name, '')) as family"),
                   //   'essentials_employees_families.age',
-                  DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+
                   'essentials_employees_families.full_name as family',
+                  DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+                 
                     'essentials_employees_families.gender',
                     'essentials_employees_families.address',
                     'essentials_employees_families.relative_relation',
@@ -264,6 +266,15 @@ class EssentialsEmployeeFamilyController extends Controller
 
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('family', function ($query, $keyword) {
+                    $query->whereRaw("essentials_employees_families.full_name like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('nationality', function ($query, $keyword) {
+                    $query->whereRaw("COALESCE(essentials_countries.nationality, '') like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('gender', function ($query, $keyword) {
+                    $query->whereRaw("essentials_employees_families.gender like ?", ["%{$keyword}%"]);
                 })
 
                 ->removeColumn('id')
