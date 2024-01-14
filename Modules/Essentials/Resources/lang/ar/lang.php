@@ -437,6 +437,7 @@ return [
   'family_member_eqama'=>'رقم اقامة المرافق',
   'relation'=>'صلة القرابة ',
   'family_eqama_no_exist'=>'رقم الأقامة للمرافق موجود سابقا ً',
+  'wife'=>'زوجة',
   'import_employees_insurance'=>'استيراد التأمين الطبي',
   'view_import_employees_insurance'=>'عرض  استيراد التأمين الطبي',
   'employee_id'=>'رقم الموظف',

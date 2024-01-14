@@ -196,6 +196,9 @@
                             } else {
                                 return '@lang('essentials::lang.other')';
                             }
+                            else {
+                                return '@lang('essentials::lang.wife')';
+                            }
                         }
                     },
 
