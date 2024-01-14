@@ -193,11 +193,12 @@
                                 return '@lang('essentials::lang.spouse')';
                             } else if (data === 'child') {
                                 return '@lang('essentials::lang.child')';
-                            } else {
-                                return '@lang('essentials::lang.other')';
-                            }
+                            } 
                             else {
                                 return '@lang('essentials::lang.wife')';
+                            }
+                            else {
+                                return '@lang('essentials::lang.other')';
                             }
                         }
                     },
