@@ -5,7 +5,8 @@ return [
     'crud_president_requests'=>'إدارة طلبات رئاسة مجلس الإدارة',
     'requests'=>'الطلبات',
     'escalate_requests'=>'الطلبات المصعّدة',
-    'requests_by_sequential'=>'الطلبات حسب التسلسل'
+    'requests_by_sequential'=>'الطلبات حسب التسلسل',
+    'generalmanagement_dashboard'=>'الصفحة الرئيسية لمجلس الإدارة'
 
 
 

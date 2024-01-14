@@ -1193,7 +1193,6 @@ return [
   'nots' => 'ملاحظات',
   'actions' => 'العمليات',
   'requests' => 'الطلبات',
-  'view_medical_insurance' => 'الصفحة الرئيسية للتأمين الطبي',
   'insurance' => 'التأمينات',
   'add_insurance' => 'إضافة تأمين',
   'edit_insurance' => 'تعديل التأمين',
@@ -1210,7 +1209,9 @@ return [
   'view_all_payroll'=>'عرض جميع الرواتب',
   'crud_all_roles'=>'عرض جميع الصلاحيات',
   'delete_payroll'=>'حذف راتب',
-  'view_employees'=>'عرض الموظفين'
+  'view_employees'=>'عرض الموظفين',
+  'medicalInsurance_dashboard'=>'الصفحة الرئيسية للتأمين الطبي',
+  'crud_insurance_classes'=>'إدارة فئات التأمين'
 
 
 ];

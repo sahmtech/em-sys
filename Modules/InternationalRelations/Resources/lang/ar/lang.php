@@ -109,8 +109,8 @@ return [
 
 // to here we have en file
 
-'crud_all_ir_requests'=>'إدارة الطلبات'
-
+'crud_all_ir_requests'=>'إدارة الطلبات',
+'internationalrelations_dashboard'=>'الصفحة الرئيسية للعلاقات الدولية'
 
 ];
 

@@ -64,8 +64,6 @@ return [
     'chamberRequest' => ' طلبات تصديق غرفة تجارية',
     'allRequests' => 'جميع الطلبات',
     'request_number' => 'رقم الطلب',
-    'crud_workers' => 'عمال المشاريع',
-    'crud_projects' => 'المشاريع',
     'worker_name' => 'اسم العامل',
     'select_worker' => 'اختر عامل',
     'add_request' => 'إضافة طلب',
@@ -122,28 +120,8 @@ return [
 
 
 
-    'create_order' => 'إنشاء طلب',
-    'viewExitRequests' => 'عرض طلبات الخروج النهائي',
-    'crudExitRequests' => 'قبول/رفض طلبات الخروج النهائي',
-    'viewReturnRequest' => 'عرض طلبات الخروج والعودة',
-    'crudReturnRequest' => 'قبول/رفض طلبات الخروج والعودة',
-    'viewEscapeRequest' => 'عرض تبليغات الهروب',
-    'crudEscapeRequest' => 'قبول/رفض تبليغات الهروب',
-    'viewAdvanceSalary' => 'عرض طلبات السلف',
-    'crudAdvanceSalary' => 'قبول/رفض طلبات السلف',
-    'viewLeavesAndDepartures' => 'عرض طلبات الاجازات والمغادرات',
-    'crudLeavesAndDepartures' => 'قبول/رفض طلبات الإجازات والمغادرات',
-    'viewAtmCard' => 'عرض طلبات بطافات الصراف الآلي',
-    'crudAtmCard' => 'قبول/رفض طلبات بطاقات الصراف الآلي',
-    'viewResidenceRenewal' => 'عرض طلبات تجديد الإقامة',
-    'crudResidenceRenewal' => 'قبول /رفض طلبات تجديد الإقامة',
-    'viewResidenceCard' => 'عرض طلبات الإقامة',
-    'crudResidenceCard' => 'قبول/رفض طلبات الإقامة',
-    'viewWorkerTransfer' => 'عرض طلبات نقل العمالة',
-    'crudWorkerTransfer' => 'قبول/ رفض طلبات نقل العمالة',
-    'return_request' => 'إرجاع الطلب',
-
-    'crud_operation_orders' => 'عرض أوامر التشغيل',
+   
+    
     'curd_contracts_wishes' => 'إضافة \حذف\تعديل العقود والرغبات',
     'contrascts_wishes' => 'الرغبات والعقود',
     'renew_contract' => 'تجديد العقد',
@@ -237,7 +215,8 @@ return [
     'customer_home_under_process__workers_requests_count' => 'عدد طلبات العمال قيد الإجراء',
     'customer_home_workers_requests' => 'طلبات العمال',
     'customer_home_workers' => 'حالات العمال',
-
+    'create_order' => 'إنشاء طلب',
+    'return_request' => 'إرجاع الطلب',
     'pending' => 'قيد الدراسة',
     'approved' => 'مقبول',
     'rejected' => 'مرفوض',
@@ -274,10 +253,40 @@ return [
     'booking' => 'محجوز',
     'not_booking' => 'غير محجوز',
     'booking_details' => 'معلومات الحجز',
-    'viewRecruitmentRequest'=>'عرض طلبات التوظيف الداخلي'
+    'viewRecruitmentRequest'=>'عرض طلبات التوظيف الداخلي',
 
-
-
-
-
+//permissions
+        'followup_dashboard'=>'الصفحة الرئيسية لإدارة المتابعة',
+        'crud_contact_locations'=>'إدارة فروع المشاريع',
+        'crud_projects'=>'إدارة المشاريع',
+        'crud_workers'=>'إدارة عمال المشاريع',
+        'crud_operation_orders'=>'إدارة أوامر التشغيل',
+        'crud_requests'=>'إدارة الطلبات',
+        'crud_recruitmentRequests'=>'إدارة طلبات التوظيف الداخلي',
+        'crud_documents'=>'إدارة أنواع السندات',
+        'crud_document_delivery'=>'إدارة سندات التسليم',
+        'crud_projectsReports'=>'إدارة تقارير المشاريع',
+        'crud_projectWorkersReports'=>'إدارة تقارير عمال المشاريع',
+        'crud_contrascts_wishes'=>'إدارة الرغبات والعقود',
+        'crud_shifts'=>'إدارة فترات الدوام',
+        'viewExitRequests' => 'عرض طلبات الخروج النهائي',
+        'crudExitRequests' => 'قبول/رفض طلبات الخروج النهائي',
+        'viewReturnRequest' => 'عرض طلبات الخروج والعودة',
+        'crudReturnRequest' => 'قبول/رفض طلبات الخروج والعودة',
+        'viewEscapeRequest' => 'عرض تبليغات الهروب',
+        'crudEscapeRequest' => 'قبول/رفض تبليغات الهروب',
+        'viewAdvanceSalary' => 'عرض طلبات السلف',
+        'crudAdvanceSalary' => 'قبول/رفض طلبات السلف',
+        'viewLeavesAndDepartures' => 'عرض طلبات الاجازات والمغادرات',
+        'crudLeavesAndDepartures' => 'قبول/رفض طلبات الإجازات والمغادرات',
+        'viewAtmCard' => 'عرض طلبات بطافات الصراف الآلي',
+        'crudAtmCard' => 'قبول/رفض طلبات بطاقات الصراف الآلي',
+        'viewResidenceRenewal' => 'عرض طلبات تجديد الإقامة',
+        'crudResidenceRenewal' => 'قبول /رفض طلبات تجديد الإقامة',
+        'viewResidenceCard' => 'عرض طلبات الإقامة',
+        'crudResidenceCard' => 'قبول/رفض طلبات الإقامة',
+        'viewWorkerTransfer' => 'عرض طلبات نقل العمالة',
+        'crudWorkerTransfer' => 'قبول/ رفض طلبات نقل العمالة',
+       
+    
 ];

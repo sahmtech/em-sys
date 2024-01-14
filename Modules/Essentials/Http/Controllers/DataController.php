@@ -481,8 +481,14 @@ class DataController extends Controller
                 'group_name' => __('essentials::lang.health_insurance'),
                 'group_permissions' =>[
                     [
-                        'value' => 'essentials.view_medical_insurance',
-                        'label' => __('essentials::lang.view_medical_insurance'),
+                        'value' => 'essentials.medicalInsurance_dashboard',
+                        'label' => __('essentials::lang.medicalInsurance_dashboard'),
+                        'default' => false,
+                    ],
+                 
+                    [
+                        'value' => 'essentials.crud_insurance_contracts',
+                        'label' => __('essentials::lang.crud_insurance_contracts'),
                         'default' => false,
                     ],
                     [
@@ -491,22 +497,16 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.crud_insurance_contracts',
-                        'label' => __('essentials::lang.crud_insurance_contracts'),
-                        'default' => false,
-                    ],
-                    [
                         'value' => 'essentials.crud_insurance_companies',
                         'label' => __('essentials::lang.crud_insurance_companies'),
                         'default' => false,
                     ],
-        
                     [
-                        'value' => 'essentials.crud_employees_insurances',
-                        'label' => __('essentials::lang.crud_employees_insurances'),
+                        'value' => 'essentials.crud_insurance_classes',
+                        'label' => __('essentials::lang.crud_insurance_classes'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'essentials.view_import_employees_insurance',
                         'label' => __('essentials::lang.view_import_employees_insurance'),
