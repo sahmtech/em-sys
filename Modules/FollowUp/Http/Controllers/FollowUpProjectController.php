@@ -125,11 +125,11 @@ class FollowUpProjectController extends Controller
                 })
                 ->addColumn('action', function ($row) use ($is_admin) {
                     $html = '';
-
-                    $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
+                    if (($is_admin  || auth()->user()->can('followup.projectView'))) {
+                        $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
                              <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
                          </a>';
-
+                    }
                     return $html;
                 })
 

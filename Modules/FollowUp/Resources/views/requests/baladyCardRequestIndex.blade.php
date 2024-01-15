@@ -109,7 +109,7 @@
                 
                     render: function (data, type, row) {
                         if (data == 1) {
-                            return '<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.id + '">@lang('followup::lang.return_the_request')</button>';
+                            return '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("followup.return_the_request_baladyCardRequest"))<button class="btn btn-danger btn-sm btn-return" data-request-id="' + row.id + '">@lang('followup::lang.return_the_request')</button>@endif';
 
                         }
                         return '';

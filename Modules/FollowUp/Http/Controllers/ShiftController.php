@@ -39,6 +39,8 @@ class ShiftController extends Controller
             ->with('Project')
             ->get();
         $salesProject = SalesProject::all()->pluck('name', 'id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
         if (request()->ajax()) {
             return DataTables::of($shifts)
 
@@ -74,20 +76,21 @@ class ShiftController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin){
 
                         $html = '';
-
-                        $html .= '
+                        if (($is_admin  || auth()->user()->can('followup.edit_shifts'))) {
+                            $html .= '
                         <a href="' . route('shifts-edit', ['id' => $row->id])  . '"
                         data-href="' . route('shifts-edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_shits_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
-                        $html .= '
+                        }
+                        if (($is_admin  || auth()->user()->can('followup.delete_shifts'))) {
+                            $html .= '
                     <button data-href="' .  route('shifts-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_shift_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
-
+                        }
                         return $html;
                     }
                 )
