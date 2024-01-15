@@ -295,7 +295,39 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                  
+                    //banks_account
+                    [
+                        'value' => 'essentials.delete_bank_accounts',
+                        'label' => __('essentials::lang.delete_bank_accounts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_bank_accounts',
+                        'label' => __('essentials::lang.edit_bank_accounts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_bank_accounts',
+                        'label' => __('essentials::lang.add_bank_accounts'),
+                        'default' => false,
+                    ],
+
+                  //holiday
+                  [
+                    'value' => 'essentials.delete_holidays',
+                    'label' => __('essentials::lang.delete_holidays'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.edit_holidays',
+                    'label' => __('essentials::lang.edit_holidays'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.add_holidays',
+                    'label' => __('essentials::lang.add_holidays'),
+                    'default' => false,
+                  ],
                     
                     
                     [

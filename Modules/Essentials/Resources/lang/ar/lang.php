@@ -1246,6 +1246,15 @@ return [
   'delete_regoins'=>'حذف المناطق',
   'edit_regoins'=>'تعديل المناطق',
   'add_regoins'=>'إضافة منطقة',
+
+  'delete_bank_accounts'=>'حذف الحسابات البنكية ',
+  'edit_bank_accounts'=>'تعديل الحسابات البنكية ',
+  'add_bank_accounts'=>'إضافة حساب بنكي',
+
+  'delete_holidays'=>'حذف العطل الرسمية',
+  'edit_holidays'=>'تعديل العطل الرسمية ',
+  'add_holidays'=>'إضافة العطل الرسمية',
+ 
  
 
 

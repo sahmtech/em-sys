@@ -39,6 +39,10 @@ class EssentialsHolidayController extends Controller
 
 
         $can_crud_holidays= auth()->user()->can('essentials.crud_holidays');
+        $can_delete_holidays= auth()->user()->can('essentials.delete_holidays');
+        $can_edit_holidays= auth()->user()->can('essentials.edit_holidays');
+        $can_add_holidays= auth()->user()->can('essentials.add_holidays');
+       
         if (! $can_crud_holidays) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -79,13 +83,16 @@ class EssentialsHolidayController extends Controller
             return Datatables::of($holidays)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin,$delete_holidays ,$can_edit_holidays) {
                         $html = '';
-                        if ($is_admin) {
+                        if ($is_admin || $can_edit_holidays) {
                             $html .= '<button class="btn btn-xs btn-primary btn-modal" data-container="#add_holiday_modal" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'edit'], [$row->id]).'"><i class="fa fa-edit"></i> '.__('messages.edit').'</button>
                             &nbsp;
-                            <button class="btn btn-xs btn-danger delete-holiday" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'destroy'], [$row->id]).'"><i class="fa fa-trash"></i> '.__('messages.delete').'</button>
-                            ';
+                          
+';
+                        }
+                        if($is_admin || $delete_holidays){
+                            $html .='  <button class="btn btn-xs btn-danger delete-holiday" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'destroy'], [$row->id]).'"><i class="fa fa-trash"></i> '.__('messages.delete').'</button>';
                         }
 
                         return $html;
