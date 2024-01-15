@@ -28,7 +28,7 @@ class CarController extends Controller
 
         $Cars = Car::all();
         $carTypes = CarModel::all();
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
 
@@ -96,22 +96,26 @@ class CarController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
 
                         $html = '';
-
-                        $html .= '
+                        if ($is_admin  || auth()->user()->can('car.edit')) {
+                            $html .= '
                         <a href="' . route('essentials.car.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.car.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_car_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
-                        $html .= '
+                        }
+                        if ($is_admin  || auth()->user()->can('car.delete')) {
+                            $html .= '
                     <button data-href="' .  route('essentials.car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-                        $html .= '
+                        }
+                        if ($is_admin  || auth()->user()->can('car.insurance')) {
+                            $html .= '
                 <a href="' .  route('essentials.car-insurance', ['id' => $row->id]) . '" style="margin-top: 2px;" class="btn btn-xs btn-info">' . __("essentials::lang.insurance") . '</a>
             ';
-
+                        }
 
                         return $html;
                     }

@@ -3,7 +3,7 @@
 @section('title', __('essentials::lang.messages'))
 
 @section('content')
-@include('essentials::layouts.nav_essentials')
+
 <section class="content">
 	<!-- Chat box -->
 	<div class="box box-solid">

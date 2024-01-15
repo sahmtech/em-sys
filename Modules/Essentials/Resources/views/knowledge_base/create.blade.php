@@ -15,7 +15,7 @@
 @section('title', $page_title)
 
 @section('content')
-@include('essentials::layouts.nav_essentials')
+
 
 <!-- Main content -->
 <section class="content">

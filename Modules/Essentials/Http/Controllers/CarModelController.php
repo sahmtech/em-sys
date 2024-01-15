@@ -23,6 +23,7 @@ class CarModelController extends Controller
     {
         $carModles = CarModel::all();
         $carTypes = CarType::all();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
@@ -48,20 +49,22 @@ class CarModelController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
 
                         $html = '';
-
-                        $html .= '
+                        if ($is_admin  || auth()->user()->can('carmodel.edit')) {
+                            $html .= '
                         <a href="' . route('essentials.carmodel.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.carmodel.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_carModel_button"  data-container="#edit_carModels_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
+                        }
+                        if ($is_admin  || auth()->user()->can('carmodel.delete')) {
                         $html .= '
                     <button data-href="' .  route('essentials.carmodel.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carModel_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
 
-
+                        }
                         return $html;
                     }
                 )
@@ -117,11 +120,10 @@ class CarModelController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
-
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -174,11 +176,10 @@ class CarModelController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
-
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -199,11 +200,10 @@ class CarModelController extends Controller
                 ];
             } catch (Exception $e) {
                 return redirect()->back()
-                ->with('status', [
-                    'success' => false,
-                    'msg' => __('messages.something_went_wrong'),
-                ]);
-
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong'),
+                    ]);
             }
             return $output;
         }

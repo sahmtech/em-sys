@@ -22,7 +22,7 @@ class CarsChangeOilController extends Controller
     {
         $CarsChangeOil = HousingMovementsCarsChangeOil::all();
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
 
@@ -57,19 +57,21 @@ class CarsChangeOilController extends Controller
                
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin){
 
                         $html = '';
-
+                        if ($is_admin  || auth()->user()->can('change.oil.edit')) {
                         $html .= '
                         <a href="' . route('essentials.cars-change-oil.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.cars-change-oil.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_carsChangeOil_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
+                        }
+                        if ($is_admin  || auth()->user()->can('change.oil.delete')) {
                         $html .= '
                     <button data-href="' .  route('essentials.cars-change-oil.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carsChangeOil_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
+                        }
 
                         return $html;
                     }
