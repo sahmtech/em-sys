@@ -23,7 +23,7 @@
                 </div>
                 @endslot
         @endcan
-        @can('bank.view')
+       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="bank_accounts_table">
                     <thead>
@@ -41,7 +41,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+      
     @endcomponent
 
     <div class="modal fade bank_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

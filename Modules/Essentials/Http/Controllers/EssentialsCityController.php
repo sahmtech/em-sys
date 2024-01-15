@@ -30,6 +30,10 @@ class EssentialsCityController extends Controller
 
 
         $can_crud_cities = auth()->user()->can('essentials.crud_cities');
+        $can_delete_cities = auth()->user()->can('essentials.delete_cities');
+        $can_edit_cities = auth()->user()->can('essentials.edit_cities');
+        $can_add_cities = auth()->user()->can('essentials.add_cities');
+
         if (! $can_crud_cities) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -73,11 +77,14 @@ class EssentialsCityController extends Controller
             )
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin , $can_delete_cities , $can_edit_cities) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin ||  $can_edit_cities ) {
                         $html .= '<a href="'. route('city.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         &nbsp;';
+                      
+                    }
+                    if($is_admin ||  $can_delete_cities){
                         $html .= '<button class="btn btn-xs btn-danger delete_city_button" data-href="' . route('city.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         

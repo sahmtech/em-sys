@@ -39,53 +39,64 @@ class EssentialsHolidayController extends Controller
 
 
         $can_crud_holidays= auth()->user()->can('essentials.crud_holidays');
+        $can_delete_holidays= auth()->user()->can('essentials.delete_holidays');
+        $can_edit_holidays= auth()->user()->can('essentials.edit_holidays');
+        $can_add_holidays= auth()->user()->can('essentials.add_holidays');
+       
         if (! $can_crud_holidays) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+        $holidays = EssentialsHoliday::where('essentials_holidays.business_id', $business_id)
+        ->leftJoin('business_locations as bl', 'bl.id', '=', 'essentials_holidays.location_id')
+        ->select([
+            'essentials_holidays.id',
+            'essentials_holidays.name as name',
+            'bl.name as location as location',
+            'start_date',
+            'end_date',
+            'note',
+        ]);
+        $permitted_locations = auth()->user()->permitted_locations();
+        if ($permitted_locations != 'all') {
+            $holidays->where(function ($query) use ($permitted_locations) {
+                $query->whereIn('essentials_holidays.location_id', $permitted_locations)
+                    ->orWhereNull('essentials_holidays.location_id');
+            });
+        }
+
+        if (! empty(request()->input('location_id'))) {
+            $holidays->where('essentials_holidays.location_id', request()->input('location_id'));
+        }
+
+        if (! empty(request()->start_date) && ! empty(request()->end_date)) {
+            $start = request()->start_date;
+            $end = request()->end_date;
+            $holidays->whereDate('essentials_holidays.start_date', '>=', $start)
+                        ->whereDate('essentials_holidays.start_date', '<=', $end);
+        }
+      //  dd($holidays->get());
         if (request()->ajax()) {
-            $holidays = EssentialsHoliday::where('essentials_holidays.business_id', $business_id)
-                        ->leftJoin('business_locations as bl', 'bl.id', '=', 'essentials_holidays.location_id')
-                        ->select([
-                            'essentials_holidays.id',
-                            'essentials_holidays.name',
-                            'bl.name as location',
-                            'start_date',
-                            'end_date',
-                            'note',
-                        ]);
 
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $holidays->where(function ($query) use ($permitted_locations) {
-                    $query->whereIn('essentials_holidays.location_id', $permitted_locations)
-                        ->orWhereNull('essentials_holidays.location_id');
-                });
-            }
 
-            if (! empty(request()->input('location_id'))) {
-                $holidays->where('essentials_holidays.location_id', request()->input('location_id'));
-            }
 
-            if (! empty(request()->start_date) && ! empty(request()->end_date)) {
-                $start = request()->start_date;
-                $end = request()->end_date;
-                $holidays->whereDate('essentials_holidays.start_date', '>=', $start)
-                            ->whereDate('essentials_holidays.start_date', '<=', $end);
-            }
+
 
             return Datatables::of($holidays)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin,$can_delete_holidays ,$can_edit_holidays) {
                         $html = '';
-                        if ($is_admin) {
+                        if ($is_admin || $can_edit_holidays) {
                             $html .= '<button class="btn btn-xs btn-primary btn-modal" data-container="#add_holiday_modal" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'edit'], [$row->id]).'"><i class="fa fa-edit"></i> '.__('messages.edit').'</button>
                             &nbsp;
-                            <button class="btn btn-xs btn-danger delete-holiday" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'destroy'], [$row->id]).'"><i class="fa fa-trash"></i> '.__('messages.delete').'</button>
-                            ';
+                          
+';
+                        }
+                        if($is_admin || $can_delete_holidays){
+                            $html .='  <button class="btn btn-xs btn-danger delete-holiday" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'destroy'], [$row->id]).'"><i class="fa fa-trash"></i> '.__('messages.delete').'</button>';
                         }
 
                         return $html;
@@ -103,14 +114,14 @@ class EssentialsHolidayController extends Controller
 
                     return $start_date_formated.' - '.$end_date_formated.' ('.$diff.\Str::plural(__('lang_v1.day'), $diff).')';
                 })
-                ->removeColumn('id')
+              
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
         $locations = BusinessLocation::forDropdown($business_id);
 
-        return view('essentials::holiday.index')->with(compact('locations', 'is_admin'));
+        return view('essentials::holiday.index')->with(compact('locations'));
     }
 
     /**

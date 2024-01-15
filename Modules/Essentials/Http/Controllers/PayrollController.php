@@ -135,7 +135,8 @@ class PayrollController extends Controller
             return Datatables::of($payrolls)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use( $is_admin ,$can_view_all_payroll) {
+                        if($is_admin  || $can_view_all_payroll){
                         $html = '<div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                         data-toggle="dropdown" aria-expanded="false">' .
@@ -146,7 +147,7 @@ class PayrollController extends Controller
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
                         $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'show'], [$row->id]) . '" data-container=".view_modal" class="btn-modal"><i class="fa fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a></li>';
-
+                        }
                         // $html .= '<li><a href="' . action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]) . '" class="view_payment_modal"><i class="fa fa-money"></i> ' . __("purchase.view_payments") . '</a></li>';
 
                         if (empty($row->payroll_group_id) && $row->payment_status != 'paid' && auth()->user()->can('essentials.create_payroll')) {

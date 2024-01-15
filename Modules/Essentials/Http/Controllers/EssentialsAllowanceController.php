@@ -28,7 +28,10 @@ class EssentialsAllowanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_delete_allowance_and_deduction= auth()->user()->can('essentials.delete_allowance_and_deduction');
+        $can_edit_allowance_and_deduction= auth()->user()->can('essentials.edit_allowance_and_deduction');
+        $can_add_allowance_and_deduction= auth()->user()->can('essentials.add_allowance_and_deduction');
 
         if (! auth()->user()->can('essentials.add_allowance_and_deduction') && ! auth()->user()->can('essentials.view_allowance_and_deduction')) {
            //temp  abort(403, 'Unauthorized action.');
@@ -39,15 +42,20 @@ class EssentialsAllowanceController extends Controller
             return Datatables::of($allowances)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use( $is_admin , $can_edit_allowance_and_deduction) {
                         $html = '';
-                        if (auth()->user()->can('essentials.add_allowance_and_deduction')) {
-                            $html .= '<a href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'edit'], [$row->id]).  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
-                            $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_allowances_and_deductions_button" data-href="' .action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'destroy'], [$row->id]). '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                       if( $is_admin || $can_edit_allowance_and_deduction){
+                        $html .= '<a href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'edit'], [$row->id]).  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+                       }
 
-                        }
+                       if($is_admin ||  $can_delete_allowance_and_deduction)
+                       {
+                        $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_allowances_and_deductions_button" data-href="' .action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'destroy'], [$row->id]). '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                       }
+
 
                         return $html;
+
                     }
                 )
                 ->editColumn('applicable_date', function ($row) {

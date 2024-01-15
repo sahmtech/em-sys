@@ -28,6 +28,10 @@ class EssentialsBankAccountController extends Controller
          $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
          $can_crud_bank_accounts= auth()->user()->can('essentials.crud_bank_accounts');
+         $can_delete_bank_accounts= auth()->user()->can('essentials.delete_bank_accounts');
+         $can_edit_bank_accounts= auth()->user()->can('essentials.edit_bank_accounts');
+         $can_add_bank_accounts= auth()->user()->can('essentials.add_bank_accounts');
+       
          if (! $can_crud_bank_accounts) {
             //temp  abort(403, 'Unauthorized action.');
          }
@@ -48,14 +52,16 @@ class EssentialsBankAccountController extends Controller
             // })
              ->addColumn(
                  'action',
-                 function ($row) use ($is_admin) {
+                 function ($row) use ($is_admin,  $can_edit_bank_accounts ,   $can_delete_bank_accounts) {
                      $html = '';
-                     if ($is_admin) {
+                     if ($is_admin || $can_edit_bank_accounts  ) {
                          $html .= '<a href="'. route('bank_account.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                          &nbsp;';
-                         $html .= '<button class="btn btn-xs btn-danger delete_bank_account_button" data-href="' . route('bank_account.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                       
                      }
-         
+                    if ($is_admin || $can_delete_bank_accounts  ){
+                        $html .= '<button class="btn btn-xs btn-danger delete_bank_account_button" data-href="' . route('bank_account.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    }
                      return $html;
                  }
              )

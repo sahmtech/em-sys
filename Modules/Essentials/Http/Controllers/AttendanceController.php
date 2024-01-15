@@ -45,8 +45,13 @@ class AttendanceController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $can_crud_all_attendance = auth()->user()->can('essentials.crud_all_attendance');
+
+        $can_edit_all_attendance = auth()->user()->can('essentials.edit_all_attendance');
+        $can_delete_all_attendance = auth()->user()->can('essentials.delete_all_attendance');
+
         $can_view_own_attendance = auth()->user()->can('essentials.view_own_attendance');
 
         if (!$can_crud_all_attendance && !$can_view_own_attendance) {
@@ -101,9 +106,21 @@ class AttendanceController extends Controller
             return Datatables::of($attendance)
                 ->addColumn(
                     'action',
-                    '@can("essentials.crud_all_attendance") <button data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
-                        <button class="btn btn-xs btn-danger delete-attendance" data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@destroy\', [$id])}}"><i class="fa fa-trash"></i> @lang("messages.delete")</button> @endcan
-                        '
+                    function ($row) use ($is_admin,  $can_edit_all_attendance ,   $can_delete_all_attendance) {
+                        $html = '';
+                        if ($is_admin || $can_edit_bank_accounts  ) {
+                            $html .= '<a href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$row->id])}}  " class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                            &nbsp;';
+                          
+                        }
+                       if ($is_admin || $can_delete_bank_accounts  ){
+                           $html .= '<button class="btn btn-xs btn-danger delete-attendance" data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@destroy\', [$row->id])}}"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                       }
+                        return $html;
+                    }
+                    // '<button data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
+                    //     <button class="btn btn-xs btn-danger delete-attendance" data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@destroy\', [$id])}}"><i class="fa fa-trash"></i> @lang("messages.delete")</button>
+                    //     '
                 )
                 ->addColumn(
                     'status',
@@ -487,8 +504,9 @@ class AttendanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
+        $can_crud_attendance_by_shift= auth()->user()->can('essentials.crud_attendance_by_shift');
+        // $can_add_attendance_by_shift= auth()->user()->can('essentials.add_attendance_by_shift');
+        // $can_edit_attendance_by_shift= auth()->user()->can('essentials.edit_attendance_by_shift');
 
         $date = $this->moduleUtil->uf_date(request()->input('date'));
 

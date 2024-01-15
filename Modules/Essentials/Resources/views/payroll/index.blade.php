@@ -19,7 +19,7 @@
                             @lang('essentials::lang.all_payrolls')
                         </a>
                     </li>
-                    @can('essentials.view_all_payroll')
+                    @can('essentials.view_payroll_group')
                         <li>
                             <a href="#payroll_group_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fas fa-layer-group" aria-hidden="true"></i>
@@ -27,6 +27,8 @@
                             </a>
                         </li>
                     @endcan
+
+
                     @if(auth()->user()->can('essentials.view_allowance_and_deduction') || auth()->user()->can('essentials.add_allowance_and_deduction'))
                         <li>
                             <a href="#pay_component_tab" data-toggle="tab" aria-expanded="true">

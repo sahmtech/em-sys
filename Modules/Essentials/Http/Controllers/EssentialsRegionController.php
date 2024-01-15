@@ -30,6 +30,10 @@ class EssentialsRegionController extends Controller
 
 
         $can_crud_regoins = auth()->user()->can('essentials.crud_regions');
+        $can_delete_regoins = auth()->user()->can('essentials.delete_regoins');
+        $can_add_regoins = auth()->user()->can('essentials.add_regoins');
+        $can_edit_regoins = auth()->user()->can('essentials.edit_regoins');
+
         if (! $can_crud_regoins) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -72,11 +76,14 @@ class EssentialsRegionController extends Controller
             )
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin , $can_edit_regoins , $can_delete_regoins) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin ||  $can_edit_regoins  ) {
                         $html .= '<a href="'. route('region.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         &nbsp;';
+                       
+                    }
+                    if($is_admin ||  $can_delete_regoins ){
                         $html .= '<button class="btn btn-xs btn-danger delete_region_button" data-href="' . route('region.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         

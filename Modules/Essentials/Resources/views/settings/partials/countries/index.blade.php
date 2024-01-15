@@ -16,10 +16,11 @@
 
             @slot('tool')
             <div class="box-tools">
-                
+               @if( auth()->user()->can('essentials.crud_countries'))
                 <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addCountryModal">
                     <i class="fa fa-plus"></i> @lang('messages.add')
                 </button>
+                @endif
             </div>
             @endslot
       
