@@ -31,14 +31,14 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.widget', ['class' => 'box-solid', 'title' => __( 'essentials::lang.all_holidays' )])
-                @if($is_admin)
+              
                 @slot('tool')
                     <div class="box-tools">
                         <button type="button" class="btn btn-block btn-primary btn-modal" data-href="{{action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'create'])}}" data-container="#add_holiday_modal">
                             <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
                     </div>
                 @endslot
-                @endif
+             
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="holidays_table">
                         <thead>
@@ -47,9 +47,9 @@
                                 <th>@lang( 'lang_v1.date' )</th>
                                 <th>@lang( 'business.business_location' )</th>
                                 <th>@lang( 'brand.note' )</th>
-                                @if($is_admin)
+                             
                                     <th>@lang( 'messages.action' )</th>
-                                @endif
+                                
                             </tr>
                         </thead>
                     </table>
@@ -72,6 +72,7 @@
                 serverSide: true,
                 ajax: {
                     "url": "{{action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index'])}}",
+                  
                     "data" : function(d) {
                         d.location_id = $('#location_id').val();
                         if($('#holiday_filter_date_range').val()) {
@@ -82,23 +83,15 @@
                         }
                     }
                 },
-                @if($is_admin)
-                columnDefs: [
-                    {
-                        targets: 4,
-                        orderable: false,
-                        searchable: false,
-                    },
-                ],
-                @endif
+              
+               
                 columns: [
-                    { data: 'name', name: 'essentials_holidays.name' },
+                    { data: 'name', name: 'name' },
                     { data: 'start_date', name: 'start_date'},
-                    { data: 'location', name: 'bl.name' },
+                    { data: 'location', name: 'location' },
                     { data: 'note', name: 'note'},
-                    @if($is_admin)
                     { data: 'action', name: 'action' },
-                    @endif
+                   
                 ],
             });
 

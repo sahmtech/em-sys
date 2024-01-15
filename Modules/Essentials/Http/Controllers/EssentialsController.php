@@ -36,9 +36,9 @@ class EssentialsController extends Controller
     public function index()
     {
 
-        if (!(auth()->user()->can('essentials.essentials_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
-            return redirect()->route('essentials_word_cards_dashboard');
-        }
+        // if (!(auth()->user()->can('essentials.essentials_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
+        //     return redirect()->route('essentials_word_cards_dashboard');
+        // }
         $business_id = request()->session()->get('user.business_id');
 
         $num_employee_staff = User::where('business_id', $business_id)->where(function ($query) {

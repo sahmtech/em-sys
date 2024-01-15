@@ -36,6 +36,10 @@ class EssentialsOfficialDocumentController extends Controller
         //    //temp  abort(403, 'Unauthorized action.');
         // }
 
+        $can_add_official_documents = auth()->user()->can('essentials.add_official_documents');
+        $can_edit_official_documents = auth()->user()->can('essentials.edit_official_documents');
+        $can_delete_official_documents = auth()->user()->can('essentials.delete_official_documents');
+        $can_show_official_documents = auth()->user()->can('essentials.show_official_documents');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
@@ -106,11 +110,20 @@ class EssentialsOfficialDocumentController extends Controller
             return Datatables::of($official_documents)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row)  use($is_admin,$can_edit_official_documents ,$can_delete_official_documents ,$can_show_official_documents){
                         $html = '';
-                        $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
-                        //      $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        if($is_admin || $can_edit_official_documents){
+                            $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+                        }
+
+                        if($is_admin || $can_show_official_documents){
+                        $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                        }
+                        if($is_admin || $can_delete_official_documents){
+                            $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+                    
 
                         return $html;
                     }

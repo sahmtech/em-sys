@@ -23,7 +23,7 @@
         </div>
     @endslot
         @endcan
-        @can('travel_categorie.view')
+       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="travel_categories_table">
                     <thead>
@@ -39,7 +39,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+      
     @endcomponent
 
     <div class="modal fade country_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

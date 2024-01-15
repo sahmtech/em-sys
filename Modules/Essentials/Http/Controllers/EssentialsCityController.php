@@ -79,7 +79,7 @@ class EssentialsCityController extends Controller
                 'action',
                 function ($row) use ($is_admin , $can_delete_cities , $can_edit_cities) {
                     $html = '';
-                    if ($is_admin ||  $can_edit_citie ) {
+                    if ($is_admin ||  $can_edit_cities ) {
                         $html .= '<a href="'. route('city.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         &nbsp;';
                       

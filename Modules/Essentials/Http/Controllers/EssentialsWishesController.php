@@ -25,6 +25,9 @@ class EssentialsWishesController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_delete_wishes= auth()->user()->can('essentials.delete_wishes');
+        $can_add_wishes= auth()->user()->can('essentials.add_wishes');
+        $can_edit_wishes= auth()->user()->can('essentials.edit_wishes');
+
         $can_curd_wishes=auth()->user()->can('essentials.curd_wishes');
        
         $reasons = EssentailsReasonWish::where('type','wish')->select(
@@ -47,9 +50,9 @@ class EssentialsWishesController extends Controller
             })
           
          
-                ->addColumn('action', function ($row) use($is_admin ,$can_delete_wishes ,$can_curd_wishes) {
+                ->addColumn('action', function ($row) use($is_admin ,$can_delete_wishes ,$can_edit_wishes) {
                     $html = '';
-                    if($is_admin  || $can_curd_wishes)
+                    if($is_admin  || $can_edit_wishes)
                     {
                    
                     $html .= '<button class="btn btn-xs btn-primary edit_button" 

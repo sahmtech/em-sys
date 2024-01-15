@@ -1231,6 +1231,9 @@ return [
   "crud_professions"=>'إضافة \ حذف \ تعديل المهن',
   'delete_procedures'=>'حذف إجراءات سير العمل',
   'delete_finish_contracts'=>'حذف اسباب انهاء العقود',
+  'add_finish_contracts'=>'إضافة سبب إنهاء العقود',
+
+
   'delete_wishes'=>'حذف الرغبات',
   'delete_leave'=>'حذف الاجازات',
   'delete_leave_type'=>'حذف أنواع الاجازات',
@@ -1251,10 +1254,82 @@ return [
   'edit_bank_accounts'=>'تعديل الحسابات البنكية ',
   'add_bank_accounts'=>'إضافة حساب بنكي',
 
+  'crud_shift'=>'حذف \ تعديل \ اضافة فترات العمل',
+  'edit_all_attendance'=>'تعديل كل الحضور',
+  'delete_all_attendance'=>'حذف كل الحضور',
+
   'delete_holidays'=>'حذف العطل الرسمية',
   'edit_holidays'=>'تعديل العطل الرسمية ',
   'add_holidays'=>'إضافة العطل الرسمية',
- 
+
+  'delete_travel_categories'=>'حذف تذاكر السفر',
+  'edit_travel_categories'=>'تعديل تذاكر السفر',
+  'add_travel_categories'=>'إضافة تذاكر السفر',
+
+  'delete_profession'=>'حذف المهن',
+  'edit_profession'=>'تعديل المهن',
+  'add_profession'=>'إضافة المهن',
+
+  'add_allowance_and_deduction'=>'إضافة البدلات والخصومات',
+  'edit_allowance_and_deduction'=>'تعديل البدلات الخصومات',
+  'delete_allowance_and_deduction'=>'حذف البدلات والخصومات',
+
+  'delete_contract_types'=>'حذف أنواع العقود',
+  'edit_contract_types'=>'تعديل أنواع العقود',
+  'add_contract_types'=>'إضافة أنواع العقود',
+
+  'add_attendance_status'=>'إضافة حالة انصراف',
+  'delete_attendance_status'=>'حذف حالة انصراف',
+
+  'crud_system_settings'=>'اعدادات النظام ',
+  'add_departments'=>'اضافة ادارات واقسام',
+  'delete_depatments'=>'حذف ادارات واقسام',
+  'edit_depatments'=>'تعديل ادارات واقسام',
+  'show_depatments'=>'عرض ادارات واقسام',
+  'add_manager'=>'اضافة مدير',
+  'delegatingManager_name'=>'تفويض مدير',
+  'show_employee'=>' عرض موظف',
+  'add_employee'=>'إضافة موظف',
+  'edit_employee'=>'تعديل موظف',
+  'show_employee_options'=>'عرض خيارات الموظفين',
+
+  'add_employee_appointments'=>'إضافة تعيين موظفين',
+  'edit_employee_appointments'=>'تعديل تعيين موظفين',
+  'delete_employee_appointments'=>'حذف تعيين موظفين',
+
+  'add_employee_work_admissions'=>'إضافة مباشرة عمل',
+  'edit_employee_work_admissions'=>'تعديل مباشرة العمل',
+  'delete_employee_work_admissions'=>'حذف مباشرة العمل',
+
+  'add_employee_contracts'=>'إضافة عقد وظيفي',
+  'show_employee_contracts'=>'عرض ملف العقد',
+  'delete_employee_contracts'=>'حذف العقد الوظيفي',
+
+  'add_employee_qualifications'=>'إضافة مؤهل علمي',
+  'edit_employee_qualifications'=>'تعديل مؤهل علمي',
+  'delete_employee_qualifications'=>'حذف مؤهل علمي',
+
+  'add_official_documents'=>'إضافة وثيقة رسمية ',
+  'edit_official_documents'=>'تعديل وثيقة رسمية ',
+  'delete_official_documents'=>'حذف وثيقة رسمية ',
+  'show_official_documents'=>'عرض وثيقة رسمية ',
+
+  'add_employee_families'=>'إضافة مرافقين',
+  'edit_employee_families'=>'تعديل مرافقين',
+  'delete_employee_families'=>'حذف مرافقين',
+
+
+  'edit_allowance_and_deduction'=>'تعديل البدلات',
+  'delete_allowance_and_deduction'=>'حذف البدلات',
+
+  'add_wishes'=>'إضافة رغبة',
+  'edit_wishes'=>'تعديل رغبة',
+
+  'crud_attendance_by_shift'=>' الحضور حسب الوردية',
+  'crud_attendance_by_date'=>'الحضور حسب التاريخ',
+  'import_attendance'=>'استيراد الحضور',
+  'view_payroll_group'=>'عرض كل مجموعات مسير الرواتب',
+  'essentials_requests_change_status'=>'تغير حالة الطلب ',
  
 
 

@@ -221,8 +221,13 @@ class EssentialsEmployeeFamilyController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $crud_employee_families = auth()->user()->can('essentials.crud_employee_families');
+        $can_add_employee_families = auth()->user()->can('essentials.add_employee_families');
+        $can_edit_employee_families = auth()->user()->can('essentials.edit_employee_families');
+        $can_delete_employee_families = auth()->user()->can('essentials.delete_employee_families');
+
         if (!$crud_employee_families) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -253,12 +258,18 @@ class EssentialsEmployeeFamilyController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row)  use($is_admin,$can_edit_employee_families,$can_delete_employee_families){
                         $html = '';
-
-                        $html .= '<a  href="' . route('employee_families.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                        '&nbsp;';
-                  //      $html .= '<button class="btn btn-xs btn-danger delete_employee_families_button" data-href="' . route('employee_families.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        if($is_admin || $can_edit_employee_families)
+                        {
+                            $html .= '<a  href="' . route('employee_families.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                            '&nbsp;';
+                        }
+                        if($is_admin || $can_delete_employee_families)
+                        {
+                            $html .= '<button class="btn btn-xs btn-danger delete_employee_families_button" data-href="' . route('employee_families.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+                       
 
                         return $html;
                     }

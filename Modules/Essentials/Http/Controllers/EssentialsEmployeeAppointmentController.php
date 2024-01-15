@@ -50,6 +50,11 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
         $can_crud_employee_appointments = auth()->user()->can('essentials.crud_employee_appointments');
+        $can_add_employee_appointments = auth()->user()->can('essentials.add_employee_appointments');
+        $can_edit_employee_appointments = auth()->user()->can('essentials.edit_employee_appointments');
+        $can_delete_employee_appointments = auth()->user()->can('essentials.delete_employee_appointments');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
         if (!$can_crud_employee_appointments) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -110,12 +115,20 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row)  use( $is_admin  , $can_edit_employee_appointments , $can_delete_employee_appointments){
                         $html = '';
+                         if($is_admin  || $can_edit_employee_appointments)
+                         {
+                            $html .= '<a  href="' . route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                            '&nbsp;';
+                         }
 
-                        $html .= '<a  href="' . route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                        '&nbsp;';
-                       // $html .= '<button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                         if($is_admin  || $can_delete_employee_appointments)
+                         {
+                              $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                         }
+                      
+                      
 
                         return $html;
                     }

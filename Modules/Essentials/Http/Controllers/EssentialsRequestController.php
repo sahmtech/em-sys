@@ -407,6 +407,7 @@ class EssentialsRequestController extends Controller
         if (!$crud_requests) {
             //temp  abort(403, 'Unauthorized action.');
         }
+        $can_essentials_requests_change_status =auth()->user()->can('essentials.essentials_requests_change_status');
 
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -510,20 +511,22 @@ class EssentialsRequestController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row)  use( $is_admin ,$can_essentials_requests_change_status) {
                     $status = '';
-
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . __($this->statuses[$row->status]['name']) . '</span>';
-
-
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                 
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                        $status = trans('followup::lang.' . $row->status);
+                    if($is_admin || $can_essentials_requests_change_status){
+                        if ($row->status == 'pending') {
+                            $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                                . __($this->statuses[$row->status]['name']) . '</span>';
+    
+    
+                                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                     
+                        } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                            $status = trans('followup::lang.' . $row->status);
+                        }
+    
                     }
-
+                  
                     return $status;
                 })
 
