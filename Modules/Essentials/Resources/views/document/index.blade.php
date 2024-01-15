@@ -3,7 +3,7 @@
 @section('title', __('essentials::lang.document'))
 
 @section('content')
-@include('essentials::layouts.nav_essentials')
+
 	<section class="content">
 	<h4>
 		@lang('essentials::lang.all_documents')
@@ -90,7 +90,7 @@
 		//document dataTable
 		var documents = $(".documents").DataTable({
 			processing: true,
-			ajax: "/essentials/document"+'?type=document',
+			ajax: "/toDo/document"+'?type=document',
 			columns: [
 						{data: "name", name:"documents.name"},
 						{data: "description", name:"documents.description"},

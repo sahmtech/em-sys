@@ -16,7 +16,7 @@ return [
   "user" => "المستخدم",
   "role" => "الوظيفة",
   "shared_by" => "نشر بواسطة :",
-  "todo" => "إدارة المهام",
+  "todo" => "إدارة المهام اليومية   ",
   "todo_list" => "قائمة المهام",
   'age_required' => 'العمر مطلوب في السطر رقم ',
   'gender_required' => 'الجنس مطلوب في السطر رقم ',
@@ -961,7 +961,7 @@ return [
   'missing_license_types' => 'التراخيص المتبقية',
   'add_doc' => 'إضافة وثيقة',
   'add_qualification' => 'إضافة مؤهل',
-  'crud_regions' => 'إضافة/حذف/تعديل منطقة',
+  'crud_regions' => 'إضافة/حذف/تعديل المناطق',
   'regions' => 'المناطق',
   'add_region' => 'إضافة منطقة',
   'end_residency' => 'الاقامات التي تنتهي خلال 15 يوم',
@@ -1225,7 +1225,11 @@ return [
   'view_all_payroll'=>'عرض جميع الرواتب',
   'crud_all_roles'=>'عرض جميع الصلاحيات',
   'delete_payroll'=>'حذف راتب',
-  'view_employees'=>'عرض الموظفين'
+  'view_employees'=>'عرض الموظفين',
+  'todo_dashboard'=>'الصفحة الأساسية ',
+  "crud_professions"=>'إضافة \ حذف \ تعديل المهن',
+
+
 
 
 ];

@@ -320,7 +320,7 @@ class HomeController extends Controller
 
         $ToPermissions = [
             
-            ['value' => 'essentials.toDo_dash'],
+            ['value' => 'essentials.essentials_todo_dashboard'],
 
         ];
 
