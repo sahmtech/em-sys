@@ -4,6 +4,7 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleBusiness;
+use App\AccessRoleCompany;
 use App\AccessRoleProject;
 use App\Business;
 use Illuminate\Contracts\Support\Renderable;
@@ -14,6 +15,7 @@ use App\BusinessLocation;
 use App\User;
 use App\ContactLocation;
 use App\Category;
+use App\Company;
 use App\Transaction;
 use App\Contact;
 use Modules\Sales\Entities\salesContractItem;
@@ -90,7 +92,7 @@ class EssentialsManageEmployeeController extends Controller
 
     public function index(Request $request)
     {
-        $business_id = request()->session()->get('user.business_id');
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
@@ -117,41 +119,15 @@ class EssentialsManageEmployeeController extends Controller
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
-
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
 
-
-        // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        $users = User::query();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+            $users = $this->moduleUtil->applyAccessRole($users);
         }
 
-        $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-            $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager', 'worker']);
-            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
-                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->whereIn('users.business_id', $user_businesses_ids);
-            });
-        })->where('users.is_cmmsn_agnt', 0)
+
+        $users = $users->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
 
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
@@ -178,30 +154,8 @@ class EssentialsManageEmployeeController extends Controller
                 'users.essentials_salary',
                 'users.total_salary',
                 'essentials_employee_appointmets.profession_id as profession_id',
-
                 'essentials_employee_appointmets.specialization_id as specialization_id'
-            ])->orderby('id', 'desc');
-
-
-
-        // $userProjects = [];
-        // if (!$is_admin) {
-        //     $roles = auth()->user()->roles;
-        //     foreach ($roles as $role) {
-
-        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-        //         $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        //         $userProjects = array_merge($userProjects, $userProjectsForRole);
-        //     }
-        //     $userProjects = array_unique($userProjects);
-        //     $users = $users->whereIn('assigned_to', $userProjects)
-        //         ->orWhere(function ($query) use ($business_id) {
-        //             $query->whereNull('assigned_to')->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
-        //         });
-        // }
-
-        // $users = $users->union($workers)->orderby('id', 'desc');
+            ])->orderby('id', 'desc')->groupby('id');
 
 
         if (!empty($request->input('specialization'))) {
@@ -331,15 +285,12 @@ class EssentialsManageEmployeeController extends Controller
                 ->make(true);
         }
 
-        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);;
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
-        $users = $all_users->pluck('full_name', 'id');
+
         $countries = EssentialsCountry::forDropdown();
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
-
-        $businesses = Business::whereIn('id', $user_businesses_ids)->pluck('name', 'id');
+        $businesses = Business::all();
+        //$businesses = Business::whereIn('id', $user_businesses_ids)->pluck('name', 'id');
         // $bl_attributes = $business_locations['attributes'];
         // $business_locations = $business_locations['locations'];
 
@@ -368,7 +319,7 @@ class EssentialsManageEmployeeController extends Controller
                 'nationalities',
                 'specializations',
                 'professions',
-                'users',
+
                 'countries',
                 'spacializations',
                 'status',
@@ -435,40 +386,39 @@ class EssentialsManageEmployeeController extends Controller
                     ->orWhereNull('degree');
             })
             ->count();
-            $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-            $user_projects_ids = SalesProject::all('id')->unique()->toArray();
-            if (!$is_admin) {
-                $userProjects = [];
-                $userBusinesses = [];
-                $roles = auth()->user()->roles;
-                foreach ($roles as $role) {
-    
-                    $accessRole = AccessRole::where('role_id', $role->id)->first();
-    
-                    if ($accessRole) {
-                        $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-    
-                        $userProjects = array_merge($userProjects, $userProjectsForRole);
-                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                    }
-                   
-                }
-                $user_projects_ids = array_unique($userProjects);
-                $user_businesses_ids = array_unique($userBusinesses);
-            }
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
+        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        if (!$is_admin) {
+            $userProjects = [];
+            $userBusinesses = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
 
-            $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
+
+                    $userProjects = array_merge($userProjects, $userProjectsForRole);
+                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                }
+            }
+            $user_projects_ids = array_unique($userProjects);
+            $user_businesses_ids = array_unique($userBusinesses);
+        }
+
+        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
-       
+
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
         $requestsProcess = null;
-     
+
         if (!empty($departmentIds)) {
 
             $requestsProcess = FollowupWorkerRequest::select([
@@ -491,15 +441,15 @@ class EssentialsManageEmployeeController extends Controller
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
-        }
-        else {
-            $output = ['success' => false,
-            'msg' => __('essentials::lang.please_add_the_employee_affairs_department'),
-                ];
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('essentials::lang.please_add_the_employee_affairs_department'),
+            ];
             return redirect()->route('home')->with('status', $output);
         }
         if (!$is_admin) {
-      
+
             $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
                 $query->where(function ($query2) use ($user_businesses_ids) {
                     $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
@@ -524,18 +474,18 @@ class EssentialsManageEmployeeController extends Controller
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
-                        
+
                         if (auth()->user()->can('crudExitRequests')) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                         }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -981,20 +931,19 @@ class EssentialsManageEmployeeController extends Controller
             // $lastEmployee = User::orderBy('emp_number', 'desc')
             //     ->first();
 
-                $latestRecord = User::where('business_id', $business_id )->orderBy('emp_number', 'desc')
+            $latestRecord = User::where('business_id', $business_id)->orderBy('emp_number', 'desc')
                 ->first();
-            
+
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->emp_number;
-              
-              //  $numericPart = (int)substr($latestRefNo, 3);
-            
+
+                //  $numericPart = (int)substr($latestRefNo, 3);
+
                 $latestRefNo++;
-               
-                 $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-               
+
+                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
             } else {
-               
+
                 $request['emp_number'] =  $business_id . '000';
             }
 

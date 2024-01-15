@@ -147,7 +147,7 @@
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee', $users, null, [
+                                {!! Form::select('employee', [], null, [
                                     'class' => 'form-control',
                                     'style' => 'height:40px',
                                     'placeholder' => __('essentials::lang.select_employee'),
@@ -242,7 +242,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employees2', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employees2', $users, null, [
+                                {!! Form::select('employees2', [], null, [
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.select_employee'),
                                     'required',

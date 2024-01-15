@@ -73,6 +73,10 @@ class User extends Authenticatable
         return $this->belongsTo(\App\Business::class);
     }
 
+    public static function userTypes()
+    {
+        return User::distinct()->pluck('user_type')->toArray();
+    }
 
 
     public function scopeUser($query)
