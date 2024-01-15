@@ -20,7 +20,7 @@ class CarTypeController extends Controller
     public function index(Request $request)
     {
         $carTypes = CarType::all();
-        $after_serch = false;
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (request()->ajax()) {
 
 
@@ -36,19 +36,21 @@ class CarTypeController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
 
                         $html = '';
-
+                        if ($is_admin  || auth()->user()->can('cartype.edit')) {
                         $html .= '
                         <a href="' . route('essentials.cartype.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.cartype.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_carType_button"  data-container="#edit_car_type_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
+                        }
+                        if ($is_admin  || auth()->user()->can('cartype.delete')) {
                         $html .= '
                     <button data-href="' .  route('essentials.cartype.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carType_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
+                        }
 
                         return $html;
                     }
@@ -64,7 +66,7 @@ class CarTypeController extends Controller
                 ->rawColumns(['action', 'name_en', 'name_ar'])
                 ->make(true);
         }
-        return view('essentials::movementMangment.carType.index', compact('carTypes', 'after_serch'));
+        return view('essentials::movementMangment.carType.index', compact('carTypes'));
     }
 
     /**

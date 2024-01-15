@@ -754,8 +754,28 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'cartype.edit',
+                        'label' => __('essentials::lang.carTypes_edit'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'cartype.delete',
+                        'label' => __('essentials::lang.carTypes_delete'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.carModels',
                         'label' => __('housingmovements::lang.carModels'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'carmodel.edit',
+                        'label' => __('essentials::lang.carModels_edit'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'carmodel.delete',
+                        'label' => __('essentials::lang.carModels_delete'),
                         'default' => false,
                     ],
                     [
@@ -764,8 +784,33 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'car.edit',
+                        'label' => __('essentials::lang.cars_edit'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'car.delete',
+                        'label' => __('essentials::lang.cars_delete'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'car.insurance',
+                        'label' => __('essentials::lang.cars_insurance'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.car_drivers',
                         'label' => __('housingmovements::lang.car_drivers'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'driver.edit',
+                        'label' => __('essentials::lang.drivers_edit'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'driver.delete',
+                        'label' => __('essentials::lang.drivers_delete'),
                         'default' => false,
                     ],
 
@@ -777,8 +822,30 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'change.oil.edit',
+                        'label' => __('essentials::lang.carsChangeOil_edit'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'change.oil.delete',
+                        'label' => __('essentials::lang.carsChangeOil_delete'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.carMaintenances',
                         'label' => __('housingmovements::lang.carMaintenances'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'maintenances.edit',
+                        'label' => __('essentials::lang.carMaintenances_edit'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'maintenances.delete',
+                        'label' => __('essentials::lang.carMaintenances_delete'),
                         'default' => false,
                     ],
 
