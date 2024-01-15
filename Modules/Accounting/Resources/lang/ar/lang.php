@@ -597,5 +597,13 @@ return [
 
     'accounting_dashboard' => 'الصفحة الرئيسية لإدارة المحاسبة ',
     'settings' => 'الاعدادات',
+    'automatedMigration_edit' => 'تعديل الترحيل الالي',
+    'automatedMigration_active_toggle' => 'تغيير حالة الترحيل الالي',
+    'account_edit' => 'تعديل الحسابات',
+    'cost_center_edit' => 'تعديل مراكز التكلفة',
+    'cost_center_delete' => 'حذف مراكز التكلفة',
+    'opening_balances_delete' => 'حذف الارصدة الافتتاحية',
+
+
 
 ];

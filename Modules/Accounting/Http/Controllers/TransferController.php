@@ -42,7 +42,7 @@ class TransferController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
         if (request()->ajax()) {
@@ -89,7 +89,7 @@ class TransferController extends Controller
 
             return Datatables::of($transfers)
                 ->addColumn(
-                    'action', function ($row) {
+                    'action', function ($row) use( $is_admin) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -98,7 +98,7 @@ class TransferController extends Controller
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                        if(auth()->user()->can('accounting.edit_transfer')) {
+                        if( $is_admin || auth()->user()->can('accounting.edit_transfer')) {
                             $html .= '<li>
                                 <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\TransferController@edit', 
                                 [$row->id]).'" class="btn-modal" data-container="#create_transfer_modal">
@@ -106,7 +106,7 @@ class TransferController extends Controller
                                 </a>
                             </li>';
                         }
-                        if(auth()->user()->can('accounting.delete_transfer')) {
+                        if( $is_admin || auth()->user()->can('accounting.delete_transfer')) {
                             $html .=  '<li>
                                     <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\TransferController@destroy', [$row->id]).'" class="delete_transfer_button">
                                         <i class="fas fa-trash" aria-hidden="true"></i>'.__("messages.delete").'

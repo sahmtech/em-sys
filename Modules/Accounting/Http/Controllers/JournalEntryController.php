@@ -32,7 +32,7 @@ class JournalEntryController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
             $journal = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
@@ -50,7 +50,7 @@ class JournalEntryController extends Controller
             }
             return Datatables::of($journal)
                 ->addColumn(
-                    'action', function ($row) {
+                    'action', function ($row) use($is_admin) {
                     $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -59,7 +59,7 @@ class JournalEntryController extends Controller
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                    if (auth()->user()->can('accounting.view_journal')) {
+                    if ($is_admin || auth()->user()->can('accounting.view_journal')) {
                         // $html .= '<li>
                         //         <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]).'">
                         //             <i class="fas fa-eye" aria-hidden="true"></i>'.__("messages.view").'
@@ -67,7 +67,7 @@ class JournalEntryController extends Controller
                         //         </li>';
                     }
 
-                    if (auth()->user()->can('accounting.edit_journal')) {
+                    if ($is_admin || auth()->user()->can('accounting.edit_journal')) {
                         $html .= '<li>
                                     <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@edit', [$row->id]) . '">
                                         <i class="fas fa-edit"></i>' . __("messages.edit") . '
@@ -75,7 +75,7 @@ class JournalEntryController extends Controller
                                 </li>';
                     }
 
-                    if (auth()->user()->can('accounting.delete_journal')) {
+                    if ( $is_admin || auth()->user()->can('accounting.delete_journal')) {
                         $html .= '<li>
                                     <a href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
                                         <i class="fas fa-trash" aria-hidden="true"></i>' . __("messages.delete") . '

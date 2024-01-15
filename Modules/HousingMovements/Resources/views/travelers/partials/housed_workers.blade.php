@@ -76,11 +76,11 @@
 
 
                                 &nbsp;
-                                @can('worker_housed')
+                                @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('worker_housed'))
                                 {!! Form::hidden('selected_products', null, ['id' => 'selected_products_for_edit']) !!}
                                 <button type="submit" class="btn btn-xs btn-warning" id="edit-selected"> <i
                                         class="fa fa-home"></i>{{ __('housingmovements::lang.housed') }}</button>
-                               @endcan
+                               @endif
 
 
 

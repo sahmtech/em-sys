@@ -27,7 +27,7 @@ class OpeningBalanceController extends Controller
     protected function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $sub_types_obj = AccountingAccount::query()->whereIn('account_primary_type', ['asset', 'liability'])
             ->where(function ($q) use ($business_id) {
@@ -48,12 +48,14 @@ class OpeningBalanceController extends Controller
             return Datatables::of($openingBalances)
                 ->addColumn(
                     'action',
-                    function ($row) {
-                        $deleteUrl = action('\Modules\Accounting\Http\Controllers\OpeningBalanceController@destroy', [$row->id]);
-                        return
-                            '
+                    function ($row) use ($is_admin) {
+                        if ($is_admin  || auth()->user()->can('accounting.OpeningBalance.delete')) {
+                            $deleteUrl = action('\Modules\Accounting\Http\Controllers\OpeningBalanceController@destroy', [$row->id]);
+                            return
+                                '
                         <button data-href="' . $deleteUrl . '" class="btn btn-xs btn-danger delete_opening_balance_button"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</button>
                     ';
+                        }
                     }
                 )
                 ->addColumn('account_name', function ($row) {

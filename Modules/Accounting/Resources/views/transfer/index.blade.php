@@ -44,7 +44,8 @@
     <div class="row">
         <div class="col-md-12">
             @component('components.widget', ['class' => 'box-solid'])
-                @can('accounting.add_transfer')
+               
+                @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.add_transfer'))
                     @slot('tool')
                         <div class="box-tools">
                             <button type="button" class="btn btn-block btn-primary btn-modal" 
@@ -53,7 +54,7 @@
                                 <i class="fas fa-plus"></i> @lang( 'messages.add' )</a>
                         </div>
                     @endslot
-                @endcan
+                @endif
                 <table class="table table-bordered table-striped" id="transfer_table">
                     <thead>
                         <tr>
