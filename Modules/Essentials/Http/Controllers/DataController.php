@@ -214,7 +214,90 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'essentials.delete_procedures',
+                        'label' => __('essentials::lang.delete_procedures'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_finish_coontracts',
+                        'label' => __('essentials::lang.delete_finish_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_wishes',
+                        'label' => __('essentials::lang.delete_wishes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_leave',
+                        'label' => __('essentials::lang.delete_leave'),
+                        'default' => false,
+                    ],
 
+                    [
+                        'value' => 'essentials.delete_leave_type',
+                        'label' => __('essentials::lang.delete_leave_type'),
+                        'default' => false,
+                    ],
+
+                    //countries
+                    [
+                        'value' => 'essentials.delete_countries',
+                        'label' => __('essentials::lang.delete_countries'),
+                        'default' => false,
+                    ],
+                    
+                    [
+                        'value' => 'essentials.edit_countries',
+                        'label' => __('essentials::lang.edit_countries'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.add_countries',
+                        'label' => __('essentials::lang.add_countries'),
+                        'default' => false,
+                    ],
+                    
+                    
+                    [
+                        'value' => 'essentials.delete_cities',
+                        'label' => __('essentials::lang.delete_cities'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.edit_cities',
+                        'label' => __('essentials::lang.edit_cities'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_cities',
+                        'label' => __('essentials::lang.add_cities'),
+                        'default' => false,
+                    ],
+                    //regoins
+                    [
+                        'value' => 'essentials.delete_regoins',
+                        'label' => __('essentials::lang.delete_regoins'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_regoins',
+                        'label' => __('essentials::lang.edit_regoins'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.add_regoins',
+                        'label' => __('essentials::lang.add_regoins'),
+                        'default' => false,
+                    ],
+
+                  
+                    
+                    
                     [
                         'value' => 'essentials.crud_all_attendance',
                         'label' => __('essentials::lang.crud_all_attendance'),

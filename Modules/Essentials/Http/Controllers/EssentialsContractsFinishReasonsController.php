@@ -23,7 +23,8 @@ class EssentialsContractsFinishReasonsController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-    
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_delete_finish_contracts = auth()->user()->can('essentials.delete_finish_contracts');
   
     
         $reasons = EssentailsReasonWish::where('type','reason')->select(
@@ -50,7 +51,7 @@ class EssentialsContractsFinishReasonsController extends Controller
 
 
             return datatables()->of($reasons)
-            ->addColumn('employee_type', function ($row) {
+            ->addColumn('employee_type', function ($row)  {
                 return trans('essentials::lang.' . $row->employee_type);
             })
             ->addColumn('reason_type', function ($row) {
@@ -69,11 +70,13 @@ class EssentialsContractsFinishReasonsController extends Controller
             
                 return '';
             })
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use ($is_admin , $can_delete_finish_contracts) {
+               if ($is_admin || $can_delete_finish_contracts ) {
                 $html = '';
                 
                 $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('finish_contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                 return $html;
+                }
             })
                 ->rawColumns(['action'])
                 ->removeColumn('main_reson_id')

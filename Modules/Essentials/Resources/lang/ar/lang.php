@@ -1229,6 +1229,24 @@ return [
   'crud_insurance_classes'=>'إدارة فئات التأمين',
   'todo_dashboard'=>'الصفحة الأساسية ',
   "crud_professions"=>'إضافة \ حذف \ تعديل المهن',
+  'delete_procedures'=>'حذف إجراءات سير العمل',
+  'delete_finish_contracts'=>'حذف اسباب انهاء العقود',
+  'delete_wishes'=>'حذف الرغبات',
+  'delete_leave'=>'حذف الاجازات',
+  'delete_leave_type'=>'حذف أنواع الاجازات',
+  
+  'delete_countries'=>'حذف الدول',
+  'edit_countries'=>'تعديل الدول',
+  'add_countries'=>' إضافة دولة ',
+  
+  'delete_cities'=>'حذف المدن',
+  'edit_cities'=>'تعديل المدن',
+  'add_cities'=>'إضافة مدينة',
+
+  'delete_regoins'=>'حذف المناطق',
+  'edit_regoins'=>'تعديل المناطق',
+  'add_regoins'=>'إضافة منطقة',
+ 
 
 
 

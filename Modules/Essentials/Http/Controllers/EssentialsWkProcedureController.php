@@ -54,7 +54,7 @@ class EssentialsWkProcedureController extends Controller
         $missingTypes = array_diff($requestsType, $actualTypes);
         $departments=EssentialsDepartment::where('business_id',$business_id)->pluck('name','id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-       
+        $can_delete_procedures = auth()->user()->can('essentials.delete_procedures');
      
 
         if (request()->ajax()) {	
@@ -62,7 +62,7 @@ class EssentialsWkProcedureController extends Controller
             $procedures = EssentialsWkProcedure::groupBy('type')->with('department')->get();
 
         return DataTables::of($procedures)
-        ->addColumn('steps', function ($procedure) {
+        ->addColumn('steps', function ($procedure)   use ($is_admin) {
             $steps = [];
             $steps1=EssentialsWkProcedure::where('type',$procedure->type)->with('department')->get();
             foreach ($steps1 as $step) {
@@ -80,12 +80,14 @@ class EssentialsWkProcedureController extends Controller
         })
         ->addColumn(
             'action',
-             function ($row) {
-                $html = '';
+             function ($row)  use ($is_admin , $can_delete_procedures) {
+            if ($is_admin || $can_delete_procedures ) {
+               $html = '';
        
                $html .= '<button class="btn btn-xs btn-danger delete_procedure_button" data-href="'. route('procedure.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                 
                 return $html;
+            }
              }
             )
         ->rawColumns(['steps','action'])
