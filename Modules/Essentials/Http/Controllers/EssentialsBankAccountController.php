@@ -28,6 +28,9 @@ class EssentialsBankAccountController extends Controller
          $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
          $can_crud_bank_accounts= auth()->user()->can('essentials.crud_bank_accounts');
+         $can_delete_bank_accounts= auth()->user()->can('essentials.delete_bank_accounts');
+         $can_edit_bank_accounts= auth()->user()->can('essentials.edit_bank_accounts');
+         $can_add_bank_accounts= auth()->user()->can('essentials.add_bank_accounts');
          if (! $can_crud_bank_accounts) {
             //temp  abort(403, 'Unauthorized action.');
          }
