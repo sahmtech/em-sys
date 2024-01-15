@@ -3,7 +3,7 @@
 @section('title', __('essentials::lang.knowledge_base'))
 
 @section('content')
-@include('essentials::layouts.nav_essentials')
+
 	<section class="content">
 		<div class="row">
 			<div class="col-md-3">

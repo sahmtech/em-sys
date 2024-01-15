@@ -303,7 +303,7 @@ class HomeController extends Controller
             ['value' => 'essentials.medicalInsurance_dashboard'],
         ];
         $ToPermissions = [
-            ['value' => 'essentials.toDo_dash'],
+            ['value' => 'essentials.essentials_todo_dashboard'],
         ];
         $salesDashPermission = [
             ['value' => 'sales.sales_dashboard'],

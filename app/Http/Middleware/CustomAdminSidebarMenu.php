@@ -95,7 +95,11 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
+        }
+        elseif (Str::startsWith($currentPath, 'toDo')) {
+            $this->toDoMenu();
+        }
+         elseif (Str::startsWith($currentPath, ['helpdesk','tickets'])) {
             $this->helpdeskMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
@@ -114,7 +118,86 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
     }
+   public function toDoMenu()
+   {
+    Menu::create('admin-sidebar-menu', function ($menu) {
+        $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+        $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        
+        $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+        
+        if ($is_admin  || auth()->user()->can('essentials.essentials_todo_dashboard')) {
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
+                __('essentials::lang.todo'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
+                request()->segment(2) == 'todo_dashboard'],
+            );
+        }
 
+         
+        if ($is_admin  || auth()->user()->can('essentials.view_document')) {
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']),
+                __('essentials::lang.document'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
+                request()->segment(2) == 'document'],
+            );
+        }
+
+        if ($is_admin  || auth()->user()->can('essentials.view_memos')) {
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']) .'?type=memos',
+                __('essentials::lang.memos'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
+                request()->segment(2) == 'document'],
+            );
+        }
+
+        if ($is_admin  || auth()->user()->can('essentials.view_reminder')) {
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\ReminderController::class, 'index']),
+                __('essentials::lang.reminders'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
+                request()->segment(2) == 'reminder'],
+            );
+        }
+
+
+        
+        if ($is_admin  || auth()->user()->can('essentials.view_message') ||  auth()->user()->can('essentials.create_message') ) {
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'index']),
+                __('essentials::lang.messages'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
+                request()->segment(2) == 'messages'],
+            );
+        }
+
+        if ($is_admin  || auth()->user()->can('essentials.view_knowledge_base')  ) {
+            $menu->url(
+                action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'index']),
+                __('essentials::lang.knowledge_base'),
+                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
+                request()->segment(2) == 'knowledge-base'],
+            );
+        }
+
+        // if ($is_admin  || auth()->user()->can('essentials.edit_essentials_settings')  ) {
+        //     $menu->url(
+        //         action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+        //         __('business.settings'),
+        //         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&   request()->segment(1) == 'toDo'&&
+        //         request()->segment(2) == 'settings'],
+        //     );
+        // }
+
+      
+    });
+   }
+  
     // public function crmMenu()
     // {
     //     Menu::create('admin-sidebar-menu', function ($menu) {
@@ -133,6 +216,7 @@ class CustomAdminSidebarMenu
     //         );
     //     });
     // }
+
     public function helpdeskMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
@@ -864,6 +948,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'payroll'],
                 );
             }
+
             // if ($is_admin ) {
             //     $menu->url(
             //         action([\App\Http\Controllers\TaxonomyController::class, 'index']),
@@ -916,13 +1001,15 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'departments'],
                 );
             }
-            if ($is_admin || auth()->user()->can('essentials.essentials')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
-                    __('essentials::lang.essentials'),
-                    ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'todo', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
-                );
-            }
+
+            // if ($is_admin || auth()->user()->can('essentials.essentials')) {
+            //     $menu->url(
+            //         action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
+            //         __('essentials::lang.essentials'),
+            //         ['icon' => 'fa fas fa-check-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'todo', 'style' => config('app.env') == 'demo' ? 'background-color: #001f3f !important;' : '']
+            //     );
+            // }
+
         });
     }
 
