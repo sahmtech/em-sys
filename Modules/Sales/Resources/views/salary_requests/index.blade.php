@@ -17,16 +17,17 @@
 
 <div class="row">
     <div class="col-md-12">
-
-    @slot('tool')
-            <div class="box-tools">
-                
-                <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addItemModal">
-                    <i class="fa fa-plus"></i> @lang('messages.add')
-                </button>
-            </div>
-            @endslot
-
+       
+        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_sales_salary_request"))
+            @slot('tool')
+                    <div class="box-tools">
+                        
+                        <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addItemModal">
+                            <i class="fa fa-plus"></i> @lang('messages.add')
+                        </button>
+                    </div>
+                    @endslot
+        @endif
 
       
             <div class="table-responsive">

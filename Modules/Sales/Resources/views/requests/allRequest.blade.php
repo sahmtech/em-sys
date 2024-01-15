@@ -112,15 +112,16 @@
         {{-- @include('sales::layouts.nav_requests') --}}
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_request"))
             @slot('tool')
                 <div class="box-tools">
-
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#addRequestModal">
+                    <button type="button" class="btn btn-block btn-primary btn-modal" data-toggle="modal" data-target="#addRequestModal">
                         <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
                     </button>
                 </div>
             @endslot
+        @endif
+    
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
@@ -617,21 +618,21 @@
                         render: function(data, type, row) {
                             var buttonsHtml = '';
 
-
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('followup::lang.return_the_request')</button>';
+                                    "@if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.return_sale_request')) <button class='btn btn-danger btn-sm btn-return' data-request-id='" +
+                                    row.process_id + "'>@lang('followup::lang.return_the_request')</button>@endif";
                             }
 
-
                             buttonsHtml +=
-                                '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('followup::lang.view_request')</button>';
+                                "@if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.show_sale_request')) <button class='btn btn-primary btn-sm btn-view-request' data-request-id='" +
+                                row.id + "'>@lang('followup::lang.view_request')</button> @endif";
 
                             return buttonsHtml;
                         }
                     },
+
+
 
 
 

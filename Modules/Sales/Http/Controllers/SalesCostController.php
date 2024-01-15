@@ -30,6 +30,9 @@ class SalesCostController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $crud_delete_sale_cost = auth()->user()->can('sales.delete_sale_cost');
+        $crud_edit_sale_cost = auth()->user()->can('sales.edit_sale_cost');
+
 
         $costs = salesCost::all();
   
@@ -40,13 +43,14 @@ class SalesCostController extends Controller
         
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin,$crud_delete_sale_cost,$crud_edit_sale_cost) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin || $crud_edit_sale_cost) {
                         $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
                          data-id="' . $row->id . '" data-description-value="' . $row->description . '" data-amount-value="' . $row->amount . '" data-duration_by_month-value="' . $row->duration_by_month. '" data-monthly_cost-value="' . $row->monthly_cost  . '">
                          <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                       
+                    }
+                    if ($is_admin || $crud_delete_sale_cost) {
                         $html .= '<button class="btn btn-xs btn-danger delete_item_button"
                             data-href="' . route('sales_costs_destroy', ['id' => $row->id]) . '">
                             <i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';

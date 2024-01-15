@@ -57,6 +57,10 @@ class ClientsController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+        $can_edit_contact = auth()->user()->can('sales.edit_lead_contact');
+        $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
+        $can_change_contact_status = auth()->user()->can('sales.change_contact_status');
+
 
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
@@ -75,15 +79,19 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) {
-
-                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-
-                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
-                    $html .= '&nbsp;<a href="' . route('changeContactStatus', ['id' => $row->id]) . '"
-                    data-href="' . route('changeContactStatus', ['id' => $row->id])  . ' "  
-                    data-container="#changeStatusContactModal" class="btn btn-xs btn-modal btn-warning" style="margin-top:3px;"> ' . __('sales::lang.change_contact_status') . '</a>'; // New view button
-                    // $html .= '&nbsp;<button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-client">'.__('sales::lang.change_contact_status').'</button>'; // New view button
+                ->addColumn('action', function ($row) use ($is_admin, $can_edit_contact, $can_view_contact_info, $can_change_contact_status) {
+                    if ($is_admin || $can_edit_contact) {
+                        $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                    }
+                    if ($is_admin || $can_view_contact_info) {
+                        $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    }
+                    if ($is_admin || $can_change_contact_status) {
+                        $html .= '&nbsp;<a href="' . route('changeContactStatus', ['id' => $row->id]) . '"
+                        data-href="' . route('changeContactStatus', ['id' => $row->id])  . ' "  
+                        data-container="#changeStatusContactModal" class="btn btn-xs btn-modal btn-warning" style="margin-top:3px;"> ' . __('sales::lang.change_contact_status') . '</a>'; // New view button
+                        // $html .= '&nbsp;<button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-client">'.__('sales::lang.change_contact_status').'</button>'; // New view button
+                    }
                     return $html;
                 })
 
@@ -113,15 +121,14 @@ class ClientsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
+        $can_create_offer_price = auth()->user()->can('sales.add_offer_price');
 
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-        $can_crud_customers = auth()->user()->can('sales.crud_customers');
-        if (!$can_crud_customers) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+     
 
 
         if (request()->ajax()) {
@@ -134,12 +141,15 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use ($can_create_offer_price, $can_view_contact_info, $is_admin) {
 
-                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-
-                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
-                    $html .= '&nbsp;<a href="' . route('create_offer_price_qualified_contacts', ['id' => $row->id, 'status' => 'quotation']) . '" class="btn btn-xs btn-warning" style="margin-top: 3px;"><i class="fa fa-plus"></i> ' . __('lang_v1.add_quotation') . '</a>'; // New view button
+                    // $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                    if ($is_admin || $can_view_contact_info) {
+                        $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>';
+                    }
+                    if ($is_admin || $can_create_offer_price) {
+                        $html .= '&nbsp;<a href="' . route('create_offer_price_qualified_contacts', ['id' => $row->id, 'status' => 'quotation']) . '" class="btn btn-xs btn-warning" style="margin-top: 3px;"><i class="fa fa-plus"></i> ' . __('lang_v1.add_quotation') . '</a>'; // New view button
+                    }
                     return $html;
                 })
                 ->editColumn('qualified_by', function ($row) use ($users) {
@@ -168,15 +178,10 @@ class ClientsController extends Controller
     public function unqualified_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
+       
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
-        $can_crud_customers = auth()->user()->can('sales.crud_customers');
-        if (!$can_crud_customers) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
-
+        $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
+      
 
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
@@ -189,11 +194,12 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use ($is_admin,$can_view_contact_info) {
 
-                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-
-                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                   
+                    if ($is_admin || $can_view_contact_info) {
+                    $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    }
                     return $html;
                 })
 
@@ -214,16 +220,7 @@ class ClientsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
-
-
-        $can_crud_customers = auth()->user()->can('sales.crud_customers');
-        if (!$can_crud_customers) {
-            //temp  abort(403, 'Unauthorized action.');
-
-        }
-
+        $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
 
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
@@ -235,11 +232,12 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) {
-
-                    $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                    $html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
-                    return $html;
+                ->addColumn('action', function ($row) use ($is_admin,$can_view_contact_info) {
+                   
+                    // $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
+                    if ($is_admin || $can_view_contact_info) {
+                    $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    }return $html;
                 })
 
                 ->filterColumn('name', function ($query, $keyword) {
@@ -408,7 +406,7 @@ class ClientsController extends Controller
     public function changeStatus(Request $request)
     {
         $user = auth()->user();
-      
+
         $businessId = $request->session()->get('user.business_id');
 
         $todayDate = Carbon::now();
@@ -464,7 +462,7 @@ class ClientsController extends Controller
     public function changeStatusContact(Request $request, $id)
     {
         $user = auth()->user();
-       
+
         $businessId = $request->session()->get('user.business_id');
 
         $todayDate = Carbon::now();
@@ -655,7 +653,7 @@ class ClientsController extends Controller
                 'type', 'contact_id',
                 'supplier_business_name', 'commercial_register_no', 'mobile', 'alternate_number', 'email', 'user_id', 'selected_user_id',
 
-                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf', 
+                'first_name_cf', 'last_name_cf', 'english_name_cf', 'email_cf', 'mobile_cf',
             ]);
 
             // $input['allow_login_cs'] = $request->filled('allow_login_cs');
@@ -842,7 +840,7 @@ class ClientsController extends Controller
 
     public function change_to_converted_client(Request $request)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
 

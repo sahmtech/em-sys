@@ -86,10 +86,11 @@ class OfferPriceController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
-        if (!$can_crud_offer_price) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_change_offer_price_status = auth()->user()->can('sales.change_offer_price_status');
+        $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
+
+
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
@@ -122,12 +123,14 @@ class OfferPriceController extends Controller
 
 
             return Datatables::of($sells)
-                ->editColumn('status', function ($row) {
-
-                    $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                        . $this->statuses[$row->status]['name'] . '</span>';
-                    $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-
+                ->editColumn('status', function ($row) use ($is_admin, $can_change_offer_price_status) {
+                    if ($is_admin || $can_change_offer_price_status) {
+                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                            . $this->statuses[$row->status]['name'] . '</span>';
+                        $status = '<a href="#" class="change_status" data-offer-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                    } else {
+                        $status = $row->status;
+                    }
                     return $status;
                 })
                 ->editColumn('location_id', function ($row) use ($business_locations) {
@@ -137,24 +140,13 @@ class OfferPriceController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
-                        // $html = '<div class="btn-group">
-                        //         <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                        //             data-toggle="dropdown" aria-expanded="false">' .
-                        //     __('messages.actions') .
-                        //     '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                        //             </span>
-                        //         </button>
-                        //         <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                        //             <li>
-                        //             <a href="#" data-href="' . route('download.file', ['id' => $row->id]) . '" class="btn-download">
-                        //             <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>
-                        //             </li>
-                        //             ';
-                        // $html .= '</ul></div>';
-                        $html = '    <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
-                        <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
-                        </a>';
+                    function ($row)  use ($is_admin, $can_print_offer_price) {
+                        $html = '';
+                        if ($is_admin || $can_print_offer_price) {
+                            $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'show'], [$row->id]) . '" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal">
+                            <i class="fas fa-download" aria-hidden="true"></i>' . __('messages.print') . '
+                            </a>';
+                        }
                         return $html;
                     }
                 )
@@ -186,10 +178,10 @@ class OfferPriceController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
-        if (!$can_crud_offer_price) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+        $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
@@ -224,7 +216,9 @@ class OfferPriceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin,$can_print_offer_price) {
+                        $html = '';
+                        if ($is_admin || $can_print_offer_price) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -240,6 +234,7 @@ class OfferPriceController extends Controller
                                     </li>';
 
                         $html .= '</ul></div>';
+                    }
 
                         return $html;
                     }
@@ -272,10 +267,8 @@ class OfferPriceController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $can_crud_offer_price = auth()->user()->can('sales.crud_offer_prices');
-        if (!$can_crud_offer_price) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+        $can_print_offer_price = auth()->user()->can('sales.print_offer_price');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_locations = BusinessLocation::forDropdown($business_id, false);
         $sells = Transaction::leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->where('transactions.business_id', $business_id)
@@ -310,7 +303,9 @@ class OfferPriceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin,$can_print_offer_price) {
+                        $html = '';
+                        if ($is_admin || $can_print_offer_price) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -329,7 +324,7 @@ class OfferPriceController extends Controller
 
 
                         $html .= '</ul></div>';
-
+                        }
                         return $html;
                     }
                 )
@@ -509,11 +504,11 @@ class OfferPriceController extends Controller
         $change_return = $this->dummyPaymentLine;
 
         $leads = Contact::where('type', 'qualified')
-        ->whereDoesntHave('transactions', function($query) {
-            $query->where('status', 'under_study');
-        })
-       
-        ->pluck('supplier_business_name', 'id');
+            ->whereDoesntHave('transactions', function ($query) {
+                $query->where('status', 'under_study');
+            })
+
+            ->pluck('supplier_business_name', 'id');
 
 
         return view('sales::price_offer.create')
@@ -742,7 +737,7 @@ class OfferPriceController extends Controller
 
 
             $client = Transaction::create($offer_details);
-            
+
             if ($request->contract_form == "monthly_cost") {
                 $updatedData = json_decode($request->input('updated_data'), true);
                 foreach ($updatedData as $data) {
@@ -756,7 +751,7 @@ class OfferPriceController extends Controller
                     ]);
                 }
             }
-         
+
             $productIds = json_decode($request->input('productIds'));
             $quantityArr = json_decode($request->input('quantityArr'));
             $productData = json_decode($request->input('productData'), true);
@@ -766,7 +761,7 @@ class OfferPriceController extends Controller
                     $data = $productData[$key];
                     $quantity = $quantityArr[$key];
 
-                    
+
 
                     $transactionSellLine = new TransactionSellLine;
                     $transactionSellLine->additional_allwances = json_encode($data);

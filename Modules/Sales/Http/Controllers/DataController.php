@@ -42,47 +42,199 @@ class DataController extends Controller
                     ],
         
                     [
-                        'value' => 'sales.crud_contacts',
-                        'label' => __('sales::lang.crud_contacts'),
+                        'value' => 'sales.view_lead_contacts',
+                        'label' => __('sales::lang.view_lead_contacts'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.crud_sales_projects',
-                        'label' => __('sales::lang.crud_sales_projects'),
+                        'value' => 'sales.view_qualified_contacts',
+                        'label' => __('sales::lang.view_qualified_contacts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_unqualified_contacts',
+                        'label' => __('sales::lang.view_unqualified_contacts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_converted_contacts',
+                        'label' => __('sales::lang.view_converted_contacts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_lead_contact',
+                        'label' => __('sales::lang.add_lead_contact'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_lead_contact',
+                        'label' => __('sales::lang.edit_lead_contact'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_contact_info',
+                        'label' => __('sales::lang.view_contact_info'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.change_contact_status',
+                        'label' => __('sales::lang.change_contact_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_sales_projects',
+                        'label' => __('sales::lang.view_sales_projects'),
                         'default' => false,
                     ],      
                     [
-                        'value' => 'sales.crud_offer_price',
-                        'label' => __('sales::lang.crud_offer_price'),
+                        'value' => 'sales.edit_sale_project',
+                        'label' => __('sales::lang.edit_sale_project'),
+                        'default' => false,
+                    ],  
+                    [
+                        'value' => 'sales.delete_sale_project',
+                        'label' => __('sales::lang.delete_sale_project'),
+                        'default' => false,
+                    ],  
+                    [
+                        'value' => 'sales.view_under_study_offer_price',
+                        'label' => __('sales::lang.view_under_study_offer_price'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.crud_contracts',
-                        'label' => __('sales::lang.crud_contracts'),
+                        'value' => 'sales.view_accepted_offer_price',
+                        'label' => __('sales::lang.view_accepted_offer_price'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_unaccepted_offer_price',
+                        'label' => __('sales::lang.view_unaccepted_offer_price'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_offer_price',
+                        'label' => __('sales::lang.add_offer_price'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.change_offer_price_status',
+                        'label' => __('sales::lang.change_offer_price_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.print_offer_price',
+                        'label' => __('sales::lang.print_offer_price'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_sales_contracts',
+                        'label' => __('sales::lang.view_sales_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_sale_contract',
+                        'label' => __('sales::lang.add_sale_contract'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.delete_sale_contract',
+                        'label' => __('sales::lang.delete_sale_contract'),
                         'default' => false,
                     ],
                    
                     [
-                        'value' => 'sales.crud_contract_itmes',
-                        'label' => __('sales::lang.crud_contract_itmes'),
+                        'value' => 'sales.print_sales_contracts',
+                        'label' => __('sales::lang.print_sales_contracts'),
+                        'default' => false,
+                    ],
+                   
+                    [
+                        'value' => 'sales.view_sales_contracts_file',
+                        'label' => __('sales::lang.view_sales_contracts_file'),
+                        'default' => false,
+                    ],
+                   
+                   
+                  
+                    [
+                        'value' => 'sales.view_contract_appendics',
+                        'label' => __('sales::lang.view_contract_appendics'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.crud_contract_appendics',
-                        'label' => __('sales::lang.crud_contract_appendics'),
+                        'value' => 'sales.add_contract_appendix',
+                        'label' => __('sales::lang.add_contract_appendix'),
                         'default' => false,
                     ],
-        
                     [
-                        'value' => 'sales.crud_sale_operation_orders',
-                        'label' => __('sales::lang.crud_sale_operation_orders'),
+                        'value' => 'sales.edit_contract_appendix',
+                        'label' => __('sales::lang.edit_contract_appendix'),
                         'default' => false,
                     ],
-        
+                    [
+                        'value' => 'sales.delete_contract_appendix',
+                        'label' => __('sales::lang.delete_contract_appendix'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_sale_operation_orders',
+                        'label' => __('sales::lang.view_sale_operation_orders'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_sale_operation_orders',
+                        'label' => __('sales::lang.add_sale_operation_orders'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.show_sale_operation_order',
+                        'label' => __('sales::lang.show_sale_operation_order'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_sales_requests',
+                        'label' => __('sales::lang.view_sales_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_request',
+                        'label' => __('sales::lang.add_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.change_request_status',
+                        'label' => __('sales::lang.change_request_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.return_sale_request',
+                        'label' => __('sales::lang.return_sale_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.show_sale_request',
+                        'label' => __('sales::lang.show_sale_request'),
+                        'default' => false,
+                    ],
 
                     [
-                        'value' => 'sales.crud_requests',
-                        'label' => __('sales::lang.crud_requests'),
+                        'value' => 'sales.view_sales_salary_requests',
+                        'label' => __('sales::lang.view_sales_salary_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_sales_salary_request',
+                        'label' => __('sales::lang.add_sales_salary_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.delete_sales_salary_request',
+                        'label' => __('sales::lang.delete_sales_salary_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_sales_salary_request',
+                        'label' => __('sales::lang.edit_sales_salary_request'),
                         'default' => false,
                     ],
                     [
@@ -91,8 +243,63 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.crud_sale_sources',
-                        'label' => __('sales::lang.crud_sale_sources'),
+                        'value' => 'sales.view_sale_sources',
+                        'label' => __('sales::lang.view_sale_sources'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_sale_sources',
+                        'label' => __('sales::lang.add_sale_source'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_sale_sources',
+                        'label' => __('sales::lang.edit_sale_source'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.delete_sale_sources',
+                        'label' => __('sales::lang.delete_sale_source'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_contract_itmes',
+                        'label' => __('sales::lang.view_contract_itmes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_contract_item',
+                        'label' => __('sales::lang.add_contract_itme'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_contract_item',
+                        'label' => __('sales::lang.edit_contract_itme'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.delete_contract_item',
+                        'label' => __('sales::lang.delete_contract_itme'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.view_sales_costs',
+                        'label' => __('sales::lang.view_sales_costs'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.add_sale_cost',
+                        'label' => __('sales::lang.add_sale_cost'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.edit_sale_cost',
+                        'label' => __('sales::lang.edit_sale_cost'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'sales.delete_sale_cost',
+                        'label' => __('sales::lang.add_sale_cost'),
                         'default' => false,
                     ],
                     [
@@ -100,18 +307,9 @@ class DataController extends Controller
                         'label' => __('sales::lang.crud_sales_templates'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'sales.crud_sales_costs',
-                        'label' => __('sales::lang.crud_sales_costs'),
-                        'default' => false,
-                    ],
                    
         
-                    [
-                        'value' => 'sales.crud_sales_salary_requests',
-                        'label' => __('sales::lang.crud_sales_salary_requests'),
-                        'default' => false,
-                    ],
+                   
         
         
                 ]

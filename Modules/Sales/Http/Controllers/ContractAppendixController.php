@@ -28,12 +28,14 @@ class ContractAppendixController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-
-        $can_crud_contract_appendics = auth()->user()->can('sales.crud_contract_appendics');
-        if (!$can_crud_contract_appendics) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_edit_contract_appendix = auth()->user()->can('sales.edit_contract_appendix');
+        $can_delete_contract_appendix = auth()->user()->can('sales.delete_contract_appendix');
+
+
+
+
+
         $contracts = salesContract::all()->pluck('number_of_contract', 'id');
         $items = salesContractItem::all()->pluck('name_of_item', 'id');
 
@@ -56,11 +58,13 @@ class ContractAppendixController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin, $can_edit_contract_appendix, $can_delete_contract_appendix) {
                         $html = '';
-                        if ($is_admin) {
+                        if ($is_admin  || $can_edit_contract_appendix) {
                             $html .= '<a href="' . route('appendix.edit', ['id' => $row->id]) .  '"  data-href="' . route('appendix.edit', ['id' => $row->id])  . ' " class="btn btn-xs btn-primary" data-container="#editAppendixModal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                          &nbsp;';
+                        }
+                        if ($is_admin  || $can_delete_contract_appendix) {
                             $html .= '<button class="btn btn-xs btn-danger delete_appendix_button" data-href="' . route('appendix.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
