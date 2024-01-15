@@ -30,10 +30,13 @@ class EssentialsInsuranceCategoryController extends Controller
         $business_id = request()->session()->get('user.business_id');
     
 
-        $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
-        if (! $can_crud_insurance_companies) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+ 
+        $can_edit_insurance_classes= auth()->user()->can('essentials.edit_insurance_classes');
+        $can_delete_insurance_classes= auth()->user()->can('essentials.delete_insurance_classes');
+        // if (! $can_crud_insurance_companies) {
+        //    //temp  abort(403, 'Unauthorized action.');
+        // }
         $insurance_companies= Contact::where('type','insurance')->pluck('supplier_business_name','id');
         if (request()->ajax()) {
             $insuranceCategories = DB::table('essentials_insurance_classes')->select([
@@ -52,11 +55,14 @@ class EssentialsInsuranceCategoryController extends Controller
             })
             ->addColumn(
                 'action',
-                function ($row) {
+                function ($row)  use($is_admin , $can_delete_insurance_classes){
                     $html = '';
                     //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
                     //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
+                  if($is_admin || $can_delete_insurance_classes){
                     $html .= '<button class="btn btn-xs btn-danger delete_insurance_category_button" data-href="' . route('insurance_categories.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                  }
+                   
 
             
                     return $html;

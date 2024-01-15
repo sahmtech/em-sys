@@ -89,6 +89,7 @@
                 <tfoot>
                     <tr>
                     <td colspan="5">
+                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_renew_residency"))
                         <div style="display: flex; width: 100%;">
                         {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsCardsController::class, 'postRenewData']),
                                  'method' => 'post', 'id' => 'renew_form' ]) !!}
@@ -103,6 +104,7 @@
                          {!! Form::close() !!}
                         
                             </div>
+                        @endif
                         </td>
                     </tr>
                 </tfoot>

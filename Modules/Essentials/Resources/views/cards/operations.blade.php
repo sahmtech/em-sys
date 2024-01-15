@@ -119,25 +119,25 @@
 
                                         &nbsp;
 
-                                    
+                                    @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_return_visa"))
                                         <button type="submit" class="btn btn-xs btn-warning" id="return_visa_selected">
                                             <i class="fa fa"></i>{{ __('essentials::lang.return_visa') }}
                                         </button>
-
+                                    @endif
                                         &nbsp;
 
-                                    
+                                     @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_final_visa"))
                                         <button type="submit" class="btn btn-xs btn-success" id="final_visa_selected">
                                             <i class="fa fa"></i>{{ __('essentials::lang.final_visa') }}
                                         </button>
-
+                                    @endif
                                         &nbsp;
 
-                                    
+                                     @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_absent_report"))
                                         <button type="submit" class="btn btn-xs btn-danger" id="absent_report_selected">
                                             <i class="fa fa-warning"></i>{{ __('essentials::lang.absent_report') }}
                                         </button>
-
+                                    @endif
                                     </div>
                                 </td>
                             </tr>
