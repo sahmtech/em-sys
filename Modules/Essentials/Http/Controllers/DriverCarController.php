@@ -35,6 +35,7 @@ class DriverCarController extends Controller
     {
 
         $carDrivers = DriverCar::all();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
@@ -75,19 +76,21 @@ class DriverCarController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin){
 
                         $html = '';
-
+                        if ($is_admin  || auth()->user()->can('driver.edit')) {
                         $html .= '
                         <a href="' . action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . '"
                         data-href="' . action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_driver_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
+                        }
+                        if ($is_admin  || auth()->user()->can('driver.delete')) {
                         $html .= '
                     <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
+                        }
 
                         return $html;
                     }

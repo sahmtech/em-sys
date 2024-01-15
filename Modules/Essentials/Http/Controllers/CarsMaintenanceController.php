@@ -22,7 +22,7 @@ class CarsMaintenanceController extends Controller
     {
         $carsMaintenance = HousingMovementsMaintenance::all();
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (request()->ajax()) {
 
@@ -58,25 +58,27 @@ class CarsMaintenanceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin){
 
                         $html = '';
-
-                        $html .= '
+                        if ($is_admin  || auth()->user()->can('maintenances.edit')) {
+                            $html .= '
                         <a href="' . route('essentials.cars-maintenances.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.cars-maintenances.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_carMaintenances_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
-                        $html .= '
+                        }
+                        if ($is_admin  || auth()->user()->can('maintenances.delete')) {
+                            $html .= '
                     <button data-href="' .  route('essentials.cars-maintenances.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carMaintenances_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
-                if (!empty($row->attachment)) {   
-                    $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/'.$row->attachment.'\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
-                        '&nbsp;';
-                    } else {
-                        $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
-                    }
+                        }
+                        if (!empty($row->attachment)) {
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->attachment . '\'"><i class="fa fa-eye"></i> ' . __('followup::lang.attachment_view') . '</button>';
+                            '&nbsp;';
+                        } else {
+                            $html .= '<span class="text-warning">' . __('followup::lang.no_attachment_to_show') . '</span>';
+                        }
                         return $html;
                     }
                 )
