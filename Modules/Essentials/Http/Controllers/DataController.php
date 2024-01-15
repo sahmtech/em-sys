@@ -637,35 +637,51 @@ class DataController extends Controller
                         'value' => 'essentials.edit_all_attendance',
                         'label' => __('essentials::lang.edit_all_attendance'),
                         'default' => false,
-                        'is_radio' => true,
+                      
                        
                     ],
+                    [
+                        'value' => 'essentials.return_essentials_request',
+                        'label' => __('essentials::lang.return_essentials_request'),
+                        'default' => false,
+                      
+                       
+                    ],
+                    [
+                        'value' => 'essentials.show_essentials_request',
+                        'label' => __('essentials::lang.show_essentials_request'),
+                        'default' => false,
+                      
+                       
+                    ],
+                    
+                    
                     [
                         'value' => 'essentials.delete_all_attendance',
                         'label' => __('essentials::lang.delete_all_attendance'),
                         'default' => false,
-                        'is_radio' => true,
+                     
                        
                     ],
                     [
                         'value' => 'essentials.crud_attendance_by_shift',
                         'label' => __('essentials::lang.crud_attendance_by_shift'),
                         'default' => false,
-                        'is_radio' => true,
+                       
                        
                     ],
                     [
                         'value' => 'essentials.crud_attendance_by_date',
                         'label' => __('essentials::lang.crud_attendance_by_date'),
                         'default' => false,
-                        'is_radio' => true,
+                     
                        
                     ],
                     [
                         'value' => 'essentials.import_attendance',
                         'label' => __('essentials::lang.import_attendance'),
                         'default' => false,
-                        'is_radio' => true,
+                        
                        
                     ],
                     
@@ -1020,10 +1036,43 @@ class DataController extends Controller
                     ],
 
                     [
+                        'value' => 'essentials.crud_employees_insurances',
+                        'label' => __('essentials::lang.crud_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_employees_insurances',
+                        'label' => __('essentials::lang.add_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_employees_insurances',
+                        'label' => __('essentials::lang.delete_employees_insurances'),
+                        'default' => false,
+                    ],
+                    
+                    
+                    [
                         'value' => 'essentials.crud_insurance_contracts',
                         'label' => __('essentials::lang.crud_insurance_contracts'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.add_insurance_contracts',
+                        'label' => __('essentials::lang.add_insurance_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_insurance_contracts',
+                        'label' => __('essentials::lang.edit_insurance_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_insurance_contracts',
+                        'label' => __('essentials::lang.delete_insurance_contracts'),
+                        'default' => false,
+                    ],
+                    
                     [
                         'value' => 'essentials.crud_insurance_requests',
                         'label' => __('essentials::lang.crud_insurance_requests'),
@@ -1035,8 +1084,39 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.add_insurance_companies',
+                        'label' => __('essentials::lang.add_insurance_companies'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_insurance_companies',
+                        'label' => __('essentials::lang.edit_insurance_companies'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_insurance_companies',
+                        'label' => __('essentials::lang.delete_insurance_companies'),
+                        'default' => false,
+                    ],
+                    
+                    [
                         'value' => 'essentials.crud_insurance_classes',
                         'label' => __('essentials::lang.crud_insurance_classes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_insurance_classes',
+                        'label' => __('essentials::lang.add_insurance_classes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_insurance_classes',
+                        'label' => __('essentials::lang.edit_insurance_classes'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_insurance_classes',
+                        'label' => __('essentials::lang.delete_insurance_classes'),
                         'default' => false,
                     ],
 
@@ -1127,6 +1207,72 @@ class DataController extends Controller
                         'label' => __('essentials::lang.essentials_work_cards_dashboard'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.workcards_requests_change_status',
+                        'label' => __('essentials::lang.workcards_requests_change_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.return_workcards_request',
+                        'label' => __('essentials::lang.return_workcards_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_workcards_request',
+                        'label' => __('essentials::lang.show_workcards_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_return_visa',
+                        'label' => __('essentials::lang.view_return_visa'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_final_visa',
+                        'label' => __('essentials::lang.view_final_visa'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_absent_report',
+                        'label' => __('essentials::lang.view_absent_report'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_employee_profile',
+                        'label' => __('essentials::lang.show_employee_profile'),
+                        'default' => false,
+                    ],
+                    
+                    [
+                        'value' => 'essentials.add_work_card',
+                        'label' => __('essentials::lang.add_work_card'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_renew_residency',
+                        'label' => __('essentials::lang.view_renew_residency'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_business_documents',
+                        'label' => __('essentials::lang.view_business_documents'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_business_subscriptions',
+                        'label' => __('essentials::lang.view_business_subscriptions'),
+                        'default' => false,
+                    ],
+                    
+                    [
+                        'value' => 'essentials.add_business',
+                        'label' => __('essentials::lang.add_business'),
+                        'default' => false,
+                    ],
+                    
+                     
+                    
+                    
                     [
                         'value' => 'essentials.view_all_expire_resdiency',
                         'label' => __('essentials::lang.view_all_expire_resdiency'),

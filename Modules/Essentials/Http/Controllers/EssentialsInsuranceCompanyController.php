@@ -29,12 +29,16 @@ class EssentialsInsuranceCompanyController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
-        $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
-        if (!$can_crud_insurance_companies) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
+        $can_add_insurance_companies = auth()->user()->can('essentials.add_insurance_companies');
+        $can_edit_insurance_companies = auth()->user()->can('essentials.edit_insurance_companies');
+        $can_delete_insurance_companies = auth()->user()->can('essentials.delete_insurance_companies');
+
+        // if (!$can_crud_insurance_companies) {
+        //    //temp  abort(403, 'Unauthorized action.');
+        // }
         if (request()->ajax()) {
             $insuranceCompanies = Contact::join('business', 'business.id', '=', 'contacts.business_id')
                 ->where('contacts.type', 'insurance');
@@ -79,11 +83,14 @@ class EssentialsInsuranceCompanyController extends Controller
                 //' . route('doc.view', ['id' => $row->id]) . '
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin , $can_delete_insurance_companies ) {
                         $html = '';
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
                         //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
+                       if($is_admin || $can_delete_insurance_companies){
                         $html .= '<button class="btn btn-xs btn-danger delete_insurance_company_button" data-href="' . route('insurance_companies.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                       }
+                       
                         return $html;
                     }
                 )

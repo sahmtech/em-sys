@@ -1344,6 +1344,38 @@ return [
   'import_attendance'=>'استيراد الحضور',
   'view_payroll_group'=>'عرض كل مجموعات مسير الرواتب',
   'essentials_requests_change_status'=>'تغير حالة الطلب ',
+  'return_essentials_request'=>'طلبات الارجاع',
+  'show_essentials_request'=>'عرض الطلبات',
+
+  'crud_employees_insurances'=>'حذف \ إضافة \ تعديل التأمين الطبي للموظفين',
+  'add_employees_insurances'=>'إضافة تأمين طبي',
+  'delete_employees_insurances'=>'حذف تأمين طبي',
+
+  'add_insurance_contracts'=>'إضافة عقود التأمين',
+  'edit_insurance_contracts'=>'تعديل عقود التأمين',
+  'delete_insurance_contracts'=>'حذف عقود التأمين',
+
+
+  'add_insurance_companies'=>'إضافة شركات التأمين',
+  'edit_insurance_companies'=>'تعديل شركات التأمين',
+  'delete_insurance_companies'=>'حذف شركات التأمين',
+
+  'add_insurance_classes'=>'إضافة فئات التأمين',
+  'edit_insurance_classes'=>'تعديل فئات التأمين',
+  'delete_insurance_classes'=>'حذف فئات التأمين',
+
+  'workcards_requests_change_status'=>'تغير الحالة للطلبات في العلاقات الحكومية',
+  'return_workcards_request'=>'إرجاع الطلب ',
+  'show_workcards_request'=>'عرض الطلب',
+  'view_return_visa'=>'عرض تأشيرة خروج وعودة',
+  'view_final_visa'=>'عرض تأشيرة خروج نهائي',
+  'view_absent_report'=>'عرض تبليغ هروب',
+  'show_employee_profile'=>'عرض بروفايل الموظف',
+  'add_work_card'=>'إضافة كرت عمل',
+  'view_renew_residency'=>'عرض تجديد الإقامات',
+  'view_business_documents'=>'عرض وثائق الشركة',
+  'view_business_subscriptions'=>'عرض اشتراكات الشركة',
+  'add_business'=>'إضافة شركة',
  
 
 

@@ -207,9 +207,12 @@ class EssentialsEmployeeInsuranceController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $can_crud_employees_insurances = auth()->user()->can('essentials.crud_employees_insurances');
+        $can_delete_employees_insurances = auth()->user()->can('essentials.delete_employees_insurances');
+        $can_add_employees_insurances = auth()->user()->can('essentials.add_employees_insurances');
+
         if (!$can_crud_employees_insurances) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -242,11 +245,15 @@ class EssentialsEmployeeInsuranceController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row)  use($is_admin ,  $can_delete_employees_insurances){
                         $html = '';
+                        if($is_admin ||  $can_delete_employees_insurances)
+                        {
+                            $html .= '<button class="btn btn-xs btn-danger delete_insurance_button" data-href="' . route('employee_insurance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
                         //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                  //      $html .= '<button class="btn btn-xs btn-danger delete_insurance_button" data-href="' . route('employee_insurance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                  //  
 
 
                         return $html;

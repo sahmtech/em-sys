@@ -52,7 +52,7 @@
             <div class="col-md-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        @can('essentials.crud_shift')
+                        @if(auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.crud_shift"))
                             <li class="active">
                                 <a href="#shifts_tab" data-toggle="tab" aria-expanded="true">
                                     <i class="fas fa-user-clock" aria-hidden="true"></i>
@@ -60,8 +60,7 @@
                                     @show_tooltip(__('essentials::lang.shift_datatable_tooltip'))
                                 </a>
                             </li>
-                        @endcan
-
+                        @endif
                         
                         <li @if (!auth()->user()->can('essentials.crud_all_attendance')) class="active" @endif>
                             <a href="#attendance_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-check-square"
@@ -169,22 +168,22 @@
                                 </table>
                             </div>
                         </div>
-                        @can(essentials.crud_attendance_by_shift)
+                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.crud_attendance_by_shift"))
                         <div class="tab-pane" id="attendance_by_shift_tab">
                             @include('essentials::attendance.attendance_by_shift')
                         </div>
-                        @endcan
+                        @endif
 
-                        @can(essentials.crud_attendance_by_date)
+                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.crud_attendance_by_date"))
                         <div class="tab-pane" id="attendance_by_date_tab">
                             @include('essentials::attendance.attendance_by_date')
                         </div>
-                        @endcan
-                        @can('essentials.import_attendance')
+                        @endif
+                        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.import_attendance"))
                             <div class="tab-pane" id="import_attendance_tab">
                                 @include('essentials::attendance.import_attendance')
                             </div>
-                        @endcan
+                        @endif
                     </div>
                 </div>
             </div>

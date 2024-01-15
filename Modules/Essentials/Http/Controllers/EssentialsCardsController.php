@@ -248,13 +248,16 @@ class EssentialsCardsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+        // $crud_requests = auth()->user()->can('followup.crud_requests');
+        // if (!$crud_requests) {
+        //     //temp  abort(403, 'Unauthorized action.');
+        // }
 
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+        $can_workcards_requests_change_status =auth()->user()->can('essentials.workcards_requests_change_status');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        
+        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
+      
 
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
@@ -348,9 +351,9 @@ class EssentialsCardsController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use($is_admin, $can_workcards_requests_change_status) {
                     $status = '';
-
+                   if($is_admin || $can_workcards_requests_change_status){
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . __($this->statuses[$row->status]['name']) . '</span>';
@@ -360,6 +363,8 @@ class EssentialsCardsController extends Controller
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
+                   }
+                   
 
                     return $status;
                 })
@@ -566,6 +571,32 @@ class EssentialsCardsController extends Controller
         return $input['request_no'];
     }
 
+    private function getTypePrefix($type)
+    {
+
+        $typePrefixMap = [
+            'exitRequest' => 'ex',
+            'returnRequest' => 'ret',
+            'leavesAndDepartures' => 'lev',
+            'residenceRenewal' => 'resRe',
+            'escapeRequest' => 'escRe',
+            'advanceSalary' => 'advRe',
+            'atmCard' => 'atm',
+            'residenceCard' => 'res',
+            'workerTransfer' => 'wT',
+            'workInjuriesRequest' => 'wIng',
+            'residenceEditRequest' => 'resEd',
+            'baladyCardRequest' => 'bal',
+            'insuranceUpgradeRequest' => 'insUp',
+            'mofaRequest' => 'mofa',
+            'chamberRequest' => 'ch',
+            'cancleContractRequest' => 'con',
+            'WarningRequest' => 'WR'
+        ];
+
+        return $typePrefixMap[$type];
+    }
+
     public function work_cards_operation(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
@@ -573,6 +604,7 @@ class EssentialsCardsController extends Controller
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
             //temp  abort(403, 'Unauthorized action.');
         }
+        $can_show_employee_profile= auth()->user()->can('essentials.show_employee_profile') ;
 
         $permissionName = 'essentials.view_profile_picture';
 
@@ -778,9 +810,12 @@ class EssentialsCardsController extends Controller
                 //         return $html;
                 //     }
                 // )
-                ->addColumn('view', function ($row) {
+                ->addColumn('view', function ($row) use($is_admin ,$can_show_employee_profile){
 
-                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    if($is_admin || $can_show_employee_profile){
+                        $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
+                    }
+                   
 
                     return $html;
                 })
