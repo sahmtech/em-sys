@@ -89,9 +89,11 @@ class CustomAdminSidebarMenu
             $this->agnetMenu();
         } elseif (Str::startsWith($currentPath, 'asset')) {
             $this->assetManagementMenu();
-        } elseif (Str::startsWith($currentPath, 'crm')) {
-            $this->crmMenu();
-        } elseif (Str::startsWith($currentPath, 'generalmanagement')) {
+        }
+        //  elseif (Str::startsWith($currentPath, 'crm')) {
+        //     $this->crmMenu();
+        // } 
+        elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
         } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
@@ -113,24 +115,24 @@ class CustomAdminSidebarMenu
         return $next($request);
     }
 
-    public function crmMenu()
-    {
-        Menu::create('admin-sidebar-menu', function ($menu) {
-            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
-            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']), __('crm::lang.crm'), ['icon' => 'fas fa fa-broadcast-tower', 'style' => config('app.env') == 'demo' ? 'background-color: #8CAFD4;' : '', 'active' => request()->segment(1) == 'crm' || request()->get('type') == 'life_stage' || request()->get('type') == 'source']);
-            //$menu->header("");
-            //$menu->header("");
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-            $menu->url(
-                action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
-                __('crm::lang.order_request'),
-                ['icon' => 'fa fas fa-sync', 'active' => request()->segment(2) == 'order-request']
-            );
-        });
-    }
+    // public function crmMenu()
+    // {
+    //     Menu::create('admin-sidebar-menu', function ($menu) {
+    //         $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+    //         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+    //         $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+    //         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //         $menu->url(action([\Modules\Crm\Http\Controllers\CrmDashboardController::class, 'index']), __('crm::lang.crm'), ['icon' => 'fas fa fa-broadcast-tower', 'style' => config('app.env') == 'demo' ? 'background-color: #8CAFD4;' : '', 'active' => request()->segment(1) == 'crm' || request()->get('type') == 'life_stage' || request()->get('type') == 'source']);
+    //         //$menu->header("");
+    //         //$menu->header("");
+    //         $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+    //         $menu->url(
+    //             action([\Modules\Crm\Http\Controllers\OrderRequestController::class, 'listOrderRequests']),
+    //             __('crm::lang.order_request'),
+    //             ['icon' => 'fa fas fa-sync', 'active' => request()->segment(2) == 'order-request']
+    //         );
+    //     });
+    // }
     public function helpdeskMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
