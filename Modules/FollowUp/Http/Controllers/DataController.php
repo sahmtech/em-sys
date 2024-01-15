@@ -253,7 +253,7 @@ class DataController extends Controller
         
                     ],
                     [
-                        'value' => 'followup.reports.crud_contrascts_wishes',
+                        'value' => 'followup.crud_contrascts_wishes',
                         'label' => __('followup::lang.crud_contrascts_wishes'),
                         'default' => false,
         
