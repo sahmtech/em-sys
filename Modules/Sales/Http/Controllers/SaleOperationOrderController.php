@@ -57,6 +57,7 @@ class SaleOperationOrderController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_show_sale_operation_order = auth()->user()->can('sales.show_sale_operation_order');
 
         $contracts = DB::table('sales_orders_operations')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
@@ -101,11 +102,13 @@ class SaleOperationOrderController extends Controller
                     return __('sales::lang.' . $row->Status);
                 })
 
-                ->addColumn('show_operation', function ($row) {
+                ->addColumn('show_operation', function ($row) use ($is_admin,$can_show_sale_operation_order) {
 
                     $html = '';
+                    if ($is_admin  || $can_show_sale_operation_order) {
                     $html = '<a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'show'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
-                    return $html;
+                     }
+                      return $html;
                 })
           
                 ->rawColumns(['show_operation', 'action'])

@@ -17,6 +17,8 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_offer_price"))
+       
             @slot('tool')
                 <div class="box-tools">
                     <a class="btn btn-block btn-primary"
@@ -24,6 +26,7 @@
                         <i class="fa fa-plus"></i> @lang('lang_v1.add_quotation')</a>
                 </div>
             @endslot
+        @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped ajax_view" id="sale_table">
                     <thead>

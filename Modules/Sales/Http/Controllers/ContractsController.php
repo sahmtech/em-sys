@@ -32,14 +32,12 @@ class ContractsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_print_sales_contracts = auth()->user()->can('sales.print_sales_contracts');
+        $can_view_sales_contracts_file = auth()->user()->can('sales.view_sales_contracts_file');
+        $can_delete_sale_contract = auth()->user()->can('sales.delete_sale_contract');
 
 
-
-
-        $can_crud_contracts = auth()->user()->can('sales.crud_contract');
-        if (!$can_crud_contracts) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
         $contacts = Contact::all()->pluck('supplier_business_name', 'id');
         $offer_prices = Transaction::where([['transactions.type', '=', 'sell'], ['transactions.status', '=', 'approved']])
             ->leftJoin('sales_contracts', 'transactions.id', '=', 'sales_contracts.offer_price_id')
@@ -74,21 +72,25 @@ class ContractsController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin, $can_print_sales_contracts, $can_view_sales_contracts_file, $can_delete_sale_contract) {
                         $html = '';
                         //  $html .=  '  <a href="#" data-href="' . action([\Modules\Sales\Http\Controllers\ContractsController::class, 'showOfferPrice'], [$row->id]) . '" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i>' . __('sales::lang.offer_price_view') . '</a>';
-                        $html .= '  <a href="#" data-href="' . route('download.contract', ['id' => $row->id]) . '" class="btn btn-xs btn-success btn-download">
+                        if ($is_admin || $can_print_sales_contracts) {
+                            $html .= '  <a href="#" data-href="' . route('download.contract', ['id' => $row->id]) . '" class="btn btn-xs btn-success btn-download">
                         <i class="fas fa-download" aria-hidden="true"></i>   ' . __('messages.print') . '   </a>';
-                        $html .= '&nbsp;';
-
-                        if (!empty($row->file)) {
-                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
-                        } else {
-                            $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                            $html .= '&nbsp;';
                         }
-                        $html .= '&nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-
+                        if ($is_admin || $can_view_sales_contracts_file) {
+                            if (!empty($row->file)) {
+                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file . '\'"><i class="fa fa-eye"></i> ' . __('sales::lang.contract_view') . '</button>';
+                            } else {
+                                $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                            }
+                            $html .= '&nbsp;';
+                        }
+                        if ($is_admin || $can_delete_sale_contract) {
+                            $html .= '<button class="btn btn-xs btn-danger delete_contract_button" data-href="' . route('contract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
                         return $html;
                     }
                 )
@@ -139,10 +141,10 @@ class ContractsController extends Controller
 
         $offerPrice = $request->input('offer_price');
         $contact = Transaction::whereId($offerPrice)->first()->contact_id;
-       
-        $transaction=Transaction::where('id','=',$offerPrice )->select('contract_duration')->first();
-        $contract_duration= $transaction->contract_duration ;
-       
+
+        $transaction = Transaction::where('id', '=', $offerPrice)->select('contract_duration')->first();
+        $contract_duration = $transaction->contract_duration;
+
         //dd( $contract_duration);
 
 

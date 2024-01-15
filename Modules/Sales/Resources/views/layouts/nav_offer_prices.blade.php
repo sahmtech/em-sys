@@ -16,26 +16,30 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                     
+                    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.view_under_study_offer_price'))
                     <li @if (request()->segment(2) == 'under_study_offer_prices') class="active" @endif>
                         <a href="{{ route('under_study_offer_prices') }}">
                             <i class="fas fa-hourglass-half" aria-hidden="true" style="font-size: smaller;"></i>
                             @lang('sales::lang.under_study_offer_prices')
                         </a>
                     </li>
+                    @endif
+                    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.view_accepted_offer_price'))
                     <li @if (request()->segment(2) == 'accepted_offer_prices') class="active" @endif>
                         <a href="{{ route('accepted_offer_prices') }}">
                             <i class="fas fa-check" aria-hidden="true" style="font-size: smaller;"></i>
                             @lang('sales::lang.accepted_offer_prices')
                         </a>
                     </li>
+                    @endif
+                    @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('sales.view_unaccepted_offer_price'))
                     <li @if (request()->segment(2) == 'unaccepted_offer_prices') class="active" @endif>
                         <a href="{{ route('unaccepted_offer_prices') }}">
                             <i class="fas fa-times" aria-hidden="true" style="font-size: smaller;"></i>
                             @lang('sales::lang.unaccepted_offer_prices')
                         </a>
                     </li>
-                  
+                    @endif
                     
 
                 </ul>
