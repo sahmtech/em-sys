@@ -56,15 +56,17 @@ class CustomAdminSidebarMenu
             $this->purchasesMenu();
         } elseif (Str::startsWith($currentPath, ['movment', 'dashboard-movment'])) {
             $this->movmentMenu();
-        } elseif (Str::startsWith($currentPath, [
-            'superadmin',
-            'subscription',
-            'alladminRequests',
-            'manage-modules',
-            'backup',
-        ])) {
-            $this->superAdminMenu();
-        } elseif (
+        }
+        // elseif (Str::startsWith($currentPath, [
+        //     'superadmin',
+        //     'subscription',
+        //     'alladminRequests',
+        //     'manage-modules',
+        //     'backup',
+        // ])) {
+        //     $this->superAdminMenu();
+        // } 
+        elseif (
             Str::startsWith($currentPath, [
                 'product',
                 'taxonom',
@@ -486,30 +488,30 @@ class CustomAdminSidebarMenu
 
             // if ($is_admin  || auth()->user()->can('housingmovements.report')) {
 
-                $menu->dropdown(
-                    __('housingmovements::lang.report'),
-                    function ($report)  use ($is_admin) {
+            $menu->dropdown(
+                __('housingmovements::lang.report'),
+                function ($report)  use ($is_admin) {
 
 
-                        if ($is_admin  || auth()->user()->can('essentials.carsChangeOilReport')) {
+                    if ($is_admin  || auth()->user()->can('essentials.carsChangeOilReport')) {
 
-                            $report->url(
-                                action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil']),
-                                __('housingmovements::lang.carsChangeOilReport'),
-                                ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-change-oil-report']
-                            );
-                        }
-                        if ($is_admin  || auth()->user()->can('essentials.carMaintenancesReport')) {
+                        $report->url(
+                            action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'CarsChangeOil']),
+                            __('housingmovements::lang.carsChangeOilReport'),
+                            ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-change-oil-report']
+                        );
+                    }
+                    if ($is_admin  || auth()->user()->can('essentials.carMaintenancesReport')) {
 
-                            $report->url(
-                                action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances']),
-                                __('housingmovements::lang.carMaintenancesReport'),
-                                ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-maintenances-report']
-                            );
-                        }
-                    },
-                    ['icon' => 'fa fa-bullseye',],
-                );
+                        $report->url(
+                            action([\Modules\Essentials\Http\Controllers\CarsReportsController::class, 'carMaintenances']),
+                            __('housingmovements::lang.carMaintenancesReport'),
+                            ['icon' => 'fa fa-bullseye', 'active' =>  request()->segment(2) == 'cars-maintenances-report']
+                        );
+                    }
+                },
+                ['icon' => 'fa fa-bullseye',],
+            );
             // }
         });
     }
@@ -522,13 +524,13 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home', 'active' => request()->segment(1) == 'home']);
-           
-                $menu->url(
-                    route('employee_insurance'),
-                    __('essentials::lang.health_insurance'),
-                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
-                );
-         
+
+            $menu->url(
+                route('employee_insurance'),
+                __('essentials::lang.health_insurance'),
+                ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'employee_insurance'],
+            );
+
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_contracts')) {
                 $menu->url(
                     route('insurance_contracts'),
@@ -1134,13 +1136,13 @@ class CustomAdminSidebarMenu
             $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-         
+
             $menu->url(
                 route('sales_landing'),
                 __('sales::lang.sales'),
                 ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale'],
             );
-           
+
             //$menu->header("");
             //$menu->header("");
             if ($is_admin || auth()->user()->can('sales.crud_contacts')) {
@@ -2136,39 +2138,39 @@ class CustomAdminSidebarMenu
         });
     }
 
-    public function superAdminMenu()
-    {
+    // public function superAdminMenu()
+    // {
 
-        Menu::create('admin-sidebar-menu', function ($menu) {
-            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
-            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+    //     Menu::create('admin-sidebar-menu', function ($menu) {
+    //         $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+    //         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+    //         $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+    //         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+    //         $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
-            $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index']), __('superadmin::lang.superadmin'), ['icon' => 'fa fas fa-users-cog', 'active' => request()->segment(1) == 'superadmin']);
+    //         $menu->url(action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index']), __('superadmin::lang.superadmin'), ['icon' => 'fa fas fa-users-cog', 'active' => request()->segment(1) == 'superadmin']);
 
-            //$menu->header("");
-            //$menu->header("");
+    //         //$menu->header("");
+    //         //$menu->header("");
 
-            if (($is_admin) || (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access'))) {
-                $menu->url(
-                    action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
-                    __('superadmin::lang.subscription'),
-                    ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
-                );
-            }
+    //         if (($is_admin) || (auth()->user()->can('superadmin.access_package_subscriptions') && auth()->user()->can('business_settings.access'))) {
+    //             $menu->url(
+    //                 action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
+    //                 __('superadmin::lang.subscription'),
+    //                 ['icon' => 'fa fas fa-sync', 'active' => request()->segment(1) == 'subscription']
+    //             );
+    //         }
 
-            //Modules menu
-            if (($is_admin) || (auth()->user()->can('manage_modules'))) {
-                $menu->url(action([\App\Http\Controllers\Install\ModulesController::class, 'index']), __('lang_v1.modules'), ['icon' => 'fa fas fa-plug', 'active' => request()->segment(1) == 'manage-modules']);
-            }
-            //Backup menu
-            if (($is_admin) || (auth()->user()->can('backup'))) {
-                $menu->url(action([\App\Http\Controllers\BackUpController::class, 'index']), __('lang_v1.backup'), ['icon' => 'fa fas fa-hdd', 'active' => request()->segment(1) == 'backup']);
-            }
-        });
-    }
+    //         //Modules menu
+    //         if (($is_admin) || (auth()->user()->can('manage_modules'))) {
+    //             $menu->url(action([\App\Http\Controllers\Install\ModulesController::class, 'index']), __('lang_v1.modules'), ['icon' => 'fa fas fa-plug', 'active' => request()->segment(1) == 'manage-modules']);
+    //         }
+    //         //Backup menu
+    //         if (($is_admin) || (auth()->user()->can('backup'))) {
+    //             $menu->url(action([\App\Http\Controllers\BackUpController::class, 'index']), __('lang_v1.backup'), ['icon' => 'fa fas fa-hdd', 'active' => request()->segment(1) == 'backup']);
+    //         }
+    //     });
+    // }
 
     // public function oldHandle($request, Closure $next)
     // {

@@ -38,14 +38,14 @@ class DataController extends Controller
         }
 
         $crm_contact_persons = User::where('business_id', $transaction->business_id)
-                                ->where('crm_contact_id', $transaction->contact_id)
-                                ->where('cmmsn_percent', '>', 0)
-                                ->get();
+            ->where('crm_contact_id', $transaction->contact_id)
+            ->where('cmmsn_percent', '>', 0)
+            ->get();
 
         //delete previous commission rows if contact is changed
         CrmContactPersonCommission::where('transaction_id', $transaction->id)
-                                ->whereNotIn('contact_person_id', $crm_contact_persons->pluck('id'))
-                                ->delete();
+            ->whereNotIn('contact_person_id', $crm_contact_persons->pluck('id'))
+            ->delete();
 
         //if paid add/update commission
         if ($transaction->payment_status == 'paid') {
@@ -54,7 +54,7 @@ class DataController extends Controller
                 $transaction_total_before_tax = $transaction->total_before_tax;
                 $total_inline_tax = TransactionSellLine::where('transaction_id', $transaction->id)->select(DB::raw('SUM(item_tax * (quantity - quantity_returned)) as total_inline_tax'))->first()->total_inline_tax;
 
-                if (! empty($total_inline_tax)) {
+                if (!empty($total_inline_tax)) {
                     $transaction_total_before_tax -= $total_inline_tax;
                 }
                 $commission_amount = $crmUtil->calc_percentage($transaction_total_before_tax, $contact_person->cmmsn_percent);
@@ -84,7 +84,7 @@ class DataController extends Controller
     public function deleteCommissionWithSale($transaction_id)
     {
         CrmContactPersonCommission::where('transaction_id', $transaction_id)
-                                    ->delete();
+            ->delete();
     }
 
     /**
@@ -103,7 +103,7 @@ class DataController extends Controller
                 ->where('business_id', $data['business_id'])
                 ->find($data['schedule_id']);
 
-            if (! empty($schedule)) {
+            if (!empty($schedule)) {
                 $business = Business::find($data['business_id']);
                 $startdatetime = $commonUtil->format_date($schedule->start_datetime, true, $business);
                 $msg = __(
@@ -156,9 +156,9 @@ class DataController extends Controller
             // $crm_settings = !empty($crm_settings) ? json_decode($crm_settings, true) : [];
 
             $business = Business::find(auth()->user()->business_id);
-            $crm_settings = ! empty($business->crm_settings) ? json_decode($business->crm_settings, true) : [];
+            $crm_settings = !empty($business->crm_settings) ? json_decode($business->crm_settings, true) : [];
 
-            if (! empty($crm_settings['enable_order_request'])) {
+            if (!empty($crm_settings['enable_order_request'])) {
                 $menu = Menu::instance('admin-sidebar-menu');
                 $menu->whereTitle(__('sale.sale'), function ($sub) {
                     if (empty($sub)) {
@@ -231,7 +231,7 @@ class DataController extends Controller
             'source' => [],
             'life_stage' => [],
         ];
-        if (! (auth()->user()->can('superadmin') || $module_util->hasThePermissionInSubscription($business_id, 'crm_module'))) {
+        if (!(auth()->user()->can('superadmin') || $module_util->hasThePermissionInSubscription($business_id, 'crm_module'))) {
             return $output;
         }
 
@@ -278,6 +278,7 @@ class DataController extends Controller
      */
     public function user_permissions()
     {
+        return [];
         $permissions = [
             [
                 'value' => 'crm.access_all_schedule',
@@ -374,11 +375,10 @@ class DataController extends Controller
         return [
             [
                 'group_name' => __('crm::lang.crm'),
-                'group_permissions' =>$permissions,
-                
+                'group_permissions' => $permissions,
+
             ],
         ];
-        
     }
 
     /**
@@ -389,14 +389,14 @@ class DataController extends Controller
      */
     public function calendarEvents($data)
     {
-        if (! in_array('schedule', $data['events'])) {
+        if (!in_array('schedule', $data['events'])) {
             return [];
         }
 
         $query = Schedule::where('business_id', $data['business_id'])
             ->whereBetween(DB::raw('date(start_datetime)'), [$data['start_date'], $data['end_date']]);
 
-        if (! empty($data['user_id'])) {
+        if (!empty($data['user_id'])) {
             $query->where(function ($qry) use ($data) {
                 $qry->whereHas('users', function ($q) use ($data) {
                     $q->where('user_id', $data['user_id']);
@@ -453,15 +453,15 @@ class DataController extends Controller
         $contact = $data['contact'];
         $input = $data['input'];
 
-        if (! empty($input['contact_persons'])) {
+        if (!empty($input['contact_persons'])) {
             $crmUtil = new CrmUtil;
 
             foreach ($input['contact_persons'] as $contact_person_data) {
-                if (! empty($contact_person_data['first_name'])) {
+                if (!empty($contact_person_data['first_name'])) {
                     $contact_person_data['crm_contact_id'] = $contact->id;
                     $contact_person_data['business_id'] = request()->session()->get('user.business_id');
-                    $contact_person_data['status'] = ! empty($contact_person_data['is_active']) ? 'active' : 'inactive';
-                    $contact_person_data['cmmsn_percent'] = ! empty($contact_person_data['cmmsn_percent']) ? $contact_person_data['cmmsn_percent'] : 0;
+                    $contact_person_data['status'] = !empty($contact_person_data['is_active']) ? 'active' : 'inactive';
+                    $contact_person_data['cmmsn_percent'] = !empty($contact_person_data['cmmsn_percent']) ? $contact_person_data['cmmsn_percent'] : 0;
 
                     if (array_key_exists('confirm_password', $contact_person_data)) {
                         unset($contact_person_data['confirm_password']);
