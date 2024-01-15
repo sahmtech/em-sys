@@ -324,10 +324,10 @@
                         render: function(data, type, row) {
                             var buttonsHtml = '';
 
-                            buttonsHtml += `
+                            buttonsHtml += `@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("followup.view_request_escalate_requests"))
                             <button class="btn btn-primary btn-sm btn-view-request" data-request-id="${row.id}">
                                 @lang('followup::lang.view_request')
-                            </button>`;
+                            </button>@endif`;
 
                             return buttonsHtml;
                         }

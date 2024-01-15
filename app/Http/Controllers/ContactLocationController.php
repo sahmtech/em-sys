@@ -88,9 +88,11 @@ class ContactLocationController extends Controller
                     'action',
                     function ($row) use ($is_admin) {
                         $html = '';
-                        if ($is_admin) {
+                        if ($is_admin || auth()->user()->can('followup.editContactLocations')) {
                             $html .= '<a href="' . route('sale.editContactLocations', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                              &nbsp;';
+                        }
+                        if ($is_admin || auth()->user()->can('followup.deleteContactLocations')) {
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroyContactLocations', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
@@ -185,7 +187,7 @@ class ContactLocationController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-  
+
 
         $contactLocation = ContactLocation::findOrFail($id);
         $cities = EssentialsCity::forDropdown();

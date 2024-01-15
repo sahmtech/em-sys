@@ -35,6 +35,7 @@ class FollowupDeliveryDocumentController extends Controller
                 $delivery_documents = $delivery_documents->where('document_id', request()->input('document_id'));
             }
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
             return DataTables::of($delivery_documents)
@@ -53,22 +54,26 @@ class FollowupDeliveryDocumentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
 
                         $html = '';
 
-                        $html .= '
+                        if (($is_admin  || auth()->user()->can('followup.edit_document_delivery'))) {
+                            $html .= '
                         <a href="' . route('documents-delivery-edit', ['id' => $row->id])  . '"
                         data-href="' . route('documents-delivery-edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_document_delivery_button"  data-container="#edit_document_delivery_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
-                        $html .= '
+                        }
+                        if (($is_admin  || auth()->user()->can('followup.delete_document_deliver'))) {
+                            $html .= '
                     <button data-href="' .  route('documents-delivery-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_delivery_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-                        $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->file_path . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __("messages.view") . '</a>
+                        }
+                        if (($is_admin  || auth()->user()->can('followup.view_document_deliver'))) {
+                            $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->file_path . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __("messages.view") . '</a>
                 &nbsp;';
-
-
+                        }
                         return $html;
                     }
                 )
@@ -85,7 +90,7 @@ class FollowupDeliveryDocumentController extends Controller
         }
         $workers = User::where('user_type', 'worker')->get();
         $documents = FollowupDocument::all();
-        return view('followup::deliveryDocument.index',compact('workers','documents'));
+        return view('followup::deliveryDocument.index', compact('workers', 'documents'));
     }
 
     /**
@@ -163,16 +168,16 @@ class FollowupDeliveryDocumentController extends Controller
             $update_data = [];
             if ($request->hasFile('document')) {
                 $file = $request->file('document');
-                $update_data['file_path']= $file->store('/documents');
+                $update_data['file_path'] = $file->store('/documents');
             }
-    
+
             $update_data['user_id'] = $request->input('user_id');
             $update_data['document_id'] = $request->input('document_id');
             $update_data['nots'] = $request->input('nots');
-            
+
             $document_delivery = FollowupDeliveryDocument::find($id);
             $document_delivery->update($update_data);
-           
+
             DB::commit();
             return redirect()->back();
         } catch (Exception $e) {
