@@ -143,11 +143,7 @@ class TravelersController extends Controller
                     return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
                 })
 
-                ->addColumn('action', function ($row) {
-                  $html='';
-                   
-                    return $html;
-                })
+               
                 ->filter(function ($query) use ($request) {
                  
                     if (!empty($request->input('full_name'))) {
@@ -273,11 +269,6 @@ class TravelersController extends Controller
                     return $row->transactionSellLine?->service?->nationality?->nationality ?? '';
                 })
 
-                ->addColumn('action', function ($row) {
-                  $html='';
-                   
-                    return $html;
-                })
                 ->filter(function ($query) use ($request) {
                  
                     if (!empty($request->input('full_name'))) {

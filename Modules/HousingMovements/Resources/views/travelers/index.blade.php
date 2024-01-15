@@ -132,7 +132,7 @@
                 { "data": "passport_number" },
                 { "data": "profession" },
                 { "data": "nationality" },
-                { data: 'action', name: 'action', orderable: false, searchable: false }
+                // { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
 

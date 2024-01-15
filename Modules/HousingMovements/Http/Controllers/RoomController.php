@@ -64,18 +64,20 @@ class RoomController extends Controller
             })
             ->addColumn(
                 'action',
-                function ($row)  {
+                function ($row) use ($is_admin) {
                     $html = '';
-                  
+                    if ($is_admin  || auth()->user()->can('room.workers')) {
                         $html .= '<a href="'. route('show_room_workers', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-eye"></i> '.__('housingmovements::lang.show_room_workers').'</a>
 
                         &nbsp;';
-
-                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-
+                    }
+                    if ($is_admin  || auth()->user()->can('room.edit')) {
+                        $html .= '&nbsp;<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                    }
+                    if ($is_admin  || auth()->user()->can('room.delete')) {
                         
-                        $html .= '<button class="btn btn-xs btn-danger delete_room_button" data-href="' . route('room.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                  
+                        $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_room_button" data-href="' . route('room.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    }
         
                     return $html;
                 }

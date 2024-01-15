@@ -16,86 +16,84 @@ use Modules\Essentials\Entities\EssentialsCity;
 class BuildingController extends Controller
 {
     protected $moduleUtil;
-   
+
 
     public function __construct(ModuleUtil $moduleUtil)
     {
-         $this->moduleUtil = $moduleUtil;
+        $this->moduleUtil = $moduleUtil;
     }
 
 
     public function index()
     {
-    
-       $business_id = request()->session()->get('user.business_id');
+
+        $business_id = request()->session()->get('user.business_id');
 
 
         $can_crud_buildings = auth()->user()->can('housingmovement_module.crud_buildings');
-        if (! $can_crud_buildings) {
-           
+        if (!$can_crud_buildings) {
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-        $cities= EssentialsCity::forDropdown();
+        $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
-            $buildings =DB::table('htr_buildings')->select(['id', 'name', 'city_id', 'address', 'guard_id', 'supervisor_id', 'cleaner_id']);
-                       
+            $buildings = DB::table('htr_buildings')->select(['id', 'name', 'city_id', 'address', 'guard_id', 'supervisor_id', 'cleaner_id']);
+
             if (!empty(request()->input('city')) && request()->input('city') !== 'all') {
                 $buildings->where('city_id', request()->input('city'));
             }
             return Datatables::of($buildings)
-            ->editColumn('city_id',function($row)use($cities){
-                $item = $cities[$row->city_id]??'';
+                ->editColumn('city_id', function ($row) use ($cities) {
+                    $item = $cities[$row->city_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('guard_id',function($row)use($users){
-                $item = $users[$row->guard_id]??'';
-          
-                return $item;
-            })
-            ->editColumn('supervisor_id',function($row)use($users){
-                $item = $users[$row->supervisor_id]??'';
+                    return $item;
+                })
+                ->editColumn('guard_id', function ($row) use ($users) {
+                    $item = $users[$row->guard_id] ?? '';
 
-                return $item;
-            })
-            ->editColumn('cleaner_id',function($row)use($users){
-                $item = $users[$row->cleaner_id]??'';
+                    return $item;
+                })
+                ->editColumn('supervisor_id', function ($row) use ($users) {
+                    $item = $users[$row->supervisor_id] ?? '';
 
-                return $item;
-            })
-            ->addColumn(
-                'action',
-                function ($row) use ($is_admin) {
-                    $html = '';
-                    if ($is_admin) {
-                     
-                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-                    
-                        $html .= '<button class="btn btn-xs btn-danger delete_building_button" data-href="' . route('building.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    return $item;
+                })
+                ->editColumn('cleaner_id', function ($row) use ($users) {
+                    $item = $users[$row->cleaner_id] ?? '';
+
+                    return $item;
+                })
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin) {
+                        $html = '';
+
+                        if ($is_admin  || auth()->user()->can('building.edit')) {
+                            $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+                        }
+                        if ($is_admin  || auth()->user()->can('building.delete')) {
+                            $html .= '&nbsp;&nbsp;<button class="btn btn-xs btn-danger delete_building_button" data-href="' . route('building.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+                        return $html;
                     }
-        
-                    return $html;
-                }
-            )
-            ->filterColumn('name', function ($query, $keyword) {
-                $query->where('name', 'like', "%{$keyword}%");
-            })
-            ->removeColumn('id')
-            ->rawColumns(['action'])
-            ->make(true);
-        
-        
-            }
-            $query = User::where('business_id', $business_id)->where('user_type','worker');
-            $all_users = $query->select('id',
-             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' ',COALESCE(id_proof_number,'')) as full_name"))->get();
-            $users2 = $all_users->pluck('full_name', 'id');
-     
-            return view('housingmovements::buildings.index')->with(compact('users2','cities'));
+                )
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('name', 'like', "%{$keyword}%");
+                })
+                ->removeColumn('id')
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        $query = User::where('business_id', $business_id)->where('user_type', 'worker');
+        $all_users = $query->select(
+            'id',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),' ',COALESCE(id_proof_number,'')) as full_name")
+        )->get();
+        $users2 = $all_users->pluck('full_name', 'id');
 
+        return view('housingmovements::buildings.index')->with(compact('users2', 'cities'));
     }
 
     /**
@@ -114,15 +112,15 @@ class BuildingController extends Controller
      */
     public function store(Request $request)
     {
-      
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
-        
+
         try {
-            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor','cleaner']);
-            
+            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor', 'cleaner']);
+
 
             $input2['name'] = $input['name'];
             $input2['city_id'] = $input['city'];
@@ -130,22 +128,24 @@ class BuildingController extends Controller
             $input2['guard_id'] = $input['guard'];
             $input2['supervisor_id'] = $input['supervisor'];
             $input2['cleaner_id'] = $input['cleaner'];
-         
+
             DB::table('htr_buildings')->insert($input2);
- 
-            $output = ['success' => true,
+
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.added_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
 
-     
-       return redirect()->route('buildings');
+
+        return redirect()->route('buildings');
     }
 
     /**
@@ -167,46 +167,48 @@ class BuildingController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-    
+
         $building = DB::table('htr_buildings')->find($buildingId);
-      
+
         $query = User::where('business_id', $business_id)->where('user_type', 'worker');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users2 = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();
-    
+
         return response()->json(['data' => compact('building', 'users2', 'cities')]);
     }
-    
- 
+
+
     public function update(Request $request, $buildingId)
     {
-      
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
 
         try {
-            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor','cleaner']);
-            
+            $input = $request->only(['name', 'city', 'address', 'guard', 'supervisor', 'cleaner']);
+
 
             $input2['name'] = $input['name'];
-            
+
             $input2['city_id'] = $input['city'];
             $input2['address'] = $input['address'];
             $input2['guard_id'] = $input['guard'];
             $input2['supervisor_id'] = $input['supervisor'];
             $input2['cleaner_id'] = $input['cleaner'];
-            
+
             DB::table('htr_buildings')->where('id', $buildingId)->update($input2);
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.updated_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
@@ -224,21 +226,21 @@ class BuildingController extends Controller
 
         try {
             DB::table('htr_buildings')->where('id', $id)
-                        ->delete();
+                ->delete();
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
-       
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-       
-       return $output;
 
+        return $output;
     }
 }

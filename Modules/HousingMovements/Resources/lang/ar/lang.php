@@ -13,7 +13,7 @@ return [
     'no' => 'لا',
     'housed_sucess' => 'تم التسكين بنجاح',
     'rooms' => 'الغرف',
-    'crud_buildings' => 'إضافة/حذف/تعديل السكنات',
+    'crud_buildings' => 'إستعراض السكنات',
     'building_name' => 'اسم السكن',
     'building_address' => 'عنوان السكن',
     'city' => 'المدينة',
@@ -112,7 +112,7 @@ return [
     'workers' => 'عمال المشاريع',
     'please_add_the_HousingMovements_department' => 'الرجاء إضافة إدارة خاصة بالسكن',
 
-    'crud_rooms' => 'إضافة/حذف/تعديل الغرف',
+    'crud_rooms' => 'إستعراض الغرف',
     'crud_facilities' => 'إضافة/حذف/تعديل المرافق',
     'crud_htr_requests' => 'إضافة/حذف/تعديل الطلبات',
     'crud_htr_workers_projects' => 'إضافة/حذف/تعديل عمال المشاريع',
@@ -120,7 +120,7 @@ return [
     'crud_htr_car_models' => 'إضافة/حذف/تعديل عمال طراز المركبات',
     'crud_htr_cars' => 'إضافة/حذف/تعديل عمال  المركبات',
     'crud_htr_drivers' => 'إضافة/حذف/تعديل   السائقين',
-    'crud_htr_trevelers' => 'إضافة/حذف/تعديل   وصول جديد',
+    'crud_htr_trevelers' => 'إستعراض وصول جديد / تسكين العمال',
     'crud_htr_housed_trevelers' => 'إضافة/حذف/تعديل    تسكين',
     'view_htr_dashboard' => 'عرض داشبورد السكن',
     'view_htr_dashboard' => 'عرض  إدارة الحركة ',
@@ -162,7 +162,7 @@ return [
     'created_by' => 'انشأ من قبل',
     'insurance_company_id' => 'شركة التأمين',
     'movement_management_dashbord' => 'الصفحة الرئيسية لإدارة الحركة',
-    'housing_move_dashbord'=>'الصفحة الرئيسية لإدارة السكن',
+    'housing_move_dashbord' => 'الصفحة الرئيسية لإدارة السكن',
     'insurance_start_Date' => 'تاريخ بداية التأمين',
     'insurance_end_date' => 'تاريخ نهاية التأمين',
     'add_insurance' => 'إضافة تامين',
@@ -171,9 +171,17 @@ return [
     'booking_start_Date' => 'تاريخ بداية الحجز',
     'booking_end_Date' => 'تاريخ نهاية الحجز',
     'all_workers_view' => 'عرض العمال المتاحيين للتسوق/المحجوزين/الخروج النهائي',
-    'view_housing_dashboard'=>'عرض الصفحة الرئيسية للسكن',
-    'view_workers'=>'عرض عمال المشاريع'
-
+    'view_housing_dashboard' => 'عرض الصفحة الرئيسية للسكن',
+    'view_workers' => 'عرض عمال المشاريع',
+    'change_arrived_status' => 'تعديل حالة الوصول الجديد',
+    'worker_housed' => 'إمكانية تسكين العمال',
+    'worker_book_permission' => 'حجز عامل',
+    'worker_unbook_permission' => 'إلغاء حجز عامل',
+    '_buildings_edit' => 'تعديل سكنات',
+    '_buildings_delete' => 'حذف سكنات',
+    '_room_workers' => 'إستعراض عمال الغرفة',
+    '_rooms_edit' => 'تعديل غرفة',
+    '_rooms_delete' => 'حذف غرفة',
 
 
 
