@@ -20,39 +20,48 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::get('/contract-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getContractStatusData'])->name('contractStatusData');
 
-        //document controller
-        Route::resource('document', 'Modules\Essentials\Http\Controllers\DocumentController')->only(['index', 'store', 'destroy', 'show']);
-        Route::get('document/download/{id}', [Modules\Essentials\Http\Controllers\DocumentController::class, 'download']);
+           });
+
+
+     Route::prefix('toDo')->group(function () {
+
+     
+       //todo controller
+       Route::resource('todo', 'ToDoController');
+
+       Route::post('todo/add-comment', [Modules\Essentials\Http\Controllers\ToDoController::class, 'addComment']);
+       Route::get('todo/delete-comment/{id}', [Modules\Essentials\Http\Controllers\ToDoController::class, 'deleteComment']);
+       Route::get('todo/delete-document/{id}', [Modules\Essentials\Http\Controllers\ToDoController::class, 'deleteDocument']);
+       Route::post('todo/upload-document', [Modules\Essentials\Http\Controllers\ToDoController::class, 'uploadDocument']);
+       Route::get('view-todo-{id}-share-docs', [Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs']);
+       Route::get('my_todo', [Modules\Essentials\Http\Controllers\ToDoController::class, 'my_todo'])->name('my_todo');
+
+       //reminder controller
+       Route::resource('reminder', 'Modules\Essentials\Http\Controllers\ReminderController')->only(['index', 'store', 'edit', 'update', 'destroy', 'show']);
+
+       //message controller
+       Route::get('get-new-messages', [Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'getNewMessages']);
+       Route::resource('messages', 'Modules\Essentials\Http\Controllers\EssentialsMessageController')->only(['index', 'store', 'destroy']);
+
+         //document controller
+       Route::resource('document', 'Modules\Essentials\Http\Controllers\DocumentController')->only(['index', 'store', 'destroy', 'show']);
+      Route::get('document/download/{id}', [Modules\Essentials\Http\Controllers\DocumentController::class, 'download']);
 
         //document share controller
         Route::resource('document-share', 'Modules\Essentials\Http\Controllers\DocumentShareController')->only(['edit', 'update']);
+       //Allowance and deduction controller
+       Route::resource('allowance-deduction', 'Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController');
 
-        //todo controller
-        Route::resource('todo', 'ToDoController');
+       Route::resource('knowledge-base', 'Modules\Essentials\Http\Controllers\KnowledgeBaseController');
 
-        Route::post('todo/add-comment', [Modules\Essentials\Http\Controllers\ToDoController::class, 'addComment']);
-        Route::get('todo/delete-comment/{id}', [Modules\Essentials\Http\Controllers\ToDoController::class, 'deleteComment']);
-        Route::get('todo/delete-document/{id}', [Modules\Essentials\Http\Controllers\ToDoController::class, 'deleteDocument']);
-        Route::post('todo/upload-document', [Modules\Essentials\Http\Controllers\ToDoController::class, 'uploadDocument']);
-        Route::get('view-todo-{id}-share-docs', [Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs']);
-        Route::get('my_todo', [Modules\Essentials\Http\Controllers\ToDoController::class, 'my_todo'])->name('my_todo');
-
-        //reminder controller
-        Route::resource('reminder', 'Modules\Essentials\Http\Controllers\ReminderController')->only(['index', 'store', 'edit', 'update', 'destroy', 'show']);
-
-        //message controller
-        Route::get('get-new-messages', [Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'getNewMessages']);
-        Route::resource('messages', 'Modules\Essentials\Http\Controllers\EssentialsMessageController')->only(['index', 'store', 'destroy']);
-
-        //Allowance and deduction controller
-        Route::resource('allowance-deduction', 'Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController');
-
-        Route::resource('knowledge-base', 'Modules\Essentials\Http\Controllers\KnowledgeBaseController');
-
-        Route::get('user-sales-targets', [Modules\Essentials\Http\Controllers\DashboardController::class, 'getUserSalesTargets']);
-    });
+       Route::get('user-sales-targets', [Modules\Essentials\Http\Controllers\DashboardController::class, 'getUserSalesTargets']);
 
 
+            
+           
+        });
+    
+   
     Route::prefix('work_cards')->group(function () {
 
         Route::get('/getBusiness', [\App\Http\Controllers\BusinessController::class, 'getBusiness'])->name('getBusiness');
@@ -467,6 +476,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
 
         Route::post('/requirement-request-changeStatus', [\Modules\Essentials\Http\Controllers\RecuirementsRequestsController::class, 'changeStatus'])->name('requirement-request-changeStatus');
     });
+
+
     Route::prefix('movment')->group(function () {
         Route::get('/dashboard-movment', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'index']);
         Route::get('/latest-change-oil', [Modules\Essentials\Http\Controllers\MovmentDashboardController::class, 'latestChangeOil'])->name('essentials.latest-change-oil');

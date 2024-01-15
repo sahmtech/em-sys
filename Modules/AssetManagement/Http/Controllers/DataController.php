@@ -32,6 +32,11 @@ class DataController extends Controller
                 'group_name' => __('assetmanagement::lang.asset_management'),
                 'group_permissions' => [
                     [
+                        'value' => 'asset.assetManagement_dashboard',
+                        'label' => __('assetmanagement::lang.assetManagement_dashboard'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'asset.view',
                         'label' => __('assetmanagement::lang.view_asset'),
                         'default' => false,

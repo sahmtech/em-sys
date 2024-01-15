@@ -16,7 +16,7 @@ return [
   "user" => "المستخدم",
   "role" => "الوظيفة",
   "shared_by" => "نشر بواسطة :",
-  "todo" => "إدارة المهام",
+  "todo" => "إدارة المهام اليومية   ",
   "todo_list" => "قائمة المهام",
   'age_required' => 'العمر مطلوب في السطر رقم ',
   'gender_required' => 'الجنس مطلوب في السطر رقم ',
@@ -961,7 +961,7 @@ return [
   'missing_license_types' => 'التراخيص المتبقية',
   'add_doc' => 'إضافة وثيقة',
   'add_qualification' => 'إضافة مؤهل',
-  'crud_regions' => 'إضافة/حذف/تعديل منطقة',
+  'crud_regions' => 'إضافة/حذف/تعديل المناطق',
   'regions' => 'المناطق',
   'add_region' => 'إضافة منطقة',
   'end_residency' => 'الاقامات التي تنتهي خلال 15 يوم',
@@ -1211,6 +1211,7 @@ return [
   'insurance' => 'التأمينات',
   'add_insurance' => 'إضافة تأمين',
   'edit_insurance' => 'تعديل التأمين',
+
   "there_is_no_insurance_dep" => 'لا يوجد إدارة خاصة بالتأمين في الهيكل التنظيمي لوصول الطلبات إليها',
   'crud_insurance_requests' => 'إدارة طلبات التأمينات',
   'crud_workcards_request' => 'إدارة طلبات العلاقات الحكومية',
@@ -1227,6 +1228,8 @@ return [
   'view_employees' => 'عرض الموظفين',
   'medicalInsurance_dashboard' => 'الصفحة الرئيسية للتأمين الطبي',
   'crud_insurance_classes' => 'إدارة فئات التأمين',
+    'todo_dashboard'=>'الصفحة الأساسية ',
+  "crud_professions"=>'إضافة \ حذف \ تعديل المهن',
   'carTypes_edit' => 'تعديل نوع المركبة',
   'carTypes_delete' => 'حذف نوع المركبة',
   'carModels_edit' => 'تعديل طراز المركبة',
@@ -1240,6 +1243,7 @@ return [
   'carsChangeOil_delete' => 'حذف تغيير الزيت',
   'carMaintenances_edit' => 'تعديل صيانة سيارة',
   'carMaintenances_delete' => 'حذف صيانة سيارة',
+
 
 
 ];

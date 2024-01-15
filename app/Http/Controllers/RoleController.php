@@ -286,7 +286,16 @@ class RoleController extends Controller
             ->active()
             ->get();
 
-        $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
+       // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
+        $temp = $this->moduleUtil->getModuleData('user_permissions');
+        $module_permissions = [];
+  
+        foreach ($temp as $temp_item) {
+            foreach($temp_item as $permission_item ){
+                 $module_permissions[] = $permission_item;
+            }
+           
+        }
 
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 

@@ -3,7 +3,7 @@
 @section('title', __('essentials::lang.todo'))
 
 @section('content')
-@include('essentials::layouts.nav_essentials')
+
 <section class="content">
 	@component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
 		@can('essentials.assign_todos')
@@ -79,7 +79,7 @@
 	        processing: true,
 	        serverSide: true,
 	        ajax: {
-	        	url: '/essentials/todo',
+	        	url: '/toDo/todo',
 	        	data: function(d) {
 	        		d.user_id = $('#user_id_filter').length ? $('#user_id_filter').val() : '';
 	        		d.priority = $('#priority_filter').val();
