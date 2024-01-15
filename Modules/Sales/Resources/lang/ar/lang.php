@@ -417,10 +417,10 @@ return [
 
 
 
-    'view_contract_itmes'=>'استعراض مصادر العملاء',
-    'add_contract_item'=>'إضافة مصدر عميل',
-    'edit_contract_item'=>'تعديل مصدر عميل',
-    'delete_contract_item'=>'حذف مصدر عميل',
+    'view_contract_items'=>'استعراض بنود العملاء',
+    'add_contract_item'=>'إضافة بند عقد',
+    'edit_contract_item'=>'تعديل بند عقد ',
+    'delete_contract_item'=>'حذف بند عقد ',
 
 
     'view_sales_costs'=>'استعراض التكاليف الثابتة',
@@ -428,6 +428,7 @@ return [
     'edit_sale_cost'=>'تعديل تكلفة ثابتة',
     'delete_sale_cost'=>'حذف تكلفة ثابتة',
 
+  
 
 
 

@@ -263,23 +263,23 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'sales.view_contract_itmes',
-                        'label' => __('sales::lang.view_contract_itmes'),
+                        'value' => 'sales.view_contract_items',
+                        'label' => __('sales::lang.view_contract_items'),
                         'default' => false,
                     ],
                     [
                         'value' => 'sales.add_contract_item',
-                        'label' => __('sales::lang.add_contract_itme'),
+                        'label' => __('sales::lang.add_contract_item'),
                         'default' => false,
                     ],
                     [
                         'value' => 'sales.edit_contract_item',
-                        'label' => __('sales::lang.edit_contract_itme'),
+                        'label' => __('sales::lang.edit_contract_item'),
                         'default' => false,
                     ],
                     [
                         'value' => 'sales.delete_contract_item',
-                        'label' => __('sales::lang.delete_contract_itme'),
+                        'label' => __('sales::lang.delete_contract_item'),
                         'default' => false,
                     ],
                     [

@@ -1224,7 +1224,7 @@ class CustomAdminSidebarMenu
 
 
 
-            if ($is_admin || auth()->user()->can('sales.view_sale_sources') || auth()->user()->can('sales.view_contract_itmes') || auth()->user()->can('sales.view_sales_costs')) {
+            if ($is_admin || auth()->user()->can('sales.view_sale_sources') || auth()->user()->can('sales.view_contract_items') || auth()->user()->can('sales.view_sales_costs')) {
                 $menu->dropdown(
                     __('sales::lang.sales_settings'),
                     function ($sub) use ($is_admin) {
@@ -1235,7 +1235,7 @@ class CustomAdminSidebarMenu
                                 ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_sources']
                             );
                         }
-                        if ($is_admin || auth()->user()->can('sales.view_contract_itmes')) {
+                        if ($is_admin || auth()->user()->can('sales.view_contract_items')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
                                 __('sales::lang.contract_itmes'),
