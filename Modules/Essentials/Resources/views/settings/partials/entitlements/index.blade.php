@@ -13,7 +13,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary'])
-        @can('entitlement_type.create')
+       
         @slot('tool')
         <div class="box-tools">
       
@@ -22,8 +22,8 @@
             </button>
         </div>
     @endslot
-        @endcan
-        @can('entitlement_type.view')
+     
+       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="entitlement_types_table">
                     <thead>
@@ -38,7 +38,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+     
     @endcomponent
 
     <div class="modal fade country_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

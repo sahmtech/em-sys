@@ -13,7 +13,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary'])
-        @can('bank.create')
+        
                 @slot('tool')
                 <div class="box-tools">
             
@@ -22,7 +22,7 @@
                     </button>
                 </div>
                 @endslot
-        @endcan
+       
        
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="bank_accounts_table">

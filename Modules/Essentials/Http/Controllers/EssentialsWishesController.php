@@ -65,6 +65,7 @@ class EssentialsWishesController extends Controller
          
                     $html .= '&nbsp;';
                     }
+
                     if($is_admin  || $can_delete_wishes){
                     $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('wish.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }

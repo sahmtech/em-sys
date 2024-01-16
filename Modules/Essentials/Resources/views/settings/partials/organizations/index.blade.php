@@ -13,7 +13,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary'])
-        @can('organization.create')
+      
         @slot('tool')
         <div class="box-tools">
       
@@ -22,8 +22,8 @@
             </button>
         </div>
     @endslot
-        @endcan
-        @can('organization.view')
+     
+      
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="organizations_table">
                     <thead>
@@ -41,7 +41,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+     
     @endcomponent
     <div class="modal fade organization_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>

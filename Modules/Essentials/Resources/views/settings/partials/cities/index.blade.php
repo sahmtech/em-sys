@@ -14,7 +14,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget',['class' => 'box-primary'])
-        @can('city.create')
+      
         @slot('tool')
         <div class="box-tools">
             <!-- Button to trigger the Add New City modal -->
@@ -23,7 +23,7 @@
             </button>
         </div>
     @endslot
-        @endcan
+      
        
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="cities_table">

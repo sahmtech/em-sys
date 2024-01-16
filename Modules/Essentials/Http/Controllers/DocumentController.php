@@ -36,6 +36,12 @@ class DocumentController extends Controller
     public function index(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+ 
+        $can_add_document= auth()->user()->can('essentials.add_document');
+        $can_delete_document= auth()->user()->can('essentials.delete_document');
+        $can_share_document= auth()->user()->can('essentials.share_document');
+        $can_download_document= auth()->user()->can('essentials.download_document');
 
 
         $type = $request->get('type');
@@ -68,29 +74,43 @@ class DocumentController extends Controller
                     $session_userid = request()->session()->get("user.id");
                     @endphp
 
-                    @if($session_userid == $user_id)
+
+                   
+                    @if( auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.delete_document") && $session_userid == $user_id)
                     <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@destroy\',[$id])}}" class="btn btn-danger btn-xs delete_doc">
                      <i class="fa fa-trash"></i>
                      @lang( "essentials::lang.delete")
                     </button>
+                    @endif
 
+                    @if( auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.share_document") && $session_userid == $user_id)
                     <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentShareController@edit\',[$id])}}" class="btn btn-success btn-xs share_doc">
                          <i class="fa fa-share"></i>
                          @lang( "essentials::lang.share")
                     </button>
                     @endif
-                    @if($type == "document")
+                   
+                    @if( auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.download_document") && $type == "document")
                         <a href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@download\',[$id])}}" class="btn btn-info btn-xs download">
                              <i class="fa fa-download"></i>
                              @lang( "essentials::lang.download")
                         </a>
-                    @elseif($type == "memos")
+
+                    @elseif( auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.download_document") && $type == "memos")
+                    <a href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@download\',[$id])}}" class="btn btn-info btn-xs download">
+                    <i class="fa fa-download"></i>
+                    @lang( "essentials::lang.download")
+                     </a>
+
+                    @elseif(  auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.view_memos") && $type == "memos")
                             <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@show\',[$id])}}" class="btn btn-primary btn-xs view_memos">
                                 <i class="fa fa-eye"></i>
                                 @lang("essentials::lang.view")
                             </button>
                     @endif'
                     )
+               
+               
                 ->editColumn(
                     'name',
                     '@php

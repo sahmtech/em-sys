@@ -63,6 +63,7 @@
                 'workerTransfer'=>__('followup::lang.workerTransfer'),
                 ], null, ['class' => 'form-control', 'required', 'style'=>' height: 40px' , 'placeholder' => __('essentials::lang.select_type'), 'id' => 'requestType']) !!}
             </div>
+            
             <div class="form-group col-md-6" id="leaveType" style="display: none;">
                 {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
                 {!! Form::select('leaveType',$leaveTypes, null, ['class' => 'form-control', 'style'=>' height: 40px' , 'placeholder' => __('followup::lang.select_leaveType'), 'id' => 'leaveType']) !!}

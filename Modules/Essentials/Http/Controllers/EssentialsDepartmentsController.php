@@ -140,6 +140,7 @@ class EssentialsDepartmentsController extends Controller
         $can_show_depatments = auth()->user()->can('essentials.show_depatments');
         $can_add_manager = auth()->user()->can('essentials.add_manager ');
         $can_delegatingManager_name = auth()->user()->can('essentials.delegatingManager_name ');
+       
         if (!$can_crud_depatments) {
            //temp  abort(403, 'Unauthorized action.');
         }
