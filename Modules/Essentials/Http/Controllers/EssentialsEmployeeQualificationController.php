@@ -2,6 +2,9 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
+use App\Company;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -34,24 +37,31 @@ class EssentialsEmployeeQualificationController extends Controller
         $can_delete_employee_qualifications = auth()->user()->can('essentials.delete_employee_qualifications');
 
         if (!$can_crud_employee_qualifications) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $countries = EssentialsCountry::forDropdown();
-        if (request()->ajax()) {
-            $employees_qualifications = EssentialsEmployeesQualification::join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
-                ->where('u.business_id', $business_id)
-                ->select([
-                    'essentials_employees_qualifications.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'essentials_employees_qualifications.qualification_type',
-                    'essentials_employees_qualifications.major',
-                    'essentials_employees_qualifications.graduation_year',
-                    'essentials_employees_qualifications.graduation_institution',
-                    'essentials_employees_qualifications.graduation_country',
-                    'essentials_employees_qualifications.degree',
 
-                ]);
+        $userIds = User::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $employees_qualifications = EssentialsEmployeesQualification::join('users as u', 'u.id', '=', 'essentials_employees_qualifications.employee_id')
+        ->whereIn('u.id', $userIds)
+            ->select([
+                'essentials_employees_qualifications.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_employees_qualifications.qualification_type',
+                'essentials_employees_qualifications.major',
+                'essentials_employees_qualifications.graduation_year',
+                'essentials_employees_qualifications.graduation_institution',
+                'essentials_employees_qualifications.graduation_country',
+                'essentials_employees_qualifications.degree',
+
+            ]);
+
+        if (request()->ajax()) {
 
             if (!empty(request()->input('qualification_type')) && request()->input('qualification_type') !== 'all') {
                 $employees_qualifications->where('essentials_employees_qualifications.qualification_type', request()->input('qualification_type'));
@@ -71,23 +81,23 @@ class EssentialsEmployeeQualificationController extends Controller
                 ->editColumn('major', function ($row) use ($spacializations) {
                     $item = $spacializations[$row->major] ?? '';
 
-                return $item;
-            })
-            ->addColumn(
-                'action',
-                function ($row) use($is_admin,$can_edit_employee_qualifications ,$can_delete_employee_qualifications) {
-                    $html = '';
-                    if($is_admin || $can_edit_employee_qualifications ){
-                        $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                    return $item;
+                })
+                ->addColumn(
+                    'action',
+                    function ($row) use ($is_admin, $can_edit_employee_qualifications, $can_delete_employee_qualifications) {
+                        $html = '';
+                        if ($is_admin || $can_edit_employee_qualifications) {
+                            $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
+                        }
+                        if ($is_admin || $can_delete_employee_qualifications) {
+                            $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+                        return $html;
                     }
-                    if($is_admin || $can_delete_employee_qualifications ){
-                        $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_qualification_button" data-href="' . route('qualification.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    }
-                  
-                    return $html;
-                }
-            )
-            
+                )
+
                 ->filterColumn('user', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
                 })
@@ -95,7 +105,7 @@ class EssentialsEmployeeQualificationController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
@@ -162,12 +172,12 @@ class EssentialsEmployeeQualificationController extends Controller
     {
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-  
-    
+
+
         try {
-           
+
             $qualification = EssentialsEmployeesQualification::findOrFail($id);
-    
+
             $output = [
                 'success' => true,
                 'data' => [
@@ -178,72 +188,69 @@ class EssentialsEmployeeQualificationController extends Controller
                     'graduation_institution' => $qualification->graduation_institution,
                     'graduation_country' => $qualification->graduation_country,
                     'degree' => $qualification->degree,
-                   
+
                 ],
                 'msg' => __('lang_v1.fetched_success'),
             ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-    
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-    
+
         return response()->json($output);
     }
 
- 
+
     public function updateQualification(Request $request, $qualificationId)
     {
-      
+
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-    
-  
-    
+
+
+
         try {
-          
+
             $qualification = EssentialsEmployeesQualification::find($qualificationId);
-         //    dd( $qualification );
-          if( $qualification)
-          {
-            $qualification->update([
-                'employee_id' => $request->input('employee'),
-                'qualification_type' => $request->input('qualification_type'),
-                'major' => $request->input('major'),
-                'graduation_year' => $request->input('graduation_year'),
-                'graduation_institution' => $request->input('graduation_institution'),
-                'graduation_country' => $request->input('graduation_country'),
-                'degree' => $request->input('degree'),
-                
-            ]);
-    
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ];
-          }
-          else{
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.no_data'),
-            ];
-          }
-           
+            //    dd( $qualification );
+            if ($qualification) {
+                $qualification->update([
+                    'employee_id' => $request->input('employee'),
+                    'qualification_type' => $request->input('qualification_type'),
+                    'major' => $request->input('major'),
+                    'graduation_year' => $request->input('graduation_year'),
+                    'graduation_institution' => $request->input('graduation_institution'),
+                    'graduation_country' => $request->input('graduation_country'),
+                    'degree' => $request->input('degree'),
+
+                ]);
+
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ];
+            } else {
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.no_data'),
+                ];
+            }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-    
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
             $output = [
                 'success' => false,
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-    
+
         return response()->json($output);
     }
-    
+
 
 
 

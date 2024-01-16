@@ -90,7 +90,6 @@ class EssentialsEmployeeAppointmentController extends Controller
                 'u.id_proof_number',
                 'essentials_employee_appointmets.business_location_id',
                 'essentials_employee_appointmets.department_id',
-                //      'essentials_employee_appointmets.superior',
                 'essentials_employee_appointmets.profession_id',
                 'essentials_employee_appointmets.specialization_id',
                 'u.status as status',
@@ -170,7 +169,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
