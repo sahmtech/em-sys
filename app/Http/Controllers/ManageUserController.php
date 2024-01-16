@@ -44,6 +44,9 @@ class ManageUserController extends Controller
     public function index()
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_create_user= auth()->user()->can('user.create');
+        $can_delete_user= auth()->user()->can('user.delete');
+
         if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -68,7 +71,7 @@ class ManageUserController extends Controller
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin , $can_create_user , $can_delete_user) {
                         $html = '';
                         if ($is_admin || auth()->user()->can('user.update')) {
 

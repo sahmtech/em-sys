@@ -811,7 +811,7 @@ class EssentialsCardsController extends Controller
                 //     }
                 // )
                 ->addColumn('view', function ($row) use($is_admin ,$can_show_employee_profile){
-
+                    $html ='';
                     if($is_admin || $can_show_employee_profile){
                         $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
                     }

@@ -42,7 +42,7 @@ class EssentialsAllowanceController extends Controller
             return Datatables::of($allowances)
                 ->addColumn(
                     'action',
-                    function ($row) use( $is_admin , $can_edit_allowance_and_deduction) {
+                    function ($row) use( $is_admin , $can_edit_allowance_and_deduction,$can_delete_allowance_and_deduction) {
                         $html = '';
                        if( $is_admin || $can_edit_allowance_and_deduction){
                         $html .= '<a href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceController::class, 'edit'], [$row->id]).  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';

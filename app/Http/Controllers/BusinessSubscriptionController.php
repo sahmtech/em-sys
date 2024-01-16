@@ -25,6 +25,7 @@ class BusinessSubscriptionController extends Controller
         $auth_id = request()->session()->get('user.business_id');
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $auth_id);
+        $can_delete_business_subscription= auth()->user()->can('essentials.delete_business_subscription');
        if (request()->ajax()) {  
             $business = BusinessSubscription::where('business_id', $business_id)
             ->select(['id','business_id','subscription_type','subscription_number','subscription_date','renew_date','expiration_date']);
@@ -32,9 +33,9 @@ class BusinessSubscriptionController extends Controller
             return Datatables::of($business)
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin , $can_delete_business_subscription) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin ||  $can_delete_business_subscription) {
                       
                         $html .= '<button class="btn btn-xs btn-danger delete_subscription_button" data-href="' . route('busSubscription.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }

@@ -34,10 +34,10 @@
         {!! Form::text($val_col . '[]', !empty($value) ? @num_format((float) $value) : 0, ['class' => 'form-control input-sm value_field input_number ' . $val_class, $readonly ]); !!}
     </td>
     <td>
-        @if(!empty($add_button))
+        @if(!empty($add_button) )
             <button type="button" class="btn btn-primary btn-xs @if($type == 'allowance') add_allowance @elseif($type == 'deduction') add_deduction @endif">
             <i class="fa fa-plus"></i>
-        @else
+        @elseif 
             <button type="button" class="btn btn-danger btn-xs remove_tr"><i class="fa fa-minus"></i></button>
         @endif
     </button></td>
