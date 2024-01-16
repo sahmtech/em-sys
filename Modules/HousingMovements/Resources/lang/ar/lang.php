@@ -186,6 +186,6 @@ return [
     'view_request' => 'عرض الطلبات',
     'change_status' => 'تغيير حالة الطلبات',
     'all_request' => 'إستعراض الطلبات',
-
+    'housed_in_room' => 'إمكانية التسكين بالغرف',
 
 ];

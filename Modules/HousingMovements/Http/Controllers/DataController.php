@@ -78,7 +78,13 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                    [
+                        'value' => 'housingmovements.housed_in_room',
+                        'label' => __('housingmovements::lang.housed_in_room'),
+                        'default' => false,
+                    ],
 
+                    
 
                     [
                         'value' => 'housingmovements.crud_facilities',
