@@ -113,7 +113,7 @@ class RoleController extends Controller
         $selectedUserTypes = [];
         $tmp = AccessRoleCompany::where('access_role_id',  $accessRole->id)->get();
         foreach ($tmp as $accessRoleCompany) {
-            $selectedUserTypes[$accessRoleCompany->id] = $accessRoleCompany->userTypes();
+            $selectedUserTypes[$accessRoleCompany->company_id] = $accessRoleCompany->userTypes();
         }
         $userTypesNames = [
             'employee' => __('essentials::lang.employee'),
