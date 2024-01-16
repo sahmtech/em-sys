@@ -20,6 +20,7 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("internationalrelations.add_worker_to_visa"))
             @slot('tool')
                 <div class="box-tools">
 
@@ -28,6 +29,7 @@
                     </button>
                 </div>
             @endslot
+        @endif
             <div class="table-responsive">
 
                 <table class="table table-bordered table-striped ajax_view hide-footer" id="employees">
@@ -51,16 +53,21 @@
                     </thead>
                 </table>
                 <div style="margin-bottom: 10px;">
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.medical_examination'))
                     <button type="button" class="btn btn-success btn-sm custom-btn" id="medical_examination-selected">
                         @lang('internationalrelations::lang.medical_examination')
                     </button>
+                    @endif
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.fingerprinting'))
                     <button type="button" class="btn btn-warning btn-sm custom-btn" id="fingerprinting-selected">
                         @lang('internationalrelations::lang.fingerprinting')
                     </button>
-                   
+                    @endif
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.passport_stamped'))
                     <button type="button" class="btn btn-danger btn-sm custom-btn" id="passport_stamped-selected">
                         @lang('internationalrelations::lang.passport_stamped')
-                    </button>
+                    </button>   
+                    @endif
 
                 </div>
 

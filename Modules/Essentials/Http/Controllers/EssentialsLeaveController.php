@@ -71,7 +71,8 @@ class EssentialsLeaveController extends Controller
         $can_crud_own_leave = auth()->user()->can('essentials.crud_own_leave');
 
         $can_delete_leave = auth()->user()->can('essentials.delete_leave');
-
+        $can_edit_leave = auth()->user()->can('essentials.edit_leave');
+        $can_change_status_leave = auth()->user()->can('essentials.change_status_leave');
         if (!$can_crud_all_leave && !$can_crud_own_leave) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -126,14 +127,14 @@ class EssentialsLeaveController extends Controller
                 // )
                 ->addColumn(
                     'action',
-                    function ($row) use($is_admin ,$can_crud_all_leave ,$can_delete_leave) {
+                    function ($row) use($is_admin ,$can_edit_leave ,$can_delete_leave) {
                         $html = '';
                       
-                        if($is_admin  || $can_delete_wishes){
+                        if($is_admin  || $can_delete_leave){
                         $html .= '<button class="btn btn-xs btn-danger delete-leave" data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'destroy'], [$row->id]) . '"><i class="fa fa-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
-                        if($is_admin  || $can_crud_all_leave){
+                        if($is_admin  || $can_edit_leave){
 
                         $html .= '&nbsp;<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal"  data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'activity'], [$row->id]) . '"><i class="fa fa-edit"></i> ' . __('essentials::lang.activity') . '</button>';
                         }
@@ -151,13 +152,18 @@ class EssentialsLeaveController extends Controller
 
                     return $start_date_formated . ' - ' . $end_date_formated . ' (' . $diff . \Str::plural(__('lang_v1.day'), $diff) . ')';
                 })
-                ->editColumn('status', function ($row) {
-                    $status = '<span class="label ' . $this->leave_statuses[$row->status]['class'] . '">'
+
+                ->editColumn('status', function ($row)  use($is_admin ,$can_change_status_leave){
+                    $status=' ';
+                    if($is_admin || $can_change_status_leave){
+                        $status = '<span class="label ' . $this->leave_statuses[$row->status]['class'] . '">'
                         . $this->leave_statuses[$row->status]['name'] . '</span>';
 
                     if (auth()->user()->can('essentials.crud_all_leave') || auth()->user()->can('essentials.approve_leave')) {
                         $status = '<a href="#" class="change_status" data-status_note="' . $row->status_note . '" data-leave-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->leave_statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
+                    }
+                   
 
                     return $status;
                 })

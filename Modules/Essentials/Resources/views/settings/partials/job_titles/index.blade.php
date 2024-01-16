@@ -13,7 +13,7 @@
 
 <section class="content">
     @component('components.widget', ['class' => 'box-primary'])
-        @can('job_titles.create')
+      
         @slot('tool')
         <div class="box-tools">
       
@@ -22,7 +22,7 @@
             </button>
         </div>
     @endslot
-        @endcan
+     
         @can('job_titles.view')
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="job_titles_table">

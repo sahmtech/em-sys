@@ -254,6 +254,8 @@ class EssentialsCardsController extends Controller
         // }
 
         $can_workcards_requests_change_status =auth()->user()->can('essentials.workcards_requests_change_status');
+        $can_workcards_add_requests =auth()->user()->can('essentials.workcards_add_requests');
+        $can_workcards_return_requests =auth()->user()->can('essentials.workcards_return_requests');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
@@ -811,7 +813,7 @@ class EssentialsCardsController extends Controller
                 //     }
                 // )
                 ->addColumn('view', function ($row) use($is_admin ,$can_show_employee_profile){
-
+                    $html ='';
                     if($is_admin || $can_show_employee_profile){
                         $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
                     }

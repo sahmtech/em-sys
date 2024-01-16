@@ -30,8 +30,7 @@
                                     <th>@lang('essentials::lang.employee')</th>
                                     <th>@lang('essentials::lang.family')</th>
                                     <th>@lang('essentials::lang.gender')</th>
-                                    <th>@lang('essentials::lang.mobile_number')</th>
-                                    <th>@lang('essentials::lang.nationality')</th>
+                                   
                                    
                                     <th>@lang('essentials::lang.relative_relation')</th>
                                     <th>@lang('essentials::lang.eqama_number')</th>
@@ -173,13 +172,7 @@
                             }
                         }
                     },
-                    {
-                        data: 'mobile_number'
-                    },
-                    {
-                        data: 'nationality'
-                    },
-                    
+                   
                   
                     {
                         data: 'relative_relation',

@@ -58,15 +58,18 @@
 
 
         @component('components.widget', ['class' => 'box-primary'])
-            @slot('tool')
-                <div class="box-tools">
+            @if (auth()->user()->hasRole('Admin#1') ||
+                    auth()->user()->can('internationalrelations.add_employment_company'))
+                @slot('tool')
+                    <div class="box-tools">
 
-                    <button type="button" class="btn btn-block btn-primary" data-toggle="modal" data-target="#addEmpCompanyModal">
-                        <i class="fa fa-plus"></i> @lang('internationalrelations::lang.add_empCompany')
-                    </button>
-                </div>
-            @endslot
-
+                        <button type="button" class="btn btn-block btn-primary" data-toggle="modal"
+                            data-target="#addEmpCompanyModal">
+                            <i class="fa fa-plus"></i> @lang('internationalrelations::lang.add_empCompany')
+                        </button>
+                    </div>
+                @endslot
+            @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="EmpCompany_table">
                     <thead>

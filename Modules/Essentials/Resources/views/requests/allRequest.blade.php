@@ -621,9 +621,11 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_essentials_request")<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_essentials_request")) <button class="btn btn-danger btn-sm btn-return" data-request-id="' +
                                     row.process_id + '">@lang('followup::lang.return_the_request')</button>@endif';
                             }
+
+                            
 
 
                             buttonsHtml +=

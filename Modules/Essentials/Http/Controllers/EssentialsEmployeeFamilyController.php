@@ -89,9 +89,10 @@ class EssentialsEmployeeFamilyController extends Controller
                  {
                      $emp_array['emp_eqama_no'] = $value[0];
                     
-                     $business = user::where('id_proof_number',$emp_array['emp_eqama_no'])->first();
+                     $proof_number = user::where('id_proof_number',$emp_array['emp_eqama_no'])->first();
+                   //  $family_proof_number=EssentialsEmployeesFamily::where('eqama_number',$emp_array['emp_eqama_no'])->first();
                     
-                     if (!$business) {
+                     if (!$proof_number) {
                      
                          $is_valid = false;
                          $error_msg = __('essentials::lang.emp_eqama_no_not_found').$row_no;
@@ -132,22 +133,22 @@ class EssentialsEmployeeFamilyController extends Controller
               
                $emp_array['relation'] = $value[3];                       
                $emp_array['gender'] = $value[4];                    
-               $emp_array['mobile'] = $value[5];                         
-               $emp_array['nationality_id'] = $value[6]; 
-               if ($emp_array['nationality_id'] !== null) {
+            //    $emp_array['mobile'] = $value[5];                         
+            //    $emp_array['nationality_id'] = $value[6]; 
+            //    if ($emp_array['nationality_id'] !== null) {
                                         
-                $business = EssentialsCountry::find($emp_array['nationality_id']);
-                if (!$business) {
+            //     $business = EssentialsCountry::find($emp_array['nationality_id']);
+            //     if (!$business) {
                 
-                    $is_valid = false;
-                    $error_msg = __('essentials::lang.nationality_id_not_found').$row_no;
-                    break;
-                }
-            }
-            else
-            {
-                $emp_array['nationality_id']=null;
-            } 
+            //         $is_valid = false;
+            //         $error_msg = __('essentials::lang.nationality_id_not_found').$row_no;
+            //         break;
+            //     }
+            // }
+            // else
+            // {
+            //     $emp_array['nationality_id']=null;
+            // } 
 
             
             $formated_data[] = $emp_array;                      
@@ -175,10 +176,10 @@ class EssentialsEmployeeFamilyController extends Controller
                        
                             $family =new EssentialsEmployeesFamily();
                             $family->full_name=$emp_data['full_name'];
-                            $family->mobile_number=$emp_data['mobile'];
+                          //  $family->mobile_number=$emp_data['mobile'];
                             $family->relative_relation=$emp_data['relation'];
                             $family->eqama_number=$emp_data['family_eqama_no'];
-                            $family->nationality_id=$emp_data['nationality_id'];
+                          //  $family->nationality_id=$emp_data['nationality_id'];
                             $family->gender=$emp_data['gender'];
                             $family->employee_id =$user->id;
                             $family->save();
@@ -234,7 +235,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
         if (request()->ajax()) {
             $EssentialsEmployeesFamilies = EssentialsEmployeesFamily::join('users as u', 'u.id', '=', 'essentials_employees_families.employee_id')
-            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'essentials_employees_families.nationality_id')
+            //->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'essentials_employees_families.nationality_id')
                 ->select([
                     'essentials_employees_families.id',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -242,13 +243,13 @@ class EssentialsEmployeeFamilyController extends Controller
                   //   'essentials_employees_families.age',
 
                   'essentials_employees_families.full_name as family',
-                  DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+                //  DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
                  
                     'essentials_employees_families.gender',
                     'essentials_employees_families.address',
                     'essentials_employees_families.relative_relation',
                     'essentials_employees_families.eqama_number',
-                    'essentials_employees_families.mobile_number',
+                   // 'essentials_employees_families.mobile_number',
                     'essentials_employees_families.nationality_id',
 
                 ]);
@@ -281,9 +282,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 ->filterColumn('family', function ($query, $keyword) {
                     $query->whereRaw("essentials_employees_families.full_name like ?", ["%{$keyword}%"]);
                 })
-                ->filterColumn('nationality', function ($query, $keyword) {
-                    $query->whereRaw("COALESCE(essentials_countries.nationality, '') like ?", ["%{$keyword}%"]);
-                })
+               
                 ->filterColumn('gender', function ($query, $keyword) {
                     $query->whereRaw("essentials_employees_families.gender like ?", ["%{$keyword}%"]);
                 })

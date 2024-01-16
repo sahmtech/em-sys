@@ -60,16 +60,18 @@ class EmploymentCompaniesController extends Controller
      */
     public function index(Request $request)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_crud_employment_companies = auth()->user()->can('internationalrelations.crud_employment_companies');
-        if (!($is_admin || $can_crud_employment_companies)) {
-           //temp  abort(403, 'Unauthorized action.');
+        $can_view_employment_company_delegation_requests = auth()->user()->can('internationalrelations.view_employment_company_delegation_requests');
+
+
+        if (!($is_admin || $can_view_employment_company_delegation_requests)) {
+            //temp  abort(403, 'Unauthorized action.');
         }
-      
-        
+
+
 
 
         $countries = EssentialsCountry::forDropdown();
@@ -112,10 +114,11 @@ class EmploymentCompaniesController extends Controller
                 )
 
 
-                ->addColumn('action', function ($row) {
-
-                  $html =  '<a href="' . route('companyRequests', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('internationalrelations::lang.company_requests') . '</a>';
-                    return $html;
+                ->addColumn('action', function ($row) use ($can_view_employment_company_delegation_requests, $is_admin) {
+                    if ($is_admin || $can_view_employment_company_delegation_requests) {
+                        $html =  '<a href="' . route('companyRequests', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('internationalrelations::lang.company_requests') . '</a>';
+                        return $html;
+                    }
                 })
 
 
@@ -126,25 +129,25 @@ class EmploymentCompaniesController extends Controller
 
         return view('internationalrelations::EmploymentCompanies.index')->with(compact('countries', 'nationalities'));
     }
-   
 
-    
+
+
 
     public function companyRequests($id)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_company_requests = auth()->user()->can('internationalrelations.view_company_requests');
         if (!($is_admin || $can_view_company_requests)) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
-    
-        $irDelegations = IrDelegation::where('agency_id',$id)->with(['transactionSellLine.service'])->get();
-     
 
-        
+        $irDelegations = IrDelegation::where('agency_id', $id)->with(['transactionSellLine.service'])->get();
+
+
+
         return view('internationalrelations::EmploymentCompanies.companyRequests')->with(compact('irDelegations'));
     }
     /**
@@ -154,15 +157,15 @@ class EmploymentCompaniesController extends Controller
      */
     public function store(Request $request)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_store_emoloyment_company = auth()->user()->can('internationalrelations.store_emoloyment_company');
         if (!($is_admin || $can_store_emoloyment_company)) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
-    
+
         try {
             $business_id = $request->session()->get('user.business_id');
 

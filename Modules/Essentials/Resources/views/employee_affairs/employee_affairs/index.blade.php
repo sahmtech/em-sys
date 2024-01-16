@@ -2,16 +2,16 @@
 @section('title', __('essentials::lang.employees'))
 
 @section('content')
-   
+
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                    <li class="active">Here</li>
-                                </ol> -->
+                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                        <li class="active">Here</li>
+                                    </ol> -->
     </section>
 
     <!-- Main content -->
@@ -20,20 +20,14 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
-                    {!! Form::select(
-                        'select_business_id',
-                        $businesses,
-                        null,
-                        [
-                            'class' => 'form-control select2',
-                            'id' => 'select_business_id',
-                            'style' => 'height:36px; width:100%',
-                            'placeholder' => __('lang_v1.all'),
-                            'required',
-                            'autofocus',
-                        ],
-                        
-                    ) !!}
+                    {!! Form::select('select_business_id', $businesses, null, [
+                        'class' => 'form-control select2',
+                        'id' => 'select_business_id',
+                        'style' => 'height:36px; width:100%',
+                        'placeholder' => __('lang_v1.all'),
+                        'required',
+                        'autofocus',
+                    ]) !!}
                 </div>
             </div>
             <div class="col-md-3">
@@ -52,7 +46,7 @@
                 <div class="form-group">
                     <label for="nationalities_filter">@lang('essentials::lang.nationality'):</label>
                     {!! Form::select('nationalities_select', $nationalities, request('nationalities_select'), [
-                        'class' => 'form-control select2', 
+                        'class' => 'form-control select2',
                         'placeholder' => __('lang_v1.all'),
                         'style' => 'height:36px; width:100%',
                         'id' => 'nationalities_select',
@@ -79,51 +73,50 @@
         @component('components.widget', ['class' => 'box-primary'])
             <div class="row">
                 <div class="col-sm-3">
-                   
-                        @slot('tool')
-                            <div class="box-tools">
-                                <a class="btn btn-block btn-primary" href="{{ route('createEmployee') }}">
-                                    <i class="fa fa-plus"></i> @lang('messages.add')
-                                </a>
-                            </div>
-                        @endslot
-          
+
+                    @slot('tool')
+                        <div class="box-tools">
+                            <a class="btn btn-block btn-primary" href="{{ route('createEmployee') }}">
+                                <i class="fa fa-plus"></i> @lang('messages.add')
+                            </a>
+                        </div>
+                    @endslot
+
                 </div>
 
 
             </div>
 
 
-        
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="employees">
-                        <thead>
-                            <tr>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="employees">
+                    <thead>
+                        <tr>
                             <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
-                                <th>@lang('essentials::lang.employee_number')</th>
-                                <th>bid</th>
-                                <th>@lang('essentials::lang.employee_name')</th>
-                             
-                                <th>@lang('essentials::lang.Identity_proof_id')</th>
-                                <th>@lang('essentials::lang.contry_nationality')</th>
-                                <th>@lang('essentials::lang.total_salary')</th>
-                                <th>@lang('essentials::lang.admissions_date')</th>
-                                <th>@lang('essentials::lang.contract_end_date')</th>
+                            <th>@lang('essentials::lang.employee_number')</th>
+                            <th>bid</th>
+                            <th>@lang('essentials::lang.employee_name')</th>
 
-                                <th>@lang('essentials::lang.department')</th>
-                                <th>@lang('essentials::lang.profession')</th>
-                                <th>@lang('essentials::lang.specialization')</th>
-                                <th>@lang('essentials::lang.mobile_number')</th>
-                                <th>@lang('business.email')</th>
-                                <th>@lang('essentials::lang.status')</th>
-                                <th>@lang('messages.view')</th>
-                                <th>@lang('messages.action')</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            
+                            <th>@lang('essentials::lang.Identity_proof_id')</th>
+                            <th>@lang('essentials::lang.contry_nationality')</th>
+                            <th>@lang('essentials::lang.total_salary')</th>
+                            <th>@lang('essentials::lang.admissions_date')</th>
+                            <th>@lang('essentials::lang.contract_end_date')</th>
+
+                            <th>@lang('essentials::lang.department')</th>
+                            <th>@lang('essentials::lang.profession')</th>
+                            <th>@lang('essentials::lang.specialization')</th>
+                            <th>@lang('essentials::lang.mobile_number')</th>
+                            <th>@lang('business.email')</th>
+                            <th>@lang('essentials::lang.status')</th>
+                            <th>@lang('messages.view')</th>
+                            <th>@lang('messages.action')</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         @endcomponent
 
         <div class="modal fade user_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
@@ -348,12 +341,12 @@
             </div>
         </div>
 
-       
-            <div class="modal fade" id="addContractModal" tabindex="-1" role="dialog"
+
+        <div class="modal fade" id="addContractModal" tabindex="-1" role="dialog"
             aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-{{-- --}}
+                    {{-- --}}
                     {!! Form::open(['route' => 'storeContract', 'enctype' => 'multipart/form-data']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -364,16 +357,16 @@
                     <div class="modal-body">
 
                         <div class="row">
-                           
-                                <div class="form-group col-md-6">
+
+                            <div class="form-group col-md-6">
                                 {!! Form::label('offer_price', __('sales::lang.offer_price') . ':') !!}
                                 {!! Form::select('offer_price', $offer_prices, null, [
                                     'class' => 'form-control',
                                     'id' => 'offer_price',
                                     'placeholder' => __('sales::lang.select_offer_price'),
                                 ]) !!}
-                            </div> 
-                           
+                            </div>
+
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('contract_signer', __('sales::lang.contract_signer') . ':*') !!}
@@ -420,8 +413,8 @@
                             <div class="form-group col-md-8">
                                 {!! Form::label('contract_items', __('sales::lang.contract_items') . ':*') !!}
                                 {!! Form::select('contract_items[]', $items, null, [
-                                    'class' => 'form-control select2', 
-                                    'multiple' => 'multiple', 
+                                    'class' => 'form-control select2',
+                                    'multiple' => 'multiple',
                                     'placeholder' => __('sales::lang.select_contract_items'),
                                     'required',
                                 ]) !!}
@@ -462,8 +455,8 @@
                 </div>
             </div>
         </div>
-            
-       
+
+
 
     </section>
     <!-- /.content -->
@@ -478,7 +471,7 @@
             $('#addQualificationModal').modal('show');
 
 
-            $('#employee').empty(); 
+            $('#employee').empty();
             $('#employee').append('<option value="' + userId + '">' + userName + '</option>');
         });
     </script>
@@ -493,12 +486,11 @@
             $('#add_doc').modal('show');
 
 
-            $('#employees2').empty(); 
+            $('#employees2').empty();
             $('#employees2').append('<option value="' + userId + '">' + userName + '</option>');
         });
     </script>
     <script type="text/javascript">
-        
         $(document).ready(function() {
             var users_table = $('#employees').DataTable({
                 processing: true,
@@ -516,8 +508,7 @@
                 },
 
 
-                "columns": [
-                    {
+                "columns": [{
                         "data": "id"
                     },
                     {
@@ -543,7 +534,7 @@
                     {
                         "data": "full_name"
                     },
-            
+
                     {
                         "data": "id_proof_number"
                     },
@@ -609,10 +600,10 @@
                         var daysRemaining = moment(contractEndDate).diff(currentDate, 'days');
 
                         if (daysRemaining <= 0) {
-                            $('td', row).eq(8).addClass('text-danger'); 
+                            $('td', row).eq(8).addClass('text-danger');
                         } else if (daysRemaining <= 25) {
                             $('td', row).eq(8).addClass(
-                                'text-warning'); 
+                                'text-warning');
                         }
                     }
                 }
@@ -635,6 +626,15 @@
 
             });
 
+            //     if (cellIndex !== lastIndex) {
+            //         var data = users_table.row(this).data();
+            //         console.log(data);
+            //         if (data) {
+            //             window.location = '{{ route('showEmployee', ['id' => ':id']) }}'.replace(':id', data.id);
+            //         }
+            //     }
+
+            // });
             $('#specializations-select, #nationalities_select, #status-select, #select_business_id').change(
                 function() {
                     console.log('Specialization selected: ' + $(this).val());

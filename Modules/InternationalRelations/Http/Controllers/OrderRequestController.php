@@ -41,11 +41,15 @@ class OrderRequestController extends Controller
     public function index(Request $request)
     {
 
-
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_crud_orders_operations = auth()->user()->can('internationalrelations.crud_orders_operations');
-        if (!($is_admin || $can_crud_orders_operations)) {
+
+        $can_add_operation_order_visa = auth()->user()->can('internationalrelations.add_operation_order_visa');
+        $can_delegate_operation_order = auth()->user()->can('internationalrelations.delegate_operation_order');
+        $can_view_order_delegations = auth()->user()->can('internationalrelations.view_order_delegations');
+
+
+        if (!($is_admin || $can_add_operation_order_visa ||  $can_delegate_operation_order || $can_view_order_delegations)) {
             //temp  abort(403, 'Unauthorized action.');
         }
         $operations = DB::table('sales_orders_operations')
@@ -91,19 +95,25 @@ class OrderRequestController extends Controller
                     return $row->orderQuantity - $row->DelegatedQuantity;
                 })
 
-                ->addColumn('Delegation', function ($row) {
+                ->addColumn('Delegation', function ($row) use ($is_admin, $can_view_order_delegations, $can_delegate_operation_order,   $can_add_operation_order_visa) {
                     $html = '';
 
                     if ($row->orderQuantity - $row->DelegatedQuantity != 0) {
-                        $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'Delegation'], [$row->id]) . '" class="btn btn-xs btn-warning btn-modal" data-container=".view_modal"><i class="fas fa-plus" aria-hidden="true"></i> ' . __('internationalrelations::lang.Delegation') . '</a>&nbsp;';
+                        if ($is_admin || $can_delegate_operation_order) {
+                            $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'Delegation'], [$row->id]) . '" class="btn btn-xs btn-warning btn-modal" data-container=".view_modal"><i class="fas fa-plus" aria-hidden="true"></i> ' . __('internationalrelations::lang.Delegation') . '</a>&nbsp;';
+                        }
                     } else {
-                        $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'viewDelegation'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('internationalrelations::lang.viewDelegation') . '</a>&nbsp;';
+                        if ($is_admin || $can_view_order_delegations) {
+                            $html .= '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'viewDelegation'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('internationalrelations::lang.viewDelegation') . '</a>&nbsp;';
+                        }
                     }
-
+                    
                     if ($row->has_visa != 1) {
-                        $html .= '<button data-id="' . $row->id . '" class="btn btn-xs btn-info btn-add-visa" data-toggle="modal" data-target="#addVisaModal">
+                        if ($is_admin || $can_add_operation_order_visa) {
+                            $html .= '<button data-id="' . $row->id . '" class="btn btn-xs btn-info btn-add-visa" data-toggle="modal" data-target="#addVisaModal">
                                     <i class="fas fa-plus" aria-hidden="true"></i> ' . __('internationalrelations::lang.addvisa') . '
                                 </button>';
+                        }
                     }
                     return $html;
                 })
