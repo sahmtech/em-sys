@@ -66,9 +66,11 @@ class EssentialsLeaveController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_all_leave = auth()->user()->can('essentials.crud_all_leave');
         $can_crud_own_leave = auth()->user()->can('essentials.crud_own_leave');
+
+        $can_delete_leave = auth()->user()->can('essentials.delete_leave');
 
         if (!$can_crud_all_leave && !$can_crud_own_leave) {
            //temp  abort(403, 'Unauthorized action.');
@@ -124,14 +126,17 @@ class EssentialsLeaveController extends Controller
                 // )
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin ,$can_crud_all_leave ,$can_delete_leave) {
                         $html = '';
-                        if (auth()->user()->can('essentials.crud_all_leave')) {
-                            $html .= '<button class="btn btn-xs btn-danger delete-leave" data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'destroy'], [$row->id]) . '"><i class="fa fa-trash"></i> ' . __('messages.delete') . '</button>';
+                      
+                        if($is_admin  || $can_delete_wishes){
+                        $html .= '<button class="btn btn-xs btn-danger delete-leave" data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'destroy'], [$row->id]) . '"><i class="fa fa-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
-                        $html .= '&nbsp;<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal"  data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'activity'], [$row->id]) . '"><i class="fa fa-edit"></i> ' . __('essentials::lang.activity') . '</button>';
+                        if($is_admin  || $can_crud_all_leave){
 
+                        $html .= '&nbsp;<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal"  data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'activity'], [$row->id]) . '"><i class="fa fa-edit"></i> ' . __('essentials::lang.activity') . '</button>';
+                        }
                         return $html;
                     }
                 )

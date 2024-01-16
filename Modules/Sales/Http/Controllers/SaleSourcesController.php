@@ -28,6 +28,8 @@ class SaleSourcesController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_delete_sale_sources = auth()->user()->can('sales.delete_sale_sources');
+        $can_edit_sale_sources = auth()->user()->can('sales.edit_sale_sources');
 
         $countries = SalesSource::select(['id','source as source'])
         ->orderby('id','desc');
@@ -40,13 +42,14 @@ class SaleSourcesController extends Controller
         
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin,$can_delete_sale_sources, $can_edit_sale_sources) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin || $can_edit_sale_sources ) {
                         $html .= '<a href="#" class="btn btn-xs btn-primary edit-item"
                          data-id="' . $row->id . '" data-orig-value="' . $row->source . '">
                          <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                       
+                    }
+                    if ($is_admin || $can_delete_sale_sources ) {
                         $html .= '<button class="btn btn-xs btn-danger delete_item_button"
                             data-href="' . route('sale_source_destroy', ['id' => $row->id]) . '">
                             <i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';

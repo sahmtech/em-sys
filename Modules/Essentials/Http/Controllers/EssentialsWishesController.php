@@ -23,8 +23,13 @@ class EssentialsWishesController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-    
-      
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_delete_wishes= auth()->user()->can('essentials.delete_wishes');
+        $can_add_wishes= auth()->user()->can('essentials.add_wishes');
+        $can_edit_wishes= auth()->user()->can('essentials.edit_wishes');
+
+        $can_curd_wishes=auth()->user()->can('essentials.curd_wishes');
+       
         $reasons = EssentailsReasonWish::where('type','wish')->select(
             'id',
           
@@ -45,8 +50,11 @@ class EssentialsWishesController extends Controller
             })
           
          
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use($is_admin ,$can_delete_wishes ,$can_edit_wishes) {
                     $html = '';
+                    if($is_admin  || $can_edit_wishes)
+                    {
+                   
                     $html .= '<button class="btn btn-xs btn-primary edit_button" 
                     data-toggle="modal" 
                     data-target="#editModal" 
@@ -56,8 +64,10 @@ class EssentialsWishesController extends Controller
                     <i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
          
                     $html .= '&nbsp;';
-    
+                    }
+                    if($is_admin  || $can_delete_wishes){
                     $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('wish.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    }
                     return $html;
                 })
                 ->rawColumns(['action'])

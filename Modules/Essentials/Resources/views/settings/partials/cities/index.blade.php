@@ -24,7 +24,7 @@
         </div>
     @endslot
         @endcan
-        @can('city.view')
+       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="cities_table">
                     <thead>
@@ -40,7 +40,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+       
     @endcomponent
 
     <div class="modal fade city_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

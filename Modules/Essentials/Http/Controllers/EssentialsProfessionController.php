@@ -26,10 +26,13 @@ class EssentialsProfessionController extends Controller
       
     
        $business_id = request()->session()->get('user.business_id');
-
-
-       
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $can_crud_profession = auth()->user()->can('essentials.crud_profession');
+        $can_delete_profession = auth()->user()->can('essentials.delete_profession');
+        $can_edit_profession = auth()->user()->can('essentials.edit_profession');
+        $can_add_profession = auth()->user()->can('essentials.add_profession');
+
 
         if (request()->ajax()) {
             $professions = EssentialsProfession::with('specializations')
@@ -45,9 +48,9 @@ class EssentialsProfessionController extends Controller
         })
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin, $can_edit_profession ,$can_delete_profession) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin|| $can_delete_profession) {
                         // $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         // &nbsp;';
                         $html .= '<button class="btn btn-xs btn-danger delete_profession_button" data-href="' . route('profession.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';

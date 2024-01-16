@@ -29,10 +29,13 @@ class EssentialsInsuranceContractController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $can_crud_insurance_companies = auth()->user()->can('essentials.crud_insurance_companies');
-        if (!$can_crud_insurance_companies) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_add_insurance_contracts = auth()->user()->can('essentials.add_insurance_contracts');
+        $can_edit_insurance_contracts = auth()->user()->can('essentials.edit_insurance_contracts');
+        $can_delete_insurance_contracts = auth()->user()->can('essentials.delete_insurance_contracts');
+        // if (!$can_crud_insurance_companies) {
+        //    //temp  abort(403, 'Unauthorized action.');
+        // }
         $business_id = request()->session()->get('user.business_id');
         $insuramce_companies = Contact::where([['business_id','=', $business_id],['type','=','insurance']])->pluck('supplier_business_name', 'id',);
         if (request()->ajax()) {
@@ -74,11 +77,17 @@ class EssentialsInsuranceContractController extends Controller
               
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use( $is_admin, $can_edit_insurance_contracts ,  $can_delete_insurance_contracts) {
                         $html = '';
                         //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
+                       if($is_admin || $can_edit_insurance_contracts ){
                         $html .= '<a href="'. route('insurance_contracts.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
+                       }
+                      
+                       if($is_admin || $can_delete_insurance_contracts){
                         $html .= '<button class="btn btn-xs btn-danger delete_insurance_contract_button" data-href="' . route('insurance_contracts.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                    }
+                      
                         return $html;
                     }
                 )

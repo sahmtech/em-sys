@@ -39,6 +39,10 @@ class EssentialsEmployeeContractController extends Controller
         // }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
+        $can_add_employee_contracts = auth()->user()->can('essentials.add_employee_contracts');
+        $can_show_employee_contracts = auth()->user()->can('essentials.show_employee_contracts');
+        $can_delete_employee_contracts = auth()->user()->can('essentials.delete_employee_contracts');
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
@@ -126,18 +130,25 @@ class EssentialsEmployeeContractController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row)  use($is_admin ,$can_show_employee_contracts , $can_delete_employee_contracts){
                         $html = '';
 
-                        if (!empty($row->file_path)) {
+                        if($is_admin || $can_show_employee_contracts)
+                       { if (!empty($row->file_path)) {
                             $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
                             '&nbsp;';
                         } else {
                             $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
                         }
+                    }
+
+                    if($is_admin || $can_delete_employee_contracts)
+                    {
+                       $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                    }
 
 
-                        //   $html .= '<button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                      
 
                         return $html;
                     }

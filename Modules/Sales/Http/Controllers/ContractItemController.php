@@ -31,7 +31,9 @@ class ContractItemController extends Controller
             //temp  abort(403, 'Unauthorized action.');
          }
          $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
- 
+         $crud_edit_contract_item = auth()->user()->can('sales.edit_contract_item');
+         $crud_delete_contract_item = auth()->user()->can('sales.delete_contract_item');
+
          if (request()->ajax()) {
              $items = DB::table('sales_contract_items')->where('type','basic')->select(['id','number_of_item', 'name_of_item', 'details', 'type']);
                         
@@ -40,11 +42,12 @@ class ContractItemController extends Controller
             
              ->addColumn(
                  'action',
-                 function ($row) use ($is_admin) {
+                 function ($row) use ($is_admin,$crud_edit_contract_item,$crud_delete_contract_item) {
                      $html = '';
-                     if ($is_admin) {
+                     if ($is_admin || $crud_edit_contract_item) {
                          $html .= '<a href="'. route('item.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
-                         &nbsp;';
+                         &nbsp;';}
+                    if ($is_admin || $crud_delete_contract_item) {
                          $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('item.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                      }
          

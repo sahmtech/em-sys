@@ -24,13 +24,17 @@ class EssentialsContractTypeController extends Controller
     {
     
        $business_id = request()->session()->get('user.business_id');
-
+       $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $can_crud_contract_types = auth()->user()->can('essentials.crud_contract_types');
+        $can_delete_contract_types = auth()->user()->can('essentials.delete_contract_types');
+        $can_edit_contract_types = auth()->user()->can('essentials.edit_contract_types');
+        $can_add_contract_types = auth()->user()->can('essentials.add_contract_types');
+
         if (! $can_crud_contract_types) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+   
 
         if (request()->ajax()) {
             $contract_types = DB::table('essentials_contract_types')->select(['id','type', 'details', 'is_active']);
@@ -41,11 +45,14 @@ class EssentialsContractTypeController extends Controller
            
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin,$can_edit_contract_types , $can_delete_contract_types ) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin ||$can_edit_contract_types) {
                         $html .= '<a href="'. route('contractType.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         &nbsp;';
+                       
+                    }
+                    if($is_admin ||$can_delete_contract_types){
                         $html .= '<button class="btn btn-xs btn-danger delete_contractType_button" data-href="' . route('contractType.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
         

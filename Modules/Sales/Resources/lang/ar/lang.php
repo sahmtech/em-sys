@@ -360,14 +360,75 @@ return [
     'escalate_requests' => 'الطلبات المصعّدة',
     'requests_by_sequential' => 'الطلبات حسب التسلسل',
     'dashboard' => 'الصفحة الرئيسية للمبيعات',
-    'sales_dashboard'=>'الصفحة الرئيسية للمبيعات'
+    
+    'sales_dashboard'=>'الصفحة الرئيسية للمبيعات',
+   
+    'view_lead_contacts'=>'عرض العملاء المحتملين',
+    'view_qualified_contacts'=>'عرض العملاء المؤهلين',
+    'view_unqualified_contacts'=>'عرض العملاء الغير مؤهلين',
+    'view_converted_contacts'=>'عرض العملاء المحولين',
+    'add_lead_contact'=>'إضافة عميل محتمل',
+    'edit_lead_contact'=>'تعديل عميل محتمل',
+    'view_contact_info'=>'عرض معلومات العميل',
+    'change_contact_status'=>'تغيير حالة العميل',
+    'view_sales_projects'=>'عرض مشاريع العملاء',
+    'edit_sale_project'=>'تعديل مشروع عميل',
+    'delete_sale_project'=>'حذف مشروع عميل',
+    
+    'view_under_study_offer_price'=>'استعراض عروض الأسعار قيد الدراسة',
+    'view_accepted_offer_price'=>'استعراض عروض الأسعار المقبولة',
+    'view_unaccepted_offer_price'=>'استعراض عروض الأسعار المرفوضة',
+    'change_offer_price_status'=>'تغيير حالة عرض السعر',
+    'print_offer_price'=>'طباعة عرض السعر',
+    
+    'view_sales_contracts'=>'عرض عقود المبيعات',
+    'view_sales_contracts_file'=>'استعراض ملف عقد المبيع',
+    'delete_sale_contract'=>'حذف عقد المبيع',
+    'print_sales_contracts'=>'طباعة عقد المبيع',
+    'add_sale_contract'=>'إضافة عقد مبيع',
+   
+    'view_contract_appendics'=>'عرض ملاحق العقود',
+    'delete_contract_appendix'=>'حذف ملحق العقد',
+    'edit_contract_appendix'=>'تعديل ملحق العقد',
+    'add_contract_appendix'=>'إضافة ملحق عقد',
+    
+    'add_sale_operation_orders'=>'إضافة أمر تشغيل',
+    'view_sale_operation_orders'=>'استعراض أوامر التشغيل',
+    'show_sale_operation_order'=>'عرض معلومات أمر تشغيل معين',
+    
+    
+    'view_sales_requests'=>'استعراض طلبات إدارة المبيعات',
+    'add_request'=>'إضافة طلب',
+    'change_request_status'=>'تغيير حالة الطلب',
+    'return_sale_request'=>'إرجاع الطلب',
+    'show_sale_request'=>'عرض تفاصيل الطلب',
+    
+    
+    'edit_sales_salary_request'=>'تعديل طلب راتب',
+    'delete_sales_salary_request'=>'حذف طلب راتب',
+    'add_sales_salary_request'=>'إضافة طلب راتب',
+    'view_sales_salary_requests'=>'استعراض طلبات الرواتب',
+    
+    
+    'view_sale_sources'=>'استعراض مصادر العملاء',
+    'add_sale_source'=>'إضافة مصدر عميل',
+    'edit_sale_source'=>'تعديل مصدر عميل',
+    'delete_sale_source'=>'حذف مصدر عميل',
 
 
 
+    'view_contract_items'=>'استعراض بنود العملاء',
+    'add_contract_item'=>'إضافة بند عقد',
+    'edit_contract_item'=>'تعديل بند عقد ',
+    'delete_contract_item'=>'حذف بند عقد ',
 
 
+    'view_sales_costs'=>'استعراض التكاليف الثابتة',
+    'add_sale_cost'=>'إضافة تكلفة ثابتة',
+    'edit_sale_cost'=>'تعديل تكلفة ثابتة',
+    'delete_sale_cost'=>'حذف تكلفة ثابتة',
 
-
+  
 
 
 

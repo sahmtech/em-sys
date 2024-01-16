@@ -65,15 +65,17 @@
                                                         style="margin: 2px;" title="@lang('accounting::lang.ledger')"
                                                         href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@ledger', $account->id) }}">
                                                         <i class="fas fa-file-alt"></i></a>
-                                                    <a class="btn-modal btn-xs btn-default text-primary"
-                                                        style="margin: 2px;" title="@lang('messages.edit')"
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
-                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
-                                                        data-container="#create_account_modal">
-                                                        <i class="fas fa-edit"></i>
+                                                    @if (auth()->user()->hasRole('Admin#1') ||
+                                                            auth()->user()->can('accounting.account.edit'))
+                                                        <a class="btn-modal btn-xs btn-default text-primary"
+                                                            style="margin: 2px;" title="@lang('messages.edit')"
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
+                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\CoaController@edit', $account->id) }}"
+                                                            data-container="#create_account_modal">
+                                                            <i class="fas fa-edit"></i>
 
-                                                    </a>
-
+                                                        </a>
+                                                    @endif
 
                                                     <a class="btn-modal btn-xs btn-default text-primary"
                                                         style="margin: 2px;" title="@lang('accounting::lang.add_account')"
@@ -97,7 +99,7 @@
                                                         @foreach ($account->child_accounts as $child_account)
                                                             <li
                                                                 @if (count($child_account->child_accounts) == 0) data-jstree='{ "icon" : "fas fa-arrow-alt-circle-right"}' @endif>
-                                                               {{$child_account->name}}
+                                                                {{ $child_account->name }}
 
                                                                 @if (!empty($child_account->gl_code))
                                                                     - ({{ $child_account->gl_code }})

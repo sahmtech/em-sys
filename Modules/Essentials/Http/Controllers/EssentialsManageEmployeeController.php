@@ -98,6 +98,12 @@ class EssentialsManageEmployeeController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
+
+
+        $can_show_employee= auth()->user()->can('essentials.show_employee');
+        $can_add_employee= auth()->user()->can('essentials.add_employee');
+        $can_edit_employee= auth()->user()->can('essentials.edit_employee');
+        $can_show_employee_options= auth()->user()->can('essentials.show_employee_options');
         $permissionName = 'essentials.view_profile_picture';
 
 
@@ -219,43 +225,49 @@ class EssentialsManageEmployeeController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
-                        $html = '<div class="btn-group">
-                                    <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                                        data-toggle="dropdown" aria-expanded="false">' .
-                            __('messages.actions') .
-                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                        <li>
-                                        <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
-                                     
-                                        </a>
-                                        </li>';
-
-
-
-
-
-                        $html .= '<li>
-                                    <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
+                    function ($row)  use($is_admin ,$can_show_employee_options) {
+                        if($is_admin || $can_show_employee_options)
+                        {
+                            $html = '<div class="btn-group">
+                            <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
+                                data-toggle="dropdown" aria-expanded="false">' .
+                    __('messages.actions') .
+                    '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li>
+                                <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
+                             
+                                </a>
                                 </li>';
 
-                        $html .= '<li>
-                                <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
-                            </li>';
 
-                        $html .= '</ul></div>';
+
+
+
+                $html .= '<li>
+                            <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
+                        </li>';
+
+                $html .= '<li>
+                        <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
+                    </li>';
+
+                $html .= '</ul></div>';
+
+                return $html;
+                        }
+                       
+                    }
+                )
+                ->addColumn('view', function ($row) use($can_show_employee,$is_admin) {
+                    if($is_admin || $can_show_employee ){
+                        $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
 
                         return $html;
                     }
-                )
-                ->addColumn('view', function ($row) {
-
-                    $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
-
-                    return $html;
+                    
                 })
 
                 ->filterColumn('full_name', function ($query, $keyword) {

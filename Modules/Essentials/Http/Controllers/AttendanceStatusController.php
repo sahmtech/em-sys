@@ -28,6 +28,9 @@ class AttendanceStatusController extends Controller
 
 
         $can_crud_attendance_status = auth()->user()->can('essentials.crud_attencances_status');
+        $can_delete_attendance_status = auth()->user()->can('essentials.delete_attencances_status');
+        $can_add_attendance_status = auth()->user()->can('essentials.add_attencances_status');
+
         if (!$can_crud_attendance_status) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -49,9 +52,9 @@ class AttendanceStatusController extends Controller
                 )
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin ,  $can_delete_attendance_status ) {
                         $html = '';
-                        if ($is_admin) {
+                        if ($is_admin ||   $can_delete_attendance_status ) {
                             $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('attendanceStatus.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 

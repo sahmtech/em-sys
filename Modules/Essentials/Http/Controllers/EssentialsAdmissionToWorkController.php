@@ -27,6 +27,10 @@ class EssentialsAdmissionToWorkController extends Controller
         $business_id = request()->session()->get('user.business_id');
     
         $can_crud_employee_work_admissions = auth()->user()->can('essentials.crud_employee_work_admissions');
+        $can_add_employee_work_admissions = auth()->user()->can('essentials.add_employee_work_admissions');
+        $can_edit_employee_work_admissions = auth()->user()->can('essentials.edit_employee_work_admissions');
+        $can_delete_employee_work_admissions = auth()->user()->can('essentials.delete_employee_work_admissions');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!$can_crud_employee_work_admissions) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -70,10 +74,16 @@ class EssentialsAdmissionToWorkController extends Controller
            })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin ,$can_edit_employee_work_admissions ,$can_delete_employee_work_admissions) {
                         $html = '';
-                        $html .= '<a href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
-                   //     $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        if($is_admin ||$can_edit_employee_work_admissions ){
+                            $html .= '<a href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
+                        }
+                        if($is_admin ||$can_delete_employee_work_admissions ){
+                               $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+                       
+                 
                         return $html;
                     }
                 )

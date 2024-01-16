@@ -35,8 +35,10 @@ class EssentialsLeaveTypeController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_crud_leave_type = auth()->user()->can('essentials.crud_leave_type');
 
-
+        $can_delete_leave = auth()->user()->can('essentials.delete_leave_type');
 
         if (! auth()->user()->can('essentials.crud_leave_type')) {
            //temp  abort(403, 'Unauthorized action.');
@@ -56,10 +58,24 @@ class EssentialsLeaveTypeController extends Controller
             //         return trans("essentials::lang.$leave_type->leave_type");
             //     }
             // )
-                ->addColumn(
-                    'action',
-                    '<button data-href="{{action(\'\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>'
-                )
+              
+
+         ->addColumn(
+                'action',
+                        function ($row) use($is_admin ,$can_crud_leave_type ) {
+                            $html = '';
+                          
+                            if($is_admin  || $can_crud_leave_type){
+                          //  $html .=  '<button data-href="{{action(\'\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController@edit\', [$id])}}" class="btn btn-xs btn-primary btn-modal" data-container=".view_modal"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>';
+                          
+
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal"  data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'edit'], [$row->id]) . '"><i class="fa fa-edit"></i> ' . __('messages.edit') . '</button>';
+                             }
+    
+                          
+                            return $html;
+                        }
+                    )
                 ->removeColumn('id')
                 ->rawColumns(['action'])
                 ->make(true);

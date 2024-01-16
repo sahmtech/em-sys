@@ -62,7 +62,7 @@
                         <th>@lang('housingmovements::lang.passport_number')</th>
                         <th>@lang('housingmovements::lang.profession')</th>
                         <th>@lang('housingmovements::lang.nationality')</th>
-                        <th>@lang('messages.action')</th>
+                        {{-- <th>@lang('messages.action')</th> --}}
 
                     </tr>
                 </thead>
@@ -76,11 +76,11 @@
 
 
                                 &nbsp;
-
+                                @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('worker_housed'))
                                 {!! Form::hidden('selected_products', null, ['id' => 'selected_products_for_edit']) !!}
                                 <button type="submit" class="btn btn-xs btn-warning" id="edit-selected"> <i
                                         class="fa fa-home"></i>{{ __('housingmovements::lang.housed') }}</button>
-
+                               @endif
 
 
 
@@ -180,12 +180,7 @@
                     {
                         "data": "nationality"
                     },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
+                   
                 ]
             });
 

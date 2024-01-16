@@ -355,6 +355,8 @@ class BusinessController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
+        $can_view_business_documents= auth()->user()->can('essentials.view_business_documents');
+        $can_business_subscriptions=auth()->user()->can('essentials.view_business_subscriptions');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $allLicenseTypes = [
@@ -386,15 +388,18 @@ class BusinessController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin , $can_view_business_documents , $can_business_subscriptions) {
                         $html = '';
                         // if ($is_admin) {
                         //     $html .= '<a href="' . route('business.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-view"></i> ' . __('messages.view') . '</a>
                         // &nbsp;';
-                        $html .= '<a href="' . route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('business.view_business_docs') . '</a>
-                        &nbsp;';
+                        if($is_admin || $can_view_business_documents){
+                            $html .= '<a href="' . route('business_documents.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('business.view_business_docs') . '</a>
+                            &nbsp;';
+                        }
+                        if($is_admin || $can_business_subscriptions){
                         $html .= '<a href="' . route('business_subscriptions.view', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.view_business_subscriptions') . '</a>';
-                        // }
+                         }
 
                         return $html;
                     }

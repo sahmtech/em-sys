@@ -26,7 +26,8 @@ class CostCenterController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-   
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
         $mainCenters = CostCenter::query()->whereNull('deleted_at')->whereNull('parent_id')->get();
         $allCenters = CostCenter::query()->whereNull('deleted_at')->get();
         $businessLocations = BusinessLocation::where('business_id', $business_id)->get();
@@ -36,14 +37,19 @@ class CostCenterController extends Controller
             return Datatables::of($costCenters)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
                         $editUrl = action('\Modules\Accounting\Http\Controllers\CostCenterController@edit', [$row->id]);
                         $deleteUrl = action('\Modules\Accounting\Http\Controllers\CostCenterController@destroy', [$row->id]);
+                        $html = '';
 
-                        return '<button data-businesslocationid="' . $row->business_location_id . '" data-parent="' . $row->parent_id . '" data-accountcenternumber="' . $row->account_center_number . '" data-namear="' . $row->ar_name . '" data-nameen="' . $row->en_name . '" data-id="' . $row->id . '" class="btn btn-xs btn-primary btn-modal edit_cost_center" data-toggle="modal" data-target="#edit_cost_center_modal"><i class="glyphicon glyphicon-edit"></i>' . __("messages.edit") . '</button>
-
-                        <button data-href="' . $deleteUrl . '" class="btn btn-xs btn-danger delete_cost_center_button"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</button>
+                        if ($is_admin  || auth()->user()->can('accounting.costCenter.edit')) {
+                            $html .=  '<button data-businesslocationid="' . $row->business_location_id . '" data-parent="' . $row->parent_id . '" data-accountcenternumber="' . $row->account_center_number . '" data-namear="' . $row->ar_name . '" data-nameen="' . $row->en_name . '" data-id="' . $row->id . '" class="btn btn-xs btn-primary btn-modal edit_cost_center" data-toggle="modal" data-target="#edit_cost_center_modal"><i class="glyphicon glyphicon-edit"></i>' . __("messages.edit") . '</button>';
+                        }
+                        if ($is_admin  || auth()->user()->can('accounting.costCenter.delete')) {
+                            $html .=  '<button data-href="' . $deleteUrl . '" class="btn btn-xs btn-danger delete_cost_center_button"><i class="glyphicon glyphicon-trash"></i> ' . __("messages.delete") . '</button>
                     ';
+                        }
+                        return $html;
                     }
                 )
                 ->editColumn('name', function ($row) {

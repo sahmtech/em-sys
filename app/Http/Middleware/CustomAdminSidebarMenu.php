@@ -1149,22 +1149,26 @@ class CustomAdminSidebarMenu
 
             //$menu->header("");
             //$menu->header("");
-            if ($is_admin || auth()->user()->can('sales.crud_contacts')) {
+            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') || auth()->user()->can('sales.view_qualified_contacts')|| auth()->user()->can('sales.view_unqualified_contacts')|| auth()->user()->can('sales.view_converted_contacts') ) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
                     __('sales::lang.lead_contacts'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'lead_contacts'],
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'lead_contacts'
+                            || request()->segment(2) == 'qualified_contacts'
+                            || request()->segment(2) == 'unqualified_contacts'
+                            || request()->segment(2) == 'converted_contacts'
+                        )],
                 );
             }
 
-            if ($is_admin || auth()->user()->can('sales.crud_sales_projects')) {
+            if ($is_admin || auth()->user()->can('sales.view_sales_projects')) {
                 $menu->url(
                     route('sale.saleProjects'),
                     __('sales::lang.sales_projects'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'saleProjects'],
                 );
             }
-            if ($is_admin || auth()->user()->can('sales.crud_offer_price')) {
+            if ($is_admin || auth()->user()->can('sales.view_under_study_offer_price') || auth()->user()->can('sales.view_accepted_offer_price')|| auth()->user()->can('sales.view_unaccepted_offer_price') ) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                     __('sales::lang.offer_price'),
@@ -1172,7 +1176,7 @@ class CustomAdminSidebarMenu
 
                 );
             }
-            if ($is_admin || auth()->user()->can('sales.crud_contracts')) {
+            if ($is_admin || auth()->user()->can('sales.view_sales_contracts')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ContractsController::class, 'index']),
                     __('sales::lang.contracts'),
@@ -1180,14 +1184,14 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('sales.crud_contract_appendics')) {
+            if ($is_admin || auth()->user()->can('sales.view_contract_appendics')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ContractAppendixController::class, 'index']),
                     __('sales::lang.contract_appendics'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'contract_appendices'],
                 );
             }
-            if ($is_admin || auth()->user()->can('sales.crud_sale_operation_orders')) {
+            if ($is_admin || auth()->user()->can('sales.view_sale_operation_orders')) {
 
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\SaleOperationOrderController::class, 'index']),
@@ -1195,7 +1199,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'orderOperations'],
                 );
             }
-            if ($is_admin || auth()->user()->can('sales.crud_requests')) {
+            if ($is_admin || auth()->user()->can('sales.view_sales_requests')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\RequestController::class, 'index']),
                     __('sales::lang.requests'),
@@ -1206,7 +1210,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin || auth()->user()->can('sales.crud_sales_salary_requests')) {
+            if ($is_admin || auth()->user()->can('sales.view_sales_salary_requests')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\SalesSalaryRequestsController::class, 'index']),
                     __('sales::lang.salary_requests'),
@@ -1220,18 +1224,18 @@ class CustomAdminSidebarMenu
 
 
 
-            if ($is_admin || auth()->user()->can('sales.crud_settings')) {
+            if ($is_admin || auth()->user()->can('sales.view_sale_sources') || auth()->user()->can('sales.view_contract_items') || auth()->user()->can('sales.view_sales_costs')) {
                 $menu->dropdown(
                     __('sales::lang.sales_settings'),
                     function ($sub) use ($is_admin) {
-                        if ($is_admin || auth()->user()->can('sales.crud_sale_sources')) {
+                        if ($is_admin || auth()->user()->can('sales.view_sale_sources')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'index']),
                                 __('sales::lang.sale_sources'),
                                 ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_sources']
                             );
                         }
-                        if ($is_admin || auth()->user()->can('sales.crud_contract_itmes')) {
+                        if ($is_admin || auth()->user()->can('sales.view_contract_items')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\ContractItemController::class, 'index']),
                                 __('sales::lang.contract_itmes'),
@@ -1248,7 +1252,7 @@ class CustomAdminSidebarMenu
                         //         ['icon' => 'fas fa-chart-line', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'first_choice_offer_price_template']
                         //     );
                         // }
-                        if ($is_admin || auth()->user()->can('sales.crud_sales_costs')) {
+                        if ($is_admin || auth()->user()->can('sales.view_sales_costs')) {
                             $sub->url(
                                 action([\Modules\Sales\Http\Controllers\SalesCostController::class, 'index']),
                                 __('sales::lang.sales_costs'),

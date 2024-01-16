@@ -529,6 +529,12 @@ return [
    ],
    'accounting_dashboard' => 'Accounting home page',
    'settings' => 'Settings',
+   'automatedMigration_edit' => 'Edit Automated Migration',
+   'automatedMigration_active_toggle' => 'Change Status Automated Migration',
+   'account_edit' => 'Edit account',
+   'cost_center_edit' => 'Edit cost center ',
+   'cost_center_delete' => 'Delete cost center ',
+   'opening_balances_delete' => 'Delete opening balances',
 
 
 ];

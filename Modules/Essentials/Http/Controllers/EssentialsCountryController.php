@@ -25,9 +25,13 @@ class EssentialsCountryController extends Controller
     {
     
        $business_id = request()->session()->get('user.business_id');
+       $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+       $can_crud_countries = auth()->user()->can('essentials.crud_countries');
 
+       $can_delete_countries = auth()->user()->can('essentials.delete_countries');
+       $can_edit_countries = auth()->user()->can('essentials.edit_countries');
+       $can_add_countries = auth()->user()->can('essentials.add_countries');
 
-        $can_crud_countries = auth()->user()->can('essentials.crud_countries');
         if (! $can_crud_countries) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -55,14 +59,17 @@ class EssentialsCountryController extends Controller
             )
             ->addColumn(
                 'action',
-                function ($row) use ($is_admin) {
+                function ($row) use ($is_admin ,$can_delete_countries ,$can_edit_countries) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin  || $can_edit_countries ) {
+                      
                         $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                         &nbsp;';
-                        $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('country.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                       
                     }
-        
+                    if ($is_admin || $can_delete_countries) {
+                    $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('country.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    }
                     return $html;
                 }
             )

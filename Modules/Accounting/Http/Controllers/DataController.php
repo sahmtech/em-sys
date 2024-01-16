@@ -35,7 +35,7 @@ class DataController extends Controller
 
         $commonUtil = new Util();
         $is_admin = $commonUtil->is_admin(auth()->user(), $business_id);
-        
+
         if (auth()->user()->can('accounting.access_accounting_module') && $is_accounting_enabled) {
             Menu::create(
                 'custom_admin-sidebar-menu',
@@ -55,21 +55,37 @@ class DataController extends Controller
         return [
             [
                 'group_name' => __('accounting::lang.accounting'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'accounting.accounting_dashboard',
                         'label' => __('accounting::lang.accounting_dashboard'),
                         'default' => false
                     ],
-                    
+
                     [
                         'value' => 'accounting.chart_of_accounts',
                         'label' => __('accounting::lang.chart_of_accounts'),
                         'default' => false
                     ],
                     [
+                        'value' => 'accounting.account.edit',
+                        'label' => __('accounting::lang.account_edit'),
+                        'default' => false
+                    ],
+
+                    [
                         'value' => 'accounting.cost_center',
                         'label' => __('accounting::lang.cost_center'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.costCenter.edit',
+                        'label' => __('accounting::lang.cost_center_edit'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.costCenter.delete',
+                        'label' => __('accounting::lang.cost_center_delete'),
                         'default' => false
                     ],
                     [
@@ -77,6 +93,12 @@ class DataController extends Controller
                         'label' => __('accounting::lang.opening_balances'),
                         'default' => false
                     ],
+                    [
+                        'value' => 'accounting.OpeningBalance.delete',
+                        'label' => __('accounting::lang.opening_balances_delete'),
+                        'default' => false
+                    ],
+
                     [
                         'value' => 'accounting.receipt_vouchers',
                         'label' => __('accounting::lang.receipt_vouchers'),
@@ -92,32 +114,6 @@ class DataController extends Controller
                         'label' => __('accounting::lang.journal_entry'),
                         'default' => false
                     ],
-                    [
-                        'value' => 'accounting.automatedMigration',
-                        'label' => __('accounting::lang.automatedMigration'),
-                        'default' => false
-                    ],
-                    [
-                        'value' => 'accounting.transfer',
-                        'label' => __('accounting::lang.transfer'),
-                        'default' => false
-                    ],
-                    [
-                        'value' => 'accounting.transactions',
-                        'label' => __('accounting::lang.transactions'),
-                        'default' => false
-                    ],
-                    [
-                        'value' => 'accounting.reports',
-                        'label' => __('accounting::lang.reports'),
-                        'default' => false
-                    ],
-                    [
-                        'value' => 'accounting.settings',
-                        'label' => __('accounting::lang.settings'),
-                        'default' => false
-                    ],
-                      
                     [
                         'value' => 'accounting.view_journal',
                         'label' => __('accounting::lang.view_journal'),
@@ -139,8 +135,24 @@ class DataController extends Controller
                         'default' => false
                     ],
                     [
-                        'value' => 'accounting.map_transactions',
-                        'label' => __('accounting::lang.map_transactions'),
+                        'value' => 'accounting.automatedMigration',
+                        'label' => __('accounting::lang.automatedMigration'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'AutomatedMigration.edit',
+                        'label' => __('accounting::lang.automatedMigration_edit'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'AutomatedMigration.active_toggle',
+                        'label' => __('accounting::lang.automatedMigration_active_toggle'),
+                        'default' => false
+                    ],
+
+                    [
+                        'value' => 'accounting.transfer',
+                        'label' => __('accounting::lang.transfer'),
                         'default' => false
                     ],
                     [
@@ -164,6 +176,29 @@ class DataController extends Controller
                         'default' => false
                     ],
                     [
+                        'value' => 'accounting.transactions',
+                        'label' => __('accounting::lang.transactions'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.reports',
+                        'label' => __('accounting::lang.reports'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.settings',
+                        'label' => __('accounting::lang.settings'),
+                        'default' => false
+                    ],
+
+
+                    [
+                        'value' => 'accounting.map_transactions',
+                        'label' => __('accounting::lang.map_transactions'),
+                        'default' => false
+                    ],
+                  
+                    [
                         'value' => 'accounting.manage_budget',
                         'label' => __('accounting::lang.manage_budget'),
                         'default' => false
@@ -179,10 +214,8 @@ class DataController extends Controller
                         'default' => false
                     ],
                 ]
-                
+
             ],
         ];
-       
     }
-   
 }

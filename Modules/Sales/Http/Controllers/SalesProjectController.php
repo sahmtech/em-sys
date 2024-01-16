@@ -31,6 +31,9 @@ class SalesProjectController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+        $can_edit_sale_project = auth()->user()->can('sales.edit_sale_project');
+        $can_delete_sale_project = auth()->user()->can('sales.delete_sale_project');
+
 
         $SalesProjects = SalesProject::with(['contact']);
         $cities = EssentialsCity::forDropdown();
@@ -85,11 +88,13 @@ class SalesProjectController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin,$can_edit_sale_project,$can_delete_sale_project) {
                         $html = '';
-                        if ($is_admin) {
+                        if ($is_admin || $can_edit_sale_project) {
                             $html .= '<a href="' . route('sale.editSaleProject', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
-                             &nbsp;';
+                            &nbsp;';
+                        }
+                        if ($is_admin || $can_delete_sale_project) {
                             $html .= '<button class="btn btn-xs btn-danger delete_item_button" data-href="' . route('sale.destroySaleProject', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 

@@ -32,6 +32,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/sales.returnReq', [\Modules\Sales\Http\Controllers\RequestController::class, 'returnReq'])->name('sales.returnReq');
         Route::get('/escalate_requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'escalateRequests'])->name('sales.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\Sales\Http\Controllers\RequestController::class, 'changeEscalateRequestsStatus'])->name('sales.changeEscalateRequestsStatus');
+        Route::post('/storeRequest', [\Modules\Sales\Http\Controllers\RequestController::class, 'store'])->name('storeSaleRequest');
 
 
         Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('price_offer');

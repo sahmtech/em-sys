@@ -267,16 +267,17 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
 
                         $html = '';
-
-                        $html .= '
+                        if ($is_admin  || auth()->user()->can('worker.book')) {
+                            $html .= '
                         <a href="' . route('worker.book', ['id' => $row->id])  . '"
                         data-href="' . route('worker.book', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button" style="width: 50px;"  data-container="#book_worker_model"><i class="fa fa-bookmark cursor-pointer" style="padding: 5px;
                          font-size: smaller;"></i>' . __("housingmovements::lang.book") . '</a>';
-                        return $html;
+                            return $html;
+                        }
                     }
                 )
 
@@ -415,7 +416,7 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin){
 
                         $html = '';
 
@@ -424,11 +425,12 @@ class ProjectWorkersController extends Controller
                         // data-href="' . route('worker.unbook', ['id' => $row->id])  . ' "
                         //  class="btn btn-xs btn-modal btn-danger delete_book_worker_button" style="width: 60px;"  ><i class="fa fa-minus-circle cursor-pointer" style="
                         //  font-size: smaller;"></i>' . __("housingmovements::lang.unbook") . '</a>';
-
-                        $html .= '
+                        if ($is_admin  || auth()->user()->can('worker.unbook')) {
+                            $html .= '
                     <button data-href="' .  route('worker.unbook', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_book_worker_button"><i class="fa fa-minus-circle cursor-pointer"></i>' . __("housingmovements::lang.unbook") . '</button>
                 ';
-                        return $html;
+                            return $html;
+                        }
                     }
                 )
 

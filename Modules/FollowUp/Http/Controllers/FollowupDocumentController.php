@@ -28,6 +28,7 @@ class FollowupDocumentController extends Controller
             // }
 
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
             return DataTables::of($documents)
 
@@ -38,19 +39,21 @@ class FollowupDocumentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin) {
 
                         $html = '';
-
-                        $html .= '
+                        if (($is_admin  || auth()->user()->can('followup.edit_document'))) {
+                            $html .= '
                         <a href="' . route('documents-edit', ['id' => $row->id])  . '"
                         data-href="' . route('documents-edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_document_button"  data-container="#edit_document_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
-                        $html .= '
+                        }
+                        if (($is_admin  || auth()->user()->can('followup.documents.delete'))) {
+                            $html .= '
                     <button data-href="' .  route('documents-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
+                        }
 
                         return $html;
                     }

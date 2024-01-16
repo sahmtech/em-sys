@@ -40,6 +40,8 @@ class EssentialsDepartmentsController extends Controller
 
 
         $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
+        $can_crud_organizational_structure = auth()->user()->can('essentials.crud_organizational_structure');
+
         if (!$can_crud_organizational_structure) {
            //temp  abort(403, 'Unauthorized action.');
         }
@@ -130,12 +132,18 @@ class EssentialsDepartmentsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_crud_depatments = auth()->user()->can('essentials.crud_departments');
+        $can_add_depatments = auth()->user()->can('essentials.add_departments');
+        $can_delete_depatments = auth()->user()->can('essentials.delete_depatments');
+        $can_edit_depatments = auth()->user()->can('essentials.edit_depatments');
+        $can_show_depatments = auth()->user()->can('essentials.show_depatments');
+        $can_add_manager = auth()->user()->can('essentials.add_manager ');
+        $can_delegatingManager_name = auth()->user()->can('essentials.delegatingManager_name ');
         if (!$can_crud_depatments) {
            //temp  abort(403, 'Unauthorized action.');
         }
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+      
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $parent_departments = EssentialsDepartment::where('is_main', '1')->pluck('name', 'id');
         if (request()->ajax()) {
@@ -151,9 +159,11 @@ class EssentialsDepartmentsController extends Controller
 
                     return $item;
                 })
-                ->addColumn('manager_name', function ($row) {
 
-                    $manager = DB::table('essentials_employee_appointmets')
+                ->addColumn('manager_name', function ($row) use($can_add_manager ,$is_admin) {
+
+                    if($is_admin || $can_add_manager){
+                        $manager = DB::table('essentials_employee_appointmets')
                         ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
                         ->where('essentials_employee_appointmets.department_id', $row->id)
                         ->where('essentials_employee_appointmets.type', 'appoint')
@@ -162,10 +172,15 @@ class EssentialsDepartmentsController extends Controller
                         ->first();
 
                     return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addAppointmentModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_manager') . '</button>';
+                    }
+                    
                 })
-                ->addColumn('delegatingManager_name', function ($row) {
 
-                    $delegatingManager = DB::table('essentials_employee_appointmets')
+
+                ->addColumn('delegatingManager_name', function ($row) use($can_delegatingManager_name ,$is_admin) {
+
+                    if($is_admin || $can_delegatingManager_name){
+                        $delegatingManager = DB::table('essentials_employee_appointmets')
                         ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
                         ->where('essentials_employee_appointmets.department_id', $row->id)
                         ->where('essentials_employee_appointmets.type', 'delegating')
@@ -174,18 +189,29 @@ class EssentialsDepartmentsController extends Controller
                         ->first();
 
                     return $delegatingManager ? $delegatingManager->user : '<button type="button" class="btn btn-xs btn-success open-modal" data-toggle="modal" data-target="#addDelegatingModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.manager_delegating') . '</button>';
+                    }
+
+                   
                 })
+
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin ,$can_show_depatments, $can_delete_depatments , $can_edit_depatments) {
                         $html = '';
-                        if ($is_admin) {
-                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('dep.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                        if ($is_admin || $can_edit_depatments) {
+                           
                             //   $html .='<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                             $html .= '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#editDepartment" data-row-id="' . $row->id . '" data-info-route="' . route('getDepartmentInfo', $row->id) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
 
                             '&nbsp;';
+                           
+                        }
+                        if($is_admin || $can_delete_depatments){
                             $html .= '<button class="btn btn-xs btn-danger delete_department_button" data-href="' . route('department.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+                         
+                        if($is_admin || $can_show_depatments){
+                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('dep.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
 
                         return $html;

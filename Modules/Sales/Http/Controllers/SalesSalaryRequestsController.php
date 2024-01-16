@@ -30,11 +30,8 @@ class SalesSalaryRequestsController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-        $can_crud_sales_salary_requests= auth()->user()->can('sales.crud_sales_salary_requests');
-       
-        if (! $can_crud_sales_salary_requests) {
-           
-        }
+        $can_delete_sales_salary_request= auth()->user()->can('sales.delete_sales_salary_request');
+        $can_edit_sales_salary_request= auth()->user()->can('sales.edit_sales_salary_request');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -73,10 +70,11 @@ class SalesSalaryRequestsController extends Controller
             })
             ->addColumn(
                 'action',
-                function ($row) use($is_admin) {
+                function ($row) use($is_admin,$can_delete_sales_salary_request,$can_edit_sales_salary_request) {
                     $html = '';
-                    if ($is_admin) {
+                    if ($is_admin || $can_edit_sales_salary_request) {
                     $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                    } if ($is_admin || $can_delete_sales_salary_request) {
                     $html .= '<button class="btn btn-xs btn-danger delete_salary_request_button" data-href="' . route('salay_request.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                     }
                     return $html;

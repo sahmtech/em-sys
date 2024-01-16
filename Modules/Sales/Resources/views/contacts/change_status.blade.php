@@ -34,7 +34,7 @@
                             <div class="row" style="margin-top:8px; ">
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        {!! Form::label('file_lead', __('sales::lang.file_lead') . '*') !!}
+                                        {!! Form::label('file_lead', __('sales::lang.file_lead') . ':*') !!}
                                         {!! Form::file('file_lead', ['class' => 'form-control', 'required', 'accept' => 'doc/*']) !!}
 
 

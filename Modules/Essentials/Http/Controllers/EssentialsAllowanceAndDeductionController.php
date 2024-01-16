@@ -43,7 +43,12 @@ class EssentialsAllowanceAndDeductionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+ 
+       
+        $can_add_allowance_and_deduction= auth()->user()->can('essentials.add_allowance_and_deduction');
+        $can_edit_allowance_and_deduction= auth()->user()->can('essentials.edit_allowance_and_deduction');
+        $can_delete_allowance_and_deduction= auth()->user()->can('essentials.delete_allowance_and_deduction');
 
         if (!auth()->user()->can('essentials.add_allowance_and_deduction') && !auth()->user()->can('essentials.view_allowance_and_deduction')) {
            //temp  abort(403, 'Unauthorized action.');
@@ -56,13 +61,15 @@ class EssentialsAllowanceAndDeductionController extends Controller
             return Datatables::of($allowances)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row)  use($is_admin ,$can_edit_allowance_and_deduction,$can_delete_allowance_and_deduction){
                         $html = '';
-                        if (auth()->user()->can('essentials.add_allowance_and_deduction')) {
+                           if($is_admin  || $can_edit_allowance_and_deduction ){
                             $html .= '<button data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'edit'], [$row->id]) . '" data-container="#add_allowance_deduction_modal" class="btn-modal btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</button>';
-
+                           }
+                          
+                           if($is_admin  || $can_delete_allowance_and_deduction ){
                             $html .= '&nbsp; <button data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'destroy'], [$row->id]) . '" class="delete-allowance btn btn-danger btn-xs"><i class="fa fa-trash" aria-hidden="true"></i> ' . __('messages.delete') . '</button>';
-                        }
+                            }
 
                         return $html;
                     }

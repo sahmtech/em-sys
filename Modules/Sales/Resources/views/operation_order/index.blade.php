@@ -40,6 +40,8 @@
         @endcomponent
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("sales.add_sale_operation_orders"))
+     
             @slot('tool')
                 <div class="box-tools">
 
@@ -49,6 +51,7 @@
                     </button>
                 </div>
             @endslot
+        @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped ajax_view" id="operation_table">

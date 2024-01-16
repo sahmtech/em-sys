@@ -71,9 +71,9 @@
                 <input type="hidden" id="__precision" value="{{session('business.currency_precision', 2)}}">
                 <input type="hidden" id="__quantity_precision" value="{{session('business.quantity_precision', 2)}}">
                 <!-- End of currency related field-->
-                @can('view_export_buttons')
+                @if(auth()->user()->hasRole('Admin#1') || auth()->user()->can('view_export_buttons'))
                     <input type="hidden" id="view_export_buttons">
-                @endcan
+                @endif
                 @if(isMobile())
                     <input type="hidden" id="__is_mobile">
                 @endif

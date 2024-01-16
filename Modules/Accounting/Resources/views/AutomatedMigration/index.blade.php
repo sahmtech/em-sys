@@ -54,29 +54,38 @@
                                                     <i class="fa fa-cog" aria-hidden="true"></i>
                                                 </button>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" style="margin: 2px;" title="@lang('messages.edit')"
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@edit', $row->id) }}"
-                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@edit', $row->id) }}">
-                                                        <i class="fas fa-edit" style="padding: 2px;color:rgb(8, 158, 16);"></i>
-                                                        @lang('messages.edit') </a>
 
-                                                    <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
-                                                        href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@active_toggle', $row->id) }}"
-                                                        data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@active_toggle', $row->id) }}"
-                                                        {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
-                                                        @if (!$row->active)
-                                                            <i class="fa fa-bullseye" style="padding: 2px;color: green;"
-                                                                title="state of automated migration is active"
-                                                                aria-hidden="true"></i>
-                                                            @lang('accounting::lang.active')
+                                                    @if (auth()->user()->hasRole('Admin#1') ||
+                                                            auth()->user()->can('AutomatedMigration.edit'))
+                                                        <a class="dropdown-item" style="margin: 2px;" title="@lang('messages.edit')"
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@edit', $row->id) }}"
+                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@edit', $row->id) }}">
+                                                            <i class="fas fa-edit"
+                                                                style="padding: 2px;color:rgb(8, 158, 16);"></i>
+                                                            @lang('messages.edit') </a>
+                                                    @endif
 
-                                                            <i class=""></i>
-                                                        @else
-                                                            <i class="fa fa-ban" style="padding: 2px;color:red;"
-                                                                title="state of automated migration is inactive"></i>
-                                                            @lang('accounting::lang.inactive')
-                                                        @endif
-                                                    </a>
+
+                                                    @if (auth()->user()->hasRole('Admin#1') ||
+                                                            auth()->user()->can('AutomatedMigration.active_toggle'))
+                                                        <a class="dropdown-item" style="margin: 2px;" {{-- title="{{ $row->active ? @lang('accounting::lang.active') : @lang('accounting::lang.inactive') }}" --}}
+                                                            href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@active_toggle', $row->id) }}"
+                                                            data-href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@active_toggle', $row->id) }}"
+                                                            {{-- data-target="#active_auto_migration" data-toggle="modal" --}} {{-- id="delete_auto_migration" --}}>
+                                                            @if (!$row->active)
+                                                                <i class="fa fa-bullseye" style="padding: 2px;color: green;"
+                                                                    title="state of automated migration is active"
+                                                                    aria-hidden="true"></i>
+                                                                @lang('accounting::lang.active')
+
+                                                                <i class=""></i>
+                                                            @else
+                                                                <i class="fa fa-ban" style="padding: 2px;color:red;"
+                                                                    title="state of automated migration is inactive"></i>
+                                                                @lang('accounting::lang.inactive')
+                                                            @endif
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             </div>
 

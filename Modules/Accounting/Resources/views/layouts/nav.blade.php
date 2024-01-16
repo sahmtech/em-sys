@@ -55,13 +55,13 @@
                         </li>
                     @endif
 
-                    @if (auth()->user()->can('accounting.AutomatedMigration'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.AutomatedMigration'))
                         <li @if (request()->segment(2) == 'AutomatedMigration') class="active" @endif><a
                                 href="{{ action('\Modules\Accounting\Http\Controllers\AutomatedMigrationController@index') }}">@lang('accounting::lang.automatedMigration')</a>
                         </li>
                     @endif
 
-                    @if (auth()->user()->can('accounting.view_transfer'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.view_transfer'))
                         <li @if (request()->segment(2) == 'transfer') class="active" @endif>
                             <a href="{{ action('\Modules\Accounting\Http\Controllers\TransferController@index') }}">
                                 @lang('accounting::lang.transfer')
@@ -73,14 +73,14 @@
                             href="{{ action('\Modules\Accounting\Http\Controllers\TransactionController@index') }}">@lang('accounting::lang.transactions')</a>
                     </li>
 
-                    @if (auth()->user()->can('accounting.manage_budget'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.manage_budget'))
                         <li @if (request()->segment(2) == 'budget') class="active" @endif>
                             <a href="{{ action('\Modules\Accounting\Http\Controllers\BudgetController@index') }}">
                                 @lang('accounting::lang.budget')
                             </a>
                         </li>
                     @endif
-                    @if (auth()->user()->can('accounting.view_reports'))
+                    @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('accounting.view_reports'))
                         <li @if (request()->segment(2) == 'reports') class="active" @endif><a
                                 href="{{ action('\Modules\Accounting\Http\Controllers\ReportController@index') }}">
                                 @lang('accounting::lang.reports')
