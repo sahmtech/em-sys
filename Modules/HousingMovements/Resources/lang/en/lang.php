@@ -103,7 +103,7 @@ return [
     'workers' => 'Project Workers',
 
     'crud_rooms' => 'Index Rooms',
-    'crud_facilities' => 'Add/Delete/Edit Facilities',
+    'crud_facilities' => 'Index Facilities',
     'crud_htr_requests' => 'Add/Delete/Edit Requests',
     'crud_htr_workers_projects' => 'Add/Delete/Edit Project Workers',
     'crud_htr_car_types' => 'Add/Delete/Edit Car Types',

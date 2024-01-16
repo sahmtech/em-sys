@@ -111,7 +111,7 @@
                                 </td>
                                 <td>{{ optional(optional($user->appointment)->profession)->name }}</td>
                                 <td>
-                                @if (($is_admin  || auth()->user()->can('followup.view_worker_details'))) 
+                                @if ((auth()->user()->hasRole("Admin#1") || auth()->user()->can('followup.view_worker_details'))) 
 
                                     <a href="{{ route('showWorker', ['id' => $user->id]) }}"
                                         class="btn btn-primary">@lang('followup::lang.view_worker_details')</a>

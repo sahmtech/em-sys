@@ -113,7 +113,7 @@ return [
     'please_add_the_HousingMovements_department' => 'الرجاء إضافة إدارة خاصة بالسكن',
 
     'crud_rooms' => 'إستعراض الغرف',
-    'crud_facilities' => 'إضافة/حذف/تعديل المرافق',
+    'crud_facilities' => 'إستعراض المرافق',
     'crud_htr_requests' => 'إضافة/حذف/تعديل الطلبات',
     'crud_htr_workers_projects' => 'إضافة/حذف/تعديل عمال المشاريع',
     'crud_htr_car_types' => 'إضافة/حذف/تعديل عمال أنواع المركبات',
@@ -182,6 +182,9 @@ return [
     '_room_workers' => 'إستعراض عمال الغرفة',
     '_rooms_edit' => 'تعديل غرفة',
     '_rooms_delete' => 'حذف غرفة',
+    'return_the_request' => 'إرجاع الطلبات',
+    'view_request' => 'عرض الطلبات',
+    'change_status' => 'تغيير حالة الطلبات',
 
 
 
