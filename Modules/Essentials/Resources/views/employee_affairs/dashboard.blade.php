@@ -159,7 +159,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('housingmovements.dashboard') }}"
+                    url: "{{ route('employee_affairs_dashboard') }}"
                 },
 
                 columns: [
