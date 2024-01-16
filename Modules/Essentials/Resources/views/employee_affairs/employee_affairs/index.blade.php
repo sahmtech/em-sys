@@ -621,7 +621,7 @@
 
 
             $('#employees tbody').on('click', 'tr', function(e) {
-                var cellIndex = $(e.target).index();
+                var cellIndex = $(e.target).closest('td').index();
                 var lastIndex = $(this).children('td').length - 1;
 
                 if (cellIndex !== lastIndex) {
