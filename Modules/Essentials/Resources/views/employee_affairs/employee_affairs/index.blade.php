@@ -619,6 +619,7 @@
 
             });
 
+            
 
             $('#employees tbody').on('click', 'tr', function() {
             var data = users_table.row(this).data();
