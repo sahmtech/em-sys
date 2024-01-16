@@ -77,13 +77,16 @@
                     </thead>
                 </table>
                 <div style="margin-bottom: 10px;">
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.send_price_offer_to_worker'))
                     <button type="button" class="btn btn-success btn-sm custom-btn" id="change-status-selected">
                         @lang('internationalrelations::lang.send_offer_price')
                     </button>
+                    @endif
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.accepte_offer_from_worker'))
                     <button type="button" class="btn btn-warning btn-sm custom-btn" id="accepted-selected">
                         @lang('internationalrelations::lang.accepte_from_worker')
                     </button>
-
+                    @endif
                 </div>
 
             </div>

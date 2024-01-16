@@ -67,11 +67,9 @@ class IrRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_change_request_status = auth()->user()->can('internationalrelations.change_request_status');
+     
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
@@ -174,20 +172,23 @@ class IrRequestController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin,$can_change_request_status){
                     $status = '';
-                
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
-                        
-                 
-                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                    if ($is_admin || $can_change_request_status) {
+                        if ($row->status == 'pending') {
+                            $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                                . $this->statuses[$row->status]['name'] . '</span>';
+                            
+                    
+                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                            
+                        } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                            $status = trans('followup::lang.' . $row->status);
+                        }
+                    }
+                    else{
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
                     return $status;
                 })
 

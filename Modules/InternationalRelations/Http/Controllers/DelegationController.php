@@ -35,8 +35,9 @@ class DelegationController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_view_delegation = auth()->user()->can('internationalrelations.view_delegation');
-        if (!($is_admin || $can_view_delegation)) {
+        $can_add_proposed_worker = auth()->user()->can('internationalrelations.add_proposed_worker');
+        $can_import_proposed_workers= auth()->user()->can('internationalrelations.import_proposed_workers');
+        if (!($is_admin || $can_add_proposed_worker || $can_import_proposed_workers)) {
            //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -88,19 +89,25 @@ class DelegationController extends Controller
                 return $delegation->transactionSellLine->service->monthly_cost_for_one ?? null;
             })
           
-            ->addColumn('actions', function ($delegation) {
-                $html = '<button class="btn btn-xs btn-primary">
-                            <a href="' . route('createProposed_labor', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
-                                . trans("internationalrelations::lang.addWorker") .
-                            '</a>
-                        </button>
-                        <button class="btn btn-xs btn-success">
-                            <a href="' . route('importWorkers', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
-                                . trans("internationalrelations::lang.importWorkers") .
-                            '</a>
-                        </button>';
+            ->addColumn('actions', function ($delegation) use ($can_add_proposed_worker, $can_import_proposed_workers, $is_admin) {
+                $html = '';
+                if ($is_admin || $can_add_proposed_worker) {
+                    $html .= '<button class="btn btn-xs btn-primary">
+                                <a href="' . route('createProposed_labor', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
+                                    . trans("internationalrelations::lang.addWorker") .
+                                '</a>
+                              </button>&nbsp;';
+                }
+                if ($is_admin || $can_import_proposed_workers) {
+                    $html .= '<button class="btn btn-xs btn-success">
+                                <a href="' . route('importWorkers', ['delegation_id' => $delegation->id, 'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) . '" style="color: white; text-decoration: none;">'
+                                    . trans("internationalrelations::lang.importWorkers") .
+                                '</a>
+                              </button>';
+                }
                 return $html;
             })
+            
             ->rawColumns(['actions', 'additional_allwances'])
             ->make(true);
             }

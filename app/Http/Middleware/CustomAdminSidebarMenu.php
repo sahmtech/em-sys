@@ -1537,7 +1537,7 @@ class CustomAdminSidebarMenu
             //$menu->header("");
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.crud_orders_operations')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_orders_operations')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\OrderRequestController::class, 'index']),
                     __('internationalrelations::lang.order_request'),
@@ -1546,7 +1546,7 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($is_admin || auth()->user()->can('internationalrelations.crud_employment_companies')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_employment_companies')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\EmploymentCompaniesController::class, 'index']),
                     __('internationalrelations::lang.EmploymentCompanies'),
@@ -1562,14 +1562,21 @@ class CustomAdminSidebarMenu
             //         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'getBusiness'],
             //     );
             // }
-            if ($is_admin || auth()->user()->can('internationalrelations.view_delegation')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_all_delegation_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\DelegationController::class, 'index']),
                     __('internationalrelations::lang.Delegation'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'delegations'],
                 );
             }
-            if ($is_admin || auth()->user()->can('internationalrelations.view_proposed_labors')) {
+
+
+            
+            if ($is_admin || auth()->user()->can('internationalrelations.view_proposed_workers') || auth()->user()->can('internationalrelations.view_accepted_workers') 
+            || auth()->user()->can('internationalrelations.view_under_trialPeriod_workers') 
+            || auth()->user()->can('internationalrelations.view_unaccepted_workers') ) 
+            
+            {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex']),
                     __('internationalrelations::lang.proposed_labor'),
@@ -1581,7 +1588,7 @@ class CustomAdminSidebarMenu
                     ],
                 );
             }
-            if ($is_admin || auth()->user()->can('internationalrelations.crud_visa_cards')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_visa_cards')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\VisaCardController::class, 'index']),
                     __('internationalrelations::lang.visa_cards'),
@@ -1595,7 +1602,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'Airlines'],
                 );
             }
-            if ($is_admin || auth()->user()->can('internationalrelations.crud_all_ir_requests')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_ir_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'index']),
                     __('followup::lang.requests'),
@@ -1610,7 +1617,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'ir' && request()->segment(2) == 'internationalRleations']
                 );
             }
-            if ($is_admin || auth()->user()->can('internationalrelations.crud_all_salary_requests')) {
+            if ($is_admin || auth()->user()->can('internationalrelations.view_all_salary_requests')) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\IRsalaryRequestController::class, 'index']),
                     __('followup::lang.salary_requests'),
