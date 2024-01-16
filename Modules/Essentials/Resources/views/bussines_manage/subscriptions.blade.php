@@ -13,7 +13,7 @@
 <!-- Main content -->
 <section class="content">
     @component('components.widget', ['class' => 'box-primary'])
-        @can('business.create')
+      
             @slot('tool')
             <div class="box-tools">
                 
@@ -22,10 +22,9 @@
                 </button>
             </div>
             @endslot
-        
-        @endcan
+     
        
-        @can('business.view')
+       
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="business_subscriptions_table">
                     <thead>
@@ -45,7 +44,7 @@
                     </thead>
                 </table>
             </div>
-        @endcan
+      
     @endcomponent
 
     <div class="modal fade business_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

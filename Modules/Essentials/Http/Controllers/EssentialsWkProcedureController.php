@@ -53,29 +53,34 @@ class EssentialsWkProcedureController extends Controller
         $actualTypes = EssentialsWkProcedure::distinct()->pluck('type')->toArray();
         $missingTypes = array_diff($requestsType, $actualTypes);
         $departments=EssentialsDepartment::where('business_id',$business_id)->pluck('name','id');
+       
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_delete_procedures = auth()->user()->can('essentials.delete_procedures');
-     
+        $can_show_steps= auth()->user()->can('essentials.essentials_show_steps');
 
         if (request()->ajax()) {	
    
-            $procedures = EssentialsWkProcedure::groupBy('type')->with('department')->get();
+        $procedures = EssentialsWkProcedure::groupBy('type')->with('department')->get();
 
         return DataTables::of($procedures)
-        ->addColumn('steps', function ($procedure)   use ($is_admin) {
+        ->addColumn('steps', function ($procedure)   use ($is_admin ,$can_show_steps) {
             $steps = [];
-            $steps1=EssentialsWkProcedure::where('type',$procedure->type)->with('department')->get();
-            foreach ($steps1 as $step) {
+            if($can_show_steps || $is_admin )
+            {
+                $steps1=EssentialsWkProcedure::where('type',$procedure->type)->with('department')->get();
+                foreach ($steps1 as $step) {
+                    
+                    $departmentName = $step->department->name;
+        
+                    $arrow = $departmentName ? ' ⬅ ' : '';
                 
-                $departmentName = $step->department->name;
-    
-                $arrow = $departmentName ? ' ⬅ ' : '';
-            
-                $steps[] = "{$departmentName}";
-                $steps[]="{$arrow}";
-                
+                    $steps[] = "{$departmentName}";
+                    $steps[]="{$arrow}";
+                    
+                }
+                array_pop($steps);
             }
-            array_pop($steps);
+           
             return implode($steps);
         })
         ->addColumn(
@@ -94,7 +99,8 @@ class EssentialsWkProcedureController extends Controller
         ->make(true);
         }
         $businesses = Business::forDropdown();
-         return view('essentials::work_flow.index')->with(compact('departments','businesses','missingTypes'));
+         return view('essentials::work_flow.index')
+         ->with(compact('departments','businesses','missingTypes'));
        
     }
 

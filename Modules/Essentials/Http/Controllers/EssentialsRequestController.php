@@ -408,7 +408,7 @@ class EssentialsRequestController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $can_essentials_requests_change_status =auth()->user()->can('essentials.essentials_requests_change_status');
-
+        $can_essentials_add_requests =auth()->user()->can('essentials.essentials_add_requests');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 

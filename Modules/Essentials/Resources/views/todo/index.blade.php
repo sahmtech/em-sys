@@ -6,7 +6,7 @@
 
 <section class="content">
 	@component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-		@can('essentials.assign_todos')
+		
 			<div class="col-md-3">
 				<div class="form-group">
 					{!! Form::label('user_id_filter', __('essentials::lang.assigned_to') . ':') !!}
@@ -18,7 +18,7 @@
 					</div>
 				</div>
 			</div>
-		@endcan
+	
 		<div class="col-md-3">
 			<div class="form-group">
 				{!! Form::label('priority_filter', __('essentials::lang.priority') . ':') !!}
@@ -40,7 +40,7 @@
 	@endcomponent
 	@component('components.widget', ['title' => __('essentials::lang.todo_list'), 'icon' => '<i class="ion ion-clipboard"></i>', 'class' => 'box-solid'])
 		@slot('tool')
-			@can('essentials.add_todos')
+			@can('essentials.add_todo')
 			<div class="box-tools">
 				<button class="btn btn-block btn-primary btn-modal" data-href="{{action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create'])}}" 
 				data-container="#task_modal">

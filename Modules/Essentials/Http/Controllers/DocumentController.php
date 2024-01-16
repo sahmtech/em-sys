@@ -96,6 +96,12 @@ class DocumentController extends Controller
                              @lang( "essentials::lang.download")
                         </a>
 
+                    @elseif( auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.download_document") && $type == "memos")
+                    <a href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@download\',[$id])}}" class="btn btn-info btn-xs download">
+                    <i class="fa fa-download"></i>
+                    @lang( "essentials::lang.download")
+                     </a>
+
                     @elseif(  auth()->user()->hasRole("Admin#1") ||  auth()->user()->can("essentials.view_memos") && $type == "memos")
                             <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@show\',[$id])}}" class="btn btn-primary btn-xs view_memos">
                                 <i class="fa fa-eye"></i>

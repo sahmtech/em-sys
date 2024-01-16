@@ -1236,7 +1236,7 @@ return [
 
   'delete_wishes'=>'حذف الرغبات',
   'delete_leave'=>'حذف الاجازات',
-  'edit_leave'=>'تعديل الاجازات',
+  'edit_leave'=>' النشاط للإجازات',
   'change_status_leave'=>'تغير حالة الإجازة',
   'delete_leave_type'=>'حذف أنواع الاجازات',
   'edit_leave_type'=>'تعديل أنواع الإجازات',
@@ -1384,12 +1384,14 @@ return [
   'add_knowledge_base'=>'إضافة قاعدة معرفة',
   'edit_knowledge_base'=>'تعديل قاعدة معرفة',
   'delete_knowledge_base'=>'حذف قاعدة معرفة',
-  'show_knowledge_base'=>'عرض قاعدة معرفة',
+  'show_knowledge_base'=>'عرض ملف قاعدة معرفة',
   'add_parent_knowledge_base'=>'إضافة قسم لقاعدة المعرفة',
 
   'delete_attencances_status'=>'تعديل حالة الحضور والانصراف',
   'add_attencances_status'=>'إضافة  حالة الحضور والانصراف',
-
+  'show_payroll'=>'عرض مسير الراتب',
+  'edit_payroll_componenet'=>'تعديل مكونات الراتب',
+  'delete_payroll_componenet'=>'حذف مكونات الراتب',
 
   'show_business_document'=>' عرض وثيقة الترخيص',
   'edit_business_document'=>'تعديل الترخيص',
@@ -1406,5 +1408,8 @@ return [
 'border_no_has_insurance'=>'رقم الحدود المدخل لديه تأمين سايقا في السطر رقم ' ,
 'family_has_insurance'=>'رقم الاقامة للمرافق المدخل لديه تأمين سايقا في السطر رقم ' ,
 'duplicated_eqama_number'=>'  رقم الاقامة مكرر في السطر رقم '  ,
+
+'essentials_add_requests'=>'إضافة طلب في المتابعة',
+'essentials_show_steps'=>'عرض الادارات في إضافة أجراء',
 
 ];

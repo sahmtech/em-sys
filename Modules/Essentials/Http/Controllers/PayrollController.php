@@ -746,13 +746,15 @@ class PayrollController extends Controller
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
+                        if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.show_payroll')) {
                         $html .= '<li>
                                     <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'viewPayrollGroup'], [$row->id]) . '" target="_blank">
                                             <i class="fa fa-eye" aria-hidden="true"></i> '
                             . __('messages.view') .
                             '</a>
                                 </li>';
-                        if (auth()->user()->can('essentials.update_payroll')) {
+                        }
+                        if (auth()->user()->hasRole("Admin#1")  || auth()->user()->can('essentials.update_payroll')) {
                             $html .= '<li>
                                         <a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'getEditPayrollGroup'], [$row->id]) . '" target="_blank">
                                                 <i class="fas fa-edit" aria-hidden="true"></i> '
@@ -761,9 +763,11 @@ class PayrollController extends Controller
                                     </li>';
                         }
 
-                        if (auth()->user()->can('essentials.delete_payroll') && $row->status == 'draft') {
+                        if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.delete_payroll') && $row->status == 'draft') {
                             $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'destroy'], [$row->id]) . '" class="delete-payroll"><i class="fa fa-trash" aria-hidden="true"></i> ' . __('messages.delete') . '</a></li>';
                         }
+
+                    
 
                         if ($row->status == 'final' && $row->payment_status != 'paid') {
                             $html .= '<li>
@@ -773,6 +777,7 @@ class PayrollController extends Controller
                                 '</a>
                                 </li>';
                         }
+                    
 
                         $html .= '</ul></div>';
 
