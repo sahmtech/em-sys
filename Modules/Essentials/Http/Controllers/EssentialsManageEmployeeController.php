@@ -147,7 +147,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        $users = User::whereIn('id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
+        $users = User::whereIn('users.id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
 
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
@@ -418,7 +418,7 @@ class EssentialsManageEmployeeController extends Controller
             ->count();
 
         $departmentIds = EssentialsDepartment::where('business_id',  $business_id)
-            ->where('name', 'LIKE', '%سكن%')
+            ->where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
 
         $requestsProcess = null;
