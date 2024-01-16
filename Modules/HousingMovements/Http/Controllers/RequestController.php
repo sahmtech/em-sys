@@ -65,12 +65,12 @@ class RequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
@@ -92,7 +92,6 @@ class RequestController extends Controller
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-               
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
@@ -107,12 +106,12 @@ class RequestController extends Controller
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
-       
+
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
         $requestsProcess = null;
-     
+
         if (!empty($departmentIds)) {
 
             $requestsProcess = FollowupWorkerRequest::select([
@@ -135,15 +134,15 @@ class RequestController extends Controller
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
                 ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
-        }
-        else {
-            $output = ['success' => false,
-            'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
-                ];
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
+            ];
             return redirect()->action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
         }
         if (!$is_admin) {
-      
+
             $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
                 $query->where(function ($query2) use ($user_businesses_ids) {
                     $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
@@ -154,6 +153,7 @@ class RequestController extends Controller
         }
         if (request()->ajax()) {
 
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
             return DataTables::of($requestsProcess ?? [])
 
@@ -166,20 +166,19 @@ class RequestController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
-                        
-                 
+                        if ($is_admin || auth()->user()->can("housingmovements.change_status")) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                       
+                        }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -190,21 +189,21 @@ class RequestController extends Controller
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
         $workers = User::with(['userAllowancesAndDeductions'])
-        ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-            $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)
-                       ->whereIn('user_type', ['employee', 'manager', 'worker']);
-            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
-                $query3->where('user_type', 'worker')
-                       ->whereIn('assigned_to', $user_projects_ids)
-                       ->whereIn('users.business_id', $user_businesses_ids);
-            });
-        })
-        ->select(
-            'id',
-            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name")
-        )
-        ->pluck('full_name', 'id');
+            ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
+                $query->where(function ($query2) use ($user_businesses_ids) {
+                    $query2->whereIn('users.business_id', $user_businesses_ids)
+                        ->whereIn('user_type', ['employee', 'manager', 'worker']);
+                })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
+                    $query3->where('user_type', 'worker')
+                        ->whereIn('assigned_to', $user_projects_ids)
+                        ->whereIn('users.business_id', $user_businesses_ids);
+                });
+            })
+            ->select(
+                'id',
+                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name")
+            )
+            ->pluck('full_name', 'id');
 
 
         $statuses = $this->statuses;
@@ -218,12 +217,12 @@ class RequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         if (!(auth()->user()->can('superadmin'))) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
         if (!$crud_requests) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
@@ -245,7 +244,6 @@ class RequestController extends Controller
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-               
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
@@ -253,24 +251,24 @@ class RequestController extends Controller
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
-       
+
         $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
         $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
         $requestsProcess = null;
-     
+
         if (!empty($departmentIds)) {
 
-            $requestsProcess = FollowupWorkerRequest::where('type','leaves')->get();
-        }
-        else {
-            $output = ['success' => false,
-            'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
-                ];
+            $requestsProcess = FollowupWorkerRequest::where('type', 'leaves')->get();
+        } else {
+            $output = [
+                'success' => false,
+                'msg' => __('housingmovements::lang.please_add_the_HousingMovements_department'),
+            ];
             return redirect()->action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
         }
         if (!$is_admin) {
-      
+
             $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
                 $query->where(function ($query2) use ($user_businesses_ids) {
                     $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
@@ -295,18 +293,18 @@ class RequestController extends Controller
                 })
                 ->editColumn('status', function ($row) {
                     $status = '';
-                
+
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
-                        
+
                         if (auth()->user()->can('crudExitRequests')) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                         }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
-                
+
                     return $status;
                 })
 
@@ -328,19 +326,19 @@ class RequestController extends Controller
         return view('housingmovements::requests.allRequestFillter')->with(compact('workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
-   
-    
+
+
     public function changeStatus(Request $request)
     {
 
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
-            
-            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id',$input['request_id'])->where('status','pending')->where('sub_status',null)->first();
-   
-            $procedure=EssentialsWkProcedure::where('id',$requestProcess->procedure_id)->first()->can_reject;
 
-            if($procedure == 0 && $input['status']=='rejected'){
+            $requestProcess = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->where('status', 'pending')->where('sub_status', null)->first();
+
+            $procedure = EssentialsWkProcedure::where('id', $requestProcess->procedure_id)->first()->can_reject;
+
+            if ($procedure == 0 && $input['status'] == 'rejected') {
                 $output = [
                     'success' => false,
                     'msg' => __('lang_v1.this_department_cant_reject_this_request'),
@@ -399,13 +397,13 @@ class RequestController extends Controller
 
         return $output;
     }
-    
-  
+
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
      */
-   
+
     /**
      * Store a newly created resource in storage.
      * @param Request $request
@@ -466,29 +464,28 @@ class RequestController extends Controller
                 ];
 
                 return redirect()->back()->withErrors([$output['msg']]);
-              //  return redirect()->route('hm.requests')->withErrors([$output['msg']]);
+                //  return redirect()->route('hm.requests')->withErrors([$output['msg']]);
             }
         }
 
         $success = 1;
 
-        
+
         foreach ($request->worker_id as $workerId) {
             if ($workerId !== null) {
-                $business_id=User::where('id',$workerId)->first()->business_id;
-                $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$business_id);
+                $business_id = User::where('id', $workerId)->first()->business_id;
+                $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id', $business_id);
                 if ($procedure->count() == 0) {
-                    $is_main=Business::where('id',$business_id)->first()->is_main;
-                    if($is_main){
+                    $is_main = Business::where('id', $business_id)->first()->is_main;
+                    if ($is_main) {
                         $output = [
                             'success' => false,
                             'msg' => __('followup::lang.this_type_has_not_procedure'),
                         ];
                         return redirect()->back()->withErrors([$output['msg']]);
-                    }
-                    else{
-                        $parentBusiness=Business::where('id',$business_id)->first()->parent_business_id;
-                        $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id',$parentBusiness);
+                    } else {
+                        $parentBusiness = Business::where('id', $business_id)->first()->parent_business_id;
+                        $procedure = EssentialsWkProcedure::where('type', $request->type)->where('business_id', $parentBusiness);
                         if ($procedure->count() == 0) {
                             $output = [
                                 'success' => false,
@@ -529,7 +526,7 @@ class RequestController extends Controller
                 $workerRequest->save();
 
 
-                $procedure=$procedure->where('start', 1)->first();
+                $procedure = $procedure->where('start', 1)->first();
                 if ($workerRequest) {
                     $process = FollowupWorkerRequestProcess::create([
                         'worker_request_id' => $workerRequest->id,
@@ -548,7 +545,6 @@ class RequestController extends Controller
                 } else {
 
                     $success = 0;
-                   
                 }
             }
         }
@@ -558,14 +554,12 @@ class RequestController extends Controller
                 'msg' => __('messages.added_success'),
             ];
             return redirect()->back()->withErrors([$output['msg']]);
-        
         } else {
             $output = [
                 'success' => 0,
                 'msg' => __('messages.something_went_wrong'),
             ];
             return redirect()->back()->withErrors([$output['msg']]);
-   
         }
     }
 
@@ -704,9 +698,9 @@ class RequestController extends Controller
         }
 
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
-        ->where('name', 'LIKE', '%سكن%')
-        ->pluck('id')->toArray();
-         
+            ->where('name', 'LIKE', '%سكن%')
+            ->pluck('id')->toArray();
+
         if (!empty($departmentIds)) {
             $procedureIds = EssentialsWkProcedure::whereIn('escalates_to', $departmentIds)->pluck('id')->toArray();
 
@@ -728,7 +722,7 @@ class RequestController extends Controller
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('followup_worker_requests_process.status','pending');
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('followup_worker_requests_process.status', 'pending');
         } else {
             $output = [
                 'success' => false,
@@ -738,7 +732,7 @@ class RequestController extends Controller
         }
 
         if (request()->ajax()) {
-         
+
 
             return DataTables::of($requestsProcess ?? [])
 
@@ -754,9 +748,8 @@ class RequestController extends Controller
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . __($this->statuses[$row->status]['name']) . '</span>';
 
-                 
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        
+
+                        $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
                         $status = trans('followup::lang.' . $row->status);
                     }
@@ -779,7 +772,7 @@ class RequestController extends Controller
         try {
             $input = $request->only(['status', 'reason', 'note', 'request_id']);
 
-            $requestProcesses = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->where('status','pending')->get();
+            $requestProcesses = FollowupWorkerRequestProcess::where('worker_request_id', $input['request_id'])->where('status', 'pending')->get();
 
             foreach ($requestProcesses as $requestProcess) {
 
