@@ -62,8 +62,9 @@ class WorkerController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_view_proposed_labors = auth()->user()->can('internationalrelations.view_proposed_labors');
-        if (!($is_admin || $can_view_proposed_labors)) {
+        $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
+       
+        if (!($is_admin )) {
             //temp  abort(403, 'Unauthorized action.');
         }
 
@@ -154,10 +155,11 @@ class WorkerController extends Controller
                 //     return $html;
                 // })
 
-                ->addColumn('action', function ($row) {
-
+                ->addColumn('action', function ($row) use ($is_admin,$can_view_worker_profile){
+                    $html = '';
+                    if ($is_admin || $can_view_worker_profile) {
                     $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
-
+                    }
                     return $html;
                 })
 
@@ -206,7 +208,7 @@ class WorkerController extends Controller
         if (!($is_admin || $can_view_accepted_workers)) {
             //temp  abort(403, 'Unauthorized action.');
         }
-
+        $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -272,11 +274,12 @@ class WorkerController extends Controller
                     return  $text;
                 })
 
-                ->addColumn('action', function ($row) {
-
+                ->addColumn('action', function ($row) use ($is_admin,$can_view_worker_profile) {
+                    $html = '';
+                    if ($is_admin || $can_view_worker_profile) {
                     $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
 
-
+                    }
                     return $html;
                 })
 
@@ -304,7 +307,8 @@ class WorkerController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-
+        $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
+     
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
@@ -383,11 +387,12 @@ class WorkerController extends Controller
 
                     return $status;
                 })
-                ->addColumn('action', function ($row) {
-
+                ->addColumn('action', function ($row) use ($is_admin,$can_view_worker_profile) {
+                    $html = '';
+                    if ($is_admin || $can_view_worker_profile) {
                     $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
 
-
+                    }
                     return $html;
                 })
 
@@ -414,6 +419,7 @@ class WorkerController extends Controller
         if (!($is_admin || $can_view_proposed_labors)) {
             //temp  abort(403, 'Unauthorized action.');
         }
+        $can_view_worker_profile = auth()->user()->can('internationalrelations.view_worker_profile');
         $currentDate = now();
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
@@ -503,10 +509,11 @@ class WorkerController extends Controller
                     return $html;
                 })
 
-                ->addColumn('action', function ($row) {
-
+                ->addColumn('action', function ($row)  use ($is_admin,$can_view_worker_profile){
+                    $html = '';
+                    if ($is_admin || $can_view_worker_profile) {
                     $html = '<a href="#" data-href="' . action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'showWorker'], [$row->id]) . '" class="btn btn-xs btn-success btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</a>';
-
+                    }
                     return $html;
                 })
 
