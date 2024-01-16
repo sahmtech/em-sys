@@ -1411,5 +1411,6 @@ return [
 
 'essentials_add_requests'=>'إضافة طلب في المتابعة',
 'essentials_show_steps'=>'عرض الادارات في إضافة أجراء',
+'employee_has_insurance'=>'الموظف لديه تامين سابقا',
 
 ];

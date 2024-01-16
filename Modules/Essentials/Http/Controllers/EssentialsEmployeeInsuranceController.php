@@ -414,19 +414,30 @@ class EssentialsEmployeeInsuranceController extends Controller
 
             $input = $request->only(['insurance_class', 'employee']);
 
-
-            $insurance_data['insurance_classes_id'] = $input['insurance_class'];
-            $insurance_data['employee_id'] = $input['employee'];
-            $business = User::find($input['employee'])->business_id;
-            $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')->where('business_id', $business)->first()->id;
-            // dd(  $insurance_data );
-
-
-            EssentialsEmployeesInsurance::create($insurance_data);
-            $output = [
-                'success' => true,
-                'msg' => __('lang_v1.added_success'),
-            ];
+            $emp=EssentialsEmployeesInsurance::where('employee_id', $input['employee'])->first();
+            if(!$emp)
+            {
+                $insurance_data['insurance_classes_id'] = $input['insurance_class'];
+                $insurance_data['employee_id'] = $input['employee'];
+                $business = User::find($input['employee'])->business_id;
+                $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')->where('business_id', $business)->first()->id;
+                // dd(  $insurance_data );
+    
+    
+                EssentialsEmployeesInsurance::create($insurance_data);
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.added_success'),
+                ];
+            }
+            else
+            {
+                $output = [
+                    'success' => false,
+                    'msg' => __('messages.employee_has_insurance'),
+                ];
+            }
+           
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
