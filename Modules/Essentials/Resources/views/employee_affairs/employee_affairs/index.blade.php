@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                            <li class="active">Here</li>
-                                        </ol> -->
+                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                <li class="active">Here</li>
+                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -20,22 +20,14 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
-                    <<<<<<< HEAD {!! Form::select('select_company_id', $companies, null, [
+                    {!! Form::select('select_company_id', $companies, null, [
                         'class' => 'form-control select2',
                         'id' => 'select_company_id',
                         'style' => 'height:36px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                         'required',
                         'autofocus',
-                    ]) !!}======={!! Form::select('select_business_id', $businesses, null, [
-                        'class' => 'form-control select2',
-                        'id' => 'select_business_id',
-                        'style' => 'height:36px; width:100%',
-                        'placeholder' => __('lang_v1.all'),
-                        'required',
-                        'autofocus',
-                    ]) !!}>>>>>>>
-                        4313b29fd763a159cd258b27f20509d9e81f24bf
+                    ]) !!}
                 </div>
             </div>
             <div class="col-md-3">
