@@ -1482,8 +1482,8 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(2) == 'transactions']
                 );
             }
-            if ($is_admin  || auth()->user()->can('accounting.budget')) {
-
+            if ($is_admin  || auth()->user()->can('accounting.manage_budget')) {
+          
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
                     __('accounting::lang.budget'),

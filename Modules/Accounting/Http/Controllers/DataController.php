@@ -105,10 +105,23 @@ class DataController extends Controller
                         'default' => false
                     ],
                     [
+                        'value' => 'accounting.add_receipt_voucher',
+                        'label' => __('accounting::lang.add_receipt_voucher'),
+                        'default' => false
+                    ],
+
+                    [
                         'value' => 'accounting.payment_vouchers',
                         'label' => __('accounting::lang.payment_vouchers'),
                         'default' => false
                     ],
+                    [
+                        'value' => 'accounting.add_payment_voucher',
+                        'label' => __('accounting::lang.add_payment_voucher'),
+                        'default' => false
+                    ],
+
+
                     [
                         'value' => 'accounting.journal_entry',
                         'label' => __('accounting::lang.journal_entry'),
@@ -197,7 +210,7 @@ class DataController extends Controller
                         'label' => __('accounting::lang.map_transactions'),
                         'default' => false
                     ],
-                  
+
                     [
                         'value' => 'accounting.manage_budget',
                         'label' => __('accounting::lang.manage_budget'),
