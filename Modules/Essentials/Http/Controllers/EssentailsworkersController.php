@@ -38,32 +38,38 @@ class EssentailsworkersController extends Controller
      * @return Renderable
      */
 
-     protected $moduleUtil;
+    protected $moduleUtil;
 
 
-     public function __construct(ModuleUtil $moduleUtil)
-     {
-         $this->moduleUtil = $moduleUtil;
-     }
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
 
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
+
+        $userIds = User::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
         $categories = Category::all()->pluck('name', 'id');
-        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::where('user_type', 'worker')
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -76,21 +82,7 @@ class EssentailsworkersController extends Controller
             'sales_projects.name as contact_name'
         );
 
-        if (!$is_admin) 
-        {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
 
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('users.assigned_to',   $userProjects);
-        }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -139,15 +131,15 @@ class EssentailsworkersController extends Controller
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
                 ->addColumn('admissions_date', function ($user) {
-                    // return $this->getDocumentnumber($user, 'admissions_date');
+
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
                 ->addColumn('admissions_type', function ($user) {
-                    // return $this->getDocumentnumber($user, 'admissions_date');
+
                     return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
                 })
                 ->addColumn('admissions_status', function ($user) {
-                    // return $this->getDocumentnumber($user, 'admissions_date');
+
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
 
@@ -192,14 +184,14 @@ class EssentailsworkersController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker', 'categorie_id','admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
 
-       
+
         return view('essentials::workers.index')
-        ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));;
+            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));;
     }
 
     private function getDocumentnumber($user, $documentType)
@@ -335,7 +327,6 @@ class EssentailsworkersController extends Controller
             'documents',
             'document_delivery',
         ));
-      
     }
 
     /**
