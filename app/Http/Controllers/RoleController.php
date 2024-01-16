@@ -102,12 +102,12 @@ class RoleController extends Controller
             $accessRole->role_id = $id;
             $accessRole->save();
         }
-        $accessRoleProjects = AccessRoleProject::where('access_role_id',  $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        $accessRoleBusinesses = AccessRoleBusiness::where('access_role_id',  $accessRole->id)->pluck('business_id')->unique()->toArray();
+        //$accessRoleProjects = AccessRoleProject::where('access_role_id',  $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
+       // $accessRoleBusinesses = AccessRoleBusiness::where('access_role_id',  $accessRole->id)->pluck('business_id')->unique()->toArray();
         //$contacts = Contact::with('salesProject')->select(['id', 'supplier_business_name'])->get();
-        $businesses = Business::with('contacts.salesProjects')->get();
+        //$businesses = Business::with('contacts.salesProjects')->get();
         return view('role.edit_create_access_role')
-            ->with(compact('accessRole', 'accessRoleProjects', 'accessRoleBusinesses', 'businesses'));
+            ->with(compact('accessRole', 'businesses'));
     }
     public function updateAccessRole(Request $request, $roleId)
     {
@@ -160,14 +160,13 @@ class RoleController extends Controller
 
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
-  
+
         foreach ($temp as $temp_item) {
-            foreach($temp_item as $permission_item ){
-                 $module_permissions[] = $permission_item;
+            foreach ($temp_item as $permission_item) {
+                $module_permissions[] = $permission_item;
             }
-           
         }
-      //  return $module_permissions;
+        //  return $module_permissions;
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         return view('role.create')
@@ -286,15 +285,14 @@ class RoleController extends Controller
             ->active()
             ->get();
 
-       // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
+        // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
-  
+
         foreach ($temp as $temp_item) {
-            foreach($temp_item as $permission_item ){
-                 $module_permissions[] = $permission_item;
+            foreach ($temp_item as $permission_item) {
+                $module_permissions[] = $permission_item;
             }
-           
         }
 
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
