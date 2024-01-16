@@ -61,7 +61,7 @@ return [
   "payroll_management" => "مسير الرواتب",
   "settings" => "الإعدادات",
   "reports" => "التقارير",
-  "leave_type" => "نوع الإجازة",
+  "leave_type" => "أنواع الإجازات",
   "all_leave_types" => "كل أنواع الإجازات",
   "max_leave_count" => "العدد الأقصى للإجازات",
   "add_leave_type" => "إضافة نوع الإجازة",

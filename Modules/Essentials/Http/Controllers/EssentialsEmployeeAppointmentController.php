@@ -59,7 +59,7 @@ class EssentialsEmployeeAppointmentController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

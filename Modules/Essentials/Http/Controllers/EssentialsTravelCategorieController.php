@@ -80,7 +80,7 @@ class EssentialsTravelCategorieController extends Controller
         }
 
 
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

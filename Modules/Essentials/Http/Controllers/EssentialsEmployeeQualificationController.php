@@ -42,7 +42,7 @@ class EssentialsEmployeeQualificationController extends Controller
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $countries = EssentialsCountry::forDropdown();
 
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

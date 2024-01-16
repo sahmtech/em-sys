@@ -40,7 +40,7 @@ class EssentialsAdmissionToWorkController extends Controller
         }
 
         $departments =  EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

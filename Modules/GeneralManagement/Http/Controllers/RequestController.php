@@ -80,7 +80,7 @@ class RequestController extends Controller
         }
 
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -249,7 +249,7 @@ class RequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

@@ -129,7 +129,7 @@ class EssentialsManageEmployeeController extends Controller
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
 
         $companies_ids = Company::pluck('id')->toArray();
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -362,7 +362,7 @@ class EssentialsManageEmployeeController extends Controller
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         $business_id = request()->session()->get('user.business_id');
         if (!$is_admin) {
             $userIds = [];
@@ -494,7 +494,7 @@ class EssentialsManageEmployeeController extends Controller
         $today = now();
         $endDateThreshold = $today->copy()->addDays(14);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -570,7 +570,7 @@ class EssentialsManageEmployeeController extends Controller
         $endDateThreshold = $today->copy()->addDays(60);
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -637,7 +637,7 @@ class EssentialsManageEmployeeController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];
@@ -720,7 +720,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
 
         if (!$is_admin) {
             $userIds = [];

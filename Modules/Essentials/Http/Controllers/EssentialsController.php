@@ -57,7 +57,7 @@ class EssentialsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -292,7 +292,7 @@ class EssentialsController extends Controller
     public function getLeaves(){
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
             $business_id = request()->session()->get('user.business_id');
-            $userIds = User::pluck('id')->toArray();
+            $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
             if (!$is_admin) {
                 $userIds = [];
                 $userIds = $this->moduleUtil->applyAccessRole();
@@ -349,7 +349,7 @@ class EssentialsController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -382,7 +382,7 @@ class EssentialsController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

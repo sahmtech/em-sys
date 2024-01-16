@@ -47,7 +47,7 @@ class EssentialsEmployeeContractController extends Controller
         $can_delete_employee_contracts = auth()->user()->can('essentials.delete_employee_contracts');
 
       
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

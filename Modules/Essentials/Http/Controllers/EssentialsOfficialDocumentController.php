@@ -41,7 +41,7 @@ class EssentialsOfficialDocumentController extends Controller
         $can_show_official_documents = auth()->user()->can('essentials.show_official_documents');
 
 
-        $userIds = User::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
