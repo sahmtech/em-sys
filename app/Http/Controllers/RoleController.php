@@ -47,21 +47,22 @@ class RoleController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-
+            $can_role_update =auth()->user()->can('roles.update');
+            $can_role_delete =auth()->user()->can('roles.delete');
             $roles = Role::where('business_id', $business_id)
                 ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
-                ->addColumn('action', function ($row) use ($is_admin) {
+                ->addColumn('action', function ($row) use ($is_admin , $can_role_update ,$can_role_delete) {
                     if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
-                        if (($is_admin  || auth()->user()->can('roles.update'))) {
+                        if ($is_admin  || $can_role_update ) {
                             $action .= '<a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateAccessRole'], [$row->id]) . '" class="btn btn-success btn-xs">' . __('messages.update_access_role') . '</a>';
 
                             $action .= '&nbsp
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                         }
-                        if (($is_admin  || auth()->user()->can('roles.delete'))) {
+                        if ($is_admin  || $can_role_delete) {
                             $action .= '&nbsp
                                 <button data-href="' . action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]) . '" class="btn btn-xs btn-danger delete_role_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
