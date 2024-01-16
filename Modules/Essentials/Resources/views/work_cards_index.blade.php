@@ -215,7 +215,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('housingmovements.dashboard') }}"
+                    url: "{{ route('essentials_word_cards_dashboard') }}"
                 },
 
                 columns: [
