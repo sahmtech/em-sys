@@ -1380,6 +1380,11 @@ return [
   'view_business_subscriptions' => 'عرض اشتراكات الشركة',
   'add_business' => 'إضافة شركة',
 
+  'insurances_requests_change_status' => 'تغير حالة الطلب',
+  'return_insurances_request' => 'إرجاع الطلب',
+  'show_insurances_request' => 'عرض الطلب',
+  'insurances_add_requests' => 'إضافة طلب',
+
 
   'add_todo' => 'إضافة مهمة ',
   'edit_todo' => 'تعديل مهمة',

@@ -621,14 +621,14 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('followup::lang.return_the_request')</button>';
+                                    '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_insurances_request"))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    row.process_id + '">@lang('followup::lang.return_the_request')</button>@endif';
                             }
 
 
                             buttonsHtml +=
-                                '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('followup::lang.view_request')</button>';
+                                '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.show_insurances_request"))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
+                                row.id + '">@lang('followup::lang.view_request')</button>@endif';
 
                             return buttonsHtml;
                         }
