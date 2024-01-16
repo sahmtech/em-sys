@@ -1354,6 +1354,7 @@ return [
   'delete_insurance_classes'=>'حذف فئات التأمين',
 
   'workcards_requests_change_status'=>'تغير الحالة للطلبات في العلاقات الحكومية',
+  'workcards_add_requests'=>'إضافة طلب',
   'return_workcards_request'=>'إرجاع الطلب ',
   'show_workcards_request'=>'عرض الطلب',
   'view_return_visa'=>'عرض تأشيرة خروج وعودة',
@@ -1365,6 +1366,11 @@ return [
   'view_business_documents'=>'عرض وثائق الشركة',
   'view_business_subscriptions'=>'عرض اشتراكات الشركة',
   'add_business'=>'إضافة شركة',
+
+  'insurances_requests_change_status'=>'تغير حالة الطلب',
+  'return_insurances_request'=>'إرجاع الطلب',
+  'show_insurances_request'=>'عرض الطلب',
+  'insurances_add_requests'=>'إضافة طلب',
 
 
   'add_todo'=>'إضافة مهمة ',
