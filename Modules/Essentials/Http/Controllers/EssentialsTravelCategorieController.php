@@ -34,7 +34,7 @@ class EssentialsTravelCategorieController extends Controller
         $can_add_travel_categories = auth()->user()->can('essentials.add_travel_categories');
 
         if (!$can_crud_travel_categories) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -47,14 +47,13 @@ class EssentialsTravelCategorieController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin ,$can_delete_travel_categories ,$can_edit_travel_categories) {
+                    function ($row) use ($is_admin, $can_delete_travel_categories, $can_edit_travel_categories) {
                         $html = '';
                         if ($is_admin || $can_edit_travel_categories) {
                             $html .= '<a href="' . route('travel_categorie.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                        &nbsp;';
-                           
                         }
-                        if($is_admin || $can_delete_travel_categories){
+                        if ($is_admin || $can_delete_travel_categories) {
                             $html .= '<button class="btn btn-xs btn-danger delete_travel_categorie_button" data-href="' . route('travel_categorie.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
@@ -75,20 +74,28 @@ class EssentialsTravelCategorieController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!auth()->user()->can('essentials.view_user_travel_categorie')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+
+        $userIds = User::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
         }
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
-        if (request()->ajax()) {
-            
-            $userTravelCat = EssentialsEmployeeTravelCategorie::join('users as u', 'u.id', '=', 'essentials_employee_travel_categories.employee_id')->where('u.business_id', $business_id)
-                ->select([
-                    'essentials_employee_travel_categories.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'essentials_employee_travel_categories.categorie_id'
+        $userTravelCat = EssentialsEmployeeTravelCategorie::join('users as u', 'u.id', '=', 'essentials_employee_travel_categories.employee_id')
+            ->whereIn('u.id', $userIds)
+            ->select([
+                'essentials_employee_travel_categories.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_employee_travel_categories.categorie_id'
 
-                ]);
+            ]);
+
+        if (request()->ajax()) {
 
 
             return Datatables::of($userTravelCat)
@@ -104,7 +111,7 @@ class EssentialsTravelCategorieController extends Controller
                         $html = '';
                         //         $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         //     $html .= '<a  href="'. route('cancleActivition', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.cancleActivition').'</a>';
-                       $html .= '<button class="btn btn-xs btn-danger delete_employee_travel_categorie_button" data-href="' . route('userTravelCat.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        $html .= '<button class="btn btn-xs btn-danger delete_employee_travel_categorie_button" data-href="' . route('userTravelCat.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                         return $html;
                     }
@@ -117,7 +124,7 @@ class EssentialsTravelCategorieController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id);
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                     ' - ',COALESCE(id_proof_number,'')) as 
              full_name"))->get();

@@ -493,8 +493,15 @@ class EssentialsManageEmployeeController extends Controller
     {
         $today = now();
         $endDateThreshold = $today->copy()->addDays(14);
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::pluck('id')->toArray();
 
-        $probation_period = EssentialsEmployeesContract::with('user')
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $probation_period = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with('user')
 
             ->where('probation_period', 3)
             ->where(function ($query) use ($today) {
@@ -562,10 +569,15 @@ class EssentialsManageEmployeeController extends Controller
         $today = now();
         $endDateThreshold = $today->copy()->addDays(60);
 
-        $contract_end_date = EssentialsEmployeesContract::with(['user'])
-            ->whereHas('user', function ($query) {
-                $query->where('user_type', 'worker');
-            })
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->with(['user'])
             ->whereDate('contract_end_date', '<=', $endDateThreshold)
             ->select('contract_end_date', 'employee_id');
 
@@ -624,25 +636,36 @@ class EssentialsManageEmployeeController extends Controller
     public function uncomplete_profiles()
     {
 
-        $usersWithNullAdmission = User::with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
-            ->whereHas('essentials_admission_to_works', function ($query) {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::pluck('id')->toArray();
 
-                $query->whereNull('admissions_date');
-            })
-            ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
-                $query->WhereNull('start_from')
-                    ->orWhereNull('end_at')
-                    ->orWhereNull('profession_id')
-                    ->orWhereNull('specialization_id');
-            })
-            ->orwhereHas('essentials_qualification', function ($query) {
+        $usersWithNullAdmission = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+            ->where(function ($query) {
+                $query->whereHas('essentials_admission_to_works', function ($query) {
 
-                $query->WhereNull('graduation_year')
-                    ->orWhereNull('graduation_institution')
-                    ->orWhereNull('graduation_country')
-                    ->orWhereNull('degree');
+                    $query->whereNull('admissions_date');
+                })
+                    ->orWhereHas('essentialsEmployeeAppointmets', function ($query) {
+
+                        $query->WhereNull('start_from')
+                            ->orWhereNull('end_at')
+                            ->orWhereNull('profession_id')
+                            ->orWhereNull('specialization_id');
+                    })
+                    ->orWhereHas('essentials_qualification', function ($query) {
+
+                        $query->WhereNull('graduation_year')
+                            ->orWhereNull('graduation_institution')
+                            ->orWhereNull('graduation_country')
+                            ->orWhereNull('degree');
+                    });
             })
+
             ->get();
         // dd($usersWithNullAdmission);
 
@@ -696,7 +719,18 @@ class EssentialsManageEmployeeController extends Controller
     {
 
 
-        $late_vacation = FollowupWorkerRequest::with(['user'])
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+
+
+        $late_vacation = FollowupWorkerRequest::whereIn('worker_id', $userIds)
+            ->with(['user'])
             ->where('type', 'leavesAndDepartures')
             ->where('type', 'returnRequest')
             ->whereHas('user', function ($query) {
