@@ -66,13 +66,15 @@
                     </td>
                     <td>{{ $delegation->transactionSellLine->service->monthly_cost_for_one }}</td>
                     <td>
-                        <button class="btn btn-xs btn-primary">
-                            <a href="{{ route('createProposed_labor', ['delegation_id'=>$delegation,'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) }}" style="color: white; text-decoration: none;">
-                                @lang('internationalrelations::lang.add_roposed_labor')
-                            </a>
-                        </button>
+                        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.add_proposed_worker'))
+                            <button class="btn btn-xs btn-primary">
+                                <a href="{{ route('createProposed_labor', ['delegation_id'=>$delegation,'agency_id' => $delegation->agency->id, 'transaction_sell_line_id' => $delegation->transactionSellLine->id]) }}" style="color: white; text-decoration: none;">
+                                    @lang('internationalrelations::lang.add_roposed_labor')
+                                </a>
+                            </button>
+                        @endif
                     </td>
-                    
+
                 </tr>
             @endforeach
               

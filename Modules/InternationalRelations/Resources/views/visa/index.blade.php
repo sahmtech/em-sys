@@ -43,6 +43,8 @@
 @section('javascript')
     <script type="text/javascript">
     $(document).ready(function() {
+        var isAdmin = @json(auth()->user()->hasRole('Admin#1'));
+        var canViewVisaCardWorkers = @json(auth()->user()->can('internationalrelations.view_visa_card_workers'));
         var ordersTable = $('#orders-table').DataTable({
         processing: true,
         serverSide: true,
@@ -63,7 +65,9 @@
             {
                 data: null,
                 render: function (data, type, row) {
+                    if (isAdmin || canViewVisaCardWorkers)  {
                     return '<button class="btn btn-primary view-visa">@lang("internationalrelations::lang.view_visa_workers")</button>';
+                    }
                 }
             }
         ],

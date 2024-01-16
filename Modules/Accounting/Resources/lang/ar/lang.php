@@ -428,6 +428,7 @@ return [
     'business_location' => 'المستودع',
     'edit_opening_balance' => 'تعديل الرصيد الافتتاحي',
     'receipt_vouchers' => 'سندات القبض',
+    'add_receipt_voucher' => 'إضافة سندات قبض',
     'receipt_voucher_no' => 'رقم السند',
     'receipt_voucher_ent_date' => 'تاريخ السند',
     'receipt_voucher_date' => 'تاريخ الإدخال',
@@ -449,6 +450,7 @@ return [
 
     'all' => 'الكل',
     'payment_vouchers' => 'سندات الصرف',
+    'add_payment_voucher' => 'إضافة سندات صرف',
     'supplier' => 'المورد',
     'choose_supplier' => 'اختيار مورد',
     'a_supplier' => 'مورد',

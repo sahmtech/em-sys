@@ -86,9 +86,7 @@ return [
 'view_worker_info'=>'عرض معلومات العامل',
 'view_accepted_workers'=>'عرض العمالة المقبولة',
 'view_unaccepted_workers'=>'عرض العمالة المرفوضة',
-'fingerprinting'=>'التبصيم',
-'medical_examination'=>'الفحص الطبي',
-'passport_stamped'=>'ختم الجواز',
+
 'send_offer_price'=>'إرسال عرض سعر',
 'accepted_by_worker'=>'قبول العرض من قبل العامل',
 'store_visa_worker'=>'إضافة عامل لتأشيرة',
@@ -110,7 +108,55 @@ return [
 // to here we have en file
 
 'crud_all_ir_requests'=>'إدارة الطلبات',
-'internationalrelations_dashboard'=>'الصفحة الرئيسية للعلاقات الدولية'
+'internationalrelations_dashboard'=>'الصفحة الرئيسية للعلاقات الدولية',
+
+'view_operation_orders'=>'استعراض أوامر التشغيل',
+'add_operation_order_visa'=>'إضافة تأشيرة لأمر تشغيل',
+'delegate_operation_order'=>'تفويض أمر تشغيل',
+'view_order_delegations'=>'استعراض تفويضات أمر التشغيل',
+
+
+'view_employment_companies'=>'استعراض شركات التوظيف',
+'add_employment_company'=>'إضافة شركة توظيف',
+'view_employment_company_delegation_requests'=>'عرض طلبات التفويض لشركة',
+
+
+'view_all_delegation_requests'=>'استعراض جميع طلبات التفويض',
+'import_proposed_workers'=>'استيراد اكسل العمال المقترحة',
+'add_proposed_worker'=>'إضافة عامل مقترح لشركة',
+
+
+'view_proposed_workers'=>'عرض العمالة المرشحة',
+'view_accepted_workers'=>'عرض العمالة المقبولة',
+'view_under_trialPeriod_workers'=>'عرض العمالة تحت الفترة التجريبية',
+'view_unaccepted_workers'=>'عرض العمالة المرفوضة',
+'change_worker_interview_status'=>'تغيير حالة مقابلة العامل',
+'view_worker_profile'=>'عرض بروفايل العامل',
+'send_price_offer_to_worker'=>'إرسال عرض السعر للعامل',
+'accepte_offer_from_worker'=>'قبول عرض السعر من قبل العامل',
+
+
+'view_visa_cards'=>'عرض التأشيرات',
+'view_visa_card_workers'=>'عرض عمالة التأشيرة',
+'add_worker_to_visa'=>'إضافة عامل إلى التأشيرة',
+
+
+'view_Airlines'=>'عرض شركات الطيران',
+'add_Airline_company'=>'إضافة شركة طيران',
+'edit_Airline_company'=>'تعديل شركة طيران',
+'delete_Airline_company'=>'حذف شركة طيران',
+
+
+'view_ir_requests'=>'استعراض طلبات إدارة العلاقات الدولية',
+'add_request'=>'إضافة طلب',
+'change_request_status'=>'تغيير حالة الطلب',
+'return_ir_request'=>'إرجاع الطلب',
+'show_ir_request'=>'عرض معلومات الطلب',
+
+
+'view_all_salary_requests'=>'استعراض طلبات الرواتب'
+
+
 
 ];
 

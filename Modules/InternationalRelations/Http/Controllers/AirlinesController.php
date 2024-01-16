@@ -71,7 +71,8 @@ class AirlinesController extends Controller
            //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-     
+        $can_edit_Airline_company = auth()->user()->can('internationalrelations.edit_Airline_company');
+        $can_delete_Airline_company = auth()->user()->can('internationalrelations.delete_Airline_company');
    
         $countries = EssentialsCountry::forDropdown();
 
@@ -114,12 +115,15 @@ if (request()->ajax()) {
                 }
             )
            
-            ->addColumn('action', function ($row) {
-                
-                    $html = '<a href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                    $html .= '&nbsp;<button class="btn btn-xs btn-danger delete_country_button" data-href=""><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+            ->addColumn('action', function ($row) use ($is_admin,$can_delete_Airline_company,$can_edit_Airline_company){
+                $html = '';
+                if ($is_admin || $can_edit_Airline_company) {
+                    $html = '<a href="" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
+                  }
+                  if ($is_admin || $can_delete_Airline_company) {
+                    $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href=""><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                     //$html .= '&nbsp;<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
-                    return $html;
+                     }   return $html;
                 })
               
 

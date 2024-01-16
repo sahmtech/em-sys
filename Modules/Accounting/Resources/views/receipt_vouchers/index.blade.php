@@ -27,7 +27,8 @@
             </div>
         </div>
         @component('components.widget', ['class' => 'box-solid'])
-            @can('accounting.add_receipt_voucher')
+          
+            @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("accounting.add_receipt_voucher"))
                 @slot('tool')
                     <div class="box-tools">
                         <a class="btn btn-block btn-primary btn-modal create_voucher" data-toggle="modal"
@@ -36,7 +37,7 @@
                         </a>
                     </div>
                 @endslot
-            @endcan
+            @endif
 
             <table class="table table-bordered table-striped" id="receipt_voucher_table">
                 <thead>

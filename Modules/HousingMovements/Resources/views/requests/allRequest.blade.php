@@ -111,16 +111,18 @@
 
         {{-- @include('housingmovements::layouts.nav_requests') --}}
         @component('components.widget', ['class' => 'box-primary'])
-            @slot('tool')
-                <div class="box-tools">
+            @if (auth()->user()->hasRole('Admin#1') ||
+                    auth()->user()->can('housingmovements.create_order'))
+                @slot('tool')
+                    <div class="box-tools">
 
-                    <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
-                        data-target="#addRequestModal">
-                        <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
-                    </button>
-                </div>
-            @endslot
-
+                        <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
+                            data-target="#addRequestModal">
+                            <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
+                        </button>
+                    </div>
+                @endslot
+            @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -189,7 +191,6 @@
                                         'chamberRequest' => __('followup::lang.chamberRequest'),
                                         'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
                                         'WarningRequest' => __('followup::lang.WarningRequest'),
-
                                     ],
                                     null,
                                     [
@@ -438,14 +439,14 @@
                         <div class="row">
 
                             <div class="workflow-container" id="workflow-container">
-                           
+
                             </div>
 
 
                         </div>
 
 
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <h4>@lang('followup::lang.worker_details')</h4>
@@ -463,18 +464,19 @@
 
                                 <h4>@lang('followup::lang.attachments')</h4>
                                 <ul id="attachments-list">
-                                    
+
                                 </ul>
                             </div>
                         </div>
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
-                        
+
                             <div class="form-group">
                                 <label for="attachment">
                                     <h4>@lang('followup::lang.add_attachment')</h4>
                                 </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
+                                    name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
@@ -593,9 +595,9 @@
                                 return '@lang('followup::lang.chamberRequest')';
                             } else if (data === 'cancleContractRequest') {
                                 return '@lang('followup::lang.cancleContractRequest')';
-                            }  else if (data === 'WarningRequest') {
+                            } else if (data === 'WarningRequest') {
                                 return '@lang('followup::lang.WarningRequest')';
-                            }else {
+                            } else {
                                 return data;
                             }
                         }
@@ -619,14 +621,18 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('followup::lang.return_the_request')</button>';
+                                    '@if (auth()->user()->hasRole('Admin#1') ||
+                                            auth()->user()->can('housingmovements.return_the_request'))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    row.process_id +
+                                    '">@lang('followup::lang.return_the_request')</button>@endif';
                             }
 
 
                             buttonsHtml +=
-                                '<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('followup::lang.view_request')</button>';
+                                '@if (auth()->user()->hasRole('Admin#1') ||
+                                        auth()->user()->can('housingmovements.view_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
+                                row.id +
+                                '">@lang('followup::lang.view_request')</button>@endif';
 
                             return buttonsHtml;
                         }
@@ -713,7 +719,7 @@
                 // var data = requests_table.row(this).data();
                 // var requestId = data.id;
 
-            
+
                 if (requestId) {
                     $.ajax({
                         url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
@@ -724,7 +730,7 @@
 
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
                             var workerList = $('#worker-list');
 
                             workflowContainer.html('');
@@ -820,11 +826,15 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                    attachment += '<p>';
-                                   
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
-                               
-                                 attachment += '</p>';
+                                attachment += '<p>';
+
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) + '</a>';
+
+                                attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
@@ -1000,14 +1010,14 @@
         });
     </script>
 
-<script>
-    $('#addRequestModal').on('shown.bs.modal', function(e) {
-        $('#worker').select2({
-            dropdownParent: $(
-                '#addRequestModal'),
-            width: '100%',
-        });
+    <script>
+        $('#addRequestModal').on('shown.bs.modal', function(e) {
+            $('#worker').select2({
+                dropdownParent: $(
+                    '#addRequestModal'),
+                width: '100%',
+            });
 
-        });
-</script>
+        });
+    </script>
 @endsection

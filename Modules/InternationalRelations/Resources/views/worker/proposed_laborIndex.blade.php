@@ -73,10 +73,14 @@
                         </tr>
                     </thead>
                 </table>
+
                 <div style="margin-bottom: 10px;">
+ 
+                    @if(auth()->user()->hasRole('Admin#1') ||  auth()->user()->can('internationalrelations.change_worker_interview_status'))
                     <button type="button" class="btn btn-warning btn-sm custom-btn" id="change-status-selected">
                         @lang('internationalrelations::lang.change_interview_status')
                     </button>
+                    @endif
                 </div>
 
 

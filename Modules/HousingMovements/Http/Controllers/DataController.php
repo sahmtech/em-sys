@@ -37,7 +37,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.housing_move_dashbord'),
                         'default' => false,
                     ],
-                    
+
                     [
                         'value' => 'housingmovements.crud_buildings',
                         'label' => __('housingmovements::lang.crud_buildings'),
@@ -53,9 +53,9 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang._buildings_delete'),
                         'default' => false,
                     ],
-                  
 
-                    
+
+
                     [
                         'value' => 'housingmovements.crud_rooms',
                         'label' => __('housingmovements::lang.crud_rooms'),
@@ -78,21 +78,49 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
- 
+                    [
+                        'value' => 'housingmovements.housed_in_room',
+                        'label' => __('housingmovements::lang.housed_in_room'),
+                        'default' => false,
+                    ],
+
                     
+
                     [
                         'value' => 'housingmovements.crud_facilities',
                         'label' => __('housingmovements::lang.crud_facilities'),
                         'default' => false,
                     ],
-
-
                     [
                         'value' => 'housingmovements.crud_htr_requests',
-                        'label' => __('housingmovements::lang.crud_htr_requests'),
+                        'label' => __('housingmovements::lang.all_request'),
                         'default' => false,
                     ],
-                  //////////////////////
+                    [
+                        'value' => 'housingmovements.create_order',
+                        'label' => __('followup::lang.create_order'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'housingmovements.return_the_request',
+                        'label' => __('housingmovements::lang.return_the_request'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'housingmovements.view_request',
+                        'label' => __('housingmovements::lang.view_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.change_status',
+                        'label' => __('housingmovements::lang.change_status'),
+                        'default' => false,
+                    ],
+
+
+                    //////////////////////
 
                     [
                         'value' => 'housingmovements.workers',
@@ -115,7 +143,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.worker_unbook_permission'),
                         'default' => false,
                     ],
-                    
+
                     [
                         'value' => 'housingmovements.crud_htr_trevelers',
                         'label' => __('housingmovements::lang.crud_htr_trevelers'),
@@ -132,7 +160,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.worker_housed'),
                         'default' => false,
                     ],
-                    
+
                 ]
 
             ],

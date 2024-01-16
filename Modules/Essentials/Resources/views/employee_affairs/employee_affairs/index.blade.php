@@ -621,13 +621,20 @@
 
             
 
-            $('#employees tbody').on('click', 'tr', function() {
-            var data = users_table.row(this).data();
-            console.log(data);
-            if (data) {
-                window.location = '{{ route('showEmployee', ['id' => ':id']) }}'.replace(':id', data.id);
-            }
-        });
+            $('#employees tbody').on('click', 'tr', function(e) {
+                var cellIndex = $(e.target).closest('td').index();
+                var lastIndex = $(this).children('td').length - 1;
+
+                if (cellIndex !== lastIndex) {
+                    var data = users_table.row(this).data();
+                    console.log(data);
+                    if (data) {
+                        window.location = '{{ route('showEmployee', ['id' => ':id']) }}'.replace(':id', data
+                            .id);
+                    }
+                }
+
+            });
 
             $('#specializations-select, #nationalities_select, #status-select, #select_company_id').change(
                 function() {
