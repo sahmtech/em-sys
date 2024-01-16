@@ -29,7 +29,7 @@ class AccessRoleCompany extends Model
             ->pluck('user_type')
             ->unique()
             ->reject(function ($value) {
-                return $value == 'customer' || $value == 'customer_user' || $value == 'admin';
+                return $value == 'customer' || $value == 'customer_user' || $value == 'admin' || $value == 'user';
             })
             ->toArray();
     }

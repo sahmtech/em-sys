@@ -25,7 +25,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="checkbox">
-                        <label>
+                        <label class="custom_permission_lable">
                             <input type="checkbox" class="check_all input-icheck"> {{ __('role.select_all') }}
                         </label>
                     </div>
@@ -33,66 +33,70 @@
                 <div class="col-md-12">
                     <ul>
                         @foreach ($companies as $company)
-                            <div class="row check_group box box-primary">
-                                <div class="col-md-6">
-                                    <div class="checkbox">
-                                        <h4> 
-                                            {{-- {!! Form::checkbox('companies[]', $company->id, in_array($company->id, $accessRoleCompanies), [
+                            <div class="col-md-4">
+                                <div class="row check_group box box-primary">
+                                    <div class="col-md-12">
+                                        <div class="checkbox">
+                                            <h5>
+                                                {{-- {!! Form::checkbox('companies[]', $company->id, in_array($company->id, $accessRoleCompanies), [
                                             'class' => 'input-icheck',
                                         ]) !!} --}}
-                                            {{ $company->name }}</h4>
+                                                {{ $company->name }}</h5>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-12">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" class="check_all input-icheck">
-                                            {{ __('role.select_all') }}
-                                        </label>
+                                    <div class="col-md-12">
+                                        <div class="checkbox">
+                                            <label class="custom_permission_lable">
+                                                <input type="checkbox" class="check_all input-icheck">
+                                                {{ __('role.select_all') }}
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-12">
-                                    <ul>
-                                        @foreach ($userTypes as $uesrType)
-                                            <div class="col-md-3">
-                                                <div class="row check_group">
-                                                    {{-- <div class="col-md-5">
+                                    <div class="col-md-12">
+                                        <ul>
+                                            @foreach ($userTypes as $uesrType)
+                                                
+                                                    <div class="row check_group">
+                                                        {{-- <div class="col-md-5">
                                                         <h4>{{ $uesrType }}</h4>
                                                     </div> --}}
 
 
-                                                    <div class="col-md-9">
-
-
                                                         <div class="col-md-12">
-                                                            <div class="checkbox">
-                                                                <label>
-                                                                    {!! Form::checkbox(
-                                                                        'usertypes#' . $company->id . '[]',
-                                                                        $uesrType,
-                                                                        in_array($uesrType, $selectedUserTypes[$company->id] ?? []),
-                                                                        [
-                                                                            'class' => 'input-icheck',
-                                                                        ],
-                                                                    ) !!} {{ $uesrType }}
-                                                                </label>
+
+
+                                                            <div class="col-md-12">
+                                                                <div class="checkbox">
+                                                                    <label class="custom_permission_lable">
+                                                                        {!! Form::checkbox(
+                                                                            'usertypes#' . $company->id . '[]',
+                                                                            $uesrType,
+                                                                            in_array($uesrType, $selectedUserTypes[$company->id] ?? []),
+                                                                            [
+                                                                                'class' => 'input-icheck',
+                                                                            ],
+                                                                        ) !!} {{ $userTypesNames[$uesrType] }}
+                                                                    </label>
+                                                                </div>
                                                             </div>
+
                                                         </div>
-
                                                     </div>
-                                                </div>
-                                                <div class="clearfix"></div>
+                                                    <div class="clearfix"></div>
 
-                                            </div>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                                                
+                                                </li>
+                                            @endforeach
+                                        </ul>
 
 
+                                    </div>
                                 </div>
+                                
                             </div>
+                           
                         @endforeach
                     </ul>
 

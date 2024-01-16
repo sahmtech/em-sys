@@ -114,8 +114,13 @@ class RoleController extends Controller
         foreach ($tmp as $accessRoleCompany) {
             $selectedUserTypes[$accessRoleCompany->id] = $accessRoleCompany->userTypes();
         }
+        $userTypesNames = [
+            'employee' => __('essentials::lang.employee'),
+            'manager' => __('essentials::lang.manager'),
+            'worker' => __('essentials::lang.worker'),
+        ];
         return view('role.edit_create_access_role')
-            ->with(compact('userTypes', 'selectedUserTypes', 'accessRole', 'companies', 'accessRoleCompanies'));
+            ->with(compact('userTypesNames', 'userTypes', 'selectedUserTypes', 'accessRole', 'companies', 'accessRoleCompanies'));
     }
 
 

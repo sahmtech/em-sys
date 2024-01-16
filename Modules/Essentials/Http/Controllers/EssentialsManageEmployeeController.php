@@ -258,12 +258,12 @@ class EssentialsManageEmployeeController extends Controller
 
 
                             $html .= '<li>
-                            <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
-                        </li>';
+                                    <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
+                                </li>';
 
                             $html .= '<li>
-                        <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
-                    </li>';
+                                <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
+                            </li>';
 
                             $html .= '</ul></div>';
 
@@ -312,16 +312,6 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
-        //$businesses = Business::all();
-        //$businesses = Business::whereIn('id', $user_businesses_ids)->pluck('name', 'id');
-        // $bl_attributes = $business_locations['attributes'];
-        // $business_locations = $business_locations['locations'];
-
-        // $default_location = null;
-        // foreach ($business_locations as $id => $name) {
-        //     $default_location = BusinessLocation::findOrFail($id);
-        //     break;
-        // }
         $status = [
             'active' => 'active',
             'inactive' => 'inactive',
@@ -349,9 +339,6 @@ class EssentialsManageEmployeeController extends Controller
                 'offer_prices',
                 'items',
                 'companies',
-                //'businesses',
-                // 'bl_attributes',
-                // 'default_location'
             ));
     }
 
