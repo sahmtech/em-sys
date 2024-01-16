@@ -63,6 +63,15 @@ class ToDoController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $can_add_todo= auth()->user()->can('essentials.add_todo');
+        $can_edit_todo= auth()->user()->can('essentials.edit_todo');
+        $can_delete_todo= auth()->user()->can('essentials.delete_todo');
+        $can_show_todo= auth()->user()->can('essentials.show_todo');
+        $can_change_status_todo= auth()->user()->can('essentials.change_status_todo');
+        $can_view_documents_todo= auth()->user()->can('essentials.view_documents_todo');
+        $can_show_priorities_todo= auth()->user()->can('essentials.show_priorities_todo');
+
         $auth_id = auth()->user()->id;
 
         $task_statuses = ToDo::getTaskStatus();
@@ -110,38 +119,54 @@ class ToDoController extends Controller
             return Datatables::of($todos)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin ,$can_edit_todo ,$can_delete_todo,$can_show_todo,$can_change_status_todo) {
                         $html = '<div class="btn-group">
                             <button type="button" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">' . __('messages.actions') . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
-                        if (auth()->user()->can('essentials.edit_todos')) {
+
+
+                        if ($is_admin || $can_edit_todo) {
                             $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'edit'], [$row->id]) . '" class="btn-modal" data-container="#task_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a></li>';
                         }
 
-                        if (auth()->user()->can('essentials.delete_todos')) {
+                        if ($is_admin || $can_delete_todo) {
                             $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'destroy'], [$row->id]) . '" class="delete_task" ><i class="fa fa-trash"></i> ' . __('messages.delete') . '</a></li>';
                         }
 
+                        if ($is_admin || $can_show_todo) {
                         $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" ><i class="fa fa-eye"></i> ' . __('messages.view') . '</a></li>';
-
+                        }
+                        if ($is_admin || $can_change_status_todo) {
                         $html .= '<li><a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><i class="fas fa-check-circle"></i> ' . __('essentials::lang.change_status') . '</a></li>';
-
+                        }
                         $html .= '</ul></div>';
 
                         return $html;
                     }
                 )
-                ->editColumn('task', function ($row) use ($priorities) {
-                    $html = '<a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" >' . $row->task . '</a> <br>
-                        <a data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs'], [$row->id]) . '" class="btn btn-primary btn-xs view-shared-docs">' . __('essentials::lang.docs') . '</a>';
-
-                    if (!empty($row->priority)) {
-                        $bg_color = !empty($this->priority_colors[$row->priority]) ? $this->priority_colors[$row->priority] : 'bg-gray';
-
-                        $html .= ' &nbsp; <span class="label ' . $bg_color . '"> ' . $priorities[$row->priority] . '</span>';
+                ->editColumn('task', function ($row) use ($priorities ,$is_admin , $can_show_todo , $can_view_documents_todo ,$show_priorities_todo) {
+                    $html =" ";
+                    if($is_admin || $can_show_todo){
+                        $html = '<a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" >' . $row->task . '</a> <br>
+                        &nbsp;';
                     }
+                    if($is_admin || $can_show_todo){ 
+
+                       $html .=  ' &nbsp; <a data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs'], [$row->id]) . '" class="btn btn-primary btn-xs view-shared-docs">' . __('essentials::lang.docs') . '</a>' ;
+                     
+                    }
+
+                    if($is_admin || $show_priorities_todo){
+                        if (!empty($row->priority)) {
+                            $bg_color = !empty($this->priority_colors[$row->priority]) ? $this->priority_colors[$row->priority] : 'bg-gray';
+    
+                            $html .= ' &nbsp; <span class="label ' . $bg_color . '"> ' . $priorities[$row->priority] . '</span>';
+                        }
+                    }
+
+                   
 
                     return $html;
                 })
@@ -159,14 +184,18 @@ class ToDoController extends Controller
                 ->editColumn('created_at', '{{@format_datetime($created_at)}}')
                 ->editColumn('date', '{{@format_datetime($date)}}')
                 ->editColumn('end_date', '@if(!empty($end_date)) {{@format_datetime($end_date)}} @endif')
-                ->editColumn('status', function ($row) use ($task_statuses) {
+                
+                ->editColumn('status', function ($row) use ($task_statuses ,$can_change_status_todo ,$is_admin) {
                     $html = '';
-                    if (!empty($task_statuses[$row->status])) {
-                        $bg_color = !empty($this->status_colors[$row->status]) ? $this->status_colors[$row->status] : 'bg-gray';
+                    if($is_admin || $can_change_status_todo)
+                    {
+                        if (!empty($task_statuses[$row->status])) {
+                            $bg_color = !empty($this->status_colors[$row->status]) ? $this->status_colors[$row->status] : 'bg-gray';
 
-                        $html = '<a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><span class="label ' . $bg_color . '"> ' . $task_statuses[$row->status] . '</span></a>';
-                    }
+                            $html = '<a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><span class="label ' . $bg_color . '"> ' . $task_statuses[$row->status] . '</span></a>';
+                        }
 
+                   }
                     return $html;
                 })
                 ->removeColumn('id')

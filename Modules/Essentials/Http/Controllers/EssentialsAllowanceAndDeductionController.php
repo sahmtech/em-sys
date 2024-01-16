@@ -61,7 +61,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
             return Datatables::of($allowances)
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin ,$can_edit_allowance_and_deduction,$can_delete_allowance_and_deduction){
+                    function ($row)  use($is_admin , $can_edit_allowance_and_deduction, $can_delete_allowance_and_deduction){
                         $html = '';
                            if($is_admin  || $can_edit_allowance_and_deduction ){
                             $html .= '<button data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'edit'], [$row->id]) . '" data-container="#add_allowance_deduction_modal" class="btn-modal btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</button>';

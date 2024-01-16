@@ -8,12 +8,14 @@
 		<div class="box box-solid">
 			<div class="box-header">
 				<h4 class="box-title">@lang('essentials::lang.knowledge_base')</h4>
+				@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.add_knowledge_base"))
 				<div class="box-tools pull-right">
 					<a href="{{action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'create'])}}" class="btn btn-sm btn-primary">
 						<i class="fa fa-plus"></i> 
 						@lang( 'messages.add' )
 					</a>
 				</div>
+				@endif
 			</div>
 			<div class="box-body">
 				<div class="row">
@@ -44,14 +46,24 @@
 														<a data-toggle="collapse" data-parent="#accordian_{{$kb->id}}" href="#collapse_{{$section->id}}" @if($loop->index == 0 )aria-expanded="true" @endif>{{$section->title}}
 														</a>
 													</h4>
+
+
 													<div class="box-tools pull-right">
+													@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.show_knowledge_base"))
 														<a class="text-info p-5-5" href="{{action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'show'], [$section->id])}}" title="@lang('messages.view')" data-toggle="tooltip"><i class="fas fa-eye"></i></a>
+                                                    @endif
 
+													@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.edit_knowledge_base"))
 														<a class="text-primary p-5-5" href="{{action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'edit'], [$section->id])}}" title="@lang('messages.edit')" data-toggle="tooltip"><i class="fas fa-edit"></i></a>
+												    @endif
 
+													@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.delete_knowledge_base"))
 														<a class="text-danger p-5-5 delete-kb" href="{{action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'destroy'], [$section->id])}}" title="@lang('messages.delete')" data-toggle="tooltip"><i class="fas fa-trash"></i></a>
+													@endif
 
+													@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.add_parent_knowledge_base"))
 														<a class="text-success p-5-5" href="{{action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'create'])}}?parent={{$section->id}}" title="@lang('essentials::lang.add_article')" data-toggle="tooltip"><i class="fas fa-plus"></i></a>
+													@endif
 													</div>
 												</div>
 												<div id="collapse_{{$section->id}}" class="panel-collapse collapse @if($loop->index == 0 )in @endif" @if($loop->index == 0 )aria-expanded="true" @endif >

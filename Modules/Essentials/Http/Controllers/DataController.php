@@ -205,6 +205,7 @@ class DataController extends Controller
     public function user_permissions()
     {
         return [
+            //hrm
             [
                 'group_name' => __('essentials::lang.hrm'),
                 'group_permissions' => [
@@ -236,13 +237,13 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials. add_wishes',
-                        'label' => __('essentials::lang. add_wishes'),
+                        'value' => 'essentials.add_wishes',
+                        'label' => __('essentials::lang.add_wishes'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials. edit_wishes',
-                        'label' => __('essentials::lang. edit_wishes'),
+                        'value' => 'essentials.edit_wishes',
+                        'label' => __('essentials::lang.edit_wishes'),
                         'default' => false,
                     ],
                    
@@ -251,12 +252,29 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_leave'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.edit_leave',
+                        'label' => __('essentials::lang.edit_leave'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.change_status_leave',
+                        'label' => __('essentials::lang.change_status_leave'),
+                        'default' => false,
+                    ],
+                    
 
                     [
                         'value' => 'essentials.delete_leave_type',
                         'label' => __('essentials::lang.delete_leave_type'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.edit_leave_type',
+                        'label' => __('essentials::lang.edit_leave_type'),
+                        'default' => false,
+                    ],
+                    
 
                     //countries
                     [
@@ -619,6 +637,16 @@ class DataController extends Controller
                     'label' => __('essentials::lang.delete_allowance_and_deduction'),
                     'default' => false,
                   ],
+                  [
+                    'value' => 'essentials.delete_attencances_status',
+                    'label' => __('essentials::lang.delete_attencances_status'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.add_attencances_status',
+                    'label' => __('essentials::lang.add_attencances_status'),
+                    'default' => false,
+                  ],
                   //attendance && shift
                   [
                     'value' => 'essentials.crud_shift',
@@ -945,6 +973,7 @@ class DataController extends Controller
 
             ],
 
+            //todo
             [
                 'group_name' => __('essentials::lang.todo'),
                 'group_permissions' =>[
@@ -960,19 +989,39 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.add_todos',
-                        'label' => __('essentials::lang.add_todos'),
+                        'value' => 'essentials.add_todo',
+                        'label' => __('essentials::lang.add_todo'),
                         'default' => false,
                     ],
 
                     [
-                        'value' => 'essentials.edit_todos',
-                        'label' => __('essentials::lang.edit_todos'),
+                        'value' => 'essentials.edit_todo',
+                        'label' => __('essentials::lang.edit_todo'),
                         'default' => false,
                     ],
                     [
-                        'value' => 'essentials.delete_todos',
-                        'label' => __('essentials::lang.delete_todos'),
+                        'value' => 'essentials.delete_todo',
+                        'label' => __('essentials::lang.delete_todo'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_todo',
+                        'label' => __('essentials::lang.show_todo'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.change_status_todo',
+                        'label' => __('essentials::lang.change_status_todo'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_documents_todo',
+                        'label' => __('essentials::lang.view_documents_todo'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_priorities_todo',
+                        'label' => __('essentials::lang.show_priorities_todo'),
                         'default' => false,
                     ],
 
@@ -993,6 +1042,26 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_document'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.add_document',
+                        'label' => __('essentials::lang.add_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_document',
+                        'label' => __('essentials::lang.delete_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.share_document',
+                        'label' => __('essentials::lang.share_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.download_document',
+                        'label' => __('essentials::lang.download_document'),
+                        'default' => false,
+                    ],
                     
                     [
                         'value' => 'essentials.view_memos',
@@ -1006,8 +1075,44 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.add_reminder',
+                        'label' => __('essentials::lang.add_reminder'),
+                        'default' => false,
+                    ],
+                    
+                    [
                         'value' => 'essentials.view_knowledge_base',
                         'label' => __('essentials::lang.view_knowledge_base'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.add_knowledge_base',
+                        'label' => __('essentials::lang.add_knowledge_base'),
+                        'default' => false,
+                    ],
+
+                    
+                    [
+                        'value' => 'essentials.edit_knowledge_base',
+                        'label' => __('essentials::lang.edit_knowledge_base'),
+                        'default' => false,
+                    ],
+                      
+                    [
+                        'value' => 'essentials.delete_knowledge_base',
+                        'label' => __('essentials::lang.delete_knowledge_base'),
+                        'default' => false,
+                    ],
+                       
+                    [
+                        'value' => 'essentials.show_knowledge_base',
+                        'label' => __('essentials::lang.show_knowledge_base'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_parent_knowledge_base',
+                        'label' => __('essentials::lang.add_parent_knowledge_base'),
                         'default' => false,
                     ],
                     
@@ -1020,12 +1125,7 @@ class DataController extends Controller
 
             ],
 
-
-
-
-
-
-          
+           //health_insurance
             [
                 'group_name' => __('essentials::lang.health_insurance'),
                 'group_permissions' => [
@@ -1129,6 +1229,7 @@ class DataController extends Controller
                 ]
 
             ],
+            //employees_affairs
             [
                 'group_name' => __('essentials::lang.employees_affairs'),
                 'group_permissions' => [
@@ -1199,6 +1300,7 @@ class DataController extends Controller
                 ]
 
             ],
+            //workcard
             [
                 'group_name' => __('essentials::lang.work_cards'),
                 'group_permissions' => [
@@ -1207,6 +1309,38 @@ class DataController extends Controller
                         'label' => __('essentials::lang.essentials_work_cards_dashboard'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.show_business_document',
+                        'label' => __('essentials::lang.show_business_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_business_document',
+                        'label' => __('essentials::lang.edit_business_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_business_document',
+                        'label' => __('essentials::lang.delete_business_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_business_document',
+                        'label' => __('essentials::lang.add_business_document'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_business_subscription',
+                        'label' => __('essentials::lang.delete_business_subscription'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_business_subscription',
+                        'label' => __('essentials::lang.add_business_subscription'),
+                        'default' => false,
+                    ],
+                    
+                    
                     [
                         'value' => 'essentials.workcards_requests_change_status',
                         'label' => __('essentials::lang.workcards_requests_change_status'),
@@ -1331,6 +1465,7 @@ class DataController extends Controller
                 ]
 
             ],
+            //housing
             [
                 'group_name' => __('housingmovements::lang.movement_management'),
                 'group_permissions' => [

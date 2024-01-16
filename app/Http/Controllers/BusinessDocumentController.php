@@ -26,6 +26,10 @@ class BusinessDocumentController extends Controller
         $auth_id = request()->session()->get('user.business_id');
 
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $auth_id);
+        $can_show_business_document= auth()->user()->can('essentials.show_business_document');
+        $can_edit_business_document= auth()->user()->can('essentials.edit_business_document');
+        $can_delete_business_document= auth()->user()->can('essentials.delete_business_document');
+
         if (request()->ajax()) {
             $business = BusinessDocument::where('business_id', $business_id)
                 ->select(['id', 'business_id', 'licence_type', 'licence_number', 'licence_date', 'renew_date', 'expiration_date', 'issuing_location', 'path_file', 'details', 'unified_number']);
@@ -34,24 +38,27 @@ class BusinessDocumentController extends Controller
             return Datatables::of($business)
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin, $can_show_business_document, $can_edit_business_document, $can_delete_business_document) {
                         $html = '';
-                        if ($is_admin) {
-                            // if (!empty($row->path_file)) { 
-                            //     $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->path_file . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __('essentials::lang.doc_view') . '</a>
-                            //     &nbsp;';
-                            // }
-
+                     
+                           
+                           if($is_admin ||  $can_show_business_document){
                             if (!empty($row->path_file)) {
                                 $html .= '<button class="btn btn-xs btn-primary"  onclick="window.location.href = \'/uploads/' . $row->path_file . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.doc_view') . '</button>';
                             } else {
                                 $html .= '<a class="btn btn-xs btn-warning">' . __('essentials::lang.no_file_path') . '</a>';
                             }
-
+                           }
+                           
+                           if($is_admin ||  $can_edit_business_document){
                             $html .= '<button class="btn btn-xs btn-info btn-modal edit_doc_button" data-container="#edit_docs_model" data-href="' . route('doc.edit', ['id' => $row->id]) . '" style="margin: 2px;"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
-                            $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('doc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                        }
+                           }
 
+                           if($is_admin ||  $can_delete_business_document){
+
+                            $html .= '<button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('doc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                      
+                           }
 
                         return $html;
                     }

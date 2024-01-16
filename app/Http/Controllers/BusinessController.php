@@ -876,6 +876,6 @@ class BusinessController extends Controller
         }
 
 
-        return redirect()->route('getBusiness');
+        return redirect()->back()->with('output');
     }
 }

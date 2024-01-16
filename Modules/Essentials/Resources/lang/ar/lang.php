@@ -1236,7 +1236,10 @@ return [
 
   'delete_wishes'=>'حذف الرغبات',
   'delete_leave'=>'حذف الاجازات',
+  'edit_leave'=>'تعديل الاجازات',
+  'change_status_leave'=>'تغير حالة الإجازة',
   'delete_leave_type'=>'حذف أنواع الاجازات',
+  'edit_leave_type'=>'تعديل أنواع الإجازات',
   
   'delete_countries'=>'حذف الدول',
   'edit_countries'=>'تعديل الدول',
@@ -1362,9 +1365,46 @@ return [
   'view_business_documents'=>'عرض وثائق الشركة',
   'view_business_subscriptions'=>'عرض اشتراكات الشركة',
   'add_business'=>'إضافة شركة',
- 
 
 
+  'add_todo'=>'إضافة مهمة ',
+  'edit_todo'=>'تعديل مهمة',
+  'delete_todo'=>'حذف مهمة',
+  'show_todo'=>'عرض مهمة',
+  'change_status_todo'=>'تغير حالة المهمة ',
+  'view_documents_todo'=>'عرض المستندات للمهمة',
+  'show_priorities_todo'=>'عرض الاولوية للمهمة',
 
+  'add_document'=>'إضافة مستند',
+  'delete_document'=>'حذف مستند',
+  'share_document'=>'مشاركة مستند',
+  'download_document'=>'تحميل مستند',
+
+  'add_reminder'=>'إضافة حدث',
+  'add_knowledge_base'=>'إضافة قاعدة معرفة',
+  'edit_knowledge_base'=>'تعديل قاعدة معرفة',
+  'delete_knowledge_base'=>'حذف قاعدة معرفة',
+  'show_knowledge_base'=>'عرض قاعدة معرفة',
+  'add_parent_knowledge_base'=>'إضافة قسم لقاعدة المعرفة',
+
+  'delete_attencances_status'=>'تعديل حالة الحضور والانصراف',
+  'add_attencances_status'=>'إضافة  حالة الحضور والانصراف',
+
+
+  'show_business_document'=>' عرض وثيقة الترخيص',
+  'edit_business_document'=>'تعديل الترخيص',
+  'delete_business_document'=>'حذف الترخيص',
+  'add_business_document'=>'إضافة الترخيص',
+  'delete_business_subscription'=>'حذف اشتراكات الشركة',
+  'add_business_subscription'=>'إضافة اشتراك الشركة',
+
+
+'number_not_found'=>'رقم الإقامة غير موجود في السطر رقم  ',
+'border_no_not_found'=>' رقم الحدود غير موجود في السطر رقم ',
+'family_proof_number_not_found'=>' رقم المرافق غير موجود في السطر رقم ',
+'proof_number_has_insurance'=>'رقم الأقامة المدخل لديه تأمين سايقا في السطر رقم ' ,
+'border_no_has_insurance'=>'رقم الحدود المدخل لديه تأمين سايقا في السطر رقم ' ,
+'family_has_insurance'=>'رقم الاقامة للمرافق المدخل لديه تأمين سايقا في السطر رقم ' ,
+'duplicated_eqama_number'=>'  رقم الاقامة مكرر في السطر رقم '  ,
 
 ];
