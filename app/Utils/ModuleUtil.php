@@ -554,28 +554,34 @@ class ModuleUtil extends Util
 
 
 
-    public function applyAccessRole($eloquentQuery)
+    public function applyAccessRole()
     {
         $roles = auth()->user()->roles;
+        $users = User::query();
+        $userIds = [];
         foreach ($roles as $role) {
 
             $accessRole = AccessRole::where('role_id', $role->id)->first();
 
             if ($accessRole) {
                 $userCompaniesForRole = AccessRoleCompany::where('access_role_id', $accessRole->id)->get();
-                $eloquentQuery = $eloquentQuery->where(function ($query) use ($userCompaniesForRole) {
-                    $query->where('company_id', $userCompaniesForRole->first()->company_id)
-                        ->whereIn('user_type', $userCompaniesForRole->first()->userTypes());
-                });
-                
-                for ($i = 1; $i < $userCompaniesForRole->count(); $i++) {
-                    $eloquentQuery = $eloquentQuery->orWhere(function ($query) use ($userCompaniesForRole, $i) {
-                        $query->where('company_id', $userCompaniesForRole[$i]->company_id)
-                            ->whereIn('user_type', $userCompaniesForRole[$i]->userTypes());
+                if ($userCompaniesForRole->count() > 0) {
+                    $users = $users->where(function ($query) use ($userCompaniesForRole) {
+                        $query->where('company_id', $userCompaniesForRole->first()->company_id)
+                            ->whereIn('user_type', $userCompaniesForRole->first()->userTypes());
                     });
+
+                    for ($i = 1; $i < $userCompaniesForRole->count(); $i++) {
+                        $users = $users->orWhere(function ($query) use ($userCompaniesForRole, $i) {
+                            $query->where('company_id', $userCompaniesForRole[$i]->company_id)
+                                ->whereIn('user_type', $userCompaniesForRole[$i]->userTypes());
+                        });
+                    }
+                    $userIds = array_merge($userIds, $users->pluck('id')->toArray());
                 }
             }
         }
-        return $eloquentQuery;
+
+        return    array_unique($userIds);
     }
 }

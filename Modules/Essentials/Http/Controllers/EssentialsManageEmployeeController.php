@@ -26,6 +26,7 @@ use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\UserCreatedOrModified;
+use Carbon\Carbon;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
@@ -128,9 +129,10 @@ class EssentialsManageEmployeeController extends Controller
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
 
         $companies_ids = Company::pluck('id')->toArray();
-        $users = User::query();
+        $userIds = User::pluck('id')->toArray();
         if (!$is_admin) {
-            $users = $this->moduleUtil->applyAccessRole($users);
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
 
             $companies_ids = [];
             $roles = auth()->user()->roles;
@@ -145,7 +147,7 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        $users = $users->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
+        $users = User::whereIn('id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
 
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
@@ -348,7 +350,26 @@ class EssentialsManageEmployeeController extends Controller
         $today = now();
         $endDateThreshold = $today->copy()->addDays(14);
 
-        $probation_period = EssentialsEmployeesContract::where('probation_period', 3)
+
+
+
+        $today = now();
+        $endDateThreshold = $today->copy()->addDays(60);
+
+
+
+
+
+        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::pluck('id')->toArray();
+        $business_id = request()->session()->get('user.business_id');
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $probation_period = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->where('probation_period', 3)
             ->where(function ($query) use ($today) {
                 $query->whereDate('contract_start_date', '<=', $today)
                     ->orWhereNull('contract_start_date');
@@ -356,18 +377,14 @@ class EssentialsManageEmployeeController extends Controller
             ->whereDate(DB::raw('DATE_ADD(contract_start_date, INTERVAL probation_period MONTH)'), '>', $endDateThreshold)
             ->count();
 
-
-        $today = now();
-        $endDateThreshold = $today->copy()->addDays(60);
-
-        $contract_end_date = EssentialsEmployeesContract::where(function ($query) use ($today) {
+        $contract_end_date = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->where(function ($query) use ($today) {
             $query->whereDate('contract_start_date', '<=', $today)
                 ->orWhereNull('contract_start_date');
         })
             ->whereDate('contract_end_date', '<=', $endDateThreshold)
             ->count();
 
-        $late_vacation = FollowupWorkerRequest::with(['user'])
+        $late_vacation = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with(['user'])
             ->where('type', 'leavesAndDepartures')
             ->where('type', 'returnRequest')
             ->whereHas('user', function ($query) {
@@ -377,56 +394,32 @@ class EssentialsManageEmployeeController extends Controller
             ->where('end_date', '<', now())
             ->count();
 
-        $nullCount = User::with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
-            ->whereHas('essentials_admission_to_works', function ($query) {
+        $nullCount = User::whereIn('id', $userIds)->with(['essentials_admission_to_works', 'essentialsEmployeeAppointmets', 'essentials_qualification'])
+            ->where(function ($query) {
+                $query->whereHas('essentials_admission_to_works', function ($query) {
 
-                $query->whereNull('admissions_date');
-            })
-            ->orwhereHas('essentialsEmployeeAppointmets', function ($query) {
+                    $query->whereNull('admissions_date');
+                })
+                    ->orWhereHas('essentialsEmployeeAppointmets', function ($query) {
 
-                $query->WhereNull('start_from')
-                    ->orWhereNull('end_at')
-                    ->orWhereNull('profession_id')
-                    ->orWhereNull('specialization_id');
-            })
-            ->orwhereHas('essentials_qualification', function ($query) {
+                        $query->WhereNull('start_from')
+                            ->orWhereNull('end_at')
+                            ->orWhereNull('profession_id')
+                            ->orWhereNull('specialization_id');
+                    })
+                    ->orWhereHas('essentials_qualification', function ($query) {
 
-                $query->WhereNull('graduation_year')
-                    ->orWhereNull('graduation_institution')
-                    ->orWhereNull('graduation_country')
-                    ->orWhereNull('degree');
+                        $query->WhereNull('graduation_year')
+                            ->orWhereNull('graduation_institution')
+                            ->orWhereNull('graduation_country')
+                            ->orWhereNull('degree');
+                    });
             })
             ->count();
-        $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
-        if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
 
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
-        }
-
-        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+        $departmentIds = EssentialsDepartment::where('business_id',  $business_id)
             ->where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
-
-        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
-        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
 
         $requestsProcess = null;
 
@@ -451,7 +444,9 @@ class EssentialsManageEmployeeController extends Controller
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
+                ->whereIn('department_id', $departmentIds)
+                ->where('followup_worker_requests_process.sub_status', null)
+                ->whereIn('followup_worker_requests.worker_id', $userIds);
         } else {
             $output = [
                 'success' => false,
@@ -459,16 +454,7 @@ class EssentialsManageEmployeeController extends Controller
             ];
             return redirect()->route('home')->with('status', $output);
         }
-        if (!$is_admin) {
 
-            $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                $query->where(function ($query2) use ($user_businesses_ids) {
-                    $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
-                })->orWhere(function ($query3) use ($user_projects_ids) {
-                    $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
-                });
-            });
-        }
         if (request()->ajax()) {
 
 
@@ -484,20 +470,7 @@ class EssentialsManageEmployeeController extends Controller
                     return $item;
                 })
                 ->editColumn('status', function ($row) {
-                    $status = '';
-
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . $this->statuses[$row->status]['name'] . '</span>';
-
-                        if (auth()->user()->can('crudExitRequests')) {
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                        }
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                        $status = trans('followup::lang.' . $row->status);
-                    }
-
-                    return $status;
+                    return trans('followup::lang.' . $row->status) ?? '';
                 })
 
                 ->rawColumns(['status'])
