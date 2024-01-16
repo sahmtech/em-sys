@@ -29,44 +29,28 @@ class EssentialsOfficialDocumentController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
-        // $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
-        // if (!$can_crud_official_documents) {
-        //     error_log("2222");
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_crud_official_documents = auth()->user()->can('essentials.crud_official_documents');
+        if (!$can_crud_official_documents) {
+            error_log("2222");
+            //temp  abort(403, 'Unauthorized action.');
+        }
         $can_add_official_documents = auth()->user()->can('essentials.add_official_documents');
         $can_edit_official_documents = auth()->user()->can('essentials.edit_official_documents');
         $can_delete_official_documents = auth()->user()->can('essentials.delete_official_documents');
         $can_show_official_documents = auth()->user()->can('essentials.show_official_documents');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+
+        $userIds = User::pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
         }
+
 
         $official_documents = EssentialsOfficialDocument::join('users as u', 'u.id', '=', 'essentials_official_documents.employee_id')
 
-
+            ->whereIn('u.id', $userIds)
             ->select([
                 'essentials_official_documents.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -74,15 +58,8 @@ class EssentialsOfficialDocumentController extends Controller
                 'essentials_official_documents.status',
                 'essentials_official_documents.number',
                 'essentials_official_documents.expiration_date',
-            ])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                $query->where(function ($query2) use ($user_businesses_ids) {
-                    $query2->whereIn('u.business_id', $user_businesses_ids)->whereIn('u.user_type', ['employee', 'manager', 'worker']);
-                })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
-                    $query3->where('u.user_type', 'worker')->whereIn('u.assigned_to', $user_projects_ids)->whereIn('u.business_id', $user_businesses_ids);
-                });
-            })->orderby('id', 'desc');
+            ])->orderby('id', 'desc');
 
-        // dd(  $official_documents->where('employee_id',5914)->get() );
         if (request()->ajax()) {
 
 
@@ -110,20 +87,20 @@ class EssentialsOfficialDocumentController extends Controller
             return Datatables::of($official_documents)
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin,$can_edit_official_documents ,$can_delete_official_documents ,$can_show_official_documents){
+                    function ($row)  use ($is_admin, $can_edit_official_documents, $can_delete_official_documents, $can_show_official_documents) {
                         $html = '';
-                        if($is_admin || $can_edit_official_documents){
+                        if ($is_admin || $can_edit_official_documents) {
                             $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                         }
 
-                        if($is_admin || $can_show_official_documents){
-                        $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
+                        if ($is_admin || $can_show_official_documents) {
+                            $html .= ' &nbsp; <button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href="' . route('doc.view', ['id' => $row->id]) . '"><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         }
-                        if($is_admin || $can_delete_official_documents){
+                        if ($is_admin || $can_delete_official_documents) {
                             $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_doc_button" data-href="' . route('offDoc.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
-                    
+
 
                         return $html;
                     }
@@ -136,10 +113,8 @@ class EssentialsOfficialDocumentController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::whereIn('user_type', ['employee', 'worker', 'manager']);
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as
- full_name"))->get();
+        $query = User::whereIn('id', $userIds);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''), ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
         return view('essentials::employee_affairs.official_docs.index')->with(compact('users'));

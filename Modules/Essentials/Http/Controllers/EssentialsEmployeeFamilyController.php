@@ -24,197 +24,6 @@ class EssentialsEmployeeFamilyController extends Controller
     }
 
 
-    public function import_index()
-    {
-        $business_id = request()->session()->get('user.business_id');
-
-        $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_familiy');
-        if (! $can_crud_import_employee) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
-        $zip_loaded = extension_loaded('zip') ? true : false;
-
-        //Check if zip extension it loaded or not.
-        if ($zip_loaded === false) {
-            $output = ['success' => 0,
-                'msg' => 'Please install/enable PHP Zip archive for import',
-            ];
-
-          
-            return view('essentials::employee_affairs.employee_families.import')
-                ->with('notification', $output);
-        } else {
-            return view('essentials::employee_affairs.employee_families.import');
-        }
-
-       
-    }
-
-    public function familypostImportEmployee(Request $request)
-    {
-        $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_familiy');
-        if (! $can_crud_import_employee) {
-           //temp  abort(403, 'Unauthorized action.');
-        }
-	
-        try {
-           
-
-            //Set maximum php execution time
-            ini_set('max_execution_time', 0);
-          
-
-            if ($request->hasFile('employee_familiy_csv'))
-             {
-                $file = $request->file('employee_familiy_csv');
-                $parsed_array = Excel::toArray([], $file);
-                $imported_data = array_splice($parsed_array[0], 1);
-                $business_id = $request->session()->get('user.business_id');
-                $user_id = $request->session()->get('user.id');
-                $processedIdProofNumbers = [];
-                $formated_data = [];
-                $is_valid = true;
-                $error_msg = '';
-
-             
-              
-            DB::beginTransaction();
-            foreach ($imported_data as $key => $value)
-             {
-                $row_no = $key + 1;
-                $emp_array = [];     
-                
-             
-                 if (!empty($value[0])) 
-                 {
-                     $emp_array['emp_eqama_no'] = $value[0];
-                    
-                     $proof_number = user::where('id_proof_number',$emp_array['emp_eqama_no'])->first();
-                   //  $family_proof_number=EssentialsEmployeesFamily::where('eqama_number',$emp_array['emp_eqama_no'])->first();
-                    
-                     if (!$proof_number) {
-                     
-                         $is_valid = false;
-                         $error_msg = __('essentials::lang.emp_eqama_no_not_found').$row_no;
-                         break;
-                     }
-                 }
-                 else {
-                    $is_valid = false;
-                    $error_msg = __('essentials::lang.emp_eqama_required') .$row_no;
-                    break;
-                }
-
-                     
-                if (!empty($value[1])) 
-                {
-                    $emp_array['full_name'] = $value[1];
-                }
-
-                     
-                if (!empty($value[2])) 
-                {
-                    $emp_array['family_eqama_no'] = $value[2];
-
-                    $business = EssentialsEmployeesFamily::where('eqama_number',$emp_array['family_eqama_no'])->first();
-                    
-                    if ($business) {
-                    
-                        $is_valid = false;
-                        $error_msg = __('essentials::lang.family_eqama_no_exist').$row_no;
-                        break;
-                    }
-                }
-                else {
-                   $is_valid = false;
-                   $error_msg = __('essentials::lang.family_eqama_required') .$row_no;
-                   break;
-               }
-              
-               $emp_array['relation'] = $value[3];                       
-               $emp_array['gender'] = $value[4];                    
-            //    $emp_array['mobile'] = $value[5];                         
-            //    $emp_array['nationality_id'] = $value[6]; 
-            //    if ($emp_array['nationality_id'] !== null) {
-                                        
-            //     $business = EssentialsCountry::find($emp_array['nationality_id']);
-            //     if (!$business) {
-                
-            //         $is_valid = false;
-            //         $error_msg = __('essentials::lang.nationality_id_not_found').$row_no;
-            //         break;
-            //     }
-            // }
-            // else
-            // {
-            //     $emp_array['nationality_id']=null;
-            // } 
-
-            
-            $formated_data[] = $emp_array;                      
-                              
-                                                  
-                                         
-             }
-             
-                   
-             if (!$is_valid) 
-             {
-                 throw new \Exception($error_msg);
-             }                    
-      
-                if (! empty($formated_data)) 
-                {
-                 
-
-
-                    foreach ($formated_data as $emp_data) {
-                     
-                          
-                          $user= user::where('id_proof_number',$emp_data['emp_eqama_no'])->first();
-                          
-                       
-                            $family =new EssentialsEmployeesFamily();
-                            $family->full_name=$emp_data['full_name'];
-                          //  $family->mobile_number=$emp_data['mobile'];
-                            $family->relative_relation=$emp_data['relation'];
-                            $family->eqama_number=$emp_data['family_eqama_no'];
-                          //  $family->nationality_id=$emp_data['nationality_id'];
-                            $family->gender=$emp_data['gender'];
-                            $family->employee_id =$user->id;
-                            $family->save();
-  
-                        
-                        
-                         
-
-
-                    }
-                }
-                
-      
-               
-                $output = ['success' => 1,
-                    'msg' => __('product.file_imported_successfully'),
-                ];
-
-                DB::commit();
-            }
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
-            $output = ['success' => 0,
-                'msg' => $e->getMessage(),
-            ];
-
-            return redirect()->route('import-employees-familiy')->with('notification', $output);
-        }
-       // $type = ! empty($contact->type) && $contact->type != 'both' ? $contact->type : 'supplier';
-
-        return redirect()->route('employee_families')->with('notification', 'success insert');
-    }
 
 
     public function index()
@@ -230,47 +39,47 @@ class EssentialsEmployeeFamilyController extends Controller
         $can_delete_employee_families = auth()->user()->can('essentials.delete_employee_families');
 
         if (!$crud_employee_families) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
+        $userIds = User::pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+
+        $EssentialsEmployeesFamilies = EssentialsEmployeesFamily::join('users as u', 'u.id', '=', 'essentials_employees_families.employee_id')
+            ->whereIn('u.id', $userIds)
+            ->select([
+                'essentials_employees_families.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'essentials_employees_families.full_name as family',
+                'essentials_employees_families.gender',
+                'essentials_employees_families.address',
+                'essentials_employees_families.relative_relation',
+                'essentials_employees_families.eqama_number',
+                'essentials_employees_families.nationality_id',
+
+            ]);
+
         if (request()->ajax()) {
-            $EssentialsEmployeesFamilies = EssentialsEmployeesFamily::join('users as u', 'u.id', '=', 'essentials_employees_families.employee_id')
-            //->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'essentials_employees_families.nationality_id')
-                ->select([
-                    'essentials_employees_families.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                  //  DB::raw("CONCAT(COALESCE(essentials_employees_families.first_name, ''), ' ', COALESCE(essentials_employees_families.last_name, '')) as family"),
-                  //   'essentials_employees_families.age',
-
-                  'essentials_employees_families.full_name as family',
-                //  DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
-                 
-                    'essentials_employees_families.gender',
-                    'essentials_employees_families.address',
-                    'essentials_employees_families.relative_relation',
-                    'essentials_employees_families.eqama_number',
-                   // 'essentials_employees_families.mobile_number',
-                    'essentials_employees_families.nationality_id',
-
-                ]);
 
 
             return Datatables::of($EssentialsEmployeesFamilies)
 
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin,$can_edit_employee_families,$can_delete_employee_families){
+                    function ($row)  use ($is_admin, $can_edit_employee_families, $can_delete_employee_families) {
                         $html = '';
-                        if($is_admin || $can_edit_employee_families)
-                        {
+                        if ($is_admin || $can_edit_employee_families) {
                             $html .= '<a  href="' . route('employee_families.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                             '&nbsp;';
                         }
-                        if($is_admin || $can_delete_employee_families)
-                        {
+                        if ($is_admin || $can_delete_employee_families) {
                             $html .= '<button class="btn btn-xs btn-danger delete_employee_families_button" data-href="' . route('employee_families.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
-                       
+
 
                         return $html;
                     }
@@ -282,7 +91,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 ->filterColumn('family', function ($query, $keyword) {
                     $query->whereRaw("essentials_employees_families.full_name like ?", ["%{$keyword}%"]);
                 })
-               
+
                 ->filterColumn('gender', function ($query, $keyword) {
                     $query->whereRaw("essentials_employees_families.gender like ?", ["%{$keyword}%"]);
                 })
@@ -292,7 +101,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 ->make(true);
         }
 
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
@@ -300,6 +109,182 @@ class EssentialsEmployeeFamilyController extends Controller
 
 
         return view('essentials::employee_affairs.employee_families.index')->with(compact('users'));
+    }
+
+    
+    public function import_index()
+    {
+        $business_id = request()->session()->get('user.business_id');
+
+        $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_familiy');
+        if (!$can_crud_import_employee) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+        $zip_loaded = extension_loaded('zip') ? true : false;
+
+        //Check if zip extension it loaded or not.
+        if ($zip_loaded === false) {
+            $output = [
+                'success' => 0,
+                'msg' => 'Please install/enable PHP Zip archive for import',
+            ];
+
+
+            return view('essentials::employee_affairs.employee_families.import')
+                ->with('notification', $output);
+        } else {
+            return view('essentials::employee_affairs.employee_families.import');
+        }
+    }
+
+    public function familypostImportEmployee(Request $request)
+    {
+        $can_crud_import_employee = auth()->user()->can('essentials.view_import_employees_familiy');
+        if (!$can_crud_import_employee) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        try {
+
+
+            //Set maximum php execution time
+            ini_set('max_execution_time', 0);
+
+
+            if ($request->hasFile('employee_familiy_csv')) {
+                $file = $request->file('employee_familiy_csv');
+                $parsed_array = Excel::toArray([], $file);
+                $imported_data = array_splice($parsed_array[0], 1);
+                $business_id = $request->session()->get('user.business_id');
+                $user_id = $request->session()->get('user.id');
+                $processedIdProofNumbers = [];
+                $formated_data = [];
+                $is_valid = true;
+                $error_msg = '';
+
+
+
+                DB::beginTransaction();
+                foreach ($imported_data as $key => $value) {
+                    $row_no = $key + 1;
+                    $emp_array = [];
+
+
+                    if (!empty($value[0])) {
+                        $emp_array['emp_eqama_no'] = $value[0];
+
+                        $proof_number = user::where('id_proof_number', $emp_array['emp_eqama_no'])->first();
+                        //  $family_proof_number=EssentialsEmployeesFamily::where('eqama_number',$emp_array['emp_eqama_no'])->first();
+
+                        if (!$proof_number) {
+
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.emp_eqama_no_not_found') . $row_no;
+                            break;
+                        }
+                    } else {
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.emp_eqama_required') . $row_no;
+                        break;
+                    }
+
+
+                    if (!empty($value[1])) {
+                        $emp_array['full_name'] = $value[1];
+                    }
+
+
+                    if (!empty($value[2])) {
+                        $emp_array['family_eqama_no'] = $value[2];
+
+                        $business = EssentialsEmployeesFamily::where('eqama_number', $emp_array['family_eqama_no'])->first();
+
+                        if ($business) {
+
+                            $is_valid = false;
+                            $error_msg = __('essentials::lang.family_eqama_no_exist') . $row_no;
+                            break;
+                        }
+                    } else {
+                        $is_valid = false;
+                        $error_msg = __('essentials::lang.family_eqama_required') . $row_no;
+                        break;
+                    }
+
+                    $emp_array['relation'] = $value[3];
+                    $emp_array['gender'] = $value[4];
+                    //    $emp_array['mobile'] = $value[5];                         
+                    //    $emp_array['nationality_id'] = $value[6]; 
+                    //    if ($emp_array['nationality_id'] !== null) {
+
+                    //     $business = EssentialsCountry::find($emp_array['nationality_id']);
+                    //     if (!$business) {
+
+                    //         $is_valid = false;
+                    //         $error_msg = __('essentials::lang.nationality_id_not_found').$row_no;
+                    //         break;
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //     $emp_array['nationality_id']=null;
+                    // } 
+
+
+                    $formated_data[] = $emp_array;
+                }
+
+
+                if (!$is_valid) {
+                    throw new \Exception($error_msg);
+                }
+
+                if (!empty($formated_data)) {
+
+
+
+                    foreach ($formated_data as $emp_data) {
+
+
+                        $user = user::where('id_proof_number', $emp_data['emp_eqama_no'])->first();
+
+
+                        $family = new EssentialsEmployeesFamily();
+                        $family->full_name = $emp_data['full_name'];
+                        //  $family->mobile_number=$emp_data['mobile'];
+                        $family->relative_relation = $emp_data['relation'];
+                        $family->eqama_number = $emp_data['family_eqama_no'];
+                        //  $family->nationality_id=$emp_data['nationality_id'];
+                        $family->gender = $emp_data['gender'];
+                        $family->employee_id = $user->id;
+                        $family->save();
+                    }
+                }
+
+
+
+                $output = [
+                    'success' => 1,
+                    'msg' => __('product.file_imported_successfully'),
+                ];
+
+                DB::commit();
+            }
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+
+            return redirect()->route('import-employees-familiy')->with('notification', $output);
+        }
+        // $type = ! empty($contact->type) && $contact->type != 'both' ? $contact->type : 'supplier';
+
+        return redirect()->route('employee_families')->with('notification', 'success insert');
     }
 
 
@@ -316,7 +301,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
 
         try {
-            $input = $request->only(['full_name','address', 'gender', 'relative_relation', 'eqama_number', 'employee']);
+            $input = $request->only(['full_name', 'address', 'gender', 'relative_relation', 'eqama_number', 'employee']);
 
             $input2['employee_id'] = $input['employee'];
 
@@ -447,7 +432,7 @@ class EssentialsEmployeeFamilyController extends Controller
 
             $input2['relative_relation'] = $input['relative_relation'];
 
-          //  $input2['age'] = $input['age'];
+            //  $input2['age'] = $input['age'];
 
             $input2['gender'] = $input['gender'];
 
