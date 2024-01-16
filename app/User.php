@@ -72,7 +72,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Business::class);
     }
-
+    public function company()
+    {
+        return $this->belongsTo(\App\Company::class);
+    }
     public static function userTypes()
     {
         return User::distinct()
