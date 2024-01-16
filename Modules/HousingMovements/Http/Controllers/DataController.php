@@ -85,13 +85,23 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.crud_facilities'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'housingmovements.crud_htr_requests',
+                        'label' => __('housingmovements::lang.all_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'housingmovements.create_order',
+                        'label' => __('followup::lang.create_order'),
+                        'default' => false,
+                    ],
 
                     [
                         'value' => 'housingmovements.return_the_request',
                         'label' => __('housingmovements::lang.return_the_request'),
                         'default' => false,
                     ],
+
                     [
                         'value' => 'housingmovements.view_request',
                         'label' => __('housingmovements::lang.view_request'),
