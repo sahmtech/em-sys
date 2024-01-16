@@ -1370,6 +1370,7 @@ return [
   'workcards_requests_change_status' => 'تغير الحالة للطلبات في العلاقات الحكومية',
   'return_workcards_request' => 'إرجاع الطلب ',
   'show_workcards_request' => 'عرض الطلب',
+  'workcards_add_requests'=>'إضافة طلب',
   'view_return_visa' => 'عرض تأشيرة خروج وعودة',
   'view_final_visa' => 'عرض تأشيرة خروج نهائي',
   'view_absent_report' => 'عرض تبليغ هروب',
