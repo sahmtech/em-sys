@@ -254,6 +254,8 @@ class EssentialsCardsController extends Controller
         // }
 
         $can_workcards_requests_change_status =auth()->user()->can('essentials.workcards_requests_change_status');
+        $can_workcards_add_requests =auth()->user()->can('essentials.workcards_add_requests');
+        $can_workcards_return_requests =auth()->user()->can('essentials.workcards_return_requests');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');

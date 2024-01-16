@@ -1038,6 +1038,26 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_employees_insurances'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.insurances_requests_change_status',
+                        'label' => __('essentials::lang.insurances_requests_change_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.return_insurances_request',
+                        'label' => __('essentials::lang.return_insurances_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_insurances_request',
+                        'label' => __('essentials::lang.show_insurances_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.insurances_add_requests',
+                        'label' => __('essentials::lang.insurances_add_requests'),
+                        'default' => false,
+                    ],
                     
                     
                     [
@@ -1392,6 +1412,12 @@ class DataController extends Controller
                         'label' => __('essentials::lang.show_workcards_request'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.workcards_add_requests',
+                        'label' => __('essentials::lang.workcards_add_requests'),
+                        'default' => false,
+                    ],
+                    
                     [
                         'value' => 'essentials.view_return_visa',
                         'label' => __('essentials::lang.view_return_visa'),

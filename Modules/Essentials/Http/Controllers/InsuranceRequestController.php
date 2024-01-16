@@ -68,6 +68,7 @@ class InsuranceRequestController extends Controller
     public function index(){  
         
         $business_id = request()->session()->get('user.business_id');
+        $can_insurance_requests_change_status =auth()->user()->can('essentials.insurances_requests_change_status');
        
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -171,19 +172,23 @@ class InsuranceRequestController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row ,$can_insurance_requests_change_status ,$is_admin) {
                     $status = '';
 
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . __($this->statuses[$row->status]['name']) . '</span>';
-
-                      
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                    
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                        $status = trans('followup::lang.' . $row->status);
+                    if($can_insurance_requests_change_status || $is_admin)
+                    {
+                        if ($row->status == 'pending') {
+                            $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
+                                . __($this->statuses[$row->status]['name']) . '</span>';
+    
+                          
+                                $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
+                        
+                        } elseif (in_array($row->status, ['approved', 'rejected'])) {
+                            $status = trans('followup::lang.' . $row->status);
+                        }
                     }
+                   
 
                     return $status;
                 })
