@@ -75,7 +75,11 @@ class User extends Authenticatable
 
     public static function userTypes()
     {
-        return User::distinct()->pluck('user_type')->toArray();
+        return User::distinct()
+            ->pluck('user_type')
+            ->reject(function ($value) {
+                return $value == 'customer' || $value == 'customer_user' || $value == 'admin';
+            })->toArray();
     }
 
 

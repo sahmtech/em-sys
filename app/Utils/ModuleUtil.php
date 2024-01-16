@@ -563,8 +563,6 @@ class ModuleUtil extends Util
 
             if ($accessRole) {
                 $userCompaniesForRole = AccessRoleCompany::where('access_role_id', $accessRole->id)->get();
-                // error_log($accessRole->id);
-                // error_log($userCompaniesForRole->first()->id);
                 $eloquentQuery = $eloquentQuery->where(function ($query) use ($userCompaniesForRole) {
                     $query->where('company_id', $userCompaniesForRole->first()->company_id)
                         ->whereIn('user_type', $userCompaniesForRole->first()->userTypes());
@@ -572,7 +570,7 @@ class ModuleUtil extends Util
                 
                 for ($i = 1; $i < $userCompaniesForRole->count(); $i++) {
                     $eloquentQuery = $eloquentQuery->orWhere(function ($query) use ($userCompaniesForRole, $i) {
-                        $query->where('compamy_id', $userCompaniesForRole[$i]->company_id)
+                        $query->where('company_id', $userCompaniesForRole[$i]->company_id)
                             ->whereIn('user_type', $userCompaniesForRole[$i]->userTypes());
                     });
                 }

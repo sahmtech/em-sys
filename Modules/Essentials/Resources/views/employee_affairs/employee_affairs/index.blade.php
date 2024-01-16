@@ -21,12 +21,12 @@
                 <div class="form-group">
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
                     {!! Form::select(
-                        'select_business_id',
-                        $businesses,
+                        'select_company_id',
+                        $companies,
                         null,
                         [
                             'class' => 'form-control select2',
-                            'id' => 'select_business_id',
+                            'id' => 'select_company_id',
                             'style' => 'height:36px; width:100%',
                             'placeholder' => __('lang_v1.all'),
                             'required',
@@ -102,7 +102,7 @@
                             <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
                                 <th>@lang('essentials::lang.employee_number')</th>
-                                <th>bid</th>
+                                <th>company_id</th>
                                 <th>@lang('essentials::lang.employee_name')</th>
                              
                                 <th>@lang('essentials::lang.Identity_proof_id')</th>
@@ -509,7 +509,7 @@
                         d.specialization = $('#specializations-select').val();
                         d.nationality = $('#nationalities_select').val();
                         d.status = $('#status_filter').val();
-                        d.business = $('#select_business_id').val();
+                        d.company = $('#select_company_id').val();
 
                         console.log(d);
                     },
@@ -537,7 +537,7 @@
                         "data": "emp_number"
                     },
                     {
-                        "data": "business_id"
+                        "data": "company_id"
                     },
 
                     {
@@ -628,12 +628,12 @@
             }
         });
 
-            $('#specializations-select, #nationalities_select, #status-select, #select_business_id').change(
+            $('#specializations-select, #nationalities_select, #status-select, #select_company_id').change(
                 function() {
                     console.log('Specialization selected: ' + $(this).val());
                     console.log('Nationality selected: ' + $('#nationalities_select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_business_id').val());
+                    console.log('loc selected: ' + $('#select_company_id').val());
                     users_table.ajax.reload();
 
                 });

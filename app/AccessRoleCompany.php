@@ -25,6 +25,12 @@ class AccessRoleCompany extends Model
 
     public function userTypes()
     {
-        return AccessRoleCompanyUserType::where('access_role_company_id', $this->id)->pluck('user_type')->unique()->toArray();
+        return AccessRoleCompanyUserType::where('access_role_company_id', $this->id)
+            ->pluck('user_type')
+            ->unique()
+            ->reject(function ($value) {
+                return $value == 'customer' || $value == 'customer_user' || $value == 'admin';
+            })
+            ->toArray();
     }
 }

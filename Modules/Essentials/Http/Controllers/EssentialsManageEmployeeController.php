@@ -100,10 +100,10 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-        $can_show_employee= auth()->user()->can('essentials.show_employee');
-        $can_add_employee= auth()->user()->can('essentials.add_employee');
-        $can_edit_employee= auth()->user()->can('essentials.edit_employee');
-        $can_show_employee_options= auth()->user()->can('essentials.show_employee_options');
+        $can_show_employee = auth()->user()->can('essentials.show_employee');
+        $can_add_employee = auth()->user()->can('essentials.add_employee');
+        $can_edit_employee = auth()->user()->can('essentials.edit_employee');
+        $can_show_employee_options = auth()->user()->can('essentials.show_employee_options');
         $permissionName = 'essentials.view_profile_picture';
 
 
@@ -127,9 +127,21 @@ class EssentialsManageEmployeeController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
 
+        $companies_ids = Company::pluck('id')->toArray();
         $users = User::query();
         if (!$is_admin) {
             $users = $this->moduleUtil->applyAccessRole($users);
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
         }
 
 
@@ -144,7 +156,7 @@ class EssentialsManageEmployeeController extends Controller
                 'users.emp_number',
                 'users.profile_image',
                 'users.username',
-                'users.business_id',
+                'users.company_id',
                 'users.user_type',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
                 'users.id_proof_number',
@@ -174,9 +186,9 @@ class EssentialsManageEmployeeController extends Controller
             $users->where('users.status', $request->input('status'));
         }
 
-        if (!empty($request->input('business'))) {
+        if (!empty($request->input('company'))) {
 
-            $users->where('users.business_id', $request->input('business'));
+            $users->where('users.company_id', $request->input('company'));
         }
 
         if (!empty($request->input('nationality'))) {
@@ -188,8 +200,8 @@ class EssentialsManageEmployeeController extends Controller
 
 
             return Datatables::of($users)
-                ->addColumn('business_id', function ($row) {
-                    return $row->business_id;
+                ->addColumn('company_id', function ($row) {
+                    return $row->company_id;
                 })
                 ->addColumn('total_salary', function ($row) {
                     return $row->calculateTotalSalary();
@@ -225,14 +237,13 @@ class EssentialsManageEmployeeController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin ,$can_show_employee_options) {
-                        if($is_admin || $can_show_employee_options)
-                        {
+                    function ($row)  use ($is_admin, $can_show_employee_options) {
+                        if ($is_admin || $can_show_employee_options) {
                             $html = '<div class="btn-group">
                             <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                 data-toggle="dropdown" aria-expanded="false">' .
-                    __('messages.actions') .
-                    '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                __('messages.actions') .
+                                '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                 </span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -246,28 +257,26 @@ class EssentialsManageEmployeeController extends Controller
 
 
 
-                $html .= '<li>
+                            $html .= '<li>
                             <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
                         </li>';
 
-                $html .= '<li>
+                            $html .= '<li>
                         <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
                     </li>';
 
-                $html .= '</ul></div>';
+                            $html .= '</ul></div>';
 
-                return $html;
+                            return $html;
                         }
-                       
                     }
                 )
-                ->addColumn('view', function ($row) use($can_show_employee,$is_admin) {
-                    if($is_admin || $can_show_employee ){
+                ->addColumn('view', function ($row) use ($can_show_employee, $is_admin) {
+                    if ($is_admin || $can_show_employee) {
                         $html = '<a href="' . route('showEmployee', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-eye"></i> ' . __('messages.view') . '</a>';
 
                         return $html;
                     }
-                    
                 })
 
                 ->filterColumn('full_name', function ($query, $keyword) {
@@ -293,7 +302,7 @@ class EssentialsManageEmployeeController extends Controller
                     });
                 })
                 //->removecolumn('id')
-                ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view'])
+                ->rawColumns(['user_type', 'company_id', 'action', 'profession', 'specialization', 'view'])
                 ->make(true);
         }
 
@@ -301,7 +310,9 @@ class EssentialsManageEmployeeController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
-        $businesses = Business::all();
+
+        $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
+        //$businesses = Business::all();
         //$businesses = Business::whereIn('id', $user_businesses_ids)->pluck('name', 'id');
         // $bl_attributes = $business_locations['attributes'];
         // $business_locations = $business_locations['locations'];
@@ -337,7 +348,8 @@ class EssentialsManageEmployeeController extends Controller
                 'status',
                 'offer_prices',
                 'items',
-                'businesses',
+                'companies',
+                //'businesses',
                 // 'bl_attributes',
                 // 'default_location'
             ));

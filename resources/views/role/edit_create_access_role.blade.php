@@ -32,17 +32,18 @@
                 </div>
                 <div class="col-md-12">
                     <ul>
-                        @foreach ($businesses as $business)
+                        @foreach ($companies as $company)
                             <div class="row check_group box box-primary">
                                 <div class="col-md-6">
                                     <div class="checkbox">
-                                        <h4> {!! Form::checkbox('businesses[]', $business->id, in_array($business->id, $accessRoleBusinesses), [
+                                        <h4> 
+                                            {{-- {!! Form::checkbox('companies[]', $company->id, in_array($company->id, $accessRoleCompanies), [
                                             'class' => 'input-icheck',
-                                        ]) !!}
-                                            {{ $business->name }}</h4>
+                                        ]) !!} --}}
+                                            {{ $company->name }}</h4>
                                     </div>
                                 </div>
-                                @if (count($business->contacts) > 1)
+
                                 <div class="col-md-12">
                                     <div class="checkbox">
                                         <label>
@@ -51,39 +52,35 @@
                                         </label>
                                     </div>
                                 </div>
-                                @endif
+
                                 <div class="col-md-12">
                                     <ul>
-                                        @foreach ($business->contacts as $contact)
-                                            <div class="col-md-12 box box-secondary">
+                                        @foreach ($userTypes as $uesrType)
+                                            <div class="col-md-3">
                                                 <div class="row check_group">
-                                                    <div class="col-md-5">
-                                                        <h4>{{ $contact->supplier_business_name }}</h4>
-                                                    </div>
-                                                    @if (count($contact->salesProjects) > 1)
-                                                        <div class="col-md-12">
-                                                            <div class="checkbox">
-                                                                <label>
-                                                                    <input type="checkbox" class="check_all input-icheck">
-                                                                    {{ __('role.select_all') }}
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                    {{-- <div class="col-md-5">
+                                                        <h4>{{ $uesrType }}</h4>
+                                                    </div> --}}
+
 
                                                     <div class="col-md-9">
 
-                                                        @foreach ($contact->salesProjects as $project)
-                                                            <div class="col-md-12">
-                                                                <div class="checkbox">
-                                                                    <label>
-                                                                        {!! Form::checkbox('projects[]', $project->id, in_array($project->id, $accessRoleProjects), [
+
+                                                        <div class="col-md-12">
+                                                            <div class="checkbox">
+                                                                <label>
+                                                                    {!! Form::checkbox(
+                                                                        'usertypes#' . $company->id . '[]',
+                                                                        $uesrType,
+                                                                        in_array($uesrType, $selectedUserTypes[$company->id] ?? []),
+                                                                        [
                                                                             'class' => 'input-icheck',
-                                                                        ]) !!} {{ $project->name }}
-                                                                    </label>
-                                                                </div>
+                                                                        ],
+                                                                    ) !!} {{ $uesrType }}
+                                                                </label>
                                                             </div>
-                                                        @endforeach
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                                 <div class="clearfix"></div>
