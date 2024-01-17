@@ -1246,6 +1246,8 @@ return [
   'delete_procedures' => 'حذف إجراءات سير العمل',
   'delete_finish_contracts' => 'حذف اسباب انهاء العقود',
   'add_finish_contracts' => 'إضافة سبب إنهاء العقود',
+  'carinsurance_edit'=>'تعديل تأمين مركبة',
+  'carinsurance_delete'=>'حذف تأمين مركبة',
 
 
   'delete_wishes' => 'حذف الرغبات',
@@ -1297,6 +1299,7 @@ return [
 
   'add_attendance_status' => 'إضافة حالة انصراف',
   'delete_attendance_status' => 'حذف حالة انصراف',
+  'edit_attendance_status'=>'تعديل حالة الحضور والانصراف',
 
   'crud_system_settings' => 'اعدادات النظام ',
   'add_departments' => 'اضافة ادارات واقسام',
@@ -1430,6 +1433,7 @@ return [
   'essentials_show_steps' => 'عرض الادارات في إضافة أجراء',
   'employee_has_insurance' => 'الموظف لديه تامين سابقا',
 
+
   //features
   'crud_employee_features' => 'إضافة/تعديل/حذف مزايا الموظفين',
   'add_employee_features'=>'إضافة مزايا بدلات الموظفين',
@@ -1442,3 +1446,4 @@ return [
   'delete_travel_categories_features'=>'حذف تذاكر السفر مزايا',
 
 ];
+

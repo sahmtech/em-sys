@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\User;
+use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -22,10 +23,12 @@ class DriverCarController extends Controller
 
 
     protected $commonUtil;
+    protected $moduleUtil;
 
-    public function __construct(Util $commonUtil)
+    public function __construct(Util $commonUtil, ModuleUtil $moduleUtil)
     {
         $this->commonUtil = $commonUtil;
+        $this->moduleUtil = $moduleUtil;
     }
     /**
      * Display a listing of the resource.
@@ -34,20 +37,27 @@ class DriverCarController extends Controller
     public function index(Request $request)
     {
 
-        $carDrivers = DriverCar::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $car_driver_edit = auth()->user()->can('driver.edit');
+        $car_driver_delete  = auth()->user()->can('driver.delete');
+
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $carDrivers = DriverCar::whereIn('user_id', $userIds)->get();
+
+
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-                // $CarModel = CarType::find()->CarModel;
-
                 $car_ids = Car::where('car_model_id', request()->input('carTypeSelect'))->get()->pluck('id');
                 $carDrivers = $carDrivers->whereIn('car_id', $car_ids);
-                // $Cars = $Cars->whereIn('car_model_id', $CarModel_ids);
             }
 
             if (!empty(request()->input('driver_select')) && request()->input('driver_select') !== 'all') {
-
                 $carDrivers = $carDrivers->where('user_id', request()->input('driver_select'));
             }
 
@@ -76,18 +86,18 @@ class DriverCarController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin){
+                    function ($row) use ($is_admin, $car_driver_edit, $car_driver_delete) {
 
                         $html = '';
-                        if ($is_admin  || auth()->user()->can('driver.edit')) {
-                        $html .= '
+                        if ($is_admin  ||  $car_driver_edit) {
+                            $html .= '
                         <a href="' . action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . '"
                         data-href="' . action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'edit'], ['id' => $row->id]) . ' "
                          class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_driver_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || auth()->user()->can('driver.delete')) {
-                        $html .= '
+                        if ($is_admin  || $car_driver_delete) {
+                            $html .= '
                     <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
@@ -106,7 +116,7 @@ class DriverCarController extends Controller
                 ->rawColumns(['action', 'driver', 'car_typeModel', 'plate_number', 'counter_number', 'delivery_date'])
                 ->make(true);
         }
-        $car_Drivers = DriverCar::all();
+        $car_Drivers = DriverCar::whereIn('user_id', $userIds)->get();
 
         $carTypes = CarModel::all();
         return view('essentials::movementMangment.driverCar.index', compact('car_Drivers', 'carTypes'));
@@ -151,26 +161,26 @@ class DriverCarController extends Controller
     {
         try {
             DB::beginTransaction();
-        $carImage_name = null;
-        if ($request->hasFile('car_image')) {
-            $image = $request->file('car_image');
-            $carImage_name = $image->store('/cars_image');
-        }
-        DriverCar::create([
-            'car_id' => $request->input('car_id'),
-            'counter_number' => $request->input('counter_number'),
-            'user_id' => $request->input('user_id'),
-            'delivery_date' => $request->input('delivery_date'),
-            'car_image' => $carImage_name,
+            $carImage_name = null;
+            if ($request->hasFile('car_image')) {
+                $image = $request->file('car_image');
+                $carImage_name = $image->store('/cars_image');
+            }
+            DriverCar::create([
+                'car_id' => $request->input('car_id'),
+                'counter_number' => $request->input('counter_number'),
+                'user_id' => $request->input('user_id'),
+                'delivery_date' => $request->input('delivery_date'),
+                'car_image' => $carImage_name,
 
-        ]);
-
-        DB::commit();
-        return redirect()->back()
-            ->with('status', [
-                'success' => true,
-                'msg' => __('housingmovements::lang.added_success'),
             ]);
+
+            DB::commit();
+            return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.added_success'),
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()

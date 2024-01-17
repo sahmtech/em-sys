@@ -15,11 +15,9 @@ class CarInsuranceController extends Controller
 {
     public function index(Request $request)
     {
-
-
-
-
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_edit_carinsurance = auth()->user()->can('carinsurance.edit');
+        $can_delete_carinsurance = auth()->user()->can('carinsurance.delete');
         if (request()->ajax()) {
             $insurance = HousingMovmentInsurance::where('car_id', request()->input('id'));
 
@@ -39,19 +37,21 @@ class CarInsuranceController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin,$can_edit_carinsurance,$can_delete_carinsurance) {
 
                         $html = '';
-
-                        $html .= '
+                        if ($is_admin  || $can_edit_carinsurance) {
+                            $html .= '
                         <a href="' . route('essentials.car.insurance.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.car.insurance.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_insurance_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
-                        $html .= '
+                        }
+                        if ($is_admin  || $can_delete_carinsurance) {
+                            $html .= '
                     <button data-href="' .  route('essentials.carinsurance.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
+                        }
 
                         return $html;
                     }
@@ -62,8 +62,8 @@ class CarInsuranceController extends Controller
                 ->rawColumns(['action', 'insurance_company_id', 'insurance_start_Date', 'insurance_end_date'])
                 ->make(true);
         }
-        $car_id=request()->input('id');
-        return view('essentials::movementMangment.carsInsurance.index',compact('car_id'));
+        $car_id = request()->input('id');
+        return view('essentials::movementMangment.carsInsurance.index', compact('car_id'));
     }
 
     /**
@@ -73,7 +73,7 @@ class CarInsuranceController extends Controller
     public function create($id)
     {
         $insurance_companies = Contact::where('type', 'insurance')->get();
-        return view('essentials::movementMangment.carsInsurance.create', compact('insurance_companies','id'));
+        return view('essentials::movementMangment.carsInsurance.create', compact('insurance_companies', 'id'));
     }
 
     // 	

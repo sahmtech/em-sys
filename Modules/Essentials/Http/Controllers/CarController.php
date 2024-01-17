@@ -38,7 +38,9 @@ class CarController extends Controller
                 $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
             }
 
-
+            $can_edit_car = auth()->user()->can('car.edit');
+            $can_delete_car = auth()->user()->can('car.delete');
+            $can_insurance_car = auth()->user()->can('car.insurance');
 
             return DataTables::of($Cars)
 
@@ -96,22 +98,22 @@ class CarController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin, $can_edit_car, $can_delete_car, $can_insurance_car) {
 
                         $html = '';
-                        if ($is_admin  || auth()->user()->can('car.edit')) {
+                        if ($is_admin  || $can_edit_car) {
                             $html .= '
                         <a href="' . route('essentials.car.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.car.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_car_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || auth()->user()->can('car.delete')) {
+                        if ($is_admin  || $can_delete_car) {
                             $html .= '
                     <button data-href="' .  route('essentials.car.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_car_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
-                        if ($is_admin  || auth()->user()->can('car.insurance')) {
+                        if ($is_admin  || $can_insurance_car) {
                             $html .= '
                 <a href="' .  route('essentials.car-insurance', ['id' => $row->id]) . '" style="margin-top: 2px;" class="btn btn-xs btn-info">' . __("essentials::lang.insurance") . '</a>
             ';

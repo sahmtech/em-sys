@@ -23,16 +23,9 @@ class CarsMaintenanceController extends Controller
         $carsMaintenance = HousingMovementsMaintenance::all();
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_maintenances_edit = auth()->user()->can('maintenances.edit');
+        $can_maintenances_delete = auth()->user()->can('maintenances.delete');
         if (request()->ajax()) {
-
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-
-
-            //     $Cars = $Cars->where('car_model_id', request()->input('carTypeSelect'));
-            // }
-
-
             return DataTables::of($carsMaintenance)
 
 
@@ -58,17 +51,17 @@ class CarsMaintenanceController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use($is_admin){
+                    function ($row) use ($is_admin, $can_maintenances_edit, $can_maintenances_delete) {
 
                         $html = '';
-                        if ($is_admin  || auth()->user()->can('maintenances.edit')) {
+                        if ($is_admin  || $can_maintenances_edit) {
                             $html .= '
                         <a href="' . route('essentials.cars-maintenances.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.cars-maintenances.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_car_button"  data-container="#edit_carMaintenances_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || auth()->user()->can('maintenances.delete')) {
+                        if ($is_admin  || $can_maintenances_delete) {
                             $html .= '
                     <button data-href="' .  route('essentials.cars-maintenances.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carMaintenances_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
