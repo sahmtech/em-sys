@@ -22,7 +22,7 @@
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
                     {!! Form::select(
                         'select_business_id',
-                        $businesses,
+                        $companies,
                         null,
                         [
                             'class' => 'form-control select2',

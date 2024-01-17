@@ -23,4 +23,8 @@ class AccessRole extends Model
     {
         return $this->hasMany(AccessRoleBusiness::class, 'access_role_id');
     }
+    public function accessRoleCompanies()
+    {
+        return $this->hasMany(AccessRoleCompany::class, 'access_role_id');
+    }
 }

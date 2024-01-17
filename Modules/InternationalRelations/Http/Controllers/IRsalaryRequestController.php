@@ -43,12 +43,12 @@ class IRsalaryRequestController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
 
-        $workers=User::where('user_type', 'worker')
-             ->select( DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-             ' - ',COALESCE(users.id_proof_number,'')) as full_name"),'users.id',)->get();
-
-
-        $salary_requests=salesSalariesRequest::select(['id','worker_id','salary','file','arrival_period','recruitment_fees']);
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $salary_requests=salesSalariesRequest::whereIn('worker_id',$userIds)->select(['id','worker_id','salary','file','arrival_period','recruitment_fees']);
         
         if (request()->ajax()) {
                         
@@ -95,7 +95,7 @@ class IRsalaryRequestController extends Controller
 
 
         
-        return view('internationalrelations::salaryRequest.index')->with(compact('workers','nationalities','professions'));
+        return view('internationalrelations::salaryRequest.index');
     }
    
 

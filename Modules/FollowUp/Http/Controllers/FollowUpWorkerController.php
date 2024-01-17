@@ -58,7 +58,11 @@ class FollowUpWorkerController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -71,7 +75,7 @@ class FollowUpWorkerController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::where('user_type', 'worker')
+        $users = User::whereIn('users.id',$userIds)->where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);

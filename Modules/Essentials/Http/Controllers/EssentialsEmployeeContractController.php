@@ -4,8 +4,10 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleBusiness;
+use App\AccessRoleCompany;
 use App\AccessRoleProject;
 use App\Business;
+use App\Company;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -31,52 +33,31 @@ class EssentialsEmployeeContractController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
-
-        // $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
-        // if (! $can_crud_employee_contracts) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
+        if (!$can_crud_employee_contracts) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+
         $can_crud_employee_contracts = auth()->user()->can('essentials.crud_employee_contracts');
         $can_add_employee_contracts = auth()->user()->can('essentials.add_employee_contracts');
         $can_show_employee_contracts = auth()->user()->can('essentials.show_employee_contracts');
         $can_delete_employee_contracts = auth()->user()->can('essentials.delete_employee_contracts');
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
 
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+      
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
         }
 
 
 
-        $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
 
-            ->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                $query->where(function ($query2) use ($user_businesses_ids) {
-                    $query2->whereIn('u.business_id', $user_businesses_ids)->whereIn('u.user_type', ['employee', 'manager', 'worker']);
-                })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
-                    $query3->where('u.user_type', 'worker')->whereIn('u.assigned_to', $user_projects_ids)->whereIn('u.business_id', $user_businesses_ids);
-                });
-            })
+        $employees_contracts = EssentialsEmployeesContract::join('users as u', 'u.id', '=', 'essentials_employees_contracts.employee_id')
+            ->whereIn('u.id', $userIds)
             ->select([
                 'essentials_employees_contracts.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
@@ -130,25 +111,24 @@ class EssentialsEmployeeContractController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin ,$can_show_employee_contracts , $can_delete_employee_contracts){
+                    function ($row)  use ($is_admin, $can_show_employee_contracts, $can_delete_employee_contracts) {
                         $html = '';
 
-                        if($is_admin || $can_show_employee_contracts)
-                       { if (!empty($row->file_path)) {
-                            $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
-                            '&nbsp;';
-                        } else {
-                            $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                        if ($is_admin || $can_show_employee_contracts) {
+                            if (!empty($row->file_path)) {
+                                $html .= '<button class="btn btn-xs btn-info btn-modal" data-dismiss="modal" onclick="window.location.href = \'/uploads/' . $row->file_path . '\'"><i class="fa fa-eye"></i> ' . __('essentials::lang.contract_view') . '</button>';
+                                '&nbsp;';
+                            } else {
+                                $html .= '<span class="text-warning">' . __('sales::lang.no_file_to_show') . '</span>';
+                            }
                         }
-                    }
 
-                    if($is_admin || $can_delete_employee_contracts)
-                    {
-                       $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                    }
+                        if ($is_admin || $can_delete_employee_contracts) {
+                            $html .= ' &nbsp; <button class="btn btn-xs btn-danger delete_employeeContract_button" data-href="' . route('employeeContract.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
 
 
-                      
+
 
                         return $html;
                     }
@@ -162,7 +142,7 @@ class EssentialsEmployeeContractController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();

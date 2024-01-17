@@ -321,10 +321,18 @@ class EssentialsEmployeeInsuranceController extends Controller
         if (!$can_crud_employees_insurances) {
             //temp  abort(403, 'Unauthorized action.');
         }
+
+        
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+        }
         $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
         $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
 
-        $insurances = EssentialsEmployeesInsurance::leftJoin('users as u', 'u.id', '=', 'essentials_employees_insurances.employee_id')
+        $insurances = EssentialsEmployeesInsurance::whereIn('essentials_employees_insurances.employee_id',$userIds)->leftJoin('users as u', 'u.id', '=', 'essentials_employees_insurances.employee_id')
         
         ->leftJoin('essentials_employees_families as f', 'f.id', '=', 'essentials_employees_insurances.family_id')
         ->select([
@@ -383,7 +391,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $query = User::whereIn('id',$userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         return view('essentials::employee_affairs.employee_insurance.index')->with(compact('insurance_companies', 'insurance_classes', 'users'));

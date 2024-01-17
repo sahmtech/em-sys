@@ -2,7 +2,10 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\BusinessLocation;
+use App\Company;
 use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -46,9 +49,6 @@ class EssentialsEmployeeAppointmentController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
-
-
-
         $can_crud_employee_appointments = auth()->user()->can('essentials.crud_employee_appointments');
         $can_add_employee_appointments = auth()->user()->can('essentials.add_employee_appointments');
         $can_edit_employee_appointments = auth()->user()->can('essentials.edit_employee_appointments');
@@ -58,25 +58,48 @@ class EssentialsEmployeeAppointmentController extends Controller
         if (!$can_crud_employee_appointments) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $business_locations = BusinessLocation::all()->pluck('name', 'id');
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
+
+
+        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+        $business_locations = BusinessLocation::whereIn('company_id', $companies_ids)->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
+
+        $employeeAppointments = EssentialsEmployeeAppointmet::join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')
+        ->whereIn('u.id', $userIds)
+            ->select([
+                'essentials_employee_appointmets.id',
+                DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
+                'u.id_proof_number',
+                'essentials_employee_appointmets.business_location_id',
+                'essentials_employee_appointmets.department_id',
+                'essentials_employee_appointmets.profession_id',
+                'essentials_employee_appointmets.specialization_id',
+                'u.status as status',
+
+
+            ]);
+
+
         if (request()->ajax()) {
-            $employeeAppointments = EssentialsEmployeeAppointmet::join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')->where('u.business_id', $business_id)
-                ->select([
-                    'essentials_employee_appointmets.id',
-                    DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
-                    'u.id_proof_number',
-                    'essentials_employee_appointmets.business_location_id',
-                    'essentials_employee_appointmets.department_id',
-                    //      'essentials_employee_appointmets.superior',
-                    'essentials_employee_appointmets.profession_id',
-                    'essentials_employee_appointmets.specialization_id',
-                    'u.status as status',
 
-
-                ]);
 
             if (!empty(request()->input('job_title')) && request()->input('job_title') !== 'all') {
                 $employeeAppointments = $employeeAppointments->where('essentials_employee_appointmets.profession_id', request()->input('job_title'));
@@ -115,20 +138,18 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use( $is_admin  , $can_edit_employee_appointments , $can_delete_employee_appointments){
+                    function ($row)  use ($is_admin, $can_edit_employee_appointments, $can_delete_employee_appointments) {
                         $html = '';
-                         if($is_admin  || $can_edit_employee_appointments)
-                         {
+                        if ($is_admin  || $can_edit_employee_appointments) {
                             $html .= '<a  href="' . route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                             '&nbsp;';
-                         }
+                        }
 
-                         if($is_admin  || $can_delete_employee_appointments)
-                         {
-                              $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                         }
-                      
-                      
+                        if ($is_admin  || $can_delete_employee_appointments) {
+                            $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+
 
                         return $html;
                     }
@@ -148,7 +169,7 @@ class EssentialsEmployeeAppointmentController extends Controller
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');

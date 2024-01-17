@@ -44,14 +44,14 @@ class EssentialsAllowanceAndDeductionController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
- 
-       
-        $can_add_allowance_and_deduction= auth()->user()->can('essentials.add_allowance_and_deduction');
-        $can_edit_allowance_and_deduction= auth()->user()->can('essentials.edit_allowance_and_deduction');
-        $can_delete_allowance_and_deduction= auth()->user()->can('essentials.delete_allowance_and_deduction');
+
+
+        $can_add_allowance_and_deduction = auth()->user()->can('essentials.add_allowance_and_deduction');
+        $can_edit_allowance_and_deduction = auth()->user()->can('essentials.edit_allowance_and_deduction');
+        $can_delete_allowance_and_deduction = auth()->user()->can('essentials.delete_allowance_and_deduction');
 
         if (!auth()->user()->can('essentials.add_allowance_and_deduction') && !auth()->user()->can('essentials.view_allowance_and_deduction')) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
@@ -61,15 +61,15 @@ class EssentialsAllowanceAndDeductionController extends Controller
             return Datatables::of($allowances)
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin , $can_edit_allowance_and_deduction, $can_delete_allowance_and_deduction){
+                    function ($row)  use ($is_admin, $can_edit_allowance_and_deduction, $can_delete_allowance_and_deduction) {
                         $html = '';
-                           if($is_admin  || $can_edit_allowance_and_deduction ){
+                        if ($is_admin  || $can_edit_allowance_and_deduction) {
                             $html .= '<button data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'edit'], [$row->id]) . '" data-container="#add_allowance_deduction_modal" class="btn-modal btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i> ' . __('messages.edit') . '</button>';
-                           }
-                          
-                           if($is_admin  || $can_delete_allowance_and_deduction ){
+                        }
+
+                        if ($is_admin  || $can_delete_allowance_and_deduction) {
                             $html .= '&nbsp; <button data-href="' . action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'destroy'], [$row->id]) . '" class="delete-allowance btn btn-danger btn-xs"><i class="fa fa-trash" aria-hidden="true"></i> ' . __('messages.delete') . '</button>';
-                            }
+                        }
 
                         return $html;
                     }
@@ -94,11 +94,19 @@ class EssentialsAllowanceAndDeductionController extends Controller
     public function featureIndex()
     {
         $business_id = request()->session()->get('user.business_id');
-    
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         if (!auth()->user()->can('essentials.view_allowance_and_deduction')) {
             //temp  abort(403, 'Unauthorized action.');
         }
-    
+
+
+
+
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         if (request()->ajax()) {
             $userAllowances = EssentialsUserAllowancesAndDeduction::join(
                 'essentials_allowances_and_deductions as allowance',
@@ -108,14 +116,14 @@ class EssentialsAllowanceAndDeductionController extends Controller
             )
                 ->where('allowance.type', 'allowance')
                 ->join('users as u', 'u.id', '=', 'essentials_user_allowance_and_deductions.user_id')
-                ->where('u.business_id', $business_id)
+                ->whereIn('u.id', $userIds)
                 ->select([
                     'allowance.id as id',
                     DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                     'allowance.description',
                     'essentials_user_allowance_and_deductions.amount',
                 ]);
-    
+
             return Datatables::of($userAllowances)
                 ->addColumn(
                     'action',
@@ -123,8 +131,8 @@ class EssentialsAllowanceAndDeductionController extends Controller
                         $html = '';
                         // $html .= '<a href="' . route('feature.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                         // &nbsp;';
-                      $html .= '<button class="btn btn-xs btn-danger delete_employee_allowance_button" data-href="' . route('employee_allowance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-    
+                        $html .= '<button class="btn btn-xs btn-danger delete_employee_allowance_button" data-href="' . route('employee_allowance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+
                         return $html;
                     }
                 )
@@ -140,17 +148,17 @@ class EssentialsAllowanceAndDeductionController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-    
-        $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
+
+        $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
                 ' - ',COALESCE(id_proof_number,'')) as 
          full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
-    
+
         return view('essentials::employee_affairs.employee_features.index')->with(compact('allowance_types', 'users'));
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -276,7 +284,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
         return view('essentials::allowance_deduction.edit')
             ->with(compact('allowance', 'users', 'selected_users', 'applicable_date'));
     }
-   
+
     public function editAllowance($id)
     {
         $business_id = request()->session()->get('user.business_id');

@@ -935,8 +935,8 @@ class CustomAdminSidebarMenu
             if ($is_admin  || auth()->user()->can('essentials.crud_all_leave')) {
 
                 $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
-                    __('essentials::lang.leave_requests'),
+                    action([\Modules\Essentials\Http\Controllers\EssentialsLeaveTypeController::class, 'index']),
+                    __('essentials::lang.leave_type'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'leave'],
                 );
             }
