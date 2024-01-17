@@ -1641,7 +1641,7 @@ class EssentialsCardsController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
        
-        $employeeId = $request->input('employee_id');
+    
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
      
@@ -1672,17 +1672,8 @@ class EssentialsCardsController extends Controller
         ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
         $employees = $all_users->pluck('full_name', 'id');
-        $responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
-            ->where('users.id', '=', $employeeId)
-            ->select('contact_locations.name', 'contact_locations.id')
-            ->get();
+        
 
-        $all_responsible_users = $responsible_users->pluck('name', 'id');
-
-
-
-        $employee = User::with('company')->where('id', '=', $employeeId)
-            ->first();
 
         $durationOptions = [
             '3' => __('essentials::lang.3_months'),
@@ -1695,8 +1686,6 @@ class EssentialsCardsController extends Controller
         return view('essentials::cards.create')
             ->with(compact(
                 'employees',
-                'all_responsible_users',
-                //  'responsible_client',
                 'business',
                 'durationOptions'
             ));
