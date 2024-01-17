@@ -1588,6 +1588,19 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'carinsurance.edit',
+                        'label' => __('essentials::lang.carinsurance_edit'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'carinsurance.delete',
+                        'label' => __('essentials::lang.carinsurance_delete'),
+                        'default' => false,
+                    ],
+
+                    
+                    
+                    [
                         'value' => 'essentials.car_drivers',
                         'label' => __('housingmovements::lang.car_drivers'),
                         'default' => false,
