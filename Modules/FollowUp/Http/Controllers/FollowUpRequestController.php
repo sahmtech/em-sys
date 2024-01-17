@@ -812,11 +812,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudReturnRequest')) {
+                    if ($is_admin || auth()->user()->can('crudReturnRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -905,11 +905,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudEscapeRequest')) {
+                    if ($is_admin || auth()->user()->can('crudEscapeRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -988,11 +988,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudAdvanceSalary')) {
+                    if ($is_admin || auth()->user()->can('crudAdvanceSalary')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1074,11 +1074,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudLeavesAndDepartures')) {
+                    if ($is_admin || auth()->user()->can('crudLeavesAndDepartures')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1158,11 +1158,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudAtmCard')) {
+                    if ($is_admin || auth()->user()->can('crudAtmCard')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1239,11 +1239,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudResidenceRenewal')) {
+                    if ($is_admin || auth()->user()->can('crudResidenceRenewal')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1319,11 +1319,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudResidenceCard')) {
+                    if ($is_admin || auth()->user()->can('crudResidenceCard')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1400,11 +1400,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudWorkerTransfer')) {
+                    if ($is_admin || auth()->user()->can('crudWorkerTransfer')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1479,11 +1479,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudChamberRequest')) {
+                    if ($is_admin || auth()->user()->can('crudChamberRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1559,11 +1559,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudMofaRequest')) {
+                    if ($is_admin || auth()->user()->can('crudMofaRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1639,11 +1639,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudMofaRequest')) {
+                    if ($is_admin || auth()->user()->can('crudMofaRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1725,11 +1725,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudMofaRequest')) {
+                    if ($is_admin || auth()->user()->can('crudMofaRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1808,11 +1808,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudMofaRequest')) {
+                    if ($is_admin || auth()->user()->can('crudMofaRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1892,11 +1892,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudMofaRequest')) {
+                    if ($is_admin || auth()->user()->can('crudMofaRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;
@@ -1979,11 +1979,11 @@ class FollowUpRequestController extends Controller
             }
 
             return DataTables::of($requestsProcess ?? [])
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin) {
 
                     $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                         . $this->statuses[$row->status]['name'] . '</span>';
-                    if (auth()->user()->can('crudMofaRequest')) {
+                    if ($is_admin || auth()->user()->can('crudMofaRequest')) {
                         $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                     }
                     return $status;

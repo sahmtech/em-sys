@@ -29,13 +29,15 @@ class FollowupDeliveryDocumentController extends Controller
     public function index(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $can_edit_document_delivery = auth()->user()->can('followup.edit_document_delivery');
+        $can_delete_document_deliver = auth()->user()->can('followup.delete_document_deliver');
+        $can_view_document_deliver = auth()->user()->can('followup.view_document_deliver');
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id',$userIds)->get();
+        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)->get();
         if (request()->ajax()) {
 
             if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
@@ -69,23 +71,23 @@ class FollowupDeliveryDocumentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin, $can_edit_document_delivery, $can_delete_document_deliver, $can_view_document_deliver) {
 
                         $html = '';
 
-                        if (($is_admin  || auth()->user()->can('followup.edit_document_delivery'))) {
+                        if (($is_admin  || $can_edit_document_delivery)) {
                             $html .= '
                         <a href="' . route('documents-delivery-edit', ['id' => $row->id])  . '"
                         data-href="' . route('documents-delivery-edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_document_delivery_button"  data-container="#edit_document_delivery_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if (($is_admin  || auth()->user()->can('followup.delete_document_deliver'))) {
+                        if (($is_admin  || $can_delete_document_deliver)) {
                             $html .= '
                     <button data-href="' .  route('documents-delivery-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_delivery_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
-                        if (($is_admin  || auth()->user()->can('followup.view_document_deliver'))) {
+                        if (($is_admin  || $can_view_document_deliver)) {
                             $html .= '<a href="' . env('APP_URL') . '/uploads/' . $row->file_path . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-view"></i> ' . __("messages.view") . '</a>
                 &nbsp;';
                         }
