@@ -2,6 +2,9 @@
 
 namespace Modules\Essentials\Http\Controllers;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
+use App\Company;
 use App\User;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\File;
@@ -43,7 +46,23 @@ class DocumentController extends Controller
         $can_share_document= auth()->user()->can('essentials.share_document');
         $can_download_document= auth()->user()->can('essentials.download_document');
 
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
 
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
         $type = $request->get('type');
 
         if (request()->ajax()) {
@@ -51,7 +70,7 @@ class DocumentController extends Controller
             $role_id = User::find($user_id)->roles()->first()->id;
             $type = request()->get('type');
 
-            $documents = Document::leftJoin('essentials_document_shares', 'essentials_documents.id', '=', 'essentials_document_shares.document_id')
+            $documents = Document::whereIn('essentials_documents.user_id',$userIds)->leftJoin('essentials_document_shares', 'essentials_documents.id', '=', 'essentials_document_shares.document_id')
                 ->join('users', 'essentials_documents.user_id', '=', 'users.id')
                 ->where('essentials_documents.business_id', $business_id)
                 ->where('user_id', $user_id)

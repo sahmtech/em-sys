@@ -4,11 +4,17 @@ namespace Modules\Essentials\Http\Controllers;
 
 use App\Media;
 use App\User;
+use App\Company;
+use App\AccessRoleCompany;
+use App\AccessRole;
+
+
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Modules\Essentials\Entities\EssentialsTodoComment;
 use Modules\Essentials\Entities\ToDo;
@@ -63,19 +69,36 @@ class ToDoController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
         $auth_id = auth()->user()->id;
-        $can_edit_todo= auth()->user()->can('essentials.edit_todo');
-        $can_delete_todo= auth()->user()->can('essentials.delete_todo');
-        $can_show_todo= auth()->user()->can('essentials.show_todo');
-        $can_change_status_todo= auth()->user()->can('essentials.change_status_todo');
-        $can_view_documents_todo= auth()->user()->can('essentials.view_documents_todo');
-        $can_show_priorities_todo= auth()->user()->can('essentials.show_priorities_todo');
+        $can_edit_todo = auth()->user()->can('essentials.edit_todo');
+        $can_delete_todo = auth()->user()->can('essentials.delete_todo');
+        $can_show_todo = auth()->user()->can('essentials.show_todo');
+        $can_change_status_todo = auth()->user()->can('essentials.change_status_todo');
+        $can_view_documents_todo = auth()->user()->can('essentials.view_documents_todo');
+        $can_show_priorities_todo = auth()->user()->can('essentials.show_priorities_todo');
 
         $task_statuses = ToDo::getTaskStatus();
         $priorities = ToDo::getTaskPriorities();
 
         if (request()->ajax()) {
-            $todos = ToDo::where('business_id', $business_id)
+            $todos = ToDo::whereIn('company_id', $companies_ids)
                 ->with(['users', 'assigned_by'])
                 ->select('*');
 
@@ -89,7 +112,7 @@ class ToDoController extends Controller
 
             //If not admin show only assigned task
             if (!$is_admin) {
-                $todos->where(function ($query) use ($auth_id) {
+                $todos = ToDo::where(function ($query) use ($auth_id) {
                     $query->where('created_by', $auth_id)
                         ->orWhereHas('users', function ($q) use ($auth_id) {
                             $q->where('user_id', $auth_id);
@@ -116,50 +139,45 @@ class ToDoController extends Controller
             return Datatables::of($todos)
                 ->addColumn(
                     'action',
-                    function ($row) use( $can_edit_todo ,$is_admin , $can_delete_todo , $can_show_todo ,$can_change_status_todo) {
+                    function ($row) use ($can_edit_todo, $is_admin, $can_delete_todo, $can_show_todo, $can_change_status_todo) {
                         $html = '<div class="btn-group">
                             <button type="button" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown" aria-expanded="false">' . __('messages.actions') . '<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">';
 
-                        if ( $can_edit_todo || $is_admin) {
+                        if ($can_edit_todo || $is_admin) {
                             $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'edit'], [$row->id]) . '" class="btn-modal" data-container="#task_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a></li>';
                         }
 
-                        if ( $can_delete_todo  || $is_admin) {
+                        if ($can_delete_todo  || $is_admin) {
                             $html .= '<li><a href="#" data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'destroy'], [$row->id]) . '" class="delete_task" ><i class="fa fa-trash"></i> ' . __('messages.delete') . '</a></li>';
                         }
 
-                        if ( $can_show_todo  || $is_admin) {
-                        $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" ><i class="fa fa-eye"></i> ' . __('messages.view') . '</a></li>';
+                        if ($can_show_todo  || $is_admin) {
+                            $html .= '<li><a href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" ><i class="fa fa-eye"></i> ' . __('messages.view') . '</a></li>';
                         }
-                        if($can_change_status_todo || $is_admin)
-                        {
+                        if ($can_change_status_todo || $is_admin) {
                             $html .= '<li><a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><i class="fas fa-check-circle"></i> ' . __('essentials::lang.change_status') . '</a></li>';
                         }
-                       
+
 
                         $html .= '</ul></div>';
 
                         return $html;
                     }
                 )
-                ->editColumn('task', function ($row) use ($priorities , $can_show_todo ,$is_admin ,$can_view_documents_todo) {
-                   
-                    $html=' ';
-                    if( $can_show_todo || $is_admin )
-                    {
+                ->editColumn('task', function ($row) use ($priorities, $can_show_todo, $is_admin, $can_view_documents_todo) {
+
+                    $html = ' ';
+                    if ($can_show_todo || $is_admin) {
                         $html .= '<a  href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], [$row->id]) . '" class="btn btn-xs btn-danger"><i class="fa fa-eye"></i>' . $row->task . '</a>';
                         '&nbsp;';
-                       
-                      
                     }
-                    if($can_view_documents_todo || $is_admin)
-                    {
-                        $html.= ' <a data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs'], [$row->id]) . '" class="btn btn-primary btn-xs view-shared-docs">' . __('essentials::lang.docs') . '</a>';
+                    if ($can_view_documents_todo || $is_admin) {
+                        $html .= ' <a data-href="' . action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'viewSharedDocs'], [$row->id]) . '" class="btn btn-primary btn-xs view-shared-docs">' . __('essentials::lang.docs') . '</a>';
                     }
-                    
-                       
+
+
 
                     if (!empty($row->priority)) {
                         $bg_color = !empty($this->priority_colors[$row->priority]) ? $this->priority_colors[$row->priority] : 'bg-gray';
@@ -183,20 +201,18 @@ class ToDoController extends Controller
                 ->editColumn('created_at', '{{@format_datetime($created_at)}}')
                 ->editColumn('date', '{{@format_datetime($date)}}')
                 ->editColumn('end_date', '@if(!empty($end_date)) {{@format_datetime($end_date)}} @endif')
-              
-              
-                ->editColumn('status', function ($row) use ($task_statuses ,$can_change_status_todo ,$is_admin) {
+
+
+                ->editColumn('status', function ($row) use ($task_statuses, $can_change_status_todo, $is_admin) {
                     $html = '';
-                    if($can_change_status_todo || $is_admin)
-                    {
+                    if ($can_change_status_todo || $is_admin) {
                         if (!empty($task_statuses[$row->status])) {
                             $bg_color = !empty($this->status_colors[$row->status]) ? $this->status_colors[$row->status] : 'bg-gray';
-    
+
                             $html = '<a href="#" class="change_status" data-status="' . $row->status . '" data-task_id="' . $row->id . '"><span class="label ' . $bg_color . '"> ' . $task_statuses[$row->status] . '</span></a>';
                         }
-
                     }
-                   
+
 
                     return $html;
                 })
@@ -206,12 +222,20 @@ class ToDoController extends Controller
         }
 
         $users = [];
-        if (auth()->user()->can('essentials.assign_todos')) {
-            $users = User::forDropdown($business_id, false);
+        if ($is_admin || auth()->user()->can('essentials.assign_todos')) {
+            $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+            if (!$is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+                  $userIds[]= auth()->user()->id;
+            }
+            $users=User::whereIn('id',$userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         }
 
 
-
+     
         return view('essentials::todo.index')->with(compact('users', 'task_statuses', 'priorities'));
     }
 
@@ -307,15 +331,27 @@ class ToDoController extends Controller
      */
     public function create()
     {
-        
+
         $business_id = request()->session()->get('user.business_id');
 
-   
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
 
         $users = [];
-        if (auth()->user()->can('essentials.assign_todos')) {
-            $users = User::forDropdown($business_id, false);
+        if ($is_admin || auth()->user()->can('essentials.assign_todos')) {
+            $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+            if (!$is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+                  $userIds[]= auth()->user()->id;
+              
+            }
+            $users=User::whereIn('id',$userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         }
+
+
         if (!empty(request()->input('from_calendar'))) {
             $users = [];
         }
@@ -408,9 +444,18 @@ class ToDoController extends Controller
         $todo = $query->with(['users'])->findOrFail($id);
 
         $users = [];
-        if (auth()->user()->can('essentials.assign_todos')) {
-            $users = User::forDropdown($business_id, false);
+        if ($is_admin || auth()->user()->can('essentials.assign_todos')) {
+            $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+            if (!$is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+                  $userIds[]= auth()->user()->id;
+            }
+            $users=User::whereIn('id',$userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->pluck('full_name', 'id');
         }
+
         $task_statuses = ToDo::getTaskStatus();
         $priorities = ToDo::getTaskPriorities();
 
