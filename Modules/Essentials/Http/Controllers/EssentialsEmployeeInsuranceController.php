@@ -96,15 +96,15 @@ class EssentialsEmployeeInsuranceController extends Controller
                   {
                     $emp_array['eqama_emp_no'] = intval($value[0]);
                      
-                      $proof_number = user::where('id_proof_number',$emp_array['eqama_emp_no'])->first();
-                      $border_no = user::where('border_no',$emp_array['eqama_emp_no'])->first();
-                      $family_proof_number = EssentialsEmployeesFamily::where('eqama_number',$emp_array['eqama_emp_no'])->first();
-                   
+                      $proof_number = User::where('id_proof_number',$emp_array['eqama_emp_no'])->first();
+                      $border_no = User::where('border_no',$emp_array['eqama_emp_no'])->first();
+                      $family_proof_number = EssentialsEmployeesFamily::where('eqama_number', $emp_array['eqama_emp_no'])->first();
+                    
                   
 
                       if( $proof_number !=null && $border_no==null &&  $family_proof_number ==null )
                       {
-                        $emp = user::where('id_proof_number', $emp_array['eqama_emp_no'])->first();
+                        $emp = User::where('id_proof_number', $emp_array['eqama_emp_no'])->first();
                         if($emp)
                         {
                             $emp_insurance=EssentialsEmployeesInsurance::where('employee_id' ,$emp->id)->first();
@@ -121,7 +121,7 @@ class EssentialsEmployeeInsuranceController extends Controller
 
                     else if( $proof_number ==null && $border_no !=null &&  $family_proof_number ==null )
                       {
-                        $emp_border = user::where('border_no', $emp_array['eqama_emp_no'])->first();
+                        $emp_border = User::where('border_no', $emp_array['eqama_emp_no'])->first();
                         if(  $emp_border )
                         {
                             $emp_insurance=EssentialsEmployeesInsurance::where('employee_id' ,$emp_border->id)->first();
@@ -233,8 +233,8 @@ class EssentialsEmployeeInsuranceController extends Controller
                             break;
                         }
                        
-                        $emp = user::where('id_proof_number', $emp_data['eqama_emp_no'])->first();
-                        $emp_border_no = user::where('border_no',$emp_data['eqama_emp_no'])->first();
+                        $emp = User::where('id_proof_number', $emp_data['eqama_emp_no'])->first();
+                        $emp_border_no = User::where('border_no',$emp_data['eqama_emp_no'])->first();
                         $family = EssentialsEmployeesFamily::where('eqama_number',$emp_data['eqama_emp_no'])->first();
                       
 

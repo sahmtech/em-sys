@@ -13,16 +13,18 @@
                 
             </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
+           
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                 
-                    @can('essentials.view_allowance_and_deduction')
+                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.crud_employee_features"))
                     <li @if(request()->segment(2) == 'featureIndex') class="active" @endif><a href="{{ route('featureIndex') }}">@lang('essentials::lang.allowances')</a></li>
-                    @endcan
-                    @can('essentials.view_user_travel_categorie')
+                @endif  
+
+                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.curd_travel_categories_features"))  
                     <li @if(request()->segment(2) == 'userTravelCat') class="active" @endif><a href="{{ route('userTravelCat') }}">@lang('essentials::lang.travel_categories')</a></li>
-                    @endcan
+                @endif  
+
                 </ul>
 
             </div><!-- /.navbar-collapse -->

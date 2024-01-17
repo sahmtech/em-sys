@@ -3,8 +3,14 @@
 
 
 @section('content')
-    @include('essentials::layouts.nav_employee_features')
+   
+    
     <section class="content-header">
+    @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_navbar_employee_features"))
+     
+     @include('essentials::layouts.nav_employee_features')
+
+    @endif 
 
         <h1>@lang('essentials::lang.travel_categories')
         </h1>
@@ -12,7 +18,8 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    @component('components.widget', ['class' => 'box-solid'])
+                 @component('components.widget', ['class' => 'box-solid'])
+                    @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.add_travel_categories_features"))
                         @slot('tool')
                             <div class="box-tools">
 
@@ -22,7 +29,7 @@
                                 </button>
                             </div>
                         @endslot
-
+                    @endif 
 
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped" id="employee_travel_categorie_table">

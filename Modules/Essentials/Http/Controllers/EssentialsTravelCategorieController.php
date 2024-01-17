@@ -69,12 +69,15 @@ class EssentialsTravelCategorieController extends Controller
         }
         return view('essentials::settings.partials.travel_categories.index');
     }
+   
+   
     public function userTravelCat()
     {
 
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_delete_travel_categories=auth()->user()->can("essentials.delete_travel_categories_features");
         if (!auth()->user()->can('essentials.view_user_travel_categorie')) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -85,6 +88,8 @@ class EssentialsTravelCategorieController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
+
+
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $userTravelCat = EssentialsEmployeeTravelCategorie::join('users as u', 'u.id', '=', 'essentials_employee_travel_categories.employee_id')
             ->whereIn('u.id', $userIds)
@@ -107,11 +112,17 @@ class EssentialsTravelCategorieController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin ,  $can_delete_travel_categories){
                         $html = '';
                         //         $html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>  &nbsp;';
                         //     $html .= '<a  href="'. route('cancleActivition', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.cancleActivition').'</a>';
+                      
+                        if($is_admin  || $can_delete_travel_categories)
+                       {
                         $html .= '<button class="btn btn-xs btn-danger delete_employee_travel_categorie_button" data-href="' . route('userTravelCat.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                       }
+                        
+
 
                         return $html;
                     }
@@ -124,14 +135,15 @@ class EssentialsTravelCategorieController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
+        
         $query = User::whereIn('id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-                    ' - ',COALESCE(id_proof_number,'')) as 
-             full_name"))->get();
+                    ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
 
-        return view('essentials::employee_affairs.employee_features.travelCategorie')->with(compact('travelCategories', 'users'));
+        return view('essentials::employee_affairs.employee_features.travelCategorie')
+        ->with(compact('travelCategories', 'users'));
     }
     public function storeUserTravelCat(Request $request)
     {
