@@ -43,40 +43,47 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-
+        $can_edit_transfer = auth()->user()->can('accounting.edit_transfer');
+        $candelete_transfer = auth()->user()->can('accounting.delete_transfer');
         if (request()->ajax()) {
             $transfers = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
-                        ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
-                        ->join('accounting_accounts_transactions as from_transaction', function($join){
-                            $join->on('from_transaction.acc_trans_mapping_id', '=', 'accounting_acc_trans_mappings.id')
-                                    ->where('from_transaction.type', 'debit');
-                        })
-                        ->join('accounting_accounts_transactions as to_transaction', function($join){
-                            $join->on('to_transaction.acc_trans_mapping_id', '=', 'accounting_acc_trans_mappings.id')
-                                    ->where('to_transaction.type', 'credit');
-                        })
-                        ->join('accounting_accounts as from_account', 
-                        'from_transaction.accounting_account_id', 'from_account.id')
-                        ->join('accounting_accounts as to_account', 
-                        'to_transaction.accounting_account_id', 'to_account.id')
-                        ->where('accounting_acc_trans_mappings.type', 'transfer')
-                        ->select(['accounting_acc_trans_mappings.id', 
-                        'accounting_acc_trans_mappings.ref_no', 
-                        'accounting_acc_trans_mappings.operation_date', 
-                        'accounting_acc_trans_mappings.note',
-                            DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) 
+                ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
+                ->join('accounting_accounts_transactions as from_transaction', function ($join) {
+                    $join->on('from_transaction.acc_trans_mapping_id', '=', 'accounting_acc_trans_mappings.id')
+                        ->where('from_transaction.type', 'debit');
+                })
+                ->join('accounting_accounts_transactions as to_transaction', function ($join) {
+                    $join->on('to_transaction.acc_trans_mapping_id', '=', 'accounting_acc_trans_mappings.id')
+                        ->where('to_transaction.type', 'credit');
+                })
+                ->join(
+                    'accounting_accounts as from_account',
+                    'from_transaction.accounting_account_id',
+                    'from_account.id'
+                )
+                ->join(
+                    'accounting_accounts as to_account',
+                    'to_transaction.accounting_account_id',
+                    'to_account.id'
+                )
+                ->where('accounting_acc_trans_mappings.type', 'transfer')
+                ->select([
+                    'accounting_acc_trans_mappings.id',
+                    'accounting_acc_trans_mappings.ref_no',
+                    'accounting_acc_trans_mappings.operation_date',
+                    'accounting_acc_trans_mappings.note',
+                    DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) 
                             as added_by"),
-                            'from_transaction.amount',
-                            'from_account.name as from_account_name',
-                            'to_account.name as to_account_name'
-                        ]);
+                    'from_transaction.amount',
+                    'from_account.name as from_account_name',
+                    'to_account.name as to_account_name'
+                ]);
 
             if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
                 $end =  request()->end_date;
                 $transfers->whereDate('accounting_acc_trans_mappings.operation_date', '>=', $start)
-                            ->whereDate('accounting_acc_trans_mappings.operation_date', '<=', $end);
+                    ->whereDate('accounting_acc_trans_mappings.operation_date', '<=', $end);
             }
 
             if (!empty(request()->transfer_from)) {
@@ -89,39 +96,43 @@ class TransferController extends Controller
 
             return Datatables::of($transfers)
                 ->addColumn(
-                    'action', function ($row) use( $is_admin) {
+                    'action',
+                    function ($row) use ($is_admin, $can_edit_transfer, $candelete_transfer) {
                         $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
-                                    __("messages.actions") .
-                                    '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                            __("messages.actions") .
+                            '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                        if( $is_admin || auth()->user()->can('accounting.edit_transfer')) {
+                        if ($is_admin || $can_edit_transfer) {
                             $html .= '<li>
-                                <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\TransferController@edit', 
-                                [$row->id]).'" class="btn-modal" data-container="#create_transfer_modal">
-                                    <i class="fas fa-edit"></i>'.  __("messages.edit").'
+                                <a href="#" data-href="' . action(
+                                '\Modules\Accounting\Http\Controllers\TransferController@edit',
+                                [$row->id]
+                            ) . '" class="btn-modal" data-container="#create_transfer_modal">
+                                    <i class="fas fa-edit"></i>' .  __("messages.edit") . '
                                 </a>
                             </li>';
                         }
-                        if( $is_admin || auth()->user()->can('accounting.delete_transfer')) {
+                        if ($is_admin || $candelete_transfer) {
                             $html .=  '<li>
-                                    <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\TransferController@destroy', [$row->id]).'" class="delete_transfer_button">
-                                        <i class="fas fa-trash" aria-hidden="true"></i>'.__("messages.delete").'
+                                    <a href="#" data-href="' . action('\Modules\Accounting\Http\Controllers\TransferController@destroy', [$row->id]) . '" class="delete_transfer_button">
+                                        <i class="fas fa-trash" aria-hidden="true"></i>' . __("messages.delete") . '
                                     </a>
                                     </li>';
                         }
-                                
+
                         $html .= '</ul></div>';
-                        
+
                         return $html;
-                    })
-                ->editColumn('amount', function($row){
+                    }
+                )
+                ->editColumn('amount', function ($row) {
                     return $this->util->num_f($row->amount, true);
                 })
-                ->editColumn('operation_date', function($row){
+                ->editColumn('operation_date', function ($row) {
                     return $this->util->format_date($row->operation_date, true);
                 })
                 ->filterColumn('added_by', function ($query, $keyword) {
@@ -131,7 +142,7 @@ class TransferController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        
+
         return view('accounting::transfer.index');
     }
 
@@ -143,7 +154,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
- 
+
 
         if (request()->ajax()) {
             return view('accounting::transfer.create');
@@ -159,7 +170,7 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-   
+
 
         try {
             DB::beginTransaction();
@@ -175,9 +186,9 @@ class TransferController extends Controller
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('accounting_transfer');
-            if(empty($ref_no)){
-                $prefix = !empty($accounting_settings['transfer_prefix'])? 
-                $accounting_settings['transfer_prefix'] : '';
+            if (empty($ref_no)) {
+                $prefix = !empty($accounting_settings['transfer_prefix']) ?
+                    $accounting_settings['transfer_prefix'] : '';
 
                 //Generate reference number
                 $ref_no = $this->util->generateReferenceNumber('accounting_transfer', $ref_count, $business_id, $prefix);
@@ -210,18 +221,19 @@ class TransferController extends Controller
             AccountingAccountsTransaction::create($to_transaction_data);
 
             DB::commit();
-            
-            $output = ['success' => 1,
-                        'msg' => __('lang_v1.added_success')
-                        ];
 
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.added_success')
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => 0,
-                            'msg' => __('messages.something_went_wrong')
-                        ];
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong')
+            ];
         }
 
         return $output;
@@ -246,20 +258,23 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-  
+
 
         if (request()->ajax()) {
             $mapping_transaction = AccountingAccTransMapping::where('id', $id)
-                            ->where('business_id', $business_id)->firstOrFail();
-            
+                ->where('business_id', $business_id)->firstOrFail();
+
             $debit_tansaction = AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)
-                                    ->where('type', 'debit')
-                                    ->first();
+                ->where('type', 'debit')
+                ->first();
             $credit_tansaction = AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)
-                                    ->where('type', 'credit')
-                                    ->first();
-            return view('accounting::transfer.edit')->with(compact('mapping_transaction', 
-            'debit_tansaction', 'credit_tansaction'));
+                ->where('type', 'credit')
+                ->first();
+            return view('accounting::transfer.edit')->with(compact(
+                'mapping_transaction',
+                'debit_tansaction',
+                'credit_tansaction'
+            ));
         }
     }
 
@@ -273,18 +288,18 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
- 
+
 
         try {
             $mapping_transaction = AccountingAccTransMapping::where('id', $id)
-                            ->where('business_id', $business_id)->firstOrFail();
-            
+                ->where('business_id', $business_id)->firstOrFail();
+
             $debit_tansaction = AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)
-                                    ->where('type', 'debit')
-                                    ->first();
+                ->where('type', 'debit')
+                ->first();
             $credit_tansaction = AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)
-                                    ->where('type', 'credit')
-                                    ->first();
+                ->where('type', 'credit')
+                ->first();
 
             DB::beginTransaction();
             $from_account = $request->get('from_account');
@@ -294,7 +309,7 @@ class TransferController extends Controller
 
             $ref_no = $request->get('ref_no');
             $ref_count = $this->util->setAndGetReferenceCount('accounting_transfer');
-            if(empty($ref_no)){
+            if (empty($ref_no)) {
                 //Generate reference number
                 $ref_no = $this->util->generateReferenceNumber('accounting_transfer', $ref_count);
             }
@@ -315,18 +330,19 @@ class TransferController extends Controller
             $credit_tansaction->save();
 
             DB::commit();
-            
-            $output = ['success' => 1,
-                        'msg' => __('lang_v1.updated_success')
-                        ];
 
+            $output = [
+                'success' => 1,
+                'msg' => __('lang_v1.updated_success')
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
-            
-            $output = ['success' => 0,
-                            'msg' => __('messages.something_went_wrong')
-                        ];
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong')
+            ];
         }
 
         return $output;
@@ -341,20 +357,21 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-    
-        
+
+
         $user_id = request()->session()->get('user.id');
 
         $acc_trans_mapping = AccountingAccTransMapping::where('id', $id)
-                        ->where('business_id', $business_id)->firstOrFail();
-        
-        if(!empty($acc_trans_mapping)){
+            ->where('business_id', $business_id)->firstOrFail();
+
+        if (!empty($acc_trans_mapping)) {
             $acc_trans_mapping->delete();
             AccountingAccountsTransaction::where('acc_trans_mapping_id', $id)->delete();
         }
 
-        return ['success' => 1,
-                    'msg' => __('lang_v1.deleted_success')
-                ];
+        return [
+            'success' => 1,
+            'msg' => __('lang_v1.deleted_success')
+        ];
     }
 }

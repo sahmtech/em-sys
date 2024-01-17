@@ -167,6 +167,8 @@ class SettingsController extends Controller
 
     protected function autoMapping()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_map_transactions = auth()->user()->can('accounting.map_transactions');
         if (\request()->ajax()) {
             $settings = [
                 (object)[
@@ -214,9 +216,9 @@ class SettingsController extends Controller
             return DataTables::of($settings)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use($is_admin,$can_map_transactions){
                         $html = '';
-                        if (auth()->user()->can('accounting.map_transactions')) {
+                        if ($is_admin || $can_map_transactions) {
                             $html .= '<a href="#" 
                                     data-href="' . action("\Modules\Accounting\Http\Controllers\SettingsController@map") . '?id=' . $row->id . '" class="btn-modal btn btn-warning btn-xs mt-10" data-container=".view_modal"><i class="fas fa-link"></i> ' . __('accounting::lang.edit_settings') . '</a>';
                         }

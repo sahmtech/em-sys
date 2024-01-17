@@ -341,16 +341,18 @@ class TransactionController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $purchases = $this->transactionUtil->getListPurchases($business_id);
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_purchase_view =auth()->user()->can("purchase.view");
+        $can_map_transactions = auth()->user()->can('accounting.map_transactions');
         return Datatables::of($purchases)
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row) use($is_admin,$can_map_transactions,$can_purchase_view) {
 
                 $html = '';
 
-                if (auth()->user()->can("purchase.view")) {
+                if ($is_admin || $can_purchase_view) {
                     $html .= '<a href="#" data-href="' . url("purchases/" . $row->id) . '" class="btn-modal btn btn-info btn-xs" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> ' . __("messages.view") . '</a>';
                 }
-                if (auth()->user()->can('accounting.map_transactions')) {
+                if ($is_admin || $can_map_transactions) {
                     //check if mapping already present
                     $is_mapped = AccountingAccountsTransaction::where('transaction_id', $row->id)->exists();
 
