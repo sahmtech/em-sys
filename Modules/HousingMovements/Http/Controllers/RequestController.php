@@ -75,7 +75,7 @@ class RequestController extends Controller
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-       
+        $can_change_status = auth()->user()->can("housingmovements.change_status");
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -137,13 +137,13 @@ class RequestController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) use ($is_admin) {
+                ->editColumn('status', function ($row) use ($is_admin,$can_change_status) {
                     $status = '';
 
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
-                        if ($is_admin || auth()->user()->can("housingmovements.change_status")) {
+                        if ($is_admin ||$can_change_status ) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                         }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {
@@ -182,6 +182,7 @@ class RequestController extends Controller
         }
 
         $crud_requests = auth()->user()->can('followup.crud_requests');
+        $can_crudExitRequests = auth()->user()->can('crudExitRequests');
         if (!$crud_requests) {
             //temp  abort(403, 'Unauthorized action.');
         }
@@ -252,14 +253,14 @@ class RequestController extends Controller
 
                     return $item;
                 })
-                ->editColumn('status', function ($row) {
+                ->editColumn('status', function ($row) use ($is_admin,$can_crudExitRequests){
                     $status = '';
 
                     if ($row->status == 'pending') {
                         $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
                             . $this->statuses[$row->status]['name'] . '</span>';
 
-                        if (auth()->user()->can('crudExitRequests')) {
+                        if ($is_admin || $can_crudExitRequests ) {
                             $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
                         }
                     } elseif (in_array($row->status, ['approved', 'rejected'])) {

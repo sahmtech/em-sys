@@ -31,8 +31,9 @@ class BuildingController extends Controller
 
 
         $can_crud_buildings = auth()->user()->can('housingmovement_module.crud_buildings');
-        if (!$can_crud_buildings) {
-        }
+        $can_building_edit =auth()->user()->can('building.edit');
+        $can_building_delete = auth()->user()->can('building.delete');
+       
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
@@ -67,13 +68,13 @@ class BuildingController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin,$can_building_edit, $can_building_delete) {
                         $html = '';
 
-                        if ($is_admin  || auth()->user()->can('building.edit')) {
+                        if ($is_admin  || $can_building_edit) {
                             $html .= '<button class="btn btn-xs btn-primary open-edit-modal" data-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>';
                         }
-                        if ($is_admin  || auth()->user()->can('building.delete')) {
+                        if ($is_admin  || $can_building_delete ) {
                             $html .= '&nbsp;&nbsp;<button class="btn btn-xs btn-danger delete_building_button" data-href="' . route('building.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
                         return $html;
