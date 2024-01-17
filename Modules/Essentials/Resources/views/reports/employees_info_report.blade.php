@@ -81,6 +81,12 @@
                 lengthChange: false, // Disable length change dropdown
                 ajax: {
                     url: "{{ route('employess-info-report') }}",
+                    data: function(d) {
+                        if ($('#select_location_id').val()) {
+                            d.select_location_id = $('#select_location_id').val();
+
+                        }
+                    }
                 },
                 columns: [{
                         data: 'typeOfEmployees',
@@ -124,6 +130,11 @@
                     },
                 ]
             });
+
+            $('#select_location_id').on('change',
+                function() {
+                    employee_info_report_table.ajax.reload();
+                });
         });
     </script>
 

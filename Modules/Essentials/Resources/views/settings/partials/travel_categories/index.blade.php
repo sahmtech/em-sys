@@ -41,6 +41,7 @@
             </div>
       
     @endcomponent
+    <div class="modal fade" id="edit_manage_travel_categories" tabindex="-1" role="dialog">
 
     <div class="modal fade country_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>

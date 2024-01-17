@@ -50,8 +50,12 @@ class EssentialsTravelCategorieController extends Controller
                     function ($row) use ($is_admin, $can_delete_travel_categories, $can_edit_travel_categories) {
                         $html = '';
                         if ($is_admin || $can_edit_travel_categories) {
-                            $html .= '<a href="' . route('travel_categorie.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
-                       &nbsp;';
+                            $html .= 
+                            '  <a href="' . route('travel_categorie.edit', ['id' => $row->id])  . '"
+                            data-href="' . route('travel_categorie.edit', ['id' => $row->id])  . ' "
+                             class="btn btn-xs btn-modal btn-info"  data-container="#edit_manage_travel_categories"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit')  . '</a>&nbsp;';
+                            
+                            
                         }
                         if ($is_admin || $can_delete_travel_categories) {
                             $html .= '<button class="btn btn-xs btn-danger delete_travel_categorie_button" data-href="' . route('travel_categorie.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';

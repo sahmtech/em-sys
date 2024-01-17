@@ -32,7 +32,7 @@ class AttendanceStatusController extends Controller
         $can_add_attendance_status = auth()->user()->can('essentials.add_attencances_status');
 
         if (!$can_crud_attendance_status) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $attencancesStatuses = EssentialsAttendanceStatus::all();
@@ -52,9 +52,14 @@ class AttendanceStatusController extends Controller
                 )
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin ,  $can_delete_attendance_status ) {
+                    function ($row) use ($is_admin,  $can_delete_attendance_status) {
                         $html = '';
-                        if ($is_admin ||   $can_delete_attendance_status ) {
+                        $html .=
+                            '  <a href="' . route('editAttendanceStatus', ['id' => $row->id])  . '"
+                        data-href="' . route('editAttendanceStatus', ['id' => $row->id])  . ' "
+                         class="btn btn-xs btn-modal btn-info"  data-container="#edit_attendance_status"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit')  . '</a>&nbsp;';
+
+                        if ($is_admin ||   $can_delete_attendance_status) {
                             $html .= '<button class="btn btn-xs btn-danger delete_country_button" data-href="' . route('attendanceStatus.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
 
@@ -102,6 +107,46 @@ class AttendanceStatusController extends Controller
         }
     }
 
+
+    public function edit($id)
+    {
+        $attendanceStatus = EssentialsAttendanceStatus::find($id);
+        return view('essentials::settings.partials.attendance_status.edit', compact('attendanceStatus'));
+    }
+
+
+
+    public function update(Request $request, $id)
+    {
+
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+
+
+        try {
+            $input = $request->only(['name']);
+            $attendanceStatus = EssentialsAttendanceStatus::find($id);
+            $attendanceStatus->update([
+                    'name' => $request->name
+                ]);
+          
+                return redirect()->back()
+                ->with('status', [
+                    'success' => true,
+                    'msg' => __('housingmovements::lang.updated_success'),
+                ]);
+            return redirect()->route('attendanceStatus')->with('success', $output['msg']);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+            return redirect()->route('attendanceStatus')->withErrors([$output['msg']]);
+        }
+    }
     // public function show($id)
     // {
     //     return view('essentials::show');

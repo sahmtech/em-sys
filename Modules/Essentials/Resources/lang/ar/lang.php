@@ -1297,6 +1297,7 @@ return [
 
   'add_attendance_status' => 'إضافة حالة انصراف',
   'delete_attendance_status' => 'حذف حالة انصراف',
+  'edit_attendance_status'=>'تعديل حالة الحضور والانصراف',
 
   'crud_system_settings' => 'اعدادات النظام ',
   'add_departments' => 'اضافة ادارات واقسام',
@@ -1432,5 +1433,7 @@ return [
   'essentials_add_requests' => 'إضافة طلب في المتابعة',
   'essentials_show_steps' => 'عرض الادارات في إضافة أجراء',
   'employee_has_insurance' => 'الموظف لديه تامين سابقا',
+
+  
 
 ];
