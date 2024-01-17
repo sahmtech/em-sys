@@ -3,6 +3,7 @@
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\User;
+use App\Utils\ModuleUtil;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -18,9 +19,23 @@ class FollowupDeliveryDocumentController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
+    protected $moduleUtil;
+
+
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
     public function index(Request $request)
     {
-        $delivery_documents = FollowupDeliveryDocument::all();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $delivery_documents = FollowupDeliveryDocument::whereIn('user_id',$userIds)->get();
         if (request()->ajax()) {
 
             if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {

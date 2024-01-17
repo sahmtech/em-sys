@@ -23,7 +23,7 @@
                         </li>
                  
                 
-                        <li @if(request()->segment(2) == 'accepted_workers') class="active" @endif>
+                        <li @if(request()->segment(2) == 'housed_workers') class="active" @endif>
                             <a href="{{route('housed_workers')}}">
                                 <i class="fas fa-check" aria-hidden="true"></i> @lang('housingmovements::lang.housed')
                             </a>

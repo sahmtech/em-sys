@@ -56,12 +56,18 @@ class ProjectWorkersController extends Controller
         // }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+      
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $users = User::with(['rooms'])
+        $users = User::whereIn('users.id',$userIds)->with(['rooms'])
             ->where('user_type', 'worker')
             ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -177,7 +183,12 @@ class ProjectWorkersController extends Controller
         // }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -185,7 +196,7 @@ class ProjectWorkersController extends Controller
         $fillterDate = now()->subDays($days)->toDateString();
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
-        $users = User::with(['rooms'])
+        $users = User::whereIn('users.id',$userIds)->with(['rooms'])
             ->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
 
 
@@ -305,7 +316,12 @@ class ProjectWorkersController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
 
@@ -324,40 +340,11 @@ class ProjectWorkersController extends Controller
         $fillterDate = now()->subDays($days)->toDateString();
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
 
-        $users = HousingMovementsWorkerBooking::all();
-
-
-
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('users.assigned_to',   $userProjects);
-        }
+        $users = HousingMovementsWorkerBooking::whereIn('user_id',$userIds)->get();
+      
 
         if (request()->ajax()) {
-            // if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-            //     $users = $users->where('users.assigned_to', request()->input('project_name'));
-            // }
-
-            // if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
-
-            //     $users = $users->where('users.status', request()->input('status_fillter'));
-            // }
-
-            // if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-            //     $users = $users->where('users.nationality_id', request()->nationality);
-            // }
+      
 
             return Datatables::of($users)
                 ->editColumn('worker', function ($row) {
@@ -471,12 +458,17 @@ class ProjectWorkersController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
-        $users = User::whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
+        $users = User::whereIn('id',$userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
 
 
 
