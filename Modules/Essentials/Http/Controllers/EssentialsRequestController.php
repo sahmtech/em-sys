@@ -408,22 +408,10 @@ class EssentialsRequestController extends Controller
         $can_essentials_requests_change_status = auth()->user()->can('essentials.essentials_requests_change_status');
         $can_essentials_add_requests = auth()->user()->can('essentials.essentials_add_requests');
 
-        $companies_ids = Company::pluck('id')->toArray();
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
-
-            $companies_ids = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
-                }
-            }
         }
 
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
@@ -642,29 +630,14 @@ class EssentialsRequestController extends Controller
 
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+   
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%بشرية%')
             ->pluck('id')->toArray();
 
@@ -691,6 +664,7 @@ class EssentialsRequestController extends Controller
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->whereIn('followup_worker_requests.worker_id', $userIds)
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->where('followup_worker_requests_process.status', 'pending');
         } else {
             $output = [
