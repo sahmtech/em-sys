@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleBusiness;
+use App\AccessRoleCompany;
+use App\AccessRoleCompanyUserType;
 use App\AccessRoleProject;
 use App\Business;
+use App\Company;
 use App\Contact;
 use App\SellingPriceGroup;
 use App\User;
@@ -47,21 +50,22 @@ class RoleController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-
+            $can_role_update =auth()->user()->can('roles.update');
+            $can_role_delete =auth()->user()->can('roles.delete');
             $roles = Role::where('business_id', $business_id)
                 ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
-                ->addColumn('action', function ($row) use ($is_admin) {
+                ->addColumn('action', function ($row) use ($is_admin , $can_role_update ,$can_role_delete) {
                     if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
-                        if (($is_admin  || auth()->user()->can('roles.update'))) {
+                        if ($is_admin  || $can_role_update ) {
                             $action .= '<a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateAccessRole'], [$row->id]) . '" class="btn btn-success btn-xs">' . __('messages.update_access_role') . '</a>';
 
                             $action .= '&nbsp
                             <a href="' . action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                         }
-                        if (($is_admin  || auth()->user()->can('roles.delete'))) {
+                        if ($is_admin  || $can_role_delete) {
                             $action .= '&nbsp
                                 <button data-href="' . action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]) . '" class="btn btn-xs btn-danger delete_role_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
@@ -102,35 +106,43 @@ class RoleController extends Controller
             $accessRole->role_id = $id;
             $accessRole->save();
         }
-        $accessRoleProjects = AccessRoleProject::where('access_role_id',  $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        $accessRoleBusinesses = AccessRoleBusiness::where('access_role_id',  $accessRole->id)->pluck('business_id')->unique()->toArray();
-        //$contacts = Contact::with('salesProject')->select(['id', 'supplier_business_name'])->get();
-        $businesses = Business::with('contacts.salesProjects')->get();
+        $accessRoleCompanies = AccessRoleCompany::where('access_role_id',  $accessRole->id)->pluck('company_id')->unique()->toArray();
+        $user_business_id = User::where('id', auth()->user()->id)->first()->business_id;
+        $companies = Company::where('business_id', $user_business_id)->get();
+        $userTypes = User::userTypes();
+        $selectedUserTypes = [];
+        $tmp = AccessRoleCompany::where('access_role_id',  $accessRole->id)->get();
+        foreach ($tmp as $accessRoleCompany) {
+            $selectedUserTypes[$accessRoleCompany->company_id] = $accessRoleCompany->userTypes();
+        }
+        $userTypesNames = [
+            'employee' => __('essentials::lang.employee'),
+            'manager' => __('essentials::lang.manager'),
+            'worker' => __('essentials::lang.worker'),
+        ];
         return view('role.edit_create_access_role')
-            ->with(compact('accessRole', 'accessRoleProjects', 'accessRoleBusinesses', 'businesses'));
+            ->with(compact('userTypesNames', 'userTypes', 'selectedUserTypes', 'accessRole', 'companies', 'accessRoleCompanies'));
     }
+
+
     public function updateAccessRole(Request $request, $roleId)
     {
-        $projectsIds = $request->projects ?? [];
-        AccessRoleBusiness::where('access_role_id', $roleId)->delete();
-        if (!empty($projectsIds)) {
-            AccessRoleBusiness::where('access_role_id', $roleId)->delete();
-            foreach ($projectsIds as $projectsId) {
-                AccessRoleProject::create([
+        $user_business_id = User::where('id', auth()->user()->id)->first()->business_id;
+        $companies = Company::where('business_id', $user_business_id)->get();
+        AccessRoleCompany::where('access_role_id', $roleId)->delete();
+        foreach ($companies as $company) {
+            $types = $request->input('usertypes#' . $company->id) ?? [];
+            if (!empty($types)) {
+                $accessRoleCompany = AccessRoleCompany::create([
                     'access_role_id' =>  $roleId,
-                    'sales_project_id' => $projectsId,
+                    'company_id' => $company->id,
                 ]);
-            }
-        }
-        $businessIds = $request->businesses ?? [];
-        AccessRoleBusiness::where('access_role_id', $roleId)->delete();
-        if (!empty($businessIds)) {
-
-            foreach ($businessIds as $businessId) {
-                AccessRoleBusiness::create([
-                    'access_role_id' =>  $roleId,
-                    'business_id' => $businessId,
-                ]);
+                foreach ($types as $type) {
+                    $accessRoleCompanyUserType = AccessRoleCompanyUserType::create([
+                        'access_role_company_id' =>  $accessRoleCompany->id,
+                        'user_type' => $type,
+                    ]);
+                }
             }
         }
         $output = [
@@ -160,14 +172,13 @@ class RoleController extends Controller
 
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
-  
+
         foreach ($temp as $temp_item) {
-            foreach($temp_item as $permission_item ){
-                 $module_permissions[] = $permission_item;
+            foreach ($temp_item as $permission_item) {
+                $module_permissions[] = $permission_item;
             }
-           
         }
-      //  return $module_permissions;
+        //  return $module_permissions;
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         return view('role.create')
@@ -286,15 +297,14 @@ class RoleController extends Controller
             ->active()
             ->get();
 
-       // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
+        // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
         $temp = $this->moduleUtil->getModuleData('user_permissions');
         $module_permissions = [];
-  
+
         foreach ($temp as $temp_item) {
-            foreach($temp_item as $permission_item ){
-                 $module_permissions[] = $permission_item;
+            foreach ($temp_item as $permission_item) {
+                $module_permissions[] = $permission_item;
             }
-           
         }
 
         $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];

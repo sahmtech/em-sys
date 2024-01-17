@@ -60,7 +60,7 @@ class EssentialsWkProcedureController extends Controller
 
         if (request()->ajax()) {	
    
-        $procedures = EssentialsWkProcedure::groupBy('type')->with('department')->get();
+        $procedures = EssentialsWkProcedure::where('business_id',$business_id)->groupBy('type')->with('department')->get();
 
         return DataTables::of($procedures)
         ->addColumn('steps', function ($procedure)   use ($is_admin ,$can_show_steps) {

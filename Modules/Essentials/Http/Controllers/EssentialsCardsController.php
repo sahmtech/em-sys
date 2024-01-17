@@ -5,7 +5,8 @@ namespace Modules\Essentials\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-
+use App\AccessRoleCompany;
+use App\Company;
 use Yajra\DataTables\Facades\DataTables;
 
 use App\Utils\ModuleUtil;
@@ -87,19 +88,31 @@ class EssentialsCardsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-        $business_name = Business::where('id', $business_id)->select('name', 'id')->first();
-        $business_name = $business_name ? $business_name->name : null;
         $responsible_client = null;
+      
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
 
-        $card = EssentialsWorkCard::with([
+            $companies_ids = [];
+            $roles = auth()->user()->roles;
+            foreach ($roles as $role) {
+
+                $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+                if ($accessRole) {
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                }
+            }
+        }
+        $card = EssentialsWorkCard::whereIn('employee_id',$userIds)->with([
             'user',
-            // 'user.assignedTo.contact.responsibleClients',
             'user.OfficialDocument'
         ])
             ->select('id', 'employee_id', 'work_card_no as card_no', 'fees as fees', 'Payment_number as Payment_number');
 
-        //dd($card->first()->user->assignedTo);
 
         if (!empty($request->input('project'))) {
             $card->whereHas('user.assignedTo', function ($query) use ($request) {
@@ -114,7 +127,7 @@ class EssentialsCardsController extends Controller
         }
 
 
-        $query = User::where('business_id', $business_id)->where('users.user_type', 'employee');
+        $query = User::whereIn('id',$userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
 
@@ -172,28 +185,7 @@ class EssentialsCardsController extends Controller
                         return $names;
                     }
                 )
-                // ->editColumn('responsible_client', function ($row) {
-                //     $user = $row->user;
-
-                //     if ($user && $user->assignedTo) {
-                //         $assignedToFirst = $user->assignedTo->first();
-
-                //         if ($assignedToFirst) {
-                //             $responsibleClients = $assignedToFirst->users;
-
-                //             if ($responsibleClients != null) {
-
-                //                 $userNames = $responsibleClients->pluck('first_name')->implode(', ');
-
-                //                 return $userNames;
-                //             }
-                //         }
-                //     }
-
-                //     return '';
-                // })
-
-
+          
 
                 ->editColumn('proof_number', function ($row) {
                     $residencePermitDocument = $row->user->OfficialDocument
@@ -235,7 +227,7 @@ class EssentialsCardsController extends Controller
 
         $sales_projects = SalesProject::pluck('name', 'id');
 
-        $proof_numbers = User::where('users.user_type', 'worker')
+        $proof_numbers = User::whereIn('users.id',$userIds)->where('users.user_type', 'worker')
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
         ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
@@ -603,14 +595,10 @@ class EssentialsCardsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('user.view') || auth()->user()->can('user.create'))) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+   
         $can_show_employee_profile= auth()->user()->can('essentials.show_employee_profile') ;
-
         $permissionName = 'essentials.view_profile_picture';
-
-
+  
         if (!Permission::where('name', $permissionName)->exists()) {
             $permission = new Permission(['name' => $permissionName]);
             $permission->save();
@@ -631,41 +619,28 @@ class EssentialsCardsController extends Controller
         $professions = EssentialsProfession::all()->pluck('name', 'id');
 
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
-
-
-        // $users = User::where('users.business_id', $business_id)->where('users.is_cmmsn_agnt', 0)
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+       
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+            $companies_ids = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
 
                 if ($accessRole) {
-
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
                 }
             }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
         }
 
-        $users = User::with(['userAllowancesAndDeductions'])->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-            $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager', 'worker']);
-            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
-                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->whereIn('users.business_id', $user_businesses_ids);
-            });
-        })->where('users.is_cmmsn_agnt', 0)
+       
+        $users = User::whereIn('users.id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
             ->where('nationality_id', '!=', 5)
-
             ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
             ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
@@ -696,25 +671,6 @@ class EssentialsCardsController extends Controller
             ])->orderby('id', 'desc');
 
 
-
-        // $userProjects = [];
-        // if (!$is_admin) {
-        //     $roles = auth()->user()->roles;
-        //     foreach ($roles as $role) {
-
-        //         $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-        //         $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-        //         $userProjects = array_merge($userProjects, $userProjectsForRole);
-        //     }
-        //     $userProjects = array_unique($userProjects);
-        //     $users = $users->whereIn('assigned_to', $userProjects)
-        //         ->orWhere(function ($query) use ($business_id) {
-        //             $query->whereNull('assigned_to')->where('users.business_id', $business_id)->whereIn('user_type', ['employee', 'manager']);
-        //         });
-        // }
-
-        // $users = $users->union($workers)->orderby('id', 'desc');
 
 
         if (!empty($request->input('specialization'))) {
@@ -774,44 +730,6 @@ class EssentialsCardsController extends Controller
                     return $specializationName;
                 })
 
-
-
-
-
-                // ->addColumn(
-                //     'action',
-                //     function ($row) {
-                //         $html = '<div class="btn-group">
-                //                     <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
-                //                         data-toggle="dropdown" aria-expanded="false">' .
-                //             __('messages.actions') .
-                //             '<span class="caret"></span><span class="sr-only">Toggle Dropdown
-                //                         </span>
-                //                     </button>
-                //                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                //                         <li>
-                //                         <a href="#" class="btn-modal1"  data-toggle="modal" data-target="#addQualificationModal"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_qualification') . '</a>
-
-                //                         </a>
-                //                         </li>';
-
-
-
-
-
-                //         $html .= '<li>
-                //                     <a href="#" class="btn-modal2"  data-toggle="modal" data-target="#add_doc"  data-row-id="' . $row->id . '"  data-row-name="' . $row->full_name . '"  data-href=""><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_doc') . '</a>
-                //                 </li>';
-
-                //         $html .= '<li>
-                //                 <a class=" btn-modal3" data-toggle="modal" data-target="#addContractModal"><i class="fas fa-plus" aria-hidden="true"></i>' . __('essentials::lang.add_contract') . '</a>
-                //             </li>';
-
-                //         $html .= '</ul></div>';
-
-                //         return $html;
-                //     }
-                // )
                 ->addColumn('view', function ($row) use($is_admin ,$can_show_employee_profile){
                     $html ='';
                     if($is_admin || $can_show_employee_profile){
@@ -848,24 +766,12 @@ class EssentialsCardsController extends Controller
                 ->rawColumns(['user_type', 'business_id', 'action', 'profession', 'specialization', 'view', 'checkbox'])
                 ->make(true);
         }
-
-        $query = User::where('business_id', $business_id)->whereIn('user_type', ['employee', 'worker', 'manager']);;
-        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
-        $users = $all_users->pluck('full_name', 'id');
+        $companies = Company::whereIn('id', $companies_ids)->pluck('name', 'id');
+       
         $countries = EssentialsCountry::forDropdown();
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
-
-        $businesses = Business::forDropdown();
-        // $bl_attributes = $business_locations['attributes'];
-        // $business_locations = $business_locations['locations'];
-
-        // $default_location = null;
-        // foreach ($business_locations as $id => $name) {
-        //     $default_location = BusinessLocation::findOrFail($id);
-        //     break;
-        // }
+ 
         $status = [
             'active' => 'active',
             'inactive' => 'inactive',
@@ -886,17 +792,14 @@ class EssentialsCardsController extends Controller
                 'contract_types',
                 'nationalities',
                 'specializations',
-                'professions',
-                'users',
+                'professions',           
                 'countries',
                 'spacializations',
                 'status',
                 'offer_prices',
                 'items',
-                'businesses',
-                // 'bl_attributes',
-                // 'default_location'
-            ));;
+                'companies'
+            ));
     }
 
     public function expired_residencies()
@@ -1470,13 +1373,19 @@ class EssentialsCardsController extends Controller
     public function residencyreports(Request $request)
     {
         $sales_projects = SalesProject::pluck('name', 'id');
-
-        $proof_numbers = User::where('users.user_type', 'worker')
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+       
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $proof_numbers = User::whereIn('id',$userIds)->where('users.user_type', 'worker')
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
             ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')
             ->get();
 
-        $report = EssentialsResidencyHistory::with(['worker'])->select('*');
+        $report = EssentialsResidencyHistory::whereIn('worker_id',$userIds)->with(['worker'])->select('*');
         if (!empty($request->input('proof_numbers')) &&  $request->input('proof_numbers') != "all") {
             $report->whereHas('worker', function ($query) use ($request) {
                 $query->whereIn('id', $request->input('proof_numbers'));
@@ -1731,39 +1640,30 @@ class EssentialsCardsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-        $employeeId = $request->input('employee_id');
+       
+    
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+     
+        $companies_ids = Company::pluck('id')->toArray();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+            $companies_ids = [];
             $roles = auth()->user()->roles;
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
 
                 if ($accessRole) {
-
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
+                    $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
                 }
             }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
         }
-
-        $all_users = User::where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-            $query->where(function ($query2) use ($user_businesses_ids) {
-                $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager', 'worker']);
-            })->orWhere(function ($query3) use ($user_projects_ids, $user_businesses_ids) {
-                $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->whereIn('users.business_id', $user_businesses_ids);
-            });
-        })->where(function ($query) {
+        $all_users = User::whereIn('id',$userIds)
+           ->where(function ($query) {
             $query->whereNotNull('users.border_no')
                 ->orWhere('users.id_proof_name', 'eqama');
         })
@@ -1771,30 +1671,9 @@ class EssentialsCardsController extends Controller
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
         ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id')->get();
 
-
-
-
-
-        $responsible_users = User::join('contact_locations', 'users.assigned_to', '=', 'contact_locations.id')
-            ->where('users.id', '=', $employeeId)
-            ->select('contact_locations.name', 'contact_locations.id')
-            ->get();
-
-
-
-        // $responsible_client=user::join('contacts','contacts.responsible_user_id','=','users.id')
-        // ->where('users.id','=', $employeeId)
-        // ->select('users.id',DB::raw("CONCAT(COALESCE(users.surname, ''),' ',COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,'')) as full_name")) 
-        // ->get();
-
-
         $employees = $all_users->pluck('full_name', 'id');
-        $all_responsible_users = $responsible_users->pluck('name', 'id');
+        
 
-
-
-        $employee = user::with('business')->where('id', '=', $employeeId)
-            ->first();
 
         $durationOptions = [
             '3' => __('essentials::lang.3_months'),
@@ -1802,15 +1681,12 @@ class EssentialsCardsController extends Controller
             '9' => __('essentials::lang.9_months'),
             '12' => __('essentials::lang.12_months'),
         ];
-        $business = Business::whereIn('id',$user_businesses_ids)->pluck('name', 'id');
+        $business = Company::whereIn('id',$companies_ids)->pluck('name', 'id');
 
         return view('essentials::cards.create')
             ->with(compact(
                 'employees',
-                'all_responsible_users',
-                //  'responsible_client',
                 'business',
-                'employee',
                 'durationOptions'
             ));
     }

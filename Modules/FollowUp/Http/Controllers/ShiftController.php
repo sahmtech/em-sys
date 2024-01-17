@@ -3,6 +3,7 @@
 namespace Modules\FollowUp\Http\Controllers;
 
 use App\Contact;
+use App\User;
 use App\Utils\ModuleUtil;
 use App\Utils\Util;
 use DateTime;
@@ -34,7 +35,8 @@ class ShiftController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+       
+      
         $shifts = Shift::where('essentials_shifts.business_id', $business_id)->where('user_type', 'worker')
             ->with('Project')
             ->get();

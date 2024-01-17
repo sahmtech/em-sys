@@ -65,6 +65,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\WarrantyController;
 use App\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Modules\FollowUp\Http\Controllers\FollowUpRequestController;
 use Illuminate\Support\Facades\DB;
@@ -148,6 +149,22 @@ include_once 'install_r.php';
 //         }
 //     }
 // });
+
+
+Route::get('/clear_cache', function () {
+    try {
+        // Call the artisan command
+        Artisan::call('cache:clear');
+
+        // Retrieve the output from the command
+        $output = Artisan::output();
+
+        return response()->json(['message' => 'Cache cleared successfully', 'output' => $output]);
+    } catch (Exception $e) {
+        // Handle the exception
+        return response()->json(['error' => 'Failed to clear cache', 'message' => $e->getMessage()], 500);
+    }
+});
 
 Route::get('/privacy-policy', function () {
     return view('privacy_policy');

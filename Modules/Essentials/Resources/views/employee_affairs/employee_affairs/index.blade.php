@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                        <li class="active">Here</li>
-                                    </ol> -->
+                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                <li class="active">Here</li>
+                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -20,9 +20,9 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="business_filter">@lang('essentials::lang.business_single'):</label>
-                    {!! Form::select('select_business_id', $businesses, null, [
+                    {!! Form::select('select_company_id', $companies, null, [
                         'class' => 'form-control select2',
-                        'id' => 'select_business_id',
+                        'id' => 'select_company_id',
                         'style' => 'height:36px; width:100%',
                         'placeholder' => __('lang_v1.all'),
                         'required',
@@ -96,7 +96,7 @@
                             <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
                             <th>@lang('essentials::lang.employee_number')</th>
-                            <th>bid</th>
+                            <th>company_id</th>
                             <th>@lang('essentials::lang.employee_name')</th>
 
                             <th>@lang('essentials::lang.Identity_proof_id')</th>
@@ -140,7 +140,7 @@
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employee', $users, null, [
+                                {!! Form::select('employee', [], null, [
                                     'class' => 'form-control',
                                     'style' => 'height:40px',
                                     'placeholder' => __('essentials::lang.select_employee'),
@@ -235,7 +235,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('employees2', __('essentials::lang.employee') . ':*') !!}
-                                {!! Form::select('employees2', $users, null, [
+                                {!! Form::select('employees2', [], null, [
                                     'class' => 'form-control',
                                     'placeholder' => __('essentials::lang.select_employee'),
                                     'required',
@@ -501,7 +501,7 @@
                         d.specialization = $('#specializations-select').val();
                         d.nationality = $('#nationalities_select').val();
                         d.status = $('#status_filter').val();
-                        d.business = $('#select_business_id').val();
+                        d.company = $('#select_company_id').val();
 
                         console.log(d);
                     },
@@ -528,7 +528,7 @@
                         "data": "emp_number"
                     },
                     {
-                        "data": "business_id"
+                        "data": "company_id"
                     },
 
                     {
@@ -611,6 +611,7 @@
             });
 
 
+
             $('#employees tbody').on('click', 'tr', function(e) {
                 var cellIndex = $(e.target).closest('td').index();
                 var lastIndex = $(this).children('td').length - 1;
@@ -626,21 +627,12 @@
 
             });
 
-            //     if (cellIndex !== lastIndex) {
-            //         var data = users_table.row(this).data();
-            //         console.log(data);
-            //         if (data) {
-            //             window.location = '{{ route('showEmployee', ['id' => ':id']) }}'.replace(':id', data.id);
-            //         }
-            //     }
-
-            // });
-            $('#specializations-select, #nationalities_select, #status-select, #select_business_id').change(
+            $('#specializations-select, #nationalities_select, #status-select, #select_company_id').change(
                 function() {
                     console.log('Specialization selected: ' + $(this).val());
                     console.log('Nationality selected: ' + $('#nationalities_select').val());
                     console.log('Status selected: ' + $('#status_filter').val());
-                    console.log('loc selected: ' + $('#select_business_id').val());
+                    console.log('loc selected: ' + $('#select_company_id').val());
                     users_table.ajax.reload();
 
                 });

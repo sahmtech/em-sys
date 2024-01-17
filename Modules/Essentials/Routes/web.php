@@ -14,10 +14,10 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/install/uninstall', [Modules\Essentials\Http\Controllers\InstallController::class, 'uninstall']);
 
         Route::get('/', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'index'])->name('essentials_landing');
-        // routes/web.php
+       
 
         Route::get('/leave-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaveStatusData'])->name('leaveStatusData');
-
+        Route::get('/getLeaves', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaves'])->name('getLeaves');
         Route::get('/contract-status-data', [Modules\Essentials\Http\Controllers\EssentialsController::class, 'getContractStatusData'])->name('contractStatusData');
 
            });

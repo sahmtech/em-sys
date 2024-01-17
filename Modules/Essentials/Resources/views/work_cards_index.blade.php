@@ -181,12 +181,12 @@
                                     <th>@lang('followup::lang.request_number')</th>
                                     <th>@lang('followup::lang.worker_name')</th>
                                     <th>@lang('followup::lang.eqama_number')</th>
-                                    <th>@lang('followup::lang.project_name')</th>
+                   
                                     <th>@lang('followup::lang.request_type')</th>
                                     <th>@lang('followup::lang.request_date')</th>
                                     <th>@lang('followup::lang.status')</th>
                                     <th>@lang('followup::lang.note')</th>
-                                    {{-- <th>@lang('followup::lang.action')</th> --}}
+                         
 
 
                                 </tr>
@@ -215,7 +215,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('housingmovements.dashboard') }}"
+                    url: "{{ route('essentials_word_cards_dashboard') }}"
                 },
 
                 columns: [
@@ -230,9 +230,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                    {
-                        data: 'assigned_to'
-                    },
+                
                     {
                         data: 'type',
                         render: function(data, type, row) {

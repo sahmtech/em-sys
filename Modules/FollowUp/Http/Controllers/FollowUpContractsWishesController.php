@@ -43,8 +43,13 @@ class FollowUpContractsWishesController extends Controller
         //  }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
-        $workers = User::join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        
+        $workers = User::whereIn('users.id',$userIds)->join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
             ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->where('users.user_type', 'worker')

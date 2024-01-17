@@ -70,41 +70,13 @@ class IrRequestController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_change_request_status = auth()->user()->can('internationalrelations.change_request_status');
      
-
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-    
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-               
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
         }
-
-        if (empty($user_businesses_ids)) {
-            $output = [
-                'success' => false,
-                'msg' => __('essentials::lang.you_have_no_access_role'),
-            ];
-            return redirect()->back()->with('status', $output);
-        }
-        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%دولي%')
             ->pluck('id')->toArray();
       
@@ -136,6 +108,7 @@ class IrRequestController extends Controller
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->whereIn('followup_worker_requests.worker_id', $userIds)
                 ->whereIn('essentials_wk_procedures.department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
                 
         }
@@ -146,17 +119,7 @@ class IrRequestController extends Controller
             return redirect()->action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
         }
   
-        if (!$is_admin) {
-      
-            $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                $query->where(function ($query2) use ($user_businesses_ids) {
-                    $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
-                })->orWhere(function ($query3) use ($user_projects_ids) {
-                    $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
-                });
-            });
-        }
-    
+
         if (request()->ajax()) {
 
       
@@ -198,7 +161,7 @@ class IrRequestController extends Controller
                 ->make(true);
         }
         $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
+        $workers = User::whereIn('id', $userIds)->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
          ' - ',COALESCE(id_proof_number,'')) as full_name")
@@ -531,29 +494,15 @@ class IrRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+       
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+        $departmentIds =  EssentialsDepartment::where('business_id', $business_id)
         ->where('name', 'LIKE', '%دولي%')
         ->pluck('id')->toArray();
 
@@ -579,6 +528,7 @@ class IrRequestController extends Controller
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->whereIn('followup_worker_requests.worker_id', $userIds)
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id') ->where('followup_worker_requests_process.status','pending');
         } else {
             $output = [

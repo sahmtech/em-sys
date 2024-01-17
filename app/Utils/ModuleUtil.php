@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\AccessRole;
+use App\AccessRoleCompany;
 use App\Account;
 use App\BusinessLocation;
 use App\Product;
@@ -22,11 +24,11 @@ class ModuleUtil extends Util
     public function isModuleInstalled($module_name)
     {
         $is_available = Module::has($module_name);
-     
+
         if ($is_available) {
             //Check if installed by checking the system table {module_name}_version
-            $module_version = System::getProperty(strtolower($module_name).'_version');
-          
+            $module_version = System::getProperty(strtolower($module_name) . '_version');
+
             if (empty($module_version)) {
                 return false;
             } else {
@@ -57,7 +59,7 @@ class ModuleUtil extends Util
     public function getModuleData($function_name, $arguments = null)
     {
         $modules = Module::toCollection()->toArray();
-        
+
 
         $installed_modules = [];
         foreach ($modules as $module => $details) {
@@ -65,16 +67,16 @@ class ModuleUtil extends Util
                 $installed_modules[] = $details;
             }
         }
-     
+
         $data = [];
-        if (! empty($modules)) {
+        if (!empty($modules)) {
             foreach ($modules as $module) {
-                $class = 'Modules\\'.$module['name'].'\Http\Controllers\DataController';
+                $class = 'Modules\\' . $module['name'] . '\Http\Controllers\DataController';
 
                 if (class_exists($class)) {
                     $class_object = new $class();
                     if (method_exists($class_object, $function_name)) {
-                        if (! empty($arguments)) {
+                        if (!empty($arguments)) {
                             $data[$module['name']] = call_user_func([$class_object, $function_name], $arguments);
                         } else {
                             $data[$module['name']] = call_user_func([$class_object, $function_name]);
@@ -99,10 +101,12 @@ class ModuleUtil extends Util
 
         $check_for_enable = [];
 
-        $output = ! empty($is_installed) ? true : false;
+        $output = !empty($is_installed) ? true : false;
 
-        if (in_array($module_name, $check_for_enable) &&
-            ! $this->isModuleEnabled(strtolower($module_name))) {
+        if (
+            in_array($module_name, $check_for_enable) &&
+            !$this->isModuleEnabled(strtolower($module_name))
+        ) {
             $output = false;
         }
 
@@ -148,7 +152,7 @@ class ModuleUtil extends Util
             if (empty($package)) {
                 return false;
             } elseif (isset($package['package_details'][$permission])) {
-                if (! is_null($callback_function)) {
+                if (!is_null($callback_function)) {
                     $obj = new ModuleUtil();
                     $permissions = $obj->getModuleData($callback_function);
 
@@ -182,10 +186,12 @@ class ModuleUtil extends Util
      */
     public static function expiredResponse($redirect_url = null)
     {
-        $response_array = ['success' => 0,
+        $response_array = [
+            'success' => 0,
             'msg' => __(
                 'superadmin::lang.subscription_expired_toastr',
-                ['app_name' => config('app.name'),
+                [
+                    'app_name' => config('app.name'),
                     'subscribe_url' => action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
                 ]
             ),
@@ -211,7 +217,7 @@ class ModuleUtil extends Util
     public function countBusinessLocation($business_id)
     {
         $count = BusinessLocation::where('business_id', $business_id)
-                                ->count();
+            ->count();
 
         return $count;
     }
@@ -219,8 +225,8 @@ class ModuleUtil extends Util
     public function countUsers($business_id)
     {
         $count = User::where('business_id', $business_id)
-                                    ->where('allow_login', 1)
-                                    ->count();
+            ->where('allow_login', 1)
+            ->count();
 
         return $count;
     }
@@ -229,7 +235,7 @@ class ModuleUtil extends Util
     {
         $query = Product::where('business_id', $business_id);
 
-        if (! empty($start_dt) && ! empty($start_dt)) {
+        if (!empty($start_dt) && !empty($start_dt)) {
             $query->whereBetween('created_at', [$start_dt, $end_dt]);
         }
 
@@ -241,10 +247,10 @@ class ModuleUtil extends Util
     public function countInvoice($business_id, $start_dt, $end_dt)
     {
         $query = Transaction::where('business_id', $business_id)
-                            ->where('type', 'sell')
-                            ->where('status', 'final');
+            ->where('type', 'sell')
+            ->where('status', 'final');
 
-        if (! empty($start_dt) && ! empty($start_dt)) {
+        if (!empty($start_dt) && !empty($start_dt)) {
             $query->whereBetween('created_at', [$start_dt, $end_dt]);
         }
 
@@ -260,7 +266,7 @@ class ModuleUtil extends Util
         $start_dt = null;
         $end_dt = null;
 
-        if (! empty($package)) {
+        if (!empty($package)) {
             $start_dt = $package->start_date->toDateTimeString();
             $end_dt = $package->end_date->endOfDay()->toDateTimeString();
         }
@@ -361,7 +367,8 @@ class ModuleUtil extends Util
         if ($type == 'locations') {
             if (request()->ajax()) {
                 if (request()->wantsJson()) {
-                    $response_array = ['success' => 0,
+                    $response_array = [
+                        'success' => 0,
                         'msg' => __('superadmin::lang.max_locations'),
                     ];
 
@@ -371,21 +378,24 @@ class ModuleUtil extends Util
                 }
             }
         } elseif ($type == 'users') {
-            $response_array = ['success' => 0,
+            $response_array = [
+                'success' => 0,
                 'msg' => __('superadmin::lang.max_users'),
             ];
 
             return redirect($redirect_url)
-                    ->with('status', $response_array);
+                ->with('status', $response_array);
         } elseif ($type == 'products') {
-            $response_array = ['success' => 0,
+            $response_array = [
+                'success' => 0,
                 'msg' => __('superadmin::lang.max_products'),
             ];
 
             return redirect($redirect_url)
-                    ->with('status', $response_array);
+                ->with('status', $response_array);
         } elseif ($type == 'invoices') {
-            $response_array = ['success' => 0,
+            $response_array = [
+                'success' => 0,
                 'msg' => __('superadmin::lang.max_invoices'),
             ];
 
@@ -421,9 +431,9 @@ class ModuleUtil extends Util
     {
         $form_fields = [];
         $module_form_fields = $this->getModuleData($function_name);
-        if (! empty($module_form_fields)) {
+        if (!empty($module_form_fields)) {
             foreach ($module_form_fields as $key => $value) {
-                if (! empty($value) && is_array($value)) {
+                if (!empty($value) && is_array($value)) {
                     $form_fields = array_merge($form_fields, $value);
                 }
             }
@@ -435,7 +445,7 @@ class ModuleUtil extends Util
     public function getApiSettings($api_token)
     {
         $settings = \Modules\Ecommerce\Entities\EcomApiSetting::where('api_token', $api_token)
-                                ->first();
+            ->first();
 
         return $settings;
     }
@@ -449,7 +459,8 @@ class ModuleUtil extends Util
      */
     public function getModuleVersionInfo($module_name)
     {
-        $output = ['installed_version' => null,
+        $output = [
+            'installed_version' => null,
             'available_version' => null,
             'is_update_available' => null,
         ];
@@ -458,10 +469,10 @@ class ModuleUtil extends Util
 
         if ($is_available) {
             //Check if installed by checking the system table {module_name}_version
-            $module_version = System::getProperty(strtolower($module_name).'_version');
+            $module_version = System::getProperty(strtolower($module_name) . '_version');
 
             $output['installed_version'] = $module_version;
-            $output['available_version'] = config(strtolower($module_name).'.module_version');
+            $output['available_version'] = config(strtolower($module_name) . '.module_version');
 
             $output['is_update_available'] = Comparator::greaterThan($output['available_version'], $output['installed_version']);
         }
@@ -479,10 +490,12 @@ class ModuleUtil extends Util
             'stock_adjustment' => ['name' => __('stock_adjustment.stock_adjustment')],
             'expenses' => ['name' => __('expense.expenses')],
             'account' => ['name' => __('lang_v1.account')],
-            'tables' => ['name' => __('restaurant.tables'),
+            'tables' => [
+                'name' => __('restaurant.tables'),
                 'tooltip' => __('restaurant.tooltip_tables'),
             ],
-            'modifiers' => ['name' => __('restaurant.modifiers'),
+            'modifiers' => [
+                'name' => __('restaurant.modifiers'),
                 'tooltip' => __('restaurant.tooltip_modifiers'),
             ],
             'service_staff' => [
@@ -494,7 +507,8 @@ class ModuleUtil extends Util
                 'name' => __('restaurant.kitchen_for_restaurant'),
             ],
             'subscription' => ['name' => __('lang_v1.enable_subscription')],
-            'types_of_service' => ['name' => __('lang_v1.types_of_service'),
+            'types_of_service' => [
+                'name' => __('lang_v1.types_of_service'),
                 'tooltip' => __('lang_v1.types_of_service_help_long'),
             ],
         ];
@@ -517,7 +531,7 @@ class ModuleUtil extends Util
             foreach ($data  as $key => $value) {
                 //key is category type
                 //check if category type is duplicate
-                if (! in_array($key, $category_types)) {
+                if (!in_array($key, $category_types)) {
                     $category_types[] = $key;
                 } else {
                     echo __('lang_v1.duplicate_taxonomy_type_found');
@@ -530,11 +544,44 @@ class ModuleUtil extends Util
             }
         }
 
-        if (! in_array($category_type, $category_types)) {
+        if (!in_array($category_type, $category_types)) {
             echo __('lang_v1.taxonomy_type_not_found');
             exit;
         }
 
         return $module_data;
+    }
+
+
+
+    public function applyAccessRole()
+    {
+        $roles = auth()->user()->roles;
+        $users = User::query();
+        $userIds = [];
+        foreach ($roles as $role) {
+
+            $accessRole = AccessRole::where('role_id', $role->id)->first();
+
+            if ($accessRole) {
+                $userCompaniesForRole = AccessRoleCompany::where('access_role_id', $accessRole->id)->get();
+                if ($userCompaniesForRole->count() > 0) {
+                    $users = $users->where(function ($query) use ($userCompaniesForRole) {
+                        $query->where('company_id', $userCompaniesForRole->first()->company_id)
+                            ->whereIn('user_type', $userCompaniesForRole->first()->userTypes());
+                    });
+
+                    for ($i = 1; $i < $userCompaniesForRole->count(); $i++) {
+                        $users = $users->orWhere(function ($query) use ($userCompaniesForRole, $i) {
+                            $query->where('company_id', $userCompaniesForRole[$i]->company_id)
+                                ->whereIn('user_type', $userCompaniesForRole[$i]->userTypes());
+                        });
+                    }
+                    $userIds = array_merge($userIds, $users->pluck('id')->toArray());
+                }
+            }
+        }
+
+        return    array_unique($userIds);
     }
 }

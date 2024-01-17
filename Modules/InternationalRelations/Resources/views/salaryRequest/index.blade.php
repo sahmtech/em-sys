@@ -44,9 +44,9 @@
  
     @endcomponent
 
-@include('sales::salary_requests.create_modal')
+{{-- @include('sales::salary_requests.create_modal')
 
-@include('sales::salary_requests.edit_modal')
+@include('sales::salary_requests.edit_modal') --}}
 
 </section>
 <!-- /.content -->

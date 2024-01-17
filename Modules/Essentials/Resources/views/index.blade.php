@@ -166,12 +166,10 @@
                             <table class="table table-bordered table-striped" id="leave_table">
                                 <thead>
                                     <tr>
-                                        <th>@lang('purchase.ref_no')</th>
-
-                                        <th>@lang('essentials::lang.employee')</th>
-                                        <th>@lang('lang_v1.date')</th>
-
-                                        <th>@lang('sale.status')</th>
+                                        <th>@lang('followup::lang.request_number')</th>
+                                        <th>@lang('followup::lang.name')</th>
+                                        <th>@lang('followup::lang.start_date')</th>
+                                        <th>@lang('followup::lang.status')</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -408,27 +406,25 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']) }}",
+                    "url": "{{ action([\Modules\Essentials\Http\Controllers\EssentialsController::class, 'getLeaves']) }}",
 
                 },
                 dom: 'lrtip',
                 lengthMenu: [5, 10, 25, 50],
                 pageLength: 5,
-                columns: [{
-                        data: 'ref_no',
-                        name: 'ref_no'
+                columns: [ {
+                        data: 'request_no'
+                    },
+
+                    {
+                        data: 'user'
                     },
                     {
-                        data: 'user',
-                        name: 'user'
-                    },
-                    {
-                        data: 'start_date',
-                        name: 'start_date'
+                        data: 'start_date'
                     },
                     {
                         data: 'status',
-                        name: 'essentials_leaves.status'
+
                     },
                 ],
             });

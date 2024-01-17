@@ -19,15 +19,32 @@ use Modules\Essentials\Entities\EssentialsLeaveType;
 use Modules\Sales\Entities\SalesProject;
 use App\AccessRole;
 use App\AccessRoleBusiness;
+use App\AccessRoleCompany;
 use App\AccessRoleProject;
 use App\Business;
+use App\Company;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
 use DB;
 use Illuminate\Support\Carbon;
+use Yajra\DataTables\Facades\DataTables;
 
 class EssentialsController extends Controller
 {
+
+    protected $moduleUtil;
+
+    /**
+     * Constructor
+     *
+     * @param  Util  $commonUtil
+     * @return void
+     */
+    public function __construct(ModuleUtil $moduleUtil)
+    {
+        $this->moduleUtil = $moduleUtil;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,23 +53,21 @@ class EssentialsController extends Controller
     public function index()
     {
 
-        // if (!(auth()->user()->can('essentials.essentials_dashboard') && auth()->user()->can('essentials.view_work_cards'))) {
-        //     return redirect()->route('essentials_word_cards_dashboard');
-        // }
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
 
-        $num_employee_staff = User::where('business_id', $business_id)->where(function ($query) {
-            $types = ['worker', 'employee', 'manager'];
 
-            foreach ($types as $type) {
-                $query->orWhere('user_type', 'like', '%' . $type . '%');
-            }
-        })->count();
-        $num_workers = User::where('business_id', $business_id)->where('user_type', 'like', '%worker%')->count();
-        $num_employees = User::where('business_id', $business_id)->where('user_type', 'like', '%employee%')->count();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
+        $num_employee_staff = User::whereIn('id', $userIds)->count();
+        $num_workers = User::whereIn('id', $userIds)->where('user_type', 'like', '%worker%')->count();
+        $num_employees = User::whereIn('id', $userIds)->where('user_type', 'like', '%employee%')->count();
+        $num_managers = User::whereIn('id', $userIds)->where('user_type', 'like', '%manager%')->count();
 
-        $num_managers = User::where('business_id', $business_id)->where('user_type', 'like', '%manager%')->count();
         $chart = new CommonChart;
         $colors = [
             '#E75E82', '#37A2EC', '#FACD56', '#5CA85C', '#605CA8',
@@ -73,93 +88,69 @@ class EssentialsController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
+  
 
-    
-
-        $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
-        $sixtyday=Carbon::now()->addDays(60)->toDateString();
-
-        $last15_expire_date_residence = EssentialsOfficialDocument::where('type', 'residence_permit')
-                ->where('expiration_date', '<=', $expiryDateThreshold)
-                ->count();
-        
-        $today = Carbon::now()->toDateString();
-
-     
-        $all_ended_residency_date = EssentialsOfficialDocument::with(['employee'])->where('type', 'residence_permit')
-        ->whereDate('expiration_date', '<=',  $today  )->count();
-
-        $escapeRequest = FollowupWorkerRequest::with('user')->where('type', 'escapeRequest')
-        ->whereHas('user', function ($query) {
-            $query->where('user_type', 'worker');
-        })
-                    ->where('end_date', '<=', $sixtyday)
-                    ->count();
-
-
-        $vacationrequest = FollowupWorkerRequest::with('user')->where('type', 'leavesAndDepartures') 
-        ->whereHas('user', function ($query) {
-            $query->where('user_type', 'worker');
-        })
-        ->count();
-
-        $final_visa = EssentailsEmployeeOperation::where('operation_type', 'final_visa') 
-        ->whereHas('user', function ($query) {
-            $query->where('user_type', 'worker');
-        })
-        ->count();
-
-
-        $late_vacation = FollowupWorkerRequest::with(['user'])
-                    ->where('type', 'leavesAndDepartures')
-                    ->where('type', 'returnRequest') 
-                    ->whereHas('user', function ($query)  {
-                        
-                        $query->where('status', 'vecation');
-                    })
-                    ->where('end_date', '<', now()) 
-                    ->count();
-                    
-        $business_id = request()->session()->get('user.business_id');
-
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
-
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-
-        $user_projects_ids = SalesProject::all('id')->unique()->toArray();
+     
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
 
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
+          
         }
-        $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
-            ->where('name', 'LIKE', '%بشرية%')
+
+
+        $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
+        $sixtyday = Carbon::now()->addDays(60)->toDateString();
+
+        $last15_expire_date_residence = EssentialsOfficialDocument::whereIn('employee_id',$userIds)->where('type', 'residence_permit')
+            ->where('expiration_date', '<=', $expiryDateThreshold)
+            ->count();
+
+        $today = Carbon::now()->toDateString();
+
+
+        $all_ended_residency_date = EssentialsOfficialDocument::whereIn('employee_id',$userIds)->with(['employee'])->where('type', 'residence_permit')
+            ->whereDate('expiration_date', '<=',  $today)->count();
+
+        $escapeRequest = FollowupWorkerRequest::whereIn('worker_id',$userIds)->with('user')->where('type', 'escapeRequest')
+            ->whereHas('user', function ($query) {
+                $query->where('user_type', 'worker');
+            })
+            ->where('end_date', '<=', $sixtyday)
+            ->count();
+
+
+        $vacationrequest = FollowupWorkerRequest::whereIn('worker_id',$userIds)->with('user')->where('type', 'leavesAndDepartures')
+            ->whereHas('user', function ($query) {
+                $query->where('user_type', 'worker');
+            })
+            ->count();
+
+        $final_visa = EssentailsEmployeeOperation::whereIn('employee_id',$userIds)->where('operation_type', 'final_visa')
+            ->whereHas('user', function ($query) {
+                $query->where('user_type', 'worker');
+            })
+            ->count();
+
+
+        $late_vacation = FollowupWorkerRequest::whereIn('worker_id',$userIds)->with(['user'])
+            ->where('type', 'leavesAndDepartures')
+            ->where('type', 'returnRequest')
+            ->whereHas('user', function ($query) {
+
+                $query->where('status', 'vecation');
+            })
+            ->where('end_date', '<', now())
+            ->count();
+
+     
+     
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%حكومية%')
             ->pluck('id')->toArray();
-
-        $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-        $classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
-        $main_reasons = DB::table('essentails_reason_wishes')->where('reason_type', 'main')->where('employee_type', 'worker')->pluck('reason', 'id');
-
 
         $requestsProcess = null;
 
@@ -185,25 +176,9 @@ class EssentialsController extends Controller
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->whereIn('users.id',$userIds)
                 ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
-        } else {
-            $output = [
-                'success' => false,
-                'msg' => __('essentials::lang.you_have_no_access_role'),
-            ];
-            return redirect()->route('home')->with('status', $output);
-        }
-
-        if (!$is_admin) {
-
-            $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                $query->where(function ($query2) use ($user_businesses_ids) {
-                    $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
-                })->orWhere(function ($query3) use ($user_projects_ids) {
-                    $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
-                });
-            });
-        }
+        } 
 
         if (request()->ajax()) {
 
@@ -216,27 +191,14 @@ class EssentialsController extends Controller
 
                     return Carbon::parse($row->created_at);
                 })
-                ->editColumn('assigned_to', function ($row) use ($ContactsLocation) {
-                    $item = $ContactsLocation[$row->assigned_to] ?? '';
-
-                    return $item;
-                })
+              
                 ->editColumn('status', function ($row) {
-                    $status = '';
+                  
+                        $status = trans('followup::lang.' . $row->status) ?? '';
+                  
 
-                    if ($row->status == 'pending') {
-                        $status = '<span class="label ' . $this->statuses[$row->status]['class'] . '">'
-                            . __($this->statuses[$row->status]['name']) . '</span>';
-
-
-                            $status = '<a href="#" class="change_status" data-request-id="' . $row->id . '" data-orig-value="' . $row->status . '" data-status-name="' . $this->statuses[$row->status]['name'] . '"> ' . $status . '</a>';
-                 
-                    } elseif (in_array($row->status, ['approved', 'rejected'])) {
-                        $status = trans('followup::lang.' . $row->status);
-                    }
-
-                    return $status;
-                })
+                                return $status;
+                    })
 
                 ->rawColumns(['status'])
 
@@ -248,9 +210,14 @@ class EssentialsController extends Controller
 
 
         return view('essentials::work_cards_index')
-        ->with(compact('last15_expire_date_residence' ,
-        'all_ended_residency_date','escapeRequest','vacationrequest','final_visa','late_vacation'
-        ));
+            ->with(compact(
+                'last15_expire_date_residence',
+                'all_ended_residency_date',
+                'escapeRequest',
+                'vacationrequest',
+                'final_visa',
+                'late_vacation'
+            ));
     }
 
 
@@ -270,21 +237,72 @@ class EssentialsController extends Controller
         ];
     }
 
+    public function getLeaves(){
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $business_id = request()->session()->get('user.business_id');
+            $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+            if (!$is_admin) {
+                $userIds = [];
+                $userIds = $this->moduleUtil->applyAccessRole();
+            }
+        
+            $departmentIds = EssentialsDepartment::where('business_id',  $business_id)
+            ->where('name', 'LIKE', '%موظف%')
+            ->pluck('id')->toArray();
+
+        $requestsProcess = null;
+
+        if (!empty($departmentIds)) {
+
+            $requestsProcess = FollowupWorkerRequest::select([
+                'followup_worker_requests.request_no','followup_worker_requests.type',
+                'followup_worker_requests.id',
+                'followup_worker_requests.worker_id',
+                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
+                'followup_worker_requests.start_date',
+                'followup_worker_requests_process.status','followup_worker_requests_process.worker_request_id',
+                'followup_worker_requests_process.procedure_id',   'followup_worker_requests_process.sub_status',
+      
+            ])
+                ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
+                ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
+                ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                ->whereIn('department_id', $departmentIds)
+                ->where('followup_worker_requests_process.sub_status', null)
+                ->whereIn('followup_worker_requests.worker_id', $userIds)->where('followup_worker_requests.type', 'leavesAndDepartures');
+        }
+
+        if (request()->ajax()) {
 
 
+            return DataTables::of($requestsProcess ?? [])
+
+                ->editColumn('created_at', function ($row) {
+
+                    return Carbon::parse($row->created_at);
+                })
+            
+                ->editColumn('status', function ($row) {
+                    return trans('followup::lang.' . $row->status) ?? '';
+                })
+
+                ->rawColumns(['status'])
 
 
-
-
-
-
+                ->make(true);
+        }
+    }
 
     public function getLeaveStatusData()
     {
-        $business_id = request()->session()->get('user.business_id');
 
-
-        $rawLeaveStatusData = FollowupWorkerRequest::where('type', 'leavesAndDepartures')
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $rawLeaveStatusData = FollowupWorkerRequest::whereIn('worker_id', $userIds)->where('type', 'leavesAndDepartures')
             ->select(DB::raw('status, COUNT(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
@@ -301,7 +319,7 @@ class EssentialsController extends Controller
             'labels' => array_keys($leaveStatusData),
             'values' => array_values($leaveStatusData),
         ];
-        
+
 
         return response()->json($data);
     }
@@ -310,15 +328,21 @@ class EssentialsController extends Controller
 
     public function getContractStatusData()
     {
-        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $totalContracts = EssentialsEmployeesContract::count();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
-        $expiredContractsByEndDate = EssentialsEmployeesContract::whereNotNull('contract_end_date')
+        $totalContracts = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->count();
+
+        $expiredContractsByEndDate = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->whereNotNull('contract_end_date')
             ->whereDate('contract_end_date', '<', now())
             ->count();
 
-        $expiredContractsByProbation = EssentialsEmployeesContract::whereNotNull('probation_period')
+        $expiredContractsByProbation = EssentialsEmployeesContract::whereIn('employee_id', $userIds)->whereNotNull('probation_period')
             ->where(function ($query) {
                 $query->whereNull('contract_end_date')
                     ->orWhere(function ($endDateSubquery) {
