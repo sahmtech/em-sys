@@ -61,7 +61,7 @@ class EssentialsEmployeeFamilyController extends Controller
                 'essentials_employees_families.eqama_number',
                 'essentials_employees_families.nationality_id',
 
-            ]);
+            ])->orderby('id','desc');
 
         if (request()->ajax()) {
 
@@ -171,9 +171,10 @@ class EssentialsEmployeeFamilyController extends Controller
 
 
                     if (!empty($value[0])) {
-                        $emp_array['emp_eqama_no'] = $value[0];
+                        $emp_array['emp_eqama_no'] =  intval($value[0]);
+                      
 
-                        $proof_number = user::where('id_proof_number', $emp_array['emp_eqama_no'])->first();
+                        $proof_number = User::where('id_proof_number', $emp_array['emp_eqama_no'])->first();
                         //  $family_proof_number=EssentialsEmployeesFamily::where('eqama_number',$emp_array['emp_eqama_no'])->first();
 
                         if (!$proof_number) {
@@ -195,8 +196,8 @@ class EssentialsEmployeeFamilyController extends Controller
 
 
                     if (!empty($value[2])) {
-                        $emp_array['family_eqama_no'] = $value[2];
-
+                        $emp_array['family_eqama_no'] = intval($value[2]);
+                       
                         $business = EssentialsEmployeesFamily::where('eqama_number', $emp_array['family_eqama_no'])->first();
 
                         if ($business) {
@@ -234,7 +235,7 @@ class EssentialsEmployeeFamilyController extends Controller
                     $formated_data[] = $emp_array;
                 }
 
-
+            
                 if (!$is_valid) {
                     throw new \Exception($error_msg);
                 }
@@ -258,6 +259,7 @@ class EssentialsEmployeeFamilyController extends Controller
                         $family->gender = $emp_data['gender'];
                         $family->employee_id = $user->id;
                         $family->save();
+                     
                     }
                 }
 

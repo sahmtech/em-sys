@@ -470,7 +470,7 @@ return [
   'please_add_the_employee_affairs_department' => 'الرجاء اضافة إدارة خاصة بشؤون الموظفين',
   'entitlement_type' => 'نوع الاستحقاق',
   'manage_allowances_types' => 'إدارة أنواع البدلات',
-  'add_allowance' => 'إضافة بدل',
+  //'add_allowance' => 'إضافة بدل',
   'allowance_value' => 'قيمة البدل',
   'type' => 'النوع',
   'number_of_months' => 'عدد الأشهر',
@@ -541,7 +541,7 @@ return [
   'crud_holidays' => 'إضافة / تعديل / عرض / حذف العطل الرسمية ',
   'crud_countries' => 'إضافة / تعديل / عرض / حذف الدول ',
   'crud_cities' => 'إضافة / تعديل / عرض / حذف المدن ',
-  'crud_allowances' => 'إضافة / تعديل / عرض / حذف البدلات',
+  'crud_allowances' => 'إضافة / تعديل / عرض / حذف البدلات والخصومات',
   'crud_bank_accounts' => 'إضافة / تعديل / عرض / حذف الحسابات البنكية',
   'crud_basic_salary' => 'إضافة / تعديل / عرض / حذف الرواتب الأساسية',
   'crud_entitlements' => 'إضافة / تعديل / عرض / حذف الاستحقاقات',
@@ -687,7 +687,7 @@ return [
   'travel_categorie' => 'تذكرة السفر',
   'add_user_travel_categorie' => 'إضافة تذكرة سفر لموظف',
   'select_allowance' => 'اختار بدل',
-  'edit_allowance' => 'تعديل بدل',
+  //'edit_allowance' => 'تعديل بدل',
   'mid_name' => 'الاسم الأوسط',
   'employee_type' => 'نوع الموظف',
   'employee_type_example' => 'مثال : مدير , موظف , عامل ',
@@ -720,8 +720,8 @@ return [
   'crud_employee_work_adminitions' => 'إضافة/تعديل/حذف مباشرة العمل للموظفين',
   'crud_employee_contracts' => 'إضافة/تعديل/حذف عقود الموظفين',
   'crud_employee_qualifications' => 'إضافة/تعديل/حذف مؤهلات الموظفين',
-  'crud_employee_features' => 'إضافة/تعديل/حذف مزايا الموظفين',
-  'view_user_travel_categorie' => 'إضافة/تعديل/حذف تذاكر سفر الموظفين',
+ 
+  'view_user_travel_categorie' => 'عرض فئات تذاكر السفر',
   'edit_bank_account' => 'تعديل الحساب البنكي',
   'editTravel_categorie' => 'تعديل تذكرة السفر',
   'edit_basic_salary_type' => 'تعديل الراتب الأساسي',
@@ -758,7 +758,7 @@ return [
   'doc_details' => 'تفاصيل الوثيقة',
   'view_doc' => 'عرض الوثيقة',
   'close' => 'إغلاق',
-  'crud_travel_categories' => 'إضافة / تعديل / عرض / حذف فئات تذاكر السفر  ',
+ 
   'import_employees' => 'استيراد الموظفين',
   'crud_import_employee' => 'إضافة / تعديل / عرض / حذف فئات استيراد الموظفين ',
   'employee_name' => 'اسم الموظف',
@@ -1281,9 +1281,9 @@ return [
   'edit_holidays' => 'تعديل العطل الرسمية ',
   'add_holidays' => 'إضافة العطل الرسمية',
 
-  'delete_travel_categories' => 'حذف تذاكر السفر',
-  'edit_travel_categories' => 'تعديل تذاكر السفر',
-  'add_travel_categories' => 'إضافة تذاكر السفر',
+  'delete_travel_categories' => 'حذف  فئات تذاكر السفر',
+  'edit_travel_categories' => 'تعديل  فئات تذاكر السفر',
+  'add_travel_categories' => 'إضافة فئات تذاكر السفر',
 
   'delete_profession' => 'حذف المهن',
   'edit_profession' => 'تعديل المهن',
@@ -1338,9 +1338,6 @@ return [
   'edit_employee_families' => 'تعديل مرافقين',
   'delete_employee_families' => 'حذف مرافقين',
 
-
-  'edit_allowance_and_deduction' => 'تعديل البدلات',
-  'delete_allowance_and_deduction' => 'حذف البدلات',
 
   'add_wishes' => 'إضافة رغبة',
   'edit_wishes' => 'تعديل رغبة',
@@ -1436,6 +1433,17 @@ return [
   'essentials_show_steps' => 'عرض الادارات في إضافة أجراء',
   'employee_has_insurance' => 'الموظف لديه تامين سابقا',
 
-  
+
+  //features
+  'crud_employee_features' => 'إضافة/تعديل/حذف مزايا الموظفين',
+  'add_employee_features'=>'إضافة مزايا بدلات الموظفين',
+  'edit_employee_features'=>'تعديل مزايا بدلات الموظفين',
+  'delete_employee_features'=>'حذف مزايا بدلات الموظفين',
+  'view_navbar_employee_features'=>'عرض ناف بار مزايا بدلات الموظفين',
+  'curd_travel_categories_features'=>'حذف \ إضافة \ تعديل تذاكر السفر مزايا ',
+  'add_travel_categories_features'=>'إضافة تذاكر السفر مزايا',
+  'edit_travel_categories_features'=>'تعديل تذاكر السفر مزايا',
+  'delete_travel_categories_features'=>'حذف تذاكر السفر مزايا',
 
 ];
+

@@ -246,7 +246,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.edit_wishes'),
                         'default' => false,
                     ],
-                   
+                   //leaves
                     [
                         'value' => 'essentials.delete_leave',
                         'label' => __('essentials::lang.delete_leave'),
@@ -756,11 +756,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.access_sales_target'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'essentials.view_user_travel_categorie',
-                        'label' => __('essentials::lang.view_user_travel_categorie'),
-                        'default' => false,
-                    ],
+                   
                     [
                         'value' => 'essentials.crud_holidays',
                         'label' => __('essentials::lang.crud_holidays'),
@@ -1287,23 +1283,7 @@ class DataController extends Controller
                     'label' => __('essentials::lang.delete_employee_families'),
                     'default' => false,
                   ],
-                 //allowance_and_deduction
-                  [
-                    'value' => 'essentials.edit_allowance_and_deduction',
-                    'label' => __('essentials::lang.edit_allowance_and_deduction'),
-                    'default' => false,
-                  ],
-                  [
-                    'value' => 'essentials.delete_allowance_and_deduction',
-                    'label' => __('essentials::lang.delete_allowance_and_deduction'),
-                    'default' => false,
-                  ],
-                 
-                  [
-                    'value' => 'essentials.add_allowance_and_deduction',
-                    'label' => __('essentials::lang.add_allowance_and_deduction'),
-                    'default' => false,
-                  ],
+                
                  
                 
                     [
@@ -1322,11 +1302,63 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
+                     //features---------------------------------------------------
+                     [
+                        'value' => 'essentials.view_user_travel_categorie',
+                        'label' => __('essentials::lang.view_user_travel_categorie'),
+                        'default' => false,
+                    ],
+                    
                     [
                         'value' => 'essentials.crud_employee_features',
                         'label' => __('essentials::lang.crud_employee_features'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'essentials.add_employee_features',
+                        'label' => __('essentials::lang.add_employee_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_employee_features',
+                        'label' => __('essentials::lang.edit_employee_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_employee_features',
+                        'label' => __('essentials::lang.delete_employee_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_navbar_employee_features',
+                        'label' => __('essentials::lang.view_navbar_employee_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.curd_travel_categories_features',
+                        'label' => __('essentials::lang.curd_travel_categories_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_travel_categories_features',
+                        'label' => __('essentials::lang.add_travel_categories_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_travel_categories_features',
+                        'label' => __('essentials::lang.edit_travel_categories_features'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_travel_categories_features',
+                        'label' => __('essentials::lang.delete_travel_categories_features'),
+                        'default' => false,
+                    ],
+
+                    
+
+                    //-----------------------------------------------------------------
                     [
                         'value' => 'essentials.crud_employee_families',
                         'label' => __('essentials::lang.crud_employee_families'),
