@@ -39,6 +39,7 @@ class DriverCarController extends Controller
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $car_driver_edit = auth()->user()->can('driver.edit');
+        $car_driver_delete  = auth()->user()->can('driver.delete');
 
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
@@ -46,8 +47,7 @@ class DriverCarController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $carDrivers = DriverCar::whereIn('user_id', $userIds);
-
+        $carDrivers = DriverCar::whereIn('user_id', $userIds)->get();
 
 
         if (request()->ajax()) {
@@ -86,7 +86,7 @@ class DriverCarController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $car_driver_edit) {
+                    function ($row) use ($is_admin, $car_driver_edit, $car_driver_delete) {
 
                         $html = '';
                         if ($is_admin  ||  $car_driver_edit) {
@@ -96,7 +96,7 @@ class DriverCarController extends Controller
                          class="btn btn-xs btn-modal btn-info edit_user_button"  data-container="#edit_driver_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || auth()->user()->can('driver.delete')) {
+                        if ($is_admin  || $car_driver_delete) {
                             $html .= '
                     <button data-href="' .  action([\Modules\Essentials\Http\Controllers\DriverCarController::class, 'destroy'], ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_user_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';

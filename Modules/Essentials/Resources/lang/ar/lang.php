@@ -1246,6 +1246,8 @@ return [
   'delete_procedures' => 'حذف إجراءات سير العمل',
   'delete_finish_contracts' => 'حذف اسباب انهاء العقود',
   'add_finish_contracts' => 'إضافة سبب إنهاء العقود',
+  'carinsurance_edit'=>'تعديل تأمين مركبة',
+  'carinsurance_delete'=>'حذف تأمين مركبة',
 
 
   'delete_wishes' => 'حذف الرغبات',
