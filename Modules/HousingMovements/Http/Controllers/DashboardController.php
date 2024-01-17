@@ -66,54 +66,35 @@ class DashboardController extends Controller
     
     public function index()
     {
-        $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
-        $final_exit_count = User::whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive')->count();
-
-        $reserved_shopping_count = HousingMovementsWorkerBooking::all()->count();
-        $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+      
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::whereIn('employee_id', $userIds)->where('operation_type', 'final_visa')->pluck('employee_id');
+        $final_exit_count = User::whereIn('id', $userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive')->count();
+      
+        
+        $reserved_shopping_count = HousingMovementsWorkerBooking::whereIn('user_id',$userIds)->count();
+        $bookedWorker_ids = HousingMovementsWorkerBooking::whereIn('user_id',$userIds)->pluck('user_id');
+       
         $HtrRoomsWorkersHistory_roomIds= HtrRoomsWorkersHistory::all()->pluck('room_id');
+     
         $empty_rooms_count = HtrRoom::whereNotIn('id',$HtrRoomsWorkersHistory_roomIds)->count();
         
-        $available_shopping_count = User::where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids)->count();
-        $leaves_count =FollowupWorkerRequest::where('type','leaves')->count();
+        $available_shopping_count = User::whereIn('id',$userIds)->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids)->count();
+     
+        $leaves_count =FollowupWorkerRequest::whereIn('worker_id',$userIds)->where('type','leaves')->count();
         
             $business_id = request()->session()->get('user.business_id');
     
-            if (!(auth()->user()->can('superadmin'))) {
-               //temp  abort(403, 'Unauthorized action.');
-            }
-    
-            $crud_requests = auth()->user()->can('followup.crud_requests');
-            if (!$crud_requests) {
-               //temp  abort(403, 'Unauthorized action.');
-            }
     
             $ContactsLocation = SalesProject::all()->pluck('name', 'id');
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $user_businesses_ids = Business::pluck('id')->unique()->toArray();
-            $user_projects_ids = SalesProject::all('id')->unique()->toArray();
-            if (!$is_admin) {
-                $userProjects = [];
-                $userBusinesses = [];
-                $roles = auth()->user()->roles;
-                foreach ($roles as $role) {
-    
-                    $accessRole = AccessRole::where('role_id', $role->id)->first();
-    
-                    if ($accessRole) {
-                        $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                        $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-    
-                        $userProjects = array_merge($userProjects, $userProjectsForRole);
-                        $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                    }
-                   
-                }
-                $user_projects_ids = array_unique($userProjects);
-                $user_businesses_ids = array_unique($userBusinesses);
-            }
+         
            
-            $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
+            $departmentIds = EssentialsDepartment::where('business_id', $business_id)
                 ->where('name', 'LIKE', '%سكن%')
                 ->pluck('id')->toArray();
            
@@ -142,7 +123,7 @@ class DashboardController extends Controller
                 ])
                     ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                     ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
-                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
+                    ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')->whereIn('followup_worker_requests.worker_id',$userIds)
                     ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
             }
             else {
@@ -151,16 +132,7 @@ class DashboardController extends Controller
                     ];
                 return redirect()->action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])->with('status', $output);
             }
-            if (!$is_admin) {
-          
-                $requestsProcess = $requestsProcess->where(function ($query) use ($user_businesses_ids, $user_projects_ids) {
-                    $query->where(function ($query2) use ($user_businesses_ids) {
-                        $query2->whereIn('users.business_id', $user_businesses_ids)->whereIn('user_type', ['employee', 'manager']);
-                    })->orWhere(function ($query3) use ($user_projects_ids) {
-                        $query3->where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids);
-                    });
-                });
-            }
+           
             if (request()->ajax()) {
     
     
@@ -198,17 +170,12 @@ class DashboardController extends Controller
                     ->make(true);
             }
             $leaveTypes = EssentialsLeaveType::all()->pluck('leave_type', 'id');
-            $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $user_projects_ids)->select(
-                'id',
-                DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
-             ' - ',COALESCE(id_proof_number,'')) as full_name")
-            )->pluck('full_name', 'id');
-    
+          
     
             $statuses = $this->statuses;
     
     
-        return view('housingmovements::dashboard.hm_dashboard',compact('empty_rooms_count','leaves_count','available_shopping_count','reserved_shopping_count','final_exit_count','workers', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
+        return view('housingmovements::dashboard.hm_dashboard',compact('empty_rooms_count','leaves_count','available_shopping_count','reserved_shopping_count','final_exit_count', 'statuses', 'main_reasons', 'classes', 'leaveTypes'));
     }
 
     /**
