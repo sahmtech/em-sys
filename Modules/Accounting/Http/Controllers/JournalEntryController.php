@@ -32,7 +32,16 @@ class JournalEntryController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_journal_entry= auth()->user()->can('accounting.journal_entry');
+        if (!($is_admin || $can_journal_entry)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        
         $can_view_journal =auth()->user()->can('accounting.view_journal');
         $can_edit_journal =auth()->user()->can('accounting.edit_journal');
         $can_delete_journal =auth()->user()->can('accounting.delete_journal');

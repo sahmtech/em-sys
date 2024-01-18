@@ -44,6 +44,15 @@ class TransactionController extends Controller
     public function index()
     {
 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_transactions = auth()->user()->can('accounting.transactions');
+        if (!($is_admin || $can_transactions)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
         if (request()->ajax()) {
 
             if (request()->input('datatable') == 'payment') {
@@ -80,7 +89,7 @@ class TransactionController extends Controller
         $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
         $sales_order_statuses = Transaction::sales_order_statuses();
 
-          $datatable = Datatables::of($sells)
+        $datatable = Datatables::of($sells)
             ->addColumn(
                 'action',
                 function ($row) use ($sale_type) {
@@ -342,10 +351,10 @@ class TransactionController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $purchases = $this->transactionUtil->getListPurchases($business_id);
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_purchase_view =auth()->user()->can("purchase.view");
+        $can_purchase_view = auth()->user()->can("purchase.view");
         $can_map_transactions = auth()->user()->can('accounting.map_transactions');
         return Datatables::of($purchases)
-            ->addColumn('action', function ($row) use($is_admin,$can_map_transactions,$can_purchase_view) {
+            ->addColumn('action', function ($row) use ($is_admin, $can_map_transactions, $can_purchase_view) {
 
                 $html = '';
 

@@ -43,6 +43,13 @@ class TransferController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_transfer=auth()->user()->can('accounting.transfer');
+        if (!($is_admin || $can_transfer)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $can_edit_transfer = auth()->user()->can('accounting.edit_transfer');
         $candelete_transfer = auth()->user()->can('accounting.delete_transfer');
         if (request()->ajax()) {

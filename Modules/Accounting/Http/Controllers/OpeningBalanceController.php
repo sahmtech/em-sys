@@ -28,6 +28,13 @@ class OpeningBalanceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_opening_balances= auth()->user()->can('accounting.opening_balances');
+        if (!($is_admin || $can_opening_balances)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $can_OpeningBalance_delete = auth()->user()->can('accounting.OpeningBalance.delete');
         $sub_types_obj = AccountingAccount::query()->whereIn('account_primary_type', ['asset', 'liability'])
             ->where(function ($q) use ($business_id) {

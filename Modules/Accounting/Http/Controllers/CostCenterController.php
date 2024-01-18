@@ -27,6 +27,13 @@ class CostCenterController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_cost_center= auth()->user()->can('accounting.cost_center');
+        if (!($is_admin || $can_cost_center)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $can_costCenter_edit = auth()->user()->can('accounting.costCenter.edit');
         $can_costCenter_delete = auth()->user()->can('accounting.costCenter.delete');
         $mainCenters = CostCenter::query()->whereNull('deleted_at')->whereNull('parent_id')->get();
