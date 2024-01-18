@@ -36,6 +36,15 @@ class FollowUpController extends Controller
      */
     public function index()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_dashboard = auth()->user()->can('followup.followup_dashboard');
+        if (!($is_admin || $can_followup_dashboard)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => 'Unauthorized action',
+            ]);
+        }
+
         $business_id = request()->session()->get('user.business_id');
         $business = Business::where('id', $business_id)->first();
 
@@ -49,7 +58,7 @@ class FollowUpController extends Controller
         return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));
     }
 
-    
+
     public function withinTwoMonthExpiryContracts()
     {
         // $business_id = request()->session()->get('user.business_id');
@@ -200,14 +209,13 @@ class FollowUpController extends Controller
             foreach ($roles as $role) {
 
                 $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if( $accessRole){
+                if ($accessRole) {
                     $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
                     $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-    
+
                     $userProjects = array_merge($userProjects, $userProjectsForRole);
                     $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
                 }
-               
             }
             $user_projects_ids = array_unique($userProjects);
             $user_businesses_ids = array_unique($userBusinesses);
