@@ -37,11 +37,9 @@ class AccountingController extends Controller
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function dashboard(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+    public function dashboard()
     {
         $business_id = request()->session()->get('user.business_id');
-
-      
         
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_accounting_dashboard = auth()->user()->can('accounting.accounting_dashboard');
