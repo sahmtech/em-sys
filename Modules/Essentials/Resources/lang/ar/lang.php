@@ -1458,6 +1458,11 @@ return [
   'view_late_work_admission'=>'عرض مباشرة العمل المتأخرة',
   'view_missing_employees_info'=>'عرض نواقص الموظفين',
   'view_contract_ending'=>'عرض العقود المنتهية',
+  'edit_Insurance'=>'تعديل التأمين الطبي',
+  'activate_employee_admission'=>'تفعيل مباشرة العمل',
+  'end_admission_activate'=>'انهاء المباشرة',
+  'admission_status'=>'حالة المباشرة ',
+  'not_found'=>'غير موجود'
  
 
 ];

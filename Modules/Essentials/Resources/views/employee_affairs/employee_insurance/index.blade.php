@@ -88,6 +88,8 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="editemployeeInsurance" tabindex="-1" role="dialog">
         </div>
     </section>
 @endsection

@@ -402,15 +402,25 @@ class EssentialsEmployeeInsuranceController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row)  use($is_admin ,  $can_delete_employees_insurances){
+                    function ($row)  use($is_admin ,  $can_delete_employees_insurances,$can_edit_employees_insurances){
                         $html = '';
                         if($is_admin ||  $can_delete_employees_insurances)
                         {
                             $html .= '<button class="btn btn-xs btn-danger delete_insurance_button" data-href="' . route('employee_insurance.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                         }
-                        //$html .= '<button class="btn btn-xs btn-info btn-modal" data-container=".view_modal" data-href=""><i class="fa fa-eye"></i> ' . __('essentials::lang.view') . '</button>&nbsp;';
-                        //$html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>&nbsp;';
-                  //  
+                        
+                        if ($is_admin || $can_edit_employees_insurances)
+                         {
+                            $html .= 
+                            '  <a href="' . route('employee_insurance.edit', ['id' => $row->id])  . '"
+                             data-href="' . route('employee_insurance.edit', ['id' => $row->id])  . ' "
+                             
+                             class="btn btn-xs btn-modal btn-info"  
+                             data-container="#editemployeeInsurance">
+                             <i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit')  . '</a>&nbsp;';
+                            
+                            
+                        }
 
 
                         return $html;
@@ -438,7 +448,8 @@ class EssentialsEmployeeInsuranceController extends Controller
         $query = User::whereIn('id',$userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
-        return view('essentials::employee_affairs.employee_insurance.index')->with(compact('insurance_companies', 'insurance_classes', 'users'));
+        return view('essentials::employee_affairs.employee_insurance.index')
+        ->with(compact('insurance_companies', 'insurance_classes', 'users'));
     }
 
     /**
@@ -471,8 +482,17 @@ class EssentialsEmployeeInsuranceController extends Controller
             {
                 $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                 $insurance_data['employee_id'] = $input['employee'];
+               
+                $insurance_class_company_id=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
+                ->select('insurance_company_id')->first();
+
                 $business = User::find($input['employee'])->business_id;
-                $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')->where('business_id', $business)->first()->id;
+                $company_id =User::find($input['employee'])->company_id;
+                $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')
+                ->where('business_id', $business)
+                ->where('company_id', $company_id)
+                ->where('id', $insurance_class_company_id)
+                ->first()->id;
               
     
     
@@ -532,7 +552,28 @@ class EssentialsEmployeeInsuranceController extends Controller
      */
     public function edit($id)
     {
-        return view('essentials::edit');
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+         
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+        }
+
+        $query = User::whereIn('id',$userIds);
+        $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $users = $all_users->pluck('full_name', 'id');
+
+        $insurance = EssentialsEmployeesInsurance::findOrFail($id);
+        $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
+        $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+
+
+        return view('essentials::employee_affairs.employee_insurance.edit_modal')
+        ->with(compact('insurance_companies', 'insurance_classes', 'users' ,'insurance'));
+     
     }
 
     /**
@@ -543,7 +584,46 @@ class EssentialsEmployeeInsuranceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+        try {
+
+            $input = $request->only(['insurance_class', 'employee']);
+
+          
+                $insurance_data['insurance_classes_id'] = $input['insurance_class'];
+                $insurance_data['employee_id'] = $input['employee'];
+                
+                $insurance_class_company_id=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
+                ->select('insurance_company_id')->first();
+
+                $business = User::find($input['employee'])->business_id;
+                $company_id =User::find($input['employee'])->company_id;
+                $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')
+                ->where('business_id', $business)
+                ->where('company_id', $company_id)
+                ->where('id', $insurance_class_company_id)
+                ->first()->id;
+              
+              
+            
+                EssentialsEmployeesInsurance::where('id', $id)->update($insurance_data);
+               
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ];
+           
+           
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => false,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+        return redirect()->route('employee_insurance')->with('status', $output);
     }
 
     /**

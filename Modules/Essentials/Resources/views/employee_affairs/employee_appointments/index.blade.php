@@ -184,7 +184,7 @@
         </div>
     </section>
     @include('essentials::employee_affairs.employee_appointments.change_status')
-    @include('essentials::employee_affairs.employee_appointments.change_activity_modal')
+   
 @endsection
 @section('javascript')
 

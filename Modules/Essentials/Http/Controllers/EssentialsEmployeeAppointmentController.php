@@ -54,7 +54,7 @@ class EssentialsEmployeeAppointmentController extends Controller
         $can_add_employee_appointments = auth()->user()->can('essentials.add_employee_appointments');
         $can_edit_employee_appointments = auth()->user()->can('essentials.edit_employee_appointments');
         $can_delete_employee_appointments = auth()->user()->can('essentials.delete_employee_appointments');
-        $can_activate_employee_appointments = auth()->user()->can('essentials.activate_employee_appointments ');
+        $can_activate_employee_appointments = auth()->user()->can('essentials.activate_employee_appointments');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (!$can_crud_employee_appointments) {
