@@ -1313,6 +1313,7 @@ return [
   'add_employee_appointments' => 'إضافة تعيين موظفين',
   'edit_employee_appointments' => 'تعديل تعيين موظفين',
   'delete_employee_appointments' => 'حذف تعيين موظفين',
+  'activate_employee_appointments' => 'تفعيل تعيين موظفين',
 
   'add_employee_work_admissions' => 'إضافة مباشرة عمل',
   'edit_employee_work_admissions' => 'تعديل مباشرة العمل',
@@ -1349,6 +1350,7 @@ return [
 
   'crud_employees_insurances' => 'حذف \ إضافة \ تعديل التأمين الطبي للموظفين',
   'add_employees_insurances' => 'إضافة تأمين طبي',
+  'edit_employees_insurances'=>'تعديل التأمين الطبي',
   'delete_employees_insurances' => 'حذف تأمين طبي',
 
   'add_insurance_contracts' => 'إضافة عقود التأمين',
@@ -1440,5 +1442,18 @@ return [
   'add_travel_categories_features'=>'إضافة تذاكر السفر مزايا',
   'edit_travel_categories_features'=>'تعديل تذاكر السفر مزايا',
   'delete_travel_categories_features'=>'حذف تذاكر السفر مزايا',
+
+
+  'is_active'=>'حالة التعيين',
+  'active'=>'مفعل',
+  'not_active'=>'غير مفعل',
+  'end_activate'=>'إنهاء التعيين',
+  'change_is_active'=>'تغير حالة التفعيل',
+  'show_employee_operation'=>'عرض الموظف في العمليات',
+  'view_contract_period_ending'=>'عرض  انتهاء الفترة التجريبية',
+  'view_late_work_admission'=>'عرض مباشرة العمل المتأخرة',
+  'view_missing_employees_info'=>'عرض نواقص الموظفين',
+  'view_contract_ending'=>'عرض العقود المنتهية',
+ 
 
 ];

@@ -553,7 +553,7 @@ class ClientsController extends Controller
             ->latest()
             ->get();
 
-        $contactSigners = user::with('country')
+        $contactSigners = User::with('country')
             ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
             ->where('users.contact_user_type', 'contact_signer')
             ->select('users.*')
@@ -716,7 +716,7 @@ class ClientsController extends Controller
 
 
 
-            $contactFollower = user::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
+            $contactFollower = User::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
                 ->where('users.contact_user_type', 'contract_follower')
                 ->where('contacts.id',   $contact->id)
                 ->select('users.*')

@@ -9,7 +9,7 @@
 
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="row widget-statistic">
-
+            @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_contract_period_ending"))
                 <div class="col-md-3 " onclick="finsish_contract_duration()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -30,6 +30,9 @@
                         </div>
                     </div>
                 </div>
+                @endif
+
+                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_contract_ending"))
                 <div class="col-md-3 " onclick="finish_contracts()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -51,8 +54,10 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
 
+                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_late_work_admission"))
                 <div class="col-md-3 " onclick="late_admission()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -72,7 +77,9 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
+                @if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.view_missing_employees_info"))
                 <div class="col-md-3 " onclick="uncomplete_profiles()" style="cursor: pointer;">
                     <div class="custom_card">
                         <div class="widget widget-one_hybrid widget-engagement">
@@ -92,6 +99,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
 
 

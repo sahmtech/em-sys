@@ -87,7 +87,7 @@
                                     {{-- <th>@lang('essentials::lang.superior' )</th> --}}
                                     <th>@lang('sales::lang.profession')</th>
                                     <th>@lang('essentials::lang.specialization')</th>
-                                    {{-- <th>@lang('essentials::lang.employee_status' )</th> --}}
+                                    <th>@lang('essentials::lang.is_active' )</th> 
                                     <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -95,6 +95,8 @@
                     </div>
                 @endcomponent
             </div>
+            <input type="hidden" name="appointment_id" id="appointment_id">
+
             <div class="modal fade" id="addAppointmentModal" tabindex="-1" role="dialog"
                 aria-labelledby="gridSystemModalLabel">
                 <div class="modal-dialog" role="document">
@@ -137,6 +139,14 @@
                                         'required',
                                     ]) !!}
                                 </div>
+                                <div class="form-group col-md-6">
+                                            {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
+                                            {!! Form::date('start_from', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => __('essentials::lang.start_date'),
+                                               
+                                            ]) !!}
+                                        </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
@@ -174,6 +184,7 @@
         </div>
     </section>
     @include('essentials::employee_affairs.employee_appointments.change_status')
+    @include('essentials::employee_affairs.employee_appointments.change_activity_modal')
 @endsection
 @section('javascript')
 
@@ -262,12 +273,22 @@
                         data: 'specialization_id'
                     },
                     {
+                        data: 'is_active',
+                        render: function (data, type, row) {
+                            return data == 1 ? '<span class="text-success">' + '{{ __("essentials::lang.active") }}' + '</span>' : '<span class="text-danger">' + '{{ __("essentials::lang.not_active") }}' + '</span>';
+                        }
+                    },
+
+                    {
                         data: 'action'
                     },
 
 
                 ],
             });
+            
+
+         
             professionSelect.on('change', function() {
                 var selectedProfession = $(this).val();
                 console.log(selectedProfession);
@@ -328,6 +349,46 @@
             });
 
 
+            //activate ---------------------------------------------------
+            $(document).on('click', 'a.change_activity', function(e) {
+                e.preventDefault();
+                
+                var appointmentId = $(this).data('appointment-id');
+                var origValue = 0;
+            
+                console.log(appointmentId);
+                console.log(origValue);
+
+                var editUrl = '{{ route('change_activity', ':appointmentId') }}'
+                editUrl = editUrl.replace(':appointmentId', appointmentId);
+                console.log(editUrl);
+
+
+                $.ajax({
+                    url:  editUrl, 
+                    type: 'POST', 
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        origValue: origValue,
+                    },
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            appointments_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        console.error("Status: " + status);
+                        console.error("Error: " + error);
+                    }
+                });
+            });
+
+
+            //----------------------------------------
             $(document).on('submit', 'form#change_status_form', function(e) {
                 e.preventDefault();
                 var data = $(this).serialize();

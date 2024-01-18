@@ -1030,6 +1030,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.edit_employees_insurances',
+                        'label' => __('essentials::lang.edit_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.delete_employees_insurances',
                         'label' => __('essentials::lang.delete_employees_insurances'),
                         'default' => false,
@@ -1142,6 +1147,28 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_employee_affairs_dashboard'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'essentials.view_contract_period_ending',
+                        'label' => __('essentials::lang.view_contract_period_ending'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_contract_ending',
+                        'label' => __('essentials::lang.view_contract_ending'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_late_work_admission',
+                        'label' => __('essentials::lang.view_late_work_admission'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_missing_employees_info',
+                        'label' => __('essentials::lang.view_missing_employees_info'),
+                        'default' => false,
+                    ],
+
                     [
                         'value' => 'essentials.crud_import_employee',
                         'label' => __('essentials::lang.crud_import_employee'),
@@ -1191,6 +1218,12 @@ class DataController extends Controller
                   [
                     'value' => 'essentials.delete_employee_appointments',
                     'label' => __('essentials::lang.delete_employee_appointments'),
+                    'default' => false,
+                  ],
+
+                  [
+                    'value' => 'essentials.activate_employee_appointments',
+                    'label' => __('essentials::lang.activate_employee_appointments'),
                     'default' => false,
                   ],
 
@@ -1397,6 +1430,12 @@ class DataController extends Controller
                         'label' => __('essentials::lang.essentials_work_cards_dashboard'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.show_employee_operation',
+                        'label' => __('essentials::lang.show_employee_operation'),
+                        'default' => false,
+                    ],
+                    
                     [
                         'value' => 'essentials.show_business_document',
                         'label' => __('essentials::lang.show_business_document'),

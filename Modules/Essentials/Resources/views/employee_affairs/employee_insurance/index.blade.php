@@ -28,6 +28,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.Residency_no')</th>
                                     <th>@lang('essentials::lang.insurance_company')</th>
                                     <th>@lang('essentials::lang.insurance_class')</th>
                                     <th>@lang('messages.action')</th>
@@ -112,8 +113,12 @@
 
                 },
 
-                columns: [{
+                columns: [
+                    {
                         data: 'user'
+                    },
+                    {
+                        data:'proof_number'
                     },
                     {
                         data: 'insurance_company_id'

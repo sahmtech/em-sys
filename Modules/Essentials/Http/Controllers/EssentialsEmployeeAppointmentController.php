@@ -22,6 +22,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 {
     protected $moduleUtil;
     protected $statuses;
+    
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
@@ -53,11 +54,13 @@ class EssentialsEmployeeAppointmentController extends Controller
         $can_add_employee_appointments = auth()->user()->can('essentials.add_employee_appointments');
         $can_edit_employee_appointments = auth()->user()->can('essentials.edit_employee_appointments');
         $can_delete_employee_appointments = auth()->user()->can('essentials.delete_employee_appointments');
+        $can_activate_employee_appointments = auth()->user()->can('essentials.activate_employee_appointments ');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
         if (!$can_crud_employee_appointments) {
             //temp  abort(403, 'Unauthorized action.');
         }
+
         $companies_ids = Company::pluck('id')->toArray();
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
@@ -92,10 +95,11 @@ class EssentialsEmployeeAppointmentController extends Controller
                 'essentials_employee_appointmets.department_id',
                 'essentials_employee_appointmets.profession_id',
                 'essentials_employee_appointmets.specialization_id',
+                'essentials_employee_appointmets.is_active',
                 'u.status as status',
 
 
-            ]);
+            ])->orderby('id','desc');
 
 
         if (request()->ajax()) {
@@ -138,7 +142,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row)  use ($is_admin, $can_edit_employee_appointments, $can_delete_employee_appointments) {
+                    function ($row)  use ($is_admin, $can_edit_employee_appointments, $can_delete_employee_appointments,$can_activate_employee_appointments) {
                         $html = '';
                         if ($is_admin  || $can_edit_employee_appointments) {
                             $html .= '<a  href="' . route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
@@ -147,6 +151,10 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                         if ($is_admin  || $can_delete_employee_appointments) {
                             $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+
+                        if ($is_admin || $can_activate_employee_appointments) {
+                            $html .= '&nbsp; <a href="#" class="btn btn-xs btn-warning change_activity"  data-appointment-id="' . $row->id . '" data-orig-value="' . $row->is_active . '"><i class="glyphicon glyphicon-stop"></i> ' . __('essentials::lang.end_activate') . '</a>';
                         }
 
 
@@ -179,6 +187,39 @@ class EssentialsEmployeeAppointmentController extends Controller
         return view('essentials::employee_affairs.employee_appointments.index')->with(compact('statuses', 'users', 'departments', 'business_locations', 'specializations', 'professions'));
     }
 
+    public function change_activity(Request $request, $appointmentId)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        
+        try {
+            $input = $request->only(['origValue']);
+            
+            $appointmet = EssentialsEmployeeAppointmet::find($appointmentId);
+            
+            if ($appointmet) {
+                $appointmet->is_active = $input['origValue'];
+                $appointmet->end_at = now();
+                $appointmet->save();
+                
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ];
+            } else {
+                $output = [
+                    'success' => false,
+                    'msg' => __('lang_v1.not_found'),
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' => $e->getMessage()];
+        }
+    
+        return $output;
+    }
+    
 
     public function changeStatus(Request $request)
     {
@@ -239,16 +280,28 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
         try {
-            $input = $request->only(['employee', 'department', 'location', 'profession', 'specialization']);
+            $input = $request->only(['employee', 'department', 'location', 'profession', 'specialization','start_from']);
 
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $input['department'];
             $input2['business_location_id'] = $input['location'];
-
-            //        $input2['superior'] = $input['superior'];
             $input2['profession_id'] = $input['profession'];
             $input2['specialization_id'] = $input['specialization'];
+            $input2['is_active'] = 1;
+            $input2['start_from']=$input['start_from'];
+            
+            $previous_appoientement = EssentialsEmployeeAppointmet::where('employee_id',$input2['employee_id'])
+            ->latest('created_at')
+            ->first();
+           
 
+            if( $previous_appoientement )
+            {
+                $previous_appoientement->is_active= 0;
+                $previous_appoientement->end_at= $input2['start_from'];
+                $previous_appoientement->save();
+              
+            }
 
 
             EssentialsEmployeeAppointmet::create($input2);

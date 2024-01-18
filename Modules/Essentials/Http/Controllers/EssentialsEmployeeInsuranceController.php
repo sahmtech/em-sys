@@ -41,7 +41,7 @@ class EssentialsEmployeeInsuranceController extends Controller
          }
          $zip_loaded = extension_loaded('zip') ? true : false;
  
-         //Check if zip extension it loaded or not.
+       
          if ($zip_loaded === false) {
              $output = ['success' => 0,
                  'msg' => 'Please install/enable PHP Zip archive for import',
@@ -217,7 +217,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                                           
               }
                     
-                              
+                    
               $processedEqamaEmpNos = [];
                  if (! empty($formated_data)) 
                  {
@@ -313,14 +313,21 @@ class EssentialsEmployeeInsuranceController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        
+        $can_insurance = auth()->user()->can('essentials.crud_employees_insurances');
+        if (!($is_admin || $can_insurance)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        
 
         $can_crud_employees_insurances = auth()->user()->can('essentials.crud_employees_insurances');
         $can_delete_employees_insurances = auth()->user()->can('essentials.delete_employees_insurances');
         $can_add_employees_insurances = auth()->user()->can('essentials.add_employees_insurances');
-
-        if (!$can_crud_employees_insurances) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
+        $can_edit_employees_insurances = auth()->user()->can('essentials.edit_employees_insurances');
+       
 
         
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
@@ -332,31 +339,57 @@ class EssentialsEmployeeInsuranceController extends Controller
         $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
         $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
 
-        $insurances = EssentialsEmployeesInsurance::whereIn('essentials_employees_insurances.employee_id',$userIds)->leftJoin('users as u', 'u.id', '=', 'essentials_employees_insurances.employee_id')
-        
-        ->leftJoin('essentials_employees_families as f', 'f.id', '=', 'essentials_employees_insurances.family_id')
-        ->select([
-            'essentials_employees_insurances.id as id',
-            DB::raw("
-                CASE 
-                    WHEN essentials_employees_insurances.employee_id IS NOT NULL 
-                    THEN CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, ''))
-                    ELSE f.full_name
-                END as user
-            "),
-            'essentials_employees_insurances.insurance_classes_id as insurance_classes_id',
-            'essentials_employees_insurances.insurance_company_id as insurance_company_id',
-            'essentials_employees_insurances.status as status'
-        ])->orderby('id','desc');
+
+        $insurances=EssentialsEmployeesInsurance::with('user','essentialsEmployeesFamily')
        
+        ->where(function($query) use($userIds) {
+            $query->whereHas('user' ,function($query1) use( $userIds){
+                $query1->whereIn('users.id', $userIds);
+            })
+            ->orWhereHas('essentialsEmployeesFamily' ,function($query2) use( $userIds){
+                $query2->whereIn('essentials_employees_families.employee_id', $userIds);
+            });
+            
+  
+        })->select('essentials_employees_insurances.employee_id' ,
+        'essentials_employees_insurances.family_id',
+        'essentials_employees_insurances.id as id' ,
+        'essentials_employees_insurances.insurance_company_id',
+        'essentials_employees_insurances.insurance_classes_id')
+        ->orderby('essentials_employees_insurances.id','desc');
+      
+      
         if (request()->ajax()) {
 
-
-         
-
-
-
             return Datatables::of($insurances)
+                ->addColumn('user', function ($row)  {
+                    if($row->employee_id != null)
+                    {
+                        $item=$row->user->first_name  .' '. $row->user->last_name?? '';
+                    }
+                    else if($row->employee_id == null)
+                    {
+                        $item=$row->essentialsEmployeesFamily->full_name ?? '';
+                    }
+
+                    return $item;
+                })
+
+               
+                ->addColumn('proof_number', function ($row) {
+                   
+                    if($row->employee_id != null)
+                    {
+                        $item=$row->user->id_proof_number ?? '';
+                    }
+                    else if($row->employee_id == null)
+                    {
+                        $item=$row->essentialsEmployeesFamily->eqama_number ?? '';
+                    }
+
+                    return $item;
+                })
+
                 ->editColumn('insurance_company_id', function ($row) use ($insurance_companies) {
                     $item = $insurance_companies[$row->insurance_company_id] ?? '';
 
@@ -383,9 +416,20 @@ class EssentialsEmployeeInsuranceController extends Controller
                         return $html;
                     }
                 )
-                ->filterColumn('name', function ($query, $keyword) {
-                    $query->where('name', "LIKE", "%{$keyword}%");
-                })
+                ->filterColumn('user', function ($query, $keyword) {
+                  
+                    $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?", ["%$keyword%"])
+                        ->orWhereRaw("f.full_name LIKE ?", ["%$keyword%"]);
+                     
+                    })
+                ->filterColumn('proof_number', function ($query, $keyword) {
+                        $query->whereRaw("CASE
+                                            WHEN u.id_proof_number IS NOT NULL THEN u.id_proof_number
+                                            WHEN f.eqama_number IS NOT NULL THEN f.eqama_number
+                                            ELSE ''
+                                        END LIKE ?", ["%$keyword%"]);
+                    })
+
                 ->removeColumn('id')
                 ->removeColumn('status')
                 ->rawColumns(['action'])
@@ -429,7 +473,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 $insurance_data['employee_id'] = $input['employee'];
                 $business = User::find($input['employee'])->business_id;
                 $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')->where('business_id', $business)->first()->id;
-                // dd(  $insurance_data );
+              
     
     
                 EssentialsEmployeesInsurance::create($insurance_data);
@@ -499,7 +543,7 @@ class EssentialsEmployeeInsuranceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
     }
 
     /**

@@ -41,10 +41,6 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
 use Modules\Sales\Entities\SalesProject;
-
-
-
-
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 
 
@@ -147,36 +143,39 @@ class EssentialsManageEmployeeController extends Controller
         }
 
 
-        $users = User::whereIn('users.id', $userIds)->with(['userAllowancesAndDeductions'])->where('users.is_cmmsn_agnt', 0)
-
-            ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
-            ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
-            ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
-            ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
-            ->select([
-                'users.id as id',
-                'users.emp_number',
-                'users.profile_image',
-                'users.username',
-                'users.company_id',
-                'users.user_type',
-                DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
-                'users.id_proof_number',
-                DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
-
-                'essentials_admission_to_works.admissions_date as admissions_date',
-                'essentials_employees_contracts.contract_end_date as contract_end_date',
-                'users.email',
-                'users.allow_login',
-                'users.contact_number',
-                'users.essentials_department_id',
-                'users.status',
-                'users.essentials_salary',
-                'users.total_salary',
-                'essentials_employee_appointmets.profession_id as profession_id',
-                'essentials_employee_appointmets.specialization_id as specialization_id'
-            ])->orderby('id', 'desc')->groupby('id');
-
+        $users = User::whereIn('users.id', $userIds)
+        ->with(['userAllowancesAndDeductions'])
+        ->where('users.is_cmmsn_agnt', 0)
+        ->leftjoin('essentials_employee_appointmets', 'essentials_employee_appointmets.employee_id', 'users.id')
+        ->leftjoin('essentials_admission_to_works', 'essentials_admission_to_works.employee_id', 'users.id')
+        ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
+        ->leftJoin('essentials_countries', 'essentials_countries.id', '=', 'users.nationality_id')
+        ->select([
+            'users.id as id',
+            'users.emp_number',
+            'users.profile_image',
+            'users.username',
+            'users.company_id',
+            'users.user_type',
+            DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.mid_name, ''),' ', COALESCE(users.last_name, '')) as full_name"),
+            'users.id_proof_number',
+            DB::raw("COALESCE(essentials_countries.nationality, '') as nationality"),
+            'essentials_admission_to_works.admissions_date as admissions_date',
+            'essentials_employees_contracts.contract_end_date as contract_end_date',
+            'users.email',
+            'users.allow_login',
+            'users.contact_number',
+            'users.essentials_department_id',
+            'users.status',
+            'users.essentials_salary',
+            'users.total_salary',
+            'essentials_employee_appointmets.profession_id as profession_id',
+            'essentials_employee_appointmets.specialization_id as specialization_id'
+        ])
+        ->where('essentials_employee_appointmets.is_active', 1) 
+        ->orderBy('id', 'desc')
+        ->groupBy('id');
+    
 
         if (!empty($request->input('specialization'))) {
 
@@ -1056,21 +1055,39 @@ class EssentialsManageEmployeeController extends Controller
     public function show($id)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('user.view'))) {
-            //temp  abort(403, 'Unauthorized action.');
+        $can_show_employee = auth()->user()->can('essentials.show_employee');
+        $business_id = request()->session()->get('user.business_id');
+        $documents = null;
+        
+        if (!($is_admin || $can_followup_dashboard)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
         }
 
-        $business_id = request()->session()->get('user.business_id');
+      
 
-        $user = User::with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        
+        if (!$is_admin) 
+        {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+        }
+
+       
+
+        $user = User::whereIn('users.id', $userIds)
+            ->with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
             ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))
             ->find($id);
 
 
 
-
-        $documents = null;
+        
 
         if ($user) {
             if ($user->user_type == 'employee') {
