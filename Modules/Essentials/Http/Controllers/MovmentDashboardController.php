@@ -70,7 +70,7 @@ class MovmentDashboardController extends Controller
 
                 ->editColumn('next_change_oil', function ($row) {
 
-                    return  Carbon::parse($row->next_change_oil)->format('Y-m-d') ?? '';
+                    return  $row->next_change_oil ?? '';
                 })
                 ->editColumn('invoice_no', function ($row) {
                     return $row->invoice_no ?? '';
