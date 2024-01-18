@@ -21,6 +21,8 @@ class CarTypeController extends Controller
     {
         $carTypes = CarType::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_cartype_edit = auth()->user()->can('cartype.edit');
+        $can_cartype_delete = auth()->user()->can('cartype.delete');
         if (request()->ajax()) {
 
 
@@ -36,18 +38,18 @@ class CarTypeController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin, $can_cartype_edit, $can_cartype_delete) {
 
                         $html = '';
-                        if ($is_admin  || auth()->user()->can('cartype.edit')) {
-                        $html .= '
+                        if ($is_admin  || $can_cartype_edit) {
+                            $html .= '
                         <a href="' . route('essentials.cartype.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.cartype.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_carType_button"  data-container="#edit_car_type_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || auth()->user()->can('cartype.delete')) {
-                        $html .= '
+                        if ($is_admin  || $can_cartype_delete) {
+                            $html .= '
                     <button data-href="' .  route('essentials.cartype.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carType_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
                         }
@@ -55,13 +57,6 @@ class CarTypeController extends Controller
                         return $html;
                     }
                 )
-
-                ->filter(function ($query) use ($request) {
-
-                    // if (!empty($request->input('full_name'))) {
-                    //     $query->whereRaw("CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$request->input('driver')}%"]);
-                    // }
-                })
 
                 ->rawColumns(['action', 'name_en', 'name_ar'])
                 ->make(true);
@@ -106,10 +101,10 @@ class CarTypeController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -151,7 +146,7 @@ class CarTypeController extends Controller
                 'name_en' => $request->input('name_en'),
             ]);
 
-           
+
             DB::commit();
             return redirect()->back()
                 ->with('status', [
@@ -161,10 +156,10 @@ class CarTypeController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
+                ->with('status', [
+                    'success' => false,
+                    'msg' => __('messages.something_went_wrong'),
+                ]);
         }
     }
 
@@ -185,10 +180,10 @@ class CarTypeController extends Controller
                 ];
             } catch (Exception $e) {
                 return redirect()->back()
-            ->with('status', [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ]);
+                    ->with('status', [
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong'),
+                    ]);
             }
             return $output;
         }

@@ -24,6 +24,8 @@ class CarModelController extends Controller
         $carModles = CarModel::all();
         $carTypes = CarType::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_carmodel_edit = auth()->user()->can('carmodel.edit');
+        $can_carmodel_delete = auth()->user()->can('carmodel.delete');
         if (request()->ajax()) {
 
             if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
@@ -49,21 +51,20 @@ class CarModelController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin, $can_carmodel_edit, $can_carmodel_delete) {
 
                         $html = '';
-                        if ($is_admin  || auth()->user()->can('carmodel.edit')) {
+                        if ($is_admin  || $can_carmodel_edit) {
                             $html .= '
                         <a href="' . route('essentials.carmodel.edit', ['id' => $row->id])  . '"
                         data-href="' . route('essentials.carmodel.edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_carModel_button"  data-container="#edit_carModels_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if ($is_admin  || auth()->user()->can('carmodel.delete')) {
-                        $html .= '
+                        if ($is_admin  ||  $can_carmodel_delete) {
+                            $html .= '
                     <button data-href="' .  route('essentials.carmodel.delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_carModel_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';
-
                         }
                         return $html;
                     }

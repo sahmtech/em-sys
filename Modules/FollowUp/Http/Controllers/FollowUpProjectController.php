@@ -34,6 +34,7 @@ class FollowUpProjectController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_projectView = auth()->user()->can('followup.projectView');
 
 
 
@@ -123,9 +124,9 @@ class FollowUpProjectController extends Controller
                 ->addColumn('type', function ($row) {
                     return $row->salesContract->salesOrderOperation?->operation_order_type ?? null;;
                 })
-                ->addColumn('action', function ($row) use ($is_admin) {
+                ->addColumn('action', function ($row) use ($is_admin,$can_projectView) {
                     $html = '';
-                    if (($is_admin  || auth()->user()->can('followup.projectView'))) {
+                    if (($is_admin  || $can_projectView)) {
                         $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
                              <i class="fas fa-eye" aria-hidden="true"></i>' . __('messages.view') . '
                          </a>';

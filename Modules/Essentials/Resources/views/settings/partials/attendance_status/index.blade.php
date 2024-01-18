@@ -23,6 +23,7 @@
                 </div>
             @endslot
 
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="attendance_statuses_table">
                     <thead>
@@ -34,6 +35,8 @@
                     </thead>
                 </table>
             </div>
+    <div class="modal fade" id="edit_attendance_status" tabindex="-1" role="dialog">
+
         @endcomponent
 
 

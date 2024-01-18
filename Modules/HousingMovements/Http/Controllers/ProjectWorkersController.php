@@ -81,22 +81,7 @@ class ProjectWorkersController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'contact_locations.name as contact_name'
         );
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('users.assigned_to',   $userProjects);
-        }
-
-
+      
         if (request()->ajax()) {
 
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -199,21 +184,6 @@ class ProjectWorkersController extends Controller
         $users = User::whereIn('users.id',$userIds)->with(['rooms'])
             ->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
 
-
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('users.assigned_to',   $userProjects);
-        }
 
 
         if (request()->ajax()) {
@@ -341,7 +311,7 @@ class ProjectWorkersController extends Controller
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
 
         $users = HousingMovementsWorkerBooking::whereIn('user_id',$userIds)->get();
-      
+        $can_unbook =auth()->user()->can('worker.unbook');
 
         if (request()->ajax()) {
       
@@ -403,16 +373,11 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use($is_admin){
+                    function ($row) use($is_admin,$can_unbook){
 
                         $html = '';
 
-                        // $html .= '
-                        // <a href="' . route('worker.unbook', ['id' => $row->id])  . '"
-                        // data-href="' . route('worker.unbook', ['id' => $row->id])  . ' "
-                        //  class="btn btn-xs btn-modal btn-danger delete_book_worker_button" style="width: 60px;"  ><i class="fa fa-minus-circle cursor-pointer" style="
-                        //  font-size: smaller;"></i>' . __("housingmovements::lang.unbook") . '</a>';
-                        if ($is_admin  || auth()->user()->can('worker.unbook')) {
+                         if ($is_admin  || $can_unbook ) {
                             $html .= '
                     <button data-href="' .  route('worker.unbook', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_book_worker_button"><i class="fa fa-minus-circle cursor-pointer"></i>' . __("housingmovements::lang.unbook") . '</button>
                 ';

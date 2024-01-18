@@ -43,13 +43,13 @@ class FollowUpContractsWishesController extends Controller
         //  }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        
-        $workers = User::whereIn('users.id',$userIds)->join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
+
+        $workers = User::whereIn('users.id', $userIds)->join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
             ->join('contacts', 'sales_projects.contact_id', '=', 'contacts.id')
             ->leftjoin('essentials_employees_contracts', 'essentials_employees_contracts.employee_id', 'users.id')
             ->where('users.user_type', 'worker')
@@ -77,7 +77,7 @@ class FollowUpContractsWishesController extends Controller
             $workers->where('sales_projects.id', request()->input('project_name_filter'));
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_change_wish = auth()->user()->can('followup.change_wish');
         if (request()->ajax()) {
 
             return DataTables::of($workers)
@@ -91,9 +91,9 @@ class FollowUpContractsWishesController extends Controller
                     return $wishReason;
                 })
 
-                ->editColumn('action', function ($row) use($is_admin) {
+                ->editColumn('action', function ($row) use ($is_admin, $can_change_wish) {
                     if (!empty($row->wish)) {
-                        if (($is_admin  || auth()->user()->can('followup.change_wish'))) {
+                        if (($is_admin  || $can_change_wish)) {
                             $button = '<a href="#" class="btn btn-xs btn-success change-status-btn" data-toggle="modal"
                         data-target="#change_status_modal" data-employee-id="' . $row->id . '"  data-orig-value="' . $row->wish . '">
                         ' . __('followup::lang.change_wish') . '

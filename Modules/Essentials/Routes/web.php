@@ -263,6 +263,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/storeAttendanceStatus', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'store'])->name('storeAttendanceStatus');
         Route::delete('/attendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'destroy'])->name('attendanceStatus.destroy');
         Route::put('/updateAttendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'update'])->name('updateAttendanceStatus');
+        Route::get('/editAttendanceStatus/{id}', [\Modules\Essentials\Http\Controllers\AttendanceStatusController::class, 'edit'])->name('editAttendanceStatus');
 
 
 

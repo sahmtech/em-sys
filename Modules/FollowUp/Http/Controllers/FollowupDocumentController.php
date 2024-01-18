@@ -21,15 +21,10 @@ class FollowupDocumentController extends Controller
         $documents = FollowupDocument::all();
         if (request()->ajax()) {
 
-            // if (!empty(request()->input('carTypeSelect')) && request()->input('carTypeSelect') !== 'all') {
-
-
-            //     $documents = $documents->where('car_model_id', request()->input('carTypeSelect'));
-            // }
-
 
             $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+            $can_edit_document = auth()->user()->can('followup.edit_document');
+            $can_documents_delete = auth()->user()->can('followup.documents.delete');
             return DataTables::of($documents)
 
 
@@ -39,17 +34,17 @@ class FollowupDocumentController extends Controller
 
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin) {
+                    function ($row) use ($is_admin,$can_edit_document, $can_documents_delete) {
 
                         $html = '';
-                        if (($is_admin  || auth()->user()->can('followup.edit_document'))) {
+                        if (($is_admin  || $can_edit_document)) {
                             $html .= '
                         <a href="' . route('documents-edit', ['id' => $row->id])  . '"
                         data-href="' . route('documents-edit', ['id' => $row->id])  . ' "
                          class="btn btn-xs btn-modal btn-info edit_document_button"  data-container="#edit_document_model"><i class="fas fa-edit cursor-pointer"></i>' . __("messages.edit") . '</a>
                     ';
                         }
-                        if (($is_admin  || auth()->user()->can('followup.documents.delete'))) {
+                        if (($is_admin  ||  $can_documents_delete )) {
                             $html .= '
                     <button data-href="' .  route('documents-delete', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_document_button"><i class="glyphicon glyphicon-trash"></i>' . __("messages.delete") . '</button>
                 ';

@@ -161,7 +161,11 @@ return [
     '_room_workers' => 'Index workers room',
     '_rooms_edit' => 'Edit room',
     '_rooms_delete' => 'Delete room',
-
+    'return_the_request' => 'Return the request',
+    'view_request' => 'view request ',
+    'change_status' => 'Change request status ',
+    'all_request' => ' Request index',
+    'housed_in_room' => 'Housed in Rooms',
 
 
 
