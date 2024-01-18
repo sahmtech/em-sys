@@ -18,11 +18,19 @@ class FollowupDocumentController extends Controller
      */
     public function index(Request $request)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_documents= auth()->user()->can('followup.crud_documents');
+        if (!($is_admin || $can_followup_crud_documents)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $documents = FollowupDocument::all();
         if (request()->ajax()) {
 
 
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+          
             $can_edit_document = auth()->user()->can('followup.edit_document');
             $can_documents_delete = auth()->user()->can('followup.documents.delete');
             return DataTables::of($documents)

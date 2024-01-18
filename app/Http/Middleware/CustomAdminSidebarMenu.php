@@ -1031,14 +1031,15 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
+            
+            if ($is_admin  || auth()->user()->can('followup.followup_dashboard')) {
             $menu->url(
                 action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
                 __('followup::lang.followUp'),
                 ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'followup']
             );
-            //$menu->header("");
-            //$menu->header("");
-
+        }
+       
 
             if ($is_admin  || auth()->user()->can('followup.crud_contact_locations')) {
                 $menu->url(
@@ -1085,8 +1086,8 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('followup::lang.reports.title'),
-                    function ($sub) use ($enabled_modules) {
-                        if (auth()->user()->can('followup.crud_projectsReports')) {
+                    function ($sub) use ($enabled_modules,$is_admin) {
+                        if ($is_admin ||auth()->user()->can('followup.crud_projectsReports')) {
                             $sub->url(
                                 action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
                                 __('followup::lang.reports.projects'),
@@ -1094,7 +1095,7 @@ class CustomAdminSidebarMenu
                             );
                         }
 
-                        if (auth()->user()->can('followup.crud_projectWorkersReports')) {
+                        if ($is_admin || auth()->user()->can('followup.crud_projectWorkersReports')) {
                             $sub->url(
                                 action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
                                 __('followup::lang.reports.projectWorkers'),

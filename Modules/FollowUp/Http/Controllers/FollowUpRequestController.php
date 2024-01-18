@@ -351,6 +351,13 @@ class FollowUpRequestController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_requests = auth()->user()->can('followup.crud_requests');
+        if (!($is_admin || $can_followup_crud_requests)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');
 
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();

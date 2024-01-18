@@ -50,7 +50,14 @@ class FollowUpWorkerController extends Controller
 
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_workers = auth()->user()->can('followup.crud_workers');
+        if (!($is_admin || $can_followup_crud_workers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $can_crud_workers = auth()->user()->can('followup.crud_workers');
         if (!$can_crud_workers) {

@@ -37,12 +37,15 @@ class FollowUpContractsWishesController extends Controller
 
 
 
-        //  $can_crud_projects = auth()->user()->can('followup.crud_projects');
-        //  if (!$can_crud_projects) {
-        //     //temp  abort(403, 'Unauthorized action.');
-        //  }
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_contrascts_wishes = auth()->user()->can('followup.crud_contrascts_wishes');
+        if (!($is_admin || $can_followup_crud_contrascts_wishes)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
         $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];

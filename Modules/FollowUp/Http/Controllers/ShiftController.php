@@ -35,7 +35,13 @@ class ShiftController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_followup_crud_shifts = auth()->user()->can('followup.crud_shifts');
+        if (!($is_admin || $can_followup_crud_shifts)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $shifts = Shift::where('essentials_shifts.business_id', $business_id)->where('user_type', 'worker')
             ->with('Project')
