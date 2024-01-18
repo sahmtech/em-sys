@@ -130,7 +130,15 @@ class DriverCarController extends Controller
     {
         $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
         $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-        $driver_ids = DriverCar::all()->pluck('user_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $driver_ids = DriverCar::whereIn('user_id', $userIds)->pluck('user_id');
+
+
 
         $workers = User::where('user_type', 'worker')
             ->whereIn('id', $essentials_employee_appointmets_ids)
