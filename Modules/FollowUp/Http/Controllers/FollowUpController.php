@@ -41,7 +41,7 @@ class FollowUpController extends Controller
         if (!($is_admin || $can_followup_dashboard)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
-                'msg' => 'Unauthorized action',
+                'msg' => __('message.unauthorized'),
             ]);
         }
 

@@ -36,5 +36,6 @@ return [
     'create_user' => 'إنشاء مستخدم',
     'update_access_role' => 'صلاحية الوصول',
     'go_back' => 'رجوع',
-    'added_success'=>'تم الحفظ بنجاح'
+    'added_success' => 'تم الحفظ بنجاح',
+    'unauthorized' => 'ليس لديك الصلاحية المناسبة',
 ];

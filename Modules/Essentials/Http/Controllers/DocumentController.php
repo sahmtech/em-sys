@@ -38,6 +38,8 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
+
+        
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
  
