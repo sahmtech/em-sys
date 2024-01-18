@@ -64,13 +64,13 @@ class RequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (!(auth()->user()->can('superadmin'))) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
-
-        $crud_requests = auth()->user()->can('followup.crud_requests');
-        if (!$crud_requests) {
-            //temp  abort(403, 'Unauthorized action.');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_housing_crud_htr_requests = auth()->user()->can('housingmovements.crud_htr_requests');
+        if (!($is_admin || $can_housing_crud_htr_requests)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
         }
 
         $ContactsLocation = SalesProject::all()->pluck('name', 'id');

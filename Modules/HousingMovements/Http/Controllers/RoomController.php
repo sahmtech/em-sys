@@ -29,10 +29,15 @@ class RoomController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $can_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
-        if (!$can_crud_rooms) {
-        }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_housing_crud_rooms = auth()->user()->can('housingmovements.crud_rooms');
+        if (!($is_admin || $can_housing_crud_rooms)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
         $can_room_workers = auth()->user()->can('room.workers');
         $can_room_edit = auth()->user()->can('room.edit');
         $can_room_delete = auth()->user()->can('room.delete');

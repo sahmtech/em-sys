@@ -50,13 +50,16 @@ class ProjectWorkersController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        // $can_crud_workers = auth()->user()->can('followup.crud_workers');
-        // if (!$can_crud_workers) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-      
+        $can_housing_workers = auth()->user()->can('housingmovements.workers');
+        if (!($is_admin || $can_housing_workers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -162,12 +165,15 @@ class ProjectWorkersController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        // $can_crud_workers = auth()->user()->can('followup.crud_workers');
-        // if (!$can_crud_workers) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_housing_all_workers = auth()->user()->can('housingmovements.all_workers');
+        if (!($is_admin || $can_housing_all_workers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];

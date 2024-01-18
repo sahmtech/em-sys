@@ -28,13 +28,20 @@ class BuildingController extends Controller
     {
 
         $business_id = request()->session()->get('user.business_id');
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_housing_crud_buildings = auth()->user()->can('housingmovements.crud_buildings');
+        if (!($is_admin || $can_housing_crud_buildings)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $can_crud_buildings = auth()->user()->can('housingmovement_module.crud_buildings');
         $can_building_edit =auth()->user()->can('building.edit');
         $can_building_delete = auth()->user()->can('building.delete');
        
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        
         $query = User::where('business_id', $business_id);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
