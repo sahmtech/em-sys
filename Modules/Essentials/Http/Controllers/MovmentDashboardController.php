@@ -21,6 +21,15 @@ class MovmentDashboardController extends Controller
      */
     public function index()
     {
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_movement_management_dashbord =  auth()->user()->can('essentials.movement_management_dashbord');
+        if (!($is_admin ||  $can_movement_management_dashbord)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $last_15_days = Carbon::now()->subDays(15);
         $to_15_days = Carbon::now()->addDays(15);
 

@@ -20,9 +20,20 @@ class CarsChangeOilController extends Controller
      */
     public function index(Request $request)
     {
-        $CarsChangeOil = HousingMovementsCarsChangeOil::all();
+
+
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_carsChangeOil = auth()->user()->can('essentials.carsChangeOil');
+        if (!($is_admin || $can_carsChangeOil)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        $CarsChangeOil = HousingMovementsCarsChangeOil::all();
+
+      
         $can_change_oil_edit = auth()->user()->can('change.oil.edit');
         $can_change_oil_delete = auth()->user()->can('change.oil.delete');
         if (request()->ajax()) {
