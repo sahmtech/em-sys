@@ -56,6 +56,8 @@ class CustomAdminSidebarMenu
             $this->purchasesMenu();
         } elseif (Str::startsWith($currentPath, ['movment', 'dashboard-movment'])) {
             $this->movmentMenu();
+        } elseif (Str::startsWith($currentPath, ['legalaffairs',])) {
+            $this->legalAffairsMenu();
         }
         // elseif (Str::startsWith($currentPath, [
         //     'superadmin',
@@ -95,11 +97,9 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        }
-        elseif (Str::startsWith($currentPath, 'toDo')) {
+        } elseif (Str::startsWith($currentPath, 'toDo')) {
             $this->toDoMenu();
-        }
-         elseif (Str::startsWith($currentPath, ['helpdesk','tickets'])) {
+        } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
         } elseif ($is_admin) {
             $this->settingsMenu();
@@ -118,86 +118,86 @@ class CustomAdminSidebarMenu
         // $moduleUtil->getModuleData('modifyAdminMenu_CUS_sales');
         return $next($request);
     }
-   public function toDoMenu()
-   {
-    Menu::create('admin-sidebar-menu', function ($menu) {
-        $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
-        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-        $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        
-        $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
-        
-        if ($is_admin  || auth()->user()->can('essentials.essentials_todo_dashboard')) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
-                __('essentials::lang.todo'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
-                request()->segment(2) == 'todo_dashboard'],
-            );
-        }
+    public function toDoMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+            $pos_settings = !empty(session('business.pos_settings')) ? json_decode(session('business.pos_settings'), true) : [];
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-         
-        if ($is_admin  || auth()->user()->can('essentials.view_document')) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']),
-                __('essentials::lang.document'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
-                request()->segment(2) == 'document'],
-            );
-        }
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
-        if ($is_admin  || auth()->user()->can('essentials.view_memos')) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']) .'?type=memos',
-                __('essentials::lang.memos'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
-                request()->segment(2) == 'document'],
-            );
-        }
-
-        if ($is_admin  || auth()->user()->can('essentials.view_reminder')) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\ReminderController::class, 'index']),
-                __('essentials::lang.reminders'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
-                request()->segment(2) == 'reminder'],
-            );
-        }
+            if ($is_admin  || auth()->user()->can('essentials.essentials_todo_dashboard')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index']),
+                    __('essentials::lang.todo'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&
+                        request()->segment(2) == 'todo_dashboard'],
+                );
+            }
 
 
-        
-        if ($is_admin  || auth()->user()->can('essentials.view_message') ||  auth()->user()->can('essentials.create_message') ) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'index']),
-                __('essentials::lang.messages'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
-                request()->segment(2) == 'messages'],
-            );
-        }
+            if ($is_admin  || auth()->user()->can('essentials.view_document')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']),
+                    __('essentials::lang.document'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&
+                        request()->segment(2) == 'document'],
+                );
+            }
 
-        if ($is_admin  || auth()->user()->can('essentials.view_knowledge_base')  ) {
-            $menu->url(
-                action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'index']),
-                __('essentials::lang.knowledge_base'),
-                ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' && 
-                request()->segment(2) == 'knowledge-base'],
-            );
-        }
+            if ($is_admin  || auth()->user()->can('essentials.view_memos')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']) . '?type=memos',
+                    __('essentials::lang.memos'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&
+                        request()->segment(2) == 'document'],
+                );
+            }
 
-        // if ($is_admin  || auth()->user()->can('essentials.edit_essentials_settings')  ) {
-        //     $menu->url(
-        //         action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
-        //         __('business.settings'),
-        //         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&   request()->segment(1) == 'toDo'&&
-        //         request()->segment(2) == 'settings'],
-        //     );
-        // }
+            if ($is_admin  || auth()->user()->can('essentials.view_reminder')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\ReminderController::class, 'index']),
+                    __('essentials::lang.reminders'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&
+                        request()->segment(2) == 'reminder'],
+                );
+            }
 
-      
-    });
-   }
-  
+
+
+            if ($is_admin  || auth()->user()->can('essentials.view_message') ||  auth()->user()->can('essentials.create_message')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'index']),
+                    __('essentials::lang.messages'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&
+                        request()->segment(2) == 'messages'],
+                );
+            }
+
+            if ($is_admin  || auth()->user()->can('essentials.view_knowledge_base')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'index']),
+                    __('essentials::lang.knowledge_base'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&
+                        request()->segment(2) == 'knowledge-base'],
+                );
+            }
+
+            // if ($is_admin  || auth()->user()->can('essentials.edit_essentials_settings')  ) {
+            //     $menu->url(
+            //         action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit']),
+            //         __('business.settings'),
+            //         ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'toDo' &&   request()->segment(1) == 'toDo'&&
+            //         request()->segment(2) == 'settings'],
+            //     );
+            // }
+
+
+        });
+    }
+
     // public function crmMenu()
     // {
     //     Menu::create('admin-sidebar-menu', function ($menu) {
@@ -517,6 +517,20 @@ class CustomAdminSidebarMenu
                 ['icon' => 'fa fa-bullseye',],
             );
             // }
+        });
+    }
+
+    public function legalAffairsMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home', 'active' => request()->segment(1) == 'home']);
+            if ($is_admin || auth()->user()->can('legalaffairs.legalAffairs_dashboard')) {
+                $menu->url(route('legalAffairs.dashboard'),  __('legalaffairs::lang.legalaffairs'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'dashboard']);
+            }
+            if ($is_admin || auth()->user()->can('legalaffairs.contracts_management')) {
+                $menu->url(route('legalAffairs.contracts_management'),  __('legalaffairs::lang.contracts_management'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'contracts_management']);
+            }
         });
     }
 
@@ -1149,15 +1163,15 @@ class CustomAdminSidebarMenu
 
             //$menu->header("");
             //$menu->header("");
-            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') || auth()->user()->can('sales.view_qualified_contacts')|| auth()->user()->can('sales.view_unqualified_contacts')|| auth()->user()->can('sales.view_converted_contacts') ) {
+            if ($is_admin || auth()->user()->can('sales.view_lead_contacts') || auth()->user()->can('sales.view_qualified_contacts') || auth()->user()->can('sales.view_unqualified_contacts') || auth()->user()->can('sales.view_converted_contacts')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\ClientsController::class, 'lead_contacts']),
                     __('sales::lang.lead_contacts'),
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && (request()->segment(2) == 'lead_contacts'
-                            || request()->segment(2) == 'qualified_contacts'
-                            || request()->segment(2) == 'unqualified_contacts'
-                            || request()->segment(2) == 'converted_contacts'
-                        )],
+                        || request()->segment(2) == 'qualified_contacts'
+                        || request()->segment(2) == 'unqualified_contacts'
+                        || request()->segment(2) == 'converted_contacts'
+                    )],
                 );
             }
 
@@ -1168,7 +1182,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'saleProjects'],
                 );
             }
-            if ($is_admin || auth()->user()->can('sales.view_under_study_offer_price') || auth()->user()->can('sales.view_accepted_offer_price')|| auth()->user()->can('sales.view_unaccepted_offer_price') ) {
+            if ($is_admin || auth()->user()->can('sales.view_under_study_offer_price') || auth()->user()->can('sales.view_accepted_offer_price') || auth()->user()->can('sales.view_unaccepted_offer_price')) {
                 $menu->url(
                     action([\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index']),
                     __('sales::lang.offer_price'),
@@ -1483,7 +1497,7 @@ class CustomAdminSidebarMenu
                 );
             }
             if ($is_admin  || auth()->user()->can('accounting.manage_budget')) {
-          
+
                 $menu->url(
                     action([\Modules\Accounting\Http\Controllers\BudgetController::class, 'index']),
                     __('accounting::lang.budget'),
@@ -1571,12 +1585,12 @@ class CustomAdminSidebarMenu
             }
 
 
-            
-            if ($is_admin || auth()->user()->can('internationalrelations.view_proposed_workers') || auth()->user()->can('internationalrelations.view_accepted_workers') 
-            || auth()->user()->can('internationalrelations.view_under_trialPeriod_workers') 
-            || auth()->user()->can('internationalrelations.view_unaccepted_workers') ) 
-            
-            {
+
+            if (
+                $is_admin || auth()->user()->can('internationalrelations.view_proposed_workers') || auth()->user()->can('internationalrelations.view_accepted_workers')
+                || auth()->user()->can('internationalrelations.view_under_trialPeriod_workers')
+                || auth()->user()->can('internationalrelations.view_unaccepted_workers')
+            ) {
                 $menu->url(
                     action([\Modules\InternationalRelations\Http\Controllers\WorkerController::class, 'proposed_laborIndex']),
                     __('internationalrelations::lang.proposed_labor'),
