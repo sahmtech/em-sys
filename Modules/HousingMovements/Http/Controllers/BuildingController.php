@@ -42,7 +42,14 @@ class BuildingController extends Controller
         $can_building_delete = auth()->user()->can('building.delete');
        
         
-        $query = User::where('business_id', $business_id);
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $query = User::whereIn('users.id', $userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();

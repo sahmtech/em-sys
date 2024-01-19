@@ -38,6 +38,13 @@ class RoomController extends Controller
             ]);
         }
 
+        
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         $can_room_workers = auth()->user()->can('room.workers');
         $can_room_edit = auth()->user()->can('room.edit');
         $can_room_delete = auth()->user()->can('room.delete');
@@ -98,7 +105,8 @@ class RoomController extends Controller
                 ->make(true);
         }
 
-        $workers = User::where('user_type', 'worker')->select(
+
+        $workers = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
              ' - ',COALESCE(id_proof_number,'')) as full_name")
@@ -122,6 +130,13 @@ class RoomController extends Controller
         }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         if (request()->ajax()) {
 
             $HtrRoomsWorkersHistory_roomIds = HtrRoomsWorkersHistory::all()->pluck('room_id');
@@ -155,7 +170,7 @@ class RoomController extends Controller
                 ->make(true);
         }
 
-        $workers = User::where('user_type', 'worker')->select(
+        $workers = User::whereIn('users.id', $userIds)->where('user_type', 'worker')->select(
             'id',
             DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
               ' - ',COALESCE(id_proof_number,'')) as full_name")
