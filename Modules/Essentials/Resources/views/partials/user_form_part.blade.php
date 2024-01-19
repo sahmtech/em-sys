@@ -3,8 +3,8 @@
     <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('location_id', __('lang_v1.primary_work_location') . ':*') !!}
-            {!! Form::select('location_id', $locations, !empty($user->location_id) ? $user->location_id : null, [
+            {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
+            {!! Form::select('location_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
                 'class' => 'form-control select2',
                 'style' => 'height:40px',
                 'required',

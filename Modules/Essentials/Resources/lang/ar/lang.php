@@ -1472,6 +1472,7 @@ return [
   'add_new_worker'=>'إضافة عامل جديد',
   'company_not_found'=>'الشركة غير موجودة',
   'company_required'=>'الشركة مطلوبة ',
+  'undefined'=>'غير محدد',
  
 
 ];

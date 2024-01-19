@@ -1,3 +1,71 @@
+<div class="col-md-12 box box-primary" id="section4">
+
+    <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
+    <div class="col-md-3">
+        <div class="form-group">
+            {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
+            {!! Form::select('location_id', $company, null, [
+                'class' => 'form-control select2',
+                'style' => 'height:40px',
+                'required',
+                'placeholder' => __('messages.please_select'),
+            ]) !!}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':*') !!}
+            <div class="form-group">
+                {!! Form::select(
+                    'essentials_department_id',
+                    $departments,
+                    !empty($user->essentials_department_id) ? $user->essentials_department_id : null,
+                    [
+                        'class' => 'form-control select2',
+                        'style' => 'height:40px',
+                        'required',
+                        'style' => 'width: 100%;',
+                        'placeholder' => __('messages.please_select'),
+                    ],
+                ) !!}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+            {!! Form::select('profession', $professions, !empty($user->profession_id) ? $user->profession_id : null, [
+                'class' => 'form-control select2',
+                'required',
+                'style' => 'height:40px',
+                'placeholder' => __('sales::lang.profession'),
+                'id' => 'professionSelect',
+            ]) !!}
+        </div>
+    </div>
+    {{--
+        <div class="col-sm-3">
+        <div class="form-group">
+            {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
+            {!! Form::select(
+                'specialization',
+                $specializations,
+                !empty($user->specialization_id) ? $user->specialization_id : null,
+                [
+                    'class' => 'form-control select2',
+                    'style' => 'height:40px',
+                    'required',
+                    'placeholder' => __('sales::lang.specialization'),
+                    'id' => 'specializationSelect',
+                ],
+            ) !!}
+        </div>
+    </div> --}}
+   
+</div>
+
+
 <div class="col-md-12 box box-primary" id="section5">
     <h4>@lang('essentials::lang.contract_details_create_edit'):</h4>
 
@@ -251,7 +319,7 @@
 <input type="hidden" id="selectedData" name="selectedData" value="">
 
 
-@section('javascript')
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -507,4 +575,3 @@
 </script>
 
 
-@endsection

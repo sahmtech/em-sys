@@ -2004,7 +2004,7 @@ class DataController extends Controller
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
            // $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
-            $departments = Company::all()->pluck('name', 'id');
+           $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -2029,9 +2029,13 @@ class DataController extends Controller
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
-           
+            $companies = Company::all()->pluck('name', 'id');
             return view('essentials::partials.user_form_part',
-             compact('contract', 'nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+             compact('companies',
+                'contract',
+                 'nationalities',
+                  'travel_ticket_categorie',
+                   'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids'))
                 ->render();
         }
         
@@ -2175,11 +2179,18 @@ class DataController extends Controller
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                 $essentials_employee_appointmets->business_location_id = request()->input('location_id');
                 $essentials_employee_appointmets->is_active = 1;
+                $essentials_employee_appointmets->type = 'appoint';
                 $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
                // $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
                 $essentials_employee_appointmets->save();
             }
 
+
+            // $essentials_employee_admission = new EssentialsEmployeeAppointmet();
+            // $essentials_employee_admission->employee_id  = $user->id;
+            // $essentials_employee_admission->admissions_type = 'first_time';
+            // $essentials_employee_admission->admissions_status = 'on_date';
+            // $essentials_employee_admission->save();
 
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);

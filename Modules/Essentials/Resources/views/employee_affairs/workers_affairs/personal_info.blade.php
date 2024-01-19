@@ -53,27 +53,18 @@
                     </div>
 
 
-                    
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
             <select id="id_proof_name" style="height:36px" name="id_proof_name" class="form-control"
-                onchange="updateNationalityOptions(this)">
+                >
                 <option value="">@lang('user.select_proof_name')</option>
-               
-                <option value="national_id"
-                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'national_id' ? 'selected' : '' }}>
-                    @lang('user.national_id')
-                </option>
-               
-                <option value="eqama"
-                    {{ !empty($user->id_proof_name) && $user->id_proof_name == 'eqama' ? 'selected' : '' }}>
-                    @lang('user.eqama')
-                </option>
+              
+                <option value="eqama">
+                    @lang('user.eqama')</option>
 
-                <option value="border_number">
-                    @lang('essentials::lang.border_number')
-                </option>
-
+                    
+                <option value="border">
+                    @lang('essentials::lang.border_number')</option>
             </select>
         </div>
 
@@ -88,7 +79,7 @@
             ]) !!}
         </div>
 
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-3" id="proof_no_container">
             {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
@@ -99,9 +90,8 @@
             <span id="idProofNumberError" class="text-danger"></span>
         </div>
 
-
-
-        <div class="form-group col-md-6" id="border_no_container"
+      
+            <div class="form-group col-md-6" id="border_no_container"
             style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
             {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
             {!! Form::text('border_no', optional($user)->border_no ?? '3', [
@@ -114,7 +104,7 @@
             ]) !!}
             <div id="border_no_error" class="text-danger"></div>
         </div>
-
+     
 
 
         <div class="form-group col-md-3">
@@ -160,8 +150,6 @@
                 ]) !!}
             </div>
         </div>
-    
-
 
                 
 </div>
@@ -170,28 +158,9 @@
 @include('essentials::employee_affairs.workers_affairs.rest_worker_info')
 
 
-@section('javascript')
-<script>
-        $(document).ready(function() {
-
-            toggleBorderNoVisibility();
 
 
-            $('#id_proof_name').on('change', function() {
-                toggleBorderNoVisibility();
-            });
 
-
-            function toggleBorderNoVisibility() {
-                var idProofName = $('#id_proof_name').val();
-                if (idProofName === 'border_number') {
-                    $('#border_no_container').show();
-                } else {
-                    $('#border_no_container').hide();
-                }
-            }
-        });
-</script>
     <script>
         $(document).ready(function() {
             $('#id_proof_name').change(function() {
@@ -330,8 +299,9 @@
 
             $('#id_proof_name').change(function() {
                 var selectedOption = $(this).val();
-
+               console.log(selectedOption);
                 const idProofNumberInput = document.getElementById('id_proof_number');
+                const border_no_containerInput = document.getElementById('border_no');
                 idProofNumberInput.minLength = validationLength;
 
                 const nationalitySelect = document.querySelector('#nationalities_select');
@@ -350,34 +320,38 @@
                 nationalitySelect.appendChild(defaultOption);
 
                 if (selectedOption === 'eqama') {
-                    
                     validationLength = 10;
                     idProofNumberInput.value = '2';
+                    border_no_containerInput.value = '';
+                    $('#border_no_container').hide();
 
 
-                    for (const [id, name] of Object.entries(nationalities))
-                     {
+                    for (const [id, name] of Object.entries(nationalities)) {
                         const option = document.createElement('option');
                         option.value = id;
                         option.text = name;
                         nationalitySelect.appendChild(option);
-                     }
-
-                } else if(selectedOption === 'national_id')
-                 {
-                    validationLength = 10;
-                    idProofNumberInput.value = '1';
-
-
-                    for (const [id, name] of Object.entries(nationalities)) {
-                        if (id === '5') {
-                            const option = document.createElement('option');
-                            option.value = id;
-                            option.text = name;
-                            nationalitySelect.appendChild(option);
-                        }
                     }
-                } else {
+                } 
+                else if (selectedOption === 'border') {
+                   // validationLength = 13;
+
+                    border_no_containerInput.value = '3';
+                    console.log( border_no_containerInput.value);
+                    validationLength = 13;
+                    idProofNumberInput.value = '';
+
+                    $('#border_no_container').show();
+                    $('#proof_no_container').hide();
+                  
+                    for (const [id, name] of Object.entries(nationalities)) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.text = name;
+                        nationalitySelect.appendChild(option);
+                    }
+                } 
+                else {
                     validationLength = 10;
                     idProofNumberInput.value = '';
 
@@ -430,5 +404,3 @@
             }
         }
     </script>
-@endsection
-

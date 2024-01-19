@@ -82,7 +82,7 @@
                             {!! Form::select('assigned_to', $contacts, null, [
                                 'class' => 'form-control select2',
                                 'style' => 'height:40px',
-                                'placeholder' => __('sales::lang.assigned_to'),
+                               
                             ]) !!}
                         </div>
                     </div>

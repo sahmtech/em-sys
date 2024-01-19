@@ -16,6 +16,7 @@ use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Modules\Sales\Entities\SalesProject;
@@ -85,7 +86,7 @@ class EssentialsWorkersAffairsController extends Controller
         $users = User::whereIn('users.id', $userIds)
         ->where('user_type', 'worker')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
-            ->with(['country', 'contract', 'OfficialDocument']);
+            ->with(['country', 'contract', 'OfficialDocument','essentials_admission_to_works','essentials_admission_to_works']);
         
         $users->select(
             'users.*',
@@ -238,16 +239,17 @@ class EssentialsWorkersAffairsController extends Controller
 
        // $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
-        $locations = BusinessLocation::where('business_id', $business_id)
-            ->Active()
-            ->get();
+        // $locations = BusinessLocation::where('business_id', $business_id)
+        //     ->Active()
+        //     ->get();
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
 
         $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
         $nationalities = EssentialsCountry::nationalityForDropdown();
 
-        $contacts = SalesProject::pluck('name', 'id');
+        $contacts = SalesProject::pluck('name', 'id')->toArray();
+        $contacts = [null => __('essentials::lang.undefined')] + $contacts;
 
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -267,8 +269,8 @@ class EssentialsWorkersAffairsController extends Controller
         $resident_doc = null;
         $user = null;
         $designations = Category::forDropdown($business_id, 'hrm_designation');
-        // $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
-         $departments = Company::all()->pluck('name', 'id');
+       
+        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
          $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
          $user = !empty($data['user']) ? $data['user'] : null;
@@ -286,7 +288,7 @@ class EssentialsWorkersAffairsController extends Controller
              $contract = null;
          }
 
-         $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
+        // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
          $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
          $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
          $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
@@ -294,24 +296,24 @@ class EssentialsWorkersAffairsController extends Controller
          $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
          $professions = EssentialsProfession::all()->pluck('name', 'id');
         
-       
+         $company = Company::all()->pluck('name', 'id');
             
         return  view('essentials::employee_affairs.workers_affairs.create')
         ->with(compact(
-          
+            'departments',
             'countries',
             'spacializations',
             'nationalities',
             'username_ext',
             'blood_types',
             'contacts',
-            'locations',
+            'company',
             'banks',
             'contract_types',
             'form_partials',
             'resident_doc',
             'user',
-            'locations',
+          
             'allowance_types',
             'travel_ticket_categorie',
             'contract_types',
@@ -329,7 +331,64 @@ class EssentialsWorkersAffairsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id = request()->session()->get('user.business_id');
+        if (!($is_admin || auth()->user()->can('user.create'))) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            if (!empty($request->input('dob'))) {
+                $request['dob'] = $this->moduleUtil->uf_date($request->input('dob'));
+            }
+
+            $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
+            $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
+
+
+            $com_id=request()->input('essentials_department_id');
+            $latestRecord = User::where('company_id',$com_id)->orderBy('emp_number', 'desc')
+                ->first();
+
+            if ($latestRecord) {
+                $latestRefNo = $latestRecord->emp_number;
+                $latestRefNo++;
+                $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
+            } 
+            else
+             {
+
+                $request['emp_number'] =  $business_id . '000';
+             }
+
+
+
+            // $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+
+            // if ($existingprofnumber) {
+            //     $errorMessage = trans('essentials::lang.user_with_same_id_proof_number_exists');
+            //     throw new \Exception($errorMessage);
+            // }
+
+            $user = $this->moduleUtil->createUser($request);
+
+            event(new UserCreatedOrModified($user, 'added'));
+
+            $output = [
+                'success' => 1,
+                'msg' => __('user.user_added'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => $e->getMessage(),
+            ];
+        }
+
+        return redirect()->route('workers_affairs')->with('status', $output);
     }
 
     /**

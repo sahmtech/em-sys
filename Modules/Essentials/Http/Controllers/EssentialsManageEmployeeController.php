@@ -816,9 +816,10 @@ class EssentialsManageEmployeeController extends Controller
 
         $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
-        $locations = BusinessLocation::where('business_id', $business_id)
-            ->Active()
-            ->get();
+        // $locations = BusinessLocation::where('business_id', $business_id)
+        //     ->Active()
+        //     ->get();
+     
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
 
@@ -843,6 +844,7 @@ class EssentialsManageEmployeeController extends Controller
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $countries = $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
+        $companies = Company::all()->pluck('name', 'id');
         $user = null;
         return view('essentials::employee_affairs.employee_affairs.create')
             ->with(compact(
@@ -853,7 +855,7 @@ class EssentialsManageEmployeeController extends Controller
                 'username_ext',
                 'blood_types',
                 'contacts',
-                'locations',
+                'companies',
                 'banks',
                 'contract_types',
                 'form_partials',

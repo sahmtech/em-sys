@@ -4,7 +4,7 @@ namespace Modules\Essentials\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
-
+use App\User;
 class EssentialsEmployeesFamily extends Model
 {
    

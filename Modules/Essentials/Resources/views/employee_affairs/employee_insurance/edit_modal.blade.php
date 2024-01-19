@@ -21,43 +21,21 @@
                                         'placeholder' => __('essentials::lang.select_employee'),
                                         'required',
                                         'id' => 'employeeSelect',
+                                        
                                     ]) !!}
                                 </div>
 
                                 <div class="form-group col-md-6">
                                     {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':') !!}
-                                    {{--   {!! Form::select('insurance_class', $insurance_classes, $insurance->insurance_classes_id, [
+                                     {!! Form::select('insurance_class', $insurance_classes, $insurance->insurance_classes_id, [
                                         'class' => 'form-control',
                                         'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.insurance_class'),
                                         'required',
                                         'id' => 'classSelect',
-                                    ]) !!}--}}
+                                    ]) !!}
                                   
-                                    {!! Form::select('insurance_class',
-                                        ['VIP+'=>'VIP+',
-                                        'VIP'=>'VIP',
-                                        'A+'=>'A+',
-                                        'A'=>'A',
-                                        'B+'=>'B+',
-                                        'B'=>'B',
-                                        'C+'=>'C+',
-                                        'C'=>'C',
-                                        'CR+'=>'CR+',
-                                        'CR'=>'CR',
-                                        'VVIP'=>"VVIP",
-                                        'A+S'=>'A+S',
-                                        'VIP+S'=>'VIP+S',
-                                        'C6'=>'C6',
-                                        'C4'=>'C4',
-                                        'C6S'=>'C6S',
-                                        
-                                        ],  null,
-                                        
-                                        ['class' => 'form-control',
-                                         'required',
-                                        'id' => 'classSelect']) !!}
-                                </div>
+                                   </div>
 
 
 

@@ -45,7 +45,7 @@
 
 </div>
 <div class="form-group col-md-4">
-    {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+    {!! Form::label('bank_code', __('lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
     {!! Form::text(
         'bank_details[bank_code]',
         !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
@@ -71,7 +71,7 @@
 </div>
 
 <div class="form-group col-md-4">
-    {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':*') !!}
+    {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':') !!}
     {!! Form::file('Iban_file', [
         'class' => 'form-control',
         'placeholder' => __('essentials::lang.Iban_file'),
