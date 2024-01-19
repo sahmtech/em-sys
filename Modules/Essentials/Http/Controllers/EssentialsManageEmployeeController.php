@@ -942,24 +942,9 @@ class EssentialsManageEmployeeController extends Controller
             $request['cmmsn_percent'] = !empty($request->input('cmmsn_percent')) ? $this->moduleUtil->num_uf($request->input('cmmsn_percent')) : 0;
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
-            $companies_ids = Company::pluck('id')->toArray();
-           
-            if (!$is_admin) {
-               
-                $companies_ids = [];
-                $roles = auth()->user()->roles;
-                foreach ($roles as $role) {
-    
-                    $accessRole = AccessRole::where('role_id', $role->id)->first();
-    
-                    if ($accessRole) {
-                        $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
-                    }
-                }
-            }
 
-
-            $latestRecord = User::whereIn('company_id', $companies_ids)->orderBy('emp_number', 'desc')
+            $com_id=request()->input('essentials_department_id');
+            $latestRecord = User::where('company_id',$com_id)->orderBy('emp_number', 'desc')
                 ->first();
 
             if ($latestRecord) {

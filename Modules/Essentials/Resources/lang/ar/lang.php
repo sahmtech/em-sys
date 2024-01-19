@@ -1465,6 +1465,13 @@ return [
   'not_found'=>'غير موجود',
   'user_not_found'=>'الموظف غير موجود',
   'company'=>'الشركة',
+  'curd_employees'=>'إضافة \تعديل الموظفين',
+  'curd_essentials_workers'=>'إضافة \تعديل العمال',
+  'add_essentials_workers'=>'إضافة عامل',
+  'apply'=>'تطبيق',
+  'add_new_worker'=>'إضافة عامل جديد',
+  'company_not_found'=>'الشركة غير موجودة',
+  'company_required'=>'الشركة مطلوبة ',
  
 
 ];

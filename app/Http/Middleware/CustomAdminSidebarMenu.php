@@ -703,19 +703,7 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs_dashboard')) {
-                // $menu->url(
-                //     route('employees'),
-                //     __('essentials::lang.employees_affairs'),
-                //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && (request()->segment(2) == 'employees' ||
-                //         request()->segment(2) == 'roles'
-                //         || request()->segment(2) == 'appointments'
-                //         || request()->segment(2) == 'admissionToWork'
-                //         || request()->segment(2) == 'employeeContracts'
-                //         || request()->segment(2) == 'qualifications'
-                //         || request()->segment(2) == 'official_documents'
-                //         || request()->segment(2) == 'featureIndex')],
-                // );
-
+    
 
                 $menu->url(
                     route('employee_affairs_dashboard'),
@@ -723,13 +711,23 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_dashboard'],
                 );
 
-                if ($is_admin  || auth()->user()->can('essentials.crud_import_employee')) {
+                if ($is_admin  || auth()->user()->can('essentials.curd_employees')) {
                     $menu->url(
                         route('employees'),
                         __('essentials::lang.employees'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employees'],
                     );
                 }
+                //workers
+                if ($is_admin  || auth()->user()->can('essentials.curd_essentials_workers')) {
+                    $menu->url(
+                        route('workers_affairs'),
+                        __('essentials::lang.workers'),
+                        ['icon' => 'fa fas fa-plus-circle',
+                         'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'workers'],
+                    );
+                }
+               
 
                 if ($is_admin  || auth()->user()->can('essentials.crud_employee_appointments')) {
                     $menu->url(

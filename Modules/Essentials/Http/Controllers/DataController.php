@@ -5,6 +5,7 @@ namespace Modules\Essentials\Http\Controllers;
 use App\BusinessLocation;
 use App\Category;
 use App\User;
+use App\Company;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
@@ -1182,7 +1183,29 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     
-                   //employee
+                   //employees
+                   [
+                    'value' => 'essentials.curd_employees',
+                    'label' => __('essentials::lang.curd_employees'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.curd_essentials_workers',
+                    'label' => __('essentials::lang.curd_essentials_workers'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.show_essentials_workers',
+                    'label' => __('essentials::lang.show_essentials_workers'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.add_essentials_workers',
+                    'label' => __('essentials::lang.add_essentials_workers'),
+                    'default' => false,
+                  ],
+                  
+
                    [
                     'value' => 'essentials.show_employee',
                     'label' => __('essentials::lang.show_employee'),
@@ -1977,7 +2000,8 @@ class DataController extends Controller
             $business_id = session()->get('business.id');
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
-            $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
+           // $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
+            $departments = Company::all()->pluck('name', 'id');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -2038,7 +2062,7 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-            $user->essentials_department_id = request()->input('essentials_department_id');
+            $user->company_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
@@ -2144,7 +2168,7 @@ class DataController extends Controller
                 $essentials_employee_appointmets->business_location_id = request()->input('location_id');
                 $essentials_employee_appointmets->is_active = 1;
                 $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-                $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+               // $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
                 $essentials_employee_appointmets->save();
             }
 
@@ -2187,8 +2211,7 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-
-            $user->essentials_department_id = request()->input('essentials_department_id');
+            $user->company_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
@@ -2368,7 +2391,7 @@ class DataController extends Controller
                     $essentials_employee_appointmets->business_location_id = request()->input('location_id');
                     // $essentials_employee_appointmets->superior = "superior";
                     $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-                    $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+                  //  $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
                     $essentials_employee_appointmets->save();
                 }
             }

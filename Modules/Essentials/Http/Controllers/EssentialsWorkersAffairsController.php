@@ -3,23 +3,24 @@
 namespace Modules\Essentials\Http\Controllers;
 
 use App\Category;
-
 use App\AccessRole;
 use App\AccessRoleProject;
-
 use App\Contact;
 use App\ContactLocation;
+use App\BusinessLocation;
+use App\Utils\ModuleUtil;
 use App\User;
 
-use Illuminate\Contracts\Support\Renderable;
+
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCountry;
 use Spatie\Activitylog\Models\Activity;
+use Modules\Sales\Entities\SalesProject;
+use Illuminate\Contracts\Support\Renderable;
 use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
@@ -28,16 +29,17 @@ use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
-use Modules\Sales\Entities\SalesProject;
 
-class EssentailsworkersController extends Controller
+
+
+class EssentialsWorkersAffairsController extends Controller
 {
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
-
     protected $moduleUtil;
 
 
@@ -50,13 +52,21 @@ class EssentailsworkersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        
+        $can_get_workers_affairs = auth()->user()->can('essentials.curd_essentials_workers');
+        if (!($is_admin || $can_get_workers_affairs)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
+
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -69,9 +79,12 @@ class EssentailsworkersController extends Controller
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
 
-        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
+        
+        $users = User::whereIn('users.id', $userIds)
+        ->where('user_type', 'worker')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+        
         $users->select(
             'users.*',
             'users.id_proof_number',
@@ -80,33 +93,30 @@ class EssentailsworkersController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         );
+        if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
+            $users = $users->where('users.assigned_to', request()->input('project_name'));
+        }
+        
+        if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
+            $users = $users->where('users.status', request()->input('status_fillter'));
+        }
+        if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+            $start = request()->filter_start_date;
+            $end = request()->filter_end_date;
+
+            $users->whereHas('contract', function ($query) use ($start, $end) {
+                $query->whereDate('contract_end_date', '>=', $start)
+                    ->whereDate('contract_end_date', '<=', $end);
+            });
+        }
+        if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
+
+            $users = $users->where('users.nationality_id', request()->nationality);
+        }
 
         if (request()->ajax()) {
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
-            }
-
-            if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
-
-                $users = $users->where('users.status', request()->input('status_fillter'));
-            }
-
-            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-                $start = request()->filter_start_date;
-                $end = request()->filter_end_date;
-
-                $users->whereHas('contract', function ($query) use ($start, $end) {
-                    $query->whereDate('contract_end_date', '>=', $start)
-                        ->whereDate('contract_end_date', '<=', $end);
-                });
-            }
-            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-                $users = $users->where('users.nationality_id', request()->nationality);
-            }
 
             return Datatables::of($users)
 
@@ -187,20 +197,21 @@ class EssentailsworkersController extends Controller
                 ->make(true);
         }
 
-
-
-        return view('essentials::workers.index')
-            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+        return view('essentials::employee_affairs.workers_affairs.index')
+        ->with(compact('contacts_fillter',
+            'status_filltetr',
+            'fields',
+            'nationalities'));
     }
 
     private function getDocumentnumber($user, $documentType)
     {
-        foreach ($user->OfficialDocument as $off) {
+        foreach ($user->OfficialDocument as $off)
+         {
             if ($off->type == $documentType) {
                 return $off->number;
             }
-        }
-
+         }
         return ' ';
     }
 
@@ -210,7 +221,67 @@ class EssentailsworkersController extends Controller
      */
     public function create()
     {
-        return view('essentials::create');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || auth()->user()->can('user.create'))) {
+            //temp  abort(403, 'Unauthorized action.');
+        }
+        $business_id = request()->session()->get('user.business_id');
+
+
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse();
+        } elseif (!$this->moduleUtil->isQuotaAvailable('users', $business_id)) {
+            return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
+        }
+
+       // $roles = $this->getRolesArray($business_id);
+        $username_ext = $this->moduleUtil->getUsernameExtension();
+        $locations = BusinessLocation::where('business_id', $business_id)
+            ->Active()
+            ->get();
+        $contract_types = EssentialsContractType::all()->pluck('type', 'id');
+        $banks = EssentialsBankAccounts::all()->pluck('name', 'id');
+
+        $form_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.create']);
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+
+        $contacts = SalesProject::pluck('name', 'id');
+
+        $blood_types = [
+            'A+' => 'A positive (A+).',
+            'A-' => 'A negative (A-).',
+            'B+' => 'B positive (B+)',
+            'B-' => 'B negative (B-).',
+            'AB+' => 'AB positive (AB+).',
+            'AB-' => 'AB negative (AB-).',
+            'O+' => 'O positive (O+).',
+            'O-' => 'O positive (O-).',
+        ];
+
+
+
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $countries = $countries = EssentialsCountry::forDropdown();
+        $resident_doc = null;
+        $user = null;
+       
+            
+        return  view('essentials::employee_affairs.workers_affairs.create')
+        ->with(compact(
+          
+            'countries',
+            'spacializations',
+            'nationalities',
+            'username_ext',
+            'blood_types',
+            'contacts',
+            'locations',
+            'banks',
+            'contract_types',
+            'form_partials',
+            'resident_doc',
+            'user'
+        ));
     }
 
     /**
@@ -230,50 +301,78 @@ class EssentailsworkersController extends Controller
      */
     public function show($id)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $business_id = request()->session()->get('user.business_id');
-
-        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
-            ->find($id);
-
-
-
+        $can_show_worker = auth()->user()->can('essentials.show_essentials_workers');
         $documents = null;
         $document_delivery = null;
+      
 
-        if ($user->user_type == 'employee') {
-
-            $documents = $user->OfficialDocument;
-        } 
-        else if ($user->user_type == 'worker') {
-
-            if (!empty($user->proposal_worker_id)) {
-
-                $officialDocuments = $user->OfficialDocument;
-                $workerDocuments = $user->proposal_worker?->worker_documents;
-                $documents = $officialDocuments->merge($workerDocuments);
-            } else {
-                $documents = $user->OfficialDocument;
-            }
-
-            $document_delivery = FollowupDeliveryDocument::where('user_id', $user->id)->get();
+        if (!($is_admin || $can_show_worker)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
         }
 
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        
+        if (!$is_admin) 
+        {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
 
+        }
 
+      
+        if (!in_array($id , $userIds)) {
+            return redirect()->back()->with('status', [
+                'success' => false,
+                'msg' => __('essentials::lang.user_not_found'),
+            ]);
+        }
+
+   
+        $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
+            ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))
+            ->find($id);
+        
 
         $dataArray = [];
-        if (!empty($user->bank_details)) {
-            $dataArray = json_decode($user->bank_details, true)['bank_name'];
-        }
-
-
         $bank_name = EssentialsBankAccounts::where('id', $dataArray)->value('name');
         $admissions_to_work = EssentialsAdmissionToWork::where('employee_id', $user->id)->first();
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-
-
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
+        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+            
+
+        if ($user->user_type == 'worker')
+         {
+
+
+                if (!empty($user->proposal_worker_id)) {
+
+
+                    $officialDocuments = $user->OfficialDocument;
+                    $workerDocuments = $user->proposal_worker?->worker_documents;
+
+                    $documents = $officialDocuments->merge($workerDocuments);
+                }
+                
+                else
+                {
+                    $documents = $user->OfficialDocument;
+                }
+            }
+
+
+       
+        if (!empty($user->bank_details)) {
+            $dataArray = json_decode($user->bank_details, true)['bank_name'];
+        }
+
 
         if ($professionId !== null) {
             $profession = EssentialsProfession::find($professionId)->name;
@@ -281,7 +380,7 @@ class EssentailsworkersController extends Controller
             $profession = "";
         }
 
-        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+       
         if ($specializationId !== null) {
             $specialization = EssentialsSpecialization::find($specializationId)->name;
         } else {
@@ -294,9 +393,7 @@ class EssentailsworkersController extends Controller
 
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
-
         $users = User::forDropdown($business_id, false);
-
         $activities = Activity::forSubject($user)
             ->with(['causer', 'subject'])
             ->latest()
@@ -311,9 +408,8 @@ class EssentailsworkersController extends Controller
         }
 
 
-
-
-        return view('essentials::workers.show')->with(compact(
+        return view('essentials::employee_affairs.workers_affairs.show')
+        ->with(compact(
             'user',
             'view_partials',
             'users',

@@ -130,7 +130,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:36px" name="id_proof_name" class="form-control"
                 onchange="updateNationalityOptions(this)">
                 <option value="">@lang('user.select_proof_name')</option>
                 <option value="national_id"
@@ -147,7 +147,7 @@
             {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
             {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'placeholder' => __('lang_v1.eqama_end_date'),
                 'id' => 'eqama_end_date',
             ]) !!}
@@ -157,19 +157,20 @@
             {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'placeholder' => __('lang_v1.id_proof_number'),
                 'oninput' => 'validateIdProofNumber(this)',
             ]) !!}
             <span id="idProofNumberError" class="text-danger"></span>
         </div>
 
-        <div class="form-group col-md-6" id="border_no_container"
+        {{-- 
+            <div class="form-group col-md-6" id="border_no_container"
             style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
             {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
             {!! Form::text('border_no', optional($user)->border_no ?? '3', [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'placeholder' => __('essentials::lang.border_number'),
                 'id' => 'border_no',
                 'maxlength' => '10',
@@ -177,13 +178,15 @@
             ]) !!}
             <div id="border_no_error" class="text-danger"></div>
         </div>
+        --}}
+
 
         <div class="form-group col-md-3">
             {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
             {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
                 'class' => 'form-control select2',
                 'id' => 'nationalities_select',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'required',
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
@@ -205,7 +208,7 @@
                     null,
                     [
                         'class' => 'form-control ',
-                        'style' => 'height:40px',
+                        'style' => 'height:36px',
                         'placeholder' => __('essentials::lang.select_type'),
                     ],
                 ) !!}
@@ -217,7 +220,7 @@
                 {!! Form::file('document_file', [
                     'class' => 'form-control',
                     'placeholder' => __('essentials::lang.file'),
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                 ]) !!}
             </div>
         </div>
@@ -246,7 +249,7 @@
                         'diploma' => __('essentials::lang.diploma'),
                     ],
                     !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
-                    ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                    ['class' => 'form-control', 'style' => 'width:100%;height:36px', 'placeholder' => __('lang_v1.all')],
                 ) !!}
             </div>
         </div>
@@ -255,7 +258,7 @@
                 {!! Form::label('major', __('essentials::lang.major') . ':') !!}
                 {!! Form::select('major', $spacializations, null, [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'placeholder' => __('essentials::lang.major'),
                 ]) !!}
             </div>
@@ -288,7 +291,7 @@
                 {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
                 {!! Form::select('graduation_country', $countries, null, [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'placeholder' => __('essentials::lang.select_country'),
                 ]) !!}
             </div>
@@ -319,7 +322,7 @@
                 !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'account_holder_name',
                     'placeholder' => __('lang_v1.account_holder_name'),
                 ],
@@ -332,7 +335,7 @@
                 !empty($bank_details['account_number']) ? $bank_details['account_number'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'account_number',
                     'placeholder' => __('lang_v1.account_number'),
                 ],
@@ -347,7 +350,7 @@
                 !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'bank_name',
                     'placeholder' => __('lang_v1.bank_name'),
                 ],
@@ -361,7 +364,7 @@
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'bank_code',
                     'placeholder' => __('lang_v1.bank_code'),
                     'oninput' => 'validateBankCode(this)',
@@ -374,7 +377,7 @@
             {!! Form::label('branch', __('lang_v1.branch') . ':') !!}
             {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'id' => 'branch',
                 'placeholder' => __('lang_v1.branch'),
             ]) !!}
@@ -386,7 +389,7 @@
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.Iban_file'),
             
-                'style' => 'height:40px',
+                'style' => 'height:36px',
             ]) !!}
         </div>
 

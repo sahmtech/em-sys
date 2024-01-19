@@ -485,8 +485,20 @@ class EssentialsEmployeeInsuranceController extends Controller
                
                 $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
                 ->select('insurance_company_id')->first();
-                $insurance_data['insurance_company_id'] =$insurance_class_company->insurance_company_id;
-               
+
+                $company_id =User::find($input['employee'])->company_id;
+                $insurance_company_id= Contact::where('type', 'insurance')
+                ->where('company_id', $company_id)
+                ->where('id', $insurance_class_company->insurance_company_id)
+                ->first()->id;
+                if($insurance_company_id)
+                 {
+                     $insurance_data['insurance_company_id']=$insurance_company_id;
+                 }
+                else
+                {
+                     $insurance_data['insurance_company_id']=null;
+                }
               
     
     
@@ -510,7 +522,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => $e->getMessage(),
             ];
         }
 
@@ -589,11 +601,21 @@ class EssentialsEmployeeInsuranceController extends Controller
                 $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
                 ->select('insurance_company_id')->first();
 
-                $insurance_data['insurance_company_id'] =$insurance_class_company->insurance_company_id;
+                $company_id =User::find($input['employee'])->company_id;
+                $insurance_company_id=Contact::where('type', 'insurance')
+                ->where('company_id', $company_id)
+                ->where('id', $insurance_class_company->insurance_company_id)
+                ->first()->id;
+                if($insurance_company_id)
+                 {
+                     $insurance_data['insurance_company_id']=$insurance_company_id;
+                 }
+                else
+                {
+                     $insurance_data['insurance_company_id']=null;
+                }
                
               
-              
-            
                 EssentialsEmployeesInsurance::where('id', $id)->update($insurance_data);
                
                 $output = [
@@ -628,8 +650,7 @@ class EssentialsEmployeeInsuranceController extends Controller
 
 
         try {
-            EssentialsEmployeesInsurance
-                ::where('id', $id)
+            EssentialsEmployeesInsurance::where('id', $id)
                 ->delete();
 
             $output = [

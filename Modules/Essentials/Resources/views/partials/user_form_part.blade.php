@@ -44,7 +44,8 @@
             ]) !!}
         </div>
     </div>
-    <div class="col-sm-3">
+    {{--
+        <div class="col-sm-3">
         <div class="form-group">
             {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
             {!! Form::select(
@@ -60,7 +61,8 @@
                 ],
             ) !!}
         </div>
-    </div>
+    </div> --}}
+   
 </div>
 
 
@@ -199,8 +201,7 @@
                                     'essentials_pay_period',
                                     [
                                         'month' => __('essentials::lang.per') . ' ' . __('lang_v1.month'),
-                                        'week' => __('essentials::lang.per') . ' ' . __('essentials::lang.week'),
-                                        'day' => __('essentials::lang.per') . ' ' . __('lang_v1.day'),
+                                      
                                     ],
                                     !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null,
                                     ['class' => 'form-control pull-left', 'style' => 'height:40px'],
