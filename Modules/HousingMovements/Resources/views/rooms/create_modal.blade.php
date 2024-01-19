@@ -28,8 +28,8 @@
         
                         
                             <div class="form-group col-md-4">
-                                {!! Form::label('beds_count', __('housingmovements::lang.beds_count') . ':*') !!}
-                                {!! Form::number('beds_count', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.beds_count'), 'required']) !!}
+                                {!! Form::label('total_beds', __('housingmovements::lang.total_beds') . ':*') !!}
+                                {!! Form::number('total_beds', null, ['class' => 'form-control', 'placeholder' => __('housingmovements::lang.total_beds'), 'required']) !!}
                             </div>
                             
                             <div class="form-group col-md-8">
