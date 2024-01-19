@@ -38,6 +38,14 @@ class ReportController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_reports= auth()->user()->can('accounting.reports');
+        if (!($is_admin || $can_reports)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
 
         $first_account = AccountingAccount::where('business_id', $business_id)

@@ -19,6 +19,17 @@ class CarsReportsController extends Controller
      */
     public function carMaintenances(Request $request)
     {
+
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_carMaintenancesReport =  auth()->user()->can('essentials.carMaintenancesReport');
+        if (!($is_admin || $can_carMaintenancesReport)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
         $carsMaintenance = HousingMovementsMaintenance::all();
 
         if (request()->ajax()) {
@@ -53,7 +64,7 @@ class CarsReportsController extends Controller
                     return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
                 })
 
-             
+
                 ->filter(function ($query) use ($request) {
 
                     // if (!empty($request->input('full_name'))) {
@@ -64,13 +75,21 @@ class CarsReportsController extends Controller
                 ->rawColumns(['action', 'car'])
                 ->make(true);
         }
-      $cars= Car::all();
+        $cars = Car::all();
 
-        return view('essentials::movementMangment.reports.carMaintenances',compact('cars'));
+        return view('essentials::movementMangment.reports.carMaintenances', compact('cars'));
     }
 
     public function CarsChangeOil(Request $request)
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_carsChangeOilReport = auth()->user()->can('essentials.carsChangeOilReport');
+        if (!($is_admin || $can_carsChangeOilReport)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $CarsChangeOil = HousingMovementsCarsChangeOil::all();
 
 
@@ -96,7 +115,7 @@ class CarsReportsController extends Controller
                 })
 
                 ->editColumn('next_change_oil', function ($row) {
-                    return  Carbon::parse($row->next_change_oil)->format('Y-m-d') ?? '';
+                    return  $row->next_change_oil?? '';
                 })
                 ->editColumn('invoice_no', function ($row) {
                     return $row->invoice_no ?? '';
@@ -104,8 +123,8 @@ class CarsReportsController extends Controller
                 ->editColumn('date', function ($row) {
                     return  Carbon::parse($row->date)->format('Y-m-d') ?? '';
                 })
-               
-               
+
+
 
                 ->filter(function ($query) use ($request) {
 
@@ -117,12 +136,12 @@ class CarsReportsController extends Controller
                 ->rawColumns(['action', 'car'])
                 ->make(true);
         }
-      $cars= Car::all();
-        return view('essentials::movementMangment.reports.carsChangeOil',compact('cars'));
+        $cars = Car::all();
+        return view('essentials::movementMangment.reports.carsChangeOil', compact('cars'));
     }
 
 
-    
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable

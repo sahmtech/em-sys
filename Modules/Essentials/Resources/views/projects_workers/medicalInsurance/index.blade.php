@@ -96,19 +96,12 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            {{-- <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.essentials_salary')</th>
-
-                            <th>@lang('followup::lang.nationality')</th>
-                            <th>@lang('followup::lang.eqama_end_date')</th>
-                            <th>@lang('followup::lang.contract_end_date')</th> --}}
+                
 
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
+                            <td class="table-td-width-80px">@lang('followup::lang.nationality')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
@@ -122,7 +115,7 @@
                             <td class="table-td-width-100px">@lang('followup::lang.status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
-                            <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
+                            <td class="table-td-width-60px">@lang('followup::lang.gender')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
@@ -156,9 +149,7 @@
 
                 ajax: {
 
-                    url: "{{ action([\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index']) }}",
-                    // url: "{{ route('projectWorkers') }}",
-
+                    url: "{{ route('insurance-workers') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
@@ -183,7 +174,7 @@
                 columns: [{
                         data: 'worker',
                         render: function(data, type, row) {
-                            var link = '<a href="' + '{{ route('showWorker', ['id' => ':id']) }}'
+                            var link = '<a href="' + '{{ route('insurance-showWorker', ['id' => ':id']) }}'
                                 .replace(':id', row.id) + '">' + data + '</a>';
                             return link;
                         }
@@ -314,11 +305,7 @@
             var dt = $('#workers_table').DataTable();
 
             var fields = fields;
-            //  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-            //     13, 14, 15,
-            //     16, 17, 18
-            // ];
-
+         
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
 

@@ -1054,8 +1054,19 @@ class DataController extends Controller
                         'label' => __('essentials::lang.insurances_add_requests'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.insurance_index_workers',
+                        'label' => __('essentials::lang.index_workers'),
+                        'default' => false,
+                    ],
                     
-                    
+                    [
+                        'value' => 'essentials.insurance_showWorkerProjects',
+                        'label' => __('essentials::lang.showWorkerProjects'),
+                        'default' => false,
+                    ],
+
+                 
                     [
                         'value' => 'essentials.crud_insurance_contracts',
                         'label' => __('essentials::lang.crud_insurance_contracts'),
@@ -1397,6 +1408,19 @@ class DataController extends Controller
                         'label' => __('essentials::lang.essentials_work_cards_dashboard'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.workcards_indexWorkerProjects',
+                        'label' => __('essentials::lang.workcards_indexWorkerProjects'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.workcards_showWorkerProjects',
+                        'label' => __('essentials::lang.showWorkerProjects'),
+                        'default' => false,
+                    ],
+
+                    
                     [
                         'value' => 'essentials.show_business_document',
                         'label' => __('essentials::lang.show_business_document'),

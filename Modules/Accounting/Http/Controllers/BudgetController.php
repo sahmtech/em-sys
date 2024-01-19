@@ -34,7 +34,14 @@ class BudgetController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-    
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_manage_budget= auth()->user()->can('accounting.manage_budget');
+        if (!($is_admin || $can_manage_budget)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $fy_year = request()->input('financial_year', null);
         $budget = [];

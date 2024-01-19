@@ -31,7 +31,14 @@ class ReceiptVouchersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_receipt_vouchers= auth()->user()->can('accounting.receipt_vouchers');
+        if (!($is_admin || $can_receipt_vouchers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $transactions = TransactionPayment::with('transaction')->where('payment_type', 'credit')
             ->orWhereHas('transaction', function ($q){

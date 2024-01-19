@@ -31,6 +31,14 @@ class ContactLocationController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_contact_locations = auth()->user()->can('followup.crud_contact_locations');
+        if (!($is_admin || $can_followup_crud_contact_locations)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
 
 
         $contact_locations = ContactLocation::with(['project']);

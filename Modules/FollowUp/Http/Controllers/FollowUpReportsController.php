@@ -45,7 +45,14 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_projectWorkersReports = auth()->user()->can('followup.crud_projectWorkersReports');
+        if (!($is_admin || $can_followup_crud_projectWorkersReports)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
@@ -204,7 +211,13 @@ class FollowUpReportsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-
+        $can_followup_crud_projectsReports = auth()->user()->can('followup.crud_projectsReports');
+        if (!($is_admin || $can_followup_crud_projectsReports)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $contacts = Contact::whereIn('type', ['customer', 'lead'])
 

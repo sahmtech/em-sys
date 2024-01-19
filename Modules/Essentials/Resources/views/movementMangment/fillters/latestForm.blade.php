@@ -46,28 +46,26 @@
         <div class="row">
             <div class="col-md-12">
                 @component('components.widget', ['class' => 'box-primary'])
-                   
-
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="cars_table"
                             style="margin-bottom: 100px;table-layout: fixed !important;">
                             <thead>
                                 <tr>
                                     {{-- <th>@lang('housingmovements::lang.driver')</th> --}}
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.car_typeModel')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.plate_number')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.plate_registration_type')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.serial_number')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.structure_no')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.manufacturing_year')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.vehicle_status')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.expiry_date')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.test_end_date')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.examination_status')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.number_seats')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.color')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_status')</th>
-                                    {{-- <th style="width: 100px !important;">@lang('messages.action')</th> --}}
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.car_typeModel')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.plate_number')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.plate_registration_type')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.serial_number')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.structure_no')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.manufacturing_year')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.vehicle_status')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.expiry_date')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.test_end_date')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.examination_status')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.number_seats')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.color')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.insurance_status')</th>
+                                    {{-- <th class="table-td-width-100px">@lang('messages.action')</th> --}}
                                 </tr>
                             </thead>
 
@@ -161,7 +159,7 @@
                     {
                         "data": "insurance_status"
                     },
-                   
+
                 ]
             });
 

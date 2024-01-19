@@ -27,7 +27,14 @@ class FollowUpRecruitmentRequestController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
      
-     
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_recruitmentRequests = auth()->user()->can('followup.crud_recruitmentRequests');
+        if (!($is_admin || $can_followup_crud_recruitmentRequests)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         
         $specializations=EssentialsSpecialization::all()->pluck('name','id');
         $professions=EssentialsProfession::all()->pluck('name','id');
