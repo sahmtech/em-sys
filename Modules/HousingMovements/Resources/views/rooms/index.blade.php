@@ -60,9 +60,7 @@
                                     <th>@lang('housingmovements::lang.room_number')</th>
                                     <th>@lang('housingmovements::lang.htr_building')</th>
                                     <th>@lang('housingmovements::lang.area')</th>
-                                    <th>@lang('housingmovements::lang.total_beds')</th>
                                     <th>@lang('housingmovements::lang.beds_count')</th>
-                                
                                     <th>@lang('housingmovements::lang.contents')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -161,9 +159,6 @@
                     },
                     {
                         data: 'area'
-                    },
-                    {
-                        data: 'total_beds'
                     },
                     {
                         data: 'beds_count'
