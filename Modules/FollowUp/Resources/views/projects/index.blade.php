@@ -36,18 +36,18 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.contact_name')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.contact_location_name')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.contract_number')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.start_date')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.end_date')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.active_worker_count')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.worker_count')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.contractDuration')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.contract_form')</th>
-                            <th style="width: 100px !important;">@lang('followup::lang.project_status')</th>
-                            <th style="width: 100px !important;">@lang('followup::lang.project_type')</th>
-                            <th style="width: 100px !important;">@lang('sales::lang.action')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.contact_name')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.contact_location_name')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.contract_number')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.start_date')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.end_date')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.active_worker_count')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.worker_count')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.contractDuration')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.contract_form')</th>
+                            <th class="table-td-width-100px">@lang('followup::lang.project_status')</th>
+                            <th class="table-td-width-100px">@lang('followup::lang.project_type')</th>
+                            <th class="table-td-width-100px">@lang('sales::lang.action')</th>
 
 
                         </tr>

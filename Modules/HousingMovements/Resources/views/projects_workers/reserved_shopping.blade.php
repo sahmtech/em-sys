@@ -64,21 +64,21 @@
                             <th>@lang('followup::lang.eqama_end_date')</th>
                             <th>@lang('followup::lang.contract_end_date')</th> --}}
 
-                            <td style="width: 100px !important;">@lang('followup::lang.name')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
-                            <td style="width: 100px !important;">@lang('housingmovements::lang.booking_start_Date')</td>
-                            <td style="width: 100px !important;">@lang('housingmovements::lang.booking_end_Date')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.Basic_salary')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.total_salary')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.gender')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.travel_categorie')</td>
-                            <td style="width: 100px !important;">@lang('housingmovements::lang.created_by')</td>
-                            <th style="width: 100px !important;">@lang('messages.action')</th>
-                            
+                            <td class="table-td-width-100px">@lang('followup::lang.name')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
+                            <td class="table-td-width-100px">@lang('housingmovements::lang.booking_start_Date')</td>
+                            <td class="table-td-width-100px">@lang('housingmovements::lang.booking_end_Date')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
+                            <td class="table-td-width-100px">@lang('housingmovements::lang.created_by')</td>
+                            <th class="table-td-width-100px">@lang('messages.action')</th>
+
 
 
                         </tr>
@@ -138,7 +138,7 @@
                     },
                     {
                         data: 'booking_start_Date'
-                    }, 
+                    },
                     {
                         data: 'booking_end_Date'
                     },
@@ -173,11 +173,11 @@
                     {
                         data: 'categorie_id',
 
-                    }, 
+                    },
                     {
                         data: 'created_by',
 
-                    }, 
+                    },
                     {
                         data: 'action',
 
@@ -208,12 +208,13 @@
 
             });
             $('#workers_table tbody').on('click', 'tr', function() {
-            var data = workers_table.row(this).data();
-            console.log(data);
-            if (data) {
-                window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data.id);
-            }
-        });
+                var data = workers_table.row(this).data();
+                console.log(data);
+                if (data) {
+                    window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data
+                        .id);
+                }
+            });
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
