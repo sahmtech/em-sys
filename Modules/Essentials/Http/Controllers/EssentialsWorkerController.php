@@ -1,43 +1,34 @@
 <?php
 
-namespace Modules\FollowUp\Http\Controllers;
-
-
-use App\Category;
+namespace Modules\Essentials\Http\Controllers;
 
 use App\AccessRole;
 use App\AccessRoleProject;
-
-use App\Contact;
+use App\Category;
 use App\ContactLocation;
 use App\User;
-
+use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
-use Modules\Essentials\Entities\EssentialsCountry;
-use Spatie\Activitylog\Models\Activity;
-use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
-use Modules\Essentials\Entities\EssentialsProfession;
-use Modules\Essentials\Entities\EssentialsSpecialization;
-use Modules\Essentials\Entities\EssentialsEmployeesContract;
-use Modules\Essentials\Entities\EssentialsEmployeesQualification;
 use Modules\Essentials\Entities\EssentialsAdmissionToWork;
 use Modules\Essentials\Entities\EssentialsBankAccounts;
+use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsDepartment;
+use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
+use Modules\Essentials\Entities\EssentialsEmployeesContract;
+use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsProfession;
+use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\Sales\Entities\SalesProject;
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\Facades\DataTables;
 
-class FollowUpWorkerController extends Controller
+class EssentialsWorkerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
     protected $moduleUtil;
 
 
@@ -45,23 +36,23 @@ class FollowUpWorkerController extends Controller
     {
         $this->moduleUtil = $moduleUtil;
     }
+
     public function index()
     {
 
-
         $business_id = request()->session()->get('user.business_id');
+
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_followup_crud_workers = auth()->user()->can('followup.crud_workers');
-        if (!($is_admin || $can_followup_crud_workers)) {
+        $can_essentials_workers = auth()->user()->can('essentials.insurance_index_workers');
+        if (!($is_admin || $can_essentials_workers)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
 
-      
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -78,7 +69,7 @@ class FollowUpWorkerController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::whereIn('users.id',$userIds)->where('user_type', 'worker')
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -153,15 +144,15 @@ class FollowUpWorkerController extends Controller
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
                 ->addColumn('admissions_date', function ($user) {
-                    // return $this->getDocumentnumber($user, 'admissions_date');
+
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
                 ->addColumn('admissions_type', function ($user) {
-                    // return $this->getDocumentnumber($user, 'admissions_date');
+
                     return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
                 })
                 ->addColumn('admissions_status', function ($user) {
-                    // return $this->getDocumentnumber($user, 'admissions_date');
+
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
 
@@ -206,26 +197,13 @@ class FollowUpWorkerController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker', 'categorie_id','admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
-        return view('followup::workers.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+        return view('essentials::projects_workers.medicalInsurance.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
-
-
-
-    private function getDocumentExpirationDate($user, $documentType)
-    {
-        foreach ($user->OfficialDocument as $off) {
-            if ($off->type == $documentType) {
-                return $off->expiration_date;
-            }
-        }
-
-        return ' ';
-    }
 
     private function getDocumentnumber($user, $documentType)
     {
@@ -239,36 +217,21 @@ class FollowUpWorkerController extends Controller
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('followup::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
     public function show($id)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
 
+
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_essentials_workers = auth()->user()->can('essentials.insurance_index_workers');
+        if (!($is_admin || $can_essentials_workers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
 
@@ -291,7 +254,7 @@ class FollowUpWorkerController extends Controller
                 $documents = $user->OfficialDocument;
             }
 
-            $document_delivery = FollowupDeliveryDocument::where('user_id', $user->id)->get();
+            $deliveryDocument = FollowupDeliveryDocument::where('user_id', $user->id)->get();
         }
 
 
@@ -349,7 +312,7 @@ class FollowUpWorkerController extends Controller
 
 
 
-        return view('followup::workers.show')->with(compact(
+        return view('essentials::projects_workers.medicalInsurance.show')->with(compact(
             'user',
             'view_partials',
             'users',
@@ -361,39 +324,7 @@ class FollowUpWorkerController extends Controller
             'nationalities',
             'nationality',
             'documents',
-            'document_delivery',
+            'deliveryDocument',
         ));
-    }
-
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('followup::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

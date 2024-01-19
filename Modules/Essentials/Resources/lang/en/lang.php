@@ -685,4 +685,8 @@ return [
     'carsChangeOil_delete' => 'Delete car change oil',
     'carMaintenances_edit' => 'Edit car maintenances',
     'carMaintenances_delete' => 'delete car maintenances',
+
+    'index_workers' => 'Project workers',
+    'workcards_indexWorkerProjects' => 'Project workers',
+  
 ];
