@@ -1061,6 +1061,13 @@ class DataController extends Controller
                     ],
                     
                     [
+                        'value' => 'essentials.insurance_showWorkerProjects',
+                        'label' => __('essentials::lang.showWorkerProjects'),
+                        'default' => false,
+                    ],
+
+                 
+                    [
                         'value' => 'essentials.crud_insurance_contracts',
                         'label' => __('essentials::lang.crud_insurance_contracts'),
                         'default' => false,
@@ -1404,6 +1411,12 @@ class DataController extends Controller
                     [
                         'value' => 'essentials.workcards_indexWorkerProjects',
                         'label' => __('essentials::lang.workcards_indexWorkerProjects'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'essentials.workcards_showWorkerProjects',
+                        'label' => __('essentials::lang.showWorkerProjects'),
                         'default' => false,
                     ],
 

@@ -1248,9 +1248,9 @@ return [
   'add_finish_contracts' => 'إضافة سبب إنهاء العقود',
   'carinsurance_edit' => 'تعديل تأمين مركبة',
   'carinsurance_delete' => 'حذف تأمين مركبة',
-  'index_workers' => 'عمال المشاريع',
-  'workcards_indexWorkerProjects' => 'عمال المشاريع',
-
+  'index_workers' => ' عمال المشاريع',
+  'workcards_indexWorkerProjects' => ' عمال المشاريع',
+   'showWorkerProjects'=>'عرض معلومات العامل',
   
   'delete_wishes' => 'حذف الرغبات',
   'delete_leave' => 'حذف الاجازات',

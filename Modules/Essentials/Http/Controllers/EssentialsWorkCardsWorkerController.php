@@ -224,14 +224,30 @@ class EssentialsWorkCardsWorkerController extends Controller
 
         
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_indexWorkerProjects');
+        $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_showWorkerProjects');
         if (!($is_admin || $can_workcards_indexWorkerProjects)) {
-            return redirect()->route('home')->with('status', [
+            return redirect()->back()->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         
+        if (!$is_admin) 
+        {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+
+        }
+
+      
+        if (!in_array($id , $userIds)) {
+            return redirect()->back()->with('status', [
+                'success' => false,
+                'msg' => __('essentials::lang.user_not_found'),
+            ]);
+        }
+
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
 

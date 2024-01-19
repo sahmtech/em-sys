@@ -225,13 +225,28 @@ class EssentialsWorkerController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_essentials_workers = auth()->user()->can('essentials.insurance_index_workers');
+        $can_essentials_workers = auth()->user()->can('essentials.insurance_showWorkerProjects');
         if (!($is_admin || $can_essentials_workers)) {
-            return redirect()->route('home')->with('status', [
+            return redirect()->back()->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+
+        if (!in_array($id, $userIds)) {
+            return redirect()->back()->with('status', [
+                'success' => false,
+                'msg' => __('essentials::lang.user_not_found'),
+            ]);
+        }
+
         $user = User::with(['contactAccess', 'assignedTo', 'OfficialDocument', 'proposal_worker'])
             ->find($id);
 
