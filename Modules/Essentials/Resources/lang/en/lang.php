@@ -688,5 +688,6 @@ return [
 
     'index_workers' => 'Project workers',
     'workcards_indexWorkerProjects' => 'Project workers',
+    'showWorkerProjects'=>'View worker details',
   
 ];
