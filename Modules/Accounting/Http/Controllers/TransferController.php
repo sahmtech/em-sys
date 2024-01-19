@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -28,6 +29,9 @@ class TransferController extends Controller
      * @param ProductUtils $product
      * @return void
      */
+    protected $moduleUtil;
+    protected $accountingUtil;
+
     public function __construct(Util $util, ModuleUtil $moduleUtil, AccountingUtil $accountingUtil)
     {
         $this->util = $util;
@@ -52,6 +56,11 @@ class TransferController extends Controller
         }
         $can_edit_transfer = auth()->user()->can('accounting.edit_transfer');
         $candelete_transfer = auth()->user()->can('accounting.delete_transfer');
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
         if (request()->ajax()) {
             $transfers = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
                 ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
@@ -74,6 +83,7 @@ class TransferController extends Controller
                     'to_account.id'
                 )
                 ->where('accounting_acc_trans_mappings.type', 'transfer')
+                ->whereIn('u.id', $userIds)
                 ->select([
                     'accounting_acc_trans_mappings.id',
                     'accounting_acc_trans_mappings.ref_no',

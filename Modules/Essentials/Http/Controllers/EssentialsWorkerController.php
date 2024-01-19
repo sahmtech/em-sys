@@ -82,20 +82,6 @@ class EssentialsWorkerController extends Controller
             'sales_projects.name as contact_name'
         );
 
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('users.assigned_to',   $userProjects);
-        }
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -309,7 +295,10 @@ class EssentialsWorkerController extends Controller
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
 
-        $users = User::forDropdown($business_id, false);
+        $users = User::whereIn('users.id', $userIds)->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+        $users = $users->pluck('full_name', 'id');
+
 
         $activities = Activity::forSubject($user)
             ->with(['causer', 'subject'])
