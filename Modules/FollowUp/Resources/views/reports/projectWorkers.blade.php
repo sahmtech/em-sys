@@ -131,29 +131,29 @@
                                     <tr>
 
 
-                                        <td style="width: 100px !important;">@lang('followup::lang.name')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.admissions_date')</td>
-                                        <td style="width: 100px !important;">@lang('essentials::lang.admissions_type')</td>
-                                        <td style="width: 100px !important;">@lang('essentials::lang.admissions_status')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.name')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
+                                        <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
+                                        <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
 
-                                        <td style="width: 100px !important;">@lang('followup::lang.contract_end_date')</td>
-                                        <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
-                                        <td style="width: 100px !important;">@lang('business.email')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.department')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.profession')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.specialization')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.status')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.Basic_salary')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.total_salary')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.gender')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
-                                        <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
-                                        <td style="width: 100px !important;">@lang('essentials::lang.travel_categorie')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
+                                        <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
+                                        <td class="table-td-width-100px">@lang('business.email')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.department')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.specialization')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.status')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+                                        <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
+                                        <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
 
 
 

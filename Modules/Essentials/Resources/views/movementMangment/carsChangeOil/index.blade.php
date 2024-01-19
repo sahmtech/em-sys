@@ -11,31 +11,7 @@
 
     <!-- Main content -->
     <section class="content">
-        {{-- <div class="row">
-            <div class="col-md-12">
-                @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
-                    {!! Form::open([
-                        'url' => action('\Modules\Essentials\Http\Controllers\CarsChangeOilController@search'),
-                        'method' => 'post',
-                        'id' => 'carType_search',
-                    ]) !!}
-                    <div class="col-md-4">
-                        {!! Form::label('carType_label', __('housingmovements::lang.carType')) !!}
-
-                        <select class="form-control" id="carTypeSelect" name="carTypeSelect" style="padding: 2px;">
-                            <option value="all" selected>@lang('lang_v1.all')</option>
-                            @foreach ($carTypes as $type)
-                                <option value="{{ $type->id }}">
-                                    {{ $type->name_ar . ' - ' . $type->name_en }}</option>
-                            @endforeach
-                        </select>
-                   
-                    </div>
-               
-                    {!! Form::close() !!}
-                @endcomponent
-            </div>
-        </div> --}}
+    
 
         <div class="row">
             <div class="col-md-12">

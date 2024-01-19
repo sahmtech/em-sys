@@ -560,9 +560,19 @@ class CustomAdminSidebarMenu
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\InsuranceRequestController::class, 'index']),
                     __('essentials::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'insurance_requests']
+                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'insurance_requests']
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('essentials.insurance_index_workers')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'index']),
+                    __('essentials::lang.index_workers'),
+                    ['icon' => 'fa fas fa-briefcase-medical', 'active' => request()->segment(1) == 'medicalInsurance' &&  request()->segment(2) == 'workers']
+                );
+            }
+
+
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_companies')) {
                 $menu->url(
                     route('insurance_companies'),
@@ -616,6 +626,16 @@ class CustomAdminSidebarMenu
                 );
             }
 
+            if ($is_admin  || auth()->user()->can('essentials.workcards_indexWorkerProjects')) {
+
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsWorkCardsWorkerController::class, 'index']),
+                    __('essentials::lang.workcards_indexWorkerProjects'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'workers'],
+                );
+            }
+
+
             if ($is_admin  || auth()->user()->can('essentials.crud_workcards_request')) {
 
                 $menu->url(
@@ -626,11 +646,6 @@ class CustomAdminSidebarMenu
             }
 
 
-            // $menu->url(
-            //     route('work_cards_vaction_requests'),
-            //     __('essentials::lang.work_cards_vaction_requests'),
-            //     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'work_cards_vaction_requests'],
-            // );
 
 
             if ($is_admin  || auth()->user()->can('essentials.work_cards_operation')) {
@@ -1045,13 +1060,14 @@ class CustomAdminSidebarMenu
                     'active' => request()->segment(1) == 'home'
                 ]
             );
-            $menu->url(
-                action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
-                __('followup::lang.followUp'),
-                ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'followup']
-            );
-            //$menu->header("");
-            //$menu->header("");
+
+            if ($is_admin  || auth()->user()->can('followup.followup_dashboard')) {
+                $menu->url(
+                    action([\Modules\FollowUp\Http\Controllers\FollowUpController::class, 'index']),
+                    __('followup::lang.followUp'),
+                    ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(1) == 'followup']
+                );
+            }
 
 
             if ($is_admin  || auth()->user()->can('followup.crud_contact_locations')) {
@@ -1099,8 +1115,8 @@ class CustomAdminSidebarMenu
 
                 $menu->dropdown(
                     __('followup::lang.reports.title'),
-                    function ($sub) use ($enabled_modules) {
-                        if (auth()->user()->can('followup.crud_projectsReports')) {
+                    function ($sub) use ($enabled_modules, $is_admin) {
+                        if ($is_admin || auth()->user()->can('followup.crud_projectsReports')) {
                             $sub->url(
                                 action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projects']),
                                 __('followup::lang.reports.projects'),
@@ -1108,7 +1124,7 @@ class CustomAdminSidebarMenu
                             );
                         }
 
-                        if (auth()->user()->can('followup.crud_projectWorkersReports')) {
+                        if ($is_admin || auth()->user()->can('followup.crud_projectWorkersReports')) {
                             $sub->url(
                                 action([\Modules\FollowUp\Http\Controllers\FollowUpReportsController::class, 'projectWorkers']),
                                 __('followup::lang.reports.projectWorkers'),

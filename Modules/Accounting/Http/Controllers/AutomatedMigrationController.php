@@ -36,6 +36,16 @@ class AutomatedMigrationController extends Controller
      */
     public function index()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_automatedMigration=auth()->user()->can('accounting.automatedMigration');
+        if (!($is_admin || $can_automatedMigration)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+
         $mappingSetting = AccountingMappingSettingTest::all();
         return view('accounting::AutomatedMigration.index', compact('mappingSetting'));
     }

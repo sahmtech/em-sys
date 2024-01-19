@@ -19,8 +19,18 @@ class CarTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $carTypes = CarType::all();
+
+       
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_carTypes =  auth()->user()->can('essentials.carTypes');
+        if (!($is_admin || $can_carTypes)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        $carTypes = CarType::all();
+       
         $can_cartype_edit = auth()->user()->can('cartype.edit');
         $can_cartype_delete = auth()->user()->can('cartype.delete');
         if (request()->ajax()) {

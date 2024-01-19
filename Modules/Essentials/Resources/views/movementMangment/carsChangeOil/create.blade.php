@@ -55,7 +55,7 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         {!! Form::label('next_change_oil', __('housingmovements::lang.next_change_oil') . '  ') !!}<span style="color: red; font-size:10px"> *</span>
-                                        {!! Form::date('next_change_oil', '', [
+                                        {!! Form::number('next_change_oil', '', [
                                             'class' => 'form-control',
                                             'required',
                                             'placeholder' => __('housingmovements::lang.next_change_oil'),

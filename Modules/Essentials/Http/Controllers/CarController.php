@@ -26,6 +26,15 @@ class CarController extends Controller
     public function index(Request $request)
     {
 
+       
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_index_cars =  auth()->user()->can('essentials.cars');
+        if (!($is_admin || $can_index_cars)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $Cars = Car::all();
         $carTypes = CarModel::all();
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;

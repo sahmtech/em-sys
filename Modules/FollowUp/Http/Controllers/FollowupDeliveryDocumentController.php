@@ -29,6 +29,13 @@ class FollowupDeliveryDocumentController extends Controller
     public function index(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_document_delivery= auth()->user()->can('followup.crud_document_delivery');
+        if (!($is_admin || $can_followup_crud_document_delivery)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $can_edit_document_delivery = auth()->user()->can('followup.edit_document_delivery');
         $can_delete_document_deliver = auth()->user()->can('followup.delete_document_deliver');
         $can_view_document_deliver = auth()->user()->can('followup.view_document_deliver');

@@ -20,9 +20,17 @@ class CarsMaintenanceController extends Controller
      */
     public function index(Request $request)
     {
-        $carsMaintenance = HousingMovementsMaintenance::all();
 
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_carMaintenances = auth()->user()->can('essentials.carMaintenances');
+        if (!($is_admin || $can_carMaintenances)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        $carsMaintenance = HousingMovementsMaintenance::all();
         $can_maintenances_edit = auth()->user()->can('maintenances.edit');
         $can_maintenances_delete = auth()->user()->can('maintenances.delete');
         if (request()->ajax()) {

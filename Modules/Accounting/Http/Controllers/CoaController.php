@@ -37,7 +37,15 @@ class CoaController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
     
-
+ 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_chart_of_accounts = auth()->user()->can('accounting.chart_of_accounts');
+        if (!($is_admin || $can_chart_of_accounts)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $account_types = AccountingAccountType::accounting_primary_type();
         $account_GLC = [];
         foreach ($account_types as $k => $v) {

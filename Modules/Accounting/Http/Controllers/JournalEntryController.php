@@ -32,8 +32,21 @@ class JournalEntryController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_journal_entry= auth()->user()->can('accounting.journal_entry');
+        if (!($is_admin || $can_journal_entry)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        
+        $can_view_journal =auth()->user()->can('accounting.view_journal');
+        $can_edit_journal =auth()->user()->can('accounting.edit_journal');
+        $can_delete_journal =auth()->user()->can('accounting.delete_journal');
 
+        
         if (request()->ajax()) {
             $journal = AccountingAccTransMapping::where('accounting_acc_trans_mappings.business_id', $business_id)
                 ->join('users as u', 'accounting_acc_trans_mappings.created_by', 'u.id')
@@ -50,7 +63,7 @@ class JournalEntryController extends Controller
             }
             return Datatables::of($journal)
                 ->addColumn(
-                    'action', function ($row) use($is_admin) {
+                    'action', function ($row) use($is_admin,$can_view_journal,$can_edit_journal ,$can_delete_journal  ) {
                     $html = '<div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle btn-xs" 
                                     data-toggle="dropdown" aria-expanded="false">' .
@@ -59,15 +72,15 @@ class JournalEntryController extends Controller
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">';
-                    if ($is_admin || auth()->user()->can('accounting.view_journal')) {
-                        // $html .= '<li>
-                        //         <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]).'">
-                        //             <i class="fas fa-eye" aria-hidden="true"></i>'.__("messages.view").'
-                        //         </a>
-                        //         </li>';
+                    if ($is_admin || $can_view_journal  ) {
+                        $html .= '<li>
+                                <a href="#" data-href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@show', [$row->id]).'">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>'.__("messages.view").'
+                                </a>
+                                </li>';
                     }
 
-                    if ($is_admin || auth()->user()->can('accounting.edit_journal')) {
+                    if ($is_admin ||$can_edit_journal  ) {
                         $html .= '<li>
                                     <a href="' . action('\Modules\Accounting\Http\Controllers\JournalEntryController@edit', [$row->id]) . '">
                                         <i class="fas fa-edit"></i>' . __("messages.edit") . '
@@ -75,7 +88,7 @@ class JournalEntryController extends Controller
                                 </li>';
                     }
 
-                    if ( $is_admin || auth()->user()->can('accounting.delete_journal')) {
+                    if ( $is_admin ||$can_delete_journal ) {
                         $html .= '<li>
                                     <a href="'.action('\Modules\Accounting\Http\Controllers\JournalEntryController@destroy', [$row->id]) . '" class="delete_journal_button">
                                         <i class="fas fa-trash" aria-hidden="true"></i>' . __("messages.delete") . '

@@ -63,10 +63,14 @@ class TravelersController extends Controller
     public function index(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        // if (! auth()->user()->can('user.view') && ! auth()->user()->can('user.create')) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_housing_crud_htr_trevelers = auth()->user()->can('housingmovements.crud_htr_trevelers');
+        if (!($is_admin || $can_housing_crud_htr_trevelers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
