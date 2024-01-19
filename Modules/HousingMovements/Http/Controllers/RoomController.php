@@ -211,7 +211,7 @@ class RoomController extends Controller
                 $data['otherRooms'][] = [
                     'room_id' => $otherRoom->id,
                     'room_number' => $otherRoom->room_number,
-                    'total_beds' => $otherRoom->total_beds,
+                    'beds_count' => $otherRoom->beds_count,
                 ];
             }
 
