@@ -1996,7 +1996,10 @@ class DataController extends Controller
      */
     public function moduleViewPartials($data)
     {
-        if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
+        if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit')
+         {
+           
+           
             $business_id = session()->get('business.id');
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
@@ -2026,9 +2029,14 @@ class DataController extends Controller
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
-            return view('essentials::partials.user_form_part', compact('contract', 'nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+           
+            return view('essentials::partials.user_form_part',
+             compact('contract', 'nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
                 ->render();
-        } elseif ($data['view'] == 'manage_user.show') {
+        }
+        
+        
+        elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
             $user_department = EssentialsDepartment::find($user->essentials_department_id);
             $user_designstion = Category::find($user->essentials_designation_id);

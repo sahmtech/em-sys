@@ -10,6 +10,7 @@ use App\ContactLocation;
 use App\BusinessLocation;
 use App\Utils\ModuleUtil;
 use App\User;
+use App\Company;
 
 
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\Essentials\Entities\EssentialsContractType;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
+use Modules\Essentials\Entities\EssentialsAllowanceAndDeduction;
 
 
 
@@ -264,6 +266,34 @@ class EssentialsWorkersAffairsController extends Controller
         $countries = $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
         $user = null;
+        $designations = Category::forDropdown($business_id, 'hrm_designation');
+        // $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
+         $departments = Company::all()->pluck('name', 'id');
+         $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
+
+         $user = !empty($data['user']) ? $data['user'] : null;
+
+         $allowance_deduction_ids = [];
+         if (!empty($user)) {
+             $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+                 ->pluck('allowance_deduction_id')
+                 ->toArray();
+         }
+
+         if (!empty($user)) {
+             $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+         } else {
+             $contract = null;
+         }
+
+         $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
+         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
+         $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
+         $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
+         $nationalities = EssentialsCountry::nationalityForDropdown();
+         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+         $professions = EssentialsProfession::all()->pluck('name', 'id');
+        
        
             
         return  view('essentials::employee_affairs.workers_affairs.create')
@@ -280,7 +310,15 @@ class EssentialsWorkersAffairsController extends Controller
             'contract_types',
             'form_partials',
             'resident_doc',
-            'user'
+            'user',
+            'locations',
+            'allowance_types',
+            'travel_ticket_categorie',
+            'contract_types',
+            'nationalities',
+            'specializations',
+            'professions'
+
         ));
     }
 
