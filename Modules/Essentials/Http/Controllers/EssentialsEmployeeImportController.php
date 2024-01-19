@@ -609,6 +609,7 @@ class EssentialsEmployeeImportController extends Controller
                                         
                                 
                                 $emp_array['total_salary'] = $value[47]; 
+                                $emp_array['emp_number'] = $value[48]; 
                                     
                                        
                               
