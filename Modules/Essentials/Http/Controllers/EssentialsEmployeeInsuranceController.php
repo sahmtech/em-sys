@@ -483,16 +483,10 @@ class EssentialsEmployeeInsuranceController extends Controller
                 $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                 $insurance_data['employee_id'] = $input['employee'];
                
-                $insurance_class_company_id=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
+                $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
                 ->select('insurance_company_id')->first();
-
-                $business = User::find($input['employee'])->business_id;
-                $company_id =User::find($input['employee'])->company_id;
-                $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')
-                ->where('business_id', $business)
-                ->where('company_id', $company_id)
-                ->where('id', $insurance_class_company_id)
-                ->first()->id;
+                $insurance_data['insurance_company_id'] =$insurance_class_company->insurance_company_id;
+               
               
     
     
@@ -592,16 +586,11 @@ class EssentialsEmployeeInsuranceController extends Controller
                 $insurance_data['insurance_classes_id'] = $input['insurance_class'];
                 $insurance_data['employee_id'] = $input['employee'];
                 
-                $insurance_class_company_id=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
+                $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
                 ->select('insurance_company_id')->first();
 
-                $business = User::find($input['employee'])->business_id;
-                $company_id =User::find($input['employee'])->company_id;
-                $insurance_data['insurance_company_id'] = Contact::where('type', 'insurance')
-                ->where('business_id', $business)
-                ->where('company_id', $company_id)
-                ->where('id', $insurance_class_company_id)
-                ->first()->id;
+                $insurance_data['insurance_company_id'] =$insurance_class_company->insurance_company_id;
+               
               
               
             

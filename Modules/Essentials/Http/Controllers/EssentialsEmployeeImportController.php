@@ -662,10 +662,24 @@ class EssentialsEmployeeImportController extends Controller
                         
                           $processedIdProofNumbers[] = $emp_data['id_proof_number'];             
 
-                         
+                          $companies_ids = Company::pluck('id')->toArray();
+           
+                          if (!$is_admin) {
+                            
+                                $companies_ids = [];
+                                $roles = auth()->user()->roles;
+                                foreach ($roles as $role) {
+                    
+                                    $accessRole = AccessRole::where('role_id', $role->id)->first();
+                    
+                                    if ($accessRole) {
+                                        $companies_ids = AccessRoleCompany::where('access_role_id', $accessRole->id)->pluck('company_id')->toArray();
+                                    }
+                                }
+                            }
 
                            
-                        $latestRecord = User::where('business_id', $emp_data['business_id'])
+                        $latestRecord = User::whereIn('company_id',  $companies_ids )
                           ->orderBy('emp_number', 'desc')
                           ->first();
                       
@@ -757,7 +771,7 @@ class EssentialsEmployeeImportController extends Controller
                         $essentials_employee_appointmets->employee_id = $emp->id;
                         $essentials_employee_appointmets->department_id= $emp_data['essentials_department_id'];
                         $essentials_employee_appointmets->business_location_id= $emp_data['location_id'];
-                  //      $essentials_employee_appointmets->superior = "superior";
+                        $essentials_employee_appointmets->is_active = 1;
                         $essentials_employee_appointmets->profession_id=$emp_data['profession_id'];
                         $essentials_employee_appointmets->specialization_id =$emp_data["specialization_id"];
                         $essentials_employee_appointmets->save();

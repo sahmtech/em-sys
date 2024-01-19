@@ -810,6 +810,7 @@ class EssentialsCardsController extends Controller
                 'companies'
             ));
     }
+    
 
     public function operations_show_employee($id ,Request $request)
     {
@@ -817,6 +818,7 @@ class EssentialsCardsController extends Controller
         $can_show_employee = auth()->user()->can('essentials.show_employee_operation');
         $business_id = request()->session()->get('user.business_id');
         $documents = null;
+
 
         if (!($is_admin || $can_show_employee)) {
             return redirect()->route('home')->with('status', [
@@ -834,18 +836,22 @@ class EssentialsCardsController extends Controller
 
         }
 
-       
+      
+        if (!in_array($id , $userIds)) {
+            return redirect()->back()->with('status', [
+                'success' => false,
+                'msg' => __('essentials::lang.user_not_found'),
+            ]);
+        }
 
-        $user = User::whereIn('users.id', $userIds)
-            ->with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
-            ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
-            ' - ',COALESCE(id_proof_number,'')) as full_name"))
-            ->find($id);
 
-        
-
-        if ($user) {
-            if ($user->user_type == 'employee') {
+        $user = User::with(['contactAccess', 'OfficialDocument', 'proposal_worker'])
+        ->select('*', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+        ' - ',COALESCE(id_proof_number,'')) as full_name"))
+        ->find($id);
+    
+    
+        if ($user->user_type == 'employee') {
 
                 $documents = $user->OfficialDocument;
             } else if ($user->user_type == 'worker') {
@@ -862,7 +868,7 @@ class EssentialsCardsController extends Controller
                     $documents = $user->OfficialDocument;
                 }
             }
-        }
+
 
 
         $dataArray = [];

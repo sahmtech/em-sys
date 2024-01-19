@@ -43,7 +43,7 @@ class EssentialsInsuranceCategoryController extends Controller
                 'id',
                 'name',
                 'insurance_company_id'
-            ]);
+            ])->orderby('id','desc');
 
     
             
@@ -76,7 +76,8 @@ class EssentialsInsuranceCategoryController extends Controller
                 ->make(true);
         }
 
-        return view('essentials::settings.partials.insurance_categories.index')->with(compact('insurance_companies'));
+        return view('essentials::settings.partials.insurance_categories.index')
+        ->with(compact('insurance_companies'));
      }
 
    

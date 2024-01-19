@@ -1462,7 +1462,9 @@ return [
   'activate_employee_admission'=>'تفعيل مباشرة العمل',
   'end_admission_activate'=>'انهاء المباشرة',
   'admission_status'=>'حالة المباشرة ',
-  'not_found'=>'غير موجود'
+  'not_found'=>'غير موجود',
+  'user_not_found'=>'الموظف غير موجود',
+  'company'=>'الشركة',
  
 
 ];
