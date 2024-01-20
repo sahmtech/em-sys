@@ -67,6 +67,8 @@ class User extends Authenticatable
      * Get the business that owns the user.
      */
 
+    
+
     public function appointment()
     {
         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');

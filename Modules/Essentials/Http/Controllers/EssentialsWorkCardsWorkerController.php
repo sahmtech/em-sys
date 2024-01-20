@@ -71,9 +71,9 @@ class EssentialsWorkCardsWorkerController extends Controller
         }
 
         $users = User::whereIn('users.id',$userIds)
-            ->with(['htrRoomsWorkersHistory'])
+        ->with(['htrRoomsWorkersHistory' ,'assignedTo'])
             ->where('user_type', 'worker')
-            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+           // ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
         $users->select(
@@ -183,7 +183,7 @@ class EssentialsWorkCardsWorkerController extends Controller
                 ->addColumn('contact_name', function ($user) {
 
 
-                    return $user->contact_name;
+                    return $user->assignedTo->name??'';
                 })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';

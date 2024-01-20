@@ -193,7 +193,7 @@
                         data: 'worker',
                         render: function(data, type, row) {
                             var link = '<a href="' +
-                                '{{ route('work_cards-showWorker', ['id' => ':id']) }}'
+                                '{{ route('show_workers_affairs', ['id' => ':id']) }}'
                                 .replace(':id', row.id) + '">' + data + '</a>';
                             return link;
                         }
