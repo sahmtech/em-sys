@@ -78,7 +78,7 @@
 
 
         <div class="form-group col-md-3">
-            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
+            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':') !!}
             {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
                 'class' => 'form-control',
                 'require',
@@ -194,7 +194,7 @@
 
         <div class="col-md-3">
             <div class="form-group ">
-                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}
                 {!! Form::select(
                     'document_type',
                     [
@@ -216,7 +216,7 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('document_file', __('essentials::lang.file') . ':*') !!}
+                {!! Form::label('document_file', __('essentials::lang.file') . ':') !!}
                 {!! Form::file('document_file', [
                     'class' => 'form-control',
                     'placeholder' => __('essentials::lang.file'),

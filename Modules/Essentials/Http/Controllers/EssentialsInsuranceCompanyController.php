@@ -168,7 +168,7 @@ class EssentialsInsuranceCompanyController extends Controller
             error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.employee_has_insurance'),
             ];
         }
 

@@ -49,10 +49,12 @@ class RoomController extends Controller
         $can_room_edit = auth()->user()->can('room.edit');
         $can_room_delete = auth()->user()->can('room.delete');
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
+        
+        $rooms = DB::table('htr_rooms')
+        ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents','total_beds']);
         if (request()->ajax()) {
 
 
-            $rooms = DB::table('htr_rooms')->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents']);
 
             if (!empty(request()->input('htr_building')) && request()->input('htr_building') !== 'all') {
                 $rooms->where('htr_building_id', request()->input('htr_building'));

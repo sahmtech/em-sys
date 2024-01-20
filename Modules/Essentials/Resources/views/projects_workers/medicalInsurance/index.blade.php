@@ -102,6 +102,9 @@
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
                             <td class="table-td-width-80px">@lang('followup::lang.nationality')</td>
+                            <th class="table-td-width-100px">@lang('housingmovements::lang.building_name')</th>
+                            <th class="table-td-width-100px">@lang('housingmovements::lang.building_address')</th>
+                            <th class="table-td-width-100px">@lang('housingmovements::lang.room_number')</th>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
@@ -185,8 +188,18 @@
                     {
                         data: 'contact_name'
                     },
+                   
                     {
                         data: 'nationality'
+                    },
+                    {
+                        data:'building'
+                    },
+                    {
+                        data:'building_address'
+                    },
+                    {
+                        data:'room_number'
                     },
                     {
                         data: 'residence_permit_expiration'

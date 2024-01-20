@@ -1159,6 +1159,12 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_employee_affairs_dashboard'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.view_essentials_affairs_workers',
+                        'label' => __('essentials::lang.view_essentials_affairs_workers'),
+                        'default' => false,
+                    ],
+                    
 
                     [
                         'value' => 'essentials.view_contract_period_ending',
@@ -1648,9 +1654,9 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                ]
+                ],
 
-            ],
+              
             //housing
             [
                 'group_name' => __('housingmovements::lang.movement_management'),
@@ -2099,12 +2105,12 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-            $user->company_id = request()->input('essentials_department_id');
+            $user->essentials_department_id  = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
-            $user->location_id = request()->input('location_id');
+            $user->company_id = request()->input('location_id');
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');
             }
@@ -2255,14 +2261,13 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-            $user->company_id = request()->input('essentials_department_id');
+            $user->essentials_department_id  = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
-            $user->user_type = request()->input('user_type');
-            $user->location_id = request()->input('location_id');
-
+            $user->company_id  = request()->input('location_id');
+        
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');
             }

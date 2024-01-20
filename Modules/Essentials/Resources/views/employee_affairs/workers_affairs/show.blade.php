@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', __( 'essentials::lang.view_employee' ))
+@section('title', __( 'essentials::lang.view_worker' ))
 
 @section('content')
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-4">
-                <h3>@lang( 'essentials::lang.view_employee' )</h3>
+                <h3>@lang( 'essentials::lang.view_worker' )</h3>
             </div>
             <!-- <div class="col-md-4 col-xs-12 mt-15 pull-right">
                 {!! Form::select('user_id', $users, $user->id , ['class' => 'form-control select2', 'id' => 'user_id']); !!}
@@ -133,7 +133,32 @@
                         @endif
                     </div>
                 </div>
+                <div class="box box-primary" id="attachments-box">
+                    <div class="box-body box-profile">
+                        <h3>@lang('followup::lang.document_delivery')</h3>
 
+                        @if (!empty($documents))
+                            <div class="checkbox-group">
+                                @foreach ($deliveryDocument as $document)
+                                    <div class="checkbox">
+                                        <label>
+                                            @if ($document->file_path || $document->attachment)
+                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                    data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                    {{ trans('followup::lang.' . $document->type) }}
+                                                </a>
+                                            @else
+                                                {{ trans('followup::lang.' . $document->type) }}
+                                            @endif
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p> {{ trans('followup::lang.no_attachment_to_show') }}</p>
+                        @endif
+                    </div>
+                </div>
 
             </div>
 

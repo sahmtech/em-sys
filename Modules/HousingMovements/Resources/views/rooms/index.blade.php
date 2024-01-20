@@ -61,6 +61,8 @@
                                     <th>@lang('housingmovements::lang.htr_building')</th>
                                     <th>@lang('housingmovements::lang.area')</th>
                                     <th>@lang('housingmovements::lang.beds_count')</th>
+                                    <th>@lang('housingmovements::lang.available_beds')</th>
+                                   
                                     <th>@lang('housingmovements::lang.contents')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -114,13 +116,15 @@
 
 @section('javascript')
     <script type="text/javascript">
-        var translations = {
+        var translations =
+        {
             cantHoused: '{{ __('housingmovements::lang.cant_housed') }}',
             notAvailable: '{{ __('housingmovements::lang.not_avaiable') }}',
 
             room_number: '{{ __('housingmovements::lang.room_number') }}',
             worker_name: '{{ __('housingmovements::lang.worker_name') }}',
         };
+        
         var rooms_table;
 
         function reloadDataTable() {
@@ -159,6 +163,9 @@
                     },
                     {
                         data: 'area'
+                    },
+                    {
+                        data: 'total_beds'
                     },
                     {
                         data: 'beds_count'

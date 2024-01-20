@@ -14,11 +14,13 @@ class HtrRoomsWorkersHistory extends Model
     public $table='htr_rooms_workers_histories';
     protected $guarded = ['id'];
 
+   
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'worker_id');
     }
 
+   
     public function room()
     {
         return $this->belongsTo(HtrRoom::class, 'room_id');

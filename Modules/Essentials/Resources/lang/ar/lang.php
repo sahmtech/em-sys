@@ -1476,6 +1476,8 @@ return [
   'company_not_found'=>'الشركة غير موجودة',
   'company_required'=>'الشركة مطلوبة ',
   'undefined'=>'غير محدد',
+  'view_essentials_affairs_workers'=>'عرض العمال',
+  'view_worker'=>'عرض العامل',
  
 
 

@@ -51,6 +51,19 @@
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
+        <div class="row">
+                <div class="col-sm-3">
+
+                    @slot('tool')
+                        <div class="box-tools">
+                            <a class="btn btn-block btn-primary" href="{{ route('create_project_workers') }}">
+                                <i class="fa fa-plus"></i> @lang('messages.add')
+                            </a>
+                        </div>
+                    @endslot
+
+                </div>
+        </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="workers_table">
                     <thead>

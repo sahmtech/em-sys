@@ -54,57 +54,60 @@ class EssentialsWorkersAffairsController extends Controller
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
+
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        
-        $can_get_workers_affairs = auth()->user()->can('essentials.curd_essentials_workers');
-        if (!($is_admin || $can_get_workers_affairs)) {
+        $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.view_essentials_affairs_workers');
+        if (!($is_admin || $can_workcards_indexWorkerProjects)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
 
+       
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+        $categories = Category::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
+        $status_filltetr = $this->moduleUtil->getUserStatus();
+        $fields = $this->moduleUtil->getWorkerFields();
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
 
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
-        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
-        $categories = Category::all()->pluck('name', 'id');
-        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
-        $status_filltetr = $this->moduleUtil->getUserStatus();
-        $fields = $this->moduleUtil->getWorkerFields();
+        $users = User::whereIn('users.id',$userIds)
+            ->with(['htrRoomsWorkersHistory'])
+            ->where('user_type', 'worker')
+            ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+            ->with(['country', 'contract', 'OfficialDocument']);
 
-        
-        $users = User::whereIn('users.id', $userIds)
-        ->where('user_type', 'worker')
-            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
-            ->with(['country', 'contract', 'OfficialDocument','essentials_admission_to_works','essentials_admission_to_works']);
-        
         $users->select(
             'users.*',
-            'users.id_proof_number',
-            'users.nationality_id',
-            'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'sales_projects.name as contact_name'
-        );
+            'contact_locations.name as contact_name'
+        )
+        ->orderBy('users.id', 'desc')
+        ->groupBy('users.id');
+      
         if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
             $users = $users->where('users.assigned_to', request()->input('project_name'));
         }
-        
+
         if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
 
             $users = $users->where('users.status', request()->input('status_fillter'));
         }
+
         if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
             $start = request()->filter_start_date;
             $end = request()->filter_end_date;
@@ -120,11 +123,22 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
         if (request()->ajax()) {
-
-            return Datatables::of($users)
+ 
+            return DataTables::of($users)
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
+                })
+                ->addColumn('building', function ($user) {
+                    return $user->htrRoomsWorkersHistory->last()->room->building?->name ?? '';
+                })
+
+                ->addColumn('building_address', function ($user) {
+                    return $user->htrRoomsWorkersHistory->last()->room->building?->address ?? '';
+                })
+
+                ->addColumn('room_number', function ($user) {
+                    return $user->htrRoomsWorkersHistory->last()->room->room_number ?? '';
                 })
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
@@ -143,15 +157,15 @@ class EssentialsWorkersAffairsController extends Controller
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
                 ->addColumn('admissions_date', function ($user) {
-
+                    
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
                 ->addColumn('admissions_type', function ($user) {
-
+                  
                     return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
                 })
                 ->addColumn('admissions_status', function ($user) {
-
+                    
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
 
@@ -201,10 +215,7 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
         return view('essentials::employee_affairs.workers_affairs.index')
-        ->with(compact('contacts_fillter',
-            'status_filltetr',
-            'fields',
-            'nationalities'));
+        ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     private function getDocumentnumber($user, $documentType)
@@ -443,7 +454,7 @@ class EssentialsWorkersAffairsController extends Controller
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
         $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-            
+        $deliveryDocument =  FollowupDeliveryDocument::where('user_id', $user->id)->get(); 
 
         if ($user->user_type == 'worker')
          {
@@ -512,6 +523,7 @@ class EssentialsWorkersAffairsController extends Controller
 
         return view('essentials::employee_affairs.workers_affairs.show')
         ->with(compact(
+            "deliveryDocument",
             'user',
             'view_partials',
             'users',
