@@ -1156,6 +1156,19 @@ class CustomAdminSidebarMenu
 
                 );
             }
+
+            if ($is_admin  || auth()->user()->can('followup.projects_access_permissions')) {
+
+                $menu->url(
+                    route('projects_access_permissions'),
+                    __('followup::lang.projects_access_permissions'),
+                    [
+                        'icon' => 'fa fas fa-key',
+                        'active' => request()->segment(2) == 'projects_access_permissions'
+                    ],
+
+                );
+            }
         });
     }
 

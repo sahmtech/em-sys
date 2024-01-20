@@ -21,6 +21,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/projects2', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'index'])->name('projects2');
         Route::get('/projectShow/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show'])->name('projectView');
 
+        Route::get('/projects_access_permissions', [\Modules\FollowUp\Http\Controllers\FollowUpProjectsAccessPermissionsController::class, 'accessPermissions'])->name('projects_access_permissions');
+
         Route::get('/workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
         Route::get('/workers/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'show'])->name('showWorker');
         Route::get('/createWorker/{id}', [\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'createWorker'])->name('createWorker');
