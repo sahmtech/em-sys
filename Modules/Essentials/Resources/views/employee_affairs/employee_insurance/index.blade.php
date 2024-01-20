@@ -63,8 +63,19 @@
                                         'id' => 'employeeSelect',
                                     ]) !!}
                                 </div>
-
                                 <div class="form-group col-md-6">
+                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':') !!}
+                                     {!! Form::select('insurance_class', $insurance_classes, null, [
+                                        'class' => 'form-control',
+                                        'style' => 'height:40px',
+                                        'placeholder' => __('essentials::lang.insurance_class'),
+                                        'required',
+                                        'id' => 'classSelect',
+                                    ]) !!}
+                                  
+                                </div>
+
+                                {{--     <div class="form-group col-md-6">
                                     {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
                                     {!! Form::select('insurance_class',
                                         ['VIP+'=>'VIP+',
@@ -89,7 +100,9 @@
                                         ['class' => 'form-control',
                                          'required',
                                         'id' => 'classSelect']) !!}
-                                </div>
+                                </div>--}}
+
+                            
 
 
 
@@ -177,6 +190,7 @@
                     }
                 });
             });
+
             var employeeSelect = $('#employeeSelect');
             var classSelect = $('#classSelect');
 
@@ -206,7 +220,7 @@
                         }
                     });
 
-});
+            });
          
 
         });

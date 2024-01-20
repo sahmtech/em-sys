@@ -35,7 +35,7 @@
                                         'id' => 'classSelect',
                                     ]) !!}
                                   
-                                   </div>
+                                </div>
 
 
 

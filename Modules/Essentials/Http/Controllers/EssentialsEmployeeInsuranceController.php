@@ -339,7 +339,7 @@ class EssentialsEmployeeInsuranceController extends Controller
         $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
         $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
 
-
+       
         $insurances=EssentialsEmployeesInsurance::with('user','essentialsEmployeesFamily')
        
         ->where(function($query) use($userIds) {
@@ -448,6 +448,7 @@ class EssentialsEmployeeInsuranceController extends Controller
         $query = User::whereIn('id',$userIds);
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),  ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
+
         return view('essentials::employee_affairs.employee_insurance.index')
         ->with(compact('insurance_companies', 'insurance_classes', 'users'));
     }
@@ -523,7 +524,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.something_went_wrong'),
             ];
         }
 
@@ -573,6 +574,7 @@ class EssentialsEmployeeInsuranceController extends Controller
     
         $insurance_companies = Contact::where('type', 'insurance')->pluck('supplier_business_name', 'id');
        // $insurance_classes = EssentialsInsuranceClass::all()->pluck('name', 'id');
+       $insurance_classes=null;
        if($insurance->employee_id != null)
        {
         $emp_id = $insurance->employee_id;
@@ -649,7 +651,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+               'msg' => __('messages.something_went_wrong'),
             ];
         }
 

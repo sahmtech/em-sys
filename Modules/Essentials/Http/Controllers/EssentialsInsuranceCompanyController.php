@@ -41,7 +41,7 @@ class EssentialsInsuranceCompanyController extends Controller
         //    //temp  abort(403, 'Unauthorized action.');
         // }
 
-        $insuranceCompanies = Contact::join('companies', 'companies.id', '=', 'contacts.company_id')
+        $insuranceCompanies = Contact::leftjoin('companies', 'companies.id', '=', 'contacts.company_id')
         ->where('contacts.type', 'insurance');
 
         // if (!(auth()->user()->can('superadmin'))) {

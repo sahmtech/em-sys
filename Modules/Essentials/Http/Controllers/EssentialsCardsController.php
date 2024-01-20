@@ -911,7 +911,14 @@ class EssentialsCardsController extends Controller
             ['view' => 'manage_user.show', 'user' => $user]
         );
 
-        $users = User::forDropdown($business_id, false);
+
+        $query = User::whereIn('id', $userIds);
+        $all_users =$query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+            ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
+       
+        $users = $all_users->pluck('full_name', 'id');
+        
+       
         $activities = Activity::forSubject($user)
             ->with(['causer', 'subject'])
             ->latest()
@@ -1901,7 +1908,7 @@ class EssentialsCardsController extends Controller
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => $e->getMessage(),
+                'msg' =>__('messeages.somthing_went_wrong'),
             ];
         }
 
