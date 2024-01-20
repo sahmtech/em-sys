@@ -191,6 +191,8 @@
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
+        
+        <div class="clearfix"></div>
 
         <div class="col-md-3">
             <div class="form-group ">

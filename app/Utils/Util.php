@@ -1719,8 +1719,6 @@ class Util
             $input['number'] = $bankCode;
 
             $file = request()->file('bank_details.Iban_file');
-
-
             if ($file->isValid() && $file->getMimeType() && in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
                 $input['file_path'] = $file->store('/officialDocuments');
 

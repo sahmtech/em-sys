@@ -1478,6 +1478,7 @@ return [
   'undefined'=>'غير محدد',
   'view_essentials_affairs_workers'=>'عرض العمال',
   'view_worker'=>'عرض العامل',
+  'salary_per_month'=>'الراتب الأساسي لكل شهر',
  
 
 

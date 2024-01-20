@@ -85,15 +85,15 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
         $users = User::whereIn('users.id',$userIds)
-        ->with(['htrRoomsWorkersHistory' ,'assignedTo'])
+        ->with(['assignedTo'])
             ->where('user_type', 'worker')
-           // ->leftjoin('contact_locations', 'contact_locations.id', '=', 'users.assigned_to')
+           ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
 
         $users->select(
             'users.*',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'contact_locations.name as contact_name'
+            'sales_projects.name as contact_name'
         )
         ->orderBy('users.id', 'desc')
         ->groupBy('users.id');
@@ -129,17 +129,17 @@ class EssentialsWorkersAffairsController extends Controller
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
-                ->addColumn('building', function ($user) {
-                    return $user->htrRoomsWorkersHistory->last()->room->building?->name ?? '';
-                })
+                // ->addColumn('building', function ($user) {
+                //     return $user->htrRoomsWorkersHistory->last()->room->building?->name ?? '';
+                // })
 
-                ->addColumn('building_address', function ($user) {
-                    return $user->htrRoomsWorkersHistory->last()->room->building?->address ?? '';
-                })
+                // ->addColumn('building_address', function ($user) {
+                //     return $user->htrRoomsWorkersHistory->last()->room->building?->address ?? '';
+                // })
 
-                ->addColumn('room_number', function ($user) {
-                    return $user->htrRoomsWorkersHistory->last()->room->room_number ?? '';
-                })
+                // ->addColumn('room_number', function ($user) {
+                //     return $user->htrRoomsWorkersHistory->last()->room->room_number ?? '';
+                // })
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
                         ->where('type', 'residence_permit')

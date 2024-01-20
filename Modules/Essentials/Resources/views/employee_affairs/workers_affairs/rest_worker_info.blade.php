@@ -188,22 +188,12 @@
                                 {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, [
                                     'class' => 'form-control pull-left',
                                     'style' => 'height:40px',
-                                    'placeholder' => __('essentials::lang.salary'),
+                                    'placeholder' => __('essentials::lang.salary_per_month'),
                                 ]) !!}
                             </div>
 
 
-                            <div class="col-md-4">
-                                {!! Form::select(
-                                    'essentials_pay_period',
-                                    [
-                                        'month' => __('essentials::lang.per') . ' ' . __('lang_v1.month'),
-                                      
-                                    ],
-                                    !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null,
-                                    ['class' => 'form-control pull-left', 'style' => 'height:40px'],
-                                ) !!}
-                            </div>
+                           
                         </td>
                     </tr>
                 </tbody>
@@ -211,8 +201,6 @@
         </div>
     </div>
     <div class="col-md-1">
-
-
     </div>
 
 

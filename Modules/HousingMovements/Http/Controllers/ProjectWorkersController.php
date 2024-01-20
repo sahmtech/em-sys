@@ -55,45 +55,54 @@ class ProjectWorkersController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_housing_workers = auth()->user()->can('housingmovements.workers');
-        if (!($is_admin || $can_housing_workers)) {
+        $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_indexWorkerProjects');
+        if (!($is_admin || $can_workcards_indexWorkerProjects)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
             ]);
         }
 
-      
-        
-        $contacts = SalesProject::all()->pluck('name', 'id');
-        $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
-        $nationalities = EssentialsCountry::nationalityForDropdown();
-  
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
 
-        $users = User::whereIn('users.id',$userIds)
-            ->with(['htrRoomsWorkersHistory' ,'assignedTo'])
-            ->where('user_type', 'worker')
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
+        $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
+        $categories = Category::all()->pluck('name', 'id');
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
+        $status_filltetr = $this->moduleUtil->getUserStatus();
+        $fields = $this->moduleUtil->getWorkerFields();
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
+            ->with(['htrRoomsWorkersHistory'])
+            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
-
         $users->select(
             'users.*',
+            'users.id_proof_number',
+            'users.nationality_id',
+            'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
-            'contact_locations.name as contact_name'
-        )
-        ->orderBy('users.id', 'desc')
-        ->groupBy('users.id');
-      
-    
-        if (request()->ajax()) {
+            'sales_projects.name as contact_name'
+        );
 
+        if (request()->ajax())
+         {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
+            }
+
+            if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
+
+                $users = $users->where('users.status', request()->input('status_fillter'));
             }
 
             if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
@@ -110,31 +119,11 @@ class ProjectWorkersController extends Controller
                 $users = $users->where('users.nationality_id', request()->nationality);
             }
 
-            return Datatables::of($users)
+            return DataTables::of($users)
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
-                ->addColumn('worker', function ($user) {
-                    return $user->first_name . ' ' . $user->last_name ?? '';
-                })
-                ->addColumn('contact_name', function ($user) {
-                    return $user->assignedTo?->name;
-                })
-
-                ->addColumn('building', function ($user) {
-                    return $user->htrRoomsWorkersHistory->last()->room->building?->name ?? '';
-                })
-
-                ->addColumn('building_address', function ($user) {
-                    return $user->htrRoomsWorkersHistory->last()->room->building?->address ?? '';
-                })
-
-                ->addColumn('room_number', function ($user) {
-                    return $user->htrRoomsWorkersHistory->last()->room->room_number ?? '';
-                })
-
-
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
                         ->where('type', 'residence_permit')
@@ -148,14 +137,79 @@ class ProjectWorkersController extends Controller
                     }
                 })
 
+                ->addColumn('residence_permit', function ($user) {
+                    return $this->getDocumentnumber($user, 'residence_permit');
+                })
+                ->addColumn('admissions_date', function ($user) {
+                    
+                    return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
+                })
+                ->addColumn('admissions_type', function ($user) {
+                  
+                    return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
+                })
+                ->addColumn('admissions_status', function ($user) {
+                    
+                    return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
+                })
+
+
                 ->addColumn('contract_end_date', function ($user) {
                     return optional($user->contract)->contract_end_date ?? ' ';
                 })
-                ->filterColumn('worker', function ($query, $keyword) {
-                    $query->where('first_name', 'LIKE', "%{$keyword}%")->orWhere('last_name', 'LIKE', "%{$keyword}%");
+
+                ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                    $professionId = $appointments[$row->id] ?? '';
+
+                    $professionName = $professions[$professionId] ?? '';
+
+                    return $professionName;
                 })
 
-                ->rawColumns(['nationality', 'worker', 'residence_permit_expiration', 'contract_end_date'])
+
+
+                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
+                    $specializationId = $appointments2[$row->id] ?? '';
+                    $specializationName = $specializations[$specializationId] ?? '';
+
+                    return $specializationName;
+                })->addColumn('bank_code', function ($user) {
+
+                    $bank_details = json_decode($user->bank_details);
+                    return $bank_details->bank_code ?? ' ';
+                })
+                ->addColumn('contact_name', function ($user) {
+
+
+                    return $user->contact_name;
+                })
+                ->addColumn('building', function ($user) {
+
+                    return $user->htrRoomsWorkersHistory?->late()->room?->building?->name??'';
+                })
+
+                ->addColumn('building_address', function ($user) {
+
+                    return $user->htrRoomsWorkersHistory?->late()->room?->building?->address??'';
+                })
+
+                ->addColumn('room_number', function ($user) {
+
+                    return $user->htrRoomsWorkersHistory?->late()->room?->room_number??'';
+                })
+               
+                ->addColumn('categorie_id', function ($row) use ($travelCategories) {
+                    $item = $travelCategories[$row->categorie_id] ?? '';
+
+                    return $item;
+                })
+                ->filterColumn('worker', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('residence_permit', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
