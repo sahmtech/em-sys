@@ -60,7 +60,9 @@
                                     <th>@lang('housingmovements::lang.room_number')</th>
                                     <th>@lang('housingmovements::lang.htr_building')</th>
                                     <th>@lang('housingmovements::lang.area')</th>
-                                    <th>@lang('housingmovements::lang.beds_count')</th>
+                                    <th>@lang('housingmovements::lang.total_beds')</th>
+                                    <th>@lang('housingmovements::lang.available_beds')</th>
+                                   
                                     <th>@lang('housingmovements::lang.contents')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -114,13 +116,15 @@
 
 @section('javascript')
     <script type="text/javascript">
-        var translations = {
+        var translations =
+        {
             cantHoused: '{{ __('housingmovements::lang.cant_housed') }}',
             notAvailable: '{{ __('housingmovements::lang.not_avaiable') }}',
 
             room_number: '{{ __('housingmovements::lang.room_number') }}',
             worker_name: '{{ __('housingmovements::lang.worker_name') }}',
         };
+        
         var rooms_table;
 
         function reloadDataTable() {
@@ -159,6 +163,9 @@
                     },
                     {
                         data: 'area'
+                    },
+                    {
+                        data: 'total_beds'
                     },
                     {
                         data: 'beds_count'
@@ -451,7 +458,7 @@
                         $('#editroomModal input[name="room_number"]').val(data.room
                             .room_number);
                         $('#editroomModal input[name="area"]').val(data.room.area);
-                        $('#editroomModal input[name="beds_count"]').val(data.room.beds_count);
+                        $('#editroomModal input[name="total_beds"]').val(data.room.total_beds);
                         $('#editroomModal textarea[name="contents"]').val(data.room.contents);
 
                         $('#editroomModal').modal('show');

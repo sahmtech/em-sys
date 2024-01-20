@@ -78,7 +78,7 @@
 
 
         <div class="form-group col-md-3">
-            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
+            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':') !!}
             {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
                 'class' => 'form-control',
                 'require',
@@ -130,7 +130,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:36px" name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control"
                 onchange="updateNationalityOptions(this)">
                 <option value="">@lang('user.select_proof_name')</option>
                 <option value="national_id"
@@ -191,10 +191,12 @@
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
+        
+        <div class="clearfix"></div>
 
         <div class="col-md-3">
             <div class="form-group ">
-                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}
                 {!! Form::select(
                     'document_type',
                     [
@@ -216,7 +218,7 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('document_file', __('essentials::lang.file') . ':*') !!}
+                {!! Form::label('document_file', __('essentials::lang.file') . ':') !!}
                 {!! Form::file('document_file', [
                     'class' => 'form-control',
                     'placeholder' => __('essentials::lang.file'),

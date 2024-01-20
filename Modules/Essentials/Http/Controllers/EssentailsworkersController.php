@@ -51,68 +51,80 @@ class EssentailsworkersController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
-        if (!$is_admin) {
-            $userIds = [];
-            $userIds = $this->moduleUtil->applyAccessRole();
-        }
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
         $categories = Category::all()->pluck('name', 'id');
-        $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
+        $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
         $professions = EssentialsProfession::all()->pluck('name', 'id');
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
+        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
 
-        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
-            ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
+        $users = User::whereIn('users.id',$userIds)
+        ->with(['assignedTo'])
+            ->where('user_type', 'worker')
+           ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
+
         $users->select(
             'users.*',
-            'users.id_proof_number',
-            'users.nationality_id',
-            'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
-        );
+        )
+        ->orderBy('users.id', 'desc')
+        ->groupBy('users.id');
+      
+        if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
+            $users = $users->where('users.assigned_to', request()->input('project_name'));
+        }
 
+        if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
+
+            $users = $users->where('users.status', request()->input('status_fillter'));
+        }
+
+        if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
+            $start = request()->filter_start_date;
+            $end = request()->filter_end_date;
+
+            $users->whereHas('contract', function ($query) use ($start, $end) {
+                $query->whereDate('contract_end_date', '>=', $start)
+                    ->whereDate('contract_end_date', '<=', $end);
+            });
+        }
+        if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
+
+            $users = $users->where('users.nationality_id', request()->nationality);
+        }
 
         if (request()->ajax()) {
-            if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
-
-                $users = $users->where('users.assigned_to', request()->input('project_name'));
-            }
-
-            if (!empty(request()->input('status_fillter')) && request()->input('status_fillter') !== 'all') {
-
-                $users = $users->where('users.status', request()->input('status_fillter'));
-            }
-
-            if (request()->date_filter && !empty(request()->filter_start_date) && !empty(request()->filter_end_date)) {
-                $start = request()->filter_start_date;
-                $end = request()->filter_end_date;
-
-                $users->whereHas('contract', function ($query) use ($start, $end) {
-                    $query->whereDate('contract_end_date', '>=', $start)
-                        ->whereDate('contract_end_date', '<=', $end);
-                });
-            }
-            if (!empty(request()->input('nationality')) && request()->input('nationality') !== 'all') {
-
-                $users = $users->where('users.nationality_id', request()->nationality);
-            }
-
-            return Datatables::of($users)
+ 
+            return DataTables::of($users)
 
                 ->addColumn('nationality', function ($user) {
                     return optional($user->country)->nationality ?? ' ';
                 })
+                // ->addColumn('building', function ($user) {
+                //     return $user->htrRoomsWorkersHistory->last()->room->building?->name ?? '';
+                // })
+
+                // ->addColumn('building_address', function ($user) {
+                //     return $user->htrRoomsWorkersHistory->last()->room->building?->address ?? '';
+                // })
+
+                // ->addColumn('room_number', function ($user) {
+                //     return $user->htrRoomsWorkersHistory->last()->room->room_number ?? '';
+                // })
                 ->addColumn('residence_permit_expiration', function ($user) {
                     $residencePermitDocument = $user->OfficialDocument
                         ->where('type', 'residence_permit')
@@ -130,15 +142,15 @@ class EssentailsworkersController extends Controller
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
                 ->addColumn('admissions_date', function ($user) {
-
+                    
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
                 ->addColumn('admissions_type', function ($user) {
-
+                  
                     return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
                 })
                 ->addColumn('admissions_status', function ($user) {
-
+                    
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
 
@@ -170,7 +182,7 @@ class EssentailsworkersController extends Controller
                 ->addColumn('contact_name', function ($user) {
 
 
-                    return $user->contact_name;
+                    return $user->assignedTo->name??'';
                 })
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';

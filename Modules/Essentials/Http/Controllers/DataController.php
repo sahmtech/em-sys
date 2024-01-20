@@ -2108,12 +2108,12 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-            $user->company_id = request()->input('essentials_department_id');
+            $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
-            $user->location_id = request()->input('location_id');
+            $user->company_id = request()->input('location_id');
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');
             }
@@ -2183,7 +2183,8 @@ class DataController extends Controller
 
 
 
-            if (request()->input('document_type')) {
+            if (request()->input('document_type'))
+             {
                 $document2 = new EssentialsOfficialDocument();
                 $document2->type = request()->input('document_type');
                 $document2->employee_id =   $user->id;
@@ -2192,7 +2193,6 @@ class DataController extends Controller
                 if (request()->hasFile('document_file')) {
                     $file = request()->file('document_file');
                     $filePath = $file->store('/officialDocuments');
-
                     $document2->file_path = $filePath;
                 }
 
@@ -2264,13 +2264,13 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-            $user->company_id = request()->input('essentials_department_id');
+            $user->essentials_department_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
             $user->essentials_pay_cycle = request()->input('essentials_pay_cycle');
             $user->user_type = request()->input('user_type');
-            $user->location_id = request()->input('location_id');
+            $user->company_id = request()->input('location_id');
 
             if (request()->input('health_insurance') != null) {
                 $user->has_insurance = request()->input('health_insurance');

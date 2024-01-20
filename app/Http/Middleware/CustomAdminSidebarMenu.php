@@ -732,9 +732,9 @@ class CustomAdminSidebarMenu
                     );
                 }
                 //workers
-                if ($is_admin  || auth()->user()->can('essentials.curd_essentials_workers')) {
+                if ($is_admin  || auth()->user()->can('essentials.view_essentials_affairs_workers')) {
                     $menu->url(
-                        route('workers_affairs'),
+                        action([\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'index']),
                         __('essentials::lang.workers'),
                         ['icon' => 'fa fas fa-plus-circle',
                          'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'workers'],

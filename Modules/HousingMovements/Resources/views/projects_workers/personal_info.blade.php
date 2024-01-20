@@ -1,5 +1,5 @@
 <div class="col-md-12 box box-primary">
-                    <h4>@lang('essentials::lang.personal_info'):</h4>
+                    <h4>@lang('housingmovements::lang.personal_info'):</h4>
                    
 
                     <div class="form-group col-md-3">
@@ -64,7 +64,7 @@
 
                     
                 <option value="border">
-                    @lang('essentials::lang.border_number')</option>
+                    @lang('housingmovements::lang.border_number')</option>
             </select>
         </div>
 
@@ -93,11 +93,11 @@
       
             <div class="form-group col-md-6" id="border_no_container"
             style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
-            {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
+            {!! Form::label('border_no', __('housingmovements::lang.border_number') . ':') !!}
             {!! Form::text('border_no', optional($user)->border_no ?? '3', [
                 'class' => 'form-control',
                 'style' => 'height:36px',
-                'placeholder' => __('essentials::lang.border_number'),
+                'placeholder' => __('housingmovements::lang.border_number'),
                 'id' => 'border_no',
                 'maxlength' => '10',
                 'oninput' => 'validateBorderNumber()',
@@ -117,37 +117,35 @@
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
-
-        <div class="clearfix"></div>
-
+<div class="clearfix"></div>
         <div class="col-md-3">
             <div class="form-group ">
-                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}
+                {!! Form::label('doc_type', __('housingmovements::lang.doc_type') . ':') !!}
                 {!! Form::select(
                     'document_type',
                     [
-                        'national_id' => __('essentials::lang.national_id'),
-                        'passport' => __('essentials::lang.passport'),
-                        'residence_permit' => __('essentials::lang.residence_permit'),
-                        'drivers_license' => __('essentials::lang.drivers_license'),
-                        'car_registration' => __('essentials::lang.car_registration'),
-                        'international_certificate' => __('essentials::lang.international_certificate'),
+                        'national_id' => __('housingmovements::lang.national_id'),
+                        'passport' => __('housingmovements::lang.passport'),
+                        'residence_permit' => __('housingmovements::lang.residence_permit'),
+                        'drivers_license' => __('housingmovements::lang.drivers_license'),
+                        'car_registration' => __('housingmovements::lang.car_registration'),
+                        'international_certificate' => __('housingmovements::lang.international_certificate'),
                     ],
                     null,
                     [
                         'class' => 'form-control ',
                         'style' => 'height:36px',
-                        'placeholder' => __('essentials::lang.select_type'),
+                        'placeholder' => __('housingmovements::lang.select_type'),
                     ],
                 ) !!}
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('document_file', __('essentials::lang.file') . ':') !!}
+                {!! Form::label('document_file', __('housingmovements::lang.file') . ':') !!}
                 {!! Form::file('document_file', [
                     'class' => 'form-control',
-                    'placeholder' => __('essentials::lang.file'),
+                    'placeholder' => __('housingmovements::lang.file'),
                     'style' => 'height:36px',
                 ]) !!}
             </div>
@@ -156,8 +154,8 @@
                 
 </div>
 
-@include('essentials::employee_affairs.workers_affairs.bank_details')
-@include('essentials::employee_affairs.workers_affairs.rest_worker_info')
+@include('housingmovements::projects_workers.bank_details')
+@include('housingmovements::projects_workers.rest_worker_info')
 
 
 
@@ -208,7 +206,7 @@
     </script>
     <script>
         function validateBorderNumber() {
-            console.log("border");
+            console.log("border test");
             var borderNoInput = document.getElementById('border_no');
             var borderNo = borderNoInput.value.trim();
 
@@ -287,13 +285,10 @@
 
             var nationalitySelect = $('#nationalities_select');
 
-            $.each(nationalities, function(id, name) {
-  
-             
-                    nationalitySelect.append(new Option(name, id));
-               
-            });
 
+            $.each(nationalities, function(id, name) {
+                nationalitySelect.append(new Option(name, id));
+            });
 
 
             nationalitySelect.val(selectedNationalityId);
@@ -369,8 +364,6 @@
                         option.text = name;
                         nationalitySelect.appendChild(option);
                     }
-                    $('#border_no_container').hide();
-                    $('#proof_no_container').hide();
                 }
             });
 

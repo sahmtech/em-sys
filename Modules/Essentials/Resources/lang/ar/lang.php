@@ -453,6 +453,7 @@ return [
   'please_add_the_word_cards_department' => 'الرجاء اصافة إدارة خاصة بالعلاقات الحكومية ',
   'view_all_essentials_workers' => 'عرض العمال ',
   'show_essentials_worker' => 'عرض صفحة العامل',
+  'show_essentials_workers' => 'عرض صفحة العامل',
   'approved_essentials_recuirements_requests' => 'طلبات التوظيف الداخلي المقبولة ',
   'canceled_essentials_recuirements_requests' => 'طلبات التوظيف الداخلي غير المقبولة ',
   'understudy_essentials_recuirements_requests' => 'طلبات التوظيف الداخلي قيد الدراسة ',
@@ -1469,13 +1470,17 @@ return [
   'user_not_found'=>'الموظف غير موجود',
   'company'=>'الشركة',
   'curd_employees'=>'إضافة \تعديل الموظفين',
-  'curd_essentials_workers'=>'إضافة \تعديل العمال',
+  'curd_essentials_workers'=>'إضافة \عرض العمال',
   'add_essentials_workers'=>'إضافة عامل',
   'apply'=>'تطبيق',
   'add_new_worker'=>'إضافة عامل جديد',
   'company_not_found'=>'الشركة غير موجودة',
   'company_required'=>'الشركة مطلوبة ',
   'undefined'=>'غير محدد',
+  'view_essentials_affairs_workers'=>'عرض العمال',
+  'view_worker'=>'عرض العامل',
+  'salary_per_month'=>'الراتب الأساسي لكل شهر',
+  'worker_with_same_id_proof_number_exists'=>'لايمكن اضافة العامل رقم الاقامة موجود سابقا'
  
 
 
