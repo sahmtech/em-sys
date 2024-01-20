@@ -169,7 +169,7 @@
                                 {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, [
                                     'class' => 'form-control pull-left',
                                     'style' => 'height:40px',
-                                    'placeholder' => __('housingmovements::lang.salary_per_month'),
+                                    'placeholder' => __('essentials::lang.salary_per_month'),
                                 ]) !!}
                             </div>
 
