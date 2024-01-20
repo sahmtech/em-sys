@@ -335,6 +335,8 @@ return [
   'bank_accounts' => 'الحسابات البنكية',
   'entitlements' => 'الاستحقاقات',
   'qualifications' => 'المؤهلات العلمية ',
+  'great_degree'=>'الدرجة العظمى',
+  'marksName'=>'التقدير',
   'allowances' => 'البدلات',
   'work_types' => 'أنماط العمل',
   'job_titles' => 'المسميات الوظيفية',
@@ -1477,10 +1479,19 @@ return [
   'company_not_found'=>'الشركة غير موجودة',
   'company_required'=>'الشركة مطلوبة ',
   'undefined'=>'غير محدد',
+
+  'veryExcellent'=>'ممتاز جداً',
+  'excellent'=>'ممتاز',
+  'veryGood'=>'جيد جداُ',
+  'good'=>'جيد',
+  'weak'=>'ضعيف',
+  'bad'=>'سيئ',
+  'fail'=>'راسب',
+
   'view_essentials_affairs_workers'=>'عرض العمال',
   'view_worker'=>'عرض العامل',
   'salary_per_month'=>'الراتب الأساسي لكل شهر',
-  'worker_with_same_id_proof_number_exists'=>'لايمكن اضافة العامل رقم الاقامة موجود سابقا'
+  'worker_with_same_id_proof_number_exists'=>'لايمكن اضافة العامل رقم الاقامة موجود سابقا',
  
 
 

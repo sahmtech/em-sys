@@ -207,14 +207,14 @@
 
 
             });
-            $('#workers_table tbody').on('click', 'tr', function() {
-                var data = workers_table.row(this).data();
-                console.log(data);
-                if (data) {
-                    window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data
-                        .id);
-                }
-            });
+            // $('#workers_table tbody').on('click', 'tr', function() {
+            //     var data = workers_table.row(this).data();
+            //     console.log(data);
+            //     if (data) {
+            //         window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data
+            //             .id);
+            //     }
+            // });
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,

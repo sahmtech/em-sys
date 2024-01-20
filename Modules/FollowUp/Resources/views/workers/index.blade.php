@@ -207,6 +207,7 @@
                         data: 'admissions_type',
                         render: function(data, type, row) {
                             if (data === 'first_time') {
+                                console.log(data);
                                 return '@lang('essentials::lang.first_time')';
                             } else {
                                 return '@lang('essentials::lang.after_vac')';

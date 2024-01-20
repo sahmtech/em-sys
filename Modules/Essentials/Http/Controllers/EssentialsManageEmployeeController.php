@@ -1162,7 +1162,6 @@ class EssentialsManageEmployeeController extends Controller
 
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
             'user',
-
             'view_partials',
             'users',
             'activities',

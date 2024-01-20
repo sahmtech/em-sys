@@ -126,7 +126,7 @@ class EssentialsEmployeeQualificationController extends Controller
 
 
         try {
-            $input = $request->only(['employee', 'qualification_type', 'major', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree']);
+            $input = $request->only(['employee', 'qualification_type', 'major', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree','marksName','great_degree']);
 
 
             $input2['qualification_type'] = $input['qualification_type'];
@@ -136,6 +136,8 @@ class EssentialsEmployeeQualificationController extends Controller
             $input2['employee_id'] = $input['employee'];
             $input2['graduation_country'] = $input['graduation_country'];
             $input2['degree'] = $input['degree'];
+            $input2['marksName'] = $input['marksName'];
+            $input2['great_degree'] = $input['great_degree'];
 
 
             EssentialsEmployeesQualification::create($input2);
@@ -188,8 +190,11 @@ class EssentialsEmployeeQualificationController extends Controller
                     'graduation_institution' => $qualification->graduation_institution,
                     'graduation_country' => $qualification->graduation_country,
                     'degree' => $qualification->degree,
+                    'marksName' => $qualification->marksName,
+                    'great_degree' => $qualification->great_degree,
 
                 ],
+              
                 'msg' => __('lang_v1.fetched_success'),
             ];
         } catch (\Exception $e) {
@@ -226,6 +231,8 @@ class EssentialsEmployeeQualificationController extends Controller
                     'graduation_institution' => $request->input('graduation_institution'),
                     'graduation_country' => $request->input('graduation_country'),
                     'degree' => $request->input('degree'),
+                    'marksName' => $request->input('marksName'),
+                    'great_degree' => $request->input('great_degree'),
 
                 ]);
 
