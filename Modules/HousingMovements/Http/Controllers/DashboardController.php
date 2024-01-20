@@ -66,7 +66,15 @@ class DashboardController extends Controller
     
     public function index()
     {
+        
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_housing_move_dashbord = auth()->user()->can('housingmovements.housing_move_dashbord');
+        if (!($is_admin || $can_housing_move_dashbord)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
       
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
         if (!$is_admin) {

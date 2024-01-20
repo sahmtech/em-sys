@@ -41,11 +41,14 @@ class FollowUpOperationOrderController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-        $can_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
-        if (!$can_crud_operation_orders) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
+        if (!($is_admin || $can_followup_crud_operation_orders)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $contracts = DB::table('sales_orders_operations')
             ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')

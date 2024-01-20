@@ -38,6 +38,14 @@ class DriverCarController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_car_drivers = auth()->user()->can('essentials.car_drivers');
+        if (!($is_admin ||  $can_car_drivers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+       
         $car_driver_edit = auth()->user()->can('driver.edit');
         $car_driver_delete  = auth()->user()->can('driver.delete');
 
@@ -130,7 +138,15 @@ class DriverCarController extends Controller
     {
         $essentials_specializations_ids = EssentialsSpecialization::where('name', 'like', "%سائق%")->get()->pluck('id');
         $essentials_employee_appointmets_ids = EssentialsEmployeeAppointmet::whereIn('specialization_id', $essentials_specializations_ids)->get()->pluck('employee_id');
-        $driver_ids = DriverCar::all()->pluck('user_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $driver_ids = DriverCar::whereIn('user_id', $userIds)->pluck('user_id');
+
+
 
         $workers = User::where('user_type', 'worker')
             ->whereIn('id', $essentials_employee_appointmets_ids)

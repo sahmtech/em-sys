@@ -720,7 +720,7 @@ return [
   'crud_employee_work_adminitions' => 'إضافة/تعديل/حذف مباشرة العمل للموظفين',
   'crud_employee_contracts' => 'إضافة/تعديل/حذف عقود الموظفين',
   'crud_employee_qualifications' => 'إضافة/تعديل/حذف مؤهلات الموظفين',
- 
+
   'view_user_travel_categorie' => 'عرض فئات تذاكر السفر',
   'edit_bank_account' => 'تعديل الحساب البنكي',
   'editTravel_categorie' => 'تعديل تذكرة السفر',
@@ -758,7 +758,7 @@ return [
   'doc_details' => 'تفاصيل الوثيقة',
   'view_doc' => 'عرض الوثيقة',
   'close' => 'إغلاق',
- 
+
   'import_employees' => 'استيراد الموظفين',
   'crud_import_employee' => 'إضافة / تعديل / عرض / حذف فئات استيراد الموظفين ',
   'employee_name' => 'اسم الموظف',
@@ -1246,10 +1246,12 @@ return [
   'delete_procedures' => 'حذف إجراءات سير العمل',
   'delete_finish_contracts' => 'حذف اسباب انهاء العقود',
   'add_finish_contracts' => 'إضافة سبب إنهاء العقود',
-  'carinsurance_edit'=>'تعديل تأمين مركبة',
-  'carinsurance_delete'=>'حذف تأمين مركبة',
-
-
+  'carinsurance_edit' => 'تعديل تأمين مركبة',
+  'carinsurance_delete' => 'حذف تأمين مركبة',
+  'index_workers' => ' عمال المشاريع',
+  'workcards_indexWorkerProjects' => ' عمال المشاريع',
+   'showWorkerProjects'=>'عرض معلومات العامل',
+  
   'delete_wishes' => 'حذف الرغبات',
   'delete_leave' => 'حذف الاجازات',
   'edit_leave' => ' النشاط للإجازات',
@@ -1299,7 +1301,7 @@ return [
 
   'add_attendance_status' => 'إضافة حالة انصراف',
   'delete_attendance_status' => 'حذف حالة انصراف',
-  'edit_attendance_status'=>'تعديل حالة الحضور والانصراف',
+  'edit_attendance_status' => 'تعديل حالة الحضور والانصراف',
 
   'crud_system_settings' => 'اعدادات النظام ',
   'add_departments' => 'اضافة ادارات واقسام',
@@ -1372,7 +1374,7 @@ return [
   'workcards_requests_change_status' => 'تغير الحالة للطلبات في العلاقات الحكومية',
   'return_workcards_request' => 'إرجاع الطلب ',
   'show_workcards_request' => 'عرض الطلب',
-  'workcards_add_requests'=>'إضافة طلب',
+  'workcards_add_requests' => 'إضافة طلب',
   'view_return_visa' => 'عرض تأشيرة خروج وعودة',
   'view_final_visa' => 'عرض تأشيرة خروج نهائي',
   'view_absent_report' => 'عرض تبليغ هروب',
@@ -1438,6 +1440,7 @@ return [
 
   //features
   'crud_employee_features' => 'إضافة/تعديل/حذف مزايا الموظفين',
+
   'add_employee_features'=>'إضافة مزايا بدلات الموظفين',
   'edit_employee_features'=>'تعديل مزايا بدلات الموظفين',
   'delete_employee_features'=>'حذف مزايا بدلات الموظفين',
@@ -1475,5 +1478,6 @@ return [
   'undefined'=>'غير محدد',
  
 
-];
 
+
+];

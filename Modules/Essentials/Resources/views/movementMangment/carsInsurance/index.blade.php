@@ -32,10 +32,10 @@
                                 <tr>
                                     {{-- <th>@lang('housingmovements::lang.driver')</th> --}}
 
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_company_id')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_start_Date')</th>
-                                    <th style="width: 100px !important;">@lang('housingmovements::lang.insurance_end_date')</th>
-                                    <th style="width: 100px !important;">@lang('messages.action')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.insurance_company_id')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.insurance_start_Date')</th>
+                                    <th class="table-td-width-100px">@lang('housingmovements::lang.insurance_end_date')</th>
+                                    <th class="table-td-width-100px">@lang('messages.action')</th>
                                 </tr>
                             </thead>
 

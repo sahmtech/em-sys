@@ -128,7 +128,7 @@ class ClientsController extends Controller
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(surname, ''),' ',COALESCE(first_name, ''),' ',COALESCE(last_name,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
-     
+
 
 
         if (request()->ajax()) {
@@ -178,10 +178,10 @@ class ClientsController extends Controller
     public function unqualified_contacts(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-       
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_view_contact_info = auth()->user()->can('sales.view_contact_info');
-      
+
 
         if (request()->ajax()) {
             $contacts = DB::table('contacts')
@@ -194,11 +194,11 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) use ($is_admin,$can_view_contact_info) {
+                ->addColumn('action', function ($row) use ($is_admin, $can_view_contact_info) {
 
-                   
+
                     if ($is_admin || $can_view_contact_info) {
-                    $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                        $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
                     }
                     return $html;
                 })
@@ -232,12 +232,13 @@ class ClientsController extends Controller
 
             return Datatables::of($contacts)
 
-                ->addColumn('action', function ($row) use ($is_admin,$can_view_contact_info) {
-                   
+                ->addColumn('action', function ($row) use ($is_admin, $can_view_contact_info) {
+
                     // $html = '<a href="' . route('sale.clients.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
                     if ($is_admin || $can_view_contact_info) {
-                    $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
-                    }return $html;
+                        $html = '<a href="' . route('sale.clients.view', ['id' => $row->id]) . '" class="btn btn-xs btn-info"><i class="glyphicon glyphicon-eye-open"></i> ' . __('messages.view') . '</a>'; // New view button
+                    }
+                    return $html;
                 })
 
                 ->filterColumn('name', function ($query, $keyword) {
@@ -553,14 +554,15 @@ class ClientsController extends Controller
             ->latest()
             ->get();
 
-        $contactSigners = User::with('country')
-            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
+           $contactSigners = user::with('country')
+            ->where( 'users.crm_contact_id', $contact->id)
+
             ->where('users.contact_user_type', 'contact_signer')
             ->select('users.*')
             ->first();
 
         $contactFollower = DB::table('users')
-            ->join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
+            ->where( 'users.crm_contact_id', $contact->id)
             ->where('users.contact_user_type', 'contract_follower')
             ->select('users.*')
             ->first();

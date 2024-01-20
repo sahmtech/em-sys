@@ -39,7 +39,14 @@ class SettingsController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
- 
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_settings = auth()->user()->can('accounting.settings');
+        if (!($is_admin || $can_settings)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
 
         $account_sub_types = AccountingAccountType::where('account_type', 'sub_type')
             ->where(function ($q) use ($business_id) {
@@ -63,7 +70,7 @@ class SettingsController extends Controller
 
         //check for admin
         if (!$this->accountingUtil->is_admin(auth()->user())) {
-           //temp  abort(403, 'Unauthorized action.');
+            //temp  abort(403, 'Unauthorized action.');
         }
 
         //reset logic
@@ -110,13 +117,15 @@ class SettingsController extends Controller
             Business::where('id', $business_id)
                 ->update(['accounting_settings' => json_encode($input)]);
 
-            $output = ['success' => true,
+            $output = [
+                'success' => true,
                 'msg' => __("lang_v1.updated_success")
             ];
         } catch (\Exception $e) {
             \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
-            $output = ['success' => false,
+            $output = [
+                'success' => false,
                 'msg' => __("messages.something_went_wrong")
             ];
         }
@@ -167,6 +176,8 @@ class SettingsController extends Controller
 
     protected function autoMapping()
     {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_map_transactions = auth()->user()->can('accounting.map_transactions');
         if (\request()->ajax()) {
             $settings = [
                 (object)[
@@ -214,9 +225,9 @@ class SettingsController extends Controller
             return DataTables::of($settings)
                 ->addColumn(
                     'action',
-                    function ($row) {
+                    function ($row) use ($is_admin, $can_map_transactions) {
                         $html = '';
-                        if (auth()->user()->can('accounting.map_transactions')) {
+                        if ($is_admin || $can_map_transactions) {
                             $html .= '<a href="#" 
                                     data-href="' . action("\Modules\Accounting\Http\Controllers\SettingsController@map") . '?id=' . $row->id . '" class="btn-modal btn btn-warning btn-xs mt-10" data-container=".view_modal"><i class="fas fa-link"></i> ' . __('accounting::lang.edit_settings') . '</a>';
                         }
@@ -246,11 +257,11 @@ class SettingsController extends Controller
             return view('accounting::settings.map')
                 ->with(compact('existing_payment_deposit', 'elem'));
         }
-
     }
-    protected function saveMap(Request $request){
+    protected function saveMap(Request $request)
+    {
         $elem = AccountingMappingSetting::query()->where('id', $request->id)->first();
-        foreach ($request->account_id as $key => $acc){
+        foreach ($request->account_id as $key => $acc) {
             AccountingMappingSetting::query()->updateOrCreate(
                 [
                     'accounting_account_id' => $acc,
@@ -259,15 +270,15 @@ class SettingsController extends Controller
                 ],
                 [
                     'type' =>  $request->type[$key],
-                    'map_type' => $request->type[$key] == 'credit'? 'payment_account' : 'deposit_to'
+                    'map_type' => $request->type[$key] == 'credit' ? 'payment_account' : 'deposit_to'
                 ]
             );
         }
-        $output = ['success' => 1,
+        $output = [
+            'success' => 1,
             'msg' => __('lang_v1.added_success')
         ];
 
         return $output;
     }
-
 }

@@ -38,7 +38,15 @@ class PaymentVouchersController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
 
-
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_payment_vouchers= auth()->user()->can('accounting.payment_vouchers');
+        if (!($is_admin || $can_payment_vouchers)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+        
         $contacts = Contact::whereNot('id', 1)->where('type', 'supplier')->get();
         $transactionUtil = new TransactionUtil();
         $moduleUtil = new ModuleUtil();
