@@ -317,7 +317,6 @@ class RoleController extends Controller
                 'msg' => __('messages.something_went_wrong'),
             ];
         }
-        return $module_permissions;
         return view('role.edit')
             ->with(compact('role', 'role_permissions', 'selling_price_groups', 'module_permissions', 'common_settings'));
     }
