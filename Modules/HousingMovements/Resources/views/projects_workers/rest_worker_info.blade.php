@@ -181,8 +181,6 @@
         </div>
     </div>
     <div class="col-md-1">
-
-
     </div>
 
 
@@ -216,18 +214,19 @@
                             ]) !!}
 
                         </td>
+                       
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-
     <div class="clearfix">
-    </div>
-    <div class="col-md-4">
-        <button type="button" id="add-row" class="btn btn-primary">{{ __('housingmovements::lang.add_extry') }}</button>
-    </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" id="add-row" class="btn btn-primary">{{ __('housingmovements::lang.add_extry') }}</button>
+                        </div>
+ 
     <div class="clearfix">
     </div>
     <br>
@@ -248,6 +247,7 @@
     </div>
     <div class="clearfix">
     </div>
+    <br>
 </div>
 
 

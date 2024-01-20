@@ -208,6 +208,7 @@
     </script>
     <script>
         function validateBorderNumber() {
+            console.log("border");
             var borderNoInput = document.getElementById('border_no');
             var borderNo = borderNoInput.value.trim();
 

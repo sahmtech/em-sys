@@ -206,6 +206,7 @@
     </script>
     <script>
         function validateBorderNumber() {
+            console.log("border test");
             var borderNoInput = document.getElementById('border_no');
             var borderNo = borderNoInput.value.trim();
 
@@ -324,6 +325,7 @@
                     idProofNumberInput.value = '2';
                     border_no_containerInput.value = '';
                     $('#border_no_container').hide();
+                    $('#proof_no_container').show();
 
 
                     for (const [id, name] of Object.entries(nationalities)) {

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
+use App\Events\UserCreatedOrModified;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Spatie\Activitylog\Models\Activity;
