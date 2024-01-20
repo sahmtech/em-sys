@@ -1006,7 +1006,7 @@ class DataController extends Controller
                      
                 
                     
-                ]
+                ],
 
             ],
 
@@ -1648,9 +1648,9 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                ]
+                ],
 
-            ],
+          
             //housing
             [
                 'group_name' => __('housingmovements::lang.movement_management'),
