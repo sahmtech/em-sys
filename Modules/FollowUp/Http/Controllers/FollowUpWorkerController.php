@@ -84,12 +84,13 @@ class FollowUpWorkerController extends Controller
             ->with(['country', 'contract', 'OfficialDocument']);
         $users->select(
             'users.*',
-            'users.id_proof_number',
-            'users.nationality_id',
-            'users.essentials_salary',
+            // 'users.id_proof_number',
+            // 'users.nationality_id',
+            // 'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
-        );
+        )->orderBy('users.id', 'desc')
+        ->groupBy('users.id');
 
         if (!$is_admin) {
             $userProjects = [];

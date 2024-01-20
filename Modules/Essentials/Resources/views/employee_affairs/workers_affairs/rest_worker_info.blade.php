@@ -12,9 +12,9 @@
             ]) !!}
         </div>
     </div>
-    <div class="col-md-3">
+    {{--   <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':*') !!}
+            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':') !!}
             <div class="form-group">
                 {!! Form::select(
                     'essentials_department_id',
@@ -23,21 +23,22 @@
                     [
                         'class' => 'form-control select2',
                         'style' => 'height:40px',
-                        'required',
+                     
                         'style' => 'width: 100%;',
                         'placeholder' => __('messages.please_select'),
                     ],
                 ) !!}
             </div>
         </div>
-    </div>
+    </div>--}}
+  
 
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+            {!! Form::label('profession', __('sales::lang.profession') . ':') !!}
             {!! Form::select('profession', $professions, !empty($user->profession_id) ? $user->profession_id : null, [
                 'class' => 'form-control select2',
-                'required',
+            
                 'style' => 'height:40px',
                 'placeholder' => __('sales::lang.profession'),
                 'id' => 'professionSelect',
@@ -187,22 +188,12 @@
                                 {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, [
                                     'class' => 'form-control pull-left',
                                     'style' => 'height:40px',
-                                    'placeholder' => __('essentials::lang.salary'),
+                                    'placeholder' => __('essentials::lang.salary_per_month'),
                                 ]) !!}
                             </div>
 
 
-                            <div class="col-md-4">
-                                {!! Form::select(
-                                    'essentials_pay_period',
-                                    [
-                                        'month' => __('essentials::lang.per') . ' ' . __('lang_v1.month'),
-                                      
-                                    ],
-                                    !empty($user->essentials_pay_period) ? $user->essentials_pay_period : null,
-                                    ['class' => 'form-control pull-left', 'style' => 'height:40px'],
-                                ) !!}
-                            </div>
+                           
                         </td>
                     </tr>
                 </tbody>
@@ -210,8 +201,6 @@
         </div>
     </div>
     <div class="col-md-1">
-
-
     </div>
 
 

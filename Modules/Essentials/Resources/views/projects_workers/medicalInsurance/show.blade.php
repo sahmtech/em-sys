@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', __('followup::lang.view_worker'))
+@section('title', __('essentials::lang.view_worker'))
 
 @section('content')
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-4">
-                <h3>@lang('followup::lang.view_worker')</h3>
+                <h3>@lang('essentials::lang.view_worker')</h3>
             </div>
             <div class="col-md-4 col-xs-12 mt-15 pull-right">
                 {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}

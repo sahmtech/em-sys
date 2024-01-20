@@ -85,7 +85,7 @@
                                 style="margin-top: 24px;
                         width: 62px;
                         height: 36px;
-                        border-radius: 4px;">@lang('essentials::lang.apply')</button>
+                        border-radius: 4px;">تطبيق</button>
                         </div>
                     </div>
                 @endcomponent
@@ -105,42 +105,42 @@
 
                 </div>
         </div>
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            {{-- <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.essentials_salary')</th>
 
-                            <th>@lang('followup::lang.nationality')</th>
-                            <th>@lang('followup::lang.eqama_end_date')</th>
-                            <th>@lang('followup::lang.contract_end_date')</th> --}}
 
-                            <td style="width: 100px !important;">@lang('followup::lang.name')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.eqama')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.project_name')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.nationality')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.eqama_end_date')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.admissions_date')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.admissions_type')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.admissions_status')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.contract_end_date')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.mobile_number')</td>
-                            <td style="width: 100px !important;">@lang('business.email')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.department')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.profession')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.specialization')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.status')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.Basic_salary')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.total_salary')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.gender')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.marital_status')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.blood_group')</td>
-                            <td style="width: 100px !important;">@lang('followup::lang.bank_code')</td>
-                            <td style="width: 100px !important;">@lang('essentials::lang.travel_categorie')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.name')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.project_name')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.nationality')</td>
+
+                            {{--  <th class="table-td-width-100px">@lang('housingmovements::lang.building_name')</th>
+                            <th class="table-td-width-100px">@lang('housingmovements::lang.building_address')</th>
+                            <th class="table-td-width-100px">@lang('housingmovements::lang.room_number')</th>
+--}}
+                           
+
+                            <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
+                  
+                            <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.contract_end_date')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.mobile_number')</td>
+                            <td class="table-td-width-100px">@lang('business.email')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.department')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.profession')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.specialization')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.status')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.Basic_salary')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.total_salary')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.gender')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.marital_status')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.blood_group')</td>
+                            <td class="table-td-width-100px">@lang('followup::lang.bank_code')</td>
+                            <td class="table-td-width-100px">@lang('essentials::lang.travel_categorie')</td>
 
 
 
@@ -170,8 +170,7 @@
 
                 ajax: {
 
-                    url: "{{route('workers_affairs')}}",
-                   
+                    url: "{{ route('workers_affairs') }}",
 
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
@@ -194,24 +193,17 @@
                     }
                 },
 
-
-
-                columns: [
-                    {
+                columns: [{
                         data: 'worker',
                         render: function(data, type, row) {
-                            @can('essentials.show_essentials_worker')
-                                var link = '<a href="' + '{{ route('show_workers_affairs', ['id' => ':id']) }}'
-                                    .replace(':id', row.id) + '">' + data + '</a>';
-                                return link;
-                            @else
-                                return data;
-                            @endcan
+                            var link = '<a href="' +
+                                '{{ route('show_workers_affairs', ['id' => ':id']) }}'
+                                .replace(':id', row.id) + '">' + data + '</a>';
+                            return link;
                         }
                     },
-
                     {
-                        data: 'residence_permit'
+                        data: 'id_proof_number'
                     },
                     {
                         data: 'contact_name'
@@ -219,6 +211,8 @@
                     {
                         data: 'nationality'
                     },
+                   
+                    
                     {
                         data: 'residence_permit_expiration'
                     },
@@ -228,7 +222,7 @@
                     {
                         data: 'admissions_type',
                         render: function(data, type, row) {
-                          
+
                             if (data === 'first_time') {
                                 return '@lang('essentials::lang.first_time')';
                             } else {

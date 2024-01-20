@@ -1,50 +1,31 @@
 <div class="col-md-12 box box-primary" id="section4">
 
-    <h4>@lang('essentials::lang.hrm_details_create_edit'):</h4>
+    <h4>@lang('housingmovements::lang.hrm_details_create_edit'):</h4>
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
-            {!! Form::select('location_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
+            {!! Form::label('location_id', __('housingmovements::lang.company') . ':*') !!}
+            {!! Form::select('location_id', $company, null, [
                 'class' => 'form-control select2',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'required',
                 'placeholder' => __('messages.please_select'),
             ]) !!}
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="form-group">
-            {!! Form::label('essentials_department_id', __('essentials::lang.department') . ':*') !!}
-            <div class="form-group">
-                {!! Form::select(
-                    'essentials_department_id',
-                    $departments,
-                    !empty($user->essentials_department_id) ? $user->essentials_department_id : null,
-                    [
-                        'class' => 'form-control select2',
-                        'style' => 'height:36px',
-                        'required',
-                        'style' => 'width: 100%;',
-                        'placeholder' => __('messages.please_select'),
-                    ],
-                ) !!}
-            </div>
-        </div>
-    </div>
+   
 
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+            {!! Form::label('profession', __('sales::lang.profession') . ':') !!}
             {!! Form::select('profession', $professions, !empty($user->profession_id) ? $user->profession_id : null, [
                 'class' => 'form-control select2',
-                'required',
-                'style' => 'height:36px',
+             
+                'style' => 'height:40px',
                 'placeholder' => __('sales::lang.profession'),
                 'id' => 'professionSelect',
             ]) !!}
         </div>
     </div>
-
     {{--
         <div class="col-sm-3">
         <div class="form-group">
@@ -55,7 +36,7 @@
                 !empty($user->specialization_id) ? $user->specialization_id : null,
                 [
                     'class' => 'form-control select2',
-                    'style' => 'height:36px',
+                    'style' => 'height:40px',
                     'required',
                     'placeholder' => __('sales::lang.specialization'),
                     'id' => 'specializationSelect',
@@ -67,40 +48,36 @@
 </div>
 
 
-
-
-
-
 <div class="col-md-12 box box-primary" id="section5">
-    <h4>@lang('essentials::lang.contract_details_create_edit'):</h4>
+    <h4>@lang('housingmovements::lang.contract_details_create_edit'):</h4>
 
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('contract_type', __('essentials::lang.contract_type') . ':') !!}
+            {!! Form::label('contract_type', __('housingmovements::lang.contract_type') . ':') !!}
             {!! Form::select(
                 'contract_type',
                 $contract_types,
                 !empty($contract->contract_type_id) ? $contract->contract_type_id : null,
-                ['class' => 'form-control select', 'style' => 'height:36px', 'placeholder' => __('messages.please_select')],
+                ['class' => 'form-control select', 'style' => 'height:40px', 'placeholder' => __('messages.please_select')],
             ) !!}
         </div>
     </div>
     <div class="form-group col-md-3">
-        {!! Form::label('contract_start_date', __('essentials::lang.contract_start_date') . ':') !!}
+        {!! Form::label('contract_start_date', __('housingmovements::lang.contract_start_date') . ':') !!}
         {!! Form::date(
             'contract_start_date',
             !empty($contract->contract_start_date) ? $contract->contract_start_date : null,
             [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
                 'id' => 'contract_start_date',
-                'placeholder' => __('essentials::lang.contract_start_date'),
+                'placeholder' => __('housingmovements::lang.contract_start_date'),
             ],
         ) !!}
     </div>
 
     <div class="form-group col-md-3">
-        {!! Form::label('contract_duration', __('essentials::lang.contract_duration') . ':') !!}
+        {!! Form::label('contract_duration', __('housingmovements::lang.contract_duration') . ':') !!}
         <div class="form-group">
             <div class="multi-input">
                 <div class="input-group">
@@ -109,16 +86,16 @@
                         !empty($contract->contract_duration) ? $contract->contract_duration : null,
                         [
                             'class' => 'form-control width-40 pull-left',
-                            'style' => 'height:36px',
+                            'style' => 'height:40px',
                             'id' => 'contract_duration',
-                            // 'placeholder' => __('essentials::lang.contract_duration'),
+                            // 'placeholder' => __('housingmovements::lang.contract_duration'),
                         ],
                     ) !!}
                     {!! Form::select(
                         'contract_duration_unit',
-                        ['years' => __('essentials::lang.years'), 'months' => __('essentials::lang.months')],
+                        ['years' => __('housingmovements::lang.years'), 'months' => __('housingmovements::lang.months')],
                         !empty($contract->contract_per_period) ? $contract->contract_per_period : null,
-                        ['class' => 'form-control width-60 pull-left', 'style' => 'height:36px', 'id' => 'contract_duration_unit'],
+                        ['class' => 'form-control width-60 pull-left', 'style' => 'height:40px', 'id' => 'contract_duration_unit'],
                     ) !!}
                 </div>
             </div>
@@ -126,41 +103,41 @@
     </div>
 
     <div class="form-group col-md-3">
-        {!! Form::label('contract_end_date', __('essentials::lang.contract_end_date') . ':') !!}
+        {!! Form::label('contract_end_date', __('housingmovements::lang.contract_end_date') . ':') !!}
         {!! Form::date('contract_end_date', !empty($contract->contract_end_date) ? $contract->contract_end_date : null, [
             'class' => 'form-control',
-            'style' => 'height:36px',
+            'style' => 'height:40px',
             'id' => 'contract_end_date',
-            'placeholder' => __('essentials::lang.contract_end_date'),
+            'placeholder' => __('housingmovements::lang.contract_end_date'),
         ]) !!}
     </div>
     <div class="clearfix">
     </div>
     <div class="form-group col-md-3">
-        {!! Form::label('probation_period', __('essentials::lang.probation_period') . ':') !!}
+        {!! Form::label('probation_period', __('housingmovements::lang.probation_period') . ':') !!}
         {!! Form::text('probation_period', !empty($contract->probation_period) ? $contract->probation_period : null, [
             'class' => 'form-control',
-            'style' => 'height:36px',
-            'placeholder' => __('essentials::lang.probation_period_in_days'),
+            'style' => 'height:40px',
+            'placeholder' => __('housingmovements::lang.probation_period_in_days'),
         ]) !!}
     </div>
     <div class="form-group col-md-3">
-        {!! Form::label('is_renewable', __('essentials::lang.is_renewable') . ':') !!}
+        {!! Form::label('is_renewable', __('housingmovements::lang.is_renewable') . ':') !!}
         {!! Form::select(
             'is_renewable',
-            ['1' => __('essentials::lang.is_renewable'), '0' => __('essentials::lang.is_unrenewable')],
+            ['1' => __('housingmovements::lang.is_renewable'), '0' => __('housingmovements::lang.is_unrenewable')],
             !empty($contract->probation_period) ? $contract->probation_period : null,
-            ['class' => 'form-control', 'style' => 'height:36px'],
+            ['class' => 'form-control', 'style' => 'height:40px'],
         ) !!}
     </div>
 
 
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('essentials::lang.contract_file', __('essentials::lang.contract_file') . ':') !!}
+            {!! Form::label('housingmovements::lang.contract_file', __('housingmovements::lang.contract_file') . ':') !!}
             {!! Form::file('contract_file', [
                 'class' => 'form-control',
-                'style' => 'height:36px',
+                'style' => 'height:40px',
             ]) !!}
         </div>
 
@@ -174,14 +151,14 @@
 
 <div class="col-md-12 box box-primary" id="section6">
 
-    <h4>@lang('essentials::lang.payroll_create_edit'):</h4>
+    <h4>@lang('housingmovements::lang.payroll_create_edit'):</h4>
 
     <div class="col-md-5">
         <div class="form-group">
             <table class="table">
                 <thead>
                     <tr>
-                        <th> {!! Form::label('essentials_salary', __('essentials::lang.salary') . ':') !!}</th>
+                        <th> {!! Form::label('essentials_salary', __('housingmovements::lang.salary') . ':') !!}</th>
 
                     </tr>
                 </thead>
@@ -191,7 +168,7 @@
                             <div class="col-md-8">
                                 {!! Form::number('essentials_salary', !empty($user->essentials_salary) ? $user->essentials_salary : null, [
                                     'class' => 'form-control pull-left',
-                                    'style' => 'height:36px',
+                                    'style' => 'height:40px',
                                     'placeholder' => __('essentials::lang.salary_per_month'),
                                 ]) !!}
                             </div>
@@ -203,10 +180,7 @@
             </table>
         </div>
     </div>
-    
     <div class="col-md-1">
-
-
     </div>
 
 
@@ -215,8 +189,8 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>{!! Form::label('extra_salary_type', __('essentials::lang.extra_salary_type') . ':') !!}</th>
-                        <th>{!! Form::label('amount', __('essentials::lang.amount') . ':') !!}</th>
+                        <th>{!! Form::label('extra_salary_type', __('housingmovements::lang.extra_salary_type') . ':') !!}</th>
+                        <th>{!! Form::label('amount', __('housingmovements::lang.amount') . ':') !!}</th>
 
                     </tr>
                 </thead>
@@ -226,8 +200,8 @@
 
                             {!! Form::select('salary_type[]', $allowance_types, null, [
                                 'class' => 'form-control  pull-left',
-                                'style' => 'height:36px',
-                                'placeholder' => __('essentials::lang.extra_salary_type'),
+                                'style' => 'height:40px',
+                                'placeholder' => __('housingmovements::lang.extra_salary_type'),
                             ]) !!}
 
                         </td>
@@ -235,36 +209,37 @@
 
                             {!! Form::text('amount[]', null, [
                                 'class' => 'form-control  pull-left',
-                                'style' => 'height:36px',
-                                'placeholder' => __('essentials::lang.amount'),
+                                'style' => 'height:40px',
+                                'placeholder' => __('housingmovements::lang.amount'),
                             ]) !!}
 
                         </td>
+                       
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-
     <div class="clearfix">
-    </div>
-    <div class="col-md-4">
-        <button type="button" id="add-row" class="btn btn-primary">{{ __('essentials::lang.add_extry') }}</button>
-    </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" id="add-row" class="btn btn-primary">{{ __('housingmovements::lang.add_extry') }}</button>
+                        </div>
+ 
     <div class="clearfix">
     </div>
     <br>
     <div class="col-md-3">
         <div class="form-group">
 
-            {!! Form::label('total_salary', __('essentials::lang.total_salary') . ':') !!}
+            {!! Form::label('total_salary', __('housingmovements::lang.total_salary') . ':') !!}
 
             {!! Form::number('total_salary', !empty($user->total_salary) ? $user->total_salary : null, [
-                'class' => 'form-control pull-left',
-                'style' => 'height:36px',
+                'class' => 'form-control ',
+                'style' => 'height:40px',
                 'id' => 'total_salary',
-                'placeholder' => __('essentials::lang.salary'),
+                'placeholder' => __('housingmovements::lang.salary'),
             ]) !!}
 
 
@@ -272,47 +247,47 @@
     </div>
     <div class="clearfix">
     </div>
+    <br>
 </div>
 
 
 
 <div class="col-md-12 box box-primary" id="section7">
 
-    <h4>@lang('essentials::lang.features'):</h4>
+    <h4>@lang('housingmovements::lang.features'):</h4>
 
     <div>
         <div class="form-group col-md-3">
-            {!! Form::label('can_add_category', __('essentials::lang.travel_categorie') . ':') !!}
+            {!! Form::label('can_add_category', __('housingmovements::lang.travel_categorie') . ':') !!}
             {{-- <input type="checkbox" id="can_add_category" name="can_add_category" value="1"> --}}
-            <select id="can_add_category" name="can_add_category" class ="form-control" style="height:36px">
-                <option value="#">@lang('essentials::lang.select_for_travel')</option>
-                <option value="1">@lang('essentials::lang.includes')</option>
-                <option value="0">@lang('essentials::lang.does_not_include')</option>
+            <select id="can_add_category" name="can_add_category" class ="form-control" style="height:40px">
+                <option value="#">@lang('housingmovements::lang.select_for_travel')</option>
+                <option value="1">@lang('housingmovements::lang.includes')</option>
+                <option value="0">@lang('housingmovements::lang.does_not_include')</option>
             </select>
 
         </div>
         <div class="form-group col-md-3" id="category_input" style="display: none;">
-            {!! Form::label('travel_ticket_categorie', __('essentials::lang.travel_ticket_categorie') . ':') !!}
+            {!! Form::label('travel_ticket_categorie', __('housingmovements::lang.travel_ticket_categorie') . ':') !!}
             {!! Form::select('travel_ticket_categorie', $travel_ticket_categorie, null, [
                 'class' => 'form-control',
-                'style' => 'height:36px',
-                'placeholder' => __('essentials::lang.travel_ticket_categorie'),
+                'style' => 'height:40px',
+                'placeholder' => __('housingmovements::lang.travel_ticket_categorie'),
             ]) !!}
         </div>
     </div>
 
     <div class="form-group col-md-3">
-        {!! Form::label('health_insurance', __('essentials::lang.health_insurance') . ':') !!}
+        {!! Form::label('health_insurance', __('housingmovements::lang.health_insurance') . ':') !!}
         {!! Form::select(
             'health_insurance',
-            ['1' => __('essentials::lang.have_an_insurance'), '0' => __('essentials::lang.not_have_an_insurance')],
+            ['1' => __('housingmovements::lang.have_an_insurance'), '0' => __('housingmovements::lang.not_have_an_insurance')],
             null,
-            ['class' => 'form-control', 'style' => 'height:36px', 'placeholder' => __('essentials::lang.health_insurance')],
+            ['class' => 'form-control', 'style' => 'height:40px', 'placeholder' => __('housingmovements::lang.health_insurance')],
         ) !!}
     </div>
 </div>
 <input type="hidden" id="selectedData" name="selectedData" value="">
-
 
 
 
@@ -569,3 +544,5 @@
         });
     });
 </script>
+
+

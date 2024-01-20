@@ -37,17 +37,12 @@ class EssentialsInsuranceCompanyController extends Controller
         $can_edit_insurance_companies = auth()->user()->can('essentials.edit_insurance_companies');
         $can_delete_insurance_companies = auth()->user()->can('essentials.delete_insurance_companies');
 
-        // if (!$can_crud_insurance_companies) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
+ 
 
         $insuranceCompanies = Contact::leftjoin('companies', 'companies.id', '=', 'contacts.company_id')
         ->where('contacts.type', 'insurance');
 
-        // if (!(auth()->user()->can('superadmin'))) {
-        //     $insuranceCompanies->where('business.id', '=', $business_id);
-        // }
-
+   
         if (request()->ajax()) {
 
             $insuranceCompanies->select([
@@ -168,7 +163,7 @@ class EssentialsInsuranceCompanyController extends Controller
             error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
             $output = [
                 'success' => false,
-                'msg' => $e->getMessage(),
+                'msg' => __('messages.employee_has_insurance'),
             ];
         }
 

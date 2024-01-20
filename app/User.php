@@ -31,6 +31,7 @@ use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
 use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsEmployeesFamily;
 use Modules\HousingMovements\Entities\HtrRoom;
+use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
 
 class User extends Authenticatable
 {
@@ -65,6 +66,8 @@ class User extends Authenticatable
     /**
      * Get the business that owns the user.
      */
+
+    
 
     public function appointment()
     {
@@ -426,6 +429,11 @@ class User extends Authenticatable
     public function rooms()
     {
         return $this->belongsTo(HtrRoom::class, 'room_id');
+    }
+
+    public function htrRoomsWorkersHistory()
+    {
+        return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id');
     }
 
 
