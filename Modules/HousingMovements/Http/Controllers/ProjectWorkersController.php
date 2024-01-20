@@ -185,17 +185,17 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn('building', function ($user) {
 
-                    return $user->htrRoomsWorkersHistory?->late()->room?->building?->name??'';
+                    return $user->htrRoomsWorkersHistory?->last()->room?->building?->name??'';
                 })
 
                 ->addColumn('building_address', function ($user) {
 
-                    return $user->htrRoomsWorkersHistory?->late()->room?->building?->address??'';
+                    return $user->htrRoomsWorkersHistory?->last()->room?->building?->address??'';
                 })
 
                 ->addColumn('room_number', function ($user) {
 
-                    return $user->htrRoomsWorkersHistory?->late()->room?->room_number??'';
+                    return $user->htrRoomsWorkersHistory?->last()->room?->room_number??'';
                 })
                
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
@@ -214,7 +214,7 @@ class ProjectWorkersController extends Controller
         }
 
         return view('housingmovements::projects_workers.index')
-        ->with(compact('contacts', 'nationalities', 'ContactsLocation'));
+        ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     public function available_shopping()

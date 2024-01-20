@@ -117,7 +117,7 @@
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
-
+<div class="clearfix"></div>
         <div class="col-md-3">
             <div class="form-group ">
                 {!! Form::label('doc_type', __('housingmovements::lang.doc_type') . ':') !!}
