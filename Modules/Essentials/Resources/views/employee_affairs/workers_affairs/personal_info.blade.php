@@ -55,7 +55,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:36px" name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control"
                 >
                 <option value="">@lang('user.select_proof_name')</option>
               
@@ -79,7 +79,7 @@
             ]) !!}
         </div>
 
-        <div class="form-group col-md-3" id="proof_no_container">
+        <div class="form-group col-md-3" id="proof_no_container" style="display:none">
             {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
@@ -287,10 +287,13 @@
 
             var nationalitySelect = $('#nationalities_select');
 
-
             $.each(nationalities, function(id, name) {
-                nationalitySelect.append(new Option(name, id));
+  
+             
+                    nationalitySelect.append(new Option(name, id));
+               
             });
+
 
 
             nationalitySelect.val(selectedNationalityId);
@@ -327,6 +330,7 @@
                     idProofNumberInput.value = '2';
                     border_no_containerInput.value = '';
                     $('#border_no_container').hide();
+                    $('#proof_no_container').show();
 
 
                     for (const [id, name] of Object.entries(nationalities)) {
@@ -341,7 +345,7 @@
 
                     border_no_containerInput.value = '3';
                     console.log( border_no_containerInput.value);
-                    validationLength = 13;
+                    validationLength = 10;
                     idProofNumberInput.value = '';
 
                     $('#border_no_container').show();
@@ -365,6 +369,8 @@
                         option.text = name;
                         nationalitySelect.appendChild(option);
                     }
+                    $('#border_no_container').hide();
+                    $('#proof_no_container').hide();
                 }
             });
 

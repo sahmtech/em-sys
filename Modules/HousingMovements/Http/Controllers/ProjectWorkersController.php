@@ -87,12 +87,13 @@ class ProjectWorkersController extends Controller
             ->with(['country', 'contract', 'OfficialDocument']);
         $users->select(
             'users.*',
-            'users.id_proof_number',
-            'users.nationality_id',
-            'users.essentials_salary',
+            // 'users.id_proof_number',
+            // 'users.nationality_id',
+            // 'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
-        );
+        ) ->orderBy('users.id', 'desc')
+        ->groupBy('users.id');
 
         if (request()->ajax())
          {
@@ -817,12 +818,12 @@ class ProjectWorkersController extends Controller
 
 
 
-            // $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
+            $existingprofnumber = User::where('id_proof_number', $request->input('id_proof_number'))->first();
 
-            // if ($existingprofnumber) {
-            //     $errorMessage = trans('essentials::lang.user_with_same_id_proof_number_exists');
-            //     throw new \Exception($errorMessage);
-            // }
+            if ($existingprofnumber) {
+                $errorMessage = trans('essentials::lang.worker_with_same_id_proof_number_exists');
+                throw new \Exception($errorMessage);
+            }
 
             $user = $this->moduleUtil->createUser($request);
 

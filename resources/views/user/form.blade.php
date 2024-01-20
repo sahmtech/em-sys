@@ -130,7 +130,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:36px" name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control"
                 onchange="updateNationalityOptions(this)">
                 <option value="">@lang('user.select_proof_name')</option>
                 <option value="national_id"

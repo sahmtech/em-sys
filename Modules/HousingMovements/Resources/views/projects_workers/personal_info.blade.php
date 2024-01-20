@@ -55,7 +55,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:36px" name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control"
                 >
                 <option value="">@lang('user.select_proof_name')</option>
               
@@ -79,7 +79,7 @@
             ]) !!}
         </div>
 
-        <div class="form-group col-md-3" id="proof_no_container">
+        <div class="form-group col-md-3" id="proof_no_container" style="display:none">
             {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
@@ -340,7 +340,7 @@
 
                     border_no_containerInput.value = '3';
                     console.log( border_no_containerInput.value);
-                    validationLength = 13;
+                    validationLength = 10;
                     idProofNumberInput.value = '';
 
                     $('#border_no_container').show();
