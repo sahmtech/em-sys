@@ -28,6 +28,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('essentials::lang.employee')</th>
+                                    <th>@lang('essentials::lang.Residency_no')</th>
                                     <th>@lang('essentials::lang.insurance_company')</th>
                                     <th>@lang('essentials::lang.insurance_class')</th>
                                     <th>@lang('messages.action')</th>
@@ -62,17 +63,46 @@
                                         'id' => 'employeeSelect',
                                     ]) !!}
                                 </div>
-
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
-                                    {!! Form::select('insurance_class', $insurance_classes, null, [
+                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':') !!}
+                                     {!! Form::select('insurance_class', $insurance_classes, null, [
                                         'class' => 'form-control',
                                         'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.insurance_class'),
                                         'required',
                                         'id' => 'classSelect',
                                     ]) !!}
+                                  
                                 </div>
+
+                                {{--     <div class="form-group col-md-6">
+                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
+                                    {!! Form::select('insurance_class',
+                                        ['VIP+'=>'VIP+',
+                                        'VIP'=>'VIP',
+                                        'A+'=>'A+',
+                                        'A'=>'A',
+                                        'B+'=>'B+',
+                                        'B'=>'B',
+                                        'C+'=>'C+',
+                                        'C'=>'C',
+                                        'CR+'=>'CR+',
+                                        'CR'=>'CR',
+                                        'VVIP'=>"VVIP",
+                                        'A+S'=>'A+S',
+                                        'VIP+S'=>'VIP+S',
+                                        'C6'=>'C6',
+                                        'C4'=>'C4',
+                                        'C6S'=>'C6S',
+                                        
+                                        ],  null,
+                                        
+                                        ['class' => 'form-control',
+                                         'required',
+                                        'id' => 'classSelect']) !!}
+                                </div>--}}
+
+                            
 
 
 
@@ -87,6 +117,8 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="editemployeeInsurance" tabindex="-1" role="dialog">
         </div>
     </section>
 @endsection
@@ -112,8 +144,12 @@
 
                 },
 
-                columns: [{
+                columns: [
+                    {
                         data: 'user'
+                    },
+                    {
+                        data:'proof_number'
                     },
                     {
                         data: 'insurance_company_id'
@@ -154,6 +190,7 @@
                     }
                 });
             });
+
             var employeeSelect = $('#employeeSelect');
             var classSelect = $('#classSelect');
 
@@ -183,7 +220,7 @@
                         }
                     });
 
-});
+            });
          
 
         });

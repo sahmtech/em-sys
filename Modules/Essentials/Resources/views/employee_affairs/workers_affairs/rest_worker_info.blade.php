@@ -4,7 +4,7 @@
     <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('location_id', __('essentials::lang.company') . ':*') !!}
-            {!! Form::select('location_id', $companies, !empty($user->company_id) ? $user->company_id : null, [
+            {!! Form::select('location_id', $company, null, [
                 'class' => 'form-control select2',
                 'style' => 'height:40px',
                 'required',
@@ -64,10 +64,6 @@
     </div> --}}
    
 </div>
-
-
-
-
 
 
 <div class="col-md-12 box box-primary" id="section5">
@@ -325,7 +321,6 @@
 
 
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -578,3 +573,5 @@
         });
     });
 </script>
+
+

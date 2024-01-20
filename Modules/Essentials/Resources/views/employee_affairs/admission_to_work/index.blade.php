@@ -67,6 +67,7 @@
                                 <th>@lang('essentials::lang.admissions_date')</th>
                                 <th>@lang('essentials::lang.admissions_type' )</th>
                                 <th>@lang('essentials::lang.admissions_status' )</th>
+                                <th>@lang('essentials::lang.admission_status' )</th> 
                                 <th>@lang('messages.action' )</th>
                             </tr>
                         </thead>
@@ -203,10 +204,59 @@
                                 }
                             }
                         },
+                        {
+                        data: 'is_active',
+                        render: function (data, type, row) {
+                            return data == 1 ? '<span class="text-success">' + '{{ __("essentials::lang.active") }}' + '</span>' : '<span class="text-danger">' + '{{ __("essentials::lang.not_active") }}' + '</span>';
+                        }
+                    },
+
                         { data: 'action' },
                     ],
              });
 
+
+
+              //activate ---------------------------------------------------
+            $(document).on('click', 'a.change_admission_activity', function(e) {
+                e.preventDefault();
+                
+                var admissionId = $(this).data('admission-id');
+                var origValue = 0;
+            
+                console.log(admissionId);
+                console.log(origValue);
+
+                var editUrl = '{{ route('change_admission_activity', ':admissionId') }}'
+                editUrl = editUrl.replace(':admissionId', admissionId);
+                console.log(editUrl);
+
+
+                $.ajax({
+                    url:  editUrl, 
+                    type: 'POST', 
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        origValue: origValue,
+                    },
+                    success: function(result) {
+                        if (result.success == true) {
+                            toastr.success(result.msg);
+                            admissions_to_work_table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        console.error("Status: " + status);
+                        console.error("Error: " + error);
+                    }
+                });
+            });
+
+
+            //----------------------------------------
              $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {

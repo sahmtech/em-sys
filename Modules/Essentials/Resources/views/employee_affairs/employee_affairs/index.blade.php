@@ -96,7 +96,7 @@
                             <th>#</th>
                             <th>@lang('essentials::lang.profile_image')</th>
                             <th>@lang('essentials::lang.employee_number')</th>
-                            <th>company_id</th>
+                            <th>@lang('essentials::lang.company')</th>
                             <th>@lang('essentials::lang.employee_name')</th>
 
                             <th>@lang('essentials::lang.Identity_proof_id')</th>

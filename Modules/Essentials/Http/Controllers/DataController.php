@@ -5,6 +5,7 @@ namespace Modules\Essentials\Http\Controllers;
 use App\BusinessLocation;
 use App\Category;
 use App\User;
+use App\Company;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Routing\Controller;
@@ -1030,6 +1031,11 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+                        'value' => 'essentials.edit_employees_insurances',
+                        'label' => __('essentials::lang.edit_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
                         'value' => 'essentials.delete_employees_insurances',
                         'label' => __('essentials::lang.delete_employees_insurances'),
                         'default' => false,
@@ -1153,6 +1159,28 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_employee_affairs_dashboard'),
                         'default' => false,
                     ],
+
+                    [
+                        'value' => 'essentials.view_contract_period_ending',
+                        'label' => __('essentials::lang.view_contract_period_ending'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_contract_ending',
+                        'label' => __('essentials::lang.view_contract_ending'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_late_work_admission',
+                        'label' => __('essentials::lang.view_late_work_admission'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_missing_employees_info',
+                        'label' => __('essentials::lang.view_missing_employees_info'),
+                        'default' => false,
+                    ],
+
                     [
                         'value' => 'essentials.crud_import_employee',
                         'label' => __('essentials::lang.crud_import_employee'),
@@ -1166,7 +1194,29 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     
-                   //employee
+                   //employees
+                   [
+                    'value' => 'essentials.curd_employees',
+                    'label' => __('essentials::lang.curd_employees'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.curd_essentials_workers',
+                    'label' => __('essentials::lang.curd_essentials_workers'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.show_essentials_workers',
+                    'label' => __('essentials::lang.show_essentials_workers'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.add_essentials_workers',
+                    'label' => __('essentials::lang.add_essentials_workers'),
+                    'default' => false,
+                  ],
+                  
+
                    [
                     'value' => 'essentials.show_employee',
                     'label' => __('essentials::lang.show_employee'),
@@ -1205,6 +1255,12 @@ class DataController extends Controller
                     'default' => false,
                   ],
 
+                  [
+                    'value' => 'essentials.activate_employee_appointments',
+                    'label' => __('essentials::lang.activate_employee_appointments'),
+                    'default' => false,
+                  ],
+
                   //employee_work_admissions
 
                   [
@@ -1220,6 +1276,11 @@ class DataController extends Controller
                   [
                     'value' => 'essentials.delete_employee_work_admissions',
                     'label' => __('essentials::lang.delete_employee_work_admissions'),
+                    'default' => false,
+                  ],
+                  [
+                    'value' => 'essentials.activate_employee_admission',
+                    'label' => __('essentials::lang.activate_employee_admission'),
                     'default' => false,
                   ],
                   //employee_contracts
@@ -1409,6 +1470,12 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
+
+                        'value' => 'essentials.show_employee_operation',
+                        'label' => __('essentials::lang.show_employee_operation'),
+                        'default' => false,
+                    ],
+
                         'value' => 'essentials.workcards_indexWorkerProjects',
                         'label' => __('essentials::lang.workcards_indexWorkerProjects'),
                         'default' => false,
@@ -1419,6 +1486,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.showWorkerProjects'),
                         'default' => false,
                     ],
+
 
                     
                     [
@@ -1953,11 +2021,15 @@ class DataController extends Controller
      */
     public function moduleViewPartials($data)
     {
-        if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit') {
+        if ($data['view'] == 'manage_user.create' || $data['view'] == 'manage_user.edit')
+         {
+           
+           
             $business_id = session()->get('business.id');
 
             $designations = Category::forDropdown($business_id, 'hrm_designation');
-            $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
+           // $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id')->all();
+           $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
             $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
             $user = !empty($data['user']) ? $data['user'] : null;
@@ -1982,9 +2054,18 @@ class DataController extends Controller
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
             $professions = EssentialsProfession::all()->pluck('name', 'id');
-            return view('essentials::partials.user_form_part', compact('contract', 'nationalities', 'travel_ticket_categorie', 'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids', 'locations'))
+            $companies = Company::all()->pluck('name', 'id');
+            return view('essentials::partials.user_form_part',
+             compact('companies',
+                'contract',
+                 'nationalities',
+                  'travel_ticket_categorie',
+                   'contract_types', 'allowance_types', 'specializations', 'professions', 'departments', 'designations', 'user', 'pay_comoponenets', 'allowance_deduction_ids'))
                 ->render();
-        } elseif ($data['view'] == 'manage_user.show') {
+        }
+        
+        
+        elseif ($data['view'] == 'manage_user.show') {
             $user = !empty($data['user']) ? $data['user'] : null;
             $user_department = EssentialsDepartment::find($user->essentials_department_id);
             $user_designstion = Category::find($user->essentials_designation_id);
@@ -2018,7 +2099,7 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-            $user->essentials_department_id = request()->input('essentials_department_id');
+            $user->company_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
@@ -2122,12 +2203,19 @@ class DataController extends Controller
                 $essentials_employee_appointmets->employee_id = $user->id;
                 $essentials_employee_appointmets->department_id = request()->input('essentials_department_id');
                 $essentials_employee_appointmets->business_location_id = request()->input('location_id');
-                // $essentials_employee_appointmets->superior = "superior";
+                $essentials_employee_appointmets->is_active = 1;
+                $essentials_employee_appointmets->type = 'appoint';
                 $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-                $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+               // $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
                 $essentials_employee_appointmets->save();
             }
 
+
+            // $essentials_employee_admission = new EssentialsEmployeeAppointmet();
+            // $essentials_employee_admission->employee_id  = $user->id;
+            // $essentials_employee_admission->admissions_type = 'first_time';
+            // $essentials_employee_admission->admissions_status = 'on_date';
+            // $essentials_employee_admission->save();
 
             if (request()->selectedData) {
                 $jsonData = json_decode(request()->selectedData, true);
@@ -2167,8 +2255,7 @@ class DataController extends Controller
 
 
             $user = $data['model_instance'];
-
-            $user->essentials_department_id = request()->input('essentials_department_id');
+            $user->company_id = request()->input('essentials_department_id');
             $user->essentials_designation_id = request()->input('essentials_designation_id');
             $user->essentials_salary = request()->input('essentials_salary');
             $user->essentials_pay_period = request()->input('essentials_pay_period');
@@ -2348,7 +2435,7 @@ class DataController extends Controller
                     $essentials_employee_appointmets->business_location_id = request()->input('location_id');
                     // $essentials_employee_appointmets->superior = "superior";
                     $essentials_employee_appointmets->profession_id = (int)$data['request']['profession'];
-                    $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
+                  //  $essentials_employee_appointmets->specialization_id = (int)$data['request']['specialization'];
                     $essentials_employee_appointmets->save();
                 }
             }

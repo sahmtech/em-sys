@@ -58,7 +58,6 @@ class EssentailsworkersController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
-
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
         $appointments2 = EssentialsEmployeeAppointmet::all()->pluck('specialization_id', 'employee_id');
@@ -69,8 +68,8 @@ class EssentailsworkersController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
 
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
         $users->select(
@@ -191,7 +190,7 @@ class EssentailsworkersController extends Controller
 
 
         return view('essentials::workers.index')
-            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));;
+            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     private function getDocumentnumber($user, $documentType)
@@ -244,7 +243,8 @@ class EssentailsworkersController extends Controller
         if ($user->user_type == 'employee') {
 
             $documents = $user->OfficialDocument;
-        } else if ($user->user_type == 'worker') {
+        } 
+        else if ($user->user_type == 'worker') {
 
             if (!empty($user->proposal_worker_id)) {
 

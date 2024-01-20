@@ -75,8 +75,8 @@
         <hr>
 
         <div class="col-md-4">
-            <p><strong>@lang('lang_v1.location_ins1'):</strong>
-                {{ $user->business?->name ?? '' }}</p>
+            <p><strong>@lang('essentials::lang.company'):</strong>
+                {{ $user->company?->name ?? '' }}</p>
         </div>
 
         <div class="col-md-4">

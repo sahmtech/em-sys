@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', __('essentials::lang.add_new_employee'))
+@section('title', __('essentials::lang.add_new_worker'))
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>@lang('essentials::lang.add_new_employee')</h1>
-    </section>
+  
+        <section class="content-header">
+            <h1>@lang('essentials::lang.add_new_worker')</h1>
+        </section>
 
-    <!-- Main content -->
+
     <section class="content">
-        {!! Form::open(['route' => 'storeEmployee', 'enctype' => 'multipart/form-data']) !!}
+        {!! Form::open(['route' => 'store-worker-affairs', 'enctype' => 'multipart/form-data']) !!}
         <div class="row">
             <div class="col-md-12">
                 <div class="col-md-12 box box-primary">
@@ -61,8 +61,8 @@
                             {!! Form::select(
                                 'user_type',
                                 [
-                                    'manager' => __('user.manager'),
-                                    'employee' => __('user.employee'),
+                                    'worker' => __('user.worker'),
+                                   
                                    
                                 ],
                                 null,
@@ -70,36 +70,25 @@
                                     'class' => 'form-control',
                                     'style' => 'height:40px',
                                     'required',
-                                    'id' => 'userTypeSelect',
-                                    'placeholder' => __('user.user_type'),
+                                  
                                 ],
                             ) !!}
                         </div>
                     </div>
 
-                    <div id="workerInput" style="display: none;" class="col-md-5">
+                    <div id="workerInput"  class="col-md-5">
                         <div class="form-group">
-                            {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':*') !!}
+                            {!! Form::label('assigned_to', __('sales::lang.assigned_to') . ':') !!}
                             {!! Form::select('assigned_to', $contacts, null, [
-                                'class' => 'form-control',
+                                'class' => 'form-control select2',
                                 'style' => 'height:40px',
-                                'placeholder' => __('sales::lang.assigned_to'),
+                               
                             ]) !!}
                         </div>
                     </div>
                 </div>
-
-                @include('user.edit_profile_form_part')
-
-
-                @if (!empty($form_partials))
-                    @foreach ($form_partials as $partial)
-                        {!! $partial !!}
-                    @endforeach
-                @endif
-
-
-
+                @include('essentials::employee_affairs.workers_affairs.personal_info')
+          
                 <div class="row">
                     <div class="col-md-12 text-center">
                         <button type="submit" class="btn btn-primary btn-big"

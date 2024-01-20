@@ -6,6 +6,7 @@ use App\AccessRole;
 use App\AccessRoleCompany;
 use App\Company;
 use App\User;
+
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -34,6 +35,7 @@ class EssentialsAdmissionToWorkController extends Controller
         $can_add_employee_work_admissions = auth()->user()->can('essentials.add_employee_work_admissions');
         $can_edit_employee_work_admissions = auth()->user()->can('essentials.edit_employee_work_admissions');
         $can_delete_employee_work_admissions = auth()->user()->can('essentials.delete_employee_work_admissions');
+        $can_activate_employee_admission = auth()->user()->can('essentials.activate_employee_admission');
 
         if (!$can_crud_employee_work_admissions) {
             //temp  abort(403, 'Unauthorized action.');
@@ -45,13 +47,16 @@ class EssentialsAdmissionToWorkController extends Controller
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $admissionToWork = EssentialsAdmissionToWork::whereIn('employee_id', $userIds)->with('user')
+        $admissionToWork = EssentialsAdmissionToWork::whereIn('employee_id', $userIds)
+        ->with('user')
             ->select(
                 'id',
                 'employee_id',
                 'admissions_type as admissions_type',
                 'admissions_status as admissions_status',
-                'admissions_date as admissions_date'
+                'admissions_date as admissions_date',
+                'is_active as is_active',
+
             );
 
         if (request()->ajax()) {
@@ -84,13 +89,16 @@ class EssentialsAdmissionToWorkController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use ($is_admin, $can_edit_employee_work_admissions, $can_delete_employee_work_admissions) {
+                    function ($row) use ($is_admin, $can_edit_employee_work_admissions, $can_delete_employee_work_admissions ,$can_activate_employee_admission) {
                         $html = '';
                         if ($is_admin || $can_edit_employee_work_admissions) {
                             $html .= '<a href="' . route('admissionToWork.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
                         }
                         if ($is_admin || $can_delete_employee_work_admissions) {
                             $html .= '<button class="btn btn-xs btn-danger delete_admissionToWork_button" data-href="' . route('admissionToWork.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        }
+                        if ($is_admin || $can_activate_employee_admission) {
+                            $html .= '&nbsp; <a href="#" class="btn btn-xs btn-warning change_admission_activity"  data-admission-id="' . $row->id . '" data-orig-value="' . $row->is_active . '"><i class="glyphicon glyphicon-stop"></i> ' . __('essentials::lang.end_admission_activate') . '</a>';
                         }
 
 
@@ -126,6 +134,39 @@ class EssentialsAdmissionToWorkController extends Controller
         return view('essentials::employee_affairs.admission_to_work.index')->with(compact('users', 'departments'));
     }
 
+    public function change_admission_activity(Request $request, $admissionId)
+    {
+        $business_id = $request->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+       
+        try {
+            $input = $request->only(['origValue']);
+           
+            $admission = EssentialsAdmissionToWork::where('id',$admissionId)->first();
+            
+            if ($admission) {
+                $admission->is_active = $input['origValue'];
+                $admission->admissions_date = now();
+                $admission->save();
+                
+                $output = [
+                    'success' => true,
+                    'msg' => __('lang_v1.updated_success'),
+                ];
+            } else {
+                $output = [
+                    'success' => false,
+                    'msg' => __('essentials::lang.not_found'),
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = ['success' => false, 'msg' => $e->getMessage()];
+        }
+    
+        return $output;
+    }
+
     public function create()
     {
         return view('essentials::create');
@@ -152,7 +193,18 @@ class EssentialsAdmissionToWorkController extends Controller
             $input2['admissions_status'] = $input['admissions_status'];
             $input2['admissions_date'] = $input['admissions_date'];
 
+            $previous_admission = EssentialsAdmissionToWork::where('employee_id',$input2['employee_id'])
+            ->latest('created_at')
+            ->first();
+           
 
+            if( $previous_admission )
+            {
+                $previous_admission->is_active= 0;
+                $previous_admission->admissions_date= $input2['admissions_date'];
+                $previous_admission->save();
+              
+            }
 
             EssentialsAdmissionToWork::create($input2);
 

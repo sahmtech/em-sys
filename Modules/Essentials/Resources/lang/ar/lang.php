@@ -1318,6 +1318,7 @@ return [
   'add_employee_appointments' => 'إضافة تعيين موظفين',
   'edit_employee_appointments' => 'تعديل تعيين موظفين',
   'delete_employee_appointments' => 'حذف تعيين موظفين',
+  'activate_employee_appointments' => 'تفعيل تعيين موظفين',
 
   'add_employee_work_admissions' => 'إضافة مباشرة عمل',
   'edit_employee_work_admissions' => 'تعديل مباشرة العمل',
@@ -1354,6 +1355,7 @@ return [
 
   'crud_employees_insurances' => 'حذف \ إضافة \ تعديل التأمين الطبي للموظفين',
   'add_employees_insurances' => 'إضافة تأمين طبي',
+  'edit_employees_insurances'=>'تعديل التأمين الطبي',
   'delete_employees_insurances' => 'حذف تأمين طبي',
 
   'add_insurance_contracts' => 'إضافة عقود التأمين',
@@ -1438,13 +1440,44 @@ return [
 
   //features
   'crud_employee_features' => 'إضافة/تعديل/حذف مزايا الموظفين',
-  'add_employee_features' => 'إضافة مزايا بدلات الموظفين',
-  'edit_employee_features' => 'تعديل مزايا بدلات الموظفين',
-  'delete_employee_features' => 'حذف مزايا بدلات الموظفين',
-  'view_navbar_employee_features' => 'عرض ناف بار مزايا بدلات الموظفين',
-  'curd_travel_categories_features' => 'حذف \ إضافة \ تعديل تذاكر السفر مزايا ',
-  'add_travel_categories_features' => 'إضافة تذاكر السفر مزايا',
-  'edit_travel_categories_features' => 'تعديل تذاكر السفر مزايا',
-  'delete_travel_categories_features' => 'حذف تذاكر السفر مزايا',
+
+  'add_employee_features'=>'إضافة مزايا بدلات الموظفين',
+  'edit_employee_features'=>'تعديل مزايا بدلات الموظفين',
+  'delete_employee_features'=>'حذف مزايا بدلات الموظفين',
+  'view_navbar_employee_features'=>'عرض ناف بار مزايا بدلات الموظفين',
+  'curd_travel_categories_features'=>'حذف \ إضافة \ تعديل تذاكر السفر مزايا ',
+  'add_travel_categories_features'=>'إضافة تذاكر السفر مزايا',
+  'edit_travel_categories_features'=>'تعديل تذاكر السفر مزايا',
+  'delete_travel_categories_features'=>'حذف تذاكر السفر مزايا',
+
+
+  'is_active'=>'حالة التعيين',
+  'active'=>'مفعل',
+  'not_active'=>'غير مفعل',
+  'end_activate'=>'إنهاء التعيين',
+  'change_is_active'=>'تغير حالة التفعيل',
+  'show_employee_operation'=>'عرض الموظف في العمليات',
+  'view_contract_period_ending'=>'عرض  انتهاء الفترة التجريبية',
+  'view_late_work_admission'=>'عرض مباشرة العمل المتأخرة',
+  'view_missing_employees_info'=>'عرض نواقص الموظفين',
+  'view_contract_ending'=>'عرض العقود المنتهية',
+  'edit_Insurance'=>'تعديل التأمين الطبي',
+  'activate_employee_admission'=>'تفعيل مباشرة العمل',
+  'end_admission_activate'=>'انهاء المباشرة',
+  'admission_status'=>'حالة المباشرة ',
+  'not_found'=>'غير موجود',
+  'user_not_found'=>'الموظف غير موجود',
+  'company'=>'الشركة',
+  'curd_employees'=>'إضافة \تعديل الموظفين',
+  'curd_essentials_workers'=>'إضافة \تعديل العمال',
+  'add_essentials_workers'=>'إضافة عامل',
+  'apply'=>'تطبيق',
+  'add_new_worker'=>'إضافة عامل جديد',
+  'company_not_found'=>'الشركة غير موجودة',
+  'company_required'=>'الشركة مطلوبة ',
+  'undefined'=>'غير محدد',
+ 
+
+
 
 ];
