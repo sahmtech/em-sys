@@ -59,6 +59,19 @@
                                     </span>
                                 @endif
                             </li>
+                            <li class="list-group-item">
+                                <b>{{ __('followup::lang.is_booking') }}</b>
+                                @if ($user->booking)
+                                    <span class="label label-danger pull-right">
+
+                                        @lang('followup::lang.booking')
+                                    </span>
+                                @else
+                                    <span class="label label-success pull-right">
+                                        @lang('followup::lang.not_booking')
+                                    </span>
+                                @endif
+                            </li>
                         </ul>
 
 
