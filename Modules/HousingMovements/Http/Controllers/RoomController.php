@@ -51,7 +51,8 @@ class RoomController extends Controller
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
         
         $rooms = DB::table('htr_rooms')
-        ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents','total_beds']);
+        ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents','total_beds'])
+        ->orderBy('id','desc');
         if (request()->ajax()) {
 
 
@@ -417,6 +418,7 @@ class RoomController extends Controller
             $input2['htr_building_id'] = $input['htr_building'];
             $input2['area'] = $input['area'];
             $input2['beds_count'] = $input['beds_count'];
+            $input2['total_beds'] = $input['beds_count'];
             $input2['contents'] = $input['contents'];
 
             DB::table('htr_rooms')->insert($input2);
@@ -484,13 +486,13 @@ class RoomController extends Controller
 
 
         try {
-            $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
+            $input = $request->only(['room_number', 'htr_building', 'area', 'total_beds', 'contents']);
 
 
             $input2['room_number'] = $input['room_number'];
             $input2['htr_building_id'] = $input['htr_building'];
             $input2['area'] = $input['area'];
-            $input2['beds_count'] = $input['beds_count'];
+            $input2['total_beds'] = $input['total_beds'];
             $input2['contents'] = $input['contents'];
 
 

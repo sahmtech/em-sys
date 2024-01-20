@@ -52,7 +52,7 @@ return [
     'medical_examination_done' => 'تمت',
     'medical_examination_not_done' => 'لم تتم ',
     'driverName' => 'اسم السائق',
-    'busy_rooms' => 'الغرف الشاغرة',
+    'busy_rooms' => 'الغرف المشغولة',
     'available_rooms' => 'الغرف المتاحة ',
     'room_status' => 'حالة الغرفة',
     'search' => 'بحث',
@@ -238,5 +238,6 @@ return [
     'contract_type'=>'نوع العقد',
     'probation_period'=>'الفترة التجريبية',
     'available_beds'=>'عدد الأسرة المتاحة',
+    'total_beds'=>'عدد الأسرة الاجمالي',
 
 ];
