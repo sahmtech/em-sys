@@ -130,7 +130,7 @@
                             <th>@lang('followup::lang.request_number')</th>
                             <th>@lang('followup::lang.worker_name')</th>
                             <th>@lang('followup::lang.eqama_number')</th>
-                            <th>@lang('followup::lang.project_name')</th>
+                            {{-- <th>@lang('followup::lang.project_name')</th> --}}
                             <th>@lang('followup::lang.request_type')</th>
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
@@ -160,7 +160,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                                {!! Form::select('worker_id[]', $workers, null, [
+                                {!! Form::select('worker_id[]', $users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
                                     'required',
@@ -172,26 +172,7 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
                                 {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
-                                        'WarningRequest' => __('followup::lang.WarningRequest'),
-                                    ],
+                                    'type',$requestTypes ,
                                     null,
                                     [
                                         'class' => 'form-control',
@@ -560,9 +541,9 @@
                     {
                         data: 'id_proof_number'
                     },
-                    {
-                        data: 'assigned_to'
-                    },
+                    // {
+                    //     data: 'assigned_to'
+                    // },
                     {
                         data: 'type',
                         render: function(data, type, row) {
@@ -625,43 +606,20 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    "@if (auth()->user()->hasRole('Admin#1') ||
-                                            auth()->user()->can('internationalrelations.return_ir_request')) <button class='btn btn-danger btn-sm btn-return' data-request-id='" +
+                                    "@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.return_ir_request')) <button class='btn btn-danger btn-sm btn-return' data-request-id='" +
                                     row.process_id +
                                     "'>@lang('followup::lang.return_the_request')</button>@endif";
                             }
 
                             buttonsHtml +=
-                                "@if (auth()->user()->hasRole('Admin#1') ||
-                                        auth()->user()->can('internationalrelations.show_ir_request')) <button class='btn btn-primary btn-sm btn-view-request' data-request-id='" +
+                                "@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('internationalrelations.show_ir_request')) <button class='btn btn-primary btn-sm btn-view-request' data-request-id='" +
                                 row.id +
                                 "'>@lang('followup::lang.view_request')</button> @endif";
 
                             return buttonsHtml;
                         }
                     },
-                    {
-                        data: 'can_return',
-                        render: function(data, type, row) {
-                            var buttonsHtml = '';
-
-                            if (data == 1) {
-                                buttonsHtml +=
-                                    "@if (auth()->user()->hasRole('Admin#1') ||
-                                            auth()->user()->can('sales.return_sale_request')) <button class='btn btn-danger btn-sm btn-return' data-request-id='" +
-                                    row.process_id +
-                                    "'>@lang('followup::lang.return_the_request')</button>@endif";
-                            }
-
-                            buttonsHtml +=
-                                "@if (auth()->user()->hasRole('Admin#1') ||
-                                        auth()->user()->can('sales.show_sale_request')) <button class='btn btn-primary btn-sm btn-view-request' data-request-id='" +
-                                row.id +
-                                "'>@lang('followup::lang.view_request')</button> @endif";
-
-                            return buttonsHtml;
-                        }
-                    },
+                  
 
 
 
@@ -748,7 +706,7 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewIrRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {

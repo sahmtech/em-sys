@@ -12,6 +12,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Essentials\Entities\Shift;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -35,6 +36,7 @@ class ShiftController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_shifts = auth()->user()->can('followup.crud_shifts');
         if (!($is_admin || $can_followup_crud_shifts)) {
             return redirect()->route('home')->with('status', [
@@ -47,7 +49,16 @@ class ShiftController extends Controller
             ->with('Project')
             ->get();
         $salesProject = SalesProject::all()->pluck('name', 'id');
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $salesProject = SalesProject::whereIn('id',  $followupUserAccessProject)->pluck('name', 'id');
+            $shifts = Shift::where('essentials_shifts.business_id', $business_id)->where('user_type', 'worker')
+                ->with('Project')->whereHas('Project', function ($query) use ($followupUserAccessProject) {
+                    $query->whereIn('id', $followupUserAccessProject);
+                })
+                ->get();
+        }
+
         $can_edit_shifts = auth()->user()->can('followup.edit_shifts');
         $can_delete_shifts = auth()->user()->can('followup.delete_shifts');
         if (request()->ajax()) {

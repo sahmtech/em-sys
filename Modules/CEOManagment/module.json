@@ -1,0 +1,11 @@
+{
+    "name": "CEOManagment",
+    "alias": "ceomanagment",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CEOManagment\\Providers\\CEOManagmentServiceProvider"
+    ],
+    "files": []
+}

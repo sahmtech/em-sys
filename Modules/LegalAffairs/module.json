@@ -1,0 +1,11 @@
+{
+    "name": "LegalAffairs",
+    "alias": "legalaffairs",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LegalAffairs\\Providers\\LegalAffairsServiceProvider"
+    ],
+    "files": []
+}

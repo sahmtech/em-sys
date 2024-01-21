@@ -95,7 +95,7 @@ class EssentialsManageEmployeeController extends Controller
             //temp  abort(403, 'Unauthorized action.');
         }
 
-
+        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
 
         $can_show_employee = auth()->user()->can('essentials.show_employee');
         $can_add_employee = auth()->user()->can('essentials.add_employee');
@@ -120,8 +120,9 @@ class EssentialsManageEmployeeController extends Controller
         $EssentialsSpecialization = EssentialsSpecialization::all()->pluck('name', 'id');
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $job_titles = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
+        $specializations=EssentialsProfession::where('type','academic')->pluck('name', 'id');
+     
         $contract = EssentialsEmployeesContract::all()->pluck('contract_end_date', 'id');
         $companies = Company::all()->pluck('name', 'id');
 
@@ -187,7 +188,7 @@ class EssentialsManageEmployeeController extends Controller
 
             $users ->whereHas('appointment', function ($query) use ($request) {
                 if (!empty($request->input('specialization'))) {
-                    $query->where('specialization_id', $request->input('specialization'));
+                    $query->where('profession_id', $request->input('specialization'));
                 }
             });
         }
@@ -227,22 +228,17 @@ class EssentialsManageEmployeeController extends Controller
                 })
 
 
-                ->addColumn('profession', function ($row) use ($appointments, $professions) {
+                ->addColumn('profession', function ($row) use ($appointments, $job_titles) {
                     $professionId = $appointments[$row->id] ?? '';
 
-                    $professionName = $professions[$professionId] ?? '';
+                    $professionName = $job_titles[$professionId] ?? '';
 
                     return $professionName;
                 })
 
 
 
-                ->addColumn('specialization', function ($row) use ($appointments2, $specializations) {
-                    $specializationId = $appointments2[$row->id] ?? '';
-                    $specializationName = $specializations[$specializationId] ?? '';
-
-                    return $specializationName;
-                })
+                
 
 
 
@@ -315,7 +311,7 @@ class EssentialsManageEmployeeController extends Controller
                     });
                 })
                 //->removecolumn('id')
-                ->rawColumns(['user_type', 'company_id', 'action', 'profession', 'specialization', 'view'])
+                ->rawColumns(['user_type', 'company_id', 'action', 'profession', 'view'])
                 ->make(true);
         }
 
@@ -343,15 +339,13 @@ class EssentialsManageEmployeeController extends Controller
             ->with(compact(
                 'contract_types',
                 'nationalities',
-                'specializations',
-                'professions',
-
+               'specializations',
                 'countries',
-                'spacializations',
+                'job_titles',
                 'status',
                 'offer_prices',
                 'items',
-                'companies',
+                'companies','spacializations'
             ));
     }
 
@@ -408,8 +402,8 @@ class EssentialsManageEmployeeController extends Controller
 
                         $query->WhereNull('start_from')
                             ->orWhereNull('end_at')
-                            ->orWhereNull('profession_id')
-                            ->orWhereNull('specialization_id');
+                            ->orWhereNull('profession_id');
+                       
                     })
                     ->orWhereHas('essentials_qualification', function ($query) {
 
@@ -843,6 +837,7 @@ class EssentialsManageEmployeeController extends Controller
 
 
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type','academic')->pluck('name', 'id');
         $countries = $countries = EssentialsCountry::forDropdown();
         $resident_doc = null;
         $companies = Company::all()->pluck('name', 'id');
@@ -850,7 +845,7 @@ class EssentialsManageEmployeeController extends Controller
         return view('essentials::employee_affairs.employee_affairs.create')
             ->with(compact(
                 'roles',
-                'countries',
+                'countries','professions',
                 'spacializations',
                 'nationalities',
                 'username_ext',
@@ -1127,16 +1122,10 @@ class EssentialsManageEmployeeController extends Controller
             $profession = "";
         }
 
-        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-        if ($specializationId !== null) {
-            $specialization = EssentialsSpecialization::find($specializationId)->name;
-        } else {
-            $specialization = "";
-        }
 
 
         $user->profession = $profession;
-        $user->specialization = $specialization;
+       
 
 
         $view_partials = $this->moduleUtil->getModuleData(
@@ -1162,7 +1151,6 @@ class EssentialsManageEmployeeController extends Controller
 
         return view('essentials::employee_affairs.employee_affairs.show')->with(compact(
             'user',
-
             'view_partials',
             'users',
             'activities',
@@ -1198,15 +1186,15 @@ class EssentialsManageEmployeeController extends Controller
         $appointments = EssentialsEmployeeAppointmet::select([
 
             'profession_id',
-            'specialization_id'
+     
         ])->where('employee_id', $id)
             ->first();
         if ($appointments !== null) {
             $user->profession_id = $appointments['profession_id'];
-            $user->specialization_id = $appointments['specialization_id'];
+        
         } else {
             $user->profession_id = null;
-            $user->specialization_id = null;
+         
         }
         $blood_types = [
             'A+' => 'A positive (A+).',
@@ -1227,9 +1215,9 @@ class EssentialsManageEmployeeController extends Controller
         $contract_types = EssentialsContractType::all()->pluck('type', 'id');
         $contract = EssentialsEmployeesContract::where('employee_id', '=', $user->id)->select('*')->get();
 
-        $specializations = EssentialsSpecialization::all()->pluck('id', 'name');
+      
         $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('id', 'name');
+        $professions = EssentialsProfession::where('type','academic')->pluck( 'name','id');
         if ($user->status == 'active') {
             $is_checked_checkbox = true;
         } else {
@@ -1271,7 +1259,7 @@ class EssentialsManageEmployeeController extends Controller
                 'username_ext',
                 'contract_types',
                 'nationalities',
-                'specializations',
+          
                 'professions'
             ));
     }

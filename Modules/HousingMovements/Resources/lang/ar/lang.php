@@ -239,5 +239,7 @@ return [
     'probation_period'=>'الفترة التجريبية',
     'available_beds'=>'عدد الأسرة المتاحة',
     'total_beds'=>'عدد الأسرة الاجمالي',
+    'no_project'=>'بلا مشروع',
+    'add_request'=>'إضافة طلب',
 
 ];

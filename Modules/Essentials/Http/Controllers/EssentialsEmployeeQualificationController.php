@@ -14,6 +14,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 
 class EssentialsEmployeeQualificationController extends Controller
@@ -39,7 +40,9 @@ class EssentialsEmployeeQualificationController extends Controller
         if (!$can_crud_employee_qualifications) {
             //temp  abort(403, 'Unauthorized action.');
         }
-        $spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $sub_spacializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $spacializations = EssentialsProfession::where('type','academic')->pluck('name', 'id');
+   
         $countries = EssentialsCountry::forDropdown();
 
         $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
@@ -53,7 +56,8 @@ class EssentialsEmployeeQualificationController extends Controller
                 'essentials_employees_qualifications.id',
                 DB::raw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) as user"),
                 'essentials_employees_qualifications.qualification_type',
-                'essentials_employees_qualifications.major',
+                'essentials_employees_qualifications.sub_specialization',
+                'essentials_employees_qualifications.specialization',
                 'essentials_employees_qualifications.graduation_year',
                 'essentials_employees_qualifications.graduation_institution',
                 'essentials_employees_qualifications.graduation_country',
@@ -78,8 +82,13 @@ class EssentialsEmployeeQualificationController extends Controller
 
                     return $item;
                 })
-                ->editColumn('major', function ($row) use ($spacializations) {
-                    $item = $spacializations[$row->major] ?? '';
+                ->editColumn('specialization', function ($row) use ($spacializations) {
+                    $item = $spacializations[$row->specialization] ?? '';
+
+                    return $item;
+                })
+                ->editColumn('sub_specialization', function ($row) use ($sub_spacializations) {
+                    $item = $sub_spacializations[$row->sub_specialization] ?? '';
 
                     return $item;
                 })
@@ -126,16 +135,19 @@ class EssentialsEmployeeQualificationController extends Controller
 
 
         try {
-            $input = $request->only(['employee', 'qualification_type', 'major', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree']);
+            $input = $request->only(['employee','general_specialization','sub_specialization', 'qualification_type', 'graduation_year', 'graduation_institution', 'graduation_country', 'degree','marksName','great_degree']);
 
 
             $input2['qualification_type'] = $input['qualification_type'];
-            $input2['major'] = $input['major'];
+            $input2['specialization']  =  $input['general_specialization'];;
+            $input2['sub_specialization']   = request()->input('sub_specialization');
             $input2['graduation_year'] = $input['graduation_year'];
             $input2['graduation_institution'] = $input['graduation_institution'];
             $input2['employee_id'] = $input['employee'];
             $input2['graduation_country'] = $input['graduation_country'];
             $input2['degree'] = $input['degree'];
+            $input2['marksName'] = $input['marksName'];
+            $input2['great_degree'] = $input['great_degree'];
 
 
             EssentialsEmployeesQualification::create($input2);
@@ -183,13 +195,17 @@ class EssentialsEmployeeQualificationController extends Controller
                 'data' => [
                     'employee' => $qualification->employee_id,
                     'qualification_type' => $qualification->qualification_type,
-                    'major' => $qualification->major,
+                    'general_specialization' => $qualification->specialization,
+                    'sub_specialization' => $qualification->sub_specialization,
                     'graduation_year' => $qualification->graduation_year,
                     'graduation_institution' => $qualification->graduation_institution,
                     'graduation_country' => $qualification->graduation_country,
                     'degree' => $qualification->degree,
+                    'marksName' => $qualification->marksName,
+                    'great_degree' => $qualification->great_degree,
 
                 ],
+              
                 'msg' => __('lang_v1.fetched_success'),
             ];
         } catch (\Exception $e) {
@@ -226,6 +242,8 @@ class EssentialsEmployeeQualificationController extends Controller
                     'graduation_institution' => $request->input('graduation_institution'),
                     'graduation_country' => $request->input('graduation_country'),
                     'degree' => $request->input('degree'),
+                    'marksName' => $request->input('marksName'),
+                    'great_degree' => $request->input('great_degree'),
 
                 ]);
 

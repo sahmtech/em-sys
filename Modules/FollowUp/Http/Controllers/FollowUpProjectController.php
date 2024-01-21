@@ -17,6 +17,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
 use Modules\Sales\Http\Controllers\SalesController;
 
@@ -34,6 +35,7 @@ class FollowUpProjectController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_projects = auth()->user()->can('followup.crud_projects');
         if (!($is_admin || $can_followup_crud_projects)) {
             return redirect()->route('home')->with('status', [
@@ -43,32 +45,13 @@ class FollowUpProjectController extends Controller
         }
         $can_projectView = auth()->user()->can('followup.projectView');
 
-
-
-        $contacts = Contact::whereIn('type', ['customer', 'lead'])
-
-            ->with([
-                'transactions', 'transactions.salesContract', 'salesProject', 'salesProject.users',
-                'transactions.salesContract.salesOrderOperation'
-
-            ]);
         $salesProjects = SalesProject::with(['contact']);
-
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $salesProjects = $salesProjects->whereIn('id', $userProjects);
-            // $contacts = $contacts->whereIn('id', $contactIds);
-
+        $contacts2 = Contact::all()->pluck('supplier_business_name', 'id');
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $salesProjects =  $salesProjects->whereIn('id',  $followupUserAccessProject);
+            $contacts_ids =  $salesProjects->pluck('contact_id')->unique()->toArray();
+            $contacts2 = Contact::whereIn('id',  $contacts_ids)->pluck('supplier_business_name', 'id');
         }
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -131,7 +114,7 @@ class FollowUpProjectController extends Controller
                 ->addColumn('type', function ($row) {
                     return $row->salesContract->salesOrderOperation?->operation_order_type ?? null;;
                 })
-                ->addColumn('action', function ($row) use ($is_admin,$can_projectView) {
+                ->addColumn('action', function ($row) use ($is_admin, $can_projectView) {
                     $html = '';
                     if (($is_admin  || $can_projectView)) {
                         $html .= '<a href="' . route('projectView', ['id' => $row->id]) . '" class="btn btn-xs btn-primary">
@@ -157,7 +140,7 @@ class FollowUpProjectController extends Controller
                 ->make(true);
         }
 
-        $contacts2 = Contact::all()->pluck('supplier_business_name', 'id');
+
         return view('followup::projects.index')->with(compact('contacts2'));
     }
 

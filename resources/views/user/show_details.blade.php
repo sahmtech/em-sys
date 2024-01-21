@@ -151,7 +151,7 @@
             <p><strong>@lang('lang_v1.branch'):</strong> {{ $bank_details['branch'] ?? '' }}</p>
             <p><strong>@lang('lang_v1.tax_payer_id'):</strong> {{ $bank_details['tax_payer_id'] ?? '' }}</p>
         </div>
-
+        
         @if (!empty($view_partials))
             @foreach ($view_partials as $partial)
                 {!! $partial !!}

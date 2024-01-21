@@ -50,16 +50,16 @@ class RoleController extends Controller
 
         if (request()->ajax()) {
             $business_id = request()->session()->get('user.business_id');
-            $can_role_update =auth()->user()->can('roles.update');
-            $can_role_delete =auth()->user()->can('roles.delete');
+            $can_role_update = auth()->user()->can('roles.update');
+            $can_role_delete = auth()->user()->can('roles.delete');
             $roles = Role::where('business_id', $business_id)
                 ->select(['name', 'id', 'is_default', 'business_id']);
 
             return DataTables::of($roles)
-                ->addColumn('action', function ($row) use ($is_admin , $can_role_update ,$can_role_delete) {
+                ->addColumn('action', function ($row) use ($is_admin, $can_role_update, $can_role_delete) {
                     if (!$row->is_default || $row->name == 'Cashier#' . $row->business_id) {
                         $action = '';
-                        if ($is_admin  || $can_role_update ) {
+                        if ($is_admin  || $can_role_update) {
                             $action .= '<a href="' . action([\App\Http\Controllers\RoleController::class, 'editOrCreateAccessRole'], [$row->id]) . '" class="btn btn-success btn-xs">' . __('messages.update_access_role') . '</a>';
 
                             $action .= '&nbsp
@@ -279,36 +279,44 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        if (!($is_admin || auth()->user()->can('roles.update'))) {
-            //temp  abort(403, 'Unauthorized action.');
-        }
-
-        $business_id = request()->session()->get('user.business_id');
-        $role = Role::where('business_id', $business_id)
-            ->with(['permissions'])
-            ->find($id);
-        $role_permissions = [];
-        foreach ($role->permissions as $role_perm) {
-            $role_permissions[] = $role_perm->name;
-        }
-
-        $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
-            ->active()
-            ->get();
-
-        // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
-        $temp = $this->moduleUtil->getModuleData('user_permissions');
-        $module_permissions = [];
-
-        foreach ($temp as $temp_item) {
-            foreach ($temp_item as $permission_item) {
-                $module_permissions[] = $permission_item;
+        try {
+            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+            if (!($is_admin || auth()->user()->can('roles.update'))) {
+                //temp  abort(403, 'Unauthorized action.');
             }
+
+            $business_id = request()->session()->get('user.business_id');
+            $role = Role::where('business_id', $business_id)
+                ->with(['permissions'])
+                ->find($id);
+            $role_permissions = [];
+            foreach ($role->permissions as $role_perm) {
+                $role_permissions[] = $role_perm->name;
+            }
+
+            $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
+                ->active()
+                ->get();
+
+            // $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
+            $temp = $this->moduleUtil->getModuleData('user_permissions');
+            $module_permissions = [];
+
+            foreach ($temp as $temp_item) {
+                foreach ($temp_item as $permission_item) {
+                    $module_permissions[] = $permission_item;
+                }
+            }
+
+            $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+            $output = [
+                'success' => 0,
+                'msg' => __('messages.something_went_wrong'),
+            ];
         }
-
-        $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
-
         return view('role.edit')
             ->with(compact('role', 'role_permissions', 'selling_price_groups', 'module_permissions', 'common_settings'));
     }

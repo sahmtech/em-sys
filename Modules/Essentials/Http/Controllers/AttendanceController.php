@@ -108,12 +108,12 @@ class AttendanceController extends Controller
                     'action',
                     function ($row) use ($is_admin,  $can_edit_all_attendance ,   $can_delete_all_attendance) {
                         $html = '';
-                        if ($is_admin || $can_edit_bank_accounts  ) {
+                        if ($is_admin || $can_edit_all_attendance  ) {
                             $html .= '<a href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@edit\', [$row->id])}}  " class="btn btn-xs btn-primary btn-modal" data-container="#edit_attendance_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
                             &nbsp;';
                           
                         }
-                       if ($is_admin || $can_delete_bank_accounts  ){
+                       if ($is_admin || $can_delete_all_attendance  ){
                            $html .= '<button class="btn btn-xs btn-danger delete-attendance" data-href="{{action(\'\Modules\Essentials\Http\Controllers\AttendanceController@destroy\', [$row->id])}}"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
                        }
                         return $html;

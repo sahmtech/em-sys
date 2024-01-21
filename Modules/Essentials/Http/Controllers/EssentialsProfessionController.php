@@ -35,7 +35,53 @@ class EssentialsProfessionController extends Controller
 
 
         if (request()->ajax()) {
-            $professions = EssentialsProfession::with('specializations')
+            $professions = EssentialsProfession::where('type','job_title')
+            ->orderby('id','desc');
+                       
+
+            return Datatables::of($professions)
+            
+            ->addColumn(
+                'action',
+                function ($row) use ($is_admin, $can_delete_profession) {
+                    $html = '';
+                    if ($is_admin|| $can_delete_profession) {
+                        // $html .= '<a href="'. route('country.edit', ['id' => $row->id]) .  '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>
+                        // &nbsp;';
+                        $html .= '<button class="btn btn-xs btn-danger delete_profession_button" data-href="' . route('profession.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    }
+        
+                    return $html;
+                }
+            )
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where('name', 'like', "%{$keyword}%");
+            })
+           
+            ->rawColumns(['action'])
+            ->make(true);
+        
+        
+            }
+            return view('essentials::settings.partials.professions_and_specializations.index');
+
+    }
+    
+    public function academic_specializations()
+    {
+      
+    
+       $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+
+        $can_crud_profession = auth()->user()->can('essentials.crud_profession');
+        $can_delete_profession = auth()->user()->can('essentials.delete_profession');
+        $can_edit_profession = auth()->user()->can('essentials.edit_profession');
+        $can_add_profession = auth()->user()->can('essentials.add_profession');
+
+
+        if (request()->ajax()) {
+            $professions = EssentialsProfession::where('type','academic')->with('specializations')
             ->orderby('id','desc');
                        
 
@@ -68,11 +114,9 @@ class EssentialsProfessionController extends Controller
         
         
             }
-            return view('essentials::settings.partials.professions_and_specializations.index');
+            return view('essentials::settings.partials.academic_specializations.index');
 
     }
-    
-
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -90,6 +134,26 @@ class EssentialsProfessionController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate([
+        'name' => 'required|string',
+        'en_name' => 'nullable|string',
+      
+            ]);
+
+       
+        EssentialsProfession::create([
+            'name' => $request->input('name'),
+            'en_name' => $request->input('en_name'),
+            'type' => 'job_title',
+        ]);
+        $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
+        return redirect()->route('professions')->with(['status' => $output]);
+  
+    }
+ public function storeAcademicSpecializations(Request $request)
+    {
+   
         $request->validate([
         'name' => 'required|string',
         'en_name' => 'nullable|string',
@@ -104,6 +168,7 @@ class EssentialsProfessionController extends Controller
         $profession = EssentialsProfession::create([
             'name' => $request->input('name'),
             'en_name' => $request->input('en_name'),
+            'type' => 'academic',
         ]);
   
         foreach ($specializations as $index => $specName) {
@@ -116,10 +181,10 @@ class EssentialsProfessionController extends Controller
             ]);
         }
 
+        $output = ['success' => true, 'msg' => __('lang_v1.added_success')];
+        return redirect()->route('academic_specializations')->with(['status' => $output]);
     
-      return redirect()->route('professions');
     }
-
     /**
      * Show the specified resource.
      * @param int $id

@@ -84,9 +84,7 @@
                                     <th>@lang('essentials::lang.national_id_number')</th>
                                     <th>@lang('essentials::lang.department')</th>
                                     <th>@lang('essentials::lang.location')</th>
-                                    {{-- <th>@lang('essentials::lang.superior' )</th> --}}
-                                    <th>@lang('sales::lang.profession')</th>
-                                    <th>@lang('essentials::lang.specialization')</th>
+                                    <th>@lang('essentials::lang.job_title')</th>
                                     <th>@lang('essentials::lang.is_active' )</th> 
                                     <th>@lang('messages.action')</th>
                                 </tr>
@@ -122,6 +120,15 @@
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
+                                    {!! Form::label('location', __('essentials::lang.company') . ':*') !!}
+                                    {!! Form::select('location', $business_locations, null, [
+                                        'class' => 'form-control',
+                                        'id' => 'location_select',
+                                        'placeholder' => __('essentials::lang.select_location'),
+                                        'required',
+                                    ]) !!}
+                                </div>
+                                <div class="form-group col-md-6">
                                     {!! Form::label('department', __('essentials::lang.department') . ':*') !!}
                                     {!! Form::select('department', $departments, null, [
                                         'class' => 'form-control',
@@ -130,15 +137,7 @@
                                         'required',
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('location', __('essentials::lang.location') . ':*') !!}
-                                    {!! Form::select('location', $business_locations, null, [
-                                        'class' => 'form-control',
-                                        'id' => 'location_select',
-                                        'placeholder' => __('essentials::lang.select_location'),
-                                        'required',
-                                    ]) !!}
-                                </div>
+                            
                                 <div class="form-group col-md-6">
                                             {!! Form::label('start_date', __('essentials::lang.start_date') . ':') !!}
                                             {!! Form::date('start_from', null, [
@@ -149,7 +148,7 @@
                                         </div>
 
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+                                    {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                     {!! Form::select('profession', $professions, null, [
                                         'class' => 'form-control',
                                         'required',
@@ -158,15 +157,7 @@
                                     ]) !!}
 
                                 </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                                    {!! Form::select('specialization', $specializations, null, [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'placeholder' => __('sales::lang.specialization'),
-                                        'id' => 'specializationSelect',
-                                    ]) !!}
-                                </div>
+                               
 
 
 
@@ -229,8 +220,7 @@
             });
 
             var appointments_table;
-            var professionSelect = $('#professionSelect');
-            var specializationSelect = $('#specializationSelect');
+         
 
             appointments_table = $('#appointments_table').DataTable({
                 processing: true,
@@ -265,13 +255,11 @@
                     {
                         data: 'business_location_id'
                     },
-                    // { data: 'superior' },
+                 
                     {
                         data: 'profession_id'
                     },
-                    {
-                        data: 'specialization_id'
-                    },
+                 
                     {
                         data: 'is_active',
                         render: function (data, type, row) {
@@ -289,28 +277,7 @@
             
 
          
-            professionSelect.on('change', function() {
-                var selectedProfession = $(this).val();
-                console.log(selectedProfession);
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    url: '{{ route('specializations') }}',
-                    type: 'POST',
-                    data: {
-                        _token: csrfToken,
-                        profession_id: selectedProfession
-                    },
-                    success: function(data) {
-                        specializationSelect.empty();
-                        $.each(data, function(id, name) {
-                            specializationSelect.append($('<option>', {
-                                value: id,
-                                text: name
-                            }));
-                        });
-                    }
-                });
-            });
+       
 
             function reloadDataTable() {
                 appointments_table.ajax.reload();

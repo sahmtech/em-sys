@@ -3,7 +3,21 @@
 <style>
     .custom-modal-dialog.style {
         width: 72% !important;
-      
+
+    }
+
+    .hidden-step-details {
+        display: none;
+    }
+
+    .add-escalation {
+        margin: 0 auto;
+    }
+
+    .my-button {
+        margin: 0 10px 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 </style>
 @section('content')
@@ -34,6 +48,7 @@
 
                             <th>@lang('essentials::lang.type')</th>
                             <th>@lang('essentials::lang.steps')</th>
+                            {{-- <th>@lang('essentials::lang.escalations')</th> --}}
                             <th>@lang('messages.action')</th>
                         </tr>
                     </thead>
@@ -69,90 +84,123 @@
                                             'class' => 'form-control',
                                             'id' => 'type_select',
                                             'placeholder' => __('essentials::lang.procedure_type'),
-                                            'required', 'style' => 'height:40px',
+                                            'required',
+                                            'style' => 'height:35px',
                                         ],
                                     ) !!}
                                 </div>
                                 <div class="clearfix"></div>
-                                <div class="workflow-step" class="row">
-                                    
-                                    <div class="form-group col-md-2" style="width: 200px;">
+                                <div class="workflow-step">
+
+                                    <div class="form-group col-md-6">
                                         {!! Form::label('department_id', __('essentials::lang.managment') . ':*') !!}
                                         {!! Form::select('department_id', $departments, null, [
-                                            'class' => 'form-control',
-                                            'name' => 'steps[0][department_id]',
-                                            'placeholder' => __('essentials::lang.managment'),
+                                            'class' => 'form-control select2',
+                                            'name' => 'steps[0][department_id][]',
                                             'required',
+                                            'placeholder' => __('essentials::lang.selectDepartment'),
+                                            'multiple' => 'multiple',
                                             'style' => 'height:40px',
                                         ]) !!}
                                     </div>
 
-                                    <div class="form-group col-md-2">
-                                        <label>@lang('essentials::lang.can_reject') </label>
-                                        <div class="radio">
-                                            <label>
-                                                {!! Form::radio('steps[0][can_reject]', 1, false, ['class' => 'isRejectCheckbox']) !!} Yes
-                                            </label>
-                                            <label>
-                                                {!! Form::radio('steps[0][can_reject]', 0, true, ['class' => 'isRejectCheckbox']) !!} No
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-md-2">
-                                        <label>@lang('essentials::lang.can_return')</label>
-                                        <div class="radio">
-                                            <label>
-                                                {!! Form::radio('steps[0][can_return]', 1, false, ['class' => 'isReturnCheckbox']) !!} Yes
-                                            </label>
-                                            <label>
-                                                {!! Form::radio('steps[0][can_return]', 0, true, ['class' => 'isReturnCheckbox']) !!} No
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-md-2" style="width: 200px;">
-                                        {!! Form::label('escalates_to', __('essentials::lang.escalates_to') . ':') !!}
-                                        {!! Form::select('escalates_to', $departments, null, [
-                                            'class' => 'form-control',
-                                            'name' => 'steps[0][escalates_to]',
-                                            'placeholder' => __('essentials::lang.escalates_to'),
-                                            'style' => 'height:40px',
-                                        ]) !!}
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        {!! Form::label('escalates_after', __('essentials::lang.escalates_after') . ' (' . __('essentials::lang.in_hours') . ')' . ':') !!}
-                                        
-                                        <div class="input-group">
-                                            {!! Form::number('escalates_after', null, [
-                                                'class' => 'form-control',
-                                                'name' => 'steps[0][escalates_after]',
-                                                'placeholder' => __('essentials::lang.escalates_after'),
-                                                'style' => 'height:36px',
-                                            ]) !!}
-                                           
-                                        </div>
-                                    </div>
                                     <div class="clearfix"></div>
-                                </div>
-                   
+                                    <div class="form-group col-md-12 hidden-step-details">
+                                        <div class="col-md-12">
+                                            <div class="col-md-3">
+                                                <label>@lang('essentials::lang.can_reject') </label>
+                                                <div class="radio">
+                                                    <label>
+                                                        {!! Form::radio('steps[0][can_reject]', 1, false, ['class' => 'isRejectCheckbox']) !!} @lang('essentials::lang.yes')
+                                                    </label>
+                                                    <label>
+                                                        {!! Form::radio('steps[0][can_reject]', 0, true, ['class' => 'isRejectCheckbox']) !!} @lang('essentials::lang.no')
+                                                    </label>
+                                                </div>
+                                            </div>
 
+                                            <div class="form-group col-md-3">
+                                                <label>@lang('essentials::lang.can_return')</label>
+                                                <div class="radio">
+                                                    <label>
+                                                        {!! Form::radio('steps[0][can_return]', 1, false, ['class' => 'isReturnCheckbox']) !!} @lang('essentials::lang.yes')
+                                                    </label>
+                                                    <label>
+                                                        {!! Form::radio('steps[0][can_return]', 0, true, ['class' => 'isReturnCheckbox']) !!}@lang('essentials::lang.no')
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="escalations-container">
+
+                                            <div class="escalation-field-template col-md-12">
+                                                <div class="form-group col-md-4">
+                                                    {!! Form::label('escalates_to', __('essentials::lang.escalates_to') . ':') !!}
+                                                    {!! Form::select('escalates_to', $escalates_departments, null, [
+                                                        'class' => 'form-control push',
+                                                        'name' => 'steps[0][escalates_to][]',
+                                                        'placeholder' => __('essentials::lang.escalates_to'),
+                                                        'style' => 'height:40px',
+                                                    ]) !!}
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    {!! Form::label(
+                                                        'escalates_after',
+                                                        __('essentials::lang.escalates_after') . ' (' . __('essentials::lang.in_hours') . ')' . ':',
+                                                    ) !!}
+
+                                                    <div class="input-group">
+                                                        {!! Form::number('escalates_after', null, [
+                                                            'class' => 'form-control',
+                                                            'name' => 'steps[0][escalates_after][]',
+                                                            'placeholder' => __('essentials::lang.escalates_after'),
+                                                            'style' => 'height:40px',
+                                                        ]) !!}
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-md-4 ">
+                                                   
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-success add-escalation">
+                                                            @lang('essentials::lang.add_escalation')
+                                                        </button>
+                                              
+                                                    
+                                                </div>
+
+
+                                                <div class="additional-escalations"></div>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+                               <br>
+                              
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-warning my-button"
+                                    id="addStep">@lang('essentials::lang.add_managment')</button>
                             </div>
 
-                            <button type="button" id="addStep">@lang('essentials::lang.add_managment')</button>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                                <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">@lang('messages.close')</button>
+                            </div>
+                            {!! Form::close() !!}
                         </div>
-
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-                    </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
         </div>
-
     </section>
     <!-- /.content -->
 
@@ -171,21 +219,10 @@
 
 
             });
-            $("#addStep").on("click", function() {
-
-                let newStep = $(".workflow-step:last").clone();
-                newStep.find("input, select").each(function() {
-                    let name = $(this).attr("name");
-                    name = name.replace(/\[(\d+)\]/, function(match, p1) {
-                        return "[" + (parseInt(p1) + 1) + "]";
-                    });
-                    $(this).attr("name", name);
-
-
-                });
-
-                $("#procedureSteps").append(newStep);
+            $('.select2').select2({
+                width: '100%'
             });
+
 
             var procedures_table = $('#procedures_table').DataTable({
                 processing: true,
@@ -242,6 +279,9 @@
                     {
                         data: 'steps'
                     },
+                    // {
+                    //     data: 'escalations'
+                    // },
                     {
                         data: 'action'
                     },
@@ -277,6 +317,104 @@
             });
 
 
+            $("#addStep").on("click", function() {
+
+                let newStepIndex = $("#procedureSteps .workflow-step").length;
+
+
+                let newStep = $(".workflow-step:last").clone(false);
+                newStep.find('.hidden-step-details').removeClass('hidden-step-details');
+                newStep.find('input, select').each(function() {
+
+                    if ($(this).is(':text')) {
+                        $(this).val('');
+                    }
+
+                    if ($(this).is(':radio')) {
+                        $(this).prop('checked', false);
+                    }
+                    if ($(this).is('input[type="number"]')) {
+                        $(this).val('');
+                    }
+                    if ($(this).is('select')) {
+
+                        if ($(this).data('select2')) {
+                            $(this).select2('destroy');
+                        }
+
+                        $(this).next('.select2-container').remove();
+
+                        $(this).val('');
+
+                        $(this).removeAttr('multiple');
+                    }
+
+                    let name = $(this).attr("name");
+
+                    if (name) {
+                        let newName = name.replace(/\[\d+\]/, `[${newStepIndex}]`);
+                        $(this).attr("name", newName).attr('id', newName);
+                    }
+                    let newAdditionalEscalationsContainer = newStep.find('.additional-escalations');
+                    newAdditionalEscalationsContainer.empty();
+                });
+               
+                newStep.find('.add-escalation').show();
+                newStep.find('.remove-step').remove();
+                newStep.append(
+                    '<div class="col-md-12"><button type="button" class="btn btn-danger btn-sm remove-step">@lang('essentials::lang.remove_department')</button></div>'
+                );
+               
+                $("#procedureSteps").append(newStep);
+               
+                newStep.find('.remove-step').on("click", function() {
+
+                    $(this).closest('.workflow-step').remove();
+                });
+                newStep.find('.select2').select2({
+                    width: '100%'
+                });
+
+                if (newStepIndex === 0) {
+                    $('#procedureSteps .workflow-step:first .select2').select2({
+                        multiple: true,
+                        width: '100%'
+                    });
+                }
+
+
+            });
+
+
+            $(document).on('click', '.add-escalation', function() {
+
+                let escalationRow = $(this).closest('.escalations-container').find(
+                    '.escalation-field-template').first().clone();
+                escalationRow.find('input, select').val('');
+                escalationRow.append(
+                    '<div class="col-md-12"><button type="button" class="btn btn-sm btn-danger remove-escalation">@lang('essentials::lang.remove_escalation')</button></div>'
+                );
+                $(this).closest('.escalations-container').find('.additional-escalations').append(
+                    escalationRow);
+                escalationRow.find('.add-escalation').remove();
+                $(this).closest('.add-escalation').hide();
+            });
+
+
+            $(document).on('click', '.remove-escalation', function() {
+                var $container = $(this).closest('.escalations-container');
+                $(this).closest('.escalation-field-template').remove();
+
+
+                if ($container.find('.additional-escalations').children().length === 0) {
+
+                    $container.find('.add-escalation').show();
+                }
+            });
+
+            $('#procedureSteps').on('click', '.remove-step', function() {
+                $(this).closest('.workflow-step').remove();
+            });
 
         });
     </script>
