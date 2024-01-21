@@ -68,7 +68,7 @@
         
         var insurance_companies_contracts_table;
         var companiesData = @json($companies);
-        console.log(companiesData);
+        
 
         function reloadDataTable() {
             insurance_companies_contracts_table.ajax.reload();
@@ -89,17 +89,13 @@
                             d.start_date = start;
                             d.end_date = end;
                         }
-                        d.companiesData
                     }
             },
             columns: [
                 {
                 data: 'company_id',
-                render: function (data, type, row) {
-                    console.log(companiesData[data] );
-                    return companiesData[data] || ''; 
-                }
-            },
+                
+                },
 
                 { data: 'insur_id' },
 

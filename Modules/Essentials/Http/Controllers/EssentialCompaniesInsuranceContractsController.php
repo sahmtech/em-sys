@@ -55,7 +55,13 @@ if (!empty(request()->start_date) && !empty(request()->end_date)) {
         if (request()->ajax()) {
            
 
-            return Datatables::of($insuranceCompaniesContracts)
+        return Datatables::of($insuranceCompaniesContracts)
+            ->editColumn('company_id', function ($row) use ($companies) {
+                $companyId = $row->company_id;
+                $companyName = $companies[$companyId] ?? ''; 
+                return $companyName;
+            })
+
             ->editColumn('insur_id', function ($row) use ($insurance_companies) {
                 $item = $insurance_companies[$row->insur_id] ?? '';
                 return $item;
