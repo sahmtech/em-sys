@@ -312,25 +312,7 @@ class RequestController extends Controller
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $user_businesses_ids = Business::pluck('id')->unique()->toArray();
         $user_projects_ids = SalesProject::all('id')->unique()->toArray();
-        if (!$is_admin) {
-            $userProjects = [];
-            $userBusinesses = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userBusinessesForRole = AccessRoleBusiness::where('access_role_id', $accessRole->id)->pluck('business_id')->unique()->toArray();
-
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                    $userBusinesses = array_merge($userBusinesses, $userBusinessesForRole);
-                }
-            }
-            $user_projects_ids = array_unique($userProjects);
-            $user_businesses_ids = array_unique($userBusinesses);
-        }
+      
         $departmentIds = EssentialsDepartment::whereIn('business_id', $user_businesses_ids)
             ->where('name', 'LIKE', '%سكن%')
             ->pluck('id')->toArray();
