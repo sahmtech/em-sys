@@ -230,9 +230,9 @@ class EssentialsEmployeeQualificationController extends Controller
                     'graduation_year' => $request->input('graduation_year'),
                     'graduation_institution' => $request->input('graduation_institution'),
                     'graduation_country' => $request->input('graduation_country'),
-                    'degree' => $request->input('degree'),
-                    'marksName' => $request->input('marksName'),
-                    'great_degree' => $request->input('great_degree'),
+                    'degree' => $request->input('_degree'),
+                    'marksName' => $request->input('_marksName'),
+                    'great_degree' => $request->input('_great_degree'),
 
                 ]);
 

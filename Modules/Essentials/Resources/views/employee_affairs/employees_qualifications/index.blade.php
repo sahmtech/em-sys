@@ -379,10 +379,10 @@
                             data.graduation_institution);
                         $('#editQualificationModal select[name="graduation_country"]').val(data
                             .graduation_country).trigger('change');
-                        $('#editQualificationModal input[name="degree"]').val(data.degree);
-                        $('#editQualificationModal input[name="great_degree"]').val(data
+                        $('#editQualificationModal input[name="_degree"]').val(data.degree);
+                        $('#editQualificationModal input[name="_great_degree"]').val(data
                             .great_degree);
-                        $('#editQualificationModal input[name="marksName"]').val(data
+                        $('#editQualificationModal input[name="_marksName"]').val(data
                         .marksName);
 
                         $('#editQualificationModal').modal('show');

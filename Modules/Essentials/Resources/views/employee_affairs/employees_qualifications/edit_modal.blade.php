@@ -83,23 +83,25 @@
                     <div class=" col-md-6">
                         <div class="form-group">
                             {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-                            {!! Form::number('degree', null, [
+                            {!! Form::number('_degree', null, [
                                 'class' => 'form-control',
                                 'placeholder' => __('essentials::lang.degree'),
                                 'step' => 'any',
-                                'onkeyup' => 'getGPA()',
+                                'id' => '_degree',
+                                'onkeyup' => 'getGPAFUn()',
                             ]) !!}
                         </div>
                     </div>
-                 
+
                     <div class=" col-md-6">
                         <div class="form-group">
                             {!! Form::label('great_degree', __('essentials::lang.great_degree') . ':') !!}
-                            {!! Form::number('great_degree', null, [
+                            {!! Form::number('_great_degree', null, [
                                 'class' => 'form-control',
                                 'placeholder' => __('essentials::lang.great_degree'),
                                 'step' => 'any',
-                                'onkeyup' => 'getGPA()',
+                                'id' => '_great_degree',
+                                'onkeyup' => 'getGPAFUn()',
                             ]) !!}
 
                         </div>
@@ -108,10 +110,11 @@
                     <div class=" col-md-6">
                         <div class="form-group">
                             {!! Form::label('marksName', __('essentials::lang.marksName') . ':') !!}
-                            {!! Form::text('marksName', null, [
+                            {!! Form::text('_marksName', null, [
                                 'class' => 'form-control',
                                 'placeholder' => __('essentials::lang.marksName'),
                                 'step' => 'any',
+                                'id' => '_marksName',
                                 'readonly',
                             ]) !!}
                         </div>
@@ -131,7 +134,8 @@
 </div>
 
 <script>
-    function getGPA() {
+    function getGPAFUn() {
+
         const GPA = [{
                 PercentageTo: 100,
                 PercentageFrom: 85,
@@ -199,21 +203,28 @@
                 Grade: "F",
             },
         ];
-        var great_degree = document.getElementById('great_degree').value;
-        var degree = document.getElementById('degree').value;
+        var great_degree = document.getElementById('_great_degree').value;
+        // var great_degree = $('#_great_degree').val();
+        var degree = document.getElementById('_degree').value;
+        // var degree = $('#_degree').val();
 
         if (degree > great_degree) {
-            document.getElementById("marksName").style.color = "red";
-            document.getElementById('marksName').value =
+            document.getElementById("_marksName").style.color = "red";
+            document.getElementById('_marksName').value =
                 'يجب ان تكون الدرجة العطمة اعلى من الدرجة';
         }
         var greatDegree = 100 / great_degree;
+        console.log({
+            great_degree,
+            degree,
+            greatDegree
+        });
         GPA.forEach(gpaMark => {
             if (degree >= gpaMark.PercentageFrom / greatDegree && degree <= gpaMark
                 .PercentageTo /
                 greatDegree) {
 
-                document.getElementById('marksName').value = gpaMark.marksName +
+                document.getElementById('_marksName').value = gpaMark.marksName +
                     '  ( ' + gpaMark.Grade + ' )'
             }
 
