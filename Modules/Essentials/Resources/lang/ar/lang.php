@@ -1232,7 +1232,7 @@ return [
   'medicalInsurance_dashboard' => 'الصفحة الرئيسية للتأمين الطبي',
   'crud_insurance_classes' => 'إدارة فئات التأمين',
   'todo_dashboard' => 'الصفحة الأساسية ',
-  "crud_professions" => 'إضافة \ حذف \ تعديل المهن',
+  "crud_professions" => 'إضافة \ حذف \ تعديل المسميات الوظيفية',
   'carTypes_edit' => 'تعديل نوع المركبة',
   'carTypes_delete' => 'حذف نوع المركبة',
   'carModels_edit' => 'تعديل طراز المركبة',
@@ -1572,6 +1572,7 @@ return [
   'cant_delete_procedure_it_have_requests' => 'لا يمكن حذف الإجراء، يوجد طلبات متعلقة بهذا الإجراء',
   'yes' => 'نعم',
   'no' => 'لا',
+  'remove_escalation'=>'حذف التصعيد',
 
   'view_HR_requests' => 'عرض طلبات الموارد البشرية',
   'return_HR_request' => 'إرجاع طلبات الموارد البشرية',
@@ -1600,6 +1601,13 @@ return [
   'show_workcards_request' => 'عرض معلومات الطلب',
   'workcards_add_requests' => 'إضافة طلب',
   'view_workcards_request'  => 'عرض طبات العلاقات الحكومية',
+  'academic_specializations'=>'الاختصاصات الجامعية',
+  'job_titles'=>'المسميات الوظيفية',
+  'crud_academic_specializations'=>'إدارة التخصصات الجامعية',
+  'sub_specialization'=>'التخصص الفرعي',
+  'general_specialization'=>'التخصص العام',
+  'select_specialization'=>'اختر تخصص'
+
 
 
 ];

@@ -31,16 +31,29 @@
                                  ], null, ['class' => 'form-control',
                                   'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                              </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                {!! Form::select('major',$spacializations, null, ['class' => 'form-control','style'=>'height:40px',
-                                     'placeholder' =>  __('essentials::lang.major'), 'required']) !!}
+                             <div class="form-group col-md-6">
+                                {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                                {!! Form::select('general_specialization', $spacializations, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',   'id' => 'professionSelect',
+                                    'placeholder' => __('essentials::lang.select_specialization'),
+                                ]) !!}
+                            </div>
+                
+                       
+                        <div class="form-group col-md-6">
+                                {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                                {!! Form::select('sub_specialization', [], null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px','id' => 'specializationSelect',
+                                  
+                                ]) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
                                 {!! Form::date('graduation_year', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_year'), 'required']) !!}
                             </div>
-                            <div class="form-group col-md-7">
+                            <div class="form-group col-md-6">
                                 {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
                                 {!! Form::text('graduation_institution', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.graduation_institution'), 'required']) !!}
                             </div>

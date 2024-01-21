@@ -81,9 +81,9 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
         $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
-        $business_locations = BusinessLocation::whereIn('company_id', $companies_ids)->pluck('name', 'id');
+        $business_locations = Company::where('business_id',$business_id)->pluck('name', 'id');
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
 
         $employeeAppointments = EssentialsEmployeeAppointmet::join('users as u', 'u.id', '=', 'essentials_employee_appointmets.employee_id')
         ->whereIn('u.id', $userIds)
@@ -94,7 +94,6 @@ class EssentialsEmployeeAppointmentController extends Controller
                 'essentials_employee_appointmets.business_location_id',
                 'essentials_employee_appointmets.department_id',
                 'essentials_employee_appointmets.profession_id',
-                'essentials_employee_appointmets.specialization_id',
                 'essentials_employee_appointmets.is_active',
                 'u.status as status',
 
@@ -129,11 +128,7 @@ class EssentialsEmployeeAppointmentController extends Controller
 
                     return $item;
                 })
-                ->editColumn('specialization_id', function ($row) use ($specializations) {
-                    $item = $specializations[$row->specialization_id] ?? '';
-
-                    return $item;
-                })
+             
                 ->editColumn('business_location_id', function ($row) use ($business_locations) {
                     $item = $business_locations[$row->business_location_id] ?? '';
 
@@ -280,13 +275,13 @@ class EssentialsEmployeeAppointmentController extends Controller
 
 
         try {
-            $input = $request->only(['employee', 'department', 'location', 'profession', 'specialization','start_from']);
+            $input = $request->only(['employee', 'department', 'location', 'profession','start_from']);
 
             $input2['employee_id'] = $input['employee'];
             $input2['department_id'] = $input['department'];
             $input2['business_location_id'] = $input['location'];
             $input2['profession_id'] = $input['profession'];
-            $input2['specialization_id'] = $input['specialization'];
+          
             $input2['is_active'] = 1;
             $input2['start_from']=$input['start_from'];
             
@@ -366,13 +361,15 @@ class EssentialsEmployeeAppointmentController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
+        $business_locations = Company::where('business_id',$business_id)->pluck('name', 'id');
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
 
         $Appointmet = EssentialsEmployeeAppointmet::findOrFail($id);
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
-        $business_locations = BusinessLocation::all()->pluck('name', 'id');
+   
         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
+   
         $query = User::where('business_id', $business_id)->where('users.user_type', '!=', 'admin');
         $all_users = $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(last_name,''),
         ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();

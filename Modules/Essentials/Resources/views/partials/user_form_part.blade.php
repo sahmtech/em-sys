@@ -34,12 +34,12 @@
 
     <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-            {!! Form::select('profession', $professions, !empty($user->profession_id) ? $user->profession_id : null, [
+            {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
+            {!! Form::select('profession', $job_titles, !empty($user->profession_id) ? $user->profession_id : null, [
                 'class' => 'form-control select2',
                 'required',
                 'style' => 'height:36px',
-                'placeholder' => __('sales::lang.profession'),
+                'placeholder' => __('essentials::lang.job_title'),
                 'id' => 'professionSelect',
             ]) !!}
         </div>

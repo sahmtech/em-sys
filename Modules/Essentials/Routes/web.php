@@ -306,6 +306,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/professions', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'index'])->name('professions');
         Route::delete('/professions/{id}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'destroy'])->name('profession.destroy');
 
+        Route::post('/storeAcademicSpecializations', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'storeAcademicSpecializations'])->name('storeAcademicSpecializations');
+        Route::get('/academic_specializations', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'academic_specializations'])->name('academic_specializations');
+        Route::delete('/academic_specializations/{id}', [\Modules\Essentials\Http\Controllers\EssentialsProfessionController::class, 'destroy'])->name('academic_specializations.destroy');
 
 
         Route::get('/cities', [\Modules\Essentials\Http\Controllers\EssentialsCityController::class, 'index'])->name('cities');

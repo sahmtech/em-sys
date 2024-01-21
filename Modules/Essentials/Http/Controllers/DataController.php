@@ -830,7 +830,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_professions'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'essentials.crud_academic_specializations',
+                        'label' => __('essentials::lang.crud_academic_specializations'),
+                        'default' => false,
+                    ],
                     [
                         'value' => 'essentials.curd_organizational_structure',
                         'label' => __('essentials::lang.organizational_structure'),
@@ -2117,12 +2121,13 @@ class DataController extends Controller
             $contract_types = EssentialsContractType::pluck('type', 'id')->all();
             $nationalities = EssentialsCountry::nationalityForDropdown();
             $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-            $professions = EssentialsProfession::all()->pluck('name', 'id');
+            $professions = EssentialsProfession::where('type','acadmic')->pluck('name', 'id');
+            $job_titles = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
             $companies = Company::all()->pluck('name', 'id');
             return view(
                 'essentials::partials.user_form_part',
                 compact(
-                    'companies',
+                    'companies','job_titles',
                     'contract',
                     'nationalities',
                     'travel_ticket_categorie',
@@ -2234,7 +2239,8 @@ class DataController extends Controller
                 $qualification2 = new EssentialsEmployeesQualification();
 
                 $qualification2->qualification_type = request()->input('qualification_type');
-                $qualification2->major = request()->input('major');
+                $qualification2->specialization = request()->input('general_specialization');
+                $qualification2->sub_specialization  = request()->input('sub_specialization');
                 $qualification2->graduation_year =  request()->input('graduation_year');
                 $qualification2->graduation_institution =  request()->input('graduation_institution');
                 $qualification2->employee_id = $user->id;

@@ -34,6 +34,15 @@
                         ]) !!}
                     </div>
                     <div class="form-group col-md-6">
+                        {!! Form::label('location', __('essentials::lang.company') . ':*') !!}
+                        {!! Form::select('location', $business_locations,  $Appointmet->business_location_id, [
+                            'class' => 'form-control',
+                            'id' => 'location_select',
+                            'placeholder' => __('essentials::lang.select_location'),
+                            'required',
+                        ]) !!}
+                    </div>
+                    <div class="form-group col-md-6">
                         {!! Form::label('department', __('essentials::lang.department') . ':*') !!}
                         {!! Form::select('department', $departments, $Appointmet->department_id, [
                             'class' => 'form-control',
@@ -43,20 +52,10 @@
 
                         ]) !!}
                     </div>
+                   
                     <div class="form-group col-md-6">
-                        {!! Form::label('location', __('essentials::lang.location') . ':*') !!}
-                        {!! Form::select('location', $business_locations, $Appointmet->business_location_id, [
-                            'class' => 'form-control',
-                            'placeholder' => __('essentials::lang.select_location'),
-                            'required',
-                            'id'=>'location_select',
-
-                        ]) !!}
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
-                        {!! Form::select('profession', $professions, $Appointmet->profession_id, [
+                        {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
+                        {!! Form::select('profession', $professions,  $Appointmet->profession_id, [
                             'class' => 'form-control',
                             'required',
                             'placeholder' => __('sales::lang.profession'),
@@ -64,18 +63,7 @@
                         ]) !!}
 
                     </div>
-                    <div class="form-group col-md-6">
-                        {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                        {!! Form::select('specialization', $specializations, $Appointmet->specialization_id, [
-                            'class' => 'form-control',
-                            'required',
-                            'placeholder' => __('sales::lang.specialization'),
-                            'id' => 'specializationSelect',
-                        ]) !!}
-                    </div>
-
-
-
+                   
                 </div>
 
             </div>
