@@ -1051,7 +1051,7 @@ class EssentialsManageEmployeeController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $documents = null;
         
-        if (!($is_admin || $can_followup_dashboard)) {
+        if (!($is_admin || $can_show_employee)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
