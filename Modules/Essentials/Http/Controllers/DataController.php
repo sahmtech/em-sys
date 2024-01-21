@@ -1541,6 +1541,11 @@ class DataController extends Controller
                         'value' => 'essentials.employees_affairs_add_requests',
                         'label' => __('essentials::lang.employees_affairs_add_requests'),
                         'default' => false,
+                    ], 
+                    [
+                        'value' => 'essentials.view_essentials_affairs_workers',
+                        'label' => __('essentials::lang.view_essentials_affairs_workers'),
+                        'default' => false,
                     ],
                     [
                         'value' => 'essentials.employee_affairs_view_department_employees',
