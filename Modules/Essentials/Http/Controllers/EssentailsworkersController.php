@@ -302,7 +302,7 @@ class EssentailsworkersController extends Controller
 
 
         $user->profession = $profession;
-       // $user->specialization = $specialization;
+      //  $user->specialization = $specialization;
 
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
