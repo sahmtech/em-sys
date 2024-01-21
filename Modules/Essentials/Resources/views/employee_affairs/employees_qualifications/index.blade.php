@@ -59,7 +59,8 @@
                             <tr>
                                 <th>@lang('essentials::lang.employee' )</th>
                                 <th>@lang('essentials::lang.qualification_type' )</th>
-                                <th>@lang('essentials::lang.major')</th>
+                                <th>@lang('essentials::lang.general_specialization')</th>
+                                <th>@lang('essentials::lang.sub_specialization')</th>
                                 <th>@lang('essentials::lang.graduation_year' )</th>
                                 <th>@lang('essentials::lang.graduation_institution' )</th>
                                 <th>@lang('essentials::lang.graduation_country' )</th>
@@ -103,10 +104,23 @@
                                  ], null, ['class' => 'form-control',
                                   'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')]); !!}
                              </div>
-                            <div class="form-group col-md-6">
-                                {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                {!! Form::select('major',$spacializations, null, ['class' => 'form-control','style'=>'height:40px',
-                                     'placeholder' =>  __('essentials::lang.major'), 'required']) !!}
+                             <div class="form-group col-md-6">
+                                {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                                {!! Form::select('general_specialization', $spacializations, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',   'id' => 'professionSelect',
+                                    'placeholder' => __('essentials::lang.select_specialization'),
+                                ]) !!}
+                            </div>
+                
+                       
+                        <div class="form-group col-md-6">
+                                {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                                {!! Form::select('sub_specialization', [], null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px','id' => 'specializationSelect',
+                                  
+                                ]) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
@@ -212,7 +226,9 @@
                                 }
                             }
                         },
-                        { data: 'major'},
+                        { data: 'specialization'},
+                        { data: 'sub_specialization'},
+
                         { data: 'graduation_year' },
                         { data: 'graduation_institution' },
                         { data: 'graduation_country' },
@@ -278,7 +294,9 @@ $('body').on('click', '.open-edit-modal', function() {
 
                 $('#editQualificationModal select[name="employee"]').val(data.employee).trigger('change');
                 $('#editQualificationModal select[name="qualification_type"]').val(data.qualification_type).trigger('change');
-                $('#editQualificationModal select[name="major"]').val(data.major).trigger('change');
+                $('#editQualificationModal select[name="specialization"]').val(data.specialization ).trigger('change');
+                $('#editQualificationModal select[name="sub_specialization"]').val(data.sub_specialization  ).trigger('change');
+
                 $('#editQualificationModal input[name="graduation_year"]').val(data.graduation_year);
                 $('#editQualificationModal input[name="graduation_institution"]').val(data.graduation_institution);
                 $('#editQualificationModal select[name="graduation_country"]').val(data.graduation_country).trigger('change');
@@ -295,7 +313,7 @@ $('body').on('click', '.open-edit-modal', function() {
 $('body').on('submit', '#editQualificationModal form', function (e) {
     e.preventDefault();
 
-    var qualificationId = $('#qualificationIdInput').val(); // Retrieve qualificationId from the hidden input
+    var qualificationId = $('#qualificationIdInput').val(); 
     console.log(qualificationId);
 
     var urlWithId = '{{ route("updateQualification", ":qualificationId") }}';
@@ -339,7 +357,39 @@ $('#editQualificationModal').on('hidden.bs.modal', function () {
     
     </script>
 
+<script type="text/javascript">
+    $(document).ready(function() {
 
+
+        var professionSelect = $('#professionSelect');
+        var specializationSelect = $('#specializationSelect');
+
+       
+        professionSelect.on('change', function() {
+            var selectedProfession = $(this).val();
+            console.log(selectedProfession);
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                url: '{{ route('specializations') }}',
+                type: 'POST',
+                data: {
+                    _token: csrfToken,
+                    profession_id: selectedProfession
+                },
+                success: function(data) {
+                    specializationSelect.empty();
+                    $.each(data, function(id, name) {
+                        specializationSelect.append($('<option>', {
+                            value: id,
+                            text: name
+                        }));
+                    });
+                }
+            });
+        });
+
+    });
+</script>
 
 
 @endsection

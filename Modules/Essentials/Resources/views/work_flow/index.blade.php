@@ -392,7 +392,7 @@
                     '.escalation-field-template').first().clone();
                 escalationRow.find('input, select').val('');
                 escalationRow.append(
-                    '<div class="col-md-12"><button type="button" class="btn btn-sm btn-danger remove-escalation">Remove</button></div>'
+                    '<div class="col-md-12"><button type="button" class="btn btn-sm btn-danger remove-escalation">@lang('essentials::lang.remove_escalation')</button></div>'
                 );
                 $(this).closest('.escalations-container').find('.additional-escalations').append(
                     escalationRow);

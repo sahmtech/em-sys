@@ -10,7 +10,7 @@
 
 
     <p><strong>@lang('essentials::lang.profession'):</strong> {{ $user->profession ?? '' }}</p>
-    <p><strong>@lang('essentials::lang.specialization'):</strong> {{ $user->specialization ?? '' }}</p>
+  
 
 </div>
 
