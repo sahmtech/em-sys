@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('essentials::lang.professions'))
+@section('title', __('essentials::lang.job_titles'))
 
 @section('content')
 @include('essentials::layouts.nav_hrm_setting')
 
 <section class="content-header">
     <h1>
-        <span>@lang('essentials::lang.professions')</span>
+        <span>@lang('essentials::lang.job_titles')</span>
     </h1>
 </section>
 
@@ -25,9 +25,8 @@
                     <thead>
                         <tr>
                         <th>#</th>
-                            <th>@lang('essentials::lang.profession_name')</th>
+                            <th>@lang('essentials::lang.job_title')</th>
                             <th>@lang('essentials::lang.en_name')</th>
-                            <th>@lang('essentials::lang.specializations')</th>
                             <th>@lang('messages.action')</tr>
                         </tr>
                     </thead>
@@ -47,8 +46,8 @@
 
                     <div class="modal-body">
                         <div class="form-group">
-                            {!! Form::label('name',   __('essentials::lang.profession_name') .':*') !!}
-                            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.profession_name'), 'required']) !!}
+                            {!! Form::label('name',   __('essentials::lang.job_title') .':*') !!}
+                            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.job_title'), 'required']) !!}
                         </div>
 
                         <div class="form-group">
@@ -57,15 +56,6 @@
                             {!! Form::text('en_name', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.en_name')]) !!}
                         </div>
 
-                        <div id="specializations-container"> 
-                            <div class="form-group specialization-group">
-                                <label for="specializations[]">@lang('essentials::lang.specialization')</label>
-                                <input type="text" name="specializations[]" class="form-control" required>
-                                <label for="en_specializations[]">@lang('essentials::lang.en_name')(@lang('essentials::lang.optional'))</label>
-                                <input type="text" name="en_specializations[]" class="form-control">
-                            </div>
-                        </div>
-                        <button type="button" id="add-specialization" class="btn btn-primary">@lang('essentials::lang.add_specialization')</button>
                     </div>
 
                     <div class="modal-footer">
@@ -94,21 +84,14 @@
                 { data: 'id'},
                 { data: 'name'},
                 { data: 'en_name'},
-                {
-                     data: 'specializations'
-    
-                    },
+               
 
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
 
-        // JavaScript for adding specialization input fields (similar to the previous example)
-        $("#add-specialization").click(function() {
-            var specializationGroup = $("#specializations-container .form-group").first().clone();
-            specializationGroup.find("input").val('');
-            $("#specializations-container").append(specializationGroup);
-        });
+   
+      
   
     $(document).on('click', 'button.delete_profession_button', function () {
             swal({

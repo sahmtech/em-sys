@@ -255,14 +255,24 @@
                 ) !!}
             </div>
         </div>
-
         <div class=" col-md-4">
             <div class="form-group ">
-                {!! Form::label('major', __('essentials::lang.major') . ':') !!}
-                {!! Form::select('major', $spacializations, null, [
+                {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                {!! Form::select('general_specialization', $professions,  !empty($qualification->specialization ) ? $qualification->specialization  : null, [
                     'class' => 'form-control',
-                    'style' => 'height:36px',
-                    'placeholder' => __('essentials::lang.major'),
+                    'style' => 'height:36px',   'id' => 'professionSelect',
+                    'placeholder' => __('essentials::lang.select_specialization'),
+                ]) !!}
+            </div>
+
+        </div>
+        <div class=" col-md-4">
+            <div class="form-group ">
+                {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                {!! Form::select('sub_specialization', $spacializations, !empty($qualification->sub_specialization  ) ? $qualification->sub_specialization   : null, [
+                    'class' => 'form-control',
+                    'style' => 'height:36px','id' => 'specializationSelect',
+                    // 'placeholder' => __('essentials::lang.sub_specialization'),
                 ]) !!}
             </div>
 
@@ -278,7 +288,7 @@
             </div>
         </div>
 
-        <div class="clearfix"></div>
+   
         <div class=" col-md-4">
             <div class="form-group">
                 {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
@@ -310,7 +320,7 @@
                 ]) !!}
             </div>
         </div>
-        <div class="clearfix"></div>
+
         <div class=" col-md-4">
             <div class="form-group">
                 {!! Form::label('great_degree', __('essentials::lang.great_degree') . ':') !!}
@@ -657,7 +667,39 @@
     </script>
 
 
+<script type="text/javascript">
+    $(document).ready(function() {
 
+
+        var professionSelect = $('#professionSelect');
+        var specializationSelect = $('#specializationSelect');
+
+       
+        professionSelect.on('change', function() {
+            var selectedProfession = $(this).val();
+            console.log(selectedProfession);
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                url: '{{ route('specializations') }}',
+                type: 'POST',
+                data: {
+                    _token: csrfToken,
+                    profession_id: selectedProfession
+                },
+                success: function(data) {
+                    specializationSelect.empty();
+                    $.each(data, function(id, name) {
+                        specializationSelect.append($('<option>', {
+                            value: id,
+                            text: name
+                        }));
+                    });
+                }
+            });
+        });
+
+    });
+</script>
 
     <script>
         function getGPA() {

@@ -62,11 +62,18 @@
                         </li>
                     @endif --}}
 
+                    @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_academic_specializations')) 
+                   
+                   
+                    <li @if (request()->segment(2) == 'academic_specializations') class="active" @endif>
+                        <a href="{{ route('academic_specializations') }}">@lang('essentials::lang.academic_specializations')</a>
+                    </li>
+                    @endif 
                     @if (auth()->user()->hasRole("Admin#1") || auth()->user()->can('essentials.crud_professions')) 
                    
                    
                     <li @if (request()->segment(2) == 'professions') class="active" @endif>
-                        <a href="{{ route('professions') }}">@lang('essentials::lang.professions')</a>
+                        <a href="{{ route('professions') }}">@lang('essentials::lang.job_titles')</a>
                     </li>
                     @endif 
 
