@@ -49,7 +49,7 @@ class FollowUpWorkerController extends Controller
     public function index()
     {
 
-
+        
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_followup_crud_workers = auth()->user()->can('followup.crud_workers');
@@ -100,21 +100,8 @@ class FollowUpWorkerController extends Controller
         )->orderBy('users.id', 'desc')
             ->groupBy('users.id');
 
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $users = $users->whereIn('users.assigned_to',   $userProjects);
-        }
-
+            
+            
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
