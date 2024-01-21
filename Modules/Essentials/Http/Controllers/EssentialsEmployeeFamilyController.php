@@ -247,7 +247,7 @@ class EssentialsEmployeeFamilyController extends Controller
                     foreach ($formated_data as $emp_data) {
 
 
-                        $user = user::where('id_proof_number', $emp_data['emp_eqama_no'])->first();
+                        $user = User::where('id_proof_number', $emp_data['emp_eqama_no'])->first();
 
 
                         $family = new EssentialsEmployeesFamily();

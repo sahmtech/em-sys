@@ -556,6 +556,7 @@ class ClientsController extends Controller
 
            $contactSigners = user::with('country')
             ->where( 'users.crm_contact_id', $contact->id)
+
             ->where('users.contact_user_type', 'contact_signer')
             ->select('users.*')
             ->first();
@@ -717,7 +718,7 @@ class ClientsController extends Controller
 
 
 
-            $contactFollower = user::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
+            $contactFollower = User::join('contacts', 'users.crm_contact_id', '=', 'contacts.id')
                 ->where('users.contact_user_type', 'contract_follower')
                 ->where('contacts.id',   $contact->id)
                 ->select('users.*')

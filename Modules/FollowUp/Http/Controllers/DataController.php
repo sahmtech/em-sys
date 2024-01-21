@@ -343,6 +343,10 @@ class DataController extends Controller
                     ],
 
 
+                   
+                  
+                    
+                    
                     [
                         'value' => 'followup.view_request_escalate_requests',
                         'label' => __('followup::lang.view_request_escalate_requests'),
@@ -454,6 +458,33 @@ class DataController extends Controller
                         'default' => false,
 
                     ],
+                    [
+                        'value' => 'followup.view_followup_requests',
+                        'label' => __('followup::lang.view_followup_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.add_request',
+                        'label' => __('followup::lang.add_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.change_request_status',
+                        'label' => __('followup::lang.change_request_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.show_request',
+                        'label' => __('followup::lang.show_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.return_request',
+                        'label' => __('followup::lang.return_request'),
+                        'default' => false,
+                    ],
+                    
+        
                 ]
 
             ],

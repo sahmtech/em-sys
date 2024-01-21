@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', __('followup::lang.view_worker'))
+@section('title', __('essentials::lang.view_worker'))
 
 @section('content')
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-4">
-                <h3>@lang('followup::lang.view_worker')</h3>
+                <h3>@lang('essentials::lang.view_worker')</h3>
             </div>
             <div class="col-md-4 col-xs-12 mt-15 pull-right">
                 {!! Form::select('user_id', $users, $user->id, ['class' => 'form-control select2', 'id' => 'user_id']) !!}
@@ -56,6 +56,19 @@
                                 @else
                                     <span class="label label-danger pull-right">
                                         @lang('lang_v1.inactive')
+                                    </span>
+                                @endif
+                            </li>
+                            <li class="list-group-item">
+                                <b>{{ __('followup::lang.is_booking') }}</b>
+                                @if ($user->booking)
+                                    <span class="label label-danger pull-right">
+
+                                        @lang('followup::lang.booking')
+                                    </span>
+                                @else
+                                    <span class="label label-success pull-right">
+                                        @lang('followup::lang.not_booking')
                                     </span>
                                 @endif
                             </li>

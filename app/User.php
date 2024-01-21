@@ -29,7 +29,10 @@ use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\HelpDesk\Entities\HdTicket;
 use Modules\HelpDesk\Entities\HdTicketReply;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
+use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
+use Modules\Essentials\Entities\EssentialsEmployeesFamily;
 use Modules\HousingMovements\Entities\HtrRoom;
+use Modules\HousingMovements\Entities\HtrRoomsWorkersHistory;
 
 class User extends Authenticatable
 {
@@ -65,6 +68,8 @@ class User extends Authenticatable
      * Get the business that owns the user.
      */
 
+    
+
     public function appointment()
     {
         return $this->hasOne(EssentialsEmployeeAppointmet::class, 'employee_id');
@@ -73,6 +78,18 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Business::class);
     }
+
+    public function essentialsEmployeesFamily()
+    {
+        return $this->hasMany(EssentialsEmployeesFamily::class ,'employee_id');
+    }
+
+    public function essentialsEmployeesInsurance()
+    {
+        return $this->hasOne(EssentialsEmployeesInsurance::class ,'employee_id');
+    }
+
+
     public function company()
     {
         return $this->belongsTo(\App\Company::class);
@@ -224,8 +241,7 @@ class User extends Authenticatable
             $query->onlyPermittedLocations();
         }
 
-        $all_users =
-            $query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
+        $all_users =$query->select('id', DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''),
             ' - ',COALESCE(id_proof_number,'')) as full_name"))->get();
         $users = $all_users->pluck('full_name', 'id');
 
@@ -414,6 +430,11 @@ class User extends Authenticatable
     public function rooms()
     {
         return $this->belongsTo(HtrRoom::class, 'room_id');
+    }
+
+    public function htrRoomsWorkersHistory()
+    {
+        return $this->hasMany(HtrRoomsWorkersHistory::class, 'worker_id');
     }
 
 

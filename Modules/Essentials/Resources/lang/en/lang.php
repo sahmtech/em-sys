@@ -688,6 +688,16 @@ return [
 
     'index_workers' => 'Project workers',
     'workcards_indexWorkerProjects' => 'Project workers',
-    'showWorkerProjects'=>'View worker details',
-  
+    'showWorkerProjects' => 'View worker details',
+    'great_degree' => 'Great degree',
+    'marksName' => 'Mark name',
+    'veryExcellent' => 'Very excellent',
+    'excellent' => 'Excellent',
+    'veryGood' => 'Very Good',
+    'good' => 'Good',
+    'weak' => 'Weak',
+    'bad' => 'Bad',
+    'fail' => 'Fail',
+
+
 ];

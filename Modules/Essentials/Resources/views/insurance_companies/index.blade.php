@@ -110,7 +110,7 @@
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     {!! Form::label('business_name', __('essentials::lang.business_name') . ':*') !!}
-                                    {!! Form::select('business_name', $businesses, null, [
+                                    {!! Form::select('business_name', $companies, null, [
                                         'class' => 'form-control select',
                                         'style' => 'height:40px',
                                         'placeholder' => __('essentials::lang.business_name'),

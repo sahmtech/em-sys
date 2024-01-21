@@ -10,6 +10,8 @@ class EssentialsEmployeeAppointmet extends Model
 {
    
     protected $guarded = ['id'];
+    public $timestamps = true;
+    
     public static function forDropdown()
     {
         $employeeAppointment = EssentialsEmployeeAppointmet::all()->pluck('id');

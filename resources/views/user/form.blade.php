@@ -78,7 +78,7 @@
 
 
         <div class="form-group col-md-3">
-            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':*') !!}
+            {!! Form::label('contact_number', __('lang_v1.mobile_number') . ':') !!}
             {!! Form::text('contact_number', !empty($user->contact_number) ? $user->contact_number : '05', [
                 'class' => 'form-control',
                 'require',
@@ -130,7 +130,7 @@
 
         <div class="form-group col-md-3">
             {!! Form::label('id_proof_name', __('lang_v1.id_proof_name') . ':*') !!}
-            <select id="id_proof_name" style="height:40px" name="id_proof_name" class="form-control"
+            <select id="id_proof_name" style="height:36px" required name="id_proof_name" class="form-control"
                 onchange="updateNationalityOptions(this)">
                 <option value="">@lang('user.select_proof_name')</option>
                 <option value="national_id"
@@ -147,7 +147,7 @@
             {!! Form::label('expiration_date', __('lang_v1.eqama_end_date') . ':') !!}
             {!! Form::date('expiration_date', optional($resident_doc)->expiration_date ?? '', [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'placeholder' => __('lang_v1.eqama_end_date'),
                 'id' => 'eqama_end_date',
             ]) !!}
@@ -157,19 +157,20 @@
             {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'placeholder' => __('lang_v1.id_proof_number'),
                 'oninput' => 'validateIdProofNumber(this)',
             ]) !!}
             <span id="idProofNumberError" class="text-danger"></span>
         </div>
 
-        <div class="form-group col-md-6" id="border_no_container"
+        {{-- 
+            <div class="form-group col-md-6" id="border_no_container"
             style="{{ !is_null($user) && optional($user)->border_no ? '' : 'display:none' }}">
             {!! Form::label('border_no', __('essentials::lang.border_number') . ':') !!}
             {!! Form::text('border_no', optional($user)->border_no ?? '3', [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'placeholder' => __('essentials::lang.border_number'),
                 'id' => 'border_no',
                 'maxlength' => '10',
@@ -177,21 +178,25 @@
             ]) !!}
             <div id="border_no_error" class="text-danger"></div>
         </div>
+        --}}
+
 
         <div class="form-group col-md-3">
             {!! Form::label('nationality', __('sales::lang.nationality') . ':*') !!}
             {!! Form::select('nationality', $nationalities, !empty($user->nationality_id) ? $user->nationality_id : null, [
                 'class' => 'form-control select2',
                 'id' => 'nationalities_select',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'required',
                 'placeholder' => __('sales::lang.nationality'),
             ]) !!}
         </div>
+        
+        <div class="clearfix"></div>
 
         <div class="col-md-3">
             <div class="form-group ">
-                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':*') !!}
+                {!! Form::label('doc_type', __('essentials::lang.doc_type') . ':') !!}
                 {!! Form::select(
                     'document_type',
                     [
@@ -205,7 +210,7 @@
                     null,
                     [
                         'class' => 'form-control ',
-                        'style' => 'height:40px',
+                        'style' => 'height:36px',
                         'placeholder' => __('essentials::lang.select_type'),
                     ],
                 ) !!}
@@ -213,15 +218,15 @@
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                {!! Form::label('document_file', __('essentials::lang.file') . ':*') !!}
+                {!! Form::label('document_file', __('essentials::lang.file') . ':') !!}
                 {!! Form::file('document_file', [
                     'class' => 'form-control',
                     'placeholder' => __('essentials::lang.file'),
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                 ]) !!}
             </div>
         </div>
-    
+
     </div>
 
 
@@ -246,16 +251,17 @@
                         'diploma' => __('essentials::lang.diploma'),
                     ],
                     !empty($qualification->qualification_type) ? $qualification->qualification_type : null,
-                    ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
+                    ['class' => 'form-control', 'style' => 'width:100%;height:36px', 'placeholder' => __('lang_v1.all')],
                 ) !!}
             </div>
         </div>
+
         <div class=" col-md-4">
             <div class="form-group ">
                 {!! Form::label('major', __('essentials::lang.major') . ':') !!}
                 {!! Form::select('major', $spacializations, null, [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'placeholder' => __('essentials::lang.major'),
                 ]) !!}
             </div>
@@ -288,7 +294,7 @@
                 {!! Form::label('graduation_country', __('essentials::lang.graduation_country') . ':') !!}
                 {!! Form::select('graduation_country', $countries, null, [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'placeholder' => __('essentials::lang.select_country'),
                 ]) !!}
             </div>
@@ -300,10 +306,35 @@
                     'class' => 'form-control',
                     'placeholder' => __('essentials::lang.degree'),
                     'step' => 'any',
+                    'onkeyup' => 'getGPA()',
                 ]) !!}
             </div>
         </div>
+        <div class="clearfix"></div>
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('great_degree', __('essentials::lang.great_degree') . ':') !!}
+                {!! Form::number('great_degree', !empty($qualification->great_degree) ? $qualification->great_degree : null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.great_degree'),
+                    'step' => 'any',
+                    'onkeyup' => 'getGPA()',
+                ]) !!}
 
+            </div>
+        </div>
+
+        <div class=" col-md-4">
+            <div class="form-group">
+                {!! Form::label('marksName', __('essentials::lang.marksName') . ':') !!}
+                {!! Form::text('marksName', !empty($qualification->marksName) ? $qualification->marksName : null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('essentials::lang.marksName'),
+                    'step' => 'any',
+                    'readonly',
+                ]) !!}
+            </div>
+        </div>
 
     </div>
 
@@ -319,7 +350,7 @@
                 !empty($bank_details['account_holder_name']) ? $bank_details['account_holder_name'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'account_holder_name',
                     'placeholder' => __('lang_v1.account_holder_name'),
                 ],
@@ -332,7 +363,7 @@
                 !empty($bank_details['account_number']) ? $bank_details['account_number'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'account_number',
                     'placeholder' => __('lang_v1.account_number'),
                 ],
@@ -347,7 +378,7 @@
                 !empty($bank_details['bank_name']) ? $bank_details['bank_name'] : null,
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'bank_name',
                     'placeholder' => __('lang_v1.bank_name'),
                 ],
@@ -361,7 +392,7 @@
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
                 [
                     'class' => 'form-control',
-                    'style' => 'height:40px',
+                    'style' => 'height:36px',
                     'id' => 'bank_code',
                     'placeholder' => __('lang_v1.bank_code'),
                     'oninput' => 'validateBankCode(this)',
@@ -374,7 +405,7 @@
             {!! Form::label('branch', __('lang_v1.branch') . ':') !!}
             {!! Form::text('bank_details[branch]', !empty($bank_details['branch']) ? $bank_details['branch'] : null, [
                 'class' => 'form-control',
-                'style' => 'height:40px',
+                'style' => 'height:36px',
                 'id' => 'branch',
                 'placeholder' => __('lang_v1.branch'),
             ]) !!}
@@ -386,7 +417,7 @@
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.Iban_file'),
             
-                'style' => 'height:40px',
+                'style' => 'height:36px',
             ]) !!}
         </div>
 
@@ -629,6 +660,96 @@
 
 
     <script>
+        function getGPA() {
+            const GPA = [{
+                    PercentageTo: 100,
+                    PercentageFrom: 85,
+                    marksName: '{{ __('essentials::lang.veryExcellent') }}',
+                    Grade: "A+",
+                },
+                {
+                    PercentageTo: 84,
+                    PercentageFrom: 80,
+                    marksName: '{{ __('essentials::lang.excellent') }}',
+                    Grade: "A",
+                },
+                {
+                    PercentageTo: 79,
+                    PercentageFrom: 75,
+                    marksName: '{{ __('essentials::lang.veryGood') }}',
+                    Grade: "B+",
+                },
+                {
+                    PercentageTo: 74,
+                    PercentageFrom: 70,
+                    marksName: '{{ __('essentials::lang.veryGood') }}',
+                    Grade: "B",
+                },
+                {
+                    PercentageTo: 69,
+                    PercentageFrom: 65,
+                    marksName: '{{ __('essentials::lang.good') }}',
+                    Grade: "B-",
+                },
+                {
+                    PercentageTo: 64,
+                    PercentageFrom: 60,
+                    marksName: '{{ __('essentials::lang.good') }}',
+                    Grade: "C+",
+                },
+                {
+                    PercentageTo: 59,
+                    PercentageFrom: 55,
+                    marksName: '{{ __('essentials::lang.weak') }}',
+                    Grade: "C",
+                },
+                {
+                    PercentageTo: 54,
+                    PercentageFrom: 50,
+                    marksName: '{{ __('essentials::lang.weak') }}',
+                    Grade: "C-",
+                },
+                {
+                    PercentageTo: 49,
+                    PercentageFrom: 45,
+                    marksName: '{{ __('essentials::lang.bad') }}',
+                    Grade: "D",
+                },
+                {
+                    PercentageTo: 44,
+                    PercentageFrom: 40,
+                    marksName: '{{ __('essentials::lang.bad') }}',
+                    Grade: "D-",
+                },
+                {
+                    PercentageTo: 39,
+                    PercentageFrom: 0,
+                    marksName: '{{ __('essentials::lang.fail') }}',
+                    Grade: "F",
+                },
+            ];
+            var great_degree = document.getElementById('great_degree').value;
+            var degree = document.getElementById('degree').value;
+
+            if (degree > great_degree) {
+                document.getElementById("marksName").style.color = "red";
+                document.getElementById('marksName').value = 'يجب ان تكون الدرجة العطمة اعلى من الدرجة';
+            }
+            var greatDegree = 100 / great_degree;
+            GPA.forEach(gpaMark => {
+                if (degree >= gpaMark.PercentageFrom / greatDegree && degree <= gpaMark.PercentageTo /
+                    greatDegree) {
+
+                    document.getElementById('marksName').value = gpaMark.marksName +
+                        '  ( ' + gpaMark.Grade + ' )'
+                }
+
+            });
+
+
+        }
+
+
         function updateberPProofNumrefix(select) {
 
         }

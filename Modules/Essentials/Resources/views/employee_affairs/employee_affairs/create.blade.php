@@ -63,7 +63,7 @@
                                 [
                                     'manager' => __('user.manager'),
                                     'employee' => __('user.employee'),
-                                    'worker' => __('user.worker'),
+                                   
                                 ],
                                 null,
                                 [

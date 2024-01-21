@@ -328,16 +328,16 @@
                                 {{ json_encode($departmentIds) }}.includes(row.department_id) &&
                                 row.status.toLowerCase() != langStrings.approved && row.status
                                 .toLowerCase() != langStrings.rejected) {
-                                buttonsHtml += `
+                                buttonsHtml += `@if (auth()->user()->hasRole('Admin#1') ||auth()->user()->can('generalmanagement.return_request'))
                             <button class="btn btn-danger btn-sm btn-return" data-request-id="${row.process_id}">
                                 @lang('followup::lang.return_the_request')
-                            </button>`;
+                            </button>@endif`;
                             }
 
-                            buttonsHtml += `
+                            buttonsHtml += `@if (auth()->user()->hasRole('Admin#1') ||auth()->user()->can('generalmanagement.view_request'))
                             <button class="btn btn-primary btn-sm btn-view-request" data-request-id="${row.id}">
                                 @lang('followup::lang.view_request')
-                            </button>`;
+                            </button>@endif`;
 
                             return buttonsHtml;
                         }
@@ -425,7 +425,7 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewGmRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {

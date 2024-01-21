@@ -62,7 +62,7 @@
                                     {!! Form::label('project', __('housingmovements::lang.project') . '  ') !!}
                                     <select class="form-control " name="project_id" id="projects__select"
                                         style="padding: 2px;">
-                                        <option value="" selected>@lang('lang_v1.all')</option>
+                                        <option value="" selected>@lang('housingmovements::lang.no_project')</option>
                                         @foreach ($projects as $project)
                                             <option value="{{ $project->id }}">
                                                 {{ $project->name }}

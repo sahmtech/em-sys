@@ -11,6 +11,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Support\Facades\DB;
 use Modules\Essentials\Entities\EssentialsCountry;
 use App\Contact;
+use App\Company;
 use Modules\Essentials\Entities\EssentialsCity;
 use Modules\Essentials\Entities\EssentialsRegion;
 
@@ -36,19 +37,17 @@ class EssentialsInsuranceCompanyController extends Controller
         $can_edit_insurance_companies = auth()->user()->can('essentials.edit_insurance_companies');
         $can_delete_insurance_companies = auth()->user()->can('essentials.delete_insurance_companies');
 
-        // if (!$can_crud_insurance_companies) {
-        //    //temp  abort(403, 'Unauthorized action.');
-        // }
-        if (request()->ajax()) {
-            $insuranceCompanies = Contact::join('business', 'business.id', '=', 'contacts.business_id')
-                ->where('contacts.type', 'insurance');
+ 
 
-            if (!(auth()->user()->can('superadmin'))) {
-                $insuranceCompanies->where('business.id', '=', $business_id);
-            }
+        $insuranceCompanies = Contact::leftjoin('companies', 'companies.id', '=', 'contacts.company_id')
+        ->where('contacts.type', 'insurance');
+
+   
+        if (request()->ajax()) {
+
             $insuranceCompanies->select([
                 'contacts.id',
-                'business.name',
+                'companies.name as name',
                 'contacts.supplier_business_name',
                 'contacts.city',
                 'contacts.state',
@@ -105,13 +104,14 @@ class EssentialsInsuranceCompanyController extends Controller
         $countries = EssentialsCountry::forDropdown();
         $cities = EssentialsCity::forDropdown();
         $states=EssentialsRegion::forDropdown();
-        $businesses = null;
-        if (!(auth()->user()->can('superadmin'))) {
-            $businesses = Business::forDropdown($business_id);
-        } else {
-            $businesses = Business::forDropdown();
-        }
-        return view('essentials::insurance_companies.index')->with(compact('countries', 'cities', 'businesses','states'));
+        // $businesses = null;
+        // if (!(auth()->user()->can('superadmin'))) {
+        //     $businesses = Business::forDropdown($business_id);
+        // } else {
+        //     $businesses = Business::forDropdown();
+        // }
+        $companies = Company::all()->pluck('name', 'id');
+        return view('essentials::insurance_companies.index')->with(compact('countries','companies', 'cities','states'));
     }
 
     /**
@@ -139,7 +139,8 @@ class EssentialsInsuranceCompanyController extends Controller
 
         try {
             $input = $request->only(['business_name', 'insurance_company', 'city', 'state', 'country', 'address', 'tax_number', 'phone_number', 'mobile_number']);
-            $Contact_data['business_id'] =  $input['business_name'];
+            $Contact_data['company_id'] =  $input['business_name'];
+            $Contact_data['business_id'] =  1;
             $Contact_data['created_by'] = $user_id;
             $Contact_data['supplier_business_name'] = $input['insurance_company'];
             $Contact_data['name'] = $input['business_name'];
@@ -162,7 +163,7 @@ class EssentialsInsuranceCompanyController extends Controller
             error_log(print_r('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage()));
             $output = [
                 'success' => false,
-                'msg' => __('messages.something_went_wrong'),
+                'msg' => __('messages.employee_has_insurance'),
             ];
         }
 

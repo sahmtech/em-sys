@@ -49,10 +49,13 @@ class RoomController extends Controller
         $can_room_edit = auth()->user()->can('room.edit');
         $can_room_delete = auth()->user()->can('room.delete');
         $buildings = DB::table('htr_buildings')->get()->pluck('name', 'id');
+        
+        $rooms = DB::table('htr_rooms')
+        ->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents','total_beds'])
+        ->orderBy('id','desc');
         if (request()->ajax()) {
 
 
-            $rooms = DB::table('htr_rooms')->select(['id', 'room_number', 'htr_building_id', 'area', 'beds_count', 'contents']);
 
             if (!empty(request()->input('htr_building')) && request()->input('htr_building') !== 'all') {
                 $rooms->where('htr_building_id', request()->input('htr_building'));
@@ -415,6 +418,7 @@ class RoomController extends Controller
             $input2['htr_building_id'] = $input['htr_building'];
             $input2['area'] = $input['area'];
             $input2['beds_count'] = $input['beds_count'];
+            $input2['total_beds'] = $input['beds_count'];
             $input2['contents'] = $input['contents'];
 
             DB::table('htr_rooms')->insert($input2);
@@ -482,13 +486,13 @@ class RoomController extends Controller
 
 
         try {
-            $input = $request->only(['room_number', 'htr_building', 'area', 'beds_count', 'contents']);
+            $input = $request->only(['room_number', 'htr_building', 'area', 'total_beds', 'contents']);
 
 
             $input2['room_number'] = $input['room_number'];
             $input2['htr_building_id'] = $input['htr_building'];
             $input2['area'] = $input['area'];
-            $input2['beds_count'] = $input['beds_count'];
+            $input2['total_beds'] = $input['total_beds'];
             $input2['contents'] = $input['contents'];
 
 

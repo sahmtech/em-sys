@@ -222,9 +222,31 @@ class DataController extends Controller
                         'default' => false
                     ],
                     [
-                        'value' => 'accounting.crud_requests',
-                        'label' => __('accounting::lang.crud_requests'),
+                        'value' => 'accounting.view_accounting_requests',
+                        'label' => __('accounting::lang.view_accounting_requests'),
                         'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.change_status',
+                        'label' => __('accounting::lang.change_status'),
+                        'default' => false
+                    ],
+                    [
+                        'value' => 'accounting.return_the_request',
+                        'label' => __('accounting::lang.return_the_request'),
+                        'default' => false,
+                    ],
+
+                    [
+                        'value' => 'accounting.show_request',
+                        'label' => __('accounting::lang.show_request'),
+                        'default' => false,
+                    ],
+                   
+                    [
+                        'value' => 'accounting.add_request',
+                        'label' => __('accounting::lang.add_request'),
+                        'default' => false,
                     ],
                 ]
 

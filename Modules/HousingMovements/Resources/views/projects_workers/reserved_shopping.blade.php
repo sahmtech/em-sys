@@ -55,14 +55,6 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            {{-- <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.essentials_salary')</th>
-
-                            <th>@lang('followup::lang.nationality')</th>
-                            <th>@lang('followup::lang.eqama_end_date')</th>
-                            <th>@lang('followup::lang.contract_end_date')</th> --}}
 
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
@@ -207,14 +199,14 @@
 
 
             });
-            $('#workers_table tbody').on('click', 'tr', function() {
-                var data = workers_table.row(this).data();
-                console.log(data);
-                if (data) {
-                    window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data
-                        .id);
-                }
-            });
+            // $('#workers_table tbody').on('click', 'tr', function() {
+            //     var data = workers_table.row(this).data();
+            //     console.log(data);
+            //     if (data) {
+            //         window.location = '{{ route('htr.show.workers', ['id' => ':id']) }}'.replace(':id', data
+            //             .id);
+            //     }
+            // });
 
             $('#doc_filter_date_range').daterangepicker(
                 dateRangeSettings,

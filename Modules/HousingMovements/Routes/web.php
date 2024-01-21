@@ -24,7 +24,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/hm.returnReq.store', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'store'])->name('hm.returnReq.store');
         Route::get('/escalate_requests', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'escalateRequests'])->name('hm.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'changeEscalateRequestsStatus'])->name('hm.changeEscalateRequestsStatus');
-
+        Route::get('/viewHmRequest/{requestId}', [\Modules\HousingMovements\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewHmRequest');
 
 
         Route::get('/', [\Modules\HousingMovements\Http\Controllers\HousingMovementsController::class, 'index'])->name('housingMovements_landingPage');
@@ -73,6 +73,9 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/workers/book/{id}', [\Modules\HousingMovements\Http\Controllers\WorkerBookingController::class, 'create'])->name('worker.book');
         Route::delete('/workers/unbook/{id}', [\Modules\HousingMovements\Http\Controllers\WorkerBookingController::class, 'destroy'])->name('worker.unbook');
         Route::post('/save-book', [\Modules\HousingMovements\Http\Controllers\WorkerBookingController::class, 'store'])->name('worker.book-store');
+        Route::get('/create_project_workers', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'create'])->name('create_project_workers');
+        Route::post('/store_project_worker', [\Modules\HousingMovements\Http\Controllers\ProjectWorkersController::class, 'storeProjectWorker'])->name('store_project_worker');
+        
 
 
         Route::get('/get-room-numbers/{buildingId}',  [\Modules\HousingMovements\Http\Controllers\TravelersController::class, 'getRoomNumbers'])->name('getRoomNumbers');
