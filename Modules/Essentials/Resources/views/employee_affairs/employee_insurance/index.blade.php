@@ -209,6 +209,7 @@
                         },
                         success: function (data) {
                         classSelect.empty();
+                        console.log(data);
 
                         if ('message' in data) {
                             // Handle error message
@@ -223,6 +224,7 @@
                                     text: name
                                 }));
                             });
+                            
 
                             // Hide any previous error messages
                             $('#error-message').hide();

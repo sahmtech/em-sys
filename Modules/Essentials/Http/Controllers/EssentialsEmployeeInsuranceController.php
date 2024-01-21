@@ -527,16 +527,24 @@ class EssentialsEmployeeInsuranceController extends Controller
 
         $employee_id = $request->input('employee_id');
         $company_id = User::find($employee_id)->company_id;
-
+        $employee_id = $request->input('employee_id');
+        $company_id = User::find($employee_id)->company_id;
+       
         $insurance_company_id = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)
-        ->first()->insur_id;
+        ->first();
 
-        $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company_id)
-        ->pluck('name', 'id');
-
-        if ($classes->isEmpty()) {
+        if( $insurance_company_id)
+        {
+            $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company_id->insur_id)
+            ->pluck('name', 'id');
+        
+        }
+        else{
             return response()->json(['message' =>  __('essentials::lang.no_company_added')]);
         }
+    
+        
+
 
         return response()->json($classes);
     }
