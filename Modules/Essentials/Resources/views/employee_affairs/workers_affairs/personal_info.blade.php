@@ -333,11 +333,16 @@
                     $('#proof_no_container').show();
 
 
+                    
                     for (const [id, name] of Object.entries(nationalities)) {
+                        if(id != '5')
+                        {
                         const option = document.createElement('option');
                         option.value = id;
                         option.text = name;
                         nationalitySelect.appendChild(option);
+                        }
+                      
                     }
                 } 
                 else if (selectedOption === 'border') {
@@ -352,10 +357,14 @@
                     $('#proof_no_container').hide();
                   
                     for (const [id, name] of Object.entries(nationalities)) {
+                        if(id != '5')
+                        {
                         const option = document.createElement('option');
                         option.value = id;
                         option.text = name;
                         nationalitySelect.appendChild(option);
+                        }
+                      
                     }
                 } 
                 else {

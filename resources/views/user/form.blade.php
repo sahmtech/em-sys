@@ -153,7 +153,7 @@
             ]) !!}
         </div>
 
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-3" id="proof_no_container" style="display:none">
             {!! Form::label('id_proof_number', __('lang_v1.id_proof_number') . ':') !!}
             {!! Form::text('id_proof_number', !empty($user->id_proof_number) ? $user->id_proof_number : null, [
                 'class' => 'form-control',
@@ -396,7 +396,7 @@
 
         </div>
         <div class="form-group col-md-4">
-            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':*') !!} @show_tooltip(__('lang_v1.bank_code_help'))
+            {!! Form::label('bank_code', __('lang_v1.bank_code') . ':') !!} @show_tooltip(__('lang_v1.bank_code_help'))
             {!! Form::text(
                 'bank_details[bank_code]',
                 !empty($bank_details['bank_code']) ? $bank_details['bank_code'] : 'SA',
@@ -422,7 +422,7 @@
         </div>
 
         <div class="form-group col-md-4">
-            {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':*') !!}
+            {!! Form::label('Iban_file', __('essentials::lang.Iban_file') . ':') !!}
             {!! Form::file('Iban_file', [
                 'class' => 'form-control',
                 'placeholder' => __('essentials::lang.Iban_file'),
@@ -581,89 +581,114 @@
                 }
             }
         }
-        $(document).ready(function() {
+
+$(document).ready(function() {
 
 
-            var nationalities = @json($nationalities);
-            var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
+                var nationalities = @json($nationalities);
+                var selectedNationalityId = {{ $user->nationality_id ?? 'null' }};
 
 
-            var nationalitySelect = $('#nationalities_select');
+                var nationalitySelect = $('#nationalities_select');
 
+                $.each(nationalities, function(id, name) {
 
-            $.each(nationalities, function(id, name) {
-                nationalitySelect.append(new Option(name, id));
-            });
-
-
-            nationalitySelect.val(selectedNationalityId);
-
-
-            nationalitySelect.trigger('change');
+                
+                        nationalitySelect.append(new Option(name, id));
+                
+                });
 
 
 
-            $('#id_proof_name').change(function() {
-                var selectedOption = $(this).val();
-
-                const idProofNumberInput = document.getElementById('id_proof_number');
-                idProofNumberInput.minLength = validationLength;
-
-                const nationalitySelect = document.querySelector('#nationalities_select');
-                const input = document.getElementById('id_proof_number');
-                const prefix = selectedOption === 'eqama' ? '2' : '1';
-                input.setAttribute('data-prefix', prefix);
-                input.value = prefix;
+                nationalitySelect.val(selectedNationalityId);
 
 
-                nationalitySelect.innerHTML = '';
+                nationalitySelect.trigger('change');
 
 
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.text = '{{ __('sales::lang.nationality') }}';
-                nationalitySelect.appendChild(defaultOption);
 
-                if (selectedOption === 'eqama') {
-                    validationLength = 10;
-                    idProofNumberInput.value = '2';
+                $('#id_proof_name').change(function() {
+                    var selectedOption = $(this).val();
+                console.log(selectedOption);
+                    const idProofNumberInput = document.getElementById('id_proof_number');
+                    const border_no_containerInput = document.getElementById('border_no');
+                    idProofNumberInput.minLength = validationLength;
 
-
-                    for (const [id, name] of Object.entries(nationalities)) {
-                        const option = document.createElement('option');
-                        option.value = id;
-                        option.text = name;
-                        nationalitySelect.appendChild(option);
-                    }
-                } else if (selectedOption === 'national_id') {
-                    validationLength = 10;
-                    idProofNumberInput.value = '1';
+                    const nationalitySelect = document.querySelector('#nationalities_select');
+                    const input = document.getElementById('id_proof_number');
+                    const prefix = selectedOption === 'eqama' ? '2' : '1';
+                    input.setAttribute('data-prefix', prefix);
+                    input.value = prefix;
 
 
-                    for (const [id, name] of Object.entries(nationalities)) {
-                        if (id === '5') {
+                    nationalitySelect.innerHTML = '';
+
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.text = '{{ __('sales::lang.nationality') }}';
+                    nationalitySelect.appendChild(defaultOption);
+
+                    if (selectedOption === 'eqama') {
+                        validationLength = 10;
+                        idProofNumberInput.value = '2';
+                    
+                        $('#border_no_container').hide();
+                        $('#proof_no_container').show();
+
+
+                        for (const [id, name] of Object.entries(nationalities)) {
+                    
+                            if (id !== '5') {
+                                const option = document.createElement('option');
+                                option.value = id;
+                                option.text = name;
+                                nationalitySelect.appendChild(option);
+                            }
+                        }
+                    } 
+                    else if (selectedOption === 'national_id') {
+                    // validationLength = 13;
+                    console.log(selectedOption);
+
+                    
+                    
+                        validationLength = 10;
+                        idProofNumberInput.value = '1';
+
+                        $('#border_no_container').show();
+                        $('#proof_no_container').show();
+
+                    const option = document.createElement('option');
+                    option.value = '5'; 
+                    option.text = nationalities['5']; 
+                    nationalitySelect.appendChild(option);
+                    
+                        // for (const [id, name] of Object.entries(nationalities)) {
+                        //     const option = document.createElement('option');
+                        //     option.value = id;
+                        //     option.text = name;
+                        //     nationalitySelect.appendChild(option);
+                        // }
+                    } 
+                    else {
+                        validationLength = 10;
+                        idProofNumberInput.value = '';
+
+
+                        for (const [id, name] of Object.entries(nationalities)) {
                             const option = document.createElement('option');
                             option.value = id;
                             option.text = name;
                             nationalitySelect.appendChild(option);
                         }
+                        $('#border_no_container').hide();
+                        $('#proof_no_container').hide();
                     }
-                } else {
-                    validationLength = 10;
-                    idProofNumberInput.value = '';
+                });
 
 
-                    for (const [id, name] of Object.entries(nationalities)) {
-                        const option = document.createElement('option');
-                        option.value = id;
-                        option.text = name;
-                        nationalitySelect.appendChild(option);
-                    }
-                }
-            });
-
-
-        });
+});
     </script>
 
 
