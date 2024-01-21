@@ -145,15 +145,7 @@
                                       
                                     ]) !!}
                                 </div>
-                                <div class="form-group col-md-6">
-                                    {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                                    {!! Form::select('major', $spacializations, null, [
-                                        'class' => 'form-control',
-                                        'style' => 'height:40px',
-                                        'placeholder' => __('essentials::lang.major'),
-                                        'required',
-                                    ]) !!}
-                                </div>
+                             
                                 <div class="form-group col-md-6">
                                     {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
                                     {!! Form::date('graduation_year', null, [
