@@ -12,11 +12,11 @@
 
     <!-- Main content -->
     <section class="content">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-md-12">
                 @component('components.filters', ['title' => __('report.filters'), 'class' => 'box-solid'])
                     <div class="col-md-3">
-                        {{-- <div class="form-group">
+                        <div class="form-group">
                             {!! Form::label('project_name_filter', __('sales::lang.contact_name') . ':') !!}
                             {!! Form::select('project_name_filter', $contacts2, null, [
                                 'class' => 'form-control select2',
@@ -25,11 +25,11 @@
                                 'id' => 'project_name_filter',
                             ]) !!}
 
-                        </div> --}}
+                        </div>
                     </div>
                 @endcomponent
             </div>
-        </div>
+        </div> --}}
         @component('components.widget', ['class' => 'box-primary'])
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="projects_table" style=" table-layout: fixed !important;">
@@ -91,17 +91,7 @@
 
 @section('javascript')
     <script type="text/javascript">
-        $(document).on('click', '.add_access_project_btn', function() {
-
-            var user_id = $(this).data('id');
-            $('#addUserAccessProjectModal').find('[name="user_id"]').val(user_id);
-            $('#addUserAccessProjectModal').modal('show');
-        })
         $(document).ready(function() {
-
-
-
-
 
             $('#addUserAccessProjectModal').on('shown.bs.modal', function(e) {
                 $('#projects_menu').select2({
@@ -111,6 +101,52 @@
                 });
 
             });
+
+            $(document).on('click', '.add_access_project_btn', function(e) {
+                e.preventDefault();
+                var url = $(this).data('url');
+                var user_id = $(this).data('id');
+                var $projectsMenu = $('#projects_menu');
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        var projects;
+                        if (typeof response.projects === 'string' && response.projects !== '') {
+                            projects = JSON.parse(response.projects);
+                        } else {
+                            projects = response.projects;
+                        }
+
+                        // Clear existing options in Select2
+                        $projectsMenu.empty();
+
+                        if (projects && Object.keys(projects).length > 0) {
+                            // Add new options
+                            $.each(projects, function(id, name) {
+                                var newOption = new Option(name, id, true, true);
+                                $projectsMenu.append(newOption);
+                            });
+
+                            // Trigger change event for Select2 to update
+                            $projectsMenu.trigger('change');
+                        }
+
+
+
+                        // Update user_id and show modal
+                        $('#addUserAccessProjectModal').find('[name="user_id"]').val(user_id);
+                        $('#addUserAccessProjectModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+
+                        console.error("Error in AJAX request:", error);
+                    }
+                });
+
+
+            })
+
 
 
 

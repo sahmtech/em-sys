@@ -62,6 +62,7 @@ class FollowupUserAccessProjectController extends Controller
         if (request()->ajax()) {
 
             return Datatables::of($users)
+
                 ->addColumn(
                     'id',
                     function ($row) {
@@ -92,42 +93,38 @@ class FollowupUserAccessProjectController extends Controller
                         $html = '';
 
                         if ($is_admin  || $can_add_user_project_access_permissions) {
-                            $html .= '<a href="#" class="btn btn-xs btn-primary add_access_project_btn" data-id="' . $row->id . '">' . __('followup::lang.edit_project') . '</a>&nbsp;';
+
+                            $html .= '<a href="#" class="btn btn-xs btn-primary add_access_project_btn" data-id="' . $row->id . '" data-url="' . route('getUserProjectsPermissions', ['userId' => $row->id]) . '">' . __('followup::lang.edit_project') . '</a>&nbsp;';
+
                         }
-
-
-                        // if ($is_admin  || $can_edit_employee_appointments) {
-                        //     $html .= '<a  href="' . route('appointment.edit', ['id' => $row->id]) . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                        //     '&nbsp;';
-                        // }
-
-                        // if ($is_admin  || $can_delete_employee_appointments) {
-                        //     $html .= '&nbsp; <button class="btn btn-xs btn-danger delete_appointment_button" data-href="' . route('appointment.destroy', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
-                        // }
-
-
-
-
                         return $html;
                     }
                 )
 
-                // ->filterColumn('user', function ($query, $keyword) {
-                //     $query->whereRaw("CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) like ?", ["%{$keyword}%"]);
-                // })
-                // ->filterColumn('id_proof_number', function ($query, $keyword) {
-                //     $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
-                // })
-                // ->filterColumn('status', function ($query, $keyword) {
-                //     $query->whereRaw("status  like ?", ["%{$keyword}%"]);
-                // })
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+               
                 ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment', 'action'])
                 ->make(true);
         }
 
 
 
-        return view('followup::projects_access_permissions.index')->with(compact('projects'));
+        return view('followup::projects_access_permissions.index')->with(compact('projects',));
+    }
+
+    public function getUserProjectsPermissions($userId)
+    {
+        $followupUserAccessProject = FollowupUserAccessProject::where('user_id', $userId)->pluck('sales_project_id')->unique()->toArray();
+        $selected_projects = [];
+        if ($followupUserAccessProject && !empty($followupUserAccessProject)) {
+            $selected_projects = json_encode(SalesProject::whereIn('id', $followupUserAccessProject)->pluck('name', 'id'));
+        }
+        return response()->json(['projects' => $selected_projects]);
     }
 
     /**
@@ -146,23 +143,24 @@ class FollowupUserAccessProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $success = true;    
-        
-            $projects_ids = $request->projects_ids;
-            if ($projects_ids) {
-                FollowupUserAccessProject::where('user_id', $request->user_id)->delete();
-                foreach ($projects_ids as $project_id) {
-                    FollowupUserAccessProject::create([
-                        'user_id' => $request->user_id,
-                        'sales_project_id' => $project_id,
-                    ]);
-                }
+        $success = true;
+
+        $projects_ids = $request->projects_ids;
+        if ($projects_ids) {
+            FollowupUserAccessProject::where('user_id', $request->user_id)->delete();
+            foreach ($projects_ids as $project_id) {
+                FollowupUserAccessProject::create([
+                    'user_id' => $request->user_id,
+                    'sales_project_id' => $project_id,
+                ]);
             }
+        }
 
         if ($success) {
-            $output = $output = ['success' => true,
-            'msg' => __('lang_v1.added_success'),
-        ];
+            $output = $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
             return redirect()->back()->with(['status' => $output]);
         } else {
             $output = [

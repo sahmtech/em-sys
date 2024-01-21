@@ -22,7 +22,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/projectShow/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpProjectController::class, 'show'])->name('projectView');
 
         Route::get('/projects_access_permissions', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'index'])->name('projects_access_permissions');
-
+        Route::get('/getUserProjectsPermissions/{userId}', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'getUserProjectsPermissions'])->name('getUserProjectsPermissions');
         Route::post('/projects_access_permissions/store', [\Modules\FollowUp\Http\Controllers\FollowupUserAccessProjectController::class, 'store'])->name('projects_access_permissions.store');
         Route::get('/workers', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'index'])->name('workers');
         Route::get('/workers/{id}', [\Modules\FollowUp\Http\Controllers\FollowUpWorkerController::class, 'show'])->name('showWorker');
