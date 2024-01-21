@@ -15,6 +15,7 @@ use App\User;
 use App\Utils\ModuleUtil;
 use Carbon\Carbon;
 use DB;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentialsOfficialDocument;
 use Modules\FollowUp\Entities\FollowupWorkerRequest;
@@ -56,6 +57,81 @@ class FollowUpController extends Controller
 
 
         return view('followup::index', compact('new_requests', 'on_going_requests', 'finished_requests', 'total_requests'));
+    }
+
+
+    public function followup_department_employees()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_followup_view_department_employees = auth()->user()->can('followup.followup_view_department_employees');
+
+
+        if (!($is_admin || $can_followup_view_department_employees)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%/تابعة%')
+            ->pluck('id')->toArray();
+
+        $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds);
+        })->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
+            'users.id_proof_number',
+        ]);
+        if (request()->ajax()) {
+
+            return Datatables::of($users)
+
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
+                ->addColumn(
+                    'full_name',
+                    function ($row) {
+                        return $row->full_name;
+                    }
+                )
+                ->addColumn(
+                    'id_proof_number',
+                    function ($row) {
+                        return $row->id_proof_number;
+                    }
+                )
+                ->addColumn(
+                    'appointment',
+                    function ($row) {
+                        return $row->appointment?->profession->name ?? '';
+                    }
+                )
+
+
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment'])
+                ->make(true);
+        }
+
+        return view('followup::followup_department_employees');
     }
 
 

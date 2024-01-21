@@ -34,13 +34,13 @@ class DataController extends Controller
         return [
             [
                 'group_name' => __('sales::lang.sales'),
-                'group_permissions' =>[
+                'group_permissions' => [
                     [
                         'value' => 'sales.sales_dashboard',
                         'label' => __('sales::lang.sales_dashboard'),
                         'default' => false,
                     ],
-        
+
                     [
                         'value' => 'sales.view_lead_contacts',
                         'label' => __('sales::lang.view_lead_contacts'),
@@ -85,17 +85,17 @@ class DataController extends Controller
                         'value' => 'sales.view_sales_projects',
                         'label' => __('sales::lang.view_sales_projects'),
                         'default' => false,
-                    ],      
+                    ],
                     [
                         'value' => 'sales.edit_sale_project',
                         'label' => __('sales::lang.edit_sale_project'),
                         'default' => false,
-                    ],  
+                    ],
                     [
                         'value' => 'sales.delete_sale_project',
                         'label' => __('sales::lang.delete_sale_project'),
                         'default' => false,
-                    ],  
+                    ],
                     [
                         'value' => 'sales.view_under_study_offer_price',
                         'label' => __('sales::lang.view_under_study_offer_price'),
@@ -141,21 +141,21 @@ class DataController extends Controller
                         'label' => __('sales::lang.delete_sale_contract'),
                         'default' => false,
                     ],
-                   
+
                     [
                         'value' => 'sales.print_sales_contracts',
                         'label' => __('sales::lang.print_sales_contracts'),
                         'default' => false,
                     ],
-                   
+
                     [
                         'value' => 'sales.view_sales_contracts_file',
                         'label' => __('sales::lang.view_sales_contracts_file'),
                         'default' => false,
                     ],
-                   
-                   
-                  
+
+
+
                     [
                         'value' => 'sales.view_contract_appendics',
                         'label' => __('sales::lang.view_contract_appendics'),
@@ -307,16 +307,16 @@ class DataController extends Controller
                         'label' => __('sales::lang.crud_sales_templates'),
                         'default' => false,
                     ],
-                   
-        
-                   
-        
-        
+                    [
+                        'value' => 'sales.sales_view_department_employees',
+                        'label' => __('sales::lang.sales_view_department_employees'),
+                        'default' => false,
+                    ],
+
                 ]
-                
+
             ],
         ];
-
     }
 
     /**

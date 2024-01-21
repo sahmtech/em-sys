@@ -57,7 +57,7 @@ class EssentialsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -84,38 +84,256 @@ class EssentialsController extends Controller
         return view('essentials::index', compact('chart', 'num_employee_staff', 'num_workers', 'num_employees', 'num_managers'));
     }
 
+    public function hr_department_employees()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
+
+
+        if (!($is_admin || $can_essentials_hr_view_department_employees)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%بشرية%')
+            ->pluck('id')->toArray();
+
+        $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds);
+        })->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
+            'users.id_proof_number',
+        ]);
+        if (request()->ajax()) {
+
+            return Datatables::of($users)
+
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
+                ->addColumn(
+                    'full_name',
+                    function ($row) {
+                        return $row->full_name;
+                    }
+                )
+                ->addColumn(
+                    'id_proof_number',
+                    function ($row) {
+                        return $row->id_proof_number;
+                    }
+                )
+                ->addColumn(
+                    'appointment',
+                    function ($row) {
+                        return $row->appointment?->profession->name ?? '';
+                    }
+                )
+
+
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment'])
+                ->make(true);
+        }
+
+        return view('essentials::hr_department_employees');
+    }
+   public function work_cards_department_employees()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
+
+
+        if (!($is_admin || $can_essentials_hr_view_department_employees)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%حكومية%')
+            ->pluck('id')->toArray();
+
+        $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds);
+        })->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
+            'users.id_proof_number',
+        ]);
+        if (request()->ajax()) {
+
+            return Datatables::of($users)
+
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
+                ->addColumn(
+                    'full_name',
+                    function ($row) {
+                        return $row->full_name;
+                    }
+                )
+                ->addColumn(
+                    'id_proof_number',
+                    function ($row) {
+                        return $row->id_proof_number;
+                    }
+                )
+                ->addColumn(
+                    'appointment',
+                    function ($row) {
+                        return $row->appointment?->profession->name ?? '';
+                    }
+                )
+
+
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment'])
+                ->make(true);
+        }
+
+        return view('essentials::work_cards_department_employees');
+    }
+  public function employee_affairs_department_employees()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
+
+
+        if (!($is_admin || $can_essentials_hr_view_department_employees)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%موظف%')
+            ->pluck('id')->toArray();
+
+        $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds);
+        })->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
+            'users.id_proof_number',
+        ]);
+        if (request()->ajax()) {
+
+            return Datatables::of($users)
+
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
+                ->addColumn(
+                    'full_name',
+                    function ($row) {
+                        return $row->full_name;
+                    }
+                )
+                ->addColumn(
+                    'id_proof_number',
+                    function ($row) {
+                        return $row->id_proof_number;
+                    }
+                )
+                ->addColumn(
+                    'appointment',
+                    function ($row) {
+                        return $row->appointment?->profession->name ?? '';
+                    }
+                )
+
+
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment'])
+                ->make(true);
+        }
+
+        return view('essentials::employee_affairs_department_employees');
+    }
+
     public function word_cards_dashboard()
     {
 
         $business_id = request()->session()->get('user.business_id');
-  
+
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-     
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
-
-          
         }
 
 
         $expiryDateThreshold = Carbon::now()->addDays(15)->toDateString();
         $sixtyday = Carbon::now()->addDays(60)->toDateString();
 
-        $last15_expire_date_residence = EssentialsOfficialDocument::whereIn('employee_id',$userIds)->where('type', 'residence_permit')
+        $last15_expire_date_residence = EssentialsOfficialDocument::whereIn('employee_id', $userIds)->where('type', 'residence_permit')
             ->where('expiration_date', '<=', $expiryDateThreshold)
             ->count();
 
         $today = Carbon::now()->toDateString();
 
 
-        $all_ended_residency_date = EssentialsOfficialDocument::whereIn('employee_id',$userIds)->with(['employee'])->where('type', 'residence_permit')
+        $all_ended_residency_date = EssentialsOfficialDocument::whereIn('employee_id', $userIds)->with(['employee'])->where('type', 'residence_permit')
             ->whereDate('expiration_date', '<=',  $today)->count();
 
-        $escapeRequest = FollowupWorkerRequest::whereIn('worker_id',$userIds)->with('user')->where('type', 'escapeRequest')
+        $escapeRequest = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with('user')->where('type', 'escapeRequest')
             ->whereHas('user', function ($query) {
                 $query->where('user_type', 'worker');
             })
@@ -123,20 +341,20 @@ class EssentialsController extends Controller
             ->count();
 
 
-        $vacationrequest = FollowupWorkerRequest::whereIn('worker_id',$userIds)->with('user')->where('type', 'leavesAndDepartures')
+        $vacationrequest = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with('user')->where('type', 'leavesAndDepartures')
             ->whereHas('user', function ($query) {
                 $query->where('user_type', 'worker');
             })
             ->count();
 
-        $final_visa = EssentailsEmployeeOperation::whereIn('employee_id',$userIds)->where('operation_type', 'final_visa')
+        $final_visa = EssentailsEmployeeOperation::whereIn('employee_id', $userIds)->where('operation_type', 'final_visa')
             ->whereHas('user', function ($query) {
                 $query->where('user_type', 'worker');
             })
             ->count();
 
 
-        $late_vacation = FollowupWorkerRequest::whereIn('worker_id',$userIds)->with(['user'])
+        $late_vacation = FollowupWorkerRequest::whereIn('worker_id', $userIds)->with(['user'])
             ->where('type', 'leavesAndDepartures')
             ->where('type', 'returnRequest')
             ->whereHas('user', function ($query) {
@@ -146,8 +364,8 @@ class EssentialsController extends Controller
             ->where('end_date', '<', now())
             ->count();
 
-     
-     
+
+
         $departmentIds = EssentialsDepartment::where('business_id', $business_id)
             ->where('name', 'LIKE', '%حكومية%')
             ->pluck('id')->toArray();
@@ -176,9 +394,9 @@ class EssentialsController extends Controller
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
                 ->leftJoin('users', 'users.id', '=', 'followup_worker_requests.worker_id')
-                ->whereIn('users.id',$userIds)
+                ->whereIn('users.id', $userIds)
                 ->whereIn('department_id', $departmentIds)->where('followup_worker_requests_process.sub_status', null);
-        } 
+        }
 
         if (request()->ajax()) {
 
@@ -191,14 +409,14 @@ class EssentialsController extends Controller
 
                     return Carbon::parse($row->created_at);
                 })
-              
-                ->editColumn('status', function ($row) {
-                  
-                        $status = trans('followup::lang.' . $row->status) ?? '';
-                  
 
-                                return $status;
-                    })
+                ->editColumn('status', function ($row) {
+
+                    $status = trans('followup::lang.' . $row->status) ?? '';
+
+
+                    return $status;
+                })
 
                 ->rawColumns(['status'])
 
@@ -237,16 +455,17 @@ class EssentialsController extends Controller
         ];
     }
 
-    public function getLeaves(){
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-            $business_id = request()->session()->get('user.business_id');
-            $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
-            if (!$is_admin) {
-                $userIds = [];
-                $userIds = $this->moduleUtil->applyAccessRole();
-            }
-        
-            $departmentIds = EssentialsDepartment::where('business_id',  $business_id)
+    public function getLeaves()
+    {
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $business_id = request()->session()->get('user.business_id');
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+
+        $departmentIds = EssentialsDepartment::where('business_id',  $business_id)
             ->where('name', 'LIKE', '%موظف%')
             ->pluck('id')->toArray();
 
@@ -255,14 +474,14 @@ class EssentialsController extends Controller
         if (!empty($departmentIds)) {
 
             $requestsProcess = FollowupWorkerRequest::select([
-                'followup_worker_requests.request_no','followup_worker_requests.type',
+                'followup_worker_requests.request_no', 'followup_worker_requests.type',
                 'followup_worker_requests.id',
                 'followup_worker_requests.worker_id',
                 DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"),
                 'followup_worker_requests.start_date',
-                'followup_worker_requests_process.status','followup_worker_requests_process.worker_request_id',
+                'followup_worker_requests_process.status', 'followup_worker_requests_process.worker_request_id',
                 'followup_worker_requests_process.procedure_id',   'followup_worker_requests_process.sub_status',
-      
+
             ])
                 ->leftjoin('followup_worker_requests_process', 'followup_worker_requests_process.worker_request_id', '=', 'followup_worker_requests.id')
                 ->leftjoin('essentials_wk_procedures', 'essentials_wk_procedures.id', '=', 'followup_worker_requests_process.procedure_id')
@@ -281,7 +500,7 @@ class EssentialsController extends Controller
 
                     return Carbon::parse($row->created_at);
                 })
-            
+
                 ->editColumn('status', function ($row) {
                     return trans('followup::lang.' . $row->status) ?? '';
                 })
@@ -297,7 +516,7 @@ class EssentialsController extends Controller
     {
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -330,7 +549,7 @@ class EssentialsController extends Controller
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();

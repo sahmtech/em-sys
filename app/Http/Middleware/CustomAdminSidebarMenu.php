@@ -704,6 +704,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'getBusiness'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.work_cards_view_department_employees')) {
+                $menu->url(
+
+                    route('work_cards_department_employees'),
+                    __('essentials::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'work_cards_department_employees'],
+                );
+            }
 
 
             // if ($is_admin || auth()->user()->can('essentials.movement_management')) {
@@ -856,6 +864,14 @@ class CustomAdminSidebarMenu
                         route('import-employees-familiy'),
                         __('essentials::lang.import_employees_families'),
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import_employees_families'],
+                    );
+                }
+                if ($is_admin  || auth()->user()->can('essentials.employee_affairs_view_department_employees')) {
+                    $menu->url(
+    
+                        route('employee_affairs_department_employees'),
+                        __('essentials::lang.department_employees'),
+                        ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'employee_affairs_department_employees'],
                     );
                 }
             }
@@ -1064,6 +1080,14 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'departments'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.hr_view_department_employees')) {
+                $menu->url(
+
+                    route('hr_department_employees'),
+                    __('essentials::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'essentials' && request()->segment(2) == 'hr_department_employees'],
+                );
+            }
 
             // if ($is_admin || auth()->user()->can('essentials.essentials')) {
             //     $menu->url(
@@ -1203,6 +1227,14 @@ class CustomAdminSidebarMenu
 
                 );
             }
+            if ($is_admin  || auth()->user()->can('followup.followup_view_department_employees')) {
+                $menu->url(
+
+                    route('followup_department_employees'),
+                    __('followup::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'followup' && request()->segment(2) == 'followup_department_employees'],
+                );
+            }
         });
     }
 
@@ -1339,6 +1371,14 @@ class CustomAdminSidebarMenu
                     },
                     ['icon' => 'fa fas fa-plus-circle'],
 
+                );
+            }
+            if ($is_admin  || auth()->user()->can('sales.sales_view_department_employees')) {
+                $menu->url(
+
+                    route('sales_department_employees'),
+                    __('sales::lang.department_employees'),
+                    ['icon' => 'fa fas fa-users', 'active' => request()->segment(1) == 'sale' && request()->segment(2) == 'sales_department_employees'],
                 );
             }
         });

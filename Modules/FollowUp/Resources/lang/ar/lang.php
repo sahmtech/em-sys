@@ -330,6 +330,9 @@ return [
     'appointment' => 'التعيين',
     'add_user_project_access_permissions' => 'إضافة صلاحية وصول للمشاريع',
     'edit_project' => 'تعديل المشاريع',
+    'followup_view_department_employees'=>'عرض صفحة موظفي إدارة المتابعة',
+    'department_employees' => 'موظفي الإدارة',
+
    
     //  ''=>'',
 

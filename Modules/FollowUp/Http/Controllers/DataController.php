@@ -483,7 +483,11 @@ class DataController extends Controller
                         'label' => __('followup::lang.return_request'),
                         'default' => false,
                     ],
-                    
+                       [
+                        'value' => 'followup.followup_view_department_employees',
+                        'label' => __('followup::lang.followup_view_department_employees'),
+                        'default' => false,
+                    ],
         
                 ]
 
