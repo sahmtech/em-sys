@@ -64,7 +64,7 @@
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':') !!}
+                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
                                      {!! Form::select('insurance_class', $insurance_classes, null, [
                                         'class' => 'form-control',
                                         'style' => 'height:36px',
