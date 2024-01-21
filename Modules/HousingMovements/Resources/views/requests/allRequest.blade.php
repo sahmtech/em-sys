@@ -112,7 +112,7 @@
         {{-- @include('housingmovements::layouts.nav_requests') --}}
         @component('components.widget', ['class' => 'box-primary'])
             @if (auth()->user()->hasRole('Admin#1') ||
-                    auth()->user()->can('housingmovements.create_order'))
+                    auth()->user()->can('housingmovements.add_request'))
                 @slot('tool')
                     <div class="box-tools">
 
@@ -160,7 +160,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('worker_id', __('followup::lang.worker_name') . ':*') !!}
-                                {!! Form::select('worker_id[]', $workers, null, [
+                                {!! Form::select('worker_id[]', $users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
                                     'required',
@@ -172,26 +172,7 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
                                 {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
-                                        'WarningRequest' => __('followup::lang.WarningRequest'),
-                                    ],
+                                    'type',$requestTypes,
                                     null,
                                     [
                                         'class' => 'form-control',
@@ -621,16 +602,14 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '@if (auth()->user()->hasRole('Admin#1') ||
-                                            auth()->user()->can('housingmovements.return_the_request'))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    '@if (auth()->user()->hasRole('Admin#1') ||auth()->user()->can('housingmovements.return_the_request'))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
                                     row.process_id +
                                     '">@lang('followup::lang.return_the_request')</button>@endif';
                             }
 
 
                             buttonsHtml +=
-                                '@if (auth()->user()->hasRole('Admin#1') ||
-                                        auth()->user()->can('housingmovements.view_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
+                                '@if (auth()->user()->hasRole('Admin#1') ||auth()->user()->can('housingmovements.view_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
                                 row.id +
                                 '">@lang('followup::lang.view_request')</button>@endif';
 
@@ -722,7 +701,7 @@
 
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewHmRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {

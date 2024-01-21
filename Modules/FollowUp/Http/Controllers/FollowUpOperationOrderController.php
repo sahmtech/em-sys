@@ -19,8 +19,9 @@ use App\Utils\Util;
 use DB;
 use App\Transaction;
 use App\Contact;
-
+use App\User;
 use Illuminate\Support\Facades\DB as FacadesDB;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesOrdersOperation;
 use Modules\Sales\Entities\SalesProject;
@@ -42,6 +43,7 @@ class FollowUpOperationOrderController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_operation_orders = auth()->user()->can('followup.crud_operation_orders');
         if (!($is_admin || $can_followup_crud_operation_orders)) {
             return redirect()->route('home')->with('status', [
@@ -49,11 +51,6 @@ class FollowUpOperationOrderController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-
-        $contracts = DB::table('sales_orders_operations')
-            ->join('sales_contracts', 'sales_orders_operations.sale_contract_id', '=', 'sales_contracts.id')
-            ->select('sales_contracts.number_of_contract as contract_number')
-            ->get();
 
         $operations = DB::table('sales_orders_operations')
             ->leftjoin('contacts', 'sales_orders_operations.contact_id', '=', 'contacts.id')
@@ -67,6 +64,11 @@ class FollowUpOperationOrderController extends Controller
                 'sales_orders_operations.operation_order_type as operation_order_type',
                 'sales_orders_operations.Status as Status'
             );
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
+            $operations->whereIn('contacts.id',$contacts_ids);
+        }
 
 
 
@@ -79,22 +81,6 @@ class FollowUpOperationOrderController extends Controller
             $operations->where('sales_orders_operations.operation_order_type', request()->input('Status'));
         }
 
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $contactIds = SalesProject::whereIn('id', $userProjects)->pluck('contact_id')->unique()->toArray();
-
-            $operations = $operations->whereIn('sales_orders_operations.contact_id',   $contactIds);
-        }
 
 
         if (request()->ajax()) {

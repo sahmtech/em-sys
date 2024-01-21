@@ -12,6 +12,7 @@
                 </button>
             </div>
             <div class="modal-body">
+
                 <input type="hidden" id="qualificationIdInput" name="qualificationId">
 
                 <div class="row">
@@ -40,12 +41,21 @@
                         ) !!}
                     </div>
                     <div class="form-group col-md-6">
-                        {!! Form::label('major', __('essentials::lang.major') . ':*') !!}
-                        {!! Form::select('major', $spacializations, null, [
+                        {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                        {!! Form::select('general_specialization', $spacializations, null, [
                             'class' => 'form-control',
-                            'style' => 'height:40px',
-                            'placeholder' => __('essentials::lang.major'),
-                            'required',
+                            'style' => 'height:36px',   'id' => 'professionSelect',
+                            'placeholder' => __('essentials::lang.select_specialization'),
+                        ]) !!}
+                    </div>
+        
+               
+                <div class="form-group col-md-6">
+                        {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                        {!! Form::select('sub_specialization', [], null, [
+                            'class' => 'form-control',
+                            'style' => 'height:36px','id' => 'specializationSelect',
+                          
                         ]) !!}
                     </div>
                     <div class="form-group col-md-6">
@@ -75,10 +85,7 @@
                             'required',
                         ]) !!}
                     </div>
-                    {{-- <div class="form-group col-md-6">
-                                {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-                                {!! Form::number('degree', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.degree'), 'required', 'step' => 'any']) !!}
-                            </div> --}}
+
 
                     <div class=" col-md-6">
                         <div class="form-group">

@@ -91,6 +91,37 @@ include_once 'install_r.php';
 // });
 
 // Route::get(
+//     '/insurance_xlsx',
+//     function () {
+//         $reader = new Xlsx();
+//         $filePath = public_path('employee_insurance_csv.xlsx');
+//         $spreadsheet = $reader->load($filePath);
+//         $worksheet = $spreadsheet->getActiveSheet();
+
+//         $valuesA = [];
+//         $valuesB = [];
+
+//         foreach ($worksheet->getRowIterator() as $row) {
+//             $cellIterator = $row->getCellIterator();
+//             $cellIterator->setIterateOnlyExistingCells(true);
+
+//             $cells = [];
+//             foreach ($cellIterator as $cell) {
+//                 $cells[] = $cell->getValue();
+//             }
+
+//             $valueA = $cells[0];
+//             $comp = User::where('id_proof_number',$valueA)?->first()?->company_id ?? '';
+//             $worksheet->getCell('D' . $row->getRowIndex())->setValue($comp);
+//         }
+
+//         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+//         $writer->save(public_path('result.xlsx'));
+//     }
+
+// );
+
+// Route::get(
 //     '/xlsx',
 //     function () {
 

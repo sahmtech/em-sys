@@ -13,6 +13,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Utils\ModuleUtil;
 use Illuminate\Http\Response;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\salesContractItem;
 use Modules\Sales\Entities\SalesProject;
 
@@ -31,6 +32,7 @@ class ContactLocationController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_contact_locations = auth()->user()->can('followup.crud_contact_locations');
         if (!($is_admin || $can_followup_crud_contact_locations)) {
             return redirect()->route('home')->with('status', [
@@ -42,6 +44,12 @@ class ContactLocationController extends Controller
 
 
         $contact_locations = ContactLocation::with(['project']);
+        $contacts = SalesProject::pluck('name', 'id');
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $contact_locations =     $contact_locations->whereIn('sales_project_id', $followupUserAccessProject);
+            $contacts = SalesProject::whereIn('id', $followupUserAccessProject)->pluck('name', 'id');
+        }
         $cities = EssentialsCity::forDropdown();
         if (request()->ajax()) {
 
@@ -128,7 +136,7 @@ class ContactLocationController extends Controller
  full_name"))->get();
         $name_in_charge_choices = $all_users->pluck('full_name', 'id');
         $cities = EssentialsCity::forDropdown();
-        $contacts = SalesProject::pluck('name', 'id');
+
         return view('sales::contact_locations.index')->with(compact('cities', 'contacts', 'name_in_charge_choices', 'cities'));
     }
 

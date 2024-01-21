@@ -27,13 +27,15 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/store_source/update', [\Modules\Sales\Http\Controllers\SaleSourcesController::class, 'update'])->name('source.update');
 
 
+        Route::get('/sales_department_employees', [\Modules\Sales\Http\Controllers\SalesController::class, 'sales_department_employees'])->name('sales_department_employees');
+
         //requests 
         Route::get('/sales.requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'index'])->name('sales.requests');
         Route::post('/sales.returnReq', [\Modules\Sales\Http\Controllers\RequestController::class, 'returnReq'])->name('sales.returnReq');
         Route::get('/escalate_requests', [\Modules\Sales\Http\Controllers\RequestController::class, 'escalateRequests'])->name('sales.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\Sales\Http\Controllers\RequestController::class, 'changeEscalateRequestsStatus'])->name('sales.changeEscalateRequestsStatus');
         Route::post('/storeRequest', [\Modules\Sales\Http\Controllers\RequestController::class, 'store'])->name('storeSaleRequest');
-
+        Route::get('/viewSaleRequest/{requestId}', [\Modules\Sales\Http\Controllers\RequestController::class, 'viewRequest'])->name('viewSaleRequest');
 
         Route::get('/offer-price', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'index'])->name('price_offer');
         Route::get('/createOfferPrice', [\Modules\Sales\Http\Controllers\OfferPriceController::class, 'create'])->name('createOfferPrice');

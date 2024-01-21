@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', __('followup::lang.allRequests'))
+@section('title', __('essentials::lang.allRequests'))
 
 @section('content')
 
 
     <section class="content-header">
         <h1>
-            <span>@lang('followup::lang.allRequests')</span>
+            <span>@lang('essentials::lang.allRequests')</span>
         </h1>
     </section>
 
@@ -111,28 +111,30 @@
         {{-- @include('essentials::layouts.nav_requests') --}}
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_add_requests'))   
             @slot('tool')
                 <div class="box-tools">
 
                     <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
                         data-target="#addRequestModal">
-                        <i class="fa fa-plus"></i> @lang('followup::lang.create_order')
+                        <i class="fa fa-plus"></i> @lang('essentials::lang.create_order')
                     </button>
                 </div>
             @endslot
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
-                            <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama_number')</th>
-                            <th>@lang('followup::lang.request_type')</th>
-                            <th>@lang('followup::lang.request_date')</th>
-                            <th>@lang('followup::lang.status')</th>
-                            <th>@lang('followup::lang.note')</th>
-                            <th>@lang('followup::lang.action')</th>
+                            <th>@lang('essentials::lang.request_number')</th>
+                            <th>@lang('essentials::lang.name')</th>
+                            <th>@lang('essentials::lang.eqama_number')</th>
+                            <th>@lang('essentials::lang.request_type')</th>
+                            <th>@lang('essentials::lang.request_date')</th>
+                            <th>@lang('essentials::lang.status')</th>
+                            <th>@lang('essentials::lang.note')</th>
+                            <th>@lang('essentials::lang.action')</th>
 
 
                         </tr>
@@ -150,14 +152,14 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">@lang('followup::lang.create_order')</h4>
+                        <h4 class="modal-title">@lang('essentials::lang.create_order')</h4>
                     </div>
 
                     <div class="modal-body">
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('worker_id', __('essentials::lang.employee_name') . ':*') !!}
-                                {!! Form::select('worker_id[]', $workers, null, [
+                                {!! Form::select('worker_id[]', $users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
                                     'required',
@@ -168,43 +170,20 @@
 
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
-                                {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
-                                        'WarningRequest' => __('followup::lang.WarningRequest'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
+                                {!! Form::select('type', $requestTypes, null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('essentials::lang.select_type'),
+                                    'id' => 'requestType',
+                                ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="leaveType" style="display: none;">
-                                {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
+                                {!! Form::label('leaveType', __('essentials::lang.leaveType') . ':*') !!}
                                 {!! Form::select('leaveType', $leaveTypes, null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_leaveType'),
+                                    'placeholder' => __('essentials::lang.select_leaveType'),
                                     'id' => 'leaveType',
                                 ]) !!}
                             </div>
@@ -230,30 +209,30 @@
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="escape_time" style="display: none;">
-                                {!! Form::label('escape_time', __('followup::lang.escape_time') . ':*') !!}
+                                {!! Form::label('escape_time', __('essentials::lang.escape_time') . ':*') !!}
                                 {!! Form::time('escape_time', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.escape_time'),
+                                    'placeholder' => __('essentials::lang.escape_time'),
                                     'id' => 'escapeTimeField',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="exit_date" style="display: none;">
-                                {!! Form::label('exit_date', __('followup::lang.exit_date') . ':*') !!}
+                                {!! Form::label('exit_date', __('essentials::lang.exit_date') . ':*') !!}
                                 {!! Form::date('exit_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.exit_date'),
+                                    'placeholder' => __('essentials::lang.exit_date'),
                                     'id' => 'exit_dateField',
                                 ]) !!}
                             </div>
 
                             <div class="form-group col-md-6" id="return_date" style="display: none;">
-                                {!! Form::label('return_date', __('followup::lang.return_date') . ':*') !!}
+                                {!! Form::label('return_date', __('essentials::lang.return_date') . ':*') !!}
                                 {!! Form::date('return_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.return_date'),
+                                    'placeholder' => __('essentials::lang.return_date'),
                                     'id' => 'return_dateField',
                                 ]) !!}
                             </div>
@@ -267,21 +246,21 @@
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="workInjuriesDate" style="display: none;">
-                                {!! Form::label('workInjuriesDate', __('followup::lang.workInjuriesDate') . ':*') !!}
+                                {!! Form::label('workInjuriesDate', __('essentials::lang.workInjuriesDate') . ':*') !!}
                                 {!! Form::date('workInjuriesDate', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.workInjuriesDate'),
+                                    'placeholder' => __('essentials::lang.workInjuriesDate'),
                                     'id' => 'workInjuriesDateField',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="resEditType" style="display: none;">
-                                {!! Form::label('resEditType', __('followup::lang.request_type') . ':*') !!}
+                                {!! Form::label('resEditType', __('essentials::lang.request_type') . ':*') !!}
                                 {!! Form::select(
                                     'resEditType',
                                     [
-                                        'name' => __('followup::lang.name'),
-                                        'religion' => __('followup::lang.religion'),
+                                        'name' => __('essentials::lang.name'),
+                                        'religion' => __('essentials::lang.religion'),
                                     ],
                                     null,
                                     [
@@ -293,13 +272,13 @@
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6" id="atmType" style="display: none;">
-                                {!! Form::label('atmType', __('followup::lang.request_type') . ':*') !!}
+                                {!! Form::label('atmType', __('essentials::lang.request_type') . ':*') !!}
                                 {!! Form::select(
                                     'atmType',
                                     [
-                                        'release' => __('followup::lang.release'),
-                                        're_issuing' => __('followup::lang.re_issuing'),
-                                        'update' => __('followup::lang.update_info'),
+                                        'release' => __('essentials::lang.release'),
+                                        're_issuing' => __('essentials::lang.re_issuing'),
+                                        'update' => __('essentials::lang.update_info'),
                                     ],
                                     null,
                                     [
@@ -311,12 +290,12 @@
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6" id="baladyType" style="display: none;">
-                                {!! Form::label('baladyType', __('followup::lang.request_type') . ':*') !!}
+                                {!! Form::label('baladyType', __('essentials::lang.request_type') . ':*') !!}
                                 {!! Form::select(
                                     'baladyType',
                                     [
-                                        'renew' => __('followup::lang.renew'),
-                                        'issuance' => __('followup::lang.issuance'),
+                                        'renew' => __('essentials::lang.renew'),
+                                        'issuance' => __('essentials::lang.issuance'),
                                     ],
                                     null,
                                     [
@@ -328,86 +307,86 @@
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6" id="ins_class" style="display: none;">
-                                {!! Form::label('ins_class', __('followup::lang.insurance_class') . ':*') !!}
+                                {!! Form::label('ins_class', __('essentials::lang.insurance_class') . ':*') !!}
                                 {!! Form::select('ins_class', $classes, null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.select_class'),
+                                    'placeholder' => __('essentials::lang.select_class'),
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="main_reason" style="display: none;">
-                                {!! Form::label('main_reason', __('followup::lang.main_reason') . ':*') !!}
+                                {!! Form::label('main_reason', __('essentials::lang.main_reason') . ':*') !!}
                                 {!! Form::select('main_reason', $main_reasons, null, [
                                     'class' => 'form-control',
                                     'style' => 'height: 40px',
-                                    'placeholder' => __('followup::lang.select_reason'),
+                                    'placeholder' => __('essentials::lang.select_reason'),
                                     'id' => 'mainReasonSelect',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="sub_reason_container" style="display: none;">
-                                {!! Form::label('sub_reason', __('followup::lang.sub_reason') . ':*') !!}
+                                {!! Form::label('sub_reason', __('essentials::lang.sub_reason') . ':*') !!}
                                 {!! Form::select('sub_reason', [], null, [
                                     'class' => 'form-control',
                                     'style' => 'height: 40px',
-                                    'placeholder' => __('followup::lang.select_sub_reason'),
+                                    'placeholder' => __('essentials::lang.select_sub_reason'),
                                     'id' => 'subReasonSelect',
                                 ]) !!}
                             </div>
 
                             <div class="form-group col-md-6" id="amount" style="display: none;">
-                                {!! Form::label('amount', __('followup::lang.advSalaryAmount') . ':*') !!}
+                                {!! Form::label('amount', __('essentials::lang.advSalaryAmount') . ':*') !!}
                                 {!! Form::number('amount', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.advSalaryAmount'),
+                                    'placeholder' => __('essentials::lang.advSalaryAmount'),
                                     'id' => 'advSalaryAmountField',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="visa_number" style="display: none;">
-                                {!! Form::label('visa_number', __('followup::lang.visa_number') . ':*') !!}
+                                {!! Form::label('visa_number', __('essentials::lang.visa_number') . ':*') !!}
                                 {!! Form::number('visa_number', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.visa_number'),
+                                    'placeholder' => __('essentials::lang.visa_number'),
                                     'id' => 'visa_numberField',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="installmentsNumber" style="display: none;">
-                                {!! Form::label('installmentsNumber', __('followup::lang.installmentsNumber') . ':*') !!}
+                                {!! Form::label('installmentsNumber', __('essentials::lang.installmentsNumber') . ':*') !!}
                                 {!! Form::number('installmentsNumber', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.installmentsNumber'),
+                                    'placeholder' => __('essentials::lang.installmentsNumber'),
                                     'id' => 'installmentsNumberField',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="monthlyInstallment" style="display: none;">
-                                {!! Form::label('monthlyInstallment', __('followup::lang.monthlyInstallment') . ':*') !!}
+                                {!! Form::label('monthlyInstallment', __('essentials::lang.monthlyInstallment') . ':*') !!}
                                 {!! Form::number('monthlyInstallment', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('followup::lang.monthlyInstallment'),
+                                    'placeholder' => __('essentials::lang.monthlyInstallment'),
                                     'id' => 'monthlyInstallmentField',
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('note', __('followup::lang.note') . ':') !!}
+                                {!! Form::label('note', __('essentials::lang.note') . ':') !!}
                                 {!! Form::textarea('note', null, [
                                     'class' => 'form-control',
-                                    'placeholder' => __('followup::lang.note'),
+                                    'placeholder' => __('essentials::lang.note'),
                                     'rows' => 3,
                                 ]) !!}
                             </div>
 
                             {{-- <div class="form-group col-md-6" id="reason" style="display: block;">
-                            {!! Form::label('reason', __('followup::lang.reason') . ':') !!}
-                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('followup::lang.reason'), 'rows' => 3]) !!}
+                            {!! Form::label('reason', __('essentials::lang.reason') . ':') !!}
+                            {!! Form::textarea('reason', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.reason'), 'rows' => 3]) !!}
                         </div> --}}
                             <div class="form-group col-md-6">
-                                {!! Form::label('attachment', __('followup::lang.attachment') . ':') !!}
+                                {!! Form::label('attachment', __('essentials::lang.attachment') . ':') !!}
                                 {!! Form::file('attachment', null, [
                                     'class' => 'form-control',
-                                    'placeholder' => __('followup::lang.attachment'),
+                                    'placeholder' => __('essentials::lang.attachment'),
                                 ]) !!}
                             </div>
                         </div>
@@ -430,7 +409,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title">@lang('followup::lang.view_request')</h4>
+                        <h4 class="modal-title">@lang('essentials::lang.view_request')</h4>
                     </div>
         
                     <div class="modal-body">
@@ -442,21 +421,21 @@
         
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>@lang('followup::lang.worker_details')</h4>
+                                <h4>@lang('essentials::lang.worker_details')</h4>
                                 <ul id="worker-list">
                                     <!-- Worker details content here -->
                                 </ul>
                             </div>
                             <div class="col-md-6">
 
-                                <h4>@lang('followup::lang.activites')</h4>
+                                <h4>@lang('essentials::lang.activites')</h4>
                                 <ul id="activities-list">
                                     <!-- Activities will be dynamically added here -->
                                 </ul>
                             </div>
                             <div class="col-md-6">
 
-                                <h4>@lang('followup::lang.attachments')</h4>
+                                <h4>@lang('essentials::lang.attachments')</h4>
                                 <ul id="attachments-list">
                                     
                                 </ul>
@@ -469,7 +448,7 @@
                         
                             <div class="form-group">
                                 <label for="attachment">
-                                    <h4>@lang('followup::lang.attachment')</h4>
+                                    <h4>@lang('essentials::lang.attachment')</h4>
                                 </label>
                                 <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
                             </div>
@@ -492,7 +471,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
+                        <h5 class="modal-title" id="returnModalLabel">@lang('essentials::lang.return_the_request')</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -500,14 +479,14 @@
                     <div class="modal-body">
                         <form id="returnModalForm">
                             <div class="form-group">
-                                <label for="reasonInput">@lang('followup::lang.reason')</label>
+                                <label for="reasonInput">@lang('essentials::lang.reason')</label>
                                 <input type="text" class="form-control" id="reasonInput" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
+                            <button type="submit" class="btn btn-primary">@lang('essentials::lang.update')</button>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('essentials::lang.close')</button>
                     </div>
                 </div>
             </div>
@@ -562,40 +541,40 @@
                         data: 'type',
                         render: function(data, type, row) {
                             if (data === 'exitRequest') {
-                                return '@lang('followup::lang.exitRequest')';
+                                return '@lang('essentials::lang.exitRequest')';
 
                             } else if (data === 'returnRequest') {
-                                return '@lang('followup::lang.returnRequest')';
+                                return '@lang('essentials::lang.returnRequest')';
                             } else if (data === 'escapeRequest') {
-                                return '@lang('followup::lang.escapeRequest')';
+                                return '@lang('essentials::lang.escapeRequest')';
                             } else if (data === 'advanceSalary') {
-                                return '@lang('followup::lang.advanceSalary')';
+                                return '@lang('essentials::lang.advanceSalary')';
                             } else if (data === 'leavesAndDepartures') {
-                                return '@lang('followup::lang.leavesAndDepartures')';
+                                return '@lang('essentials::lang.leavesAndDepartures')';
                             } else if (data === 'atmCard') {
-                                return '@lang('followup::lang.atmCard')';
+                                return '@lang('essentials::lang.atmCard')';
                             } else if (data === 'residenceRenewal') {
-                                return '@lang('followup::lang.residenceRenewal')';
+                                return '@lang('essentials::lang.residenceRenewal')';
                             } else if (data === 'workerTransfer') {
-                                return '@lang('followup::lang.workerTransfer')';
+                                return '@lang('essentials::lang.workerTransfer')';
                             } else if (data === 'residenceCard') {
-                                return '@lang('followup::lang.residenceCard')';
+                                return '@lang('essentials::lang.residenceCard')';
                             } else if (data === 'workInjuriesRequest') {
-                                return '@lang('followup::lang.workInjuriesRequest')';
+                                return '@lang('essentials::lang.workInjuriesRequest')';
                             } else if (data === 'residenceEditRequest') {
-                                return '@lang('followup::lang.residenceEditRequest')';
+                                return '@lang('essentials::lang.residenceEditRequest')';
                             } else if (data === 'baladyCardRequest') {
-                                return '@lang('followup::lang.baladyCardRequest')';
+                                return '@lang('essentials::lang.baladyCardRequest')';
                             } else if (data === 'mofaRequest') {
-                                return '@lang('followup::lang.mofaRequest')';
+                                return '@lang('essentials::lang.mofaRequest')';
                             } else if (data === 'insuranceUpgradeRequest') {
-                                return '@lang('followup::lang.insuranceUpgradeRequest')';
+                                return '@lang('essentials::lang.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
-                                return '@lang('followup::lang.chamberRequest')';
+                                return '@lang('essentials::lang.chamberRequest')';
                             } else if (data === 'WarningRequest') {
-                                return '@lang('followup::lang.WarningRequest')';
+                                return '@lang('essentials::lang.WarningRequest')';
                             }  else if (data === 'cancleContractRequest') {
-                                return '@lang('followup::lang.cancleContractRequest')';
+                                return '@lang('essentials::lang.cancleContractRequest')';
                             } 
                             else {
                                 return data;
@@ -622,13 +601,13 @@
                             if (data == 1) {
                                 buttonsHtml +=
                                     '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_workcards_request"))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('followup::lang.return_the_request')</button>@endif';
+                                    row.process_id + '">@lang('essentials::lang.return_the_request')</button>@endif';
                             }
 
 
                             buttonsHtml +=
                                 '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.show_workcards_request"))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('followup::lang.view_request')</button>@endif';
+                                row.id + '">@lang('essentials::lang.view_request')</button>@endif';
 
                             return buttonsHtml;
                         }
@@ -717,7 +696,7 @@
             
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewWorkCardsRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
                         success: function(response) {
@@ -754,65 +733,65 @@
 
                             //  worker info
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.worker_name') }}' + ': ' + response
+                                '{{ __('essentials::lang.worker_name') }}' + ': ' + response
                                 .user_info.worker_full_name + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.nationality') }}' + ': ' + response
+                                '{{ __('essentials::lang.nationality') }}' + ': ' + response
                                 .user_info.nationality + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.project_name') }}' + ': ' + response
+                                '{{ __('essentials::lang.project_name') }}' + ': ' + response
                                 .user_info.assigned_to + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.eqama_number') }}' + ': ' + response
+                                '{{ __('essentials::lang.eqama_number') }}' + ': ' + response
                                 .user_info.id_proof_number + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.contract_end_date') }}' + ': ' +
+                                '{{ __('essentials::lang.contract_end_date') }}' + ': ' +
                                 response.user_info.contract_end_date + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.eqama_end_date') }}' + ': ' +
+                                '{{ __('essentials::lang.eqama_end_date') }}' + ': ' +
                                 response.user_info.eqama_end_date + '</p>');
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.passport_number') }}' + ': ' +
+                                '{{ __('essentials::lang.passport_number') }}' + ': ' +
                                 response.user_info.passport_number + '</p>');
 
 
 
                             //activities
 
-                            // activitiesList.append('<p class="worker-info">' + '{{ __('followup::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
+                            // activitiesList.append('<p class="worker-info">' + '{{ __('essentials::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
 
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
 
                                 activity += '<p>' +
-                                    '{{ __('followup::lang.department_name') }}' + ': ' +
+                                    '{{ __('essentials::lang.department_name') }}' + ': ' +
                                     response.followup_processes[j].department.name;
 
-                                activity += '<p class="{{ __('followup::lang.status') }} ' +
+                                activity += '<p class="{{ __('essentials::lang.status') }} ' +
                                     response.followup_processes[j].status.toLowerCase() + '">' +
-                                    '<strong>{{ __('followup::lang.status') }}:</strong> ' +
+                                    '<strong>{{ __('essentials::lang.status') }}:</strong> ' +
                                     response.followup_processes[j].status + '</p>';
 
 
-                                activity += '<p>' + '{{ __('followup::lang.reason') }}' + ': ';
+                                activity += '<p>' + '{{ __('essentials::lang.reason') }}' + ': ';
                                 if (response.followup_processes[j].reason) {
                                     activity += '<strong>' + response.followup_processes[j]
                                         .reason + '</strong>';
                                 } else {
-                                    activity += '{{ __('followup::lang.not_exist') }}';
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
                                 }
-                                activity += '<p>' + '{{ __('followup::lang.note') }}' + ': ';
+                                activity += '<p>' + '{{ __('essentials::lang.note') }}' + ': ';
                                 if (response.followup_processes[j].status_note) {
                                     activity += '<strong>' + response.followup_processes[j]
                                         .status_note + '</strong>';
                                 } else {
-                                    activity += '{{ __('followup::lang.not_exist') }}';
+                                    activity += '{{ __('essentials::lang.not_exist') }}';
                                 }
                                 activity += '</p>';
                                 activity += '<p style="color: green;">' +
-                                    '{{ __('followup::lang.updated_by') }}' + ': ' + (
+                                    '{{ __('essentials::lang.updated_by') }}' + ': ' + (
                                         response.followup_processes[j].updated_by ||
-                                        '{{ __('followup::lang.not_exist') }}') + '</p>';
+                                        '{{ __('essentials::lang.not_exist') }}') + '</p>';
                                 activity += '</li>';
 
                                 activitiesList.append(activity);
@@ -823,7 +802,7 @@
                                     attachment += '<p>';
                                    
                            
-                                 attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
+                                 attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("essentials::lang.attach") }} ' + (j + 1) + '</a>';
                                
                                  attachment += '</p>';
                                 attachment += '</li>';

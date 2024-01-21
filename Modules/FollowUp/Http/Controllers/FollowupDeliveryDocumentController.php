@@ -11,6 +11,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
 use Modules\FollowUp\Entities\FollowupDocument;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Yajra\DataTables\Facades\DataTables;
 
 class FollowupDeliveryDocumentController extends Controller
@@ -29,7 +30,8 @@ class FollowupDeliveryDocumentController extends Controller
     public function index(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_followup_crud_document_delivery= auth()->user()->can('followup.crud_document_delivery');
+
+        $can_followup_crud_document_delivery = auth()->user()->can('followup.crud_document_delivery');
         if (!($is_admin || $can_followup_crud_document_delivery)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
@@ -45,6 +47,15 @@ class FollowupDeliveryDocumentController extends Controller
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $delivery_documents = FollowupDeliveryDocument::whereIn('user_id', $userIds)->get();
+
+
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+
+        $workers = User::where('user_type', 'worker')->get();
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
+        }
         if (request()->ajax()) {
 
             if (!empty(request()->input('worker_id')) && request()->input('worker_id') !== 'all') {
@@ -58,8 +69,6 @@ class FollowupDeliveryDocumentController extends Controller
 
                 $delivery_documents = $delivery_documents->where('document_id', request()->input('document_id'));
             }
-
-            $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
 
             return DataTables::of($delivery_documents)
@@ -112,7 +121,7 @@ class FollowupDeliveryDocumentController extends Controller
                 ->rawColumns(['action', 'worker', 'doc_name'])
                 ->make(true);
         }
-        $workers = User::where('user_type', 'worker')->get();
+
         $documents = FollowupDocument::all();
         return view('followup::deliveryDocument.index', compact('workers', 'documents'));
     }
@@ -125,6 +134,12 @@ class FollowupDeliveryDocumentController extends Controller
     {
         $workers = User::where('user_type', 'worker')->get();
         $documents = FollowupDocument::all();
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $workers = User::where('user_type', 'worker')->whereIn('assigned_to', $followupUserAccessProject)->get();
+        }
         return view('followup::deliveryDocument.creat', compact('workers', 'documents'));
     }
 

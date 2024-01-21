@@ -25,6 +25,7 @@ use Modules\InternationalRelations\Entities\IrProposedLabor;
 use Modules\Sales\Entities\SalesProject;
 use Spatie\Permission\Traits\HasRoles;
 use Modules\Essentials\Entities\EssentialsEmployeesQualification;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\HelpDesk\Entities\HdTicket;
 use Modules\HelpDesk\Entities\HdTicketReply;
 use Modules\HousingMovements\Entities\HousingMovementsWorkerBooking;
@@ -516,5 +517,9 @@ class User extends Authenticatable
     public function ticketReplies()
     {
         return $this->hasMany(HdTicketReply::class, 'user_id');
+    }
+    public function followupUserAccessProjects()
+    {
+        return $this->hasMany(FollowupUserAccessProject::class, 'user_id');
     }
 }
