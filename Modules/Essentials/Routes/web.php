@@ -209,7 +209,8 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
    
     });
 
-    Route::prefix('medicalInsurance')->group(function () {
+    Route::prefix('medicalInsurance')->group(function ()
+     {
         Route::get('/employee_insurance', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'index'])->name('employee_insurance');
         Route::post('/employee_insurance.store', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'store'])->name('employee_insurance.store');
         Route::delete('/employee_insurance/{id}', [\Modules\Essentials\Http\Controllers\EssentialsEmployeeInsuranceController::class, 'destroy'])->name('employee_insurance.destroy');
@@ -251,6 +252,20 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/workers/{id}', [\Modules\Essentials\Http\Controllers\EssentialsWorkerController::class, 'show'])->name('insurance-showWorker');
       
   
+
+        Route::get('/get_companies_insurance_contracts',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'index'])
+         ->name('get_companies_insurance_contracts');
+
+         Route::get('/insurance_companies_contracts/edit/{id}/{comp_id}',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'edit'])
+         ->name('insurance_companies_contracts.edit');
+        
+         Route::post('/insurance_companies_contracts/update/{id}',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'update'])
+         ->name('insurance_companies_contracts.update');
+        
+         Route::delete('/insurance_companies_contracts/delete/{id}',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'destroy'])
+         ->name('insurance_companies_contracts.delete');
+
+         
     });
 
 

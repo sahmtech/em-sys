@@ -564,6 +564,15 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_companies'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.view_insurance_contracts')) {
+                $menu->url(
+                    route('get_companies_insurance_contracts'),
+                    __('essentials::lang.companies_insurance_contracts'),
+                    ['icon' => 'fa fas fa-hospital', 'active' => request()->segment(1) == 'medicalInsurance'
+                     && request()->segment(2) == 'insurance_contracts'],
+                );
+            }
+            
 
             if ($is_admin  || auth()->user()->can('essentials.crud_insurance_classes')) {
                 $menu->dropdown(

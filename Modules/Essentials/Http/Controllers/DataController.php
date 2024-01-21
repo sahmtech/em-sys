@@ -1019,10 +1019,15 @@ class DataController extends Controller
                         'label' => __('essentials::lang.medicalInsurance_dashboard'),
                         'default' => false,
                     ],
-
+                    
                     [
                         'value' => 'essentials.crud_employees_insurances',
                         'label' => __('essentials::lang.crud_employees_insurances'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.view_insurance_contracts',
+                        'label' => __('essentials::lang.view_insurance_contracts'),
                         'default' => false,
                     ],
                     [
@@ -1093,6 +1098,24 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_insurance_contracts'),
                         'default' => false,
                     ],
+                    //companies contracts
+                    [
+                        'value' => 'essentials.add_companies_insurance_contracts',
+                        'label' => __('essentials::lang.add_companies_insurance_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.edit_companies_insurance_contracts',
+                        'label' => __('essentials::lang.edit_companies_insurance_contracts'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.delete_companies_insurance_contracts',
+                        'label' => __('essentials::lang.delete_companies_insurance_contracts'),
+                        'default' => false,
+                    ],
+                    
+                    
 
                     [
                         'value' => 'essentials.crud_insurance_requests',
