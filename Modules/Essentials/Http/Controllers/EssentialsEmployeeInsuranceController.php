@@ -15,6 +15,7 @@ use Modules\Essentials\Entities\EssentialsEmployeesInsurance;
 use Modules\Essentials\Entities\EssentialsInsuranceClass;
 use Modules\Essentials\Entities\EssentialsInsuranceCompany;
 use Modules\Essentials\Entities\EssentialsEmployeesFamily;
+use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
 use Excel;
 
 
@@ -487,23 +488,7 @@ class EssentialsEmployeeInsuranceController extends Controller
                 $insurance_class_company=EssentialsInsuranceClass::where('id',$insurance_data['insurance_classes_id'])
                 ->select('insurance_company_id')->first();
                 $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
-                //  dd( $insurance_data);
-                // $company_id =User::find($input['employee'])->company_id;
-                // $insurance_company_id= Contact::where('type', 'insurance')
-                // ->where('company_id', $company_id)
-                // ->where('id', $insurance_class_company->insurance_company_id)
-                // ->first()->id;
-                // if($insurance_company_id)
-                //  {
-                //      $insurance_data['insurance_company_id']=$insurance_company_id;
-                //  }
-                // else
-                // {
-                //      $insurance_data['insurance_company_id']=null;
-                // }
-              
-    
-    
+               
                 EssentialsEmployeesInsurance::create($insurance_data);
                 $output = [
                     'success' => true,
@@ -542,9 +527,12 @@ class EssentialsEmployeeInsuranceController extends Controller
 
         $employee_id = $request->input('employee_id');
         $company_id = User::find($employee_id)->company_id;
-        $insurance_company = Contact::where('type', 'insurance')->where('company_id', $company_id)
-        ->first()->id;
-        $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company)->pluck('name', 'id');
+
+        $insurance_company_id = EssentialsCompaniesInsurancesContract::where('company_id', $company_id)
+        ->first()->insur_id;
+
+        $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company_id)
+        ->pluck('name', 'id');
 
         return response()->json($classes);
     }
@@ -622,19 +610,6 @@ class EssentialsEmployeeInsuranceController extends Controller
                 ->select('insurance_company_id')->first();
                 $insurance_data['insurance_company_id']=  $insurance_class_company->insurance_company_id;
            
-                // $company_id =User::find($input['employee'])->company_id;
-                // $insurance_company_id=Contact::where('type', 'insurance')
-                // ->where('company_id', $company_id)
-                // ->where('id', $insurance_class_company->insurance_company_id)
-                // ->first()->id;
-                // if($insurance_company_id)
-                //  {
-                //      $insurance_data['insurance_company_id']=$insurance_company_id;
-                //  }
-                // else
-                // {
-                //      $insurance_data['insurance_company_id']=null;
-                // }
                
               
                 EssentialsEmployeesInsurance::where('id', $id)->update($insurance_data);

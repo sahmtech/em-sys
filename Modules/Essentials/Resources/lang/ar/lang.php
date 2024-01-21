@@ -1481,12 +1481,13 @@ return [
   'view_worker'=>'عرض العامل',
   'salary_per_month'=>'الراتب الأساسي لكل شهر',
   'worker_with_same_id_proof_number_exists'=>'لايمكن اضافة العامل رقم الاقامة موجود سابقا',
-  'view_insurance_contracts'=>'عرض عقود التأمين',
+  'view_insurance_contracts'=>'عرض عقود شركات التأمين',
   'companies_insurance_contracts'=>'عقود شركات التأمين',
   'add_companies_insurance_contracts'=>'إضافة عقد شركة تأمين',
  
   'edit_companies_insurance_contracts'=>'تعديل  عقد شركة التأمين ',
   'delete_companies_insurance_contracts'=>' حذف  عقد شركة تأمين',
+  'does_not_add_insurance_company'=>'لا يمكن الحذف  لم تضيف شركة تأمين للمنشاة '
 
 
 

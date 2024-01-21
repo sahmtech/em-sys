@@ -256,7 +256,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::get('/get_companies_insurance_contracts',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'index'])
          ->name('get_companies_insurance_contracts');
 
-         Route::get('/insurance_companies_contracts/edit/{id}/{comp_id}',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'edit'])
+         Route::get('/insurance_companies_contracts/edit/{id}',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'edit'])
          ->name('insurance_companies_contracts.edit');
         
          Route::post('/insurance_companies_contracts/update/{id}',[\Modules\Essentials\Http\Controllers\EssentialCompaniesInsuranceContractsController::class, 'update'])
