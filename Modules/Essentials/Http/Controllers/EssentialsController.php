@@ -157,14 +157,14 @@ class EssentialsController extends Controller
 
         return view('essentials::hr_department_employees');
     }
-   public function work_cards_department_employees()
+    public function work_cards_department_employees()
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
+        $can_work_cards_view_department_employees = auth()->user()->can('essentials.work_cards_view_department_employees');
 
 
-        if (!($is_admin || $can_essentials_hr_view_department_employees)) {
+        if (!($is_admin || $can_work_cards_view_department_employees)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
@@ -230,14 +230,14 @@ class EssentialsController extends Controller
 
         return view('essentials::work_cards_department_employees');
     }
-  public function employee_affairs_department_employees()
+    public function employee_affairs_department_employees()
     {
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $can_essentials_hr_view_department_employees = auth()->user()->can('essentials.hr_view_department_employees');
+        $can_employee_affairs_view_department_employees = auth()->user()->can('essentials.employee_affairs_view_department_employees');
 
 
-        if (!($is_admin || $can_essentials_hr_view_department_employees)) {
+        if (!($is_admin || $can_employee_affairs_view_department_employees)) {
             return redirect()->route('home')->with('status', [
                 'success' => false,
                 'msg' => __('message.unauthorized'),
