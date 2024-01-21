@@ -95,7 +95,10 @@ class CustomAdminSidebarMenu
         // } 
         elseif (Str::startsWith($currentPath, 'generalmanagement')) {
             $this->generalmanagementMenu();
-        } elseif (Str::startsWith($currentPath, 'toDo')) {
+        }  elseif (Str::startsWith($currentPath, 'ceomanagment')) {
+            $this->ceoMenu();
+        } 
+        elseif (Str::startsWith($currentPath, 'toDo')) {
             $this->toDoMenu();
         } elseif (Str::startsWith($currentPath, ['helpdesk', 'tickets'])) {
             $this->helpdeskMenu();
@@ -270,7 +273,29 @@ class CustomAdminSidebarMenu
             }
         });
     }
+    public function ceoMenu()
+    {
+        Menu::create('admin-sidebar-menu', function ($menu) {
 
+            $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
+
+            $menu->url(
+                action([\Modules\CEOManagment\Http\Controllers\DashboardController::class, 'index']),
+                '<i class="fas fa-users-cog"></i> ' . __('ceomanagment::lang.CEO_Managment'),
+                [
+                    'active' => request()->segment(1) == 'ceomanagment',
+                  
+                ],
+            );
+            if (auth()->user()->can('ceomanagment.view_requests')) {
+                $menu->url(
+                    action([\Modules\CEOManagment\Http\Controllers\RequestController::class, 'index']),
+                    __('ceomanagment::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => (request()->segment(2) == 'requests' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
+        });
+    }
     public function agnetMenu()
     {
         Menu::create('admin-sidebar-menu', function ($menu) {
