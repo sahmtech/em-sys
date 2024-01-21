@@ -228,6 +228,7 @@ class EssentialsWorkersAffairsController extends Controller
         return ' ';
     }
 
+    
     /**
      * Show the form for creating a new resource.
      * @return Renderable
