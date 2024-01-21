@@ -58,6 +58,8 @@ class EssentialsEmployeeQualificationController extends Controller
                 'essentials_employees_qualifications.graduation_institution',
                 'essentials_employees_qualifications.graduation_country',
                 'essentials_employees_qualifications.degree',
+                'essentials_employees_qualifications.great_degree',
+                'essentials_employees_qualifications.marksName',  
 
             ]);
 

@@ -67,15 +67,17 @@
                         <table class="table table-bordered table-striped" id="qualifications_table">
                             <thead>
                                 <tr>
-                                    <th>@lang('essentials::lang.employee')</th>
-                                    <th>@lang('essentials::lang.qualification_type')</th>
-                                    <th>@lang('essentials::lang.major')</th>
-                                    <th>@lang('essentials::lang.graduation_year')</th>
-                                    <th>@lang('essentials::lang.graduation_institution')</th>
-                                    <th>@lang('essentials::lang.graduation_country')</th>
-                                    <th>@lang('essentials::lang.degree')</th>
+                                    <th class='table-td-width-60px'>@lang('essentials::lang.employee')</th>
+                                    <th class='table-td-width-100px'>@lang('essentials::lang.qualification_type')</th>
+                                    <th class='table-td-width-60px'>@lang('essentials::lang.major')</th>
+                                    <th class='table-td-width-60px'>@lang('essentials::lang.graduation_year')</th>
+                                    <th class='table-td-width-80px'>@lang('essentials::lang.graduation_institution')</th>
+                                    <th class='table-td-width-60px'>@lang('essentials::lang.graduation_country')</th>
+                                    <th class='table-td-width-40px'>@lang('essentials::lang.degree')</th>
+                                    <th class='table-td-width-100px'>@lang('essentials::lang.great_degree')</th>
+                                    <th class='table-td-width-60px'>@lang('essentials::lang.marksName')</th>
 
-                                    <th>@lang('messages.action')</th>
+                                    <th class='table-td-width-100px'>@lang('messages.action')</th>
                                 </tr>
                             </thead>
                         </table>
@@ -307,6 +309,12 @@
                         data: 'degree'
                     },
                     {
+                        data: 'great_degree'
+                    },
+                    {
+                        data: 'marksName'
+                    },
+                    {
                         data: 'action'
                     },
                 ],
@@ -383,7 +391,7 @@
                         $('#editQualificationModal input[name="_great_degree"]').val(data
                             .great_degree);
                         $('#editQualificationModal input[name="_marksName"]').val(data
-                        .marksName);
+                            .marksName);
 
                         $('#editQualificationModal').modal('show');
                     },
