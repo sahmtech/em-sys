@@ -60,16 +60,12 @@
                                     </div>
                     
                                     <div class="form-group  col-md-6">
-                                        {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+                                        {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                         {!! Form::select('profession',$professions,null, ['class' => 'form-control profession-select', 'required',
-                                           'placeholder' => __('sales::lang.profession')]); !!}
+                                           'placeholder' => __('essentials::lang.job_title')]); !!}
                                            
-                                      </div>
-                                    <div class="form-group col-md-6">
-                                        {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                                        {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control specialization-select', 'required',
-                                            'placeholder' => __('sales::lang.specialization')]); !!}
                                     </div>
+                                    
                                     <div class="form-group col-md-6">
                                         {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
                                         {!! Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.start_date'), 'required']) !!}
@@ -108,16 +104,12 @@
                                
                                 
                                     <div class="form-group  col-md-6">
-                                        {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+                                        {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                         {!! Form::select('profession',$professions,null, ['class' => 'form-control profession-select', 'required',
-                                           'placeholder' => __('sales::lang.profession')]); !!}
+                                           'placeholder' => __('essentials::lang.job_title')]); !!}
                                            
                                       </div>
-                                    <div class="form-group col-md-6">
-                                        {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                                        {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control specialization-select', 'required',
-                                            'placeholder' => __('sales::lang.specialization')]); !!}
-                                    </div>
+                                    
                                     <div class="form-group col-md-6">
                                         {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
                                         {!! Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.start_date'), 'required']) !!}
@@ -224,16 +216,12 @@
                                     </div>
                                 
                                     <div class="form-group  col-md-6">
-                                        {!! Form::label('profession', __('sales::lang.profession') . ':*') !!}
+                                        {!! Form::label('profession', __('essentials::lang.job_title') . ':*') !!}
                                         {!! Form::select('profession',$professions,null, ['class' => 'form-control manager_profession-select', 'required',
-                                           'placeholder' => __('sales::lang.profession'),'id' => 'profession_id']); !!}
+                                           'placeholder' => __('essentials::lang.job_title'),'id' => 'profession_id']); !!}
                                            
                                       </div>
-                                    <div class="form-group col-md-6">
-                                        {!! Form::label('specialization', __('sales::lang.specialization') . ':*') !!}
-                                        {!! Form::select('specialization',$specializations ,null, ['class' => 'form-control manager_specialization-select', 'required',
-                                            'placeholder' => __('sales::lang.specialization'),'id' => 'specialization_id']); !!}
-                                    </div>
+                                  
                                     <div class="form-group col-md-6">
                                         {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
                                         {!! Form::date('start_date', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.start_date'), 'required','id'=>'start_from']) !!}
@@ -253,16 +241,12 @@
                                
                                 
                                     <div class="form-group  col-md-6">
-                                        {!! Form::label('profession2', __('sales::lang.profession') . ':*') !!}
+                                        {!! Form::label('profession2', __('essentials::lang.job_title') . ':*') !!}
                                         {!! Form::select('profession2',$professions,null, ['class' => 'form-control profession-select', 'required',
-                                           'placeholder' => __('sales::lang.profession'),'id' => 'delegate_profession_id']); !!}
+                                           'placeholder' => __('essentials::lang.job_title'),'id' => 'delegate_profession_id']); !!}
                                            
                                       </div>
-                                    <div class="form-group col-md-6">
-                                        {!! Form::label('specialization2', __('sales::lang.specialization') . ':*') !!}
-                                        {!! Form::select('specialization2',$specializations ,null, ['class' => 'form-control specialization-select', 'required',
-                                            'placeholder' => __('sales::lang.specialization'),'id' => 'delegate_specialization_id']); !!}
-                                    </div>
+                                 
                                     <div class="form-group col-md-6">
                                         {!! Form::label('start_date2', __('essentials::lang.start_date') . ':*') !!}
                                         {!! Form::date('start_date2', null, ['class' => 'form-control', 'placeholder' => __('essentials::lang.start_date'), 'required','id'=>'delegate_start_from']) !!}
@@ -575,7 +559,7 @@ $(document).ready(function () {
                         $('#is_not_active').prop('checked', true);
                     }
               
-                    $('#specialization_id').val(data.specialization_id);
+                    
                     $('#profession_id').val(data.profession_id);
                     $('#start_from').val(data.manager_start_from);
                     $('#manager_id').val(data.manager);

@@ -233,9 +233,9 @@ class EssentialsDepartmentsController extends Controller
 
         $departments = EssentialsDepartment::all()->pluck('name', 'id');
         $business_locations = BusinessLocation::all()->where('business_id', $business_id)->pluck('name', 'id');
-        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-        $professions = EssentialsProfession::all()->pluck('name', 'id');
-        return view('essentials::settings.partials.departments.index')->with(compact('parent_departments', 'users', 'departments', 'business_locations', 'specializations', 'professions'));
+
+        $professions = EssentialsProfession::where('type','job_title')->pluck('name', 'id');
+        return view('essentials::settings.partials.departments.index')->with(compact('parent_departments', 'users', 'departments', 'business_locations', 'professions'));
     }
 
     public function destroy($id)
@@ -342,10 +342,19 @@ class EssentialsDepartmentsController extends Controller
             $input2['department_id'] = $id;
             $input2['start_from'] = $input['start_date'];
             $input2['profession_id'] = $input['profession'];
-            $input2['specialization_id'] = $input['specialization'];
             $input2['type'] = 'appoint';
 
+            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id',$input2['employee'])
+            ->latest('created_at')->first();
+           
 
+            if( $previous_appointement )
+            {
+                $previous_appointement->is_active= 0;
+                $previous_appointement->end_at= $input2['start_date'];
+                $previous_appointement->save();
+              
+            }
             EssentialsEmployeeAppointmet::create($input2);
 
 
