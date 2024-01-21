@@ -55,14 +55,6 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            {{-- <th>@lang('followup::lang.name')</th>
-                            <th>@lang('followup::lang.eqama')</th>
-                            <th>@lang('followup::lang.project_name')</th>
-                            <th>@lang('followup::lang.essentials_salary')</th>
-
-                            <th>@lang('followup::lang.nationality')</th>
-                            <th>@lang('followup::lang.eqama_end_date')</th>
-                            <th>@lang('followup::lang.contract_end_date')</th> --}}
 
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
