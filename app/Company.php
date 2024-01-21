@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Modules\Essentials\Entities\EssentialsCompaniesInsurancesContract;
 class Company extends Model
 {
     use HasFactory;
@@ -30,6 +30,13 @@ class Company extends Model
         'common_settings' => 'array',
         'weighing_scale_setting' => 'array',
     ];
+
+    public function essentialsCompaniesInsurancesContract()
+    {
+        return $this->hasMany(EssentialsCompaniesInsurancesContract::class, 'company_id');
+    }
+
+
     public static function forDropdown($business_id = null)
     {
         $businesses = null;

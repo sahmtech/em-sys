@@ -206,6 +206,7 @@
 
                                 </div>
                             </div>
+                           
                             @include('user.show_details')
 
 

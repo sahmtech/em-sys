@@ -57,23 +57,24 @@
                                     {!! Form::label('employee', __('essentials::lang.employee') . ':*') !!}
                                     {!! Form::select('employee', $users, null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:40px',
+                                        'style' => 'height:36px',
                                         'placeholder' => __('essentials::lang.select_employee'),
                                         'required',
                                         'id' => 'employeeSelect',
                                     ]) !!}
                                 </div>
                                 <div class="form-group col-md-6">
-                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':') !!}
+                                    {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
                                      {!! Form::select('insurance_class', $insurance_classes, null, [
                                         'class' => 'form-control',
-                                        'style' => 'height:40px',
+                                        'style' => 'height:36px',
                                         'placeholder' => __('essentials::lang.insurance_class'),
                                         'required',
                                         'id' => 'classSelect',
                                     ]) !!}
                                   
                                 </div>
+                                <div id="error-message" class="text-danger"></div>
 
                                 {{--     <div class="form-group col-md-6">
                                     {!! Form::label('insurance_class', __('essentials::lang.insurance_class') . ':*') !!}
@@ -207,42 +208,40 @@
                             employee_id: selectedEmployee
                         },
                         success: function (data) {
-                            
-                            classSelect.empty();
+                        classSelect.empty();
+                        console.log(data);
 
-                            
+                        if ('message' in data) {
+                            // Handle error message
+                            // For example, display it under the select dropdown
+                            var errorMessage = data.message;
+                            $('#error-message').text(errorMessage).show();
+                        } else {
+                            // Populate options if no error
                             $.each(data, function (id, name) {
                                 classSelect.append($('<option>', {
                                     value: id,
                                     text: name
                                 }));
                             });
+                            
+
+                            // Hide any previous error messages
+                            $('#error-message').hide();
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle AJAX request error here
+                        console.error(xhr.responseText);
+                    }
                     });
 
             });
          
 
-        });
+           });
     </script>
 
-        <script>
-        
-            const eqamaNumberInput = document.getElementById('eqama_number');
-            const idProofNumberError = document.getElementById('idProofNumberError');
-        
-            eqamaNumberInput.addEventListener('input', function() {
-                const eqamaNumber = eqamaNumberInput.value;
-        
-                if (eqamaNumber.length !== 10) {
-                    idProofNumberError.innerText = 'Eqama number must be 10 digits.';
-                } else if (!/^21\d{8}$/.test(eqamaNumber)) {
-                    idProofNumberError.innerText = 'Eqama number must start with "21" and be followed by 8 digits.';
-                } else {
-                    idProofNumberError.innerText = '';
-                }
-            });
-        
-        </script>
+      
 
 @endsection

@@ -13,7 +13,7 @@
                         <div class="modal-body">
 
                             <div class="row">
-                            {!! Form::hidden('company_id', $comp_id, ['id' => 'modal_company_id']) !!}
+                            {!! Form::hidden('company_id', $company_insurance->company_id, ['id' => 'modal_company_id']) !!}
                     
                               <input class="hidden" name="modal_company_id" id="modal_company_id"/>
                             <div class="form-group col-md-6">
