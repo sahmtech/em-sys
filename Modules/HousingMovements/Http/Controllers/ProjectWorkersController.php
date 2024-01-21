@@ -648,16 +648,16 @@ class ProjectWorkersController extends Controller
             $profession = "";
         }
 
-        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-        if ($specializationId !== null) {
-            $specialization = EssentialsSpecialization::find($specializationId)->name;
-        } else {
-            $specialization = "";
-        }
+        // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+        // if ($specializationId !== null) {
+        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
+        // } else {
+        //     $specialization = "";
+        // }
 
 
         $user->profession = $profession;
-        $user->specialization = $specialization;
+        // $user->specialization = $specialization;
 
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);

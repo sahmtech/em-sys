@@ -29,41 +29,64 @@ class EssentialCompaniesInsuranceContractsController extends Controller
         ->pluck('supplier_business_name', 'id');
 
        
+        $insuranceCompaniesContracts=Company::where('business_id',$business_id)
+        ->with(['essentialsCompaniesInsurancesContract'])
+        ->select('companies.*');
+        
+        if (!empty(request()->input('insurance_company_filter')) && request()->input('insurance_company_filter') != 'all') {
+            $insuranceCompaniesContracts = $insuranceCompaniesContracts
+            ->whereHas('essentialsCompaniesInsurancesContract', function ($query) {
+                $query->where('insur_id', request()->input('insurance_company_filter'));
+            });
+        }
 
-        $insuranceCompaniesContracts = EssentialsCompaniesInsurancesContract::with(['company', 'insurance'])
-        ->select([
-             'id',
-            'company_id',
-            'insur_id',
-            'insurance_start_date',
-            'insurance_end_date',
-        ]);
-    
-       // Filter by insurance company
-if (!empty(request()->input('insurance_company_filter')) && request()->input('insurance_company_filter') != 'all') {
-    $insuranceCompaniesContracts = $insuranceCompaniesContracts->where('insur_id', request()->input('insurance_company_filter'));
-}
-
-// Filter by date range
-if (!empty(request()->start_date) && !empty(request()->end_date)) {
-    $start = request()->start_date;
-    $end = request()->end_date;
-    $insuranceCompaniesContracts->whereDate('insurance_end_date', '>=', $start)
-        ->whereDate('insurance_end_date', '<=', $end);
-}
+        // if (!empty(request()->start_date) && !empty(request()->end_date)) {
+        //     $start = request()->start_date;
+        //     $end = request()->end_date;
+        //     $insuranceCompaniesContracts->whereDate('insurance_end_date', '>=', $start)
+        //         ->whereDate('insurance_end_date', '<=', $end);
+        // }
 
         if (request()->ajax()) {
            
 
         return Datatables::of($insuranceCompaniesContracts)
-            ->editColumn('company_id', function ($row) use ($companies) {
-                $companyId = $row->company_id;
+            ->addColumn('company_id', function ($row) use ($companies) {
+                $companyId = $row->id;
                 $companyName = $companies[$companyId] ?? ''; 
                 return $companyName;
             })
 
-            ->editColumn('insur_id', function ($row) use ($insurance_companies) {
-                $item = $insurance_companies[$row->insur_id] ?? '';
+            ->addColumn('insur_id', function ($row) use ($insurance_companies) {
+                if ($row->essentialsCompaniesInsurancesContract->first() != null) {
+                    $item = $insurance_companies[$row->essentialsCompaniesInsurancesContract->first()->insur_id] ?? '';
+                } else {
+                    $item = '';
+                }
+            
+                return $item;
+            })
+
+            ->addColumn('insurance_start_date', function ($row) {
+                if($row->essentialsCompaniesInsurancesContract !=null)
+                {
+                $item = $row->essentialsCompaniesInsurancesContract?->first()->insurance_start_date ?? '';
+                }
+                else
+                {
+                    $item ='';
+                }
+                return $item;
+            })
+
+            ->addColumn('insurance_end_date', function ($row) {
+                if($row->essentialsCompaniesInsurancesContract !=null)
+                {
+                $item = $row->essentialsCompaniesInsurancesContract?->first()->insurance_end_date ?? '';
+                }
+                else{
+                    $item ='';
+                }
                 return $item;
             })
           
@@ -75,24 +98,37 @@ if (!empty(request()->start_date) && !empty(request()->end_date)) {
                         
                         if ($is_admin || $can_edit_insurance_companies_contracts) {
                             
-                            $editUrl = url('medicalInsurance/insurance_companies_contracts/edit/' . $row->id . '/' . $row->company_id);
-                
+                           // $editUrl = url('medicalInsurance/insurance_companies_contracts/edit/' . $row->first()->essentialsCompaniesInsurancesContract->first()->id . '/' . $row->id);
+                            
+                           $editUrl = url('medicalInsurance/insurance_companies_contracts/edit/'. $row->id);
+                           
                             $html .= '<a href="' . $editUrl . '"
                                         data-href="' . $editUrl . '"
                                         class="btn btn-xs btn-modal btn-info"  
                                         data-container="#editinsuranceCompaniesContracts"
-                                        data-company-id="' . $row->company_id . '">
+                                        >
                                         <i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '
                                     </a>&nbsp;';
                         }
                        if($is_admin  || $can_delete_insurance_companies_contracts){
-                         $html .= '<button class="btn btn-xs btn-danger delete_companies_insurance_contract_button" data-href="' . route('insurance_companies_contracts.delete', ['id' => $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                         $html .= '<button class="btn btn-xs btn-danger delete_companies_insurance_contract_button" data-href="' . route('insurance_companies_contracts.delete', ['id' =>  $row->id]) . '"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                     }
                       
                         return $html;
                     }
                 )
-              
+               
+
+                ->filterColumn('insurance_start_date', function ($query, $keyword) {
+                    $query->whereHas('essentialsCompaniesInsurancesContract', function ($q) use ($keyword) {
+                        $q->whereDate('insurance_start_date', 'like', '%' . $keyword . '%');
+                    });
+                })
+                ->filterColumn('insurance_end_date', function ($query, $keyword) {
+                    $query->whereHas('essentialsCompaniesInsurancesContract', function ($q) use ($keyword) {
+                        $q->whereDate('insurance_end_date', 'like', '%' . $keyword . '%');
+                    });
+                })
                
                 ->rawColumns([ 'action'])
                 ->make(true);
@@ -135,19 +171,29 @@ if (!empty(request()->start_date) && !empty(request()->end_date)) {
      * @param int $id
      * @return Renderable
      */
-    public function edit($id ,$comp_id)
+    public function edit($id)
     {
+        
         $business_id = request()->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-         
+        $company_insurance=null;
         $companies = Company::where('business_id',$business_id)->pluck('name', 'id');
         $insurance_companies = Contact::where('type','=','insurance')
         ->pluck('supplier_business_name', 'id');
 
-        $company_insurance = EssentialsCompaniesInsurancesContract::findOrFail($id);
+        $prev_comp_id=EssentialsCompaniesInsurancesContract::where('company_id',$id)->first();
+        if( $prev_comp_id == null)
+        {
+            $new_company_insurance = EssentialsCompaniesInsurancesContract::create(['company_id' => $id]);
+            $company_insurance=$new_company_insurance;
+           
+        }
+        else{
+            $company_insurance=$prev_comp_id;
+        }
        
         return view('essentials::companies_insurances_contracts.edit')
-        ->with(compact('insurance_companies','companies','company_insurance' ,'comp_id'));
+        ->with(compact('insurance_companies','companies','company_insurance'));
      
     }
 
@@ -182,8 +228,7 @@ if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 'msg' => __('messages.something_went_wrong'),
             ];
             }
-            EssentialsCompaniesInsurancesContract::where('id', $id)
-            ->where('company_id',$input['company_id'])
+            EssentialsCompaniesInsurancesContract::where('company_id',$input['company_id'])
             ->update($insurance_companies_contract_data);
 
 
@@ -219,23 +264,30 @@ if (!empty(request()->start_date) && !empty(request()->end_date)) {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
     
         try {
-            $companyInsuranceContract = EssentialsCompaniesInsurancesContract::find($id);
+            $companyInsuranceContract = EssentialsCompaniesInsurancesContract::where('company_id',$id)->first();
     
             if (!$companyInsuranceContract) {
-                return response()->json(['success' => false, 'msg' => __('messages.something_went_wrong')]);
+                $output = [
+                    'success' => false,
+                    'msg' => __('essentials::lang.does_not_add_insurance_company'),
+                ];;
             }
     
-            // Update multiple columns
+           else
+           {
             $companyInsuranceContract->update([
                 'insur_id' => null,
                 'insurance_start_date' => null,
                 'insurance_end_date' => null,
             ]);
-    
             $output = [
                 'success' => true,
                 'msg' => __('lang_v1.deleted_success'),
             ];
+           }
+           
+    
+         
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
             error_log('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
