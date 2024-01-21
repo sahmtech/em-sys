@@ -80,7 +80,7 @@ class EssentialsWorkCardsWorkerController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )->orderBy('users.id', 'desc')
-        ->groupBy('users.id');
+            ->groupBy('users.id');
 
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -129,15 +129,15 @@ class EssentialsWorkCardsWorkerController extends Controller
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
                 ->addColumn('admissions_date', function ($user) {
-                    
+
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
                 ->addColumn('admissions_type', function ($user) {
-                  
+
                     return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
                 })
                 ->addColumn('admissions_status', function ($user) {
-                    
+
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
 
@@ -189,7 +189,7 @@ class EssentialsWorkCardsWorkerController extends Controller
         return view('essentials::projects_workers.work_cards.index')->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
-    
+
     private function getDocumentnumber($user, $documentType)
     {
         foreach ($user->OfficialDocument as $off) {
@@ -197,18 +197,17 @@ class EssentialsWorkCardsWorkerController extends Controller
                 return $off->number;
             }
         }
-
         return ' ';
     }
-  
-    
+
+
     public function show($id)
     {
 
 
         $business_id = request()->session()->get('user.business_id');
 
-        
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
         $can_workcards_indexWorkerProjects = auth()->user()->can('essentials.workcards_showWorkerProjects');
         if (!($is_admin || $can_workcards_indexWorkerProjects)) {
@@ -217,17 +216,15 @@ class EssentialsWorkCardsWorkerController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
-        
-        if (!$is_admin) 
-        {
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+
+        if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
-
         }
 
-      
-        if (!in_array($id , $userIds)) {
+
+        if (!in_array($id, $userIds)) {
             return redirect()->back()->with('status', [
                 'success' => false,
                 'msg' => __('essentials::lang.user_not_found'),
@@ -282,16 +279,16 @@ class EssentialsWorkCardsWorkerController extends Controller
             $profession = "";
         }
 
-        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
-        if ($specializationId !== null) {
-            $specialization = EssentialsSpecialization::find($specializationId)->name;
-        } else {
-            $specialization = "";
-        }
+        // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+        // if ($specializationId !== null) {
+        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
+        // } else {
+            // $specialization = "";
+        // }
 
 
         $user->profession = $profession;
-        $user->specialization = $specialization;
+        // $user->specialization = $specialization;
 
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);

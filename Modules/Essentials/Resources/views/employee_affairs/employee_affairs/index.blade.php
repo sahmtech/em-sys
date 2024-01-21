@@ -9,9 +9,9 @@
             @lang('essentials::lang.manage_employees')
         </h1>
         <!-- <ol class="breadcrumb">
-                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                <li class="active">Here</li>
-                                            </ol> -->
+                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                <li class="active">Here</li>
+                                                            </ol> -->
     </section>
 
     <!-- Main content -->
@@ -107,7 +107,7 @@
 
                             <th>@lang('essentials::lang.department')</th>
                             <th>@lang('essentials::lang.job_title')</th>
-                      
+
                             <th>@lang('essentials::lang.mobile_number')</th>
                             <th>@lang('business.email')</th>
                             <th>@lang('essentials::lang.status')</th>
@@ -159,29 +159,30 @@
                                         'diploma' => __('essentials::lang.diploma'),
                                     ],
                                     null,
-                                    ['class' => 'form-control', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')],
+                                    ['class' => 'form-control', 'style' => 'width:100%;height:40px', 'placeholder' => __('lang_v1.all')],
                                 ) !!}
                             </div>
                             <div class="form-group col-md-6">
-                                    {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
-                                    {!! Form::select('general_specialization', $specializations, null, [
-                                        'class' => 'form-control',
-                                        'style' => 'height:36px',   'id' => 'professionSelect',
-                                        'placeholder' => __('essentials::lang.select_specialization'),
-                                    ]) !!}
-                                </div>
-                    
-                           
+                                {!! Form::label('general_specialization', __('essentials::lang.general_specialization') . ':') !!}
+                                {!! Form::select('general_specialization', $specializations, null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',
+                                    'id' => 'professionSelect',
+                                    'placeholder' => __('essentials::lang.select_specialization'),
+                                ]) !!}
+                            </div>
+
+
                             <div class="form-group col-md-6">
-                                    {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
-                                    {!! Form::select('sub_specialization', [], null, [
-                                        'class' => 'form-control',
-                                        'style' => 'height:36px','id' => 'specializationSelect',
-                                      
-                                    ]) !!}
-                                </div>
-                    
-                       
+                                {!! Form::label('sub_specialization', __('essentials::lang.sub_specialization') . ':') !!}
+                                {!! Form::select('sub_specialization', [], null, [
+                                    'class' => 'form-control',
+                                    'style' => 'height:36px',
+                                    'id' => 'specializationSelect',
+                                ]) !!}
+                            </div>
+
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_year', __('essentials::lang.graduation_year') . ':') !!}
                                 {!! Form::date('graduation_year', null, [
@@ -190,6 +191,8 @@
                                     'required',
                                 ]) !!}
                             </div>
+                            <div class="clearfix"></div>
+
                             <div class="form-group col-md-6">
                                 {!! Form::label('graduation_institution', __('essentials::lang.graduation_institution') . ':') !!}
                                 {!! Form::text('graduation_institution', null, [
@@ -207,15 +210,44 @@
                                     'required',
                                 ]) !!}
                             </div>
+
                             <div class="form-group col-md-6">
-                                {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
-                                {!! Form::number('degree', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => __('essentials::lang.degree'),
-                                    'required',
-                                ]) !!}
+                                <div class="form-group">
+                                    {!! Form::label('degree', __('essentials::lang.degree') . ':') !!}
+                                    {!! Form::number('degree', !empty($qualification->degree) ? $qualification->degree : null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('essentials::lang.degree'),
+                                        'step' => 'any',
+                                        'onkeyup' => 'getGPA()',
+                                    ]) !!}
+                                </div>
                             </div>
 
+                            <div class=" col-md-6">
+                                <div class="form-group">
+                                    {!! Form::label('great_degree', __('essentials::lang.great_degree') . ':') !!}
+                                    {!! Form::number('great_degree', !empty($qualification->great_degree) ? $qualification->great_degree : null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('essentials::lang.great_degree'),
+                                        'step' => 'any',
+                                        'onkeyup' => 'getGPA()',
+                                    ]) !!}
+
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
+                            <div class=" col-md-6">
+                                <div class="form-group">
+                                    {!! Form::label('marksName', __('essentials::lang.marksName') . ':') !!}
+                                    {!! Form::text('marksName', !empty($qualification->marksName) ? $qualification->marksName : null, [
+                                        'class' => 'form-control',
+                                        'placeholder' => __('essentials::lang.marksName'),
+                                        'step' => 'any',
+                                        'readonly',
+                                    ]) !!}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -570,7 +602,7 @@
                         "data": "profession",
                         name: 'profession'
                     },
-                  
+
                     {
                         "data": "contact_number"
                     },
@@ -683,42 +715,125 @@
 
 
 
-
-        });
-    </script>
-<script type="text/javascript">
-    $(document).ready(function() {
+            var professionSelect = $('#professionSelect');
+            var specializationSelect = $('#specializationSelect');
 
 
-        var professionSelect = $('#professionSelect');
-        var specializationSelect = $('#specializationSelect');
-
-       
-        professionSelect.on('change', function() {
-            var selectedProfession = $(this).val();
-            console.log(selectedProfession);
-            var csrfToken = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                url: '{{ route('specializations') }}',
-                type: 'POST',
-                data: {
-                    _token: csrfToken,
-                    profession_id: selectedProfession
-                },
-                success: function(data) {
-                    specializationSelect.empty();
-                    $.each(data, function(id, name) {
-                        specializationSelect.append($('<option>', {
-                            value: id,
-                            text: name
-                        }));
-                    });
-                }
+            professionSelect.on('change', function() {
+                var selectedProfession = $(this).val();
+                console.log(selectedProfession);
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '{{ route('specializations') }}',
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        profession_id: selectedProfession
+                    },
+                    success: function(data) {
+                        specializationSelect.empty();
+                        $.each(data, function(id, name) {
+                            specializationSelect.append($('<option>', {
+                                value: id,
+                                text: name
+                            }));
+                        });
+                    }
+                });
             });
+
+
         });
 
-    });
-</script>
+        function getGPA() {
+            const GPA = [{
+                    PercentageTo: 100,
+                    PercentageFrom: 85,
+                    marksName: '{{ __('essentials::lang.veryExcellent') }}',
+                    Grade: "A+",
+                },
+                {
+                    PercentageTo: 84,
+                    PercentageFrom: 80,
+                    marksName: '{{ __('essentials::lang.excellent') }}',
+                    Grade: "A",
+                },
+                {
+                    PercentageTo: 79,
+                    PercentageFrom: 75,
+                    marksName: '{{ __('essentials::lang.veryGood') }}',
+                    Grade: "B+",
+                },
+                {
+                    PercentageTo: 74,
+                    PercentageFrom: 70,
+                    marksName: '{{ __('essentials::lang.veryGood') }}',
+                    Grade: "B",
+                },
+                {
+                    PercentageTo: 69,
+                    PercentageFrom: 65,
+                    marksName: '{{ __('essentials::lang.good') }}',
+                    Grade: "B-",
+                },
+                {
+                    PercentageTo: 64,
+                    PercentageFrom: 60,
+                    marksName: '{{ __('essentials::lang.good') }}',
+                    Grade: "C+",
+                },
+                {
+                    PercentageTo: 59,
+                    PercentageFrom: 55,
+                    marksName: '{{ __('essentials::lang.weak') }}',
+                    Grade: "C",
+                },
+                {
+                    PercentageTo: 54,
+                    PercentageFrom: 50,
+                    marksName: '{{ __('essentials::lang.weak') }}',
+                    Grade: "C-",
+                },
+                {
+                    PercentageTo: 49,
+                    PercentageFrom: 45,
+                    marksName: '{{ __('essentials::lang.bad') }}',
+                    Grade: "D",
+                },
+                {
+                    PercentageTo: 44,
+                    PercentageFrom: 40,
+                    marksName: '{{ __('essentials::lang.bad') }}',
+                    Grade: "D-",
+                },
+                {
+                    PercentageTo: 39,
+                    PercentageFrom: 0,
+                    marksName: '{{ __('essentials::lang.fail') }}',
+                    Grade: "F",
+                },
+            ];
+            var great_degree = document.getElementById('great_degree').value;
+            var degree = document.getElementById('degree').value;
+
+            if (degree > great_degree) {
+                document.getElementById("marksName").style.color = "red";
+                document.getElementById('marksName').value = 'يجب ان تكون الدرجة العطمة اعلى من الدرجة';
+            }
+            var greatDegree = 100 / great_degree;
+            GPA.forEach(gpaMark => {
+                if (degree >= gpaMark.PercentageFrom / greatDegree && degree <= gpaMark.PercentageTo /
+                    greatDegree) {
+
+                    document.getElementById('marksName').value = gpaMark.marksName +
+                        '  ( ' + gpaMark.Grade + ' )'
+                }
+
+            });
+
+
+        }
+    </script>
 
 
 @endsection
