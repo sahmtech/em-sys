@@ -177,7 +177,20 @@ class EssentialsDepartmentsController extends Controller
                     
                 })
 
+                ->addColumn('manager_deputy', function ($row) use($can_add_manager ,$is_admin) {
 
+                    if($is_admin || $can_add_manager){
+                        $manager = DB::table('essentials_employee_appointmets')
+                        ->join('users', 'essentials_employee_appointmets.employee_id', '=', 'users.id')
+                        ->where('essentials_employee_appointmets.department_id', $row->id)
+                        ->where('essentials_employee_appointmets.type', 'deputy')
+                        ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as user"))
+                        ->first();
+
+                    return $manager ? $manager->user : '<button type="button" class="btn btn-xs btn-primary open-modal" data-toggle="modal" data-target="#addDeputyModal" data-row-id="' . $row->id . '"><i class="glyphicon glyphicon-edit"></i> ' . __('essentials::lang.add_deputy') . '</button>';
+                    }
+                    
+                })
                 ->addColumn('delegatingManager_name', function ($row) use($can_delegatingManager_name ,$is_admin) {
 
                     if($is_admin || $can_delegatingManager_name){
@@ -222,7 +235,7 @@ class EssentialsDepartmentsController extends Controller
                     $query->where('name', 'like', "%{$keyword}%");
                 })
 
-                ->rawColumns(['action', 'manager_name', 'delegatingManager_name'])
+                ->rawColumns(['action', 'manager_name', 'delegatingManager_name','manager_deputy'])
                 ->make(true);
         }
         $query = User::where('business_id', $business_id)->where('users.user_type', '=', 'manager');
@@ -333,8 +346,6 @@ class EssentialsDepartmentsController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
 
-
-
         try {
             $input = $request->only(['employee', 'start_date', 'profession', 'specialization']);
 
@@ -372,7 +383,47 @@ class EssentialsDepartmentsController extends Controller
         }
         return $output;
     }
+    public function storeDeputy($id, Request $request)
+    {
+       
 
+        try {
+            $input = $request->only(['employee', 'start_date', 'profession']);
+
+            $input2['employee_id'] = $input['employee'];
+            $input2['department_id'] = $id;
+            $input2['start_from'] = $input['start_date'];
+            $input2['profession_id'] = $input['profession'];
+            $input2['type'] = 'deputy';
+
+            $previous_appointement = EssentialsEmployeeAppointmet::where('employee_id',$input['employee'])
+            ->latest('created_at')->first();
+           
+
+            if( $previous_appointement->is_active == 1 )
+            {
+                $previous_appointement->is_active= 0;
+                $previous_appointement->end_at= $input2['start_date'];
+                $previous_appointement->save();
+              
+            }
+            EssentialsEmployeeAppointmet::create($input2);
+
+
+            $output = [
+                'success' => true,
+                'msg' => __('lang_v1.added_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = [
+                'success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+        return $output;
+    }
     public function manager_delegating($id, Request $request)
     {
 

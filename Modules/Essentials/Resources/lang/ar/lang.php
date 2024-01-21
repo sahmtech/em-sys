@@ -1606,7 +1606,9 @@ return [
   'crud_academic_specializations'=>'إدارة التخصصات الجامعية',
   'sub_specialization'=>'التخصص الفرعي',
   'general_specialization'=>'التخصص العام',
-  'select_specialization'=>'اختر تخصص'
+  'select_specialization'=>'اختر تخصص',
+  'manager_deputy'=>'نائب المدير',
+  'add_deputy'=>'إضافة نائب'
 
 
 
