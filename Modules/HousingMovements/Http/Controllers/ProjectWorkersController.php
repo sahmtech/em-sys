@@ -92,11 +92,10 @@ class ProjectWorkersController extends Controller
             // 'users.essentials_salary',
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
-        ) ->orderBy('users.id', 'desc')
-        ->groupBy('users.id');
+        )->orderBy('users.id', 'desc')
+            ->groupBy('users.id');
 
-        if (request()->ajax())
-         {
+        if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
 
                 $users = $users->where('users.assigned_to', request()->input('project_name'));
@@ -143,15 +142,15 @@ class ProjectWorkersController extends Controller
                     return $this->getDocumentnumber($user, 'residence_permit');
                 })
                 ->addColumn('admissions_date', function ($user) {
-                    
+
                     return optional($user->essentials_admission_to_works)->admissions_date ?? ' ';
                 })
                 ->addColumn('admissions_type', function ($user) {
-                  
+
                     return optional($user->essentials_admission_to_works)->admissions_type ?? ' ';
                 })
                 ->addColumn('admissions_status', function ($user) {
-                    
+
                     return optional($user->essentials_admission_to_works)->admissions_status ?? ' ';
                 })
 
@@ -187,19 +186,19 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn('building', function ($user) {
 
-                    return $user->htrRoomsWorkersHistory?->last()->room?->building?->name??'';
+                    return $user->htrRoomsWorkersHistory?->last()->room?->building?->name ?? '';
                 })
 
                 ->addColumn('building_address', function ($user) {
 
-                    return $user->htrRoomsWorkersHistory?->last()->room?->building?->address??'';
+                    return $user->htrRoomsWorkersHistory?->last()->room?->building?->address ?? '';
                 })
 
                 ->addColumn('room_number', function ($user) {
 
-                    return $user->htrRoomsWorkersHistory?->last()->room?->room_number??'';
+                    return $user->htrRoomsWorkersHistory?->last()->room?->room_number ?? '';
                 })
-               
+
                 ->addColumn('categorie_id', function ($row) use ($travelCategories) {
                     $item = $travelCategories[$row->categorie_id] ?? '';
 
@@ -216,7 +215,7 @@ class ProjectWorkersController extends Controller
         }
 
         return view('housingmovements::projects_workers.index')
-        ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
+            ->with(compact('contacts_fillter', 'status_filltetr',  'fields', 'nationalities'));
     }
 
     public function available_shopping()
@@ -234,12 +233,12 @@ class ProjectWorkersController extends Controller
             ]);
         }
 
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        
+
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
@@ -247,7 +246,7 @@ class ProjectWorkersController extends Controller
         $fillterDate = now()->subDays($days)->toDateString();
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
         $bookedWorker_ids = HousingMovementsWorkerBooking::all()->pluck('user_id');
-        $users = User::whereIn('users.id',$userIds)->with(['rooms'])
+        $users = User::whereIn('users.id', $userIds)->with(['rooms'])
             ->where('user_type', 'worker')->whereNull('assigned_to')->whereNotIn('id', $bookedWorker_ids);
 
 
@@ -352,12 +351,12 @@ class ProjectWorkersController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        
+
         $contacts = SalesProject::all()->pluck('name', 'id');
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
 
@@ -376,11 +375,11 @@ class ProjectWorkersController extends Controller
         $fillterDate = now()->subDays($days)->toDateString();
         HousingMovementsWorkerBooking::where('booking_end_Date', '<=', $fillterDate)->delete();
 
-        $users = HousingMovementsWorkerBooking::whereIn('user_id',$userIds)->get();
-        $can_unbook =auth()->user()->can('worker.unbook');
+        $users = HousingMovementsWorkerBooking::whereIn('user_id', $userIds)->get();
+        $can_unbook = auth()->user()->can('worker.unbook');
 
         if (request()->ajax()) {
-      
+
 
             return Datatables::of($users)
                 ->editColumn('worker', function ($row) {
@@ -393,8 +392,8 @@ class ProjectWorkersController extends Controller
                     $residencePermitDocument = $row->user->OfficialDocument
                         ->where('type', 'residence_permit')
                         ->first();
-                    if ($residencePermitDocument) {
 
+                    if ($residencePermitDocument) {
                         return optional($residencePermitDocument)->expiration_date ?? ' ';
                     } else {
 
@@ -403,7 +402,7 @@ class ProjectWorkersController extends Controller
                 })
 
                 ->addColumn('residence_permit', function ($row) {
-                    return $this->getDocumentnumber($row->user, 'residence_permit');
+                    return   $row->user->id_proof_number;
                 })
 
                 ->addColumn('contact_name', function ($row) {
@@ -439,11 +438,11 @@ class ProjectWorkersController extends Controller
                 })
                 ->addColumn(
                     'action',
-                    function ($row) use($is_admin,$can_unbook){
+                    function ($row) use ($is_admin, $can_unbook) {
 
                         $html = '';
 
-                         if ($is_admin  || $can_unbook ) {
+                        if ($is_admin  || $can_unbook) {
                             $html .= '
                     <button data-href="' .  route('worker.unbook', ['id' => $row->id]) . '" class="btn btn-xs btn-danger delete_book_worker_button"><i class="fa fa-minus-circle cursor-pointer"></i>' . __("housingmovements::lang.unbook") . '</button>
                 ';
@@ -489,7 +488,7 @@ class ProjectWorkersController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
@@ -499,7 +498,7 @@ class ProjectWorkersController extends Controller
         $ContactsLocation = ContactLocation::all()->pluck('name', 'id');
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $EssentailsEmployeeOperation_emplyeeIds = EssentailsEmployeeOperation::where('operation_type', 'final_visa')->pluck('employee_id');
-        $users = User::whereIn('id',$userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
+        $users = User::whereIn('id', $userIds)->whereIn('id', $EssentailsEmployeeOperation_emplyeeIds)->where('user_type', 'worker')->where('status', 'inactive');
 
 
 
@@ -697,7 +696,7 @@ class ProjectWorkersController extends Controller
             return $this->moduleUtil->quotaExpiredResponse('users', $business_id, action([\App\Http\Controllers\ManageUserController::class, 'index']));
         }
 
-       // $roles = $this->getRolesArray($business_id);
+        // $roles = $this->getRolesArray($business_id);
         $username_ext = $this->moduleUtil->getUsernameExtension();
         // $locations = BusinessLocation::where('business_id', $business_id)
         //     ->Active()
@@ -729,61 +728,61 @@ class ProjectWorkersController extends Controller
         $resident_doc = null;
         $user = null;
         $designations = Category::forDropdown($business_id, 'hrm_designation');
-       
+
         $departments = EssentialsDepartment::where('business_id', $business_id)->pluck('name', 'id');
         $pay_comoponenets = EssentialsAllowanceAndDeduction::forDropdown($business_id);
 
-         $user = !empty($data['user']) ? $data['user'] : null;
+        $user = !empty($data['user']) ? $data['user'] : null;
 
-         $allowance_deduction_ids = [];
-         if (!empty($user)) {
-             $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
-                 ->pluck('allowance_deduction_id')
-                 ->toArray();
-         }
+        $allowance_deduction_ids = [];
+        if (!empty($user)) {
+            $allowance_deduction_ids = EssentialsUserAllowancesAndDeduction::where('user_id', $user->id)
+                ->pluck('allowance_deduction_id')
+                ->toArray();
+        }
 
-         if (!empty($user)) {
-             $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
-         } else {
-             $contract = null;
-         }
+        if (!empty($user)) {
+            $contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
+        } else {
+            $contract = null;
+        }
 
         // $locations = BusinessLocation::forDropdown($business_id, false, false, true, false);
-         $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
-         $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
-         $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
-         $nationalities = EssentialsCountry::nationalityForDropdown();
-         $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
-         $professions = EssentialsProfession::all()->pluck('name', 'id');
-        
-         $company = Company::where('business_id',$business_id)->pluck('name', 'id');
-            
-        return  view('housingmovements::projects_workers.create')
-        ->with(compact(
-            'departments',
-            'countries',
-            'spacializations',
-            'nationalities',
-            'username_ext',
-            'blood_types',
-            'contacts',
-            'company',
-            'banks',
-            'contract_types',
-            'form_partials',
-            'resident_doc',
-            'user',
-          
-            'allowance_types',
-            'travel_ticket_categorie',
-            'contract_types',
-            'nationalities',
-            'specializations',
-            'professions'
+        $allowance_types = EssentialsAllowanceAndDeduction::pluck('description', 'id')->all();
+        $travel_ticket_categorie = EssentialsTravelTicketCategorie::pluck('name', 'id')->all();
+        $contract_types = EssentialsContractType::where('type', '!=', 'تمهير')->pluck('type', 'id')->all();
+        $nationalities = EssentialsCountry::nationalityForDropdown();
+        $specializations = EssentialsSpecialization::all()->pluck('name', 'id');
+        $professions = EssentialsProfession::all()->pluck('name', 'id');
 
-        ));
+        $company = Company::where('business_id', $business_id)->pluck('name', 'id');
+
+        return  view('housingmovements::projects_workers.create')
+            ->with(compact(
+                'departments',
+                'countries',
+                'spacializations',
+                'nationalities',
+                'username_ext',
+                'blood_types',
+                'contacts',
+                'company',
+                'banks',
+                'contract_types',
+                'form_partials',
+                'resident_doc',
+                'user',
+
+                'allowance_types',
+                'travel_ticket_categorie',
+                'contract_types',
+                'nationalities',
+                'specializations',
+                'professions'
+
+            ));
     }
-  
+
     public function storeProjectWorker(Request $request)
     {
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
@@ -801,20 +800,18 @@ class ProjectWorkersController extends Controller
             $request['max_sales_discount_percent'] = !is_null($request->input('max_sales_discount_percent')) ? $this->moduleUtil->num_uf($request->input('max_sales_discount_percent')) : null;
 
 
-            $com_id=request()->input('essentials_department_id');
-            $latestRecord = User::where('company_id',$com_id)->orderBy('emp_number', 'desc')
+            $com_id = request()->input('essentials_department_id');
+            $latestRecord = User::where('company_id', $com_id)->orderBy('emp_number', 'desc')
                 ->first();
 
             if ($latestRecord) {
                 $latestRefNo = $latestRecord->emp_number;
                 $latestRefNo++;
                 $request['emp_number'] = str_pad($latestRefNo, 4, '0', STR_PAD_LEFT);
-            } 
-            else
-             {
+            } else {
 
                 $request['emp_number'] =  $business_id . '000';
-             }
+            }
 
 
 
