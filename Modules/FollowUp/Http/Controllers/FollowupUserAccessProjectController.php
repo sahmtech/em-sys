@@ -92,7 +92,7 @@ class FollowupUserAccessProjectController extends Controller
                         $html = '';
 
                         if ($is_admin  || $can_add_user_project_access_permissions) {
-                            $html .= '<a href="#" class="btn btn-xs btn-primary add_access_project_btn" data-id="' . $row->id . '">' . __('followup::lang.add_project') . '</a>&nbsp;';
+                            $html .= '<a href="#" class="btn btn-xs btn-primary add_access_project_btn" data-id="' . $row->id . '">' . __('followup::lang.edit_project') . '</a>&nbsp;';
                         }
 
 
@@ -146,7 +146,7 @@ class FollowupUserAccessProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $success = true;
+        $success = true;    
         
             $projects_ids = $request->projects_ids;
             if ($projects_ids) {
