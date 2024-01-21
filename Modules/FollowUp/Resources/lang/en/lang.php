@@ -299,6 +299,7 @@ return [
     'appointment' => 'Appointment',
     'add_user_project_access_permissions' => 'Add Projects Access Permission',
     'edit_project' => 'Edit Projects',
+
     //  ''=>'',
 
 ];

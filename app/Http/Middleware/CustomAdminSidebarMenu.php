@@ -529,7 +529,32 @@ class CustomAdminSidebarMenu
                 $menu->url(route('legalAffairs.dashboard'),  __('legalaffairs::lang.legalaffairs'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'dashboard']);
             }
             if ($is_admin || auth()->user()->can('legalaffairs.contracts_management')) {
-                $menu->url(route('legalAffairs.contracts_management'),  __('legalaffairs::lang.contracts_management'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'contracts_management']);
+                $menu->dropdown(
+                    __('legalaffairs::lang.contracts_management'),
+                    function ($sub) use ($is_admin,) {
+
+
+                        if ($is_admin  || auth()->user()->can('essentials.crud_employee_contracts')) {
+                            $sub->url(
+                                route('legalAffairs.employeeContracts'),
+                                __('legalaffairs::lang.employee_contracts'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'employees_contracts'],
+                            );
+                        }
+                        if ($is_admin || auth()->user()->can('sales.view_sales_contracts')) {
+                            $sub->url(
+                                route('legalAffairs.salesContracts'),
+
+                                __('legalaffairs::lang.sales_contracts'),
+                                ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'sales_contracts'],
+                            );
+                        }
+                    },
+                    ['icon' => 'fas fa-balance-scale']
+
+                );
+
+                // $menu->url(route('legalAffairs.contracts_management'),  __('legalaffairs::lang.contracts_management'), ['icon' => 'fas fa-balance-scale', 'active' => request()->segment(1) == 'legalaffairs' && request()->segment(2) == 'contracts_management']);
             }
         });
     }
@@ -732,7 +757,7 @@ class CustomAdminSidebarMenu
             $menu->url(action([\App\Http\Controllers\HomeController::class, 'index']), __('home.home'), ['icon' => 'fa fas fa-home  ', 'active' => request()->segment(1) == 'home']);
 
             if ($is_admin  || auth()->user()->can('essentials.view_employee_affairs_dashboard')) {
-    
+
 
                 $menu->url(
                     route('employee_affairs_dashboard'),
@@ -752,11 +777,13 @@ class CustomAdminSidebarMenu
                     $menu->url(
                         action([\Modules\Essentials\Http\Controllers\EssentialsWorkersAffairsController::class, 'index']),
                         __('essentials::lang.workers'),
-                        ['icon' => 'fa fas fa-plus-circle',
-                         'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'workers'],
+                        [
+                            'icon' => 'fa fas fa-plus-circle',
+                            'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'workers'
+                        ],
                     );
                 }
-               
+
 
                 if ($is_admin  || auth()->user()->can('essentials.view_employees_affairs_requests')) {
                     $menu->url(
@@ -831,7 +858,6 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import_employees_families'],
                     );
                 }
-              
             }
         });
     }
@@ -891,7 +917,7 @@ class CustomAdminSidebarMenu
             }
 
 
-           
+
             //employee reports 
             if ($is_admin  || auth()->user()->can('essentials.employees_reports_view')) {
 
