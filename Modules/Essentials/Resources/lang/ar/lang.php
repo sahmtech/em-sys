@@ -1487,7 +1487,8 @@ return [
  
   'edit_companies_insurance_contracts'=>'تعديل  عقد شركة التأمين ',
   'delete_companies_insurance_contracts'=>' حذف  عقد شركة تأمين',
-  'does_not_add_insurance_company'=>'لا يمكن الحذف  لم تضيف شركة تأمين للمنشاة '
+  'does_not_add_insurance_company'=>'لا يمكن الحذف  لم تضيف شركة تأمين للمنشاة ',
+  'no_company_added'=>'لم تتم إضافة شركة تأمين للمنشاة التابع لها الموظف'
 
 
 

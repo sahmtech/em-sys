@@ -534,6 +534,10 @@ class EssentialsEmployeeInsuranceController extends Controller
         $classes = EssentialsInsuranceClass::where('insurance_company_id', $insurance_company_id)
         ->pluck('name', 'id');
 
+        if ($classes->isEmpty()) {
+            return response()->json(['message' =>  __('essentials::lang.no_company_added')]);
+        }
+
         return response()->json($classes);
     }
 
