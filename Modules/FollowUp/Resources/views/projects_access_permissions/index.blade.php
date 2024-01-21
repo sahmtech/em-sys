@@ -119,19 +119,22 @@
                         }
 
                         // Clear existing options in Select2
-                        $projectsMenu.empty();
+                    
 
                         if (projects && Object.keys(projects).length > 0) {
-                            // Add new options
-                            $.each(projects, function(id, name) {
-                                var newOption = new Option(name, id, true, true);
-                                $projectsMenu.append(newOption);
+                            $projectsMenu.find('option').each(function() {
+                                var optionValue = $(this).attr('value');
+                                // Check if the current option value is in the response projects
+                                if (projects.hasOwnProperty(optionValue)) {
+                                    // Mark as selected
+                                    $(this).prop('selected', true);
+                                } else {
+                                    // Optionally, unselect it if you want to deselect previously selected options
+                                    $(this).prop('selected', false);
+                                }
                             });
-
-                            // Trigger change event for Select2 to update
-                            $projectsMenu.trigger('change');
                         }
-
+                        $projectsMenu.trigger('change');
 
 
                         // Update user_id and show modal
