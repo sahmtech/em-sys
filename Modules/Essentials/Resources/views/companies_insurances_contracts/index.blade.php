@@ -76,6 +76,7 @@
         insurance_companies_contracts_table = $('#insurance_companies_contracts_table').DataTable({
             processing: true,
             serverSide: true,
+            searching: false,
             ajax: {
                 "url":"{{ route('get_companies_insurance_contracts') }}",
 
@@ -104,6 +105,16 @@
            
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
+            , initComplete: function () {
+            this.api().columns().every(function () {
+                var column = this;
+                var input = document.createElement("input");
+                $(input).appendTo($(column.footer()).empty())
+                    .on('change', function () {
+                        column.search($(this).val(), false, false, true).draw();
+                    });
+            });
+        }
         });
 
         $('#doc_filter_date_range').daterangepicker(
