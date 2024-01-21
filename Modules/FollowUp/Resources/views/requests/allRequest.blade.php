@@ -2,8 +2,7 @@
 @section('title', __('followup::lang.allRequests'))
 
 @section('content')
-    @include('followup::layouts.nav_requests')
-  
+
 
     <section class="content-header">
         <h1>
@@ -109,9 +108,9 @@
         @endif
     @endif
     <section class="content">
-        {{-- @include('followup::layouts.nav_followup_requests') --}}
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.add_request'))   
             @slot('tool')
                 <div class="box-tools">
 
@@ -121,20 +120,20 @@
                     </button>
                 </div>
             @endslot
-
+            @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
                         <tr>
                             <th>@lang('followup::lang.request_number')</th>
-                            <th>@lang('followup::lang.worker_name')</th>
+                            <th>@lang('followup::lang.request_owner')</th>
                             <th>@lang('followup::lang.eqama_number')</th>
-                            <th>@lang('followup::lang.project_name')</th>
+                            {{-- <th>@lang('followup::lang.project_name')</th> --}}
                             <th>@lang('followup::lang.request_type')</th>
                             <th>@lang('followup::lang.request_date')</th>
                             <th>@lang('followup::lang.status')</th>
                             <th>@lang('followup::lang.note')</th>
-
+                            <th>@lang('followup::lang.action')</th>
 
 
                         </tr>
@@ -142,6 +141,8 @@
                 </table>
             </div>
         @endcomponent
+
+        {{-- add request --}}
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -167,37 +168,14 @@
                             </div>
 
                             <div class="form-group col-md-6">
-                                {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
-                                {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
-                                        'WarningRequest' => __('followup::lang.WarningRequest'),
-                                    ],
-                                    null,
-                                    [
-                                        'class' => 'form-control',
-                                        'required',
-                                        'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
-                                        'id' => 'requestType',
-                                    ],
-                                ) !!}
+                                {!! Form::label('type', __('followup::lang.type') . ':*') !!}
+                                {!! Form::select('type', $requestTypes, null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'style' => ' height: 40px',
+                                    'placeholder' => __('followup::lang.select_type'),
+                                    'id' => 'requestType',
+                                ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="leaveType" style="display: none;">
                                 {!! Form::label('leaveType', __('followup::lang.leaveType') . ':*') !!}
@@ -210,22 +188,22 @@
                             </div>
 
                             <div class="form-group col-md-6" id="start_date" style="display: none;">
-                                {!! Form::label('start_date', __('essentials::lang.start_date') . ':*') !!}
+                                {!! Form::label('start_date', __('followup::lang.start_date') . ':*') !!}
                                 {!! Form::date('start_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.start_date'),
+                                    'placeholder' => __('followup::lang.start_date'),
                                     'id' => 'startDateField',
                                 ]) !!}
                             </div>
 
 
                             <div class="form-group col-md-6" id="end_date" style="display: none;">
-                                {!! Form::label('end_date', __('essentials::lang.end_date') . ':*') !!}
+                                {!! Form::label('end_date', __('followup::lang.end_date') . ':*') !!}
                                 {!! Form::date('end_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.end_date'),
+                                    'placeholder' => __('followup::lang.end_date'),
                                     'id' => 'endDateField',
                                 ]) !!}
                             </div>
@@ -258,11 +236,11 @@
                                 ]) !!}
                             </div>
                             <div class="form-group col-md-6" id="escape_date" style="display: none;">
-                                {!! Form::label('escape_date', __('essentials::lang.escape_date') . ':*') !!}
+                                {!! Form::label('escape_date', __('followup::lang.escape_date') . ':*') !!}
                                 {!! Form::date('escape_date', null, [
                                     'class' => 'form-control',
                                     'style' => ' height: 40px',
-                                    'placeholder' => __('essentials::lang.escape_date'),
+                                    'placeholder' => __('followup::lang.escape_date'),
                                     'id' => 'escapeDateField',
                                 ]) !!}
                             </div>
@@ -287,7 +265,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('followup::lang.select_type'),
                                         'id' => 'requestType',
                                     ],
                                 ) !!}
@@ -305,7 +283,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('followup::lang.select_type'),
                                         'id' => 'atmType',
                                     ],
                                 ) !!}
@@ -322,7 +300,7 @@
                                     [
                                         'class' => 'form-control',
                                         'style' => ' height: 40px',
-                                        'placeholder' => __('essentials::lang.select_type'),
+                                        'placeholder' => __('followup::lang.select_type'),
                                         'id' => 'requestType',
                                     ],
                                 ) !!}
@@ -422,60 +400,59 @@
             </div>
         </div>
 
+        {{-- view request --}}
         <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         <h4 class="modal-title">@lang('followup::lang.view_request')</h4>
                     </div>
 
                     <div class="modal-body">
                         <div class="row">
-
                             <div class="workflow-container" id="workflow-container">
-                                <!-- Workflow circles will be dynamically added here -->
+                             
                             </div>
-
-
                         </div>
-                       
-                     
+
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>@lang('followup::lang.worker_details')</h4>
+                                <h4>@lang('followup::lang.request_owner')</h4>
                                 <ul id="worker-list">
-
-                            </div>
-                            <div class="col-md-6">
-
-                                <h4>@lang('followup::lang.activites')</h4>
-                                <ul id="activities-list">
+                                   
+                                </ul>
+                                <h4>@lang('followup::lang.attachments')</h4>
+                                <ul id="attachments-list">
 
                                 </ul>
                             </div>
                             <div class="col-md-6">
 
-                                <h4>@lang('followup::lang.attachments')</h4>
-                                    <ul id="attachments-list">
-                                    
-                                    </ul>
+                                <h4>@lang('followup::lang.activites')</h4>
+                                <ul id="activities-list">
+                              
+                                </ul>
                             </div>
+                           
                         </div>
+
                         <!-- Attachment Form -->
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <div class="form-group">
                                 <label for="attachment">
-                                    <h4>@lang('followup::lang.attachment')</h4>
+                                    <h4>@lang('followup::lang.add_attachment')</h4>
                                 </label>
                                 <input type="file" class="form-control" style="width: 250px;" id="attachment"
                                     name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
+
                     </div>
 
                     <div class="modal-footer">
@@ -486,8 +463,34 @@
         </div>
 
 
+        {{-- return request --}}
+        <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="returnModalLabel">@lang('followup::lang.return_the_request')</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="returnModalForm">
+                            <div class="form-group">
+                                <label for="reasonInput">@lang('followup::lang.reason')</label>
+                                <input type="text" class="form-control" id="reasonInput" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">@lang('followup::lang.update')</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@lang('followup::lang.close')</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-
+        @include('followup::requests.change_status_modal')
 
     </section>
     <!-- /.content -->
@@ -498,14 +501,17 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+
             $('#addRequestModal').on('shown.bs.modal', function(e) {
                 $('#requestType').select2({
                     dropdownParent: $(
                         '#addRequestModal'),
                     width: '100%',
                 });
-
             });
+
+
+
 
 
             var requests_table = $('#requests_table').DataTable({
@@ -528,9 +534,9 @@
                     {
                         data: 'id_proof_number'
                     },
-                    {
-                        data: 'assigned_to'
-                    },
+                    // {
+                    //     data: 'assigned_to'
+                    // },
                     {
                         data: 'type',
                         render: function(data, type, row) {
@@ -565,10 +571,10 @@
                                 return '@lang('followup::lang.insuranceUpgradeRequest')';
                             } else if (data === 'chamberRequest') {
                                 return '@lang('followup::lang.chamberRequest')';
-                            } else if (data === 'cancleContractRequest') {
-                                return '@lang('followup::lang.cancleContractRequest')';
                             } else if (data === 'WarningRequest') {
                                 return '@lang('followup::lang.WarningRequest')';
+                            } else if (data === 'cancleContractRequest') {
+                                return '@lang('followup::lang.cancleContractRequest')';
                             } else {
                                 return data;
                             }
@@ -579,51 +585,129 @@
                     },
                     {
                         data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
 
-
-                                case 'approved':
-                                    return '{{ trans('followup::lang.approved') }}';
-                                case 'pending':
-                                    return '{{ trans('followup::lang.pending') }}';
-
-                                case 'rejected':
-                                    return '{{ trans('followup::lang.rejected') }}';
-                                default:
-                                    return data;
-                            }
-                        }
                     },
                     {
                         data: 'note'
                     },
 
+                    {
+                        data: 'can_return',
+                        render: function(data, type, row) {
+                            var buttonsHtml = '';
+
+
+                            if (data == 1) {
+                                buttonsHtml +=
+                                    '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.return_request')) <button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    row.process_id +'">@lang('followup::lang.return_the_request')</button>@endif';
+                            }
+
+
+
+
+                            buttonsHtml +=
+                                '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('followup.show_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
+                                row.id +
+                                '">@lang('followup::lang.view_request')</button>@endif';
+
+                            return buttonsHtml;
+                        }
+                    },
 
 
 
                 ],
             });
 
-            $('#requests_table tbody').on('click', 'tr', function() {
-                var data = requests_table.row(this).data();
-                var requestId = data.id;
+            $(document).on('click', 'a.change_status', function(e) {
+                e.preventDefault();
+
+                $('#change_status_modal').find('select#status_dropdown').val($(this).data('orig-value'))
+                    .change();
+                $('#change_status_modal').find('#request_id').val($(this).data('request-id'));
+                $('#change_status_modal').modal('show');
+
+
+            });
+
+
+            $(document).on('submit', 'form#change_status_form', function(e) {
+                e.preventDefault();
+                var data = $(this).serialize();
+                var ladda = Ladda.create(document.querySelector('.update-offer-status'));
+                ladda.start();
+                $.ajax({
+                    method: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    dataType: 'json',
+                    data: data,
+                    success: function(result) {
+                        ladda.stop();
+                        if (result.success == true) {
+                            $('div#change_status_modal').modal('hide');
+                            toastr.success(result.msg);
+                            requests_table.ajax.reload();
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                });
+            });
+
+            $('#requests_table').on('click', '.btn-return', function() {
+
+                var requestId = $(this).data('request-id');
+                $('#returnModal').modal('show');
+                $('#returnModal').data('id', requestId);
+            });
+
+
+            $('#returnModalForm').submit(function(e) {
+                e.preventDefault();
+
+                var requestId = $('#returnModal').data('id');
+                var reason = $('#reasonInput').val();
+
+                $.ajax({
+                    url: "{{ route('returnReq') }}",
+                    method: "POST",
+                    data: {
+                        requestId: requestId,
+                        reason: reason
+                    },
+                    success: function(result) {
+
+                        if (result.success == true) {
+                            $('#returnModal').modal('hide');
+                            toastr.success(result.msg);
+                            requests_table.ajax.reload();
+
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                });
+            });
+
+
+            $(document).on('click', '.btn-view-request', function() {
+                var requestId = $(this).data('request-id');
+              
 
                 if (requestId) {
                     $.ajax({
                         url: '{{ route('viewRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
-                        success: function(response) {
-                            console.log(response);
-
+                        success: function(response) { 
+                         
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
-                            var attachmentsList= $('#attachments-list');
                             var workerList = $('#worker-list');
+                            var attachmentsList = $('#attachments-list');
 
-
-                            
                             workflowContainer.html('');
                             workerList.html('');
                             activitiesList.html('');
@@ -641,7 +725,6 @@
                                 workflowContainer.append(circle);
 
 
-
                                 if (i < response.workflow.length - 1) {
                                     workflowContainer.append(
                                         '<i class="fas fa-arrow-left workflow-arrow ' +
@@ -649,37 +732,42 @@
                                 }
                             }
 
-                         
-
-
                             //  worker info
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.worker_name') }}' + ': ' + response
+                                '{{ __('followup::lang.name') }}' + ': ' + response
                                 .user_info.worker_full_name + '</p>');
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('followup::lang.nationality') }}' + ': ' + response
                                 .user_info.nationality + '</p>');
+                            if (response.user_info.assigned_to) {
+                                workerList.append('<p class="worker-info">' +
+                                    '{{ __('followup::lang.project_name') }}' + ': ' +
+                                    response
+                                    .user_info.assigned_to + '</p>');
+                            }
+                            if (response.user_info.id_proof_number) {
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.project_name') }}' + ': ' + response
-                                .user_info.assigned_to + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('followup::lang.eqama_number') }}' + ': ' + response
+                                '{{ __('followup::lang.eqama_number') }}' + ': ' +
+                                response
                                 .user_info.id_proof_number + '</p>');
+                            }
+                            if (response.user_info.contract_end_date) {
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('followup::lang.contract_end_date') }}' + ': ' +
                                 response.user_info.contract_end_date + '</p>');
+                            }
+                            if (response.user_info.eqama_end_date) {
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('followup::lang.eqama_end_date') }}' + ': ' +
-                                response.user_info.eqama_end_date + '</p>');
+                                response.user_info.eqama_end_date + '</p>');}
+                            if (response.user_info.passport_number) {
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('followup::lang.passport_number') }}' + ': ' +
                                 response.user_info.passport_number + '</p>');
-
+                            }
 
 
                             //activities
-
-                            // activitiesList.append('<p class="worker-info">' + '{{ __('followup::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
 
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
@@ -694,7 +782,8 @@
                                     response.followup_processes[j].status + '</p>';
 
 
-                                activity += '<p>' + '{{ __('followup::lang.reason') }}' + ': ';
+                                activity += '<p>' + '{{ __('followup::lang.reason') }}' +
+                                    ': ';
                                 if (response.followup_processes[j].reason) {
                                     activity += '<strong>' + response.followup_processes[j]
                                         .reason + '</strong>';
@@ -722,9 +811,13 @@
 
                                 attachment += '<p>';
 
-                               
-                                attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("followup::lang.attach") }} ' + (j + 1) + '</a>';
 
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('followup::lang.attach') }} ' + (j + 1) +
+                                    '</a>';
 
                                 attachment += '</p>';
                                 attachment += '</li>';
@@ -752,6 +845,8 @@
 
         });
     </script>
+
+
     <script>
         $(document).ready(function() {
             var mainReasonSelect = $('#mainReasonSelect');
@@ -896,11 +991,8 @@
                 });
 
             });
-        });
-    </script>
+        
 
-
-    <script>
         $('#addRequestModal').on('shown.bs.modal', function(e) {
             $('#worker').select2({
                 dropdownParent: $(
@@ -908,7 +1000,8 @@
                 width: '100%',
             });
 
-            });
+        });
+    });
     </script>
 
 @endsection

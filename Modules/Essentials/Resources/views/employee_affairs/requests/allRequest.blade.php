@@ -108,11 +108,10 @@
         @endif
     @endif
     <section class="content">
-        {{-- @include('essentials::layouts.nav_requests') --}}
 
         @component('components.widget', ['class' => 'box-primary'])
-        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.workcards_add_requests'))   
-            @slot('tool')
+        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.employees_affairs_add_requests'))   
+        @slot('tool')
                 <div class="box-tools">
 
                     <button type="button" class="btn btn-block btn-primary  btn-modal" data-toggle="modal"
@@ -121,8 +120,7 @@
                     </button>
                 </div>
             @endslot
-            @endif
-
+        @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -147,7 +145,7 @@
         <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'Wk_storeRequest', 'enctype' => 'multipart/form-data']) !!}
+                    {!! Form::open(['route' => 'storeEmployeeAffairsRequest', 'enctype' => 'multipart/form-data']) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -411,59 +409,58 @@
                         </button>
                         <h4 class="modal-title">@lang('essentials::lang.view_request')</h4>
                     </div>
-        
+
                     <div class="modal-body">
                         <div class="row">
                             <div class="workflow-container" id="workflow-container">
-                                <!-- Workflow content here -->
+                             
                             </div>
                         </div>
-        
+
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>@lang('essentials::lang.worker_details')</h4>
+                                <h4>@lang('essentials::lang.request_owner')</h4>
                                 <ul id="worker-list">
-                                    <!-- Worker details content here -->
+                                   
+                                </ul>
+                                <h4>@lang('essentials::lang.attachments')</h4>
+                                <ul id="attachments-list">
+
                                 </ul>
                             </div>
                             <div class="col-md-6">
 
                                 <h4>@lang('essentials::lang.activites')</h4>
                                 <ul id="activities-list">
-                                    <!-- Activities will be dynamically added here -->
+                              
                                 </ul>
                             </div>
-                            <div class="col-md-6">
-
-                                <h4>@lang('essentials::lang.attachments')</h4>
-                                <ul id="attachments-list">
-                                    
-                                </ul>
-                            </div>
+                           
                         </div>
-        
+
                         <!-- Attachment Form -->
                         <form id="attachmentForm" method="POST" enctype="multipart/form-data">
                             @csrf
-                        
+
                             <div class="form-group">
                                 <label for="attachment">
-                                    <h4>@lang('essentials::lang.attachment')</h4>
+                                    <h4>@lang('essentials::lang.add_attachment')</h4>
                                 </label>
-                                <input type="file" class="form-control" style="width: 250px;" id="attachment" name="attachment">
+                                <input type="file" class="form-control" style="width: 250px;" id="attachment"
+                                    name="attachment">
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
                         </form>
-                        
+
                     </div>
-        
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
                     </div>
                 </div>
             </div>
         </div>
-        
+
 
         {{-- return request --}}
         <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel"
@@ -521,7 +518,7 @@
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('work_cards_all_requests') }}"
+                    url: "{{ route('allEmployeeAffairsRequests') }}"
                 },
 
                 columns: [
@@ -536,7 +533,7 @@
                     {
                         data: 'id_proof_number'
                     },
-                  
+
                     {
                         data: 'type',
                         render: function(data, type, row) {
@@ -573,10 +570,9 @@
                                 return '@lang('essentials::lang.chamberRequest')';
                             } else if (data === 'WarningRequest') {
                                 return '@lang('essentials::lang.WarningRequest')';
-                            }  else if (data === 'cancleContractRequest') {
+                            } else if (data === 'cancleContractRequest') {
                                 return '@lang('essentials::lang.cancleContractRequest')';
-                            } 
-                            else {
+                            } else {
                                 return data;
                             }
                         }
@@ -600,14 +596,18 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_workcards_request"))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
-                                    row.process_id + '">@lang('essentials::lang.return_the_request')</button>@endif';
+                                    '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.return_employees_request')) <button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    row.process_id +
+                                    '">@lang('essentials::lang.return_the_request')</button>@endif';
                             }
 
 
+
+
                             buttonsHtml +=
-                                '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.show_workcards_request"))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
-                                row.id + '">@lang('essentials::lang.view_request')</button>@endif';
+                                '@if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.show_employees_request'))<button class="btn btn-primary btn-sm btn-view-request" data-request-id="' +
+                                row.id +
+                                '">@lang('essentials::lang.view_request')</button>@endif';
 
                             return buttonsHtml;
                         }
@@ -655,7 +655,7 @@
             });
 
             $('#requests_table').on('click', '.btn-return', function() {
-                
+
                 var requestId = $(this).data('request-id');
                 $('#returnModal').modal('show');
                 $('#returnModal').data('id', requestId);
@@ -692,20 +692,19 @@
 
             $(document).on('click', '.btn-view-request', function() {
                 var requestId = $(this).data('request-id');
-                console.log(requestId);
-            
+              
+
                 if (requestId) {
                     $.ajax({
-                        url: '{{ route('viewWorkCardsRequest', ['requestId' => ':requestId']) }}'.replace(
+                        url: '{{ route('viewEmployeeAffRequest', ['requestId' => ':requestId']) }}'.replace(
                             ':requestId', requestId),
                         method: 'GET',
-                        success: function(response) {
-                            console.log(response);
-
+                        success: function(response) { 
+                         
                             var workflowContainer = $('#workflow-container');
                             var activitiesList = $('#activities-list');
                             var workerList = $('#worker-list');
-                            var attachmentsList= $('#attachments-list');
+                            var attachmentsList = $('#attachments-list');
 
                             workflowContainer.html('');
                             workerList.html('');
@@ -733,32 +732,40 @@
 
                             //  worker info
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('essentials::lang.worker_name') }}' + ': ' + response
+                                '{{ __('essentials::lang.name') }}' + ': ' + response
                                 .user_info.worker_full_name + '</p>');
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('essentials::lang.nationality') }}' + ': ' + response
                                 .user_info.nationality + '</p>');
+                            if (response.user_info.assigned_to) {
+                                workerList.append('<p class="worker-info">' +
+                                    '{{ __('essentials::lang.project_name') }}' + ': ' +
+                                    response
+                                    .user_info.assigned_to + '</p>');
+                            }
+                            if (response.user_info.id_proof_number) {
                             workerList.append('<p class="worker-info">' +
-                                '{{ __('essentials::lang.project_name') }}' + ': ' + response
-                                .user_info.assigned_to + '</p>');
-                            workerList.append('<p class="worker-info">' +
-                                '{{ __('essentials::lang.eqama_number') }}' + ': ' + response
+                                '{{ __('essentials::lang.eqama_number') }}' + ': ' +
+                                response
                                 .user_info.id_proof_number + '</p>');
+                            }
+                            if (response.user_info.contract_end_date) {
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('essentials::lang.contract_end_date') }}' + ': ' +
                                 response.user_info.contract_end_date + '</p>');
+                            }
+                            if (response.user_info.eqama_end_date) {
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('essentials::lang.eqama_end_date') }}' + ': ' +
-                                response.user_info.eqama_end_date + '</p>');
+                                response.user_info.eqama_end_date + '</p>');}
+                            if (response.user_info.passport_number) {
                             workerList.append('<p class="worker-info">' +
                                 '{{ __('essentials::lang.passport_number') }}' + ': ' +
                                 response.user_info.passport_number + '</p>');
-
+                            }
 
 
                             //activities
-
-                            // activitiesList.append('<p class="worker-info">' + '{{ __('essentials::lang.created_by') }}' + ': ' + created_user_info.created_user_full_name + '</p>');    
 
                             for (var j = 0; j < response.followup_processes.length; j++) {
                                 var activity = '<li>';
@@ -773,7 +780,8 @@
                                     response.followup_processes[j].status + '</p>';
 
 
-                                activity += '<p>' + '{{ __('essentials::lang.reason') }}' + ': ';
+                                activity += '<p>' + '{{ __('essentials::lang.reason') }}' +
+                                    ': ';
                                 if (response.followup_processes[j].reason) {
                                     activity += '<strong>' + response.followup_processes[j]
                                         .reason + '</strong>';
@@ -799,21 +807,28 @@
                             for (var j = 0; j < response.attachments.length; j++) {
                                 var attachment = '<li>';
 
-                                    attachment += '<p>';
-                                   
-                           
-                                 attachment += '<a href="{{ url("uploads") }}/' + response.attachments[j].file_path + '" target="_blank" onclick="openAttachment(\'' + response.attachments[j].file_path + '\', ' + (j + 1) + ')">' + '{{ trans("essentials::lang.attach") }} ' + (j + 1) + '</a>';
-                               
-                                 attachment += '</p>';
+                                attachment += '<p>';
+
+
+                                attachment += '<a href="{{ url('uploads') }}/' + response
+                                    .attachments[j].file_path +
+                                    '" target="_blank" onclick="openAttachment(\'' + response
+                                    .attachments[j].file_path + '\', ' + (j + 1) + ')">' +
+                                    '{{ trans('essentials::lang.attach') }} ' + (j + 1) +
+                                    '</a>';
+
+                                attachment += '</p>';
                                 attachment += '</li>';
 
                                 attachmentsList.append(attachment);
                             }
-                            $('#attachmentForm').attr('action', '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'.replace(':requestId', response.request_info.id));
+                            $('#attachmentForm').attr('action',
+                                '{{ route('saveAttachment', ['requestId' => ':requestId']) }}'
+                                .replace(':requestId', response.request_info.id));
 
                             $('#attachmentForm input[name="requestId"]').val(requestId);
-                         
-                            
+
+
                             $('#requestModal').modal('show');
                         },
                         error: function(error) {
@@ -974,19 +989,17 @@
                 });
 
             });
+        
+
+        $('#addRequestModal').on('shown.bs.modal', function(e) {
+            $('#worker').select2({
+                dropdownParent: $(
+                    '#addRequestModal'),
+                width: '100%',
+            });
+
         });
+    });
     </script>
-
-
-<script>
-    $('#addRequestModal').on('shown.bs.modal', function(e) {
-        $('#worker').select2({
-            dropdownParent: $(
-                '#addRequestModal'),
-            width: '100%',
-        });
-
-        });
-</script>
 
 @endsection

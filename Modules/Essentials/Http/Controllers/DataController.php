@@ -603,10 +603,31 @@ class DataController extends Controller
                     ],
 
                     [
-                        'value' => 'essentials.crud_HR_requests',
-                        'label' => __('essentials::lang.crud_HR_requests'),
+                        'value' => 'essentials.view_HR_requests',
+                        'label' => __('essentials::lang.view_HR_requests'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.return_HR_request',
+                        'label' => __('essentials::lang.return_HR_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.change_HR_status',
+                        'label' => __('essentials::lang.change_HR_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_HR_request',
+                        'label' => __('essentials::lang.show_HR_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.add_HR_requests',
+                        'label' => __('essentials::lang.add_HR_requests'),
+                        'default' => false,
+                    ],
+                    
 
                     [
                         'value' => 'essentials.show_essentials_worker',
@@ -716,11 +737,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     
-                    [
-                        'value' => 'essentials.essentials_requests_change_status',
-                        'label' => __('essentials::lang.essentials_requests_change_status'),
-                        'default' => false,
-                    ],
+                 
                     
                     [
                         'value' => 'essentials.create_payroll',
@@ -1038,27 +1055,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_employees_insurances'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'essentials.insurances_requests_change_status',
-                        'label' => __('essentials::lang.insurances_requests_change_status'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.return_insurances_request',
-                        'label' => __('essentials::lang.return_insurances_request'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.show_insurances_request',
-                        'label' => __('essentials::lang.show_insurances_request'),
-                        'default' => false,
-                    ],
-                    [
-                        'value' => 'essentials.insurances_add_requests',
-                        'label' => __('essentials::lang.insurances_add_requests'),
-                        'default' => false,
-                    ],
-                    
+                   
                     
                     [
                         'value' => 'essentials.crud_insurance_contracts',
@@ -1081,11 +1078,7 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     
-                    [
-                        'value' => 'essentials.crud_insurance_requests',
-                        'label' => __('essentials::lang.crud_insurance_requests'),
-                        'default' => false,
-                    ],
+                
                     [
                         'value' => 'essentials.crud_insurance_companies',
                         'label' => __('essentials::lang.crud_insurance_companies'),
@@ -1352,7 +1345,31 @@ class DataController extends Controller
                         'label' => __('essentials::lang.view_profile_picture'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'essentials.view_employees_affairs_requests',
+                        'label' => __('essentials::lang.view_employees_affairs_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.return_employees_request',
+                        'label' => __('essentials::lang.return_employees_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.show_employees_request',
+                        'label' => __('essentials::lang.show_employees_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.change_employees_request_status',
+                        'label' => __('essentials::lang.change_employees_request_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'essentials.employees_affairs_add_requests',
+                        'label' => __('essentials::lang.employees_affairs_add_requests'),
+                        'default' => false,
+                    ],
                 ]
 
             ],
@@ -1417,7 +1434,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.workcards_add_requests'),
                         'default' => false,
                     ],
-                    
+                    [
+                        'value' => 'essentials.view_workcards_request',
+                        'label' => __('essentials::lang.view_workcards_request'),
+                        'default' => false,
+                    ],
                     [
                         'value' => 'essentials.view_return_visa',
                         'label' => __('essentials::lang.view_return_visa'),
@@ -1496,11 +1517,7 @@ class DataController extends Controller
                     ],
         
                   
-                    [
-                        'value' => 'essentials.crud_workcards_request',
-                        'label' => __('essentials::lang.crud_workcards_request'),
-                        'default' => false,
-                    ],
+                  
 
                     [
                         'value' => 'essentials.work_cards_operation',

@@ -187,5 +187,6 @@ return [
     'change_status' => 'تغيير حالة الطلبات',
     'all_request' => 'إستعراض الطلبات',
     'housed_in_room' => 'إمكانية التسكين بالغرف',
+    'add_request'=>'إضافة طلب'
 
 ];

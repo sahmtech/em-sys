@@ -239,108 +239,8 @@ class DataController extends Controller
                         'default' => false,
         
                     ],
-                    [
-                        'value' => 'followup.crud_requests',
-                        'label' => __('followup::lang.crud_requests'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_advanceSalary',
-                        'label' => __('followup::lang.return_the_request_advanceSalary'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_atmCard',
-                        'label' => __('followup::lang.return_the_request_atmCard'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_baladyCardRequest',
-                        'label' => __('followup::lang.return_the_request_baladyCardRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_cancleContractRequest',
-                        'label' => __('followup::lang.return_the_request_cancleContractRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_chamberRequest',
-                        'label' => __('followup::lang.return_the_request_chamberRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_escapeRequest',
-                        'label' => __('followup::lang.return_the_request_escapeRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_exitRequest',
-                        'label' => __('followup::lang.return_the_request_exitRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_insuranceUpgradeRequest',
-                        'label' => __('followup::lang.return_the_request_insuranceUpgradeRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_leavesAndDepartures',
-                        'label' => __('followup::lang.return_the_request_leavesAndDepartures'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_mofaRequest',
-                        'label' => __('followup::lang.return_the_request_mofaRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_residenceCard',
-                        'label' => __('followup::lang.return_the_request_residenceCard'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_residenceEditRequest',
-                        'label' => __('followup::lang.return_the_request_residenceEditRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_residenceRenewal',
-                        'label' => __('followup::lang.return_the_request_residenceRenewal'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_returnRequest',
-                        'label' => __('followup::lang.return_the_request_returnRequest'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_workerTransfer',
-                        'label' => __('followup::lang.return_the_request_workerTransfer'),
-                        'default' => false,
-        
-                    ],
-                    [
-                        'value' => 'followup.return_the_request_workInjuriesRequest',
-                        'label' => __('followup::lang.return_the_request_workInjuriesRequest'),
-                        'default' => false,
-        
-                    ],
+                   
+                  
                     
                     
                     [
@@ -441,6 +341,31 @@ class DataController extends Controller
                         'label' => __('followup::lang.delete_shifts'),
                         'default' => false,
         
+                    ],
+                    [
+                        'value' => 'followup.view_followup_requests',
+                        'label' => __('followup::lang.view_followup_requests'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.add_request',
+                        'label' => __('followup::lang.add_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.change_request_status',
+                        'label' => __('followup::lang.change_request_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.show_request',
+                        'label' => __('followup::lang.show_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'followup.return_request',
+                        'label' => __('followup::lang.return_request'),
+                        'default' => false,
                     ],
                     
         
