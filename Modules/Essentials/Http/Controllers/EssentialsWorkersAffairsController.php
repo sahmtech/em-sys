@@ -452,7 +452,7 @@ class EssentialsWorkersAffairsController extends Controller
         $Qualification = EssentialsEmployeesQualification::where('employee_id', $user->id)->first();
         $Contract = EssentialsEmployeesContract::where('employee_id', $user->id)->first();
         $professionId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('profession_id');
-        $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
+       // $specializationId = EssentialsEmployeeAppointmet::where('employee_id', $user->id)->value('specialization_id');
         $deliveryDocument =  FollowupDeliveryDocument::where('user_id', $user->id)->get(); 
 
         if ($user->user_type == 'worker')
@@ -488,15 +488,15 @@ class EssentialsWorkersAffairsController extends Controller
         }
 
        
-        if ($specializationId !== null) {
-            $specialization = EssentialsSpecialization::find($specializationId)->name;
-        } else {
-            $specialization = "";
-        }
+        // if ($specializationId !== null) {
+        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
+        // } else {
+        //     $specialization = "";
+        // }
 
 
         $user->profession = $profession;
-        $user->specialization = $specialization;
+      //  $user->specialization = $specialization;
 
 
         $view_partials = $this->moduleUtil->getModuleData('moduleViewPartials', ['view' => 'manage_user.show', 'user' => $user]);
