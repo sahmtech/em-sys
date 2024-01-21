@@ -499,7 +499,7 @@ class EssentialsEmployeeInsuranceController extends Controller
             {
                 $output = [
                     'success' => false,
-                    'msg' => __('messages.employee_has_insurance'),
+                    'msg' => __('essentials::lang.employee_has_insurance'),
                 ];
             }
            
