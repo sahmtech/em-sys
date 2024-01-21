@@ -44,14 +44,19 @@ class FollowUpProjectController extends Controller
             ]);
         }
         $can_projectView = auth()->user()->can('followup.projectView');
-
+        
         $salesProjects = SalesProject::with(['contact']);
-        $contacts2 = Contact::all()->pluck('supplier_business_name', 'id');
+        $contacts2 = Contact::whereIn('type',['lead','qualified','unqualified','converted'])
+        ->pluck('supplier_business_name', 'id');
+        
         if (!($is_admin || $is_manager)) {
             $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
             $salesProjects =  $salesProjects->whereIn('id',  $followupUserAccessProject);
             $contacts_ids =  $salesProjects->pluck('contact_id')->unique()->toArray();
-            $contacts2 = Contact::whereIn('id',  $contacts_ids)->pluck('supplier_business_name', 'id');
+           
+            $contacts2 = Contact::whereIn('id',  $contacts_ids)
+            ->whereIn('type',['lead','qualified','unqualified','converted'])
+            ->pluck('supplier_business_name', 'id');
         }
         if (request()->ajax()) {
             if (!empty(request()->input('project_name')) && request()->input('project_name') !== 'all') {
@@ -141,7 +146,8 @@ class FollowUpProjectController extends Controller
         }
 
 
-        return view('followup::projects.index')->with(compact('contacts2'));
+        return view('followup::projects.index')
+        ->with(compact('contacts2'));
     }
 
     /**
