@@ -448,7 +448,12 @@ class DataController extends Controller
                         'default' => false,
 
                     ],
+                    [
+                        'value' => 'followup.add_user_project_access_permissions',
+                        'label' => __('followup::lang.add_user_project_access_permissions'),
+                        'default' => false,
 
+                    ],
                 ]
 
             ],

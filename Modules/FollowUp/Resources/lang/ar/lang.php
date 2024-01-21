@@ -317,5 +317,10 @@ return [
     'return_the_request_workerTransfer' => 'إرجاع طلبات نقل العمال ',
     'return_the_request_workInjuriesRequest' => 'إرجاع طلبات إصابة العمل ',
     'projects_access_permissions' => 'صلاحيات المشاريع',
+    'emp_name' => 'الاسم الكامل',
+    'emp_id_proof_number' => 'رقم الإثبات',
+    'appointment' => 'التعيين',
+    'add_user_project_access_permissions' => 'إضافة صلاحية وصول للمشاريع',
+    'edit_project' => 'تعديل المشاريع',
     //  ''=>'',
 ];

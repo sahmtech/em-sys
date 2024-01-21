@@ -35,27 +35,53 @@
                 <table class="table table-bordered table-striped" id="projects_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.contact_name')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.contact_location_name')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.contract_number')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.start_date')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.end_date')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.active_worker_count')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.worker_count')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.contractDuration')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.contract_form')</th>
-                            <th class="table-td-width-100px">@lang('followup::lang.project_status')</th>
-                            <th class="table-td-width-100px">@lang('followup::lang.project_type')</th>
-                            <th class="table-td-width-100px">@lang('sales::lang.action')</th>
-
-
+                            <th class="table-td-width-25px">#</th>
+                            <th class="table-td-width-100px">@lang('followup::lang.emp_name')</th>
+                            <th class="table-td-width-60px">@lang('followup::lang.emp_id_proof_number')</th>
+                            <th class="table-td-width-100px">@lang('followup::lang.appointment')</th>
+                            <th class="table-td-width-100px">@lang('messages.action')</th>
                         </tr>
                     </thead>
                 </table>
             </div>
         @endcomponent
+        <div class="modal fade" id="addUserAccessProjectModal" tabindex="-1" role="dialog"
+            aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    {!! Form::open(['route' => 'projects_access_permissions.store', 'enctype' => 'multipart/form-data']) !!}
 
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">@lang('followup::lang.add_user_project_access_permissions')</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                {!! Form::hidden('user_id', null, ['id' => 'user_id']) !!}
+                                {!! Form::label('projects_ids', __('followup::lang.projects') . ':*') !!}
+                                {!! Form::select('projects_ids[]', $projects, null, [
+                                    'class' => 'form-control select2',
+                                    'multiple',
+                                    'required',
+                                    'id' => 'projects_menu',
+                                    'style' => 'height: 60px;',
+                                ]) !!}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
 
 
     </section>
@@ -65,98 +91,57 @@
 
 @section('javascript')
     <script type="text/javascript">
+        $(document).on('click', '.add_access_project_btn', function() {
+
+            var user_id = $(this).data('id');
+            $('#addUserAccessProjectModal').find('[name="user_id"]').val(user_id);
+            $('#addUserAccessProjectModal').modal('show');
+        })
         $(document).ready(function() {
+
+
+
+
+
+            $('#addUserAccessProjectModal').on('shown.bs.modal', function(e) {
+                $('#projects_menu').select2({
+                    dropdownParent: $(
+                        '#addUserAccessProjectModal'),
+                    width: '100%',
+                });
+
+            });
+
+
+
             $('#project_name_filter_select').select2();
             $('#projects_table').DataTable({
                 processing: true,
                 serverSide: true,
 
                 ajax: {
-                    url: "{{ route('projects2') }}",
+                    url: "{{ route('projects_access_permissions') }}",
                     data: function(d) {
                         if ($('#project_name_filter').val()) {
                             d.project_name = $('#project_name_filter').val();
                         }
-
-
                     }
                 },
                 columns: [{
                         data: 'id'
                     },
                     {
-                        data: 'contact_name'
+                        data: 'full_name'
                     },
                     {
-                        data: 'contact_location_name'
+                        data: 'id_proof_number'
                     },
                     {
-                        data: 'number_of_contract'
-                    },
-                    {
-                        data: 'start_date'
-                    },
-                    {
-                        data: 'end_date'
-                    },
-                    {
-                        data: 'active_worker_count'
-                    },
-                    {
-                        data: 'worker_count'
-                    },
-                    {
-                        data: 'duration'
-                    },
-                    {
-                        data: 'contract_form',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-                                case 'monthly_cost':
-                                    return '{{ trans('sales::lang.monthly_cost') }}';
-                                case 'operating_fees':
-                                    return '{{ trans('sales::lang.operating_fees') }}';
-
-                                default:
-                                    return data;
-                            }
-                        }
-                    },
-
-                    {
-                        data: 'status',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-                                case 'Done':
-                                    return '{{ trans('sales::lang.Done') }}';
-                                case 'Under_process':
-                                    return '{{ trans('sales::lang.Under_process') }}';
-
-
-                                default:
-                                    return data;
-                            }
-                        }
-                    },
-                    {
-                        data: 'type',
-                        render: function(data, type, full, meta) {
-                            switch (data) {
-                                case 'External':
-                                    return '{{ trans('sales::lang.external') }}';
-                                case 'Internal':
-                                    return '{{ trans('sales::lang.internal') }}';
-
-                                default:
-                                    return data;
-                            }
-                        }
+                        data: 'appointment'
                     },
                     {
                         data: 'action'
                     },
-
-
                 ]
 
             });

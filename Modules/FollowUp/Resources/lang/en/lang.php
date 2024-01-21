@@ -294,9 +294,11 @@ return [
     'return_the_request_workerTransfer' => 'return worker transfer request',
     'return_the_request_workInjuriesRequest' => 'return work injuries request ',
     'projects_access_permissions' => 'Projects Access Permissions',
-
-
-
+    'emp_name' => 'Full Name',
+    'emp_id_proof_number' => 'Identification',
+    'appointment' => 'Appointment',
+    'add_user_project_access_permissions' => 'Add Projects Access Permission',
+    'edit_project' => 'Edit Projects',
     //  ''=>'',
 
 ];
