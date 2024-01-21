@@ -11,10 +11,12 @@ use App\Transaction;
 use App\User;
 use App\ContactLocation;
 use Modules\Sales\Entities\SalesProject;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
+
 use DB;
 use Modules\Essentials\Entities\EssentialsEmployeesContract;
 use Modules\Essentials\Entities\EssentailsReasonWish;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 
 class FollowUpContractsWishesController extends Controller
 {
@@ -38,6 +40,7 @@ class FollowUpContractsWishesController extends Controller
 
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_contrascts_wishes = auth()->user()->can('followup.crud_contrascts_wishes');
         if (!($is_admin || $can_followup_crud_contrascts_wishes)) {
             return redirect()->route('home')->with('status', [
@@ -50,6 +53,13 @@ class FollowUpContractsWishesController extends Controller
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $projects = SalesProject::pluck('name', 'id');
+
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $userIds = User::whereIn('id',  $userIds)->whereIn('assigned_to',  $followupUserAccessProject)->pluck('id')->toArray();
+            $projects = SalesProject::whereIn('id', $followupUserAccessProject)->pluck('name', 'id');
         }
 
         $workers = User::whereIn('users.id', $userIds)->join('sales_projects', 'users.assigned_to', '=', 'sales_projects.id')
@@ -123,9 +133,9 @@ class FollowUpContractsWishesController extends Controller
         $wishes = EssentailsReasonWish::where('type', 'wish')
             ->where('employee_type', 'worker')
             ->pluck('reason', 'id');
-        $projects = SalesProject::pluck('name', 'id');
 
-        $employees = User::where('users.user_type', 'worker')
+
+        $employees = User::whereIn('users.id', $userIds)->where('users.user_type', 'worker')
             ->select(DB::raw("CONCAT(COALESCE(users.first_name, ''),' ',COALESCE(users.last_name,''),
              ' - ',COALESCE(users.id_proof_number,'')) as full_name"), 'users.id',)->get();
 
