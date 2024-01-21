@@ -965,17 +965,17 @@ class EssentialsCardsController extends Controller
         }
 
       
-        if ($specializationId !== null) {
-            $specialization = EssentialsSpecialization::find($specializationId)->name;
-        } 
-        else 
-        {
-            $specialization = "";
-        }
+        // if ($specializationId !== null) {
+        //     $specialization = EssentialsSpecialization::find($specializationId)->name;
+        // } 
+        // else 
+        // {
+        //     $specialization = "";
+        // }
 
 
         $user->profession = $profession;
-        $user->specialization = $specialization;
+     //   $user->specialization = $specialization;
 
 
         $view_partials = $this->moduleUtil->getModuleData(
