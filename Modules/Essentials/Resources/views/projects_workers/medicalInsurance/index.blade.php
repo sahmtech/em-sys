@@ -96,7 +96,7 @@
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
                         <tr>
-                
+
 
                             <td class="table-td-width-100px">@lang('followup::lang.name')</td>
                             <td class="table-td-width-100px">@lang('followup::lang.eqama')</td>
@@ -174,13 +174,14 @@
                 columns: [{
                         data: 'worker',
                         render: function(data, type, row) {
-                            var link = '<a href="' + '{{ route('insurance-showWorker', ['id' => ':id']) }}'
+                            var link = '<a href="' +
+                                '{{ route('insurance-showWorker', ['id' => ':id']) }}'
                                 .replace(':id', row.id) + '">' + data + '</a>';
                             return link;
                         }
                     },
                     {
-                        data: 'residence_permit'
+                        data: 'id_proof_number'
                     },
                     {
                         data: 'contact_name'
@@ -305,7 +306,7 @@
             var dt = $('#workers_table').DataTable();
 
             var fields = fields;
-         
+
             dt.columns(fields).visible(false);
             dt.columns(selectedOptions).visible(true);
 

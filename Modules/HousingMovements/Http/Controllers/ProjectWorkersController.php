@@ -388,12 +388,28 @@ class ProjectWorkersController extends Controller
                 ->addColumn('nationality', function ($row) {
                     return optional($row->user->country)->nationality ?? ' ';
                 })
+                // ->addColumn('residence_permit_expiration', function ($row) {
+                //     $residencePermitDocument = $row->user->OfficialDocument
+                //         ->where('type', 'residence_permit')
+                //         ->first();
+
+                //     if ($residencePermitDocument) {
+                //         return optional($residencePermitDocument)->expiration_date ?? ' ';
+                //     } else {
+
+                //         return ' ';
+                //     }
+                // })
+
+                // ->addColumn('residence_permit', function ($row) {
+                //     return   $row->user->id_proof_number;
+                // })
                 ->addColumn('residence_permit_expiration', function ($row) {
                     $residencePermitDocument = $row->user->OfficialDocument
                         ->where('type', 'residence_permit')
                         ->first();
-
                     if ($residencePermitDocument) {
+
                         return optional($residencePermitDocument)->expiration_date ?? ' ';
                     } else {
 
@@ -402,9 +418,8 @@ class ProjectWorkersController extends Controller
                 })
 
                 ->addColumn('residence_permit', function ($row) {
-                    return   $row->user->id_proof_number;
+                    return $this->getDocumentnumber($row->user, 'residence_permit');
                 })
-
                 ->addColumn('contact_name', function ($row) {
                     return $row->saleProject?->name;
                 })
