@@ -85,12 +85,13 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        {!! Form::label('username', __('business.username') . ':') !!}
+                        {!! Form::label('username', __('business.username') . ':*') !!}
                         @if (!empty($username_ext))
                             <div class="input-group">
                                 {!! Form::text('username', $user->username, [
                                     'class' => 'form-control',
                                     'placeholder' => __('business.username'),
+                                    'required'
                                 ]) !!}
                                 <span class="input-group-addon">{{ $username_ext }}</span>
                             </div>

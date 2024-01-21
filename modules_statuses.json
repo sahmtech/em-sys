@@ -4,7 +4,7 @@
     "AssetManagement": true,
     "Cms": true,
     "Connector": true,
-    "Crm": true,
+    "Crm": false,
     "Ecommerce": true,
     "FieldForce": true,
     "Manufacturing": true,
@@ -12,7 +12,7 @@
     "Project": true,
     "Repair": true,
     "Spreadsheet": true,
-    "Superadmin": true,
+    "Superadmin": false,
     "Woocommerce": true,
     "AiAssistance": true,
     "HousingMovements": true,
@@ -23,5 +23,9 @@
     "YourModuleName": true,
     "GeneralManagement": true,
     "HelpDesk": true,
+
+    "LegalAffairs": true
+
     "CEOManagment": true
+
 }

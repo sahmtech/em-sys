@@ -30,6 +30,7 @@ use Modules\Essentials\Entities\EssentialsBankAccounts;
 use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
 use Modules\FollowUp\Entities\FollowupDeliveryDocument;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\SalesProject;
 
 class FollowUpWorkerController extends Controller
@@ -59,14 +60,21 @@ class FollowUpWorkerController extends Controller
             ]);
         }
 
-      
+
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
-        $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $userIds = User::whereIn('id', $userIds)->whereIn('assigned_to', $followupUserAccessProject)->pluck('id')->toArray();
+            $contacts_fillter = SalesProject::whereIn('id',$followupUserAccessProject)->pluck('name', 'id');
+        }
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -78,7 +86,7 @@ class FollowUpWorkerController extends Controller
         $travelCategories = EssentialsTravelTicketCategorie::all()->pluck('name', 'id');
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::whereIn('users.id',$userIds)->where('user_type', 'worker')
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -90,7 +98,7 @@ class FollowUpWorkerController extends Controller
             DB::raw("CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, '')) as worker"),
             'sales_projects.name as contact_name'
         )->orderBy('users.id', 'desc')
-        ->groupBy('users.id');
+            ->groupBy('users.id');
 
         if (!$is_admin) {
             $userProjects = [];
@@ -207,7 +215,7 @@ class FollowUpWorkerController extends Controller
                 ->filterColumn('residence_permit', function ($query, $keyword) {
                     $query->whereRaw("id_proof_number like ?", ["%{$keyword}%"]);
                 })
-                ->rawColumns(['contact_name', 'worker', 'categorie_id','admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
+                ->rawColumns(['contact_name', 'worker', 'categorie_id', 'admissions_status', 'admissions_type', 'nationality', 'residence_permit_expiration', 'residence_permit', 'admissions_date', 'contract_end_date'])
                 ->make(true);
         }
 
@@ -266,7 +274,7 @@ class FollowUpWorkerController extends Controller
      */
     public function show($id)
     {
-        
+
 
         $business_id = request()->session()->get('user.business_id');
 

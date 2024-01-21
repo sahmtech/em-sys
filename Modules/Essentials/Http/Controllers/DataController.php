@@ -628,7 +628,7 @@ class DataController extends Controller
                         'label' => __('essentials::lang.add_HR_requests'),
                         'default' => false,
                     ],
-                    
+
 
                     [
                         'value' => 'essentials.show_essentials_worker',
@@ -744,9 +744,9 @@ class DataController extends Controller
                         'default' => false,
                     ],
 
-                    
-                 
-                    
+
+
+
                     [
                         'value' => 'essentials.create_payroll',
                         'label' => __('essentials::lang.add_payroll'),
@@ -873,7 +873,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.delete_attencances_status'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'essentials.hr_view_department_employees',
+                        'label' => __('essentials::lang.hr_view_department_employees'),
+                        'default' => false,
+                    ],
 
 
 
@@ -1103,8 +1107,8 @@ class DataController extends Controller
                     ],
 
 
-                   
-                    
+
+
                     [
                         'value' => 'essentials.crud_insurance_contracts',
                         'label' => __('essentials::lang.crud_insurance_contracts'),
@@ -1131,8 +1135,8 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_insurance_requests'),
                         'default' => false,
                     ],
-                    
-                
+
+
                     [
                         'value' => 'essentials.crud_insurance_companies',
                         'label' => __('essentials::lang.crud_insurance_companies'),
@@ -1515,6 +1519,11 @@ class DataController extends Controller
                         'label' => __('essentials::lang.employees_affairs_add_requests'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'essentials.employee_affairs_view_department_employees',
+                        'label' => __('essentials::lang.employee_affairs_view_department_employees'),
+                        'default' => false,
+                    ],
                 ]
 
             ],
@@ -1688,9 +1697,9 @@ class DataController extends Controller
                         'label' => __('essentials::lang.crud_workcards_request'),
                         'default' => false,
                     ],
-        
-                  
-                  
+
+
+
 
                     [
                         'value' => 'essentials.work_cards_operation',
@@ -1711,6 +1720,11 @@ class DataController extends Controller
                     [
                         'value' => 'essentials.facilities_management',
                         'label' => __('essentials::lang.facilities_management'),
+                        'default' => false,
+                    ],
+                     [
+                        'value' => 'essentials.work_cards_view_department_employees',
+                        'label' => __('essentials::lang.work_cards_view_department_employees'),
                         'default' => false,
                     ],
 
@@ -2253,8 +2267,7 @@ class DataController extends Controller
 
 
 
-            if (request()->input('document_type'))
-             {
+            if (request()->input('document_type')) {
                 $document2 = new EssentialsOfficialDocument();
                 $document2->type = request()->input('document_type');
                 $document2->employee_id =   $user->id;

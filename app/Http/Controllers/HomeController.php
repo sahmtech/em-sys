@@ -329,6 +329,9 @@ class HomeController extends Controller
         $assetPermissions = [
             ['value' => 'assetmanagement.assetManagement_dashboard'],
         ];
+        $legalAffairsPermissions = [
+            ['value' => 'legalaffairs.legalAffairs_dashboard'],
+        ];
 
         // $settingsPermissions = [
         //     ['value' => 'business_settings.access'],
@@ -365,6 +368,7 @@ class HomeController extends Controller
             ['id' => 'houseingMovements',  'permissions' => $housingPermissions, 'title' => __('housingmovements::lang.housing_move'), 'icon' => 'fa fas fa-home', 'link' =>   action([\Modules\HousingMovements\Http\Controllers\DashboardController::class, 'index'])],
             ['id' => 'movements',  'permissions' => $movmentsPermissions, 'title' => __('housingmovements::lang.movement_management'), 'icon' => 'fa fa-car', 'link' =>   action([MovmentDashboardController::class, 'index'])],
             ['id' => 'internationalrelations',  'permissions' => $internationalrelationsDashPermission, 'title' => __('internationalrelations::lang.International'), 'icon' => 'fa fas fa-dharmachakra', 'link' =>  action([\Modules\InternationalRelations\Http\Controllers\DashboardController::class, 'index'])],
+            ['id' => 'legalAffairs',  'permissions' => $legalAffairsPermissions, 'title' => __('legalaffairs::lang.legalaffairs'), 'icon' =>  'fas fa-balance-scale', 'link' =>  route('legalAffairs.dashboard')],
             ['id' => 'purchases',  'permissions' => [], 'title' =>  __('purchase.purchases'), 'icon' => 'fas fa-cart-plus', 'link' => route('purchases.index')],
             ['id' => 'accounting',  'permissions' => $accountingPermissions, 'title' =>   __('accounting::lang.accounting'),  'icon' => 'fas fa-money-check fa', 'link' =>  action('\Modules\Accounting\Http\Controllers\AccountingController@dashboard'),],
             ['id' => 'assetManagement',  'permissions' => $assetPermissions, 'title' => __('assetmanagement::lang.asset_management'), 'icon' => 'fas fa fa-boxes', 'link' =>  action([\Modules\AssetManagement\Http\Controllers\AssetController::class, 'dashboard'])],

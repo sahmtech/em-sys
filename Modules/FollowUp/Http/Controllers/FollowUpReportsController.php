@@ -21,11 +21,13 @@ use Modules\Essentials\Entities\EssentialsEmployeeAppointmet;
 use Modules\Essentials\Entities\EssentialsProfession;
 use Modules\Essentials\Entities\EssentialsSpecialization;
 use Modules\Essentials\Entities\EssentialsTravelTicketCategorie;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesProject;
 
 class FollowUpReportsController extends Controller
 {
+    protected $moduleUtil;
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
@@ -45,6 +47,7 @@ class FollowUpReportsController extends Controller
         }
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_projectWorkersReports = auth()->user()->can('followup.crud_projectWorkersReports');
         if (!($is_admin || $can_followup_crud_projectWorkersReports)) {
             return redirect()->route('home')->with('status', [
@@ -52,13 +55,20 @@ class FollowUpReportsController extends Controller
                 'msg' => __('message.unauthorized'),
             ]);
         }
-        
-        $userIds = User::whereNot('user_type','admin')->pluck('id')->toArray();
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
         if (!$is_admin) {
             $userIds = [];
             $userIds = $this->moduleUtil->applyAccessRole();
         }
         $contacts_fillter = SalesProject::all()->pluck('name', 'id');
+
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $userIds = User::whereIn('id',   $userIds)->whereIn('assigned_to',  $followupUserAccessProject)->pluck('id')->toArray();
+            $contacts_fillter = SalesProject::whereIn('id',  $followupUserAccessProject)->pluck('name', 'id');
+        }
+
 
         $nationalities = EssentialsCountry::nationalityForDropdown();
         $appointments = EssentialsEmployeeAppointmet::all()->pluck('profession_id', 'employee_id');
@@ -71,7 +81,7 @@ class FollowUpReportsController extends Controller
 
         $status_filltetr = $this->moduleUtil->getUserStatus();
         $fields = $this->moduleUtil->getWorkerFields();
-        $users = User::whereIn('users.id',$userIds)->where('user_type', 'worker')
+        $users = User::whereIn('users.id', $userIds)->where('user_type', 'worker')
 
             ->leftjoin('sales_projects', 'sales_projects.id', '=', 'users.assigned_to')
             ->with(['country', 'contract', 'OfficialDocument']);
@@ -211,6 +221,7 @@ class FollowUpReportsController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $is_manager = User::find(auth()->user()->id)->user_type == 'manager';
         $can_followup_crud_projectsReports = auth()->user()->can('followup.crud_projectsReports');
         if (!($is_admin || $can_followup_crud_projectsReports)) {
             return redirect()->route('home')->with('status', [
@@ -227,23 +238,13 @@ class FollowUpReportsController extends Controller
 
             ]);
         $salesProjects = SalesProject::with(['contact']);
-
-
-        if (!$is_admin) {
-            $userProjects = [];
-            $roles = auth()->user()->roles;
-            foreach ($roles as $role) {
-
-                $accessRole = AccessRole::where('role_id', $role->id)->first();
-                if ($accessRole) {
-                    $userProjectsForRole = AccessRoleProject::where('access_role_id', $accessRole->id)->pluck('sales_project_id')->unique()->toArray();
-                    $userProjects = array_merge($userProjects, $userProjectsForRole);
-                }
-            }
-            $userProjects = array_unique($userProjects);
-            $salesProjects = $salesProjects->whereIn('id', $userProjects);
-            // $contacts = $contacts->whereIn('id', $contactIds);
-
+        $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
+        if (!($is_admin || $is_manager)) {
+            $followupUserAccessProject = FollowupUserAccessProject::where('user_id',  auth()->user()->id)->pluck('sales_project_id');
+            $contacts_ids =   SalesProject::whereIn('id', $followupUserAccessProject)->pluck('contact_id')->unique()->toArray();
+            $contacts->whereIn('id',   $contacts_ids);
+            $salesProjects =   $salesProjects->whereIn('id', $followupUserAccessProject);
+            $contacts_fillter = Contact::whereIn('id',   $contacts_ids)->pluck('supplier_business_name', 'id');
         }
 
         if (request()->ajax()) {
@@ -323,7 +324,7 @@ class FollowUpReportsController extends Controller
                 ->rawColumns(['id', 'contact_location_name', 'contract_form', 'contact_name', 'active_worker_count', 'worker_count', 'action'])
                 ->make(true);
         }
-        $contacts_fillter = Contact::all()->pluck('supplier_business_name', 'id');
+
         return view('followup::reports.projects')->with(compact('contacts_fillter'));
     }
 

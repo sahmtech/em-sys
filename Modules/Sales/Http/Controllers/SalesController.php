@@ -10,11 +10,12 @@ use App\Utils\ModuleUtil;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Essentials\Entities\EssentialsDepartment;
 use Modules\Sales\Entities\salesContract;
 use Modules\Sales\Entities\SalesOrdersOperation;
 use Modules\Sales\Entities\SalesProject;
 use Yajra\DataTables\Facades\DataTables;
-
+use DB;
 class SalesController extends Controller
 {
 
@@ -101,6 +102,80 @@ class SalesController extends Controller
             'widgets',
             'common_settings'
         ));
+    }
+
+    public function sales_department_employees()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $is_admin = auth()->user()->hasRole('Admin#1') ? true : false;
+        $can_sales_view_department_employees = auth()->user()->can('sales.sales_view_department_employees');
+
+
+        if (!($is_admin || $can_sales_view_department_employees)) {
+            return redirect()->route('home')->with('status', [
+                'success' => false,
+                'msg' => __('message.unauthorized'),
+            ]);
+        }
+
+        $userIds = User::whereNot('user_type', 'admin')->pluck('id')->toArray();
+        if (!$is_admin) {
+            $userIds = [];
+            $userIds = $this->moduleUtil->applyAccessRole();
+        }
+        $departmentIds = EssentialsDepartment::where('business_id', $business_id)
+            ->where('name', 'LIKE', '%مبيعات%')
+            ->pluck('id')->toArray();
+
+        $users = User::whereIn('id', $userIds)->whereHas('appointment', function ($query) use ($departmentIds) {
+            $query->whereIn('department_id', $departmentIds);
+        })->select([
+            'users.*',
+            DB::raw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,'')) as full_name"),
+            'users.id_proof_number',
+        ]);
+        if (request()->ajax()) {
+
+            return Datatables::of($users)
+
+                ->addColumn(
+                    'id',
+                    function ($row) {
+                        return $row->id;
+                    }
+                )
+                ->addColumn(
+                    'full_name',
+                    function ($row) {
+                        return $row->full_name;
+                    }
+                )
+                ->addColumn(
+                    'id_proof_number',
+                    function ($row) {
+                        return $row->id_proof_number;
+                    }
+                )
+                ->addColumn(
+                    'appointment',
+                    function ($row) {
+                        return $row->appointment?->profession->name ?? '';
+                    }
+                )
+
+
+                ->filterColumn('full_name', function ($query, $keyword) {
+                    $query->whereRaw("CONCAT(COALESCE(first_name, ''),' ',COALESCE(mid_name, ''),' ',COALESCE(last_name,''))  like ?", ["%{$keyword}%"]);
+                })
+                ->filterColumn('id_proof_number', function ($query, $keyword) {
+                    $query->whereRaw("id_proof_number  like ?", ["%{$keyword}%"]);
+                })
+
+                ->rawColumns(['id', 'full_name', 'id_proof_number', 'appointment'])
+                ->make(true);
+        }
+
+        return view('sales::sales_department_employees');
     }
 
     public function getOperationAvailableContracts()

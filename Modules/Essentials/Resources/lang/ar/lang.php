@@ -1601,6 +1601,12 @@ return [
   'show_workcards_request' => 'عرض معلومات الطلب',
   'workcards_add_requests' => 'إضافة طلب',
   'view_workcards_request'  => 'عرض طبات العلاقات الحكومية',
+
+  'hr_view_department_employees' => 'عرض صفحة موظفي إدارة الموارد البشرية',
+  'work_cards_view_department_employees' => 'عرض صفحة موظفي إدارة العلاقات الحكومية',
+  'employee_affairs_view_department_employees' => 'عرض صفحة موظفي إدارة شؤون الموظفين',
+  'department_employees' => 'موظفي الإدارة',
+
   'academic_specializations'=>'الاختصاصات الجامعية',
   'job_titles'=>'المسميات الوظيفية',
   'crud_academic_specializations'=>'إدارة التخصصات الجامعية',
@@ -1609,6 +1615,7 @@ return [
   'select_specialization'=>'اختر تخصص',
   'manager_deputy'=>'نائب المدير',
   'add_deputy'=>'إضافة نائب'
+
 
 
 

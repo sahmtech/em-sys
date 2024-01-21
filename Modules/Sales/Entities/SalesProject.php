@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Essentials\Entities\Shift;
 use Modules\Essentials\Entities\EssentialsCity;
+use Modules\FollowUp\Entities\FollowupUserAccessProject;
 
 class SalesProject extends Model
 {
@@ -37,6 +38,8 @@ class SalesProject extends Model
     {
         return $this->hasOne(salesContract::class, 'sales_project_id');
     }
-
-
+    public function followupUserAccessProjects()
+    {
+        return $this->hasMany(FollowupUserAccessProject::class, 'sales_project_id');
+    }
 }
