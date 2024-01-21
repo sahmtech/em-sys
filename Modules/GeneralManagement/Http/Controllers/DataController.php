@@ -22,10 +22,26 @@ class DataController extends Controller
                         'default' => false,
                     ],
                     [
-                        'value' => 'generalmanagement.president_requests',
-                        'label' => __('generalmanagement::lang.crud_president_requests'),
+                        'value' => 'generalmanagement.view_president_requests',
+                        'label' => __('generalmanagement::lang.view_president_requests'),
                         'default' => false,
                     ],
+                    [
+                        'value' => 'generalmanagement.change_request_status',
+                        'label' => __('generalmanagement::lang.change_request_status'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'generalmanagement.view_request',
+                        'label' => __('generalmanagement::lang.view_request'),
+                        'default' => false,
+                    ],
+                    [
+                        'value' => 'generalmanagement.return_request',
+                        'label' => __('generalmanagement::lang.return_request'),
+                        'default' => false,
+                    ],
+                   
                 ],
             ],
         ];

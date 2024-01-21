@@ -316,4 +316,14 @@ return [
     'return_the_request_returnRequest'=>'إرجاع طلبات خروج وعودة ',
     'return_the_request_workerTransfer'=>'إرجاع طلبات نقل العمال ',
     'return_the_request_workInjuriesRequest'=>'إرجاع طلبات إصابة العمل ',
+    'select_type'=>'اختر نوع',
+    'request_owner'=>' صاحب الطلب',
+
+    'view_followup_requests'=>'عرض طلبات المتابعة',
+    'add_request'=>'إضافة طلب',
+    'change_request_status'=>'تغيير حالة الطلب',
+    'show_request'=>'عرض معلومات الطلب',
+    'return_request'=>'إرجاع الطلب',
+    
+
 ];

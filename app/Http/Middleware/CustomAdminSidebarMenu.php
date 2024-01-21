@@ -261,7 +261,7 @@ class CustomAdminSidebarMenu
                     // 'style' => config('app.env') == 'demo' ? 'background-color: #605ca8 !important;' : '',
                 ],
             );
-            if (auth()->user()->can('generalmanagement.president_requests')) {
+            if (auth()->user()->can('generalmanagement.view_president_requests')) {
                 $menu->url(
                     action([\Modules\GeneralManagement\Http\Controllers\RequestController::class, 'index']),
                     __('generalmanagement::lang.requests'),
@@ -540,7 +540,7 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-book-medical', 'active' => request()->segment(1) == 'medicalInsurance' && request()->segment(2) == 'insurance_contracts'],
                 );
             }
-            if ($is_admin  || auth()->user()->can('essentials.crud_insurance_requests')) {
+            if ($is_admin  || auth()->user()->can('essentials.view_insurance_requests')) {
                 $menu->url(
                     action([\Modules\Essentials\Http\Controllers\InsuranceRequestController::class, 'index']),
                     __('essentials::lang.requests'),
@@ -742,6 +742,13 @@ class CustomAdminSidebarMenu
                 }
                
 
+                if ($is_admin  || auth()->user()->can('essentials.view_employees_affairs_requests')) {
+                    $menu->url(
+                        action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'employee_affairs_all_requests']),
+                        __('essentials::lang.employees_requests'),
+                        ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' &&  (request()->segment(2) == 'allEmployeeAffairsRequests')]
+                    );
+                }
                 if ($is_admin  || auth()->user()->can('essentials.crud_employee_appointments')) {
                     $menu->url(
                         route('appointments'),
@@ -808,9 +815,11 @@ class CustomAdminSidebarMenu
                         ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'employee_affairs' && request()->segment(2) == 'import_employees_families'],
                     );
                 }
+              
             }
         });
     }
+
     public function essentialsMenu()
     {
 
@@ -848,6 +857,13 @@ class CustomAdminSidebarMenu
                     ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' && request()->segment(2) == 'procedures'],
                 );
             }
+            if ($is_admin  || auth()->user()->can('essentials.view_HR_requests')) {
+                $menu->url(
+                    action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
+                    __('essentials::lang.requests'),
+                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'allEssentialsRequests' || request()->segment(2) == 'escalate_requests')]
+                );
+            }
 
             if ($is_admin  || auth()->user()->can('essentials.view_all_essentials_workers')) {
                 //workers:
@@ -859,13 +875,7 @@ class CustomAdminSidebarMenu
             }
 
 
-            if ($is_admin  || auth()->user()->can('essentials.crud_HR_requests')) {
-                $menu->url(
-                    action([\Modules\Essentials\Http\Controllers\EssentialsRequestController::class, 'requests']),
-                    __('essentials::lang.requests'),
-                    ['icon' => 'fa fas fa-plus-circle', 'active' => request()->segment(1) == 'hrm' &&  (request()->segment(2) == 'allEssentialsRequests' || request()->segment(2) == 'escalate_requests')]
-                );
-            }
+           
             //employee reports 
             if ($is_admin  || auth()->user()->can('essentials.employees_reports_view')) {
 
@@ -1073,7 +1083,7 @@ class CustomAdminSidebarMenu
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpOperationOrderController::class, 'index']), __('followup::lang.operation_orders'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'operation_orders']);
             }
 
-            if ($is_admin  || auth()->user()->can('followup.crud_requests')) {
+            if ($is_admin  || auth()->user()->can('followup.view_followup_requests')) {
 
                 $menu->url(action([\Modules\FollowUp\Http\Controllers\FollowUpRequestController::class, 'requests']), __('followup::lang.requests'), ['icon' => 'fa fas fa-meteor', 'active' => request()->segment(2) == 'allRequests']);
             }
@@ -1458,7 +1468,7 @@ class CustomAdminSidebarMenu
                 );
             }
 
-            if ($is_admin  || auth()->user()->can('accounting.crud_requests')) {
+            if ($is_admin  || auth()->user()->can('accounting.view_accounting_requests')) {
                 $menu->url(
 
                     action([\Modules\Accounting\Http\Controllers\RequestController::class, 'index']),

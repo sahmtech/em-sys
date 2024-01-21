@@ -479,6 +479,13 @@ return [
     'first_journal' => 'القيد الاول',
     'second_journal' => 'القيد الثاني',
     'third_journal' => 'القيد الثالث',
+    'return_the_request'=>'إرجاع الطلب',
+    'show_request'=>'عرض طلب',
+    'add_request'=>'إضافة طلب',
+    'change_status'=>'تغيير حالة الطلب',
+    'view_accounting_requests'=>'عرض طلبات المحاسبة',
+
+
     'autoMigration' => [
         'sell' => 'مبيعات',
         'sell_return' => 'بيع العائد',

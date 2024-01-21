@@ -111,6 +111,7 @@
       
 
         @component('components.widget', ['class' => 'box-primary'])
+        @if (auth()->user()->hasRole('Admin#1') || auth()->user()->can('essentials.insurances_add_requests'))   
             @slot('tool')
                 <div class="box-tools">
 
@@ -120,7 +121,7 @@
                     </button>
                 </div>
             @endslot
-
+        @endif
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="requests_table">
                     <thead>
@@ -157,7 +158,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('worker_id', __('essentials::lang.employee_name') . ':*') !!}
-                                {!! Form::select('worker_id[]', $workers, null, [
+                                {!! Form::select('worker_id[]', $users, null, [
                                     'class' => 'form-control select2',
                                     'multiple',
                                     'required',
@@ -169,26 +170,7 @@
                             <div class="form-group col-md-6">
                                 {!! Form::label('type', __('essentials::lang.type') . ':*') !!}
                                 {!! Form::select(
-                                    'type',
-                                    [
-                                        'exitRequest' => __('followup::lang.exitRequest'),
-                                        'returnRequest' => __('followup::lang.returnRequest'),
-                                        'escapeRequest' => __('followup::lang.escapeRequest'),
-                                        'advanceSalary' => __('followup::lang.advanceSalary'),
-                                        'leavesAndDepartures' => __('followup::lang.leavesAndDepartures'),
-                                        'atmCard' => __('followup::lang.atmCard'),
-                                        'residenceRenewal' => __('followup::lang.residenceRenewal'),
-                                        'residenceCard' => __('followup::lang.residenceCard'),
-                                        'workerTransfer' => __('followup::lang.workerTransfer'),
-                                        'workInjuriesRequest' => __('followup::lang.workInjuriesRequest'),
-                                        'residenceEditRequest' => __('followup::lang.residenceEditRequest'),
-                                        'baladyCardRequest' => __('followup::lang.baladyCardRequest'),
-                                        'insuranceUpgradeRequest' => __('followup::lang.insuranceUpgradeRequest'),
-                                        'mofaRequest' => __('followup::lang.mofaRequest'),
-                                        'chamberRequest' => __('followup::lang.chamberRequest'),
-                                        'cancleContractRequest' => __('followup::lang.cancleContractRequest'),
-                                        'WarningRequest' => __('followup::lang.WarningRequest'),
-                                    ],
+                                    'type',$requestTypes,
                                     null,
                                     [
                                         'class' => 'form-control',
@@ -621,7 +603,7 @@
 
                             if (data == 1) {
                                 buttonsHtml +=
-                                    '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_insurances_request"))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
+                                    '@if(auth()->user()->hasRole("Admin#1") || auth()->user()->can("essentials.return_insurance_request"))<button class="btn btn-danger btn-sm btn-return" data-request-id="' +
                                     row.process_id + '">@lang('followup::lang.return_the_request')</button>@endif';
                             }
 

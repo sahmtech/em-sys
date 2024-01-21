@@ -67,7 +67,7 @@ Route::middleware('web', 'authh', 'auth', 'SetSessionData', 'language', 'timezon
         Route::post('/ir_change-status', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeStatus'])->name('ir_changeStatus');
         Route::get('/escalate_requests', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'escalateRequests'])->name('ir.escalate_requests');
         Route::post('/changeEscalateRequestsStatus', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'changeEscalateRequestsStatus'])->name('ir.changeEscalateRequestsStatus');
-
+        Route::get('/viewIrRequest/{requestId}', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'viewRequest'])->name('viewIrRequest');
 
 
         Route::post('/storeIrRequest', [\Modules\InternationalRelations\Http\Controllers\IrRequestController::class, 'store'])->name('storeIrRequest');

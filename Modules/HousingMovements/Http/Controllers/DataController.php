@@ -96,11 +96,7 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.all_request'),
                         'default' => false,
                     ],
-                    [
-                        'value' => 'housingmovements.create_order',
-                        'label' => __('followup::lang.create_order'),
-                        'default' => false,
-                    ],
+                
 
                     [
                         'value' => 'housingmovements.return_the_request',
@@ -118,7 +114,11 @@ class DataController extends Controller
                         'label' => __('housingmovements::lang.change_status'),
                         'default' => false,
                     ],
-
+                    [
+                        'value' => 'housingmovements.add_request',
+                        'label' => __('housingmovements::lang.add_request'),
+                        'default' => false,
+                    ],
 
                     //////////////////////
 
