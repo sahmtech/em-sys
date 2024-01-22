@@ -92,19 +92,20 @@
             </div>
         </div>
         @component('components.widget', ['class' => 'box-primary'])
-        <div class="row">
+            <div class="row">
                 <div class="col-sm-3">
-
-                    @slot('tool')
-                        <div class="box-tools">
-                            <a class="btn btn-block btn-primary" href="{{ route('add_workers_affairs') }}">
-                                <i class="fa fa-plus"></i> @lang('messages.add')
-                            </a>
-                        </div>
-                    @endslot
-
+                    @if (auth()->user()->hasRole('Admin#1') ||
+                            auth()->user()->can('essentials.add_essentials_workers'))
+                        @slot('tool')
+                            <div class="box-tools">
+                                <a class="btn btn-block btn-primary" href="{{ route('add_workers_affairs') }}">
+                                    <i class="fa fa-plus"></i> @lang('messages.add')
+                                </a>
+                            </div>
+                        @endslot
+                    @endif
                 </div>
-        </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="workers_table" style=" table-layout: fixed !important;">
                     <thead>
@@ -120,10 +121,10 @@
                             <th class="table-td-width-100px">@lang('housingmovements::lang.building_address')</th>
                             <th class="table-td-width-100px">@lang('housingmovements::lang.room_number')</th>
 --}}
-                           
+
 
                             <td class="table-td-width-100px">@lang('followup::lang.eqama_end_date')</td>
-                  
+
                             <td class="table-td-width-100px">@lang('followup::lang.admissions_date')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_type')</td>
                             <td class="table-td-width-100px">@lang('essentials::lang.admissions_status')</td>
@@ -211,8 +212,8 @@
                     {
                         data: 'nationality'
                     },
-                   
-                    
+
+
                     {
                         data: 'residence_permit_expiration'
                     },

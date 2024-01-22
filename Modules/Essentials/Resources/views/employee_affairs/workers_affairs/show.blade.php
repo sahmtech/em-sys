@@ -73,7 +73,11 @@
                                 @endif
                             </li>
                         </ul>
-
+                        <a href="{{ action([\Modules\Essentials\Http\Controllers\EssentialsManageEmployeeController::class, 'edit'], [$user->id]) }}"
+                            class="btn btn-primary btn-block">
+                            <i class="glyphicon glyphicon-edit"></i>
+                            @lang('messages.edit')
+                        </a>
 
                     </div>
                     <!-- /.box-body -->
@@ -115,22 +119,21 @@
 
                         @if (!empty($documents))
                             <div class="checkbox-group">
-                                @foreach($documents as $document)
-                                
-                                @if(isset($document->file_path) ||isset( $document->attachment))
-                                    <div class="checkbox">
-                                        <label>
-                                            @if ($document->file_path || $document->attachment)
-                                                <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
-                                                    data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                @foreach ($documents as $document)
+                                    @if (isset($document->file_path) || isset($document->attachment))
+                                        <div class="checkbox">
+                                            <label>
+                                                @if ($document->file_path || $document->attachment)
+                                                    <a href="/uploads/{{ $document->file_path ?? $document->attachment }}"
+                                                        data-file-url="{{ $document->file_path ?? $document->attachment }}">
+                                                        {{ trans('followup::lang.' . $document->type) }}
+                                                    </a>
+                                                @else
                                                     {{ trans('followup::lang.' . $document->type) }}
-                                                </a>
-                                            @else
-                                                {{ trans('followup::lang.' . $document->type) }}
-                                            @endif
-                                        </label>
-                                    </div>
-                                @endif
+                                                @endif
+                                            </label>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         @else
@@ -206,7 +209,7 @@
 
                                 </div>
                             </div>
-                           
+
                             @include('user.show_details')
 
 
